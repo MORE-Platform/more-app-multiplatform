@@ -25,7 +25,7 @@ In summer 2022 we started the development More project including two native apps
 We explored the possibilities of Android and its API's. 
 Now, half a year later when we're about to start the iOS implementation, we revisit the original decision to re-evaluate the requirements and options from today's perspective.
 
-The decision lies between Flutter, React-Native, Kotlin-Multiplatform-Mobile and PWA.
+We are evaluating the expected effort to implement the native iOS app next to the Android app compared with the implementation of a hybrid/multiplatform application. We are explicitly targeting for a solution that helps us maintaining support for _both platfoms with a syncronized feature-set_.
 
 
 ## Original ADRs
