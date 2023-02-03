@@ -101,7 +101,8 @@ Written with Kotlin, it basically creates a shared module, which is included int
 - Apps have complete access to all native APIs and frameworks.
 - UI and app behaviour is completely native
 - Excellent interoperability with Java and Kotlin
-- Most of the code can be used and edited with Java/Kotlin knowledge only
+- Most of the business-logic can be implemented with Java/Kotlin knowledge only
+- We can re-use elements of the business-logic from the existing Android-App
 
 ### Cons:
 - Knowledge about iOS Swift and SwiftUI still needed
