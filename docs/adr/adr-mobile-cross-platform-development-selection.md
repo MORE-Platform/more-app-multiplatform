@@ -96,8 +96,8 @@ Kotlin Multiplatform Mobile is a cross-platform development tool to build mobile
 Written with Kotlin, it basically creates a shared module, which is included into the native apps using Kotlin Native.
 
 #### Pros:
-- A shared core library can be developed for iOS and Android
-- Most of the code can be shared and therefore most of the code only has to be developed once, if a good architecture is provided
+- A shared core library is developed for iOS and Android
+- Most of the functionality can be shared and therefore must only be developed once. 
 - Apps have complete access to all native APIs and frameworks.
 - UI and app behaviour is completely native
 - Excellent interoperability with Java and Kotlin
