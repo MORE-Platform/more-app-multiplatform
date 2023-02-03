@@ -138,7 +138,7 @@ Progressive Web App (PWA) tries to package a website into a web app, which can b
 - Increased discoverability: PWAs are easily discoverable via search engines and can be shared via URLs, making them more accessible to users.
 
 #### Cons:
-- Limited access to native device functionality: PWAs have limited access to native device functionality, such as the camera or accelerometer.
+- Limited access to native device functionality: PWAs have limited access to native device functionality, such as the camera or accelerometer. :stop_sign:
 - Browser compatibility issues: PWAs may not work optimally on all browsers, leading to compatibility issues for some users.
 - User adoption: Users may not be familiar with PWAs and may need to be educated on how to use them.
 - Limited distribution channels: PWAs have limited distribution channels compared to native apps, which can make it harder to reach a wide audience.
