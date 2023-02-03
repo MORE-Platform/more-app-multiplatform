@@ -163,7 +163,12 @@ Progressive Web App (PWA) tries to package a website into a web app, which can b
 
 ## Decision
 
-We made Kotlin Native would be the best alternative, since we are experienced in Kotlin, it is very simple to add platform dependent code and is very easy to develop.
+We come to the conclusion that **Kotlin Multiplatform Mobile** is the best option at this point:
+
+* Kotlin-Experience is wide spread in the development team
+* We can re-use significant code-elements from the existing App
+* The shared module for the business-logic allows us to use synergies compared with the original approach.
+* We can still make use of platform-native features if specific requirements.
 
 
 ---
