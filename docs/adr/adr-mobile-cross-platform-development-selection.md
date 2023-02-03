@@ -76,7 +76,7 @@ It's built by Google and the language used is Dart. It is still a very new envir
 #### Pros:
 
 - Hot reloading allows for instant changes in the UI while the application is running
-- There is only a single Code base. Only one application has to be built.
+- There is only a single Code base to maintain. Only one application has to be built.
 - Faster development
 - Easier maintenance
 
