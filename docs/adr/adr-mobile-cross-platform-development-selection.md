@@ -85,7 +85,7 @@ It's built by Google and the language used is Dart. It is still a very new envir
 - Only a small adoption rate
 - Large app sizes
 - Lack of Third-party Libraries. Many basic features have to be implemented by hand. Also, many libraries developed open-source by single contributors tend to be abandoned.
-- Issues with iOS. There are many bugs and new features use a long time to be adopted, including security updates.
+- Slow adoption rate on iOS. There are many bugs and new features require a long time to be adopted, including security updates.
 - Dart is still in development, therefore it is missing a lot of features, even basic ones. It also isn't used a lot in other domains than flutter.
 - Flutter has no native way to access sensor data of the devices. It still needs a library for that, which relies on the open-source community to take care.
 - [Flutter apps use much more energy and memory to their native counterparts.](https://medium.com/swlh/flutter-vs-react-native-vs-native-deep-performance-comparison-990b90c11433)
