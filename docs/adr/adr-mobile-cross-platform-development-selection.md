@@ -23,8 +23,7 @@
 
 In summer 2022 we started the development More project including two native apps, starting with the Android app written in Kotlin. 
 We explored the possibilities of Android and its API's. 
-Now, half a year later, we startet having a new discussion about the mobile application development process, since we are about to begin the iOS application.
-The discussion is about a cross-development development, which enables the development of two different platform specific application on one code basis.
+Now, half a year later when we're about to start the iOS implementation, we revisit the original decision to re-evaluate the requirements and options from today's perspective.
 
 The decision lies between Flutter, React-Native, Kotlin-Multiplatform-Mobile and PWA.
 
