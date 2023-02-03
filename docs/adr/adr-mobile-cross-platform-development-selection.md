@@ -121,6 +121,7 @@ React Native is a framework, which can create views for both iOS, Android and PW
 
 #### Cons:
 - Not direct access to all platform features
+- Sensor access limited and requires additional 3rd-party libraries
 - Limited Customization: Limited customization options compared to native development as it uses pre-built components.
 - Dependence on third-party libraries: Some functionality may require the use of third-party libraries, which can lead to compatibility issues.
 - Debugging can be challenging: Debugging can be more difficult than in native development, especially in case of complex issues.
