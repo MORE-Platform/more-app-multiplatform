@@ -67,8 +67,6 @@ There are different options to develop an app for both platforms. It can be cate
 - Higher maintenance load, since each update has to developed separately for each platform.
 
 
-Cross-Platform apps are built to run on multiple different platforms, including desktop systems and more.
-There are a few different frameworks worth considering:
 
 
 ### Flutter
