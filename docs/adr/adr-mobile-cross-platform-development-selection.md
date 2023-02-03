@@ -92,8 +92,8 @@ It's built by Google and the language used is Dart. It is still a very new envir
 - It still needs knowledge about Android development in Kotlin or Java to develop Android specific features.
 
 ### Kotlin Multiplatform Mobile:
-Kotlin Native is a cross-platform development tool to build mobile, desktop and web apps.
-Written with Kotlin, it just creates a shared module, which is included into the native apps.
+Kotlin Multiplatform Mobile is a cross-platform development tool to build mobile, desktop and web apps.
+Written with Kotlin, it basically creates a shared module, which is included into the native apps using Kotlin Native.
 
 #### Pros:
 - A shared core library can be developed for iOS and Android
