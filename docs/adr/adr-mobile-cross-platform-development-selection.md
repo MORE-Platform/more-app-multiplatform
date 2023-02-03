@@ -17,7 +17,7 @@
 **Date: 26.01.2023**
 
 
-**Participants**: Cortiel Jan (Redlink GmbH)
+**Participants**: @janoliver20, @dan0bar, @ja-fra
 
 ## Introduction
 
