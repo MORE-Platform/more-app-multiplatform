@@ -39,8 +39,9 @@ Originally we defined three separate [ADRs](https://github.com/MORE-Platform/mor
 
 There are different options to develop an app for both platforms. It can be categorized into native and mobile cross-platform development.
 
-- iOS Native
-- Android Native
+- Individual native Implementation
+  - iOS Native
+  - Android Native
 - Flutter
 - Kotlin Multiplatform Mobile
 - React-Native
