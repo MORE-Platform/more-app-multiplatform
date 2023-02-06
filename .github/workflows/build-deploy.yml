@@ -54,13 +54,15 @@ jobs:
           name: shared-module
 
       - name: Build Android
-        run: ./gradlew androidApp:build androidApp:bundleRelease androidApp:assembleRelease
+        run: ./gradlew androidApp:build androidApp:bundleDebug androidApp:bundleRelease androidApp:assembleRelease
 
       - name: Collect Artifacts
         run: |
           mkdir -p artifacts
-          cp androidApp/build/outputs/bundle/release/*.aab artifacts/more-app.aab
-          cp androidApp/build/outputs/apk/release/*.apk artifacts/more-app.apk
+          cp androidApp/build/outputs/apk/debug/androidApp-debug.apk artifacts/
+          cp androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk artifacts/
+          cp androidApp/build/outputs/bundle/debug/androidApp-debug.aab artifacts/
+          cp androidApp/build/outputs/bundle/release/androidApp-release.aab artifacts/
 
       - name: Upload Release Bundle
         uses: actions/upload-artifact@v3
