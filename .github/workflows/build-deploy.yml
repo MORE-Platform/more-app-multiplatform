@@ -56,13 +56,17 @@ jobs:
       - name: Build Android
         run: ./gradlew androidApp:build androidApp:bundleRelease androidApp:assembleRelease
 
-      - name: Upload artifacts
+      - name: Collect Artifacts
+          run: |
+            mkdir -p artifacts
+            cp androidApp/build/outputs/bundle/release/*.aab artifacts/more-app.aab
+            cp androidApp/build/outputs/apk/release/*.apk artifacts/more-app.apk
+
+      - name: Upload Release Bundle
         uses: actions/upload-artifact@v3
         with:
-          name: android-packages
-          path: |
-            androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk
-            androidApp/build/outputs/bundle/release/androidApp-release.aab
+          name: android-release-bundle
+          path: artifacts/*
 
   build-ios:
     name: Build Ios App
