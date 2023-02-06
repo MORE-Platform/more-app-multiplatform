@@ -54,7 +54,7 @@ jobs:
           name: shared-module
 
       - name: Build Android
-        run: ./gradlew androidApp:build androidApp:bundleRelease
+        run: ./gradlew androidApp:build androidApp:bundleRelease androidApp:assembleRelease
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
