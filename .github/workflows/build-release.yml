@@ -79,5 +79,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup MacOS
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
 
 
