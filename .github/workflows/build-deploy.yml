@@ -57,12 +57,12 @@ jobs:
         run: ./gradlew androidApp:build androidApp:bundleRelease
 
       - name: Upload artifacts
-          uses: actions/upload-artifact@v3
-          with:
-            name: android-packages
-            path: |
-              androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk
-              androidApp/build/outputs/bundle/release/androidApp-release.aab
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-packages
+          path: |
+            androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk
+            androidApp/build/outputs/bundle/release/androidApp-release.aab
       
 
   build-ios:
