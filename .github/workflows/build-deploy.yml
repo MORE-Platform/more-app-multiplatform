@@ -57,10 +57,10 @@ jobs:
         run: ./gradlew androidApp:build androidApp:bundleRelease androidApp:assembleRelease
 
       - name: Collect Artifacts
-          run: |
-            mkdir -p artifacts
-            cp androidApp/build/outputs/bundle/release/*.aab artifacts/more-app.aab
-            cp androidApp/build/outputs/apk/release/*.apk artifacts/more-app.apk
+        run: |
+          mkdir -p artifacts
+          cp androidApp/build/outputs/bundle/release/*.aab artifacts/more-app.aab
+          cp androidApp/build/outputs/apk/release/*.apk artifacts/more-app.apk
 
       - name: Upload Release Bundle
         uses: actions/upload-artifact@v3
