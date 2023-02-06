@@ -20,14 +20,14 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
 
-class NetworkService(endpointRepository: EndpointRepository, credentialRepository: CredentialRepository) {
+class NetworkService(private val endpointRepository: EndpointRepository, private val credentialRepository: CredentialRepository) {
 
-    suspend fun validateRegistrationToken(registrationToken: String): Pair<Study?, NetworkServiceError?> {
+    suspend fun validateRegistrationToken(registrationToken: String, endpoint: String? = null): Pair<Study?, NetworkServiceError?> {
         try {
             val httpClient = getHttpClient()
-
+            val url = endpoint ?: endpointRepository.endpoint() ?: DATA_BASE_PATH_ENDPOINT
             val registrationApi =
-                RegistrationApi(baseUrl = DATA_BASE_PATH_ENDPOINT, httpClientEngine = httpClient.engine)
+                RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
             val registrationResponse = registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken)
             Napier.d(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {

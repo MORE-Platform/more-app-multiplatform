@@ -20,10 +20,12 @@ class CoreLoginViewModel(endpointRepository: EndpointRepository, credentialRepos
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     val studyFlow: MutableStateFlow<Study?> = MutableStateFlow(null)
+    val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    fun sendRegistrationToken(token: String) {
+    fun sendRegistrationToken(token: String, endpoint: String? = null) {
         if (token.isNotEmpty()) {
             val upperCaseToken = token.uppercase()
+            loadingFlow.value = true
             scope.launch {
                 val (study, networkError) = networkService.validateRegistrationToken(upperCaseToken)
                 study?.let {
@@ -47,6 +49,18 @@ class CoreLoginViewModel(endpointRepository: EndpointRepository, credentialRepos
                 job.cancel()
             }
 
+        }
+    }
+
+    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)): Closeable {
+        val job = Job()
+        loadingFlow.onEach {
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object: Closeable {
+            override fun close() {
+                job.cancel()
+            }
         }
     }
 

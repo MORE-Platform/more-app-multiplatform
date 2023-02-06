@@ -1,0 +1,11 @@
+/* 
+  LoginViewLocalizable.strings
+  iosApp
+
+  Created by Jan Cortiel on 06.02.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"login_welcome_title" = "Welcome to More";
+"study_endpoint_headling" = "Study Endpoint";
+"participation_key_entry" = "Participation Key";

@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
-import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import platform.Foundation.NSUserDefaults
 import platform.darwin.NSInteger
 
