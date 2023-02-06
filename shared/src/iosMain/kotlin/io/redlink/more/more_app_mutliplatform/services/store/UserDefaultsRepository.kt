@@ -6,14 +6,6 @@ import platform.darwin.NSInteger
 
 
 class UserDefaultsRepository: SharedStorageRepository {
-    override fun storeSecure(key: String, value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun loadSecure(key: String, default: String): String {
-        TODO("Not yet implemented")
-    }
-
     override fun store(key: String, value: String) {
         NSUserDefaults.standardUserDefaults.setObject(value, key)
     }
