@@ -1,56 +1,68 @@
 package io.redlink.more.more_app_mutliplatform.services.store
-//
-//import android.content.SharedPreferences
-//
-//
-class SharedPreferencesRepository(): SharedStorageRepository {
-    override fun storeSecure(key: String, value: String) {
-        TODO("Not yet implemented")
-    }
 
-    override fun loadSecure(key: String, default: String): String {
-        TODO("Not yet implemented")
+import android.content.Context
+import android.content.SharedPreferences
+
+class SharedPreferencesRepository(): SharedStorageRepository, AndroidContext {
+    private var sharedPreferences: SharedPreferences? = null
+
+    override fun apply(context: Context) {
+        sharedPreferences = EncryptedSharedPreference.create(context)
     }
 
     override fun store(key: String, value: String) {
-        TODO("Not yet implemented")
+        sharedPreferences
+            ?.edit()
+            ?.putString(key, value)
+            ?.apply()
     }
 
     override fun store(key: String, value: Boolean) {
-        TODO("Not yet implemented")
+        sharedPreferences
+            ?.edit()
+            ?.putBoolean(key, value)
+            ?.apply()
     }
 
     override fun store(key: String, value: Int) {
-        TODO("Not yet implemented")
+        sharedPreferences
+            ?.edit()
+            ?.putInt(key, value)
+            ?.apply()
     }
 
     override fun store(key: String, value: Float) {
-        TODO("Not yet implemented")
+        sharedPreferences
+            ?.edit()
+            ?.putFloat(key, value)
+            ?.apply()
     }
 
     override fun store(key: String, value: Double) {
-        TODO("Not yet implemented")
+        sharedPreferences
+            ?.edit()
+            ?.putLong(key, value.toRawBits())
+            ?.apply()
     }
 
     override fun load(key: String, default: String): String {
-        TODO("Not yet implemented")
+        return sharedPreferences?.getString(key, default) ?: default
     }
 
     override fun load(key: String, default: Boolean): Boolean {
-        TODO("Not yet implemented")
+        return sharedPreferences?.getBoolean(key, default) ?: default
     }
 
     override fun load(key: String, default: Int): Int {
-        TODO("Not yet implemented")
+        return sharedPreferences?.getInt(key, default) ?: default
     }
 
     override fun load(key: String, default: Float): Float {
-        TODO("Not yet implemented")
+        return sharedPreferences?.getFloat(key, default) ?: default
     }
 
     override fun load(key: String, default: Double): Double {
-        TODO("Not yet implemented")
+        return sharedPreferences?.getLong(key, default.toRawBits())?.toDouble() ?: default
     }
 }
-//
 actual fun getSharedStorageRepository(): SharedStorageRepository = SharedPreferencesRepository()

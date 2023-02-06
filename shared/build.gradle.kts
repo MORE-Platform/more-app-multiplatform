@@ -69,6 +69,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha04")
+
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
             }
         }
@@ -106,7 +108,6 @@ android {
         targetSdk = 33
     }
 }
-
 
 
 openApiGenerate {

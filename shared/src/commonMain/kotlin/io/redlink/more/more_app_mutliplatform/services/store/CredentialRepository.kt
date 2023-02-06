@@ -11,8 +11,8 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
 
     fun store(credentials: CredentialModel): Boolean {
         if (credentials.apiId.isNotEmpty() && credentials.apiKey.isNotEmpty()) {
-            sharedStorageRepository.storeSecure(CREDENTIAL_ID, credentials.apiId)
-            sharedStorageRepository.storeSecure(CREDENTIAL_KEY, credentials.apiKey)
+            sharedStorageRepository.store(CREDENTIAL_ID, credentials.apiId)
+            sharedStorageRepository.store(CREDENTIAL_KEY, credentials.apiKey)
             cache = credentials
             return true
         }
@@ -20,8 +20,8 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
     }
 
     private fun load(): CredentialModel? {
-        val apiId = sharedStorageRepository.loadSecure(CREDENTIAL_ID, "")
-        val apiKey = sharedStorageRepository.loadSecure(CREDENTIAL_KEY, "")
+        val apiId = sharedStorageRepository.load(CREDENTIAL_ID, "")
+        val apiKey = sharedStorageRepository.load(CREDENTIAL_KEY, "")
         if (apiId.isNotEmpty() && apiKey.isNotEmpty()) {
             return CredentialModel(apiId, apiKey)
         }

@@ -1,9 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
 interface SharedStorageRepository {
-    fun storeSecure(key: String, value: String)
-    fun loadSecure(key: String, default: String): String
-
     fun store(key: String, value: String)
     fun store(key: String, value: Boolean)
     fun store(key: String, value: Int)

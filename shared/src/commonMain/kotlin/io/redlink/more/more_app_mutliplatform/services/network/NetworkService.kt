@@ -5,6 +5,8 @@ import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_multiplatform.openapi.api.RegistrationApi
 import io.redlink.more.more_app_multiplatform.openapi.infrastructure.HttpResponse
 import io.redlink.more.more_app_multiplatform.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
+import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -18,7 +20,7 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
 
-class NetworkService {
+class NetworkService(endpointRepository: EndpointRepository, credentialRepository: CredentialRepository) {
 
     suspend fun validateRegistrationToken(registrationToken: String): Pair<Study?, NetworkServiceError?> {
         try {
@@ -56,6 +58,7 @@ class NetworkService {
             val error = Json.decodeFromString<io.redlink.more.more_app_multiplatform.openapi.model.Error>(responseBody.toString())
             return NetworkServiceError(code = code, message = error.msg ?: "Error")
         } catch (e: Exception) {
+            e.printStackTrace()
             Napier.e(e.toString(), tag = TAG)
             NetworkServiceError(code = code, "Error")
         }
