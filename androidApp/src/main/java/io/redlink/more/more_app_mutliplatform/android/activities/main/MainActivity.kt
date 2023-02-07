@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android
+package io.redlink.more.more_app_mutliplatform.android.activities.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.redlink.more.more_app_mutliplatform.Greeting
+import io.redlink.more.more_app_mutliplatform.android.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
