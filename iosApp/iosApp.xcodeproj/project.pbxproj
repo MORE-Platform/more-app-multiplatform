@@ -21,9 +21,13 @@
 		1F8847D4299158BD0023EF10 /* MoreImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847D3299158BC0023EF10 /* MoreImage.swift */; };
 		1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847D529915ADE0023EF10 /* MoreAnimation.swift */; };
 		1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847D729915C030023EF10 /* MoreTextField.swift */; };
-		1F8847DC29915E7C0023EF10 /* MoreCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847DB29915E7C0023EF10 /* MoreCornerRadius.swift */; };
-		1F8847DE29915FAB0023EF10 /* MoreLineWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847DD29915FAB0023EF10 /* MoreLineWidth.swift */; };
-		1F8847E0299160400023EF10 /* MorePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847DF299160400023EF10 /* MorePadding.swift */; };
+		1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847DF299160400023EF10 /* MoreTextFieldStyle.swift */; };
+		1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847E129917F5D0023EF10 /* MoreActionButton.swift */; };
+		1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847E3299180980023EF10 /* MoreBorder.swift */; };
+		1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847E5299182C90023EF10 /* LoginButton.swift */; };
+		1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847E72992BEE30023EF10 /* BasicText.swift */; };
+		1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847E92992C0060023EF10 /* MoreContainer.swift */; };
+		1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847EB2992C3240023EF10 /* MoreFrame.swift */; };
 		1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */; };
 		1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */; };
 		1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9DB19F298CF44000DBB7DB /* MoreColor.swift */; };
@@ -61,9 +65,13 @@
 		1F8847D3299158BC0023EF10 /* MoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreImage.swift; sourceTree = "<group>"; };
 		1F8847D529915ADE0023EF10 /* MoreAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreAnimation.swift; sourceTree = "<group>"; };
 		1F8847D729915C030023EF10 /* MoreTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreTextField.swift; sourceTree = "<group>"; };
-		1F8847DB29915E7C0023EF10 /* MoreCornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreCornerRadius.swift; sourceTree = "<group>"; };
-		1F8847DD29915FAB0023EF10 /* MoreLineWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreLineWidth.swift; sourceTree = "<group>"; };
-		1F8847DF299160400023EF10 /* MorePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorePadding.swift; sourceTree = "<group>"; };
+		1F8847DF299160400023EF10 /* MoreTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreTextFieldStyle.swift; sourceTree = "<group>"; };
+		1F8847E129917F5D0023EF10 /* MoreActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreActionButton.swift; sourceTree = "<group>"; };
+		1F8847E3299180980023EF10 /* MoreBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreBorder.swift; sourceTree = "<group>"; };
+		1F8847E5299182C90023EF10 /* LoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButton.swift; sourceTree = "<group>"; };
+		1F8847E72992BEE30023EF10 /* BasicText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicText.swift; sourceTree = "<group>"; };
+		1F8847E92992C0060023EF10 /* MoreContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreContainer.swift; sourceTree = "<group>"; };
+		1F8847EB2992C3240023EF10 /* MoreFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFrame.swift; sourceTree = "<group>"; };
 		1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMainBackgroundView.swift; sourceTree = "<group>"; };
 		1F9DB19F298CF44000DBB7DB /* MoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreColor.swift; sourceTree = "<group>"; };
@@ -98,9 +106,11 @@
 			isa = PBXGroup;
 			children = (
 				1F8847B929914C8D0023EF10 /* Title.swift */,
+				1F8847E72992BEE30023EF10 /* BasicText.swift */,
 				1F8847CD299155F50023EF10 /* SectionHeadling.swift */,
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
 				1F8847D729915C030023EF10 /* MoreTextField.swift */,
+				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -156,6 +166,7 @@
 			children = (
 				1F8847B629911E6E0023EF10 /* LoginViewModel.swift */,
 				1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */,
+				1F8847E5299182C90023EF10 /* LoginButton.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -168,9 +179,10 @@
 				1F8847C9299154120023EF10 /* MoreFont.swift */,
 				1F8847D3299158BC0023EF10 /* MoreImage.swift */,
 				1F8847D529915ADE0023EF10 /* MoreAnimation.swift */,
-				1F8847DB29915E7C0023EF10 /* MoreCornerRadius.swift */,
-				1F8847DD29915FAB0023EF10 /* MoreLineWidth.swift */,
-				1F8847DF299160400023EF10 /* MorePadding.swift */,
+				1F8847DF299160400023EF10 /* MoreTextFieldStyle.swift */,
+				1F8847E3299180980023EF10 /* MoreBorder.swift */,
+				1F8847E92992C0060023EF10 /* MoreContainer.swift */,
+				1F8847EB2992C3240023EF10 /* MoreFrame.swift */,
 			);
 			path = Style;
 			sourceTree = "<group>";
@@ -310,24 +322,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
+				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
 				1F8847CA299154120023EF10 /* MoreFont.swift in Sources */,
+				1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */,
 				1F8847D4299158BD0023EF10 /* MoreImage.swift in Sources */,
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeadling.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
-				1F8847DC29915E7C0023EF10 /* MoreCornerRadius.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
-				1F8847E0299160400023EF10 /* MorePadding.swift in Sources */,
+				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
+				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
+				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
+				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
-				1F8847DE29915FAB0023EF10 /* MoreLineWidth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

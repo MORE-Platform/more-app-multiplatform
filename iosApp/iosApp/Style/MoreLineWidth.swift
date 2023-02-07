@@ -8,10 +8,3 @@
 
 import Foundation
 
-extension CGFloat {
-    static let moreLineWidth = MoreLineWidth()
-    
-    struct MoreLineWidth {
-        let textField: CGFloat = 2
-    }
-}

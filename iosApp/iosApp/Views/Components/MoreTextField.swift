@@ -13,12 +13,11 @@ struct MoreTextField: View {
     @Binding var inputText: String
     var body: some View {
         TextField(titleKey, text: $inputText)
-            .padding(.morePadding.textField)
+            .padding(.moreTextFieldPadding.textFieldInnerPadding)
             .overlay(
-                RoundedRectangle(cornerRadius: .moreCornerRadius.textField)
-                    .stroke(Color.more.main, lineWidth: .moreLineWidth.textField)
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                    .stroke(Color.more.main, lineWidth: .moreBorder.lineWidth)
             )
-            .padding(.moreEdgeInsets.textFieldBottom)
     }
 }
 

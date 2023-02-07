@@ -11,7 +11,7 @@ import SwiftUI
 struct LoginView: View {
     @StateObject private var model = LoginViewModel()
     @State var endpoint = "https://"
-    @State var key = ""
+    @State var token = ""
     @State private var endpointShowTextField = false
     @State private var rotationAngle = 0.0
 
@@ -31,29 +31,23 @@ struct LoginView: View {
                         UIToggleFoldViewButton(isOpen: $endpointShowTextField)
                     }
                     .padding(.bottom, 4)
-                    if endpointShowTextField {
-                        MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $endpoint)
-                    } else {
-                        Text(endpoint)
-                            .padding(.bottom, 24)
+                    Group {
+                        if endpointShowTextField {
+                            MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $endpoint)
+                        } else {
+                            BasicText(text: $endpoint)
+                        }
                     }
+                    .padding(.moreContainerEdgeInsets.bottom)
                     SectionHeadling(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
 
-                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $key)
+                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $token)
                 }
                 .padding()
 
                 if !model.isLoading {
-                    Button {
-                        model.validate(token: key, endpoint: endpoint)
-                    } label: {
-                        Text("Login")
-                    }
-                    .frame(minWidth: 100, maxWidth: 150)
-                    .padding()
-                    .foregroundColor(.more.white)
-                    .background(Color.more.main)
-                    .cornerRadius(6)
+                    LoginButton(key: $token, endpoint: $endpoint, stringTable: .constant(stringTable))
+                        .environmentObject(model)
                 } else {
                     ProgressView()
                         .progressViewStyle(.circular)
@@ -61,8 +55,7 @@ struct LoginView: View {
 
                 Spacer()
             }
-            .frame(maxWidth: 300)
-            .padding(.vertical, 50)
+            .frame(maxWidth: .moreFrameStyle.minWidth)
 
         } topBarContent: {
             EmptyView()
