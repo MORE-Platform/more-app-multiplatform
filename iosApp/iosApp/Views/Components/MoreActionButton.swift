@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct MoreActionButton<ButtonLabel: View>: View {
+    var color: Color = .more.main
     let action: () -> Void
     var label: () -> ButtonLabel
     var body: some View {
@@ -16,7 +17,7 @@ struct MoreActionButton<ButtonLabel: View>: View {
             .frame(minWidth: .moreFrameStyle.buttonMaxWidth, maxWidth: .moreFrameStyle.buttonMaxWidth)
             .padding()
             .foregroundColor(.more.white)
-            .background(Color.more.main)
+            .background(color)
             .cornerRadius(.moreBorder.cornerRadius)
     }
 }

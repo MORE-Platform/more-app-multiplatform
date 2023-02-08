@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SectionHeadling: View {
+struct SectionHeading: View {
     @Binding var sectionTitle: String
     var body: some View {
         Text(sectionTitle)

@@ -7,15 +7,14 @@
 //
 
 import SwiftUI
+import shared
 
 struct LoginButton: View {
     @EnvironmentObject var model: LoginViewModel
-    @Binding var key: String
-    @Binding var endpoint: String
     @Binding var stringTable: String
     var body: some View {
         MoreActionButton {
-            model.validate(token: key, endpoint: endpoint)
+            model.validate()
         } label: {
             Text(verbatim:.localizedString(forKey: "login_button", inTable: stringTable, withComment: "button to log into a more study"))
         }
@@ -24,7 +23,7 @@ struct LoginButton: View {
 
 struct LoginButton_Previews: PreviewProvider {
     static var previews: some View {
-        LoginButton(key: .constant(""), endpoint: .constant(""), stringTable: .constant("LoginView"))
-            .environmentObject(LoginViewModel())
+        LoginButton(stringTable: .constant("LoginView"))
+            .environmentObject(LoginViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
     }
 }

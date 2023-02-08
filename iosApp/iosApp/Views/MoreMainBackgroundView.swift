@@ -24,12 +24,12 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
                     topBarContent()
                 }
                 .padding(.vertical, 16)
-                .padding(.horizontal, 24)
                 Spacer()
-                content().padding()
+                content()
                 Spacer()
             }
             .foregroundColor(.more.main)
+            .padding(.horizontal, 24)
         }
     }
 }

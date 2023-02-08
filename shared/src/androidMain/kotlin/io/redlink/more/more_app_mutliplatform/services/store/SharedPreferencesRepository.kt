@@ -64,5 +64,9 @@ class SharedPreferencesRepository(): SharedStorageRepository, AndroidContext {
     override fun load(key: String, default: Double): Double {
         return sharedPreferences?.getLong(key, default.toRawBits())?.toDouble() ?: default
     }
+
+    override fun remove(key: String) {
+        sharedPreferences?.edit()?.remove(key)?.apply()
+    }
 }
 actual fun getSharedStorageRepository(): SharedStorageRepository = SharedPreferencesRepository()

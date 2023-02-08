@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 extension String {
     static func localizedString(forKey key: String, inTable table: String?, withComment comment: String) -> String {
@@ -15,5 +16,10 @@ extension String {
             result = NSLocalizedString(key, tableName: table, comment: comment)
         }
         return result
+    }
+    
+    func toMD5() -> String {
+        let digest = Insecure.MD5.hash(data: self.data(using: .utf8) ?? Data())
+        return Data(digest).base64EncodedString()
     }
 }
