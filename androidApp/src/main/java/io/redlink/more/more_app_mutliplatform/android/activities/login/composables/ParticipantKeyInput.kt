@@ -29,10 +29,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.app.android.activities.login.LoginViewModel
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun ParticipationKeyInput(

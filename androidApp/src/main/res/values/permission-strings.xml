@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permission_accept">Proceed</string>
+    <string name="permission_decline">Withdraw</string>
+    <string name="consent">A statement that the study is research and participation is voluntary. A summary of the study including purpose, duration and procedures. Reasonable, foreseeable risks or discomforts Reasonable, expected benefits. <br/>In order to proceed, please accept the following permissions! </string>
+    <string name="consent_title">Informed Consent Statement </string>
+    <string name="permissions_denied">Permissions denied!</string>
+    <string name="permission_denied_dialog">You denied the access to a permission, which is needed to continue this study. To continue participating please give this app the permissions to access your sensors. Else you have to withdraw your participation and only reenter, when you accept the access to the needed sensors!</string>
+    <string name="permission_open_settings">Open settings</string>
+    <string name="missing_location_permission_title_notification">Missing Location permissions!</string>
+    <string name="missing_location_permission_correction_text">Some required location permissions are not accepted which are needed for this study. Please open the app and give your consent to track your current location!</string>
+    <string name="background_location_permission_title">Request for always accessing your location</string>
+    <string name="background_location_permission_message">Please allow the app to always access your current location to participate on the study!</string>
+
+    <string name="more_permissions_main_consent_text">To take part in this study you have to consent all needed permissions:</string>
+    <string name="more_permission_button_decline">Decline</string>
+    <string name="more_permission_button_accept">Accept</string>
+    <string name="more_permission_check_icon_description">I accept this needed permission</string>
+    <string name="more_permission_message_dialog_title">Error</string>
+    <string name="more_permission_message_dialog_message_retry">Would you like to retry?</string>
+    <string name="more_permission_message_dialog_message_retry_button">Retry</string>
+    <string name="more_permission_message_dialog_message_cancel_button">Cancel</string>
+
+    <string name="more_permission_missing_error_title">Missing Permission</string>
+    <string name="more_permission_missing_error_message">To participate in this study, please turn on all permissions! To reiterate, what these permissions are for, please go to settings, where those are listed!</string>
+
+</resources>

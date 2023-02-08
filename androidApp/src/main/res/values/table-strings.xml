@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_table_item_icon_date">At Date</string>
+    <string name="more_table_item_icon_time">At Time</string>
+    <string name="more_table_item_icon_start_time">Activity is to to Time</string>
+    <string name="more_table_item_icon_duration">Activity runs for</string>
+    <string name="more_table_item_icon_repetition">Observations Activities repeat</string>
+    <string name="more_table_item_icon_date_range">Observation start between these dates</string>
+    <string name="more_table_item_icon_done">Observation fully done</string>
+
+    <string name="more_table_item_observation_done">Task completed</string>
+
+    <string name="more_table_item_duration_s">Second(s)</string>
+    <string name="more_table_item_duration_m">Minute(s)</string>
+    <string name="more_table_item_duration_h">Hour(s)</string>
+    <string name="more_table_item_duration_d">Day(s)</string>
+
+    <string name="more_table_item_repetition_none">Never</string>
+    <string name="more_table_item_repetition_once">Once</string>
+    <string name="more_table_item_repetition_d">Day</string>
+    <string name="more_table_item_repetition_w">Week</string>
+    <string name="more_table_item_repetition_m">Month</string>
+    <string name="more_table_item_repetition_y">Year</string>
+
+    <string name="more_table_item_details">See Details</string>
+    <string name="more_table_view_empty">No items to show</string>
+
+    <string name="more_table_activity_bar_headline">Recurrences</string>
+</resources>

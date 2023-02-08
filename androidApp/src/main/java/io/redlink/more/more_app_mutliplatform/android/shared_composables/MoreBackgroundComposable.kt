@@ -1,7 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.shared_composables
 
-
-import android.media.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,13 +35,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.NotificationButton
+import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.SettingsButton
+import io.redlink.more.more_app_mutliplatform.android.extensions.Image
+import io.redlink.more.more_app_mutliplatform.android.extensions.color
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MorePlatformTheme
 
 @Composable
 fun MoreBackground(
     rightCornerContent: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    MyApplicationTheme() {
+    MorePlatformTheme() {
         Surface(
             modifier = Modifier
                 .fillMaxSize(1f),
@@ -183,7 +188,8 @@ fun TableItem() {
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(Icons.Default.Schedule,
+                        Icon(
+                            Icons.Default.Schedule,
                             contentDescription = "Activity is to to Time:",
                             tint = MoreColors.Main
                         )
@@ -197,7 +203,8 @@ fun TableItem() {
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(Icons.Default.Timelapse,
+                        Icon(
+                            Icons.Default.Timelapse,
                             contentDescription = "Activity runs for:",
                             tint = MoreColors.Main
                         )
@@ -233,7 +240,8 @@ fun TableItem() {
                     .weight(0.1f)
                     .fillMaxWidth()
             ) {
-                Icon(Icons.Default.ArrowForwardIos,
+                Icon(
+                    Icons.Default.ArrowForwardIos,
                     contentDescription = "See Details",
                     tint = MoreColors.Main,
                     modifier = Modifier
@@ -249,3 +257,4 @@ fun TableItem() {
     }
     Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = MoreColors.Divider)
 }
+

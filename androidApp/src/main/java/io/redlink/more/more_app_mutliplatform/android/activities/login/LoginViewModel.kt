@@ -8,12 +8,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 
 private const val TAG = "LoginViewModel"
 
 @HiltViewModel
-class LoginViewModel() : ViewModel() {
+class LoginViewModel @Inject constructor() : ViewModel() {
 
     private val tokenValid = mutableStateOf(false)
     val participantKey = mutableStateOf("")
@@ -21,7 +22,7 @@ class LoginViewModel() : ViewModel() {
     val error = mutableStateOf<String?>(null)
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
-    val dataEndpoint = mutableStateOf(sharedPreferencesRepository.getDataEndpoint())
+    val dataEndpoint = mutableStateOf("https://data.platform-test.more.redlink.io/api/v1")
     val endpointItemOpen = mutableStateOf(false)
     val endpointError = mutableStateOf<String?>(null)
 
@@ -34,33 +35,33 @@ class LoginViewModel() : ViewModel() {
         endpointItemOpen.value = !endpointItemOpen.value
     }
 
-    fun validateKey() {
-        if (participationKeyNotBlank()) {
-            if (dataEndpoint.value.isNotEmpty() || dataEndpoint.value != sharedPreferencesRepository.getDataEndpoint()) {
-                if (!sharedPreferencesRepository.setDataEndpoint(dataEndpoint.value)) {
-                    endpointError.value = "Server URL invalid!"
-                    loadingState.value = false
-                    return
-                }
-            }
-            else if (dataEndpoint.value.isEmpty()) {
-                sharedPreferencesRepository.setDataEndpoint(DATA_BASE_PATH_ENDPOINT)
-            }
-            scope.launch {
-                workManager.cancelAllWork()
-                dataPointRepository.removeAllDataPoints()
-            }
-            scope.launch {
-                val success =
-                    registrationService.sendRegistrationToken(participantKey.value.uppercase())
-                if (!success) {
-                    error.value = registrationService.error?.message
-                } else {
-                    tokenValid.value = true
-                }
-                loadingState.value = false
-            }
-        }
-    }
+//    fun validateKey() {
+//        if (participationKeyNotBlank()) {
+//            if (dataEndpoint.value.isNotEmpty() || dataEndpoint.value != sharedPreferencesRepository.getDataEndpoint()) {
+//                if (!sharedPreferencesRepository.setDataEndpoint(dataEndpoint.value)) {
+//                    endpointError.value = "Server URL invalid!"
+//                    loadingState.value = false
+//                    return
+//                }
+//            }
+//            else if (dataEndpoint.value.isEmpty()) {
+//                sharedPreferencesRepository.setDataEndpoint(DATA_BASE_PATH_ENDPOINT)
+//            }
+//            scope.launch {
+//                workManager.cancelAllWork()
+//                dataPointRepository.removeAllDataPoints()
+//            }
+//            scope.launch {
+//                val success =
+//                    registrationService.sendRegistrationToken(participantKey.value.uppercase())
+//                if (!success) {
+//                    error.value = registrationService.error?.message
+//                } else {
+//                    tokenValid.value = true
+//                }
+//                loadingState.value = false
+//            }
+//        }
+//    }
 
 }

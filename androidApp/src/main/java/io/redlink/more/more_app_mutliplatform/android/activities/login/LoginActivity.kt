@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -21,6 +22,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
+import io.redlink.more.more_app_mutliplatform.android.EndpointView
+import io.redlink.more.more_app_mutliplatform.android.ParticipationKeyInput
+import io.redlink.more.more_app_mutliplatform.android.ValidationButton
+import io.redlink.more.more_app_mutliplatform.android.extensions.color
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.NotificationButton
+import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.SettingsButton
+import io.redlink.more.more_app_mutliplatform.android.extensions.Image
+import io.redlink.more.more_app_mutliplatform.android.extensions.color
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MorePlatformTheme
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
@@ -39,9 +54,9 @@ class LoginActivity : ComponentActivity() {
 private fun OpenPermActivity() {
     val context = LocalContext.current as? Activity
     context?.let {
-        val intent = Intent(context, PermissionActivity::class.java)
-        it.finish()
-        it.startActivity(intent)
+//        val intent = Intent(context, PermissionActivity::class.java)
+//        it.finish()
+//        it.startActivity(intent)
     }
 }
 

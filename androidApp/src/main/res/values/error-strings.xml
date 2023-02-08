@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_not_valid">The entered key is not valid!</string>
+    <string name="error">Error</string>
+</resources>

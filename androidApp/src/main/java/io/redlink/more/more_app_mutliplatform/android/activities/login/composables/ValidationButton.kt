@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.activities.login.LoginViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 
@@ -27,7 +27,7 @@ fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
             onClick = {
                 focusManager.clearFocus()
                 loadingState = true
-                model.validateKey()
+//                model.validateKey()
             },
             enabled = model.participationKeyNotBlank() && !loadingState,
             colors = ButtonDefaults
