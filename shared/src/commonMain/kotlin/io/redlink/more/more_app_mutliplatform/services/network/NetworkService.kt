@@ -2,13 +2,11 @@ package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
 import io.ktor.client.statement.*
-import io.ktor.client.utils.EmptyContent.contentType
-import io.ktor.http.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
-import io.redlink.more.more_app_multiplatform.openapi.api.RegistrationApi
-import io.redlink.more.more_app_multiplatform.openapi.model.AppConfiguration
-import io.redlink.more.more_app_multiplatform.openapi.model.Study
-import io.redlink.more.more_app_multiplatform.openapi.model.StudyConsent
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -80,7 +78,7 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
                 return NetworkServiceError(code = code, message = "Error")
             }
 
-            val error = Json.decodeFromString<io.redlink.more.more_app_multiplatform.openapi.model.Error>(responseBody.toString())
+            val error = Json.decodeFromString<io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error>(responseBody.toString())
             return NetworkServiceError(code = code, message = error.msg ?: "Error")
         } catch (e: Exception) {
             e.printStackTrace()

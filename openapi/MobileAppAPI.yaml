@@ -412,6 +412,7 @@ components:
           type: string
         dataValue:
           type: object
+          additionalProperties: true
         timestamp:
           type: string
           format: date-time
