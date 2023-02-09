@@ -28,6 +28,12 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
         return null
     }
 
+    fun remove() {
+        sharedStorageRepository.remove(CREDENTIAL_ID)
+        sharedStorageRepository.remove(CREDENTIAL_KEY)
+        cache = null
+    }
+
     fun credentials() = cache
 
     fun hasCredentials() = cache != null

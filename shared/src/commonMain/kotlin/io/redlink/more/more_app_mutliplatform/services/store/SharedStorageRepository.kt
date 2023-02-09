@@ -12,6 +12,8 @@ interface SharedStorageRepository {
     fun load(key: String, default: Int): Int
     fun load(key: String, default: Float): Float
     fun load(key: String, default: Double): Double
+
+    fun remove(key: String)
 }
 
 expect fun getSharedStorageRepository(): SharedStorageRepository

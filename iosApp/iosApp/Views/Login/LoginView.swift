@@ -7,15 +7,16 @@
 //
 
 import SwiftUI
+import shared
 
 struct LoginView: View {
-    @StateObject private var model = LoginViewModel()
-    @State var endpoint = "https://"
-    @State var token = ""
+    @EnvironmentObject var contentViewModel: ContentViewModel
+    @StateObject var model: LoginViewModel
     @State private var endpointShowTextField = false
     @State private var rotationAngle = 0.0
 
     private let stringTable = "LoginView"
+    
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .center) {
@@ -25,7 +26,7 @@ struct LoginView: View {
 
                 VStack(alignment: .leading) {
                     HStack {
-                        SectionHeadling(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
+                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
 
                         Spacer()
                         UIToggleFoldViewButton(isOpen: $endpointShowTextField)
@@ -33,20 +34,21 @@ struct LoginView: View {
                     .padding(.bottom, 4)
                     Group {
                         if endpointShowTextField {
-                            MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $endpoint)
+                            MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
                         } else {
-                            BasicText(text: $endpoint)
+                            BasicText(text: $model.endpoint)
+                                .lineLimit(1)
                         }
                     }
                     .padding(.moreContainerEdgeInsets.bottom)
-                    SectionHeadling(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
+                    SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
 
-                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $token)
+                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
                 }
                 .padding()
 
                 if !model.isLoading {
-                    LoginButton(key: $token, endpoint: $endpoint, stringTable: .constant(stringTable))
+                    LoginButton(stringTable: .constant(stringTable))
                         .environmentObject(model)
                 } else {
                     ProgressView()
@@ -65,6 +67,7 @@ struct LoginView: View {
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(model: LoginViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
+            .environmentObject(ContentViewModel())
     }
 }

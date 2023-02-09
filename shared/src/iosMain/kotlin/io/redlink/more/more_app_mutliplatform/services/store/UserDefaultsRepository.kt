@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
 import platform.Foundation.NSUserDefaults
+import platform.Foundation.removeObserver
 import platform.darwin.NSInteger
 
 
@@ -43,6 +44,10 @@ class UserDefaultsRepository: SharedStorageRepository {
 
     override fun load(key: String, default: Double): Double {
         return NSUserDefaults.standardUserDefaults.doubleForKey(key) ?: default
+    }
+
+    override fun remove(key: String) {
+        NSUserDefaults.standardUserDefaults.removeObjectForKey(key)
     }
 }
 

@@ -9,31 +9,41 @@
 
 import shared
 
+protocol LoginViewModelListener {
+    func tokenValid(study: Study)
+}
+
 class LoginViewModel: ObservableObject {
     private let userDefaultRepository = UserDefaultsRepository()
     private let endpointRepository: EndpointRepository
-    private let credentialReposiotry: CredentialRepository
     private let coreModel: CoreLoginViewModel
+    
+    var delegate: LoginViewModelListener? = nil
 
     @Published private(set) var isLoading = false
+    @Published var endpoint: String = ""
+    @Published var token: String = ""
     
     
-    init() {
+    init(registrationService: RegistrationService) {
         endpointRepository = EndpointRepository(sharedStorageRepository: userDefaultRepository)
-        credentialReposiotry = CredentialRepository(sharedStorageRepository: userDefaultRepository)
-        coreModel = CoreLoginViewModel(endpointRepository: endpointRepository, credentialRepository: credentialReposiotry)
         
-        coreModel.onStudyChange { study in
-            if study != nil {
-                print("Study title: \(String(describing: study?.studyTitle))")
-            }
-        }
+        self.endpoint = endpointRepository.endpoint()
+        
+        coreModel = CoreLoginViewModel(registrationService: registrationService)
+        
         coreModel.onLoadingChange { loading in
-            self.isLoading = loading as! Bool
+            if let loading = loading as? Bool {
+                self.isLoading = loading
+            }
         }
     }
     
-    func validate(token: String, endpoint: String? = nil) {
-        coreModel.sendRegistrationToken(token: token, endpoint: endpoint)
+    func validate() {
+        coreModel.sendRegistrationToken(token: token, endpoint: endpoint) { study in
+            self.delegate?.tokenValid(study: study)
+        } onError: { error in
+            print(error?.message)
+        }
     }
 }

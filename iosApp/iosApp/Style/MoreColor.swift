@@ -16,5 +16,7 @@ extension Color {
         let mainTitle = Color("MainTitle")
         let main = Color("Main")
         let white = Color("White")
+        let inactiveText = Color("InactiveText")
+        let importantBright = Color("ImportantBright")
     }
 }

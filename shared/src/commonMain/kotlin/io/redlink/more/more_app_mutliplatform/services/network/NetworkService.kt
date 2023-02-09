@@ -1,10 +1,14 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
+import io.ktor.client.statement.*
+import io.ktor.client.utils.EmptyContent.contentType
+import io.ktor.http.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_multiplatform.openapi.api.RegistrationApi
-import io.redlink.more.more_app_multiplatform.openapi.infrastructure.HttpResponse
+import io.redlink.more.more_app_multiplatform.openapi.model.AppConfiguration
 import io.redlink.more.more_app_multiplatform.openapi.model.Study
+import io.redlink.more.more_app_multiplatform.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -25,19 +29,19 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
     suspend fun validateRegistrationToken(registrationToken: String, endpoint: String? = null): Pair<Study?, NetworkServiceError?> {
         try {
             val httpClient = getHttpClient()
-            val url = endpoint ?: endpointRepository.endpoint() ?: DATA_BASE_PATH_ENDPOINT
+            val url = endpoint ?: endpointRepository.endpoint()
             val registrationApi =
                 RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
             val registrationResponse = registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken)
             Napier.d(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {
                 registrationResponse.body().let {
+                    println(it.studyTitle)
                     return Pair(it, null)
                 }
             }
-
-//            val error = createErrorBody(registrationResponse.response.status.value, "registrationResponse")
-            val error = NetworkServiceError(registrationResponse.response.status.value, "Error")
+            println("Error; Code: ${registrationResponse.response.status.value}")
+            val error = createErrorBody(registrationResponse.response.status.value, registrationResponse.response)
             return Pair(
                 null,
                 error
@@ -49,7 +53,28 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
         }
     }
 
-    private fun createErrorBody(code: Int, responseBody: HttpResponse<Any>?): NetworkServiceError {
+    suspend fun sendConsent(registrationToken: String, studyConsent: StudyConsent, endpoint: String? = null): Pair<AppConfiguration?, NetworkServiceError?> {
+        try {
+            val httpClient = getHttpClient()
+            val url = endpoint ?: endpointRepository.endpoint()
+            val registrationApi = RegistrationApi(baseUrl = url, httpClient.engine)
+            val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent)
+            if (consentResponse.success) {
+                consentResponse.body().let {
+                    return Pair(it, null)
+                }
+            }
+            return Pair(
+                null,
+                createErrorBody(consentResponse.response.status.value, consentResponse.response)
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return Pair(null, getException(e))
+        }
+    }
+
+    private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
         return try {
             if (responseBody == null){
                 return NetworkServiceError(code = code, message = "Error")
@@ -74,9 +99,6 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
 
     companion object {
         private const val AUTH_NAME = "apiKey"
-
-        private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://data.platform-test.more.redlink.io/api/v1"
 
     }
 }

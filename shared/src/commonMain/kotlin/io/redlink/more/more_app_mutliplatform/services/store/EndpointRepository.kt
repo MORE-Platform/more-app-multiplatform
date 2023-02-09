@@ -16,9 +16,16 @@ class EndpointRepository(private val sharedStorageRepository: SharedStorageRepos
         return sharedStorageRepository.load(ENDPOINT_KEY, cache)
     }
 
-    fun endpoint(): String? = cache.ifEmpty { null }
+    fun removeEndpoint() {
+        cache = ""
+        sharedStorageRepository.remove(ENDPOINT_KEY)
+    }
+
+    fun endpoint(): String = cache.ifEmpty { DATA_BASE_PATH_ENDPOINT }
 
     companion object {
         private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
+        private const val DATA_BASE_PATH_ENDPOINT: String =
+            "https://data.platform-test.more.redlink.io/api/v1"
     }
 }
