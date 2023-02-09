@@ -1,8 +1,20 @@
+
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization") version "1.8.0"
+
     id("com.android.library")
     id("io.realm.kotlin") version "1.5.2"
+    id("org.openapi.generator") version "6.3.0"
 }
+
+val generated = "$rootDir/shared/build/generated"
+val openApiInputDir = "$rootDir/openapi"
+val openApiOutputDir = "$generated/open_api"
+val mobileAppApiInput = "$openApiInputDir/MobileAppAPI.yaml"
+val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
+val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.openapi"
+val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 kotlin {
     android {
@@ -11,8 +23,9 @@ kotlin {
                 jvmTarget = "1.8"
             }
         }
+        publishLibraryVariants("release")
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -25,17 +38,29 @@ kotlin {
 
     val coroutinesVersion = "1.6.4"
     val ktorVersion = "2.2.2"
+    val napierVersion = "2.6.1"
+    val serializationVersion = "1.5.0-RC"
+    val axayVersion = "0.1.2"
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                kotlin.srcDir(mobileAppApiOutputDir)
+
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+
+
                 implementation("io.realm.kotlin:library-base:1.5.2")
+
+                implementation("io.github.aakira:napier:$napierVersion")
+
             }
+
         }
         val commonTest by getting {
             dependencies {
@@ -44,7 +69,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha04")
+
+                implementation("io.ktor:ktor-client-android:$ktorVersion")
             }
         }
         val androidUnitTest by getting
@@ -75,8 +102,38 @@ kotlin {
 android {
     namespace = "io.redlink.more.more_app_mutliplatform"
     compileSdk = 33
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 29
         targetSdk = 33
     }
 }
+
+
+openApiGenerate {
+    generatorName.set("kotlin")
+    inputSpec.set(mobileAppApiInput)
+    outputDir.set(mobileAppApiOutputDir)
+    packageName.set(mobileAppApiPackage)
+    invokerPackage.set("$mobileAppApiPackage.invoke")
+    modelPackage.set("$mobileAppApiPackage.model")
+    apiPackage.set("$mobileAppApiPackage.api")
+    ignoreFileOverride.set(openapiIgnore)
+
+    configOptions.put("library", "multiplatform")
+    configOptions.put("enumPropertyNaming", "UPPERCASE")
+    configOptions.put("hideGenerationTimestamp", "true")
+}
+openApiValidate {
+    inputSpec.set(mobileAppApiInput)
+}
+//
+//tasks {
+//    register<OpenApiGenerateTask>("generateOpenApiSpec") {
+//        specFile.set()
+//        specFormat.set("yaml")
+//        outputDirectory.set(file(mobileAppApiOutputDir))
+//        packageName.set(mobileAppApiPackage)
+//
+//    }
+//}

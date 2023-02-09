@@ -1,0 +1,482 @@
+openapi: 3.0.3
+info:
+  title: MobileApp API
+  description: API for the mobile apps in the MORE platform
+  version: '1'
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Registration
+    description: |
+      Initial **registration** of a participant
+  - name: Configuration
+    description: Endpoints to retrieve **configuration settings** for the current participation
+  - name: Data
+    description: |
+      Endpoints to **send** observation-data
+
+externalDocs:
+  url: https://github.com/MORE-Platform
+
+security:
+  - apiKey: [ ]
+
+paths:
+  /registration:
+    get:
+      operationId: getStudyRegistrationInfo
+      description: Provide the information on a study required to register and consent.
+      tags:
+        - Registration
+      security: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RegistrationToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/StudyInfoResponse'
+        '404':
+          $ref: '#/components/responses/NoSuchRegistrationToken'
+        '410':
+          $ref: '#/components/responses/RegistrationTokenExpired'
+    post:
+      operationId: registerForStudy
+      description: Perform the Registration to the Study and express the users consent.
+      tags:
+        - Registration
+      security: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RegistrationToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyConsent'
+      responses:
+        '201':
+          description: Consent given and ApiKey created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppConfiguration'
+        '404':
+          $ref: '#/components/responses/NoSuchRegistrationToken'
+        '409':
+          $ref: '#/components/responses/RegistrationNotPossible'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: unregisterFromStudy
+      description: Leave study / Withdraw Consent
+      tags:
+        - Registration
+      responses:
+        '204':
+          description: Participant left the study.
+
+  /config/study:
+    get:
+      operationId: getStudyConfiguration
+      description: (re)load the study configuration
+      tags:
+        - Configuration
+      responses:
+        '200':
+          $ref: '#/components/responses/StudyInfoResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+
+  /config/notifications:
+    get:
+      operationId: listPushNotificationServices
+      description: list available push-notification services
+      tags:
+        - Configuration
+      responses:
+        '200':
+          description: available push-notification services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushNotificationServiceType'
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+
+  /config/notifications/{serviceType}:
+    parameters:
+      - name: serviceType
+        in: path
+        schema:
+          $ref: '#/components/schemas/PushNotificationServiceType'
+        required: true
+    get:
+      operationId: getPushNotificationServiceClientConfig
+      description: retrieve the client-configuration for the push-notification service
+      tags:
+        - Configuration
+      responses:
+        '200':
+          description: the notification-service config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushNotificationConfig'
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+    put:
+      operationId: setPushNotificationToken
+      description: store the client's push-notification token
+      tags:
+        - Configuration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushNotificationToken'
+      responses:
+        '202':
+          description: notification-token updated
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+        '404':
+          description: unknown notification service
+
+  /data/bulk:
+    post:
+      operationId: storeBulk
+      description: add data to elastic shard
+      tags:
+        - Data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataBulk'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Id'
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+
+components:
+  schemas:
+    Study:
+      description:
+        The study object containing all information and observation
+        information to configure and initialize the APP
+      type: object
+      properties:
+        active:
+          description:
+            The current study-state. Mainly used during the registration process.
+          type: boolean
+          default: true
+        studyTitle:
+          type: string
+        participantInfo:
+          type: string
+        consentInfo:
+          type: string
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        observations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Observation'
+          minItems: 1
+        version:
+          $ref: '#/components/schemas/VersionTag'
+      required:
+        - studyTitle
+        - participantInfo
+        - consentInfo
+        - start
+        - end
+        - observations
+        - version
+
+    Observation:
+      description: The configuration of an observation for the study.
+      type: object
+      properties:
+        observationId:
+          type: string
+        observationType:
+          type: string
+        observationTitle:
+          type: string
+        participantInfo:
+          type: string
+        configuration:
+          type: object
+        schedule:
+          type: array
+          items:
+            title: ObservationSchedule
+            type: object
+            properties:
+              start:
+                type: string
+                format: date-time
+              end:
+                type: string
+                format: date-time
+        required:
+          type: boolean
+          default: true
+        hidden:
+          type: boolean
+          default: false
+        version:
+          $ref: '#/components/schemas/VersionTag'
+      required:
+        - observationId
+        - observationType
+        - observationTitle
+        - participantInfo
+        - schedule
+        - required
+        - version
+
+    VersionTag:
+      description:
+        A version indicator. Currently the last-modified date in EPOCH-format
+        but that's not guaranteed.
+      type: integer
+      format: int64
+
+    StudyConsent:
+      type: object
+      description: Confirms the participants consent to the study including supported observations on the device.
+      properties:
+        consent:
+          description: Explicitly state the consent of the Participant
+          type: boolean
+          default: false
+        deviceId:
+          description: Identifier of the device used to provide consent
+          type: string
+        consentInfoMD5:
+          description: |
+            MD5-Hash of the `consentInfo` (text) the participant
+            actually gave consent.
+          type: string
+        observations:
+          type: array
+          items:
+            title: ObservationConsent
+            type: object
+            properties:
+              observationId:
+                type: string
+              active:
+                type: boolean
+                default: true
+            required:
+              - observationId
+              - active
+      required:
+        - consent
+        - deviceId
+        - consentInfoMD5
+        - observations
+
+    AppConfiguration:
+      description: |
+        The configuration settings for the App while participating on a study
+      type: object
+      readOnly: true
+      properties:
+        endpoint:
+          description: |
+            base-uri of the App-API to use during the runtime of the study.
+            
+            If omitted, the client should stay with the current endpoint.
+          type: string
+          format: uri
+        credentials:
+          $ref: '#/components/schemas/ApiKey'
+      required:
+        - credentials
+
+    PushNotificationServiceType:
+      description: available services for push-notification
+      type: string
+      enum:
+        - FCM
+
+    PushNotificationToken:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+
+    PushNotificationConfig:
+      type: object
+      readOnly: true
+      properties:
+        service:
+          $ref: '#/components/schemas/PushNotificationServiceType'
+      required:
+        - service
+      discriminator:
+        propertyName: service
+        mapping:
+          FCM: '#/components/schemas/FcmNotificationConfig'
+
+    FcmNotificationConfig:
+      description: configuration-settings for Firebase Cloud Messaging
+      readOnly: true
+      allOf:
+        - $ref: '#/components/schemas/PushNotificationConfig'
+        - type: object
+          properties:
+            projectId:
+              description: The Google Cloud project ID
+              type: string
+            applicationId:
+              description: The Google App ID that is used to uniquely identify an instance of an app.
+              type: string
+            apiKey:
+              type: string
+            databaseUrl:
+              type: string
+            gcmSenderId:
+              description: The Project Number from the Google Developer's console
+              type: string
+            storageBucket:
+              type: string
+          readOnly: true
+          externalDocs:
+            url: https://firebase.google.com/docs/reference/android/com/google/firebase/FirebaseOptions
+
+
+    ApiKey:
+      description: |
+        Credentials for the App for interacting with the backends
+      type: object
+      readOnly: true
+      properties:
+        apiId:
+          type: string
+          readOnly: true
+        apiKey:
+          type: string
+          readOnly: true
+      required:
+        - apiId
+        - apiKey
+
+
+    DataBulk:
+      type: object
+      description: A bulk of observation data containing a unique id, the API Key of the participant and the array of observation data
+      properties:
+        bulkId:
+          $ref: '#/components/schemas/Id'
+        dataPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObservationData'
+      required:
+        - bulkId
+        - dataPoints
+
+    ObservationData:
+      type: object
+      properties:
+        dataId:
+          $ref: '#/components/schemas/Id'
+        observationId:
+          type: string
+        observationType:
+          type: string
+        dataValue:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - dataId
+        - observationId
+        - observationType
+        - dataValue
+        - timestamp
+
+    Id:
+      type: string
+
+    Error:
+      description: Generic Error
+      type: object
+      properties:
+        code:
+          type: string
+        msg:
+          type: string
+
+  parameters:
+    RegistrationToken:
+      name: More-Registration-Token
+      in: header
+      required: true
+      schema:
+        type: string
+      description: The token to register for a study
+
+  responses:
+    StudyInfoResponse:
+      description: The Study Info
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Study'
+
+    NoSuchRegistrationToken:
+      description: Invalid/Unknown Registration Token
+    RegistrationTokenExpired:
+      description: The provided registration token is expired or has already been used
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnauthorizedApiKey:
+      description: |
+        **Authentication Required**
+        Login is performed via `basic-auth` using `apiId` as username and `apiKey` as password.
+    RegistrationNotPossible:
+      description: |
+        Registration could not be completed:
+        * the study currently does not accept new participants
+        * `consent` was `false`
+        * a **required** observation is not enabled/active
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    apiKey:
+      description: |
+        Login with `apiId` as username and `apiKey` as password
+      type: http
+      scheme: basic

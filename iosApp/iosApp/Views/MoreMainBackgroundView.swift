@@ -13,7 +13,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
     var topBarContent: () -> TopBarContent
     var body: some View {
         ZStack {
-            Color.ui.mainBackground.ignoresSafeArea()
+            Color.more.mainBackground.ignoresSafeArea()
             VStack(alignment: .center) {
                 HStack{
                     Image("more_logo_blue")
@@ -24,12 +24,12 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
                     topBarContent()
                 }
                 .padding(.vertical, 16)
-                .padding(.horizontal, 24)
                 Spacer()
-                content().padding()
+                content()
                 Spacer()
             }
-            .foregroundColor(.ui.main)
+            .foregroundColor(.more.main)
+            .padding(.horizontal, 24)
         }
     }
 }
