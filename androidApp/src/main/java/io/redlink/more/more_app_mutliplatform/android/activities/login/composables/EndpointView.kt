@@ -83,12 +83,6 @@ fun EndpointView(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        ErrorMessage(
-            hasError = model.isEndpointError(),
-            errorMsg = model.error.value ?: getStringResource(
-                id = R.string.more_enpoint_error
-            )
-        )
     }
 }
 

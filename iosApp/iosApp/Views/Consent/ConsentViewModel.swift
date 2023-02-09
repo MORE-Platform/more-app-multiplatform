@@ -11,6 +11,7 @@ import UIKit
 
 protocol ConsentViewModelListener {
     func credentialsStored()
+    func decline()
 }
 
 class ConsentViewModel: ObservableObject {
@@ -20,7 +21,8 @@ class ConsentViewModel: ObservableObject {
     
     @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", consentInfo: [])
     @Published private(set) var isLoading = false
-    @Published var error: String? = nil
+    @Published var error: String = ""
+    @Published var showErrorAlert: Bool = false
     
     
     init(registrationService: RegistrationService) {
@@ -40,7 +42,9 @@ class ConsentViewModel: ObservableObject {
             coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
                 self.delegate?.credentialsStored()
             } onError: { error in
-                print(error?.message)
+                if let error {
+                    self.error = error.message
+                }
             }
 
         }
@@ -48,5 +52,9 @@ class ConsentViewModel: ObservableObject {
     
     func buildConsentModel() {
         coreModel.buildConsentModel()
+    }
+    
+    func decline() {
+        delegate?.decline()
     }
 }

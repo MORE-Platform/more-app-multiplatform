@@ -11,10 +11,8 @@ struct ContentView: View {
                 } else {
                     if viewModel.loginViewScreenNr == 0 {
                         LoginView(model: viewModel.loginViewModel)
-                            .environmentObject(viewModel)
                     } else {
                         ConsentView(viewModel: viewModel.consentViewModel)
-                            .environmentObject(viewModel)
                     }
                 }
             }

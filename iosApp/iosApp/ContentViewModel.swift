@@ -34,14 +34,13 @@ class ContentViewModel: ObservableObject {
     }
     
     func showLoginView() {
-        print(self.loginViewScreenNr)
+        self.registrationService.reset()
         DispatchQueue.main.async {
             self.loginViewScreenNr = 0
         }
     }
     
     func showConsentView() {
-        print(self.loginViewScreenNr)
         DispatchQueue.main.async {
             self.loginViewScreenNr = 1
         }
@@ -57,6 +56,10 @@ extension ContentViewModel: LoginViewModelListener {
 }
 
 extension ContentViewModel: ConsentViewModelListener {
+    func decline() {
+        showLoginView()
+    }
+    
     func credentialsStored() {
         self.hasCredentials = true
     }

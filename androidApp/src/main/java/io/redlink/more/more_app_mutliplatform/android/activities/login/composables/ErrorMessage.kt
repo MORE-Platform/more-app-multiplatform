@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.android.activities.login.composab
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 @Composable
 fun ErrorMessage(hasError: Boolean, errorMsg: String) {
     if (hasError) {
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp).fillMaxWidth())
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = errorMsg, color = MoreColors.Important, textAlign = TextAlign.Center)
         }

@@ -14,5 +14,6 @@ extension Font.Weight {
     
     struct More {
         let title = Font.Weight.bold
+        let error = Font.Weight.semibold
     }
 }

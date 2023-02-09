@@ -18,5 +18,6 @@ extension Color {
         let white = Color("White")
         let inactiveText = Color("InactiveText")
         let importantBright = Color("ImportantBright")
+        let important = Color("Important")
     }
 }
