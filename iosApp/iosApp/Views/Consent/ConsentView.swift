@@ -6,22 +6,21 @@
 //  Copyright © 2023 orgName. All rights reserved.
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct ConsentView: View {
-    @EnvironmentObject var contentViewModel: ContentViewModel
     @StateObject var viewModel: ConsentViewModel
-    
+
+    private let stringsTable = "ConsentView"
     var body: some View {
-        VStack() {
+        VStack {
             VStack(alignment: .leading) {
                 Title(titleText: .constant(viewModel.permissionModel.studyTitle))
                 Divider()
                 BasicText(text: .constant(viewModel.permissionModel.studyParticipantInfo))
             }
-            
-            
+
             ConsentList(permissionModel: .constant(viewModel.permissionModel))
             Spacer()
             if viewModel.isLoading {
@@ -30,27 +29,45 @@ struct ConsentView: View {
             } else {
                 HStack {
                     MoreActionButton(color: .more.importantBright) {
-                        contentViewModel.showLoginView()
+                        viewModel.decline()
                     } label: {
-                        Text("Decline")
+                        Text(verbatim: .localizedString(
+                            forKey: "decline_button",
+                            inTable: stringsTable,
+                            withComment: "Button to decline the study"))
                     }
                     Spacer()
-                    MoreActionButton {
+                    MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
                         viewModel.acceptConsent()
                     } label: {
-                        Text("Accept")
+                        Text(verbatim: .localizedString(
+                            forKey: "accept_button",
+                            inTable: stringsTable,
+                            withComment: "Button to accept the study consent"))
+                    } errorAlert: {
+                        Alert(title:
+                            Text(verbatim: .localizedString(
+                                forKey: "error_dialog_title",
+                                inTable: stringsTable,
+                                withComment: "Error dialog title"))
+                                .foregroundColor(.more.importantBright),
+                            message: Text(viewModel.error),
+                            primaryButton: .default(Text(
+                                verbatim: .localizedString(
+                                    forKey: "dialog_retry",
+                                    inTable: stringsTable,
+                                    withComment: "Dialog button to retry sending your consent for this study")),
+                            action: { viewModel.acceptConsent() }),
+                            secondaryButton: .cancel())
                     }
                 }
             }
         }
-
-
     }
 }
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
         ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
-            .environmentObject(ContentViewModel())
     }
 }

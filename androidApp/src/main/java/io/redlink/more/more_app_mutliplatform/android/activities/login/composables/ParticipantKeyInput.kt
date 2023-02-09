@@ -102,7 +102,7 @@ fun ParticipationKeyInput(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             ErrorMessage(
-                hasError = model.isTokenError(),
+                hasError = model.error.value != null,
                 errorMsg = model.error.value ?: getStringResource(
                     id = R.string.more_token_error
                 )
