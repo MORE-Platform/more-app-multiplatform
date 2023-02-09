@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android
+package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,38 +15,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
-    var loadingState by remember { model.loadingState }
-    if (!loadingState) {
+    if (!model.loadingState.value) {
         OutlinedButton(
             onClick = {
                 focusManager.clearFocus()
-                loadingState = true
-//                model.validateKey()
+                model.validateKey()
             },
-            enabled = model.participationKeyNotBlank() && !loadingState,
+            enabled = model.participationKeyNotBlank() && !model.loadingState.value,
             colors = ButtonDefaults
                 .buttonColors(
-                    backgroundColor = color(id = R.color.more_main_color),
-                    contentColor = color(id = R.color.more_white),
+                    backgroundColor = MoreColors.Main,
+                    contentColor = MoreColors.White,
                     disabledBackgroundColor = Color.Transparent,
-                    disabledContentColor = color(id = R.color.more_inactivity_color)
+                    disabledContentColor = MoreColors.Inactivity
                 ),
-            border = if (model.participationKeyNotBlank() && !loadingState)
-                BorderStroke(0.dp, color(id = R.color.more_main_color))
+            border = if (model.participationKeyNotBlank() && !model.loadingState.value)
+                BorderStroke(0.dp, MoreColors.Main)
             else
-                BorderStroke(2.dp, color(id = R.color.more_inactivity_color)),
+                BorderStroke(2.dp, MoreColors.Inactivity),
             modifier = Modifier.fillMaxWidth(0.7f).height(50.dp)
         ) {
             Text(text = getStringResource(id = R.string.more_login_button_label))
         }
     } else {
-        CircularProgressIndicator(strokeWidth = 2.dp, color = color(id = R.color.more_main_color))
+        CircularProgressIndicator(strokeWidth = 2.dp, color = MoreColors.Main)
     }
 
 }

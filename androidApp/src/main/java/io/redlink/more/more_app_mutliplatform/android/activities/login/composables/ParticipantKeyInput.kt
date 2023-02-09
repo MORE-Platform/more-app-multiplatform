@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android
+package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
@@ -40,27 +41,26 @@ fun ParticipationKeyInput(
     focusRequester: FocusRequester,
     focusManager: FocusManager,
 ) {
-    var key by remember { model.participantKey }
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = getStringResource(id = R.string.more_registration_token_label),
             fontWeight = FontWeight.Medium,
             fontSize = 20.sp,
-            color = color(id = R.color.more_main_color)
+            color = MoreColors.Main
         )
         Column(verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()) {
 
             OutlinedTextField(
-                value = key,
+                value = model.participantKey.value,
                 onValueChange = {
-                    key = it
+                    model.participantKey.value = it
                     model.error.value = null
                 },
                 trailingIcon = {
                     if (model.isTokenError()) {
-                        Icon(Icons.Filled.Error, "Error", tint = color(id = R.color.more_important))
+                        Icon(Icons.Filled.Error, "Error", tint = MoreColors.Important)
                     }
                 },
                 textStyle = TextStyle(fontSize = 16.sp),

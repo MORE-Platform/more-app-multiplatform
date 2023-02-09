@@ -1,11 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.login
 
 import android.app.Activity
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,36 +14,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dagger.hilt.android.AndroidEntryPoint
-import io.redlink.more.more_app_mutliplatform.android.EndpointView
-import io.redlink.more.more_app_mutliplatform.android.ParticipationKeyInput
-import io.redlink.more.more_app_mutliplatform.android.ValidationButton
-import io.redlink.more.more_app_mutliplatform.android.extensions.color
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.NotificationButton
-import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.SettingsButton
-import io.redlink.more.more_app_mutliplatform.android.extensions.Image
-import io.redlink.more.more_app_mutliplatform.android.extensions.color
+import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.EndpointView
+import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ParticipationKeyInput
+import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ValidationButton
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MorePlatformTheme
+import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
+import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 
-@AndroidEntryPoint
-class LoginActivity : ComponentActivity() {
-    private val viewModel: LoginViewModel by viewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MoreBackground {
-                LoginView(viewModel)
-            }
-        }
-    }
-}
 
 @Composable
 private fun OpenPermActivity() {
@@ -80,7 +58,7 @@ fun LoginView(model: LoginViewModel) {
                     text = getStringResource(id = R.string.more_welcome_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp,
-                    color = color(id = R.color.more_main_title_color),
+                    color = MoreColors.MainTitle,
                     maxLines = 2,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()

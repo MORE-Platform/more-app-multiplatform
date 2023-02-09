@@ -1,29 +1,16 @@
-package io.redlink.more.more_app_mutliplatform.android
+package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -38,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
@@ -49,8 +37,11 @@ fun EndpointView(
     focusRequester: FocusRequester,
     focusManager: FocusManager
 ) {
+    var isOpen by remember {
+        mutableStateOf(false)
+    }
     val angle: Float by animateFloatAsState(
-        targetValue = if (model.endpointItemOpen.value) 180f else 0f,
+        targetValue = if (isOpen) 180f else 0f,
         animationSpec = tween(
             durationMillis = 100,
             easing = LinearEasing
@@ -66,22 +57,22 @@ fun EndpointView(
                 text = getStringResource(id = R.string.more_endpoint_label),
                 fontWeight = FontWeight.Medium,
                 fontSize = 20.sp,
-                color = color(id = R.color.more_main_color),
+                color = MoreColors.Main,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
-            IconButton(onClick = { model.toggleEndpointTextField() },
+            IconButton(onClick = { isOpen = !isOpen },
                 modifier = Modifier.weight(0.2f)) {
                 Icon(
                     Icons.Rounded.ExpandMore,
                     getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                    tint = color(id = R.color.more_main_color),
+                    tint = MoreColors.Main,
                     modifier = Modifier
                         .fillMaxSize(1.2f)
                         .rotate(angle)
                 )
             }
         }
-        if (model.endpointItemOpen.value) {
+        if (isOpen) {
             EndpointInput(model = model, focusRequester = focusRequester, focusManager = focusManager)
         } else {
             Text(
@@ -107,17 +98,16 @@ fun EndpointInput(
     focusRequester: FocusRequester,
     focusManager: FocusManager
 ) {
-    var dataEndpoint by remember { model.dataEndpoint }
     OutlinedTextField(
-        value = dataEndpoint,
+        value = model.dataEndpoint.value,
         onValueChange = {
-            dataEndpoint = it
+            model.dataEndpoint.value = it
             model.endpointError.value = null
         },
         textStyle = TextStyle(fontSize = 12.sp),
         trailingIcon = {
             if (model.isEndpointError()) {
-                Icon(Icons.Filled.Error, "URL Error", tint = color(id = R.color.more_important))
+                Icon(Icons.Filled.Error, "URL Error", tint = MoreColors.Important)
             }
         },
         placeholder = { Text(text = getStringResource(id = R.string.more_endpoint_input_placeholder)) },

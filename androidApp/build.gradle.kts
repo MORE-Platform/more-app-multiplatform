@@ -1,7 +1,7 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
-    id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
     kotlin("android")
 }
 
@@ -40,18 +40,18 @@ android {
     }
 }
 
+val composeVersion = "1.3.1"
+val hilt_version = "2.43.2"
+
 dependencies {
     implementation(project(":shared"))
-    implementation("androidx.compose.ui:ui:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.3.1")
-    implementation("androidx.compose.foundation:foundation:1.3.1")
-    implementation("androidx.compose.material:material:1.3.1")
-    implementation("androidx.compose.material:material-icons-core:1.3.1")
-    implementation("androidx.compose.material:material-icons-extended:1.3.1")
+    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
+    implementation("androidx.compose.foundation:foundation:$composeVersion")
+    implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.material:material-icons-core:$composeVersion")
+    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("com.google.dagger:hilt-android:2.43.2")
-    implementation("androidx.hilt:hilt-work:1.0.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.43.2")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
 }

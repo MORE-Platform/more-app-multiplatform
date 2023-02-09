@@ -1,29 +1,32 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.login
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import io.redlink.more.more_app_multiplatform.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
+import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 
 
 private const val TAG = "LoginViewModel"
 
-@HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+interface LoginViewModelListener {
+    fun tokenIsValid(study: Study)
+}
+
+class LoginViewModel(registrationService: RegistrationService, private val loginViewModelListener: LoginViewModelListener) : ViewModel() {
+    private val coreLoginViewModel = CoreLoginViewModel(registrationService)
 
     private val tokenValid = mutableStateOf(false)
     val participantKey = mutableStateOf("")
     val loadingState = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
-    val dataEndpoint = mutableStateOf("https://data.platform-test.more.redlink.io/api/v1")
-    val endpointItemOpen = mutableStateOf(false)
+    val dataEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
     val endpointError = mutableStateOf<String?>(null)
 
     fun participationKeyNotBlank(): Boolean = this.participantKey.value.isNotBlank()
@@ -31,37 +34,23 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     fun isEndpointError(): Boolean = !this.endpointError.value.isNullOrBlank()
     fun tokenIsValid() = this.tokenValid.value
 
-    fun toggleEndpointTextField() {
-        endpointItemOpen.value = !endpointItemOpen.value
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            coreLoginViewModel.loadingFlow.collect {
+                withContext(Dispatchers.Main) {
+                    loadingState.value = it
+                }
+            }
+        }
     }
 
-//    fun validateKey() {
-//        if (participationKeyNotBlank()) {
-//            if (dataEndpoint.value.isNotEmpty() || dataEndpoint.value != sharedPreferencesRepository.getDataEndpoint()) {
-//                if (!sharedPreferencesRepository.setDataEndpoint(dataEndpoint.value)) {
-//                    endpointError.value = "Server URL invalid!"
-//                    loadingState.value = false
-//                    return
-//                }
-//            }
-//            else if (dataEndpoint.value.isEmpty()) {
-//                sharedPreferencesRepository.setDataEndpoint(DATA_BASE_PATH_ENDPOINT)
-//            }
-//            scope.launch {
-//                workManager.cancelAllWork()
-//                dataPointRepository.removeAllDataPoints()
-//            }
-//            scope.launch {
-//                val success =
-//                    registrationService.sendRegistrationToken(participantKey.value.uppercase())
-//                if (!success) {
-//                    error.value = registrationService.error?.message
-//                } else {
-//                    tokenValid.value = true
-//                }
-//                loadingState.value = false
-//            }
-//        }
-//    }
+    fun validateKey() {
+        coreLoginViewModel.sendRegistrationToken(participantKey.value, endpointError.value,
+            onSuccess = {
+                        loginViewModelListener.tokenIsValid(it)
+            }, onError = {
+                error.value = it?.message
+            })
+    }
 
 }

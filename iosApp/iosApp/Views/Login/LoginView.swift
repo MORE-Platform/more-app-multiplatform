@@ -18,50 +18,45 @@ struct LoginView: View {
     private let stringTable = "LoginView"
     
     var body: some View {
-        MoreMainBackgroundView {
-            VStack(alignment: .center) {
-                Title(titleText:
+        VStack(alignment: .center) {
+            Title(titleText:
                     .constant(String
                         .localizedString(forKey: "login_welcome_title", inTable: stringTable, withComment: "welcome string on login view")))
-
-                VStack(alignment: .leading) {
-                    HStack {
-                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
-
-                        Spacer()
-                        UIToggleFoldViewButton(isOpen: $endpointShowTextField)
-                    }
-                    .padding(.bottom, 4)
-                    Group {
-                        if endpointShowTextField {
-                            MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
-                        } else {
-                            BasicText(text: $model.endpoint)
-                                .lineLimit(1)
-                        }
-                    }
-                    .padding(.moreContainerEdgeInsets.bottom)
-                    SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
-
-                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
+            
+            VStack(alignment: .leading) {
+                HStack {
+                    SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
+                    
+                    Spacer()
+                    UIToggleFoldViewButton(isOpen: $endpointShowTextField)
                 }
-                .padding()
-
-                if !model.isLoading {
-                    LoginButton(stringTable: .constant(stringTable))
-                        .environmentObject(model)
-                } else {
-                    ProgressView()
-                        .progressViewStyle(.circular)
+                .padding(.bottom, 4)
+                Group {
+                    if endpointShowTextField {
+                        MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
+                    } else {
+                        BasicText(text: $model.endpoint)
+                            .lineLimit(1)
+                    }
                 }
-
-                Spacer()
+                .padding(.moreContainerEdgeInsets.bottom)
+                SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
+                
+                MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
             }
-            .frame(maxWidth: .moreFrameStyle.minWidth)
-
-        } topBarContent: {
-            EmptyView()
+            .padding()
+            
+            if !model.isLoading {
+                LoginButton(stringTable: .constant(stringTable))
+                    .environmentObject(model)
+            } else {
+                ProgressView()
+                    .progressViewStyle(.circular)
+            }
+            
+            Spacer()
         }
+        .frame(maxWidth: .moreFrameStyle.minWidth)
     }
 }
 

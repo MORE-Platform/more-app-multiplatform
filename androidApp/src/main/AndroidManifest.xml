@@ -9,15 +9,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_more_logo_blue_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MorePlatform"
-        tools:targetApi="32">
+        android:theme="@style/Theme.MorePlatform">
         <activity
-            android:name=".activities.login.LoginActivity"
+            android:name=".activities.ContentActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest> 
