@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_multiplatform.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+
 
 data class PermissionModel(
     val studyTitle: String,
