@@ -15,5 +15,3 @@ interface SharedStorageRepository {
 
     fun remove(key: String)
 }
-
-expect fun getSharedStorageRepository(): SharedStorageRepository

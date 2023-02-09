@@ -3,18 +3,26 @@ import shared
 
 struct ContentView: View {
     @EnvironmentObject var viewModel: ContentViewModel
-	var body: some View {
-        if viewModel.hasCredentials {
-            EmptyView()
-        } else {
-            if viewModel.loginViewScreenNr == 0 {
-                LoginView(model: viewModel.loginViewModel)
-                    .environmentObject(viewModel)
-            } else {
-                ConsentView(viewModel: viewModel.consentViewModel)
-                    .environmentObject(viewModel)
+    var body: some View {
+        MoreMainBackgroundView {
+            VStack {
+                if viewModel.hasCredentials {
+                    EmptyView()
+                } else {
+                    if viewModel.loginViewScreenNr == 0 {
+                        LoginView(model: viewModel.loginViewModel)
+                            .environmentObject(viewModel)
+                    } else {
+                        ConsentView(viewModel: viewModel.consentViewModel)
+                            .environmentObject(viewModel)
+                    }
+                }
             }
+            
+        } topBarContent: {
+            EmptyView()
         }
+        
     }
 }
 

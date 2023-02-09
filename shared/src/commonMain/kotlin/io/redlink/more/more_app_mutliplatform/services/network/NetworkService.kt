@@ -57,7 +57,7 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
         try {
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
-            val registrationApi = RegistrationApi(baseUrl = url, httpClient.engine)
+            val registrationApi = RegistrationApi(baseUrl = url, httpClient.engine, httpClientConfig = { httpClient.engineConfig })
             val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent)
             if (consentResponse.success) {
                 consentResponse.body().let {

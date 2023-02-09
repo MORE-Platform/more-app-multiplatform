@@ -31,24 +31,22 @@ class UserDefaultsRepository: SharedStorageRepository {
     }
 
     override fun load(key: String, default: Boolean): Boolean {
-        return NSUserDefaults.standardUserDefaults.boolForKey(key) ?: default
+        return NSUserDefaults.standardUserDefaults.boolForKey(key)
     }
 
     override fun load(key: String, default: Int): Int {
-        return NSUserDefaults.standardUserDefaults.integerForKey(key).toInt() ?: default
+        return NSUserDefaults.standardUserDefaults.integerForKey(key).toInt()
     }
 
     override fun load(key: String, default: Float): Float {
-        return NSUserDefaults.standardUserDefaults.floatForKey(key) ?: default
+        return NSUserDefaults.standardUserDefaults.floatForKey(key)
     }
 
     override fun load(key: String, default: Double): Double {
-        return NSUserDefaults.standardUserDefaults.doubleForKey(key) ?: default
+        return NSUserDefaults.standardUserDefaults.doubleForKey(key)
     }
 
     override fun remove(key: String) {
         NSUserDefaults.standardUserDefaults.removeObjectForKey(key)
     }
 }
-
-actual fun getSharedStorageRepository(): SharedStorageRepository = UserDefaultsRepository()

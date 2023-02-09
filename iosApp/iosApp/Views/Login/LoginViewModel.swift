@@ -14,8 +14,8 @@ protocol LoginViewModelListener {
 }
 
 class LoginViewModel: ObservableObject {
-    private let userDefaultRepository = UserDefaultsRepository()
-    private let endpointRepository: EndpointRepository
+    
+    
     private let coreModel: CoreLoginViewModel
     
     var delegate: LoginViewModelListener? = nil
@@ -26,11 +26,9 @@ class LoginViewModel: ObservableObject {
     
     
     init(registrationService: RegistrationService) {
-        endpointRepository = EndpointRepository(sharedStorageRepository: userDefaultRepository)
-        
-        self.endpoint = endpointRepository.endpoint()
         
         coreModel = CoreLoginViewModel(registrationService: registrationService)
+        endpoint = registrationService.getEndpointRepository().endpoint()
         
         coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {

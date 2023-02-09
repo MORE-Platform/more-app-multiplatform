@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android
+package io.redlink.more.more_app_mutliplatform.android.activities.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,12 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.redlink.more.more_app_mutliplatform.Greeting
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MorePlatformTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            MorePlatformTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -34,7 +35,7 @@ fun GreetingView(text: String) {
 @Preview
 @Composable
 fun DefaultPreview() {
-    MyApplicationTheme {
+    MorePlatformTheme() {
         GreetingView("Hello, Android!")
     }
 }

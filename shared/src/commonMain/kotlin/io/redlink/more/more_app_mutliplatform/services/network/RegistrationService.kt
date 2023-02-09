@@ -30,6 +30,8 @@ class RegistrationService(
 
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
+    fun getEndpointRepository(): EndpointRepository = endpointRepository
+
     fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
             val upperCaseToken = token.uppercase()
