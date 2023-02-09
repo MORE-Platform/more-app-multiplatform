@@ -1,0 +1,46 @@
+name: Deploy Release
+
+on:
+  workflow_dispatch:
+    push:
+      branches:
+        - main
+      tags:
+        - 'v*'
+#  workflow_run:
+#    workflows: ["Build Release"]
+#    types:
+#      - completed
+#permissions: {}
+
+env:
+  XCODE_VERSION: '14.2.0'
+  JAVA_VERSION: '17'
+
+jobs:
+  deploy-android:
+    name: Deploy Android App Release to Google Play
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Deploy to Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+#          The contents of your service-account.json
+          serviceAccountJsonPlainText: ${{ SERVICE_ACCOUNT_JSON }}
+          packageName: com.redlink.MORE.AndroidApp
+          releaseFiles: androidApp/build/outputs/bundle/release/androidApp-release.aab
+          track: production
+          status: completed
+          inAppUpdatePriority: 5
+          userFraction: 1.0
+#          whatsNewDirectory: distribution/whatsnew
+#          mappingFile: app/build/outputs/mapping/release/mapping.txt
+#          debugSymbols: app/intermediates/merged_native_libs/release/out/lib
