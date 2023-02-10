@@ -82,14 +82,13 @@ class NetworkService(private val endpointRepository: EndpointRepository, private
             return NetworkServiceError(code = code, message = error.msg ?: "Error")
         } catch (e: Exception) {
             e.printStackTrace()
-            Napier.e(e.toString(), tag = TAG)
-            NetworkServiceError(code = code, "Error")
+            getException(e)
         }
     }
 
     private fun getException(exception: Exception): NetworkServiceError {
         val errorResponse = when (exception) {
-            else -> "Error"
+            else -> "System error!"
         }
         Napier.e( "Exception: $exception", tag = TAG)
         return NetworkServiceError(null, errorResponse)

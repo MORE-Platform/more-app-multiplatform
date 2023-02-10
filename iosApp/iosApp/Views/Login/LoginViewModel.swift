@@ -23,6 +23,7 @@ class LoginViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published var endpoint: String = ""
     @Published var token: String = ""
+    @Published var error: String = ""
     
     
     init(registrationService: RegistrationService) {
@@ -38,10 +39,13 @@ class LoginViewModel: ObservableObject {
     }
     
     func validate() {
+        self.error = ""
         coreModel.sendRegistrationToken(token: token, endpoint: endpoint) { study in
             self.delegate?.tokenValid(study: study)
         } onError: { error in
-            print(error?.message)
+            DispatchQueue.main.async {
+                self.error = error?.message ?? ""
+            }
         }
     }
 }

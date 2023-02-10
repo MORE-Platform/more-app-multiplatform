@@ -15,7 +15,10 @@ env:
 jobs:
   build-shared:
     name: Build shared module
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,7 +40,10 @@ jobs:
 
   build-android:
     name: Build Android App
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macOS-latest ]
     needs: build-shared
     steps:
       - name: Checkout
@@ -72,7 +78,7 @@ jobs:
 
   build-ios:
     name: Build Ios App
-    runs-on: macos-latest
+    runs-on: macOS-latest
     if: false
     needs: build-shared
     steps:
