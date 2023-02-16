@@ -16,6 +16,8 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.UtcOffset
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
@@ -42,7 +44,7 @@ data class ObservationData (
 
     @SerialName(value = "dataValue") @Required val configuration: JsonObject? = null,
 
-    @SerialName(value = "timestamp") @Required val timestamp: kotlin.String
+    @SerialName(value = "timestamp") @Required val timestamp: LocalDateTime
 
 )
 

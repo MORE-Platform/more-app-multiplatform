@@ -35,7 +35,12 @@ fun GreetingView(text: String) {
 @Preview
 @Composable
 fun DefaultPreview() {
-    MorePlatformTheme() {
-        GreetingView("Hello, Android!")
+    MorePlatformTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            GreetingView(Greeting().greet())
+        }
     }
 }

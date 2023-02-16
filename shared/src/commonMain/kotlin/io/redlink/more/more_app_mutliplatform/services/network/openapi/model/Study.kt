@@ -16,6 +16,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
@@ -42,9 +43,9 @@ data class Study (
 
     @SerialName(value = "consentInfo") @Required val consentInfo: kotlin.String,
 
-    @SerialName(value = "start") @Required val start: kotlin.String,
+    @SerialName(value = "start") @Required val start: LocalDate,
 
-    @SerialName(value = "end") @Required val end: kotlin.String,
+    @SerialName(value = "end") @Required val end: LocalDate,
 
     @SerialName(value = "observations") @Required val observations: kotlin.collections.List<Observation>,
 
