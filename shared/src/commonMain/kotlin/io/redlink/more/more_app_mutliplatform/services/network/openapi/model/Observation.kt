@@ -18,6 +18,7 @@ package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.JsonObject
 
 /**
  * The configuration of an observation for the study.
@@ -51,7 +52,7 @@ data class Observation (
     /* A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed. */
     @SerialName(value = "version") @Required val version: kotlin.Long,
 
-    @SerialName(value = "configuration") val configuration: kotlin.String? = null,
+    @SerialName(value = "configuration") val configuration: JsonObject? = null,
 
     @SerialName(value = "hidden") val hidden: kotlin.Boolean? = false
 

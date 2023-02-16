@@ -3,13 +3,13 @@ package io.redlink.more.more_app_mutliplatform.android.activities
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.more_app_multiplatform.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModelListener
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository

@@ -1,15 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.login
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.more_app_multiplatform.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 
 
 private const val TAG = "LoginViewModel"

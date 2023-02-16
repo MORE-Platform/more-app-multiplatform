@@ -152,6 +152,12 @@ open class ApiClient(
             headers.filter { header -> !UNSAFE_HEADERS.contains(header.key) }.forEach { header -> this.header(header.key, header.value) }
             if (requestConfig.method in listOf(
                     RequestMethod.PUT,
+                    RequestMethod.POST
+            )){
+                this.contentType(ContentType.Application.Json)
+            }
+            if (requestConfig.method in listOf(
+                    RequestMethod.PUT,
                     RequestMethod.POST,
                     RequestMethod.PATCH
                 )) {

@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
-import io.ktor.utils.io.core.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel

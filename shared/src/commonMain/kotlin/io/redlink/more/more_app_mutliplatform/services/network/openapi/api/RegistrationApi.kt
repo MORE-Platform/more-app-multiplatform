@@ -22,9 +22,6 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.App
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
 
 open class RegistrationApi(
     baseUrl: String = ApiClient.BASE_URL,
@@ -131,6 +128,4 @@ open class RegistrationApi(
             localVariableAuthNames
         ).wrap()
     }
-
-
 }
