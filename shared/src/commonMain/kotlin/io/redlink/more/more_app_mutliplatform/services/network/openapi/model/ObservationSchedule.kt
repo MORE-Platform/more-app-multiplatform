@@ -24,9 +24,9 @@ import kotlinx.serialization.encoding.*
 
 data class ObservationSchedule (
 
-    @SerialName(value = "start") val start: LocalDateTime? = null,
+    @SerialName(value = "start") val start: String? = null,
 
-    @SerialName(value = "end") val end: LocalDateTime? = null
+    @SerialName(value = "end") val end: String? = null
 
 )
 
