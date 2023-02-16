@@ -16,11 +16,8 @@ import io.ktor.http.content.PartData
 import kotlin.Unit
 import kotlinx.serialization.json.Json
 
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.ApiKeyAuth
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.Authentication
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.HttpBasicAuth
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.HttpBearerAuth
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.OAuth
 
 open class ApiClient(
         private val baseUrl: String,
@@ -76,52 +73,6 @@ open class ApiClient(
         val auth = authentications?.values?.firstOrNull { it is HttpBasicAuth } as HttpBasicAuth?
                 ?: throw Exception("No HTTP basic authentication configured")
         auth.password = password
-    }
-
-    /**
-     * Set the API key value for the first API key authentication.
-     *
-     * @param apiKey API key
-     * @param paramName The name of the API key parameter, or null or set the first key.
-     */
-    fun setApiKey(apiKey: String, paramName: String? = null) {
-        val auth = authentications?.values?.firstOrNull { it is ApiKeyAuth && (paramName == null || paramName == it.paramName)} as ApiKeyAuth?
-                ?: throw Exception("No API key authentication configured")
-        auth.apiKey = apiKey
-    }
-
-    /**
-     * Set the API key prefix for the first API key authentication.
-     *
-     * @param apiKeyPrefix API key prefix
-     * @param paramName The name of the API key parameter, or null or set the first key.
-     */
-    fun setApiKeyPrefix(apiKeyPrefix: String, paramName: String? = null) {
-        val auth = authentications?.values?.firstOrNull { it is ApiKeyAuth && (paramName == null || paramName == it.paramName) } as ApiKeyAuth?
-                ?: throw Exception("No API key authentication configured")
-        auth.apiKeyPrefix = apiKeyPrefix
-    }
-
-    /**
-     * Set the access token for the first OAuth2 authentication.
-     *
-     * @param accessToken Access token
-     */
-    fun setAccessToken(accessToken: String) {
-        val auth = authentications?.values?.firstOrNull { it is OAuth } as OAuth?
-                ?: throw Exception("No OAuth2 authentication configured")
-        auth.accessToken = accessToken
-    }
-
-    /**
-     * Set the access token for the first Bearer authentication.
-     *
-     * @param bearerToken The bearer token.
-     */
-    fun setBearerToken(bearerToken: String) {
-        val auth = authentications?.values?.firstOrNull { it is HttpBearerAuth } as HttpBearerAuth?
-                ?: throw Exception("No Bearer authentication configured")
-        auth.bearerToken = bearerToken
     }
 
     protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: kotlin.collections.List<PartData>?, authNames: kotlin.collections.List<String>): HttpResponse {
