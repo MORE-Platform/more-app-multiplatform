@@ -8,6 +8,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.*
@@ -24,9 +25,9 @@ import kotlinx.serialization.encoding.*
 
 data class ObservationSchedule (
 
-    @SerialName(value = "start") val start: String? = null,
+    @SerialName(value = "start") val start: Instant? = null,
 
-    @SerialName(value = "end") val end: String? = null
+    @SerialName(value = "end") val end: Instant? = null
 
 )
 
