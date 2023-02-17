@@ -6,7 +6,6 @@ This document provides detailed description of how to install, prepare and contr
 
 <!-- GETTING STARTED -->
 ## Getting Started
-***
 
 This is an example of how you can set up the project locally.
 To get a local copy up and running follow these steps.
@@ -78,7 +77,6 @@ _You may ignore KDoctor's warnings regarding the CocoaPods installation. In this
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-***
 
 ### Emulator Configuration
 In order to run your application you have to create an emulator device. Follow these steps to create an Android emulator:
@@ -107,7 +105,6 @@ Because **More App Multiplatform** supports iOS and Android, you can choose whic
 
 
 ## Project Architecture
-***
 
 The purpose of the Kotlin Multiplatform Mobile technology is unifying the development of applications with common logic for Android and iOS platforms.
 To make this possible, it uses a mobile-specific structure of Kotlin Multiplatform projects.
@@ -148,6 +145,24 @@ The shared module contains the code that is common for Android and iOS applicati
 However, to implement the same logic on Android and iOS, you sometimes need to write two platform-specific versions of it.
 To handle such cases, Kotlin offers the expect/actual mechanism.
 The source code of the shared module is organized in three source sets accordingly:
+
+* `commonMain` stores the code that works on both platforms, including the `expect` declarations
+* `androidMain` stores Android-specific parts, including `actual` implementations
+* `iosMain` stores iOS-specific parts, including `actual` implementations
+
+
+## Troubleshooting
+* Use **Wipe Data** on your emulator device.
+* Use **Sync Project with Gradle Files** in the **File** tab.
+* Use **Invalidate Caches** in the **File** tab.
+
+
+
+## Useful links
+* https://kotlinlang.org/docs/multiplatform-mobile-setup.html
+* https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html
+* https://kotlinlang.org/docs/multiplatform-mobile-integrate-in-existing-app.html
+* https://kotlinlang.org/docs/multiplatform-mobile-ktor-sqldelight.html
 
 
 
