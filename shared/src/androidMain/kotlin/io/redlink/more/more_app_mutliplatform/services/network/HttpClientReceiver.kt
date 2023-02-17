@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
@@ -12,6 +13,10 @@ actual fun getHttpClient(): HttpClient = HttpClient(Android) {
         json()
         defaultRequest {
             contentType(ContentType.Application.Json)
+        }
+        Logging {
+            logger = Logger.DEFAULT
+            level = LogLevel.ALL
         }
     }
 }

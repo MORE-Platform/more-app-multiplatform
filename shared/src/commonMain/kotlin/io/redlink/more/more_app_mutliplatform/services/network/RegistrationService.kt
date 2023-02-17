@@ -1,12 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
-import io.ktor.utils.io.core.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
-import io.redlink.more.more_app_multiplatform.openapi.model.ObservationConsent
-import io.redlink.more.more_app_multiplatform.openapi.model.Study
-import io.redlink.more.more_app_multiplatform.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationConsent
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository

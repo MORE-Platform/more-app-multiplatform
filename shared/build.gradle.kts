@@ -58,6 +58,9 @@ kotlin {
                 implementation("io.realm.kotlin:library-base:1.5.2")
 
                 implementation("io.github.aakira:napier:$napierVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("io.ktor:ktor-client-auth:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
             }
 
