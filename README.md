@@ -1,5 +1,4 @@
 # More App Multiplatform
-***
 
 This document provides detailed description of how to install, prepare and contribute to the App development as part of the "MORE"-Project.
 
@@ -18,10 +17,10 @@ The following prerequisites list contains all the needed software in order to be
 simulated or real device, you'll need a Mac with macOS.
 This cannot be performed on other operating systems, such as Microsoft Windows. This is an Apple requirement.
 
-It's recommended that you install the latest stable versions for compatibility and better performance.
+It's recommended that you install the latest stable versions for compatibility and better performance. In order to build the iOS application the version of **iOS** should be at least 14.
 
 * [Android Studio](https://developer.android.com/studio)
-* [XCode](https://apps.apple.com/us/app/xcode)
+* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 14.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK](https://www.oracle.com/java/technologies/downloads/)
 
