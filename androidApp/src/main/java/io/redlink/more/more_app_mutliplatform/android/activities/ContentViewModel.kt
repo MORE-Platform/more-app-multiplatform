@@ -8,6 +8,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.consent.Consent
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModelListener
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
     private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = MoreApplication.appContext!!)
-    private val registrationService: RegistrationService = RegistrationService(sharedPreferencesRepository)
+    private val studyRepository: StudyRepository = StudyRepository()
+    private val registrationService: RegistrationService = RegistrationService(sharedPreferencesRepository, studyRepository)
     private val credentialRepository: CredentialRepository = CredentialRepository(sharedPreferencesRepository)
 
     val loginViewModel: LoginViewModel = LoginViewModel(registrationService, this)

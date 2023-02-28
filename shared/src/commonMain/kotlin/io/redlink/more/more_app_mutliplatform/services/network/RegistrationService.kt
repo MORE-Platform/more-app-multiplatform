@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationConsent
@@ -14,8 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class RegistrationService(
-    sharedStorageRepository: SharedStorageRepository
+class RegistrationService (
+    sharedStorageRepository: SharedStorageRepository,
+    private val studyRepository: StudyRepository
 ) {
     private val endpointRepository = EndpointRepository(sharedStorageRepository)
     private val credentialRepository = CredentialRepository(sharedStorageRepository)
@@ -61,6 +63,7 @@ class RegistrationService(
                     deviceId = "${getPlatform().productName}#$uniqueDeviceId"
                 )
                 sendConsent(token, studyConsent, endpoint, onSuccess, onError, onFinish)
+                studyRepository.storeStudy(study)
             }
         }
     }
