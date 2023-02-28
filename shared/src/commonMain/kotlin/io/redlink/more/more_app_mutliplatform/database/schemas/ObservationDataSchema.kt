@@ -5,7 +5,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
 
-class ObservationData : RealmObject {
+class ObservationDataSchema : RealmObject {
     @PrimaryKey
     var dataId: ObjectId = ObjectId()
     var observationId: String = ""

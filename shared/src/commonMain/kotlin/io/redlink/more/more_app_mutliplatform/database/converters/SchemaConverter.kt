@@ -2,18 +2,20 @@ package io.redlink.more.more_app_mutliplatform.database.converters
 
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.schemas.Study
-import io.redlink.more.more_app_mutliplatform.database.schemas.Observation
-import io.redlink.more.more_app_mutliplatform.database.schemas.Schedule
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
 class SchemaConverter {
 
     companion object SchemaConverter {
-        fun toSchema(study: io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study): Study {
-            return Study().apply {
+        fun toSchema(study: Study): StudySchema {
+            return StudySchema().apply {
                 studyTitle = study.studyTitle
                 consentInfo = study.consentInfo
                 participantInfo = study.participantInfo
@@ -30,8 +32,8 @@ class SchemaConverter {
             }
         }
 
-        private fun toSchema(observation: io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation): Observation {
-            return Observation().apply {
+        private fun toSchema(observation: Observation): ObservationSchema {
+            return ObservationSchema().apply {
                 observationId = observation.observationId
                 observationTitle = observation.observationTitle
                 observationType = observation.observationType
@@ -42,8 +44,8 @@ class SchemaConverter {
             }
         }
 
-        private fun toSchema(schedule: ObservationSchedule, id: String): Schedule {
-            return Schedule().apply {
+        private fun toSchema(schedule: ObservationSchedule, id: String): ScheduleSchema {
+            return ScheduleSchema().apply {
                 observationId = id
                 start = schedule.start?.let {
                     RealmInstant.from(it.toEpochMilliseconds(), 0)

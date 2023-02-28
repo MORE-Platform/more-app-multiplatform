@@ -5,13 +5,13 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class Observation : RealmObject {
+class ObservationSchema : RealmObject {
     @PrimaryKey
     var observationId: String = ""
     var observationType: String = ""
     var observationTitle: String = ""
     var participantInfo: String = ""
     var configuration: String? = null
-    var schedule: RealmList<Schedule> = realmListOf()
+    var schedule: RealmList<ScheduleSchema> = realmListOf()
 
 }
