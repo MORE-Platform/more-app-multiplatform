@@ -4,7 +4,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.0"
 
     id("com.android.library")
-    id("io.realm.kotlin") version "1.5.2"
+    id("io.realm.kotlin") version "1.6.0"
     id("org.openapi.generator") version "6.3.0"
 }
 
@@ -55,7 +55,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 
-                implementation("io.realm.kotlin:library-base:1.5.2")
+                implementation("io.realm.kotlin:library-base:1.6.0")
 
                 implementation("io.github.aakira:napier:$napierVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
