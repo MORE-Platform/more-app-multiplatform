@@ -11,7 +11,7 @@ import kotlinx.datetime.atStartOfDayIn
 
 class SchemaConverter {
 
-    companion object SchemaParser {
+    companion object SchemaConverter {
         fun toSchema(study: io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study): Study {
             return Study().apply {
                 studyTitle = study.studyTitle
