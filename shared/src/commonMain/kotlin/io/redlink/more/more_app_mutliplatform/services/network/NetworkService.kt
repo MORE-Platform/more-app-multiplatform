@@ -4,10 +4,9 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.statement.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.*
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -29,6 +28,7 @@ class NetworkService(
 ) {
 
     private var configurationApi: ConfigurationApi? = null
+    private var dataApi: DataApi? = null
 
     init {
         initConfigApi()
@@ -45,6 +45,14 @@ class NetworkService(
                     httpClientConfig = { httpClient.engineConfig })
                 configurationApi?.setUsername(it.apiId)
                 configurationApi?.setPassword(it.apiKey)
+
+                dataApi = DataApi(
+                    baseUrl = url,
+                    httpClient.engine,
+                    httpClientConfig = { httpClient.engineConfig}
+                )
+                dataApi?.setUsername(it.apiId)
+                dataApi?.setPassword(it.apiKey)
             }
         }
     }
@@ -67,7 +75,6 @@ class NetworkService(
                     return Pair(it, null)
                 }
             }
-            println("Error; Code: ${registrationResponse.response.status.value}")
             val error = createErrorBody(
                 registrationResponse.response.status.value,
                 registrationResponse.response
@@ -78,7 +85,6 @@ class NetworkService(
             )
 
         } catch (err: Exception) {
-            err.printStackTrace()
             return Pair(null, getException(err))
         }
     }
@@ -106,7 +112,6 @@ class NetworkService(
                 createErrorBody(consentResponse.response.status.value, consentResponse.response)
             )
         } catch (e: Exception) {
-            e.printStackTrace()
             return Pair(null, getException(e))
         }
     }
@@ -115,7 +120,7 @@ class NetworkService(
         initConfigApi()
         try {
             val configResponse =
-                configurationApi?.getStudyConfiguration() ?: throw Exception("Credentials not set!")
+                configurationApi?.getStudyConfiguration() ?: return Pair(null, NetworkServiceError(null, "No credentials set!"))
             if (configResponse.success) {
                 configResponse.body().let {
                     return Pair(it, null)
@@ -127,8 +132,28 @@ class NetworkService(
                 createErrorBody(configResponse.response.status.value, configResponse.response)
             )
         } catch (e: Exception) {
-            e.printStackTrace()
             return Pair(null, getException(e))
+        }
+    }
+
+    suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
+        initConfigApi()
+        try {
+            val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
+                emptySet(),
+                NetworkServiceError(null, "No credentials set!")
+            )
+            if (dataApiResponse.success) {
+                dataApiResponse.body().let {
+                    return Pair(it.toSet(), null)
+                }
+            }
+            return Pair(
+                emptySet(),
+                createErrorBody(dataApiResponse.response.status.value, dataApiResponse.response)
+            )
+        } catch (e: Exception) {
+            return Pair(emptySet(), getException(e))
         }
     }
 
@@ -137,14 +162,12 @@ class NetworkService(
             if (responseBody == null) {
                 return NetworkServiceError(code = code, message = "Error")
             }
-
             val error =
                 Json.decodeFromString<io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error>(
                     responseBody.toString()
                 )
-            return NetworkServiceError(code = code, message = error.msg ?: "Error")
+            NetworkServiceError(code = code, message = error.msg ?: "Error")
         } catch (e: Exception) {
-            e.printStackTrace()
             getException(e)
         }
     }
@@ -153,7 +176,8 @@ class NetworkService(
         val errorResponse = when (exception) {
             else -> "System error!"
         }
-        Napier.e("Exception: $exception", tag = TAG)
+        Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
+        exception.printStackTrace()
         return NetworkServiceError(null, errorResponse)
     }
 
