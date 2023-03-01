@@ -23,4 +23,16 @@ class CoreLoginViewModel(private val registrationService: RegistrationService) {
             }
         }
     }
+
+    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)): Closeable {
+        val job = Job()
+        loadingFlow.onEach {
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object: Closeable {
+            override fun close() {
+                job.cancel()
+            }
+        }
+    }
 }
