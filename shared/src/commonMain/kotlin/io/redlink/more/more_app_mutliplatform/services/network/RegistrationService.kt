@@ -16,11 +16,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class RegistrationService (
-    sharedStorageRepository: SharedStorageRepository,
-    private val studyRepository: StudyRepository
+    sharedStorageRepository: SharedStorageRepository
 ) {
     private val endpointRepository = EndpointRepository(sharedStorageRepository)
     private val credentialRepository = CredentialRepository(sharedStorageRepository)
+    private val studyRepository = StudyRepository()
     private val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
 
     var study: Study? = null
@@ -62,13 +62,12 @@ class RegistrationService (
                     consentInfoMD5 = consentInfoMd5,
                     deviceId = "${getPlatform().productName}#$uniqueDeviceId"
                 )
-                sendConsent(token, studyConsent, endpoint, onSuccess, onError, onFinish)
-                studyRepository.storeStudy(study)
+                sendConsent(token, studyConsent, study, endpoint, onSuccess, onError, onFinish)
             }
         }
     }
 
-    private fun sendConsent(token: String, studyConsent: StudyConsent, endpoint: String? = null, onSuccess: (Boolean) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
+    private fun sendConsent(token: String, studyConsent: StudyConsent, study: Study, endpoint: String? = null, onSuccess: (Boolean) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         scope.launch {
             val (config, networkError) = networkService.sendConsent(token, studyConsent, endpoint)
             if (config != null) {
@@ -79,6 +78,7 @@ class RegistrationService (
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 credentialRepository.store(credentialModel)
                 onSuccess(credentialRepository.hasCredentials())
+                studyRepository.storeStudy(study)
             }
             networkError?.let {
                 onError(it)
