@@ -77,8 +77,10 @@ class RegistrationService (
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 credentialRepository.store(credentialModel)
+                if (credentialRepository.hasCredentials()) {
+                    studyRepository.storeStudy(study)
+                }
                 onSuccess(credentialRepository.hasCredentials())
-                studyRepository.storeStudy(study)
             }
             networkError?.let {
                 onError(it)
