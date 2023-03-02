@@ -57,7 +57,7 @@ fun ConsentButtons(model: ConsentViewModel) {
             }
             Button(
                 onClick = {
-//                    model.acceptConsent(context)
+                    model.observations.value?.let { model.getNeededPermissions(it) }
                     checkAndRequestLocationPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults
@@ -137,8 +137,7 @@ fun checkPermissionForBackgroundLocationAccess(
         }
         .setNegativeButton("Decline") { dialog, _ ->
             dialog.dismiss()
-//            model.returnToStart(context)
-//            TODO: should be returning to the login view
+            model.decline()
         }
         .create()
         .show()
