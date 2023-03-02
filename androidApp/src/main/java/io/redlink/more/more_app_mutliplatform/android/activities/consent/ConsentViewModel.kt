@@ -8,11 +8,10 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.getSecureID
 import io.redlink.more.more_app_mutliplatform.managers.ObservationsManager
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
-import io.redlink.more.more_app_mutliplatform.observations.ObservationType
+import io.redlink.more.more_app_mutliplatform.observations.ObservationWithType
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
 import kotlinx.coroutines.*
 
@@ -70,7 +69,7 @@ class ConsentViewModel(
             permissions += ObservationsManager
                 .getAllPermissionsForFactories(observations.map { it.observationType })
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ObservationType.NOTIFICATION.sensorPermission?.let { permissions.add(it) }
+                ObservationWithType.NOTIFICATION.sensorPermission?.let { permissions.add(it) }
             }
         }
     }

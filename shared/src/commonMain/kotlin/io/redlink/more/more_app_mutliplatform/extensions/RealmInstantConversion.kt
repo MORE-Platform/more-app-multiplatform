@@ -2,6 +2,9 @@ package io.redlink.more.more_app_mutliplatform.extensions
 
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 fun RealmInstant.toInstant(): Instant {
     val sec: Long = this.epochSeconds
@@ -21,3 +24,5 @@ fun Instant.toRealmInstant(): RealmInstant {
         RealmInstant.from(sec + 1, -1_000_000 + nano)
     }
 }
+
+fun Instant.localDateTime(): LocalDateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())

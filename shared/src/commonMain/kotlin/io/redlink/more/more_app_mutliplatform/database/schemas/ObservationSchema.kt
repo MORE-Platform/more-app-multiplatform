@@ -14,7 +14,7 @@ class ObservationSchema : RealmObject {
     var observationTitle: String = ""
     var participantInfo: String = ""
     var configuration: String? = null
-    var schedule: RealmList<ScheduleSchema> = realmListOf()
+    var schedules: RealmList<ScheduleSchema> = realmListOf()
 
     companion object {
         fun toSchema(observation: Observation): ObservationSchema {
@@ -24,7 +24,7 @@ class ObservationSchema : RealmObject {
                 observationType = observation.observationType
                 participantInfo = observation.participantInfo
                 configuration = observation.configuration.toString()
-                schedule = observation.schedule.map {
+                schedules = observation.schedule.map {
                     ScheduleSchema.toSchema(
                         it,
                         observation.observationId

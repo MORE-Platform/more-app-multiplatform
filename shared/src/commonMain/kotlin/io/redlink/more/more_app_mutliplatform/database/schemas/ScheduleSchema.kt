@@ -4,8 +4,10 @@ import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
+import org.mongodb.kbson.ObjectId
 
 class ScheduleSchema : RealmObject {
+    var scheduleId: ObjectId = ObjectId.invoke()
     var observationId: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
