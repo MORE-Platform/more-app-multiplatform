@@ -11,7 +11,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import org.mongodb.kbson.ObjectId
 import kotlin.reflect.KClass
 
 object RealmDatabase {
@@ -72,9 +71,9 @@ object RealmDatabase {
         return realm?.query<T>("${field.trim()} IN $0", list)?.asMappedFlow() ?: emptyFlow()
     }
 
-    inline fun <reified T : BaseRealmObject, R : Any> deleteAllWhereFieldInList(
+    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
-        list: Set<R>
+        list: Set<Any>
     ) {
         realm?.writeBlocking {
             val itemsToDelete = this.query<T>("${field.trim()} IN $0", list).find()

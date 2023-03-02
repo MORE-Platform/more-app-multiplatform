@@ -1,25 +1,29 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
+import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 private const val TAG = "ObservationDataManager"
 
-class ObservationDataManager {
+class ObservationDataManager: Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private var networkService: NetworkService? = null
-
-    private val dataQueue = mutableListOf<ObservationData>()
-
+    private val observationDataRepository = ObservationDataRepository()
     init {
         scope.launch {
-
+            observationDataRepository.databaseCount().collect{
+                if (it >= DATA_COUNT_THRESHOLD) {
+                    observationDataRepository.allAsBulk()?.let { dataBulk ->
+                        sendRecordedData(dataBulk)
+                    }
+                }
+            }
         }
     }
 
@@ -28,36 +32,36 @@ class ObservationDataManager {
     }
 
     fun add(data: ObservationData) {
-        dataQueue.add(data)
+        observationDataRepository.addData(ObservationDataSchema.fromObservationData(data))
     }
 
-    private fun storeQueueToDB() {
-        if (dataQueue.size >= QUEUE_COUNT_THRESHOLD) {
-
+    fun saveAndSend() {
+        scope.launch {
+            observationDataRepository.storeAndQuery()?.let {
+                sendRecordedData(it)
+            }
         }
     }
 
-    fun sendRecordedData(data: Set<ObservationData>) {
+    fun sendRecordedData(data: DataBulk) {
         networkService?.let { networkService ->
-            data.mapAsBulkData()?.let {
-                scope.launch {
-                    val (idList, error) = networkService.sendData(it)
-                    if (idList.isNotEmpty()) {
-                        deleteAll(idList)
-                    }
-                    error?.let {
-                        Napier.e(tag = TAG, message = it.message)
-                    }
+            scope.launch {
+                val (idList, error) = networkService.sendData(data)
+                if (idList.isNotEmpty()) {
+                    deleteAll(idList)
+                }
+                error?.let {
+                    Napier.e(tag = TAG, message = it.message)
                 }
             }
         }
     }
 
-    private fun getAllDataRecords(): Set<ObservationData> {
-        return emptySet()
+    private fun deleteAll(idSet: Set<String>) {
+        observationDataRepository.deleteAllWithId(idSet)
     }
 
-    private fun deleteAll(idList: Set<String>) {
-
+    override fun close() {
+        observationDataRepository.close()
     }
 }
