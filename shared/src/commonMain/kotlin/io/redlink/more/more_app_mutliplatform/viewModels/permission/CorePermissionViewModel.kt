@@ -17,12 +17,12 @@ class CorePermissionViewModel(
 ) {
     val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(PermissionModel("Title", "info", consentInfo = emptyList()))
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val observations: MutableStateFlow<List<Observation>?> = MutableStateFlow(null)
+    val observations: MutableStateFlow<List<Observation>> = MutableStateFlow(emptyList())
 
     fun buildConsentModel() {
         registrationService.study?.let {
             permissionModel.value = PermissionModel.create(it)
-            observations.value = it.observations
+            observations.value = it.observations ?: emptyList()
         }
     }
 

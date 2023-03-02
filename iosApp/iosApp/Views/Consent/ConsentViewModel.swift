@@ -8,6 +8,7 @@
 
 import shared
 import UIKit
+import CoreLocation
 
 protocol ConsentViewModelListener {
     func credentialsStored()
@@ -47,6 +48,26 @@ class ConsentViewModel: ObservableObject {
                 }
             }
 
+        }
+    }
+    var locationManager: CLLocationManager?
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse:  // Location services are available.
+            enableLocationFeatures()
+            break
+            
+        case .restricted, .denied:  // Location services currently unavailable.
+            disableLocationFeatures()
+            break
+            
+        case .notDetermined:        // Authorization not determined yet.
+           manager.requestWhenInUseAuthorization()
+            break
+            
+        default:
+            break
         }
     }
     
