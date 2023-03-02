@@ -12,8 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-class ObservationDataRepository: Closeable {
-    private val realmDatabase = DatabaseManager.database
+class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     private val queue = mutableListOf<ObservationDataSchema>()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
@@ -25,7 +24,7 @@ class ObservationDataRepository: Closeable {
         }
     }
 
-    fun databaseCount() = realmDatabase.count<ObservationDataSchema>()
+    override fun count() = realmDatabase.count<ObservationDataSchema>()
 
     fun storeDataFromQueue() {
         val queueCopy = queue.toList()
@@ -48,9 +47,5 @@ class ObservationDataRepository: Closeable {
 
     fun deleteAllWithId(idSet: Set<String>) {
         realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", list = idSet)
-    }
-
-    override fun close() {
-        realmDatabase.close()
     }
 }
