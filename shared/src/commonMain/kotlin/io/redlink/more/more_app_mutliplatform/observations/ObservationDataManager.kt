@@ -16,7 +16,7 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
     private val observationDataRepository = ObservationDataRepository()
     init {
         scope.launch {
-            observationDataRepository.databaseCount().collect{
+            observationDataRepository.count().collect{
                 if (it >= DATA_COUNT_THRESHOLD) {
                     observationDataRepository.allAsBulk()?.let { dataBulk ->
                         sendRecordedData(dataBulk)
