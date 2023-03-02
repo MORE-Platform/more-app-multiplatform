@@ -24,6 +24,6 @@ class DashboardView : ComponentActivity() {
 @Composable
 fun DashboardView(model: DashboardViewModel) {
     Text(
-        text = model.study.value.studyTitle
+        text = model.studyTitle.value
     )
 }

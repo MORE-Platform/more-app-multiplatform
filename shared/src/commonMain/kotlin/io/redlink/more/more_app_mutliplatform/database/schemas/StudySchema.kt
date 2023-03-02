@@ -5,7 +5,6 @@ import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.datetime.*
@@ -38,33 +37,6 @@ class StudySchema : RealmObject {
                 ).toRealmInstant()
                 version = study.version
             }
-        }
-
-        fun fromSchema(study: StudySchema): Study {
-            val startDateAsDateTime =
-                study.start!!.toInstant().toLocalDateTime(TimeZone.currentSystemDefault())
-            val endDateAsDateTime =
-                study.end!!.toInstant().toLocalDateTime(TimeZone.currentSystemDefault())
-            return Study(
-                study.studyTitle,
-                study.participantInfo,
-                study.consentInfo,
-                LocalDate(
-                    startDateAsDateTime.year,
-                    startDateAsDateTime.monthNumber,
-                    startDateAsDateTime.dayOfMonth
-                ),
-                LocalDate(
-                    endDateAsDateTime.year,
-                    endDateAsDateTime.monthNumber,
-                    endDateAsDateTime.dayOfMonth
-                ),
-                study.observations.let {
-                    it.map { observationSchema -> ObservationSchema.fromSchema(observationSchema) }
-                },
-                study.version,
-                study.active
-            )
         }
     }
 }

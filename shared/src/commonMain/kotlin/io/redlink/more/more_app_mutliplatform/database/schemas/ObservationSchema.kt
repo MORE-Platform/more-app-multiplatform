@@ -6,10 +6,6 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
 
 
 class ObservationSchema : RealmObject {
@@ -44,22 +40,5 @@ class ObservationSchema : RealmObject {
                     .toRealmList()
             }
         }
-
-        fun fromSchema(observation: ObservationSchema): Observation {
-            return Observation(
-                observation.observationId,
-                observation.observationTitle,
-                observation.observationType,
-                observation.participantInfo,
-                observation.schedule.map { s -> ScheduleSchema.fromSchema(s) },
-                observation.required,
-                observation.version,
-                observation.configuration?.let {
-                    Json.parseToJsonElement(it)
-                }?.jsonObject,
-                observation.hidden
-            )
-        }
     }
-
 }
