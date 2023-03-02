@@ -8,13 +8,14 @@
 
 import shared
 import UIKit
+import CoreLocation
 
 protocol ConsentViewModelListener {
     func credentialsStored()
     func decline()
 }
 
-class ConsentViewModel: ObservableObject {
+class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let coreModel: CorePermissionViewModel
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
@@ -23,10 +24,22 @@ class ConsentViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
+    @Published var authorisationStatus: CLAuthorizationStatus = .notDetermined
+    @Published var authorizationStatus: CLAuthorizationStatus
+        
+    private let locationManager: CLLocationManager
     
     
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
+        locationManager = CLLocationManager()
+        authorizationStatus = locationManager.authorizationStatus
+        
+        super.init()
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -46,8 +59,24 @@ class ConsentViewModel: ObservableObject {
                     self.error = error.message
                 }
             }
-
+            
         }
+    }
+    
+    public func requestAuthorisation(always: Bool = false) {
+        if always {
+            self.locationManager.requestAlwaysAuthorization()
+        } else {
+            self.locationManager.requestWhenInUseAuthorization()
+        }
+    }
+    
+    func requestPermission() {
+        locationManager.requestWhenInUseAuthorization()
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
     }
     
     func buildConsentModel() {

@@ -38,6 +38,7 @@ struct ConsentView: View {
                     }
                     Spacer()
                     MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
+                        viewModel.requestPermission()
                         viewModel.acceptConsent()
                     } label: {
                         Text(verbatim: .localizedString(
