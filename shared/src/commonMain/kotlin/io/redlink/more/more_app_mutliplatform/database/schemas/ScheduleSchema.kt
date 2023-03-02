@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.database.schemas
 
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
+import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
 
@@ -18,6 +19,13 @@ class ScheduleSchema : RealmObject {
                 start = schedule.start?.toRealmInstant()
                 end = schedule.end?.toRealmInstant()
             }
+        }
+
+        fun fromSchema(schedule: ScheduleSchema): ObservationSchedule {
+            return ObservationSchedule(
+                schedule.start?.toInstant(),
+                schedule.end?.toInstant()
+            )
         }
     }
 }
