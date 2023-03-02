@@ -11,9 +11,8 @@ import kotlinx.coroutines.*
 
 private const val TAG = "ObservationDataManager"
 
-class ObservationDataManager: Closeable {
+class ObservationDataManager(private val networkService: NetworkService): Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
-    private var networkService: NetworkService? = null
     private val observationDataRepository = ObservationDataRepository()
     init {
         scope.launch {
@@ -27,12 +26,8 @@ class ObservationDataManager: Closeable {
         }
     }
 
-    fun setNetworkService(networkService: NetworkService) {
-        this.networkService = networkService
-    }
-
-    fun add(data: ObservationData) {
-        observationDataRepository.addData(ObservationDataSchema.fromObservationData(data))
+    fun add(data: ObservationDataSchema) {
+        observationDataRepository.addData(data)
     }
 
     fun saveAndSend() {
@@ -43,16 +38,14 @@ class ObservationDataManager: Closeable {
         }
     }
 
-    fun sendRecordedData(data: DataBulk) {
-        networkService?.let { networkService ->
-            scope.launch {
-                val (idList, error) = networkService.sendData(data)
-                if (idList.isNotEmpty()) {
-                    deleteAll(idList)
-                }
-                error?.let {
-                    Napier.e(tag = TAG, message = it.message)
-                }
+    private fun sendRecordedData(data: DataBulk) {
+        scope.launch {
+            val (idList, error) = networkService.sendData(data)
+            if (idList.isNotEmpty()) {
+                deleteAll(idList)
+            }
+            error?.let {
+                Napier.e(tag = TAG, message = it.message)
             }
         }
     }
