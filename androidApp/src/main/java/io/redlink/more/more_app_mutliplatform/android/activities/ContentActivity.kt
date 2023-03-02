@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentView
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
@@ -24,8 +25,9 @@ class ContentActivity: ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
+    val context = LocalContext.current
     if (viewModel.hasCredentials.value) {
-        Text(text = "Main")
+        viewModel.openDashboard(context)
     } else {
         if (viewModel.loginViewScreenNr.value == 0) {
             LoginView(model = viewModel.loginViewModel)
