@@ -1,0 +1,10 @@
+/* 
+  DashboardView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 03.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"no_filter_activated" = "No Filter activated";
+"tasks_completed" = "Completed Tasks";
