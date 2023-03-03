@@ -7,9 +7,12 @@
     <string name="accelerometer_module_title">Smartphone Accelerometer Module</string>
     <string name="study_description">Study Description</string>
     <string name="study_loading_problem">There was a problem loading the study!</string>
+    <string name="study_details">Open study details</string>
+    <string name="study_not_active">Study currently inactive</string>
 
     <string name="more_main_tab_schedule">Schedule</string>
-    <string name="more_main_tab_details">Modules</string>
+    <string name="more_main_tab_modules">Modules</string>
+    <string name="more_main_tab_filters">Open Filter Settings</string>
 
     <string name="more_main_completed_tasks">Completed Tasks</string>
     <string name="more_main_notification_button_description">Open Notification Pane</string>
