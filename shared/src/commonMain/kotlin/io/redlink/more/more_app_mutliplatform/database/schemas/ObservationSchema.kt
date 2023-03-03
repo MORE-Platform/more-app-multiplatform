@@ -7,6 +7,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
 
+
 class ObservationSchema : RealmObject {
     @PrimaryKey
     var observationId: String = ""
@@ -15,6 +16,9 @@ class ObservationSchema : RealmObject {
     var participantInfo: String = ""
     var configuration: String? = null
     var schedule: RealmList<ScheduleSchema> = realmListOf()
+    var hidden: Boolean? = null
+    var version: Long = 0
+    var required: Boolean = false
 
     companion object {
         fun toSchema(observation: Observation): ObservationSchema {
@@ -24,6 +28,9 @@ class ObservationSchema : RealmObject {
                 observationType = observation.observationType
                 participantInfo = observation.participantInfo
                 configuration = observation.configuration.toString()
+                hidden = observation.hidden
+                required = observation.required
+                version = observation.version
                 schedule = observation.schedule.map {
                     ScheduleSchema.toSchema(
                         it,
@@ -34,5 +41,4 @@ class ObservationSchema : RealmObject {
             }
         }
     }
-
 }

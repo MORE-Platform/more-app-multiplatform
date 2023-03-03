@@ -49,17 +49,17 @@ fun Image(
         colorFilter
     )
 
-//fun showNewActivityAndClearStack(context: Context, cls: Class<*>) {
-//    (context as? Activity)?.let {
-//        val intent = Intent(context, cls)
-//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        TaskStackBuilder.create(it).addNextIntentWithParentStack(intent).startActivities()
-//    }
-//}
+fun showNewActivityAndClearStack(context: Context, cls: Class<*>) {
+    (context as? Activity)?.let {
+        val intent = Intent(context, cls)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        TaskStackBuilder.create(it).addNextIntentWithParentStack(intent).startActivities()
+    }
+}
 
-//fun showNewActivity(context: Context, cls: Class<*>) {
-//    (context as? Activity)?.let {
-//        val intent = Intent(context, cls)
-//        it.startActivity(intent)
-//    }
-//}
+fun showNewActivity(context: Context, cls: Class<*>) {
+    (context as? Activity)?.let {
+        val intent = Intent(context, cls)
+        it.startActivity(intent)
+    }
+}
