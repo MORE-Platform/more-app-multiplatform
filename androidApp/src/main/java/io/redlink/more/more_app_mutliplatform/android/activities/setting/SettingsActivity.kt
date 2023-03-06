@@ -3,10 +3,8 @@ package io.redlink.more.more_app_mutliplatform.android.activities.setting
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.ContentView
+import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentListItem
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
@@ -33,6 +33,7 @@ class SettingsActivity: ComponentActivity() {
         setContent {
             MoreBackground {
                 SettingsView(viewModel = viewModel)
+
             }
         }
     }
@@ -45,7 +46,9 @@ fun SettingsView(
 ) {
     val context = LocalContext.current
     Column(
-
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.8f)
     ) {
         Text(
             text = "Settings",
@@ -74,5 +77,17 @@ fun SettingsView(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        Spacer(Modifier.height(24.dp))
+
+        LazyColumn(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .padding(vertical = 16.dp)) {
+            /*items(consentModel.permissionModel.value.consentInfo) { consentInfo ->
+                ConsentListItem(title = consentInfo.title, description = consentInfo.info)
+            }*/
+        }
+
     }
 }

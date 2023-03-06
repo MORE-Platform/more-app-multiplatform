@@ -2,20 +2,37 @@ package io.redlink.more.more_app_mutliplatform.android.activities.setting
 
 import android.app.Activity
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.activities.ContentActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.more_app_mutliplatform.models.PermissionModel
+import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class SettingsViewModel(): ViewModel() {
+class SettingsViewModel(
+): ViewModel() {
     private var coreSettingsViewModel: CoreSettingsViewModel? = null
+    private val study: Study = Study();
+
+    val permissionModel =
+        mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            PermissionModel.create(study).consentInfo
+        }
+    }
 
     fun createCoreViewModel(context: Context) {
         (context as? Activity)?.let {
