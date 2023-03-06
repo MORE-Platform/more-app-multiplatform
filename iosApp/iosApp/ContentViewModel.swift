@@ -20,6 +20,7 @@ class ContentViewModel: ObservableObject {
     
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
+    let permissionManager: PermissionManager
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -28,6 +29,7 @@ class ContentViewModel: ObservableObject {
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
+        permissionManager = PermissionManager()
         
         loginViewModel.delegate = self
         consentViewModel.delegate = self

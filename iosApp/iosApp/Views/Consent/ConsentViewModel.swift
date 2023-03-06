@@ -9,6 +9,7 @@
 import shared
 import UIKit
 import CoreLocation
+import AVFoundation
 
 protocol ConsentViewModelListener {
     func credentialsStored()
@@ -26,9 +27,10 @@ class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var showErrorAlert: Bool = false
     @Published var authorisationStatus: CLAuthorizationStatus = .notDetermined
     @Published var authorizationStatus: CLAuthorizationStatus
-        
+    
     private let locationManager: CLLocationManager
     
+    @Published var permissionGranted = false
     
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
@@ -74,9 +76,17 @@ class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     func requestPermission() {
         locationManager.requestWhenInUseAuthorization()
     }
-
+    
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+    }
+    
+    func requestPermissionCamera() {
+        AVCaptureDevice.requestAccess(for: .video, completionHandler: {accessGranted in
+            DispatchQueue.main.async {
+                self.permissionGranted = accessGranted
+            }
+        })
     }
     
     func buildConsentModel() {
