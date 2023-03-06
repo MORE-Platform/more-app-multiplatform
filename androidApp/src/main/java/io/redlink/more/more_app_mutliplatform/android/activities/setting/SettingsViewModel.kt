@@ -2,35 +2,41 @@ package io.redlink.more.more_app_mutliplatform.android.activities.setting
 
 import android.app.Activity
 import android.content.Context
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.activities.ContentActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
-import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-class SettingsViewModel(
-): ViewModel() {
+class SettingsViewModel(): ViewModel() {
     private var coreSettingsViewModel: CoreSettingsViewModel? = null
-    private val study: Study = Study();
+    private val studySchema = mutableStateOf<StudySchema?>(null)
+    private val studyRepository: StudyRepository = StudyRepository();
+    var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
+    private val scope = CoroutineScope(Dispatchers.Default + Job())
 
     val permissionModel =
         mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            PermissionModel.create(study).consentInfo
+            studyRepository.getStudy().collect() {
+                withContext(Dispatchers.Main) {
+                    studySchema.value = it
+                    if(it != null) {
+                        permissionModel.value = PermissionModel.createFromSchema(it)
+                    }
+                }
+            }
         }
     }
 

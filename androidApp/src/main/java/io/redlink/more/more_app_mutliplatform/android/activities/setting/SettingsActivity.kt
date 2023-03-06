@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,28 +13,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.ContentView
-import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentListItem
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 class SettingsActivity: ComponentActivity() {
 
     private val viewModel = SettingsViewModel()
+    private val settingsViewModel = SettingsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.createCoreViewModel(this)
         setContent {
             MoreBackground {
-                SettingsView(viewModel = viewModel)
-
+                SettingsView(model = viewModel)
             }
         }
     }
@@ -42,7 +41,7 @@ class SettingsActivity: ComponentActivity() {
 
 @Composable
 fun SettingsView(
-    viewModel: SettingsViewModel
+    model: SettingsViewModel
 ) {
     val context = LocalContext.current
     Column(
@@ -62,9 +61,13 @@ fun SettingsView(
 
         Spacer(Modifier.height(24.dp))
 
+        Accordion(title = "Participant Information", description = model.permissionModel.value.studyParticipantInfo, hasCheck = false)
+
+        Spacer(Modifier.height(24.dp))
+
         Button(
             onClick = {
-                viewModel.removeParticipation(context)
+                model.removeParticipation(context)
             }
         ){
             Text(
@@ -84,9 +87,10 @@ fun SettingsView(
             .fillMaxWidth()
             .weight(1f)
             .padding(vertical = 16.dp)) {
-            /*items(consentModel.permissionModel.value.consentInfo) { consentInfo ->
+
+            items(model.permissionModel.value.consentInfo) { consentInfo ->
                 ConsentListItem(title = consentInfo.title, description = consentInfo.info)
-            }*/
+            }
         }
 
     }
