@@ -42,7 +42,6 @@ class DashboardViewModel: ViewModel() {
         }
     }
 
-
     fun openSettings(context: Context) {
         (context as? Activity)?.let {
             showNewActivity(it, SettingsActivity::class.java)

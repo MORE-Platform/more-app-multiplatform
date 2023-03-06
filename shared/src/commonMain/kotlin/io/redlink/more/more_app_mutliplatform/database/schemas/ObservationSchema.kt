@@ -9,6 +9,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Obs
 import org.mongodb.kbson.ObjectId
 
 
+
 class ObservationSchema : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId.invoke()
