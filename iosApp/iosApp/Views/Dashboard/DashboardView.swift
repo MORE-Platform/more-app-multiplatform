@@ -30,20 +30,24 @@ struct DashboardView: View {
                     }
                 }
                 .foregroundColor(Color.more.main)
+                .padding(.bottom)
             }
             Picker ("", selection: $selection){
-                BasicText(text: .constant("Schedule"))
+                BasicText(text: .constant(String
+                    .localizedString(forKey: "schedule_string", inTable: stringTable, withComment: "schedule tab is selected")))
                     .tag(0)
-                BasicText(text: .constant("Overview")).tag(1)
+                BasicText(text: .constant(String
+                    .localizedString(forKey: "modules_string", inTable: stringTable, withComment: "modules tab is selected"))).tag(1)
             }.pickerStyle(.segmented)
                 .frame(height: 50)
                 .colorMultiply(Color.more.mainLight)
+                .padding(.bottom)
             Button {
                 
             } label: {
                 HStack {
-                    Text(String
-                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected"))
+                    BasicText(text: .constant(String
+                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
                     Image(systemName: "slider.horizontal.3")
                         .foregroundColor(Color.more.icons)
                 }.padding(.bottom)
@@ -54,7 +58,8 @@ struct DashboardView: View {
                                      withComment: "string for completed tasks")))
                 .foregroundColor(Color.more.icons)
                 Spacer()
-                Text(String(format: "%d%%", tasksCompleted / totalTasks))
+                BasicText(text: .constant(String(format: "%d%%", tasksCompleted / totalTasks)))
+                    .foregroundColor(Color.more.main)
             }.foregroundColor(Color.more.icons)
             
             ProgressView(value: tasksCompleted, total: totalTasks)
@@ -71,7 +76,21 @@ struct DashboardView: View {
 
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardView(viewModel: DashboardViewModel())
+        MoreMainBackgroundView {
+            DashboardView(viewModel: DashboardViewModel())
+        } topBarContent: {
+            HStack {
+                Button {
+                } label: {
+                    Image(systemName: "bell.fill")
+                }
+                Button {
+                    
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                }
+            }.foregroundColor(Color.more.icons)
+        }
     }
 }
 
