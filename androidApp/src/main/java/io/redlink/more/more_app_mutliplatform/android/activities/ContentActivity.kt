@@ -3,7 +3,6 @@ package io.redlink.more.more_app_mutliplatform.android.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentView
@@ -20,14 +19,12 @@ class ContentActivity: ComponentActivity() {
             }
         }
     }
-
 }
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
-    val context = LocalContext.current
     if (viewModel.hasCredentials.value) {
-        viewModel.openDashboard(context)
+        viewModel.openDashboard(LocalContext.current)
     } else {
         if (viewModel.loginViewScreenNr.value == 0) {
             LoginView(model = viewModel.loginViewModel)

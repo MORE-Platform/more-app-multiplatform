@@ -31,16 +31,17 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     val hasCredentials = mutableStateOf(credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
 
-    fun openDashboard(context: Context) {
-        (context as? Activity)?.let {
-            showNewActivityAndClearStack(it, DashboardActivity::class.java)
-        }
-    }
-
     private fun showLoginView() {
         viewModelScope.launch(Dispatchers.Main) {
             loginViewScreenNr.value = 0
             registrationService.reset()
+        }
+    }
+
+
+    fun openDashboard(context: Context) {
+        (context as? Activity)?.let {
+            showNewActivityAndClearStack(it, DashboardActivity::class.java)
         }
     }
 
