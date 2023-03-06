@@ -9,17 +9,12 @@
 import SwiftUI
 import shared
 
-struct DummyStruct: Identifiable {
-    var id: UUID
-    var value: Int
-}
-
 struct ScheduleList: View {
     var model: DashboardViewModel
-    var dummyList: [DummyStruct] = [DummyStruct(id: UUID(), value: 1), DummyStruct(id: UUID(), value: 2), DummyStruct(id: UUID(), value: 3)]
+    var dummyList: [Int] = [1, 2, 3]
     var body: some View {
         List {
-            ForEach(dummyList) { item in
+            ForEach(dummyList, id: \.self) { item in
                 VStack {
                     VStack(alignment: .leading) {
                         Text("Title")

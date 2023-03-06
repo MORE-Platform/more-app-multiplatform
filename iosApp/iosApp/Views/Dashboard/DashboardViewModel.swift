@@ -12,10 +12,12 @@ class DashboardViewModel: ObservableObject {
     
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
     
-    @Published var studyTitle: String = "Study Title"
+    @Published var studyTitle: String = ""
     
     @Published var study: StudySchema? = StudySchema()
     @Published var schedules: [ObservationSchedule] = []
+    @Published var schedulesCount: Double = 0
+    @Published var completedTasks: Double = 0
     
     init() {
         coreModel.onLoadStudy { study in
@@ -24,6 +26,8 @@ class DashboardViewModel: ObservableObject {
                 self.studyTitle = study.studyTitle
             }
         }
+        self.schedulesCount = Double(self.schedules.count)
+        // self.completedTasks = coreModel.getCompletedTasks()
     }
     
 }

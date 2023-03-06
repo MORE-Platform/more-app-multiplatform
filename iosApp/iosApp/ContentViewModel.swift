@@ -20,7 +20,7 @@ class ContentViewModel: ObservableObject {
     
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
-    let dashboardViewModel: DashboardViewModel
+    var dashboardViewModel: DashboardViewModel
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -64,5 +64,6 @@ extension ContentViewModel: ConsentViewModelListener {
     
     func credentialsStored() {
         self.hasCredentials = true
+        self.dashboardViewModel = DashboardViewModel()
     }
 }
