@@ -13,43 +13,25 @@ struct ScheduleList: View {
     var model: DashboardViewModel
     var dummyList: [Int] = [1, 2, 3]
     var body: some View {
-        List {
+        ScrollView {
             ForEach(dummyList, id: \.self) { item in
                 VStack {
-                    VStack(alignment: .leading) {
-                        Text("Title")
-                        Button {
-                            
-                        } label: {
-                            HStack {
-                                Text("subtitle")
-                                Spacer()
-                                Image(systemName: "chevron.forward")
-                            }
-                        }.buttonStyle(PlainButtonStyle())
-                    }
-                    HStack {
-                        Image(systemName: "clock.fill")
-                        Text("Start")
-                        Spacer()
-                        Image(systemName: "clock.fill")
-                        Text("Active for: ")
-                        Text("30 min")
-                    }
-                    MoreActionButton {
-                        
-                    } label: {
-                        Text("Start Observation")
-                    }.buttonStyle(PlainButtonStyle())
+                    ScheduleListItem(observationTitle: "Test", observationType: "simple-question-observation", scheduleStart: Date(), scheduleEnd: Date(), observation: ObservationSchema(), activeFor: 0)
+                        .listRowBackground(Color.more.mainLight)
+                    Divider()
                 }
             }
-        }.listStyle(.plain)
+        }
     }
 }
 
 struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleList(model: DashboardViewModel())
+        MoreMainBackgroundView {
+            ScheduleList(model: DashboardViewModel())
+        } topBarContent: {
+            EmptyView()
+        }
     }
 }
 

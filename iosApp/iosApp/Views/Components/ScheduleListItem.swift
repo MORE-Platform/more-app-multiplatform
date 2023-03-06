@@ -9,37 +9,60 @@
 import SwiftUI
 import shared
 import RealmSwift
+import Foundation
 
 struct ScheduleListItem: View {
-    var schedule: ScheduleSchema
-    var observation: ObservationSchema
+    @State var observationTitle: String
+    @State var observationType: String
+    @State var scheduleStart: Date
+    @State var scheduleEnd: Date
+    @State var observation: ObservationSchema
+    @State var activeFor: Int
     let calendar = Calendar.current
+    private let dateFormatter = DateFormatter()
+    private let buttonLabel = "Start Observation"
     
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
-                Text(observation.observationTitle)
                 Button {
                 } label: {
-                    HStack {
-                        Text(observation.observationType)
+                    HStack{
+                        VStack(alignment: .leading) {
+                            BasicText(text: $observationTitle)
+                                .font(Font.more.headline)
+                                .foregroundColor(Color.more.main)
+                            BasicText(text: $observationType)
+                                .foregroundColor(Color.more.icons)
+                        }
                         Spacer()
                         Image(systemName: "chevron.forward")
                     }
-                }.buttonStyle(PlainButtonStyle())
+                }
             }
             HStack {
                 Image(systemName: "clock.fill")
-                Text("Start: 12:00")
+                BasicText(text: .constant(String(format: "Start: %@", dateFormatter.string(from: scheduleStart))))
                 Spacer()
-                Text("Active for: ")
-                Text("30 min")
+                BasicText(text: .constant(String(format: "Active for: %d min", activeFor)))
             }
             MoreActionButton {
                 
             } label: {
-                Text("Start Observation")
+                HStack {
+                    if observationType.lowercased() == "simple-question-observation" {
+                        BasicText(text: .constant("Start Questionnaire"))
+                    } else {
+                        BasicText(text: .constant("Start Observation"))
+                    }
+                }
             }.buttonStyle(PlainButtonStyle())
         }
+    }
+}
+
+struct ScheduleListItem_Previews: PreviewProvider {
+    static var previews: some View {
+        ScheduleListItem(observationTitle: "Test Title", observationType: "Some Type", scheduleStart: Date(), scheduleEnd: Date(), observation: ObservationSchema(), activeFor: 0)
     }
 }

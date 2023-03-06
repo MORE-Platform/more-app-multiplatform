@@ -69,7 +69,7 @@ struct DashboardView: View {
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
             Divider()
-            // ScheduleList(model: viewModel)
+            ScheduleList(model: viewModel)
         }
     }
 }
