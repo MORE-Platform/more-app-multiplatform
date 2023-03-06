@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,6 +46,10 @@
 		1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2B29B0D78700BAF0A6 /* Realm */; };
+		ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */; };
+		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
+		EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13429B0D30200533F79 /* DashboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -103,6 +107,8 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		EDEBA13429B0D30200533F79 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +116,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */,
+				ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +199,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EDEBA13129B0D2CC00533F79 /* Dashboard */,
 				1F8847ED29938C500023EF10 /* Consent */,
 				1F8847B829914BD50023EF10 /* Components */,
 				1F9C3E8C298AAC0900B9AC82 /* Login */,
@@ -267,6 +276,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		EDEBA13129B0D2CC00533F79 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */,
+				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -285,6 +303,10 @@
 			dependencies = (
 			);
 			name = iosApp;
+			packageProductDependencies = (
+				ED5EBB2B29B0D78700BAF0A6 /* Realm */,
+				ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */,
+			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -313,6 +335,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -355,7 +380,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export JAVA_HOME=/Users/iaigner/.sdkman/candidates/java/current && echo $JAVA_HOME && cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -379,6 +404,7 @@
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
@@ -390,6 +416,7 @@
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
 				1F13BA4F2993A2A600938C1E /* ContentViewModel.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
+				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
@@ -535,10 +562,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 37M7HB4W2A;
+				DEVELOPMENT_TEAM = UD5RW7QT26;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -559,7 +585,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -572,10 +597,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 37M7HB4W2A;
+				DEVELOPMENT_TEAM = UD5RW7QT26;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -596,7 +620,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -627,6 +650,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ED5EBB2B29B0D78700BAF0A6 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

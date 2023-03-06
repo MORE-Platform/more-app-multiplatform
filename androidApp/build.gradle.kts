@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 plugins {
     id("com.android.application")
     kotlin("android")
+
+    id("io.realm.kotlin") version "1.6.0"
 }
 
 android {
@@ -53,5 +55,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("io.realm.kotlin:library-base:1.6.0")
 
 }
