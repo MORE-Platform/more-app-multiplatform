@@ -15,9 +15,9 @@ class DashboardViewModel: ObservableObject {
     @Published var studyTitle: String = "Study title"
     
     @Published var study: StudySchema? = StudySchema()
-    @Published var schedules: [ObservationSchedule] = []
-    @Published var schedulesCount: Double = 0
-    @Published var completedTasks: Double = 0
+    private var schedules: [ObservationSchedule] = []
+    private var schedulesCount: Double = 0
+    private var completedTasks: Double = 0
     
     init() {
         coreModel.onLoadStudy { study in
