@@ -40,6 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.dashboard.DashboardView"
+            android:exported="true">
+        </activity>
 
         <activity android:name=".activities.setting.SettingsActivity"
             android:exported="true"
