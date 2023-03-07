@@ -15,7 +15,6 @@ fun DashboardProgress(model: DashboardViewModel) {
     val context = LocalContext.current
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(bottom = 16.dp)
     ) {
         ActivityProgressView(
             finishedTasks = model.finishedTasks.value,

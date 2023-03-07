@@ -9,7 +9,6 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Obs
 import org.mongodb.kbson.ObjectId
 
 
-
 class ObservationSchema : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId.invoke()
@@ -18,7 +17,7 @@ class ObservationSchema : RealmObject {
     var observationTitle: String = ""
     var participantInfo: String = ""
     var configuration: String? = null
-    var schedule: RealmList<ScheduleSchema> = realmListOf()
+    var schedules: RealmList<ScheduleSchema> = realmListOf()
     var hidden: Boolean? = null
     var version: Long = 0
     var required: Boolean = false
@@ -34,7 +33,7 @@ class ObservationSchema : RealmObject {
                 hidden = observation.hidden
                 required = observation.required
                 version = observation.version
-                schedule = observation.schedule.map {
+                schedules = observation.schedule.map {
                     ScheduleSchema.toSchema(
                         it,
                         observation.observationId

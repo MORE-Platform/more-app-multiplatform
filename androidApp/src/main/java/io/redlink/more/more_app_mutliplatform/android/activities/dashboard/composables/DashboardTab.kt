@@ -28,7 +28,7 @@ fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp))
+            .padding(vertical = 10.dp))
     {
 
         TabRow(
@@ -40,8 +40,8 @@ fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {
             },
             backgroundColor = MoreColors.Main,
             modifier = Modifier
-                .height(60.dp)
-                .padding(6.dp)
+                .padding(vertical = 6.dp)
+                .height(50.dp)
                 .clip(RoundedCornerShape(10))
         ) {
             model.tabData.forEachIndexed { index, viewObject ->
@@ -66,21 +66,6 @@ fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {
                 }
             }
         }
-        Row(
-            modifier = Modifier.padding(6.dp)
-        ){
-            Text(
-                text = "Filters will be found here",
-                color = MoreColors.MainDarker,
-                modifier = Modifier
-                    .weight(0.95f)
-            )
-            Icon(
-                Icons.Default.Tune,
-                contentDescription = getStringResource(id = R.string.more_main_tab_filters),
-                modifier = Modifier,
-                tint = MoreColors.MainDarker
-            )
-        }
+
     }
 }

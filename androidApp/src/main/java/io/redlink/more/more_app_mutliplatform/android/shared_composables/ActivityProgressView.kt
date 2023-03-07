@@ -20,7 +20,7 @@ fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, tota
     Column(
         modifier = modifier
         .fillMaxWidth()
-        .padding(5.dp)) {
+        .padding(vertical = 5.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
