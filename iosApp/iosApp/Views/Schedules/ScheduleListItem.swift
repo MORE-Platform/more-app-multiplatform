@@ -25,20 +25,7 @@ struct ScheduleListItem: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
-                Button {
-                } label: {
-                    HStack{
-                        VStack(alignment: .leading) {
-                            BasicText(text: $observationTitle)
-                                .font(Font.more.headline)
-                                .foregroundColor(Color.more.main)
-                            BasicText(text: $observationType)
-                                .foregroundColor(Color.more.icons)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.forward")
-                    }
-                }
+                ObservationDetailsButton(observationTitle: observationTitle, observationType: observationType)
             }
             HStack {
                 Image(systemName: "clock.fill")

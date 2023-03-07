@@ -13,15 +13,15 @@ struct ScheduleList: View {
     var model: DashboardViewModel
     var dummyList: [Int] = [1, 2, 3]
     var body: some View {
-        ScrollView {
+        List {
             ForEach(dummyList, id: \.self) { item in
                 VStack {
                     ScheduleListItem(observationTitle: "Test", observationType: "simple-question-observation", scheduleStart: Date(), scheduleEnd: Date(), observation: ObservationSchema(), activeFor: 0)
-                        .listRowBackground(Color.more.mainLight)
-                    Divider()
                 }
             }
+            .listRowBackground(Color.more.mainLight)
         }
+        .listStyle(.plain)
     }
 }
 
