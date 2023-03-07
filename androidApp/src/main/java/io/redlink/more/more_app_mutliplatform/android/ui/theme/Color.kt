@@ -37,6 +37,8 @@ class MoreColors {
         val MainTitle = Color(0xff476580)
         val Main = Color(0xff6E8FAC)
         val MainDarker = Color(0xFF5A89B3)
+        val MainDarker2 = Color(0xFF4F7BA3)
+        val MainLighter = Color(0xFF9BBAD6)
         val InactiveText = Color(0xffC6D3DB)
         val ShadingBoxShadow = Color (0xffDCE2E7)
         val MainBackground = Color (0xffF4F9FD)

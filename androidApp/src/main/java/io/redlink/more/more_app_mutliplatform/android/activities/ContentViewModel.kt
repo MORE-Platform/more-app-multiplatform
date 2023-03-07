@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModelListener
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
@@ -41,7 +41,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     fun openDashboard(context: Context) {
         (context as? Activity)?.let {
-            showNewActivityAndClearStack(it, DashboardView::class.java)
+            showNewActivityAndClearStack(it, DashboardActivity::class.java)
         }
     }
 

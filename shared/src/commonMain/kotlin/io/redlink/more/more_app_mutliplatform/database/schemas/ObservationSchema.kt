@@ -6,10 +6,13 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
+import org.mongodb.kbson.ObjectId
+
 
 
 class ObservationSchema : RealmObject {
     @PrimaryKey
+    var _id: ObjectId = ObjectId.invoke()
     var observationId: String = ""
     var observationType: String = ""
     var observationTitle: String = ""
