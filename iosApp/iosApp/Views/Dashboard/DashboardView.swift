@@ -11,6 +11,7 @@ import shared
 
 struct DashboardView: View {
     @StateObject var viewModel: DashboardViewModel
+    @StateObject var scheduleViewModel: ScheduleViewModel
     private let stringTable = "DashboardView"
     @State private var totalTasks: Double = 0
     @State private var selection: Int = 0
@@ -69,7 +70,7 @@ struct DashboardView: View {
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
             Divider()
-            ScheduleList(model: viewModel)
+            ScheduleList(model: scheduleViewModel)
         }
     }
 }
@@ -77,7 +78,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(viewModel: DashboardViewModel())
+            DashboardView(viewModel: DashboardViewModel(), scheduleViewModel: ScheduleViewModel())
         } topBarContent: {
             HStack {
                 Button {

@@ -20,7 +20,8 @@ class ContentViewModel: ObservableObject {
     
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
-    var dashboardViewModel: DashboardViewModel
+    let dashboardViewModel: DashboardViewModel
+    let scheduleViewModel: ScheduleViewModel
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -30,6 +31,7 @@ class ContentViewModel: ObservableObject {
         loginViewModel = LoginViewModel(registrationService: registrationService)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
+        scheduleViewModel = ScheduleViewModel()
         
         loginViewModel.delegate = self
         consentViewModel.delegate = self
@@ -63,7 +65,9 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
-        self.hasCredentials = true
-        self.dashboardViewModel = DashboardViewModel()
+        DispatchQueue.main.async {
+            self.hasCredentials = true
+        }
+        
     }
 }
