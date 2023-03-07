@@ -20,9 +20,7 @@ fun ScheduleListView(scheduleViewModel: ScheduleViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(0.85f)
-        ) {
+        LazyColumn {
             if (scheduleViewModel.schedules.isNotEmpty()) {
                 scheduleViewModel.schedules.keys.forEach { date ->
                     item {

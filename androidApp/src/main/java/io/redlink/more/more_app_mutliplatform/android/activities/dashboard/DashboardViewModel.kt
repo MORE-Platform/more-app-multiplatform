@@ -13,14 +13,22 @@ import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class DashboardViewModel: ViewModel() {
     private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
-    var studyTitle = mutableStateOf("")
+    val studyTitle = mutableStateOf("Study Title")
+    val studyActive = mutableStateOf(true)
+    val currentTabIndex = MutableStateFlow(0)
+
+    val totalTasks = mutableStateOf(0)
+    val finishedTasks = mutableStateOf(0)
+    val tabData = Views.values()
+
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-    
+
     val scheduleViewModel = ScheduleViewModel()
 
     init {
