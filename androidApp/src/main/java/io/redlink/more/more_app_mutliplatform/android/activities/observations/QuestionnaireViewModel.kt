@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,13 +15,16 @@ import kotlinx.coroutines.Job
 class QuestionnaireViewModel: ViewModel() {
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
-    val observationTitle = mutableStateOf("")
-    val observationParticipantInfo = mutableStateOf("")
+    val observationTitle = mutableStateOf("Observation Title")
+    val observationParticipantInfo = mutableStateOf("Here you will find your participant informations")
 
-    val answers = mutableStateListOf<String>()
+    val answers = mutableStateListOf(
+        "Answer 1",
+        "Answer 2",
+        "Answer 3")
     val answerSet = mutableStateOf(false)
 
-    val question = mutableStateOf("Question missing!")
+    val question = mutableStateOf("Here you will find the Questionnaire question")
 
     private fun finished(setObservationToDone: Boolean = true) {
         //observerManagement.stop(this, setObservationToDone)
@@ -41,5 +43,9 @@ class QuestionnaireViewModel: ViewModel() {
     fun closeActivity(context: Context, setObservationToDone: Boolean) {
         finished(setObservationToDone)
         (context as? Activity)?.finish()
+    }
+
+    fun setAnswer() {
+        this.answerSet.value = true
     }
 }

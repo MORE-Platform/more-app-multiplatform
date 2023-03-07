@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -59,12 +60,14 @@ fun QuestionnaireView(model: QuestionnaireViewModel){
 fun QuestionPart(model: QuestionnaireViewModel) {
     Text(
         text = model.observationTitle.value,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         color = MoreColors.MainTitle
     )
 
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
 
     LazyColumn(
         horizontalAlignment = Alignment.Start,
@@ -75,10 +78,11 @@ fun QuestionPart(model: QuestionnaireViewModel) {
     ) {
         item{
             Text(
-                text = "Question",
+                text = "Simple Questionnaire",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = MoreColors.Main
+                color = MoreColors.Main,
+                modifier = Modifier.padding(bottom = 2.dp)
             )
         }
         item {
@@ -102,6 +106,8 @@ fun QuestionAnswer(model: QuestionnaireViewModel) {
 
     Text(
         text = model.question.value,
+        maxLines = 5,
+        overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         color = MoreColors.Main
@@ -121,6 +127,7 @@ fun MultipleRadioButtons(model: QuestionnaireViewModel) {
     val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
     val onChangeState: (String) -> Unit = {
         selectedValue.value = it
+        model.setAnswer()
     }
 
     val items = remember {
@@ -147,11 +154,15 @@ fun MultipleRadioButtons(model: QuestionnaireViewModel) {
                         unselectedColor = MoreColors.Main,
                         disabledColor = MoreColors.Inactivity
                     ),
-                    modifier = Modifier.padding(0.dp)
+                    modifier = Modifier.padding(4.dp)
                 )
                 Text(
                     text = item,
-                    modifier = Modifier.fillMaxWidth()
+                    maxLines = 5,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(2.dp)
                 )
             }
         }
