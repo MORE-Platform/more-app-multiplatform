@@ -11,8 +11,6 @@ import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
-import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -47,10 +45,9 @@ class DashboardViewModel: ViewModel() {
         }
     }
 
-    /* left
     fun openSettings(context: Context) {
         (context as? Activity)?.let {
             showNewActivity(it, SettingsActivity::class.java)
         }
-    }*/
+    }
 }
