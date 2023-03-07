@@ -14,21 +14,22 @@ import Foundation
 struct ScheduleListItem: View {
     @State var scheduleModel: ScheduleModel
     private let stringTable = "ScheduleListView"
-    let calendar = Calendar.current
-    private let dateFormatter = DateFormatter()
     private let buttonLabel = "Start Observation"
     
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
-                ObservationDetailsButton(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationTitle)
-                    .buttonStyle(.plain)
-            }
+            ObservationDetailsButton(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationTitle)
+                .padding(0.5)
             HStack {
                 Image(systemName: "clock.fill")
-                BasicText(text: .constant(String(format: "%@: %@", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"), String(scheduleModel.start))))
+                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
+                BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: scheduleModel.start, dateFormat: "HH:mm")))
+                    .foregroundColor(Color.more.icons)
                 Spacer()
-                BasicText(text: .constant(String(format: "Active for: %d min", 0)))
+                Image(systemName: "clock.arrow.circlepath")
+                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "active_for", inTable: stringTable, withComment: "how long the observation has been active for"), 0)))
+                BasicText(text: .constant(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000)))
+                    .foregroundColor(Color.more.icons)
             }
             MoreActionButton {
                 
@@ -41,12 +42,12 @@ struct ScheduleListItem: View {
                     }
                 }
             }.buttonStyle(PlainButtonStyle())
-        }
+        }.padding(.bottom)
     }
 }
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "simple-question-observation", observationTitle: "Test", done: false, start: 10, end: 10))
+        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "simple-question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000))
     }
 }

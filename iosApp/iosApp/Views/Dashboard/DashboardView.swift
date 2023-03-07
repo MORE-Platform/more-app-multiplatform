@@ -69,8 +69,7 @@ struct DashboardView: View {
                 .accentColor(Color.more.main)
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
-            Divider()
-            ScheduleList(model: scheduleViewModel)
+            ScheduleView(viewModel: scheduleViewModel)
         }
     }
 }

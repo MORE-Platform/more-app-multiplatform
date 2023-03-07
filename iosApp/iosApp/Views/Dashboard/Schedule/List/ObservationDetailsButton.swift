@@ -22,6 +22,7 @@ struct ObservationDetailsButton: View {
                     BasicText(text: $observationTitle)
                         .font(Font.more.headline)
                         .foregroundColor(Color.more.main)
+                        .padding(0.5)
                     BasicText(text: $observationType)
                         .foregroundColor(Color.more.icons)
                 }

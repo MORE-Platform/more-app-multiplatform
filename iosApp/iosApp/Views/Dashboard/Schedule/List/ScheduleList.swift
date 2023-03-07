@@ -11,31 +11,24 @@ import shared
 import Foundation
 
 struct ScheduleList: View {
-    @StateObject var model: ScheduleViewModel
+    @State var scheduleModels: [ScheduleModel]?
     private let dateFormatter = DateFormatter()
     var body: some View {
-        List {
-            ForEach(Array(model.schedules.keys).sorted(), id: \.self) { key in
-                VStack(alignment: .leading) {
-                    BasicText(text: .constant(String(key)))
+        Section {
+            ForEach(scheduleModels!, id: \.self) { schedule in
+                    ScheduleListItem(scheduleModel: schedule)
                     Divider()
-                    Section {
-                        ForEach(model.schedules[key]!, id: \.self) { schedule in
-                                ScheduleListItem(scheduleModel: schedule)
-                            }
-                        }
-                }.padding(.bottom)
+                }
             }
-            .listRowBackground(Color.more.mainLight)
-            .listRowInsets(.none)
-        }
-        .listStyle(.plain)
     }
 }
 
 struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleList(model: ScheduleViewModel())
+        ScheduleList(scheduleModels: [
+        ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000),
+        ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000)
+        ])
     }
 }
 

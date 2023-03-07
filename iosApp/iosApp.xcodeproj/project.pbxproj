@@ -50,11 +50,11 @@
 		ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */; };
 		ED16C5F729B764DC00DA8AFE /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */; };
 		ED16C5FB29B764FE00DA8AFE /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5FA29B764FE00DA8AFE /* ScheduleViewModel.swift */; };
-		ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2B29B0D78700BAF0A6 /* Realm */; };
-		ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */; };
 		ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */; };
 		ED5EBB3529B21A4000BAF0A6 /* ScheduleList.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */; };
 		ED5EBB3729B21A8A00BAF0A6 /* ScheduleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */; };
+		ED7B7A4029B7A36300C724AB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A3F29B7A36300C724AB /* Realm */; };
+		ED7B7A4229B7A36300C724AB /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A4129B7A36300C724AB /* RealmSwift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
 		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
 		EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13429B0D30200533F79 /* DashboardView.swift */; };
@@ -132,8 +132,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */,
-				ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */,
+				ED7B7A4229B7A36300C724AB /* RealmSwift in Frameworks */,
+				ED7B7A4029B7A36300C724AB /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,11 +155,11 @@
 				1F8847E72992BEE30023EF10 /* BasicText.swift */,
 				1F8847CD299155F50023EF10 /* SectionHeading.swift */,
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
-				1F8847D729915C030023EF10 /* MoreTextField.swift */,
 				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
 				1F13BA422993951200938C1E /* ConsentList.swift */,
 				1F13BA462993972E00938C1E /* ConsentListItem.swift */,
 				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
+				1F8847D729915C030023EF10 /* MoreTextField.swift */,
 				1F13BA482993985800938C1E /* InactiveText.swift */,
 				1F60C58529951A5F00858581 /* ErrorText.swift */,
 			);
@@ -344,8 +344,8 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				ED5EBB2B29B0D78700BAF0A6 /* Realm */,
-				ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */,
+				ED7B7A3F29B7A36300C724AB /* Realm */,
+				ED7B7A4129B7A36300C724AB /* RealmSwift */,
 			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
@@ -376,7 +376,7 @@
 			);
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
-				ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -700,9 +700,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+		ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
+			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -711,14 +711,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		ED5EBB2B29B0D78700BAF0A6 /* Realm */ = {
+		ED7B7A3F29B7A36300C724AB /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = Realm;
 		};
-		ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */ = {
+		ED7B7A4129B7A36300C724AB /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
