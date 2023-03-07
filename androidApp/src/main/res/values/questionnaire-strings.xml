@@ -7,4 +7,5 @@
     <string name="more_quest_complete">Submit</string>
     <string name="more_quest_question_description">Following You will have the question. Please select the most fitting answer below.</string>
     <string name="more_quest_question">Question</string>
+    <string name="more_quest_return_button_title">Return to Dashboard</string>
 </resources>
