@@ -64,6 +64,5 @@ extension ContentViewModel: ConsentViewModelListener {
     
     func credentialsStored() {
         self.hasCredentials = true
-        self.dashboardViewModel = DashboardViewModel()
     }
 }

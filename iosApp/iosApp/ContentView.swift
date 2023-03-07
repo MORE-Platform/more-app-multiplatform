@@ -25,8 +25,9 @@ struct ContentView: View {
                         } label: {
                             Image(systemName: "bell.fill")
                         }
+                        .padding(.horizontal)
                         Button {
-                            
+                    
                         } label: {
                             Image(systemName: "gearshape.fill")
                         }

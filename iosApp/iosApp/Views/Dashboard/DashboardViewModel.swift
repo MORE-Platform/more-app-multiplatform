@@ -12,7 +12,7 @@ class DashboardViewModel: ObservableObject {
     
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
     
-    @Published var studyTitle: String = ""
+    @Published var studyTitle: String = "Study title"
     
     @Published var study: StudySchema? = StudySchema()
     @Published var schedules: [ObservationSchedule] = []
@@ -28,6 +28,15 @@ class DashboardViewModel: ObservableObject {
         }
         self.schedulesCount = Double(self.schedules.count)
         // self.completedTasks = coreModel.getCompletedTasks()
+    }
+    
+    func loadStudy() {
+        coreModel.onLoadStudy { study in
+            if let study {
+                self.study = study
+                self.studyTitle = study.studyTitle
+            }
+        }
     }
     
 }
