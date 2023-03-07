@@ -10,8 +10,8 @@ data class ScheduleModel(
     val observationType: String,
     val observationTitle: String,
     val done: Boolean,
-    val start: Instant,
-    val end: Instant
+    val start: Long,
+    val end: Long
 ){
     companion object {
         fun createModelsFrom(observation: ObservationSchema): List<ScheduleModel> {
@@ -24,8 +24,8 @@ data class ScheduleModel(
                     observationType = observation.observationType,
                     observationTitle = observation.observationTitle,
                     done = it.done,
-                    start = start.toInstant(),
-                    end = end.toInstant()
+                    start = start.toInstant().toEpochMilliseconds(),
+                    end = end.toInstant().toEpochMilliseconds()
                 )
             }
         }

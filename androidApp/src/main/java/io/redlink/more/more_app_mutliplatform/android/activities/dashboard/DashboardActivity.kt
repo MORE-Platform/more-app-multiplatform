@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class DashboardActivity: ComponentActivity() {
@@ -22,13 +23,14 @@ class DashboardActivity: ComponentActivity() {
                     Icon(Icons.Default.Settings, contentDescription = "Open Settings")
                 }
             }) {
-                DashboardView()
+                DashboardView(dashboardViewModel)
             }
         }
     }
 }
 
 @Composable
-fun DashboardView() {
+fun DashboardView(dashboardViewModel: DashboardViewModel) {
     Text(text = "Studytitle")
+    ScheduleListView(scheduleViewModel = dashboardViewModel.scheduleViewModel)
 }
