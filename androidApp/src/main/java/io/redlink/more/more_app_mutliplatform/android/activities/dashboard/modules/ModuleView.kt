@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables
+package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +20,7 @@ fun ModuleView(model: DashboardViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f, true)
-                .padding(bottom = 442.dp)
+                .padding(bottom = 425.dp)
         )
     }
 }

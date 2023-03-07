@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -19,8 +18,8 @@ fun DashboardProgress(model: DashboardViewModel) {
         .padding(bottom = 16.dp)
     ) {
         ActivityProgressView(
-            finishedTasks = model.finishedTasks.collectAsState().value,
-            totalTasks = model.totalTasks.collectAsState().value
+            finishedTasks = model.finishedTasks.value,
+            totalTasks = model.totalTasks.value
         )
     }
 }

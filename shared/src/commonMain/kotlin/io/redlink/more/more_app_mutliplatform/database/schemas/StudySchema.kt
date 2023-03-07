@@ -13,7 +13,7 @@ import org.mongodb.kbson.ObjectId
 
 class StudySchema : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId.invoke()
+    var studyId: ObjectId = ObjectId.invoke()
     var studyTitle: String = ""
     var participantInfo: String = ""
     var consentInfo: String = ""

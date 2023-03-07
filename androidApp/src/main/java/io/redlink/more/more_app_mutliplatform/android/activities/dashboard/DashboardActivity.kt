@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard
 
 import android.os.Bundle
-import io.redlink.more.more_app_mutliplatform.android.R
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -15,14 +14,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardHeader
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardTab
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.ModuleView
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.ScheduleView
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.*
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules.ModuleView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules.ScheduleView
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.ActivityProgressView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class DashboardActivity: ComponentActivity() {
@@ -56,9 +53,7 @@ fun DashboardView(model: DashboardViewModel) {
                 //TODO reload data source
             }
         })
-        ActivityProgressView(
-            finishedTasks = model.finishedTasks.collectAsState().value,
-            totalTasks = model.totalTasks.collectAsState().value)
+        DashboardProgress(model = model)
         if (!model.studyActive.value) {
             Box(
                 contentAlignment = Alignment.Center,
