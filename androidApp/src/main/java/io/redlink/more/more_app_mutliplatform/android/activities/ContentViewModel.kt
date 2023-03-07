@@ -45,12 +45,6 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     }
 
 
-    fun openDashboard(context: Context) {
-        (context as? Activity)?.let {
-            showNewActivityAndClearStack(it, DashboardView::class.java)
-        }
-    }
-
     private fun showConsentView() {
         viewModelScope.launch(Dispatchers.Main) {
             loginViewScreenNr.value = 1

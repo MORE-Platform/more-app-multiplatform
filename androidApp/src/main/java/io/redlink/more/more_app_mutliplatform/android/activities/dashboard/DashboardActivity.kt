@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
