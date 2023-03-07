@@ -8,6 +8,9 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
+import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
@@ -15,13 +18,23 @@ import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class DashboardViewModel: ViewModel() {
     private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
-    var studyTitle = mutableStateOf("")
+    val studyTitle = mutableStateOf("Study Title")
+    val studyActive = mutableStateOf(true)
+    val currentTabIndex = MutableStateFlow(0)
+
+    val totalTasks = mutableStateOf(0)
+    val finishedTasks = mutableStateOf(0)
+    val tabData = Views.values()
+
     private val scope = CoroutineScope(Dispatchers.Default + Job())
+
+    val scheduleViewModel = ScheduleViewModel()
 
     init {
         scope.launch {
@@ -34,9 +47,10 @@ class DashboardViewModel: ViewModel() {
         }
     }
 
+    /* left
     fun openSettings(context: Context) {
         (context as? Activity)?.let {
             showNewActivity(it, SettingsActivity::class.java)
         }
-    }
+    }*/
 }

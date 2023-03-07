@@ -14,22 +14,21 @@ import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBac
 class DashboardView : ComponentActivity() {
 
     private val viewModel = DashboardViewModel()
-    private val dashboardViewModel = DashboardViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MoreBackground(rightCornerContent = {
-                IconButton(onClick = { dashboardViewModel.openSettings(this)}) {
-                    Icon(Icons.Default.Settings, contentDescription = "Open Settings")
-                }
-            }) {
+            MoreBackground {
+                /*MoreBackground(rightCornerContent = {
+                    IconButton(onClick = { dashboardViewModel.openSettings(this)}) {
+                        Icon(Icons.Default.Settings, contentDescription = "Open Settings")
+                    }
+                })*/
                 DashboardView(model = viewModel)
             }
         }
     }
 }
-
 
 @Composable
 fun DashboardView(model: DashboardViewModel) {

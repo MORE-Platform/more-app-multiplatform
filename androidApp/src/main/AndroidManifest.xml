@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.dashboard.DashboardView"
+            android:name=".activities.dashboard.DashboardActivity"
             android:exported="true">
         </activity>
 
