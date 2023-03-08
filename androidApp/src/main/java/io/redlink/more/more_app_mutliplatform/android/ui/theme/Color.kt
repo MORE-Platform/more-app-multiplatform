@@ -46,6 +46,7 @@ class MoreColors {
         val InactiveText = Color(0xffC6D3DB)
         val ShadingBoxShadow = Color (0xffDCE2E7)
         val MainBackground = Color (0xffF4F9FD)
+        val MainCancel = Color (0xff707070)
         val Divider = Color(0x80AAAAAA)
         val Inactivity = Color (0xffAAAAAA)
         val Shading = Color (0xffE8EBED)
