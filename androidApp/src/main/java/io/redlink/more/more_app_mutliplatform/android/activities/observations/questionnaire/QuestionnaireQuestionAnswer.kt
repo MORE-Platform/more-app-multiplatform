@@ -26,7 +26,7 @@ fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
 
     Spacer(Modifier.height(12.dp))
 
-    MultipleRadioButtons(model = model)
+    QuestionnaireRadioButtons(model = model)
 
     Spacer(Modifier.height(4.dp))
 }

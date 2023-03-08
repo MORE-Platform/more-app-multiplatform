@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
-fun MultipleRadioButtons(model: QuestionnaireViewModel) {
+fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
     val selectedValue = remember { mutableStateOf("") }
 
     val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
