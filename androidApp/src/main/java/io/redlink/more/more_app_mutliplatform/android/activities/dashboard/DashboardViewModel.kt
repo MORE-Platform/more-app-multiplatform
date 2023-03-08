@@ -2,6 +2,9 @@ package io.redlink.more.more_app_mutliplatform.android.activities.dashboard
 
 import android.app.Activity
 import android.content.Context
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

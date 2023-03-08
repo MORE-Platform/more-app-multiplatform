@@ -10,14 +10,14 @@ import SwiftUI
 import shared
 
 struct DashboardView: View {
-    @StateObject var viewModel: DashboardViewModel
+    @StateObject var dashboardViewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State private var totalTasks: Double = 0
     @State private var selection: Int = 0
     @State private var tasksCompleted: Double = 0
     var body: some View {
         VStack {
-            StudyTitleForwardButton(title: $viewModel.studyTitle)
+            StudyTitleForwardButton(title: $dashboardViewModel.studyTitle)
                 .padding(.bottom)
             DashboardPicker(selection: selection, firstTab: .constant(String
                 .localizedString(forKey: "schedule_string", inTable: stringTable, withComment: "schedule tab is selected")),
@@ -31,11 +31,12 @@ struct DashboardView: View {
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                  withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
             .padding(.bottom)
-            Divider()
-            // ScheduleList(model: viewModel)
+            ScheduleView()
+                .environmentObject(dashboardViewModel.scheduleViewModel)
         }
         .onAppear {
-            viewModel.loadStudy()
+            dashboardViewModel.loadStudy()
+            dashboardViewModel.scheduleViewModel.loadObservations()
         }
     }
 }
@@ -43,7 +44,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(viewModel: DashboardViewModel())
+            DashboardView(dashboardViewModel: DashboardViewModel())
         } topBarContent: {
             HStack {
                 Button {
