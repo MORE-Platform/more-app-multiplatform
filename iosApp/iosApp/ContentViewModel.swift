@@ -32,7 +32,7 @@ class ContentViewModel: ObservableObject {
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
         scheduleViewModel = ScheduleViewModel()
-        
+
         loginViewModel.delegate = self
         consentViewModel.delegate = self
     }
@@ -68,6 +68,6 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async {
             self.hasCredentials = true
         }
-        
+
     }
 }

@@ -25,4 +25,13 @@ class DashboardViewModel: ObservableObject {
         }
     }
     
+    func loadStudy() {
+        coreModel.onLoadStudy { study in
+            if let study {
+                self.study = study
+                self.studyTitle = study.studyTitle
+            }
+        }
+    }
+
 }
