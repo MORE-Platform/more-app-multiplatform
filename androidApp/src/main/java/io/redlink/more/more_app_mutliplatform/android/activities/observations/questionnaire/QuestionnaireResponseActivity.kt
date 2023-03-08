@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.observations
+package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderDescription
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
@@ -45,28 +47,15 @@ fun QuestionnaireResponseView(model: QuestionnaireViewModel) {
                 .fillMaxWidth(0.8f)
         ) {
             Column {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MoreColors.MainTitle,
-
-                    )
+                HeaderTitle(title = title)
 
                 Spacer(Modifier.height(24.dp))
 
-                Text(
-                    text = getString(R.string.more_quest_validation),
-                    fontSize = 14.sp,
-                    color = MoreColors.MainTitle
-                )
+                HeaderDescription(description = getString(R.string.more_quest_validation))
+
                 Spacer(Modifier.height(12.dp))
 
-                Text(
-                    text = getString(R.string.more_quest_thank_you_full),
-                    fontSize = 14.sp,
-                    color = MoreColors.MainTitle
-                )
+                HeaderDescription(description = getString(R.string.more_quest_thank_you_full))
             }
             TextButton(
                 onClick = { model.closeActivity(context, true) },
@@ -86,9 +75,3 @@ fun QuestionnaireResponseView(model: QuestionnaireViewModel) {
         }
     }
 }
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun QuestRespPreview() {
-//    QuestionnaireResponseView()
-//}
