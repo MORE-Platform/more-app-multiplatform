@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
@@ -30,16 +31,7 @@ fun DashboardHeader(model: DashboardViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
         ){
-            Text(
-                text = model.studyTitle.value,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = MoreColors.MainDarker,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(0.95f)
-            )
+            HeaderTitle(title = model.studyTitle.value)
             Icon(
                 Icons.Default.ArrowForwardIos,
                 contentDescription = getStringResource(id = R.string.study_details),

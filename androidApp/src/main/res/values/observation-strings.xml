@@ -4,6 +4,9 @@
     <string name="more_observation_stop">Stop Observation</string>
     <string name="more_observation_running">Observation Running</string>
     <string name="more_questionnaire_start">Start Questionnaire</string>
+    <string name="more_questionnaire_select">Please select an answer!</string>
+    <string name="more_questionnaire_type">Simple Questionnaire</string>
+    <string name="more_observation_close">Close Observation</string>
 
     <string name="more_observation_notification_title">Activity is running</string>
     <string name="more_observation_notification_explanation">An Observation of yours is currently running and recording data in the background!</string>
