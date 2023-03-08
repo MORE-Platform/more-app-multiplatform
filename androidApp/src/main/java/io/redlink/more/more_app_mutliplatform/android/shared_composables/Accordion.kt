@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -103,7 +104,7 @@ fun Accordion(
             if(hasPreview) {
                 Text(
                     text = description
-                        ?: "Do you authorize MORE to access your protected resources? Click the resources for which you want to grant access:",
+                        ?: "",
                     color = if (open.value) MoreColors.Main else MoreColors.InactiveText,
                     maxLines = if(open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
@@ -113,7 +114,7 @@ fun Accordion(
             } else if(open.value) {
                 Text(
                     text = description
-                        ?: "Do you authorize MORE to access your protected resources? Click the resources for which you want to grant access:",
+                        ?: stringResource(id = R.string.more_authorization_description),
                     color = MoreColors.Main,
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,

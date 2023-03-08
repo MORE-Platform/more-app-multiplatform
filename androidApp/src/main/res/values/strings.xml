@@ -7,4 +7,5 @@
     <string name="more_cancel">Cancel</string>
     <string name="more_back">Back</string>
     <string name="more_close_overlay">Close Overlay</string>
+    <string name="more_authorization_description">You authorize MORE to access your protected resources? To withdraw permissions, you can only do so by withdrawing from the study altogether.</string>
 </resources>

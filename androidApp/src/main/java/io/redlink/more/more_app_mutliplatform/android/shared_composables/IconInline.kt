@@ -18,7 +18,6 @@ fun IconInline(icon: ImageVector, color: Color = MoreColors.Main, contentDescrip
         contentDescription = contentDescription,
         tint = color,
         modifier = Modifier
-            .padding(0.dp)
             .width(IntrinsicSize.Min)
     )
 }
