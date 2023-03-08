@@ -23,8 +23,9 @@ class ContentActivity: ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
+    val context = LocalContext.current
     if (viewModel.hasCredentials.value) {
-        viewModel.openDashboard(LocalContext.current)
+        viewModel.openDashboard(context)
     } else {
         if (viewModel.loginViewScreenNr.value == 0) {
             LoginView(model = viewModel.loginViewModel)
