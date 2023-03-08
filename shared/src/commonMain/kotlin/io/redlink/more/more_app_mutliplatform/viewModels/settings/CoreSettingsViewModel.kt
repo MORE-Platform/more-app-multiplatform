@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.settings
 
+import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
@@ -23,6 +24,7 @@ class CoreSettingsViewModel(
             networkService.deleteParticipation()
             credentialRepository.remove()
             endpointRepository.removeEndpoint()
+            DatabaseManager.deleteAll()
             dataDeleted.value = true
         }
     }

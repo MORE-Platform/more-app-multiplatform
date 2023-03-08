@@ -22,19 +22,21 @@ fun ScheduleListView(scheduleViewModel: ScheduleViewModel) {
     ) {
         LazyColumn {
             if (scheduleViewModel.schedules.isNotEmpty()) {
-                scheduleViewModel.schedules.keys.forEach { date ->
-                    item {
-                        Heading(
-                            text = date.formattedString(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    itemsIndexed(scheduleViewModel.schedules[date] ?: emptyList()) { _, item ->
-                        MoreDivider(Modifier.fillMaxWidth())
-                        ScheduleListItem(scheduleModel = item, scheduleViewModel)
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(30.dp))
+                scheduleViewModel.schedules.toSortedMap().let { schedules ->
+                    schedules.keys.forEach { date ->
+                        item {
+                            Heading(
+                                text = date.formattedString(),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        itemsIndexed(schedules[date] ?: emptyList()) { _, item ->
+                            MoreDivider(Modifier.fillMaxWidth())
+                            ScheduleListItem(scheduleModel = item, scheduleViewModel)
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
                     }
                 }
             }

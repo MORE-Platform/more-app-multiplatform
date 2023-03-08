@@ -68,7 +68,7 @@ class ScheduleViewModel(private val observationFactory: ObservationFactory) : Vi
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
         val filteredData =
-            data.filter { entry -> entry.key >= LocalDate.now() && entry.value.isNotEmpty() }
+            data.filter { entry -> entry.key >= LocalDate.now() && entry.value.isNotEmpty() }.toSortedMap()
         schedules.clear()
         schedules.putAll(filteredData)
     }
