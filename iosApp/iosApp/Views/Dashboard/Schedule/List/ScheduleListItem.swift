@@ -25,7 +25,7 @@ struct ScheduleListItem: View {
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
-                Text(ScheduleViewModel.transfromInt64ToDateString(timestamp: scheduleModel.start, dateFormat: "HH:mm"))
+                Text(scheduleModel.start.toDateString(dateFormat: "HH:mm"))
                     .foregroundColor(Color.more.icons)
                 Spacer()
                 Image(systemName: "clock.arrow.circlepath")

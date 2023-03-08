@@ -13,8 +13,9 @@ class DashboardViewModel: ObservableObject {
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
     
     @Published var studyTitle: String = ""
-    
     @Published var study: StudySchema? = StudySchema()
+    @Published var scheduleViewModel: ScheduleViewModel = ScheduleViewModel()
+    
     
     func loadStudy() {
         coreModel.onLoadStudy { study in

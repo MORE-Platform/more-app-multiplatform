@@ -11,7 +11,6 @@ import shared
 
 struct DashboardView: View {
     @StateObject var dashboardViewModel: DashboardViewModel
-    @StateObject var scheduleViewModel: ScheduleViewModel
     private let stringTable = "DashboardView"
     @State private var totalTasks: Double = 0
     @State private var selection: Int = 0
@@ -32,11 +31,11 @@ struct DashboardView: View {
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                  withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
             .padding(.bottom)
-            ScheduleView(viewModel: scheduleViewModel)
+            ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
         }
         .onAppear {
             dashboardViewModel.loadStudy()
-            scheduleViewModel.loadObservations()
+            dashboardViewModel.scheduleViewModel.loadObservations()
         }
     }
 }
@@ -44,7 +43,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(), scheduleViewModel: ScheduleViewModel())
+            DashboardView(dashboardViewModel: DashboardViewModel())
         } topBarContent: {
             HStack {
                 Button {

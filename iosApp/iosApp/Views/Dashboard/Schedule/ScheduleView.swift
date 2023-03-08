@@ -15,12 +15,7 @@ struct ScheduleView: View {
         if #available(iOS 16.0, *) {
             List {
                 ForEach($viewModel.scheduleDates, id: \.self) { key in
-                    VStack(alignment: .leading) {
-                        BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: Int64(key.wrappedValue), dateFormat: "dd.MM.yyyy")))
-                            .font(Font.more.headline)
-                        Divider()
-                        ScheduleList(scheduleModels: viewModel.schedules[key.wrappedValue])
-                    }.padding(.bottom)
+                    ScheduleDateWithList(viewModel: viewModel, key: key.wrappedValue)
                 }
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
@@ -30,13 +25,8 @@ struct ScheduleView: View {
             .scrollContentBackground(.hidden)
         } else {
             List {
-                ForEach(Array(viewModel.schedules.keys).sorted(), id: \.self) { key in
-                    VStack(alignment: .leading) {
-                        BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: Int64(key), dateFormat: "dd.MM.yyyy")))
-                            .font(Font.more.headline)
-                        Divider()
-                        ScheduleList(scheduleModels: viewModel.schedules[key])
-                    }.padding(.bottom)
+                ForEach($viewModel.scheduleDates, id: \.self) { key in
+                    ScheduleDateWithList(viewModel: viewModel, key: key.wrappedValue)
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.more.mainLight)

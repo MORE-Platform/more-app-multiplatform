@@ -22,12 +22,4 @@ class ScheduleViewModel: ObservableObject {
             self.scheduleDates = Array(self.schedules.keys).sorted()
         }
     }
-    
-    static func transfromInt64ToDateString(timestamp: Int64, dateFormat: String) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = dateFormat
-        dateFormatter.timeZone = TimeZone.current
-        return dateFormatter.string(from: date)
-    }
 }

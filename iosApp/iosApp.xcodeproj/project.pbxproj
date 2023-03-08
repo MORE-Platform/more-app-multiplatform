@@ -59,6 +59,8 @@
 		ED5EBB3729B21A8A00BAF0A6 /* ScheduleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */; };
 		ED7B7A4029B7A36300C724AB /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A3F29B7A36300C724AB /* Realm */; };
 		ED7B7A4229B7A36300C724AB /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A4129B7A36300C724AB /* RealmSwift */; };
+		EDBB2B4229B8ACD400CA973E /* ScheduleDateWithList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */; };
+		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
 		EDC89B1129B899D400E0A160 /* StartObservationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC89B1029B899D400E0A160 /* StartObservationButton.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
 		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
@@ -131,6 +133,8 @@
 		ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = DashboardView.strings; sourceTree = "<group>"; };
 		ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleList.swift; sourceTree = "<group>"; };
 		ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
+		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
+		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
 		EDC89B1029B899D400E0A160 /* StartObservationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
 		EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
@@ -213,6 +217,7 @@
 			children = (
 				1F8847C029914FD60023EF10 /* StringExtension.swift */,
 				EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */,
+				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -323,6 +328,7 @@
 				ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */,
 				ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */,
 				EDC89B1029B899D400E0A160 /* StartObservationButton.swift */,
+				EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -484,8 +490,10 @@
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
+				EDBB2B4229B8ACD400CA973E /* ScheduleDateWithList.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
+				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				EDC89B1129B899D400E0A160 /* StartObservationButton.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,

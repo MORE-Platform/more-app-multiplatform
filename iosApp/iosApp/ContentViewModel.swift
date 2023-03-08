@@ -21,7 +21,6 @@ class ContentViewModel: ObservableObject {
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
-    let scheduleViewModel: ScheduleViewModel
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -31,7 +30,6 @@ class ContentViewModel: ObservableObject {
         loginViewModel = LoginViewModel(registrationService: registrationService)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
-        scheduleViewModel = ScheduleViewModel()
 
         loginViewModel.delegate = self
         consentViewModel.delegate = self
