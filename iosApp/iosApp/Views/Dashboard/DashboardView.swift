@@ -18,7 +18,7 @@ struct DashboardView: View {
     @State private var tasksCompleted: Double = 0
     var body: some View {
         VStack {
-            StudyTitleForwardButton(title: $viewModel.studyTitle)
+            StudyTitleForwardButton(title: $dashboardViewModel.studyTitle)
                 .padding(.bottom)
             DashboardPicker(selection: selection, firstTab: .constant(String
                 .localizedString(forKey: "schedule_string", inTable: stringTable, withComment: "schedule tab is selected")),
@@ -32,10 +32,11 @@ struct DashboardView: View {
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                  withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
             .padding(.bottom)
-            ScheduleList(model: viewModel)
+            ScheduleView(viewModel: scheduleViewModel)
         }
         .onAppear {
-            viewModel.loadStudy()
+            dashboardViewModel.loadStudy()
+            scheduleViewModel.loadObservations()
         }
     }
 }

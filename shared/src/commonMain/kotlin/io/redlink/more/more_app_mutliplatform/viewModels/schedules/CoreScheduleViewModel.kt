@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +29,16 @@ class CoreScheduleViewModel {
         }
     }
 
+    private fun loadObservations(): MutableStateFlow<Map<Long, List<ScheduleModel>>> {
+        val scheduleList: MutableStateFlow<Map<Long, List<ScheduleModel>>> = MutableStateFlow(emptyMap())
+        scope.launch {
+            observationRepository.observationWithUndoneSchedules().collect { observationList ->
+                scheduleList.value = createMap(observationList)
+            }
+        }
+        return scheduleList
+    }
+
     private fun createMap(observationList: List<ObservationSchema>): Map<Long, List<ScheduleModel>> {
         return observationList
             .asSequence()
@@ -39,7 +50,7 @@ class CoreScheduleViewModel {
     }
 
     fun onScheduleModelListChange(provideNewState: ((Map<Long, List<ScheduleModel>>) -> Unit)): Closeable {
-        return scheduleModelList.asClosure(provideNewState)
+        return loadObservations().asClosure(provideNewState)
     }
 }
 

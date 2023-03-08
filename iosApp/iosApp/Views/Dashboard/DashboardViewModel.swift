@@ -16,15 +16,6 @@ class DashboardViewModel: ObservableObject {
     
     @Published var study: StudySchema? = StudySchema()
     
-    init() {
-        coreModel.onLoadStudy { study in
-            if let study {
-                self.study = study
-                self.studyTitle = study.studyTitle
-            }
-        }
-    }
-    
     func loadStudy() {
         coreModel.onLoadStudy { study in
             if let study {

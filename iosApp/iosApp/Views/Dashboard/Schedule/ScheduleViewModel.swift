@@ -12,12 +12,14 @@ class ScheduleViewModel: ObservableObject {
     
     private let coreModel: CoreScheduleViewModel = CoreScheduleViewModel()
     @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
+    @Published var scheduleDates: [UInt64] = []
     
-    init() {
+    func loadObservations() {
         coreModel.onScheduleModelListChange { scheduleMap in
             for (key, value) in scheduleMap {
                 self.schedules[UInt64(truncating: key)] = value
             }
+            self.scheduleDates = Array(self.schedules.keys).sorted()
         }
     }
     

@@ -14,7 +14,6 @@ import Foundation
 struct ScheduleListItem: View {
     @State var scheduleModel: ScheduleModel
     private let stringTable = "ScheduleListView"
-    private let buttonLabel = "Start Observation"
     
     var body: some View {
         VStack {
@@ -26,25 +25,16 @@ struct ScheduleListItem: View {
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
-                BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: scheduleModel.start, dateFormat: "HH:mm")))
+                Text(ScheduleViewModel.transfromInt64ToDateString(timestamp: scheduleModel.start, dateFormat: "HH:mm"))
                     .foregroundColor(Color.more.icons)
                 Spacer()
                 Image(systemName: "clock.arrow.circlepath")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "active_for", inTable: stringTable, withComment: "how long the observation has been active for"), 0)))
-                BasicText(text: .constant(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000)))
+                Text(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000))
                     .foregroundColor(Color.more.icons)
             }
-            MoreActionButton {
-                
-            } label: {
-                HStack {
-                    if scheduleModel.observationType.lowercased() == "question-observation" {
-                        BasicText(text: .constant(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire")))
-                    } else {
-                        BasicText(text: .constant(String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "button to start observation")))
-                    }
-                }
-            }.buttonStyle(PlainButtonStyle())
+            StartObservationButton(observationType: scheduleModel.observationType)
+                .buttonStyle(.plain)
         }.padding(.bottom)
     }
 }

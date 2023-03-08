@@ -14,12 +14,12 @@ struct ScheduleView: View {
     var body: some View {
         if #available(iOS 16.0, *) {
             List {
-                ForEach(Array(viewModel.schedules.keys).sorted(), id: \.self) { key in
+                ForEach($viewModel.scheduleDates, id: \.self) { key in
                     VStack(alignment: .leading) {
-                        BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: Int64(key), dateFormat: "dd.MM.yyyy")))
+                        BasicText(text: .constant(ScheduleViewModel.transfromInt64ToDateString(timestamp: Int64(key.wrappedValue), dateFormat: "dd.MM.yyyy")))
                             .font(Font.more.headline)
                         Divider()
-                        ScheduleList(scheduleModels: viewModel.schedules[key])
+                        ScheduleList(scheduleModels: viewModel.schedules[key.wrappedValue])
                     }.padding(.bottom)
                 }
                 .listRowSeparator(.hidden)

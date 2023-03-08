@@ -20,7 +20,7 @@ struct ObservationDetails: View {
                         .font(Font.more.headline)
                         .foregroundColor(Color.more.main)
                         .padding(0.5)
-                    BasicText(text: $observationType)
+                    Text(observationType)
                         .foregroundColor(Color.more.icons)
                 }
                 Spacer()
