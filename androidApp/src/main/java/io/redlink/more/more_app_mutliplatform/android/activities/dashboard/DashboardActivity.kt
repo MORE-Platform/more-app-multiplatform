@@ -16,9 +16,12 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.*
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardHeader
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardProgress
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardTab
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.FilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules.ModuleView
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules.ScheduleView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
@@ -39,40 +42,46 @@ class DashboardActivity: ComponentActivity() {
 }
 
 @Composable
-fun DashboardView(model: DashboardViewModel) {
+fun DashboardView(viewModel: DashboardViewModel) {
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .height(IntrinsicSize.Min)
+            .fillMaxWidth(0.85f)
+            .fillMaxHeight()
     ){
-        DashboardHeader(model = model)
-        DashboardTab(model = model, onClick = {
-            if(it == Views.SCHEDULE.tabPosition) {
-                //TODO reload data source
-            }
-        })
-        DashboardProgress(model = model)
-        if (!model.studyActive.value) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.8f)
-                    .padding(top = 16.dp)
-            ){
-                Text(text = getStringResource(id = R.string.study_not_active))
-            }
-        } else {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp)
-            ) {
-                when (model.currentTabIndex.collectAsState().value) {
-                    Views.SCHEDULE.tabPosition -> ScheduleView(model = model)
-                    Views.MODULES.tabPosition -> ModuleView(model = model)
-                    else -> {}
+        Column(modifier = Modifier.height(IntrinsicSize.Min)) {
+            DashboardHeader(model = viewModel)
+            DashboardTab(model = viewModel, onClick = {
+                if(it == Views.SCHEDULE.tabPosition) {
+                    //TODO reload data source
+                }
+            })
+            FilterView()
+            DashboardProgress(model = viewModel)
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Column() {
+            if (!viewModel.studyActive.value) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.8f)
+                        .padding(top = 16.dp)
+                ){
+                    Text(text = getStringResource(id = R.string.study_not_active))
+                }
+            } else {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 0.dp)
+                ) {
+                    when (viewModel.currentTabIndex.collectAsState().value) {
+                        Views.SCHEDULE.tabPosition -> ScheduleListView(scheduleViewModel = viewModel.scheduleViewModel)
+                        Views.MODULES.tabPosition -> ModuleView(model = viewModel)
+                        else -> {}
+                    }
                 }
             }
         }

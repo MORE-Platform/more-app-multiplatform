@@ -21,10 +21,9 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun DashboardHeader(model: DashboardViewModel) {
-    val context = LocalContext.current
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(12.dp))
+        )
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -1,7 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.android.ui.theme
 
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -52,5 +56,15 @@ class MoreColors {
         val Important = Color (0xffD57575)
         val ImportantBright = Color(0xFFEB171C)
         val Done = Color (0xff4BA767)
+
+        fun borderDefault(active: Boolean) = BorderStroke(1.dp, if (active) Main else Inactivity)
     }
 }
+
+@Composable
+fun ButtonDefaults.moreDefault() = buttonColors(
+    contentColor = MoreColors.White,
+    backgroundColor = MoreColors.Main,
+    disabledContentColor = MoreColors.InactiveText,
+    disabledBackgroundColor = MoreColors.InactiveBackground
+)
