@@ -18,7 +18,24 @@ struct ContentView: View {
             }
             
         } topBarContent: {
-            EmptyView()
+            HStack {
+                if viewModel.hasCredentials {
+                    HStack {
+                        Button {
+                        } label: {
+                            Image(systemName: "bell.fill")
+                        }
+                        .padding(.horizontal)
+                        Button {
+                    
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                        }
+                    }.foregroundColor(Color.more.icons)
+                } else {
+                    EmptyView()
+                }
+            }
         }
         
     }
