@@ -61,6 +61,9 @@
 		ED7B7A4229B7A36300C724AB /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A4129B7A36300C724AB /* RealmSwift */; };
 		EDBB2B4229B8ACD400CA973E /* ScheduleDateWithList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */; };
 		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
+		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
+		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
+		EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */; };
 		EDC89B1129B899D400E0A160 /* StartObservationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC89B1029B899D400E0A160 /* StartObservationButton.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
 		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
@@ -135,6 +138,9 @@
 		ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
 		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
 		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
+		EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		EDBB2B4929B8CFF000CA973E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsView.strings; sourceTree = "<group>"; };
 		EDC89B1029B899D400E0A160 /* StartObservationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
 		EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
@@ -208,6 +214,7 @@
 				1F17C08B29952C29000E124A /* ConsentView.strings */,
 				ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */,
 				ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */,
+				EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -234,6 +241,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EDBB2B4629B8CFAE00CA973E /* Settings */,
 				EDEBA13129B0D2CC00533F79 /* Dashboard */,
 				1F8847ED29938C500023EF10 /* Consent */,
 				1F8847B829914BD50023EF10 /* Components */,
@@ -333,6 +341,15 @@
 			path = List;
 			sourceTree = "<group>";
 		};
+		EDBB2B4629B8CFAE00CA973E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */,
+				EDBB2B4929B8CFF000CA973E /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		EDEBA13129B0D2CC00533F79 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -419,6 +436,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				1F17C08C29952C29000E124A /* ConsentView.strings in Resources */,
+				EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */,
 				ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */,
@@ -466,6 +484,7 @@
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				ED16C5FB29B764FE00DA8AFE /* ScheduleViewModel.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
+				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
@@ -499,6 +518,7 @@
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				ED5EBB3529B21A4000BAF0A6 /* ScheduleList.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
+				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
