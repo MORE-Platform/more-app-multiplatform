@@ -28,7 +28,6 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
 class SettingsActivity: ComponentActivity() {
 
     private val viewModel = SettingsViewModel()
-    private val settingsViewModel = SettingsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
