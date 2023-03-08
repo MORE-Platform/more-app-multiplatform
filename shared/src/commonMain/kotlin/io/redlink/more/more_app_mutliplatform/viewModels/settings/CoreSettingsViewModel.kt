@@ -32,4 +32,10 @@ class CoreSettingsViewModel(
             dataDeleted.value = true
         }
     }
+
+    fun reloadStudyConfig() {
+        scope.launch {
+
+        }
+    }
 }

@@ -32,7 +32,8 @@ class SettingsViewModel(): ViewModel() {
             studyRepository.getStudy().collect() {
                 withContext(Dispatchers.Main) {
                     studySchema.value = it
-                    if(it != null) {
+                    it?.let { study ->
+                        studySchema.value = study
                         permissionModel.value = PermissionModel.createFromSchema(it)
                     }
                 }
