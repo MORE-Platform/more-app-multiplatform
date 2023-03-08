@@ -8,19 +8,19 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class ScheduleViewModel(private val observationFactory: ObservationFactory) : ViewModel() {
-    private val coreViewModel = CoreScheduleViewModel()
+class ScheduleViewModel(observationFactory: ObservationFactory) : ViewModel() {
+    private val coreViewModel = CoreScheduleViewModel(observationFactory)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
-
-    private val observationMap = mutableMapOf<String, Observation>()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -31,39 +31,24 @@ class ScheduleViewModel(private val observationFactory: ObservationFactory) : Vi
                 }
             }
         }
-    }
-
-    fun startObservation(scheduleId: String, observationId: String, type: String) {
-        if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
-            activeScheduleState[scheduleId] = ScheduleState.RUNNING
-        } else {
-            observationFactory.observation(observationId, type)?.let {
-                observationMap[scheduleId] = it
-                if (it.start(observationId)) {
-                    activeScheduleState[scheduleId] = ScheduleState.RUNNING
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            coreViewModel.activeScheduleState.collect {
+                activeScheduleState.clear()
+                activeScheduleState.putAll(it)
             }
         }
     }
 
+    fun startObservation(scheduleId: String, observationId: String, type: String) {
+        coreViewModel.start(scheduleId, observationId, type)
+    }
+
     fun pauseObservation(scheduleId: String) {
-        observationMap[scheduleId]?.let {
-            stopSensor(it)
-            activeScheduleState[scheduleId] = ScheduleState.PAUSED
-        }
+        coreViewModel.pause(scheduleId)
     }
 
     fun stopObservation(scheduleId: String) {
-        observationMap[scheduleId]?.let {
-            stopSensor(it)
-            activeScheduleState[scheduleId] = ScheduleState.STOPPED
-            observationMap.remove(scheduleId)
-        }
-    }
-
-    private fun stopSensor(observation: Observation) {
-        observation.stop()
-        observation.finish()
+        coreViewModel.stop(scheduleId)
     }
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
@@ -74,11 +59,6 @@ class ScheduleViewModel(private val observationFactory: ObservationFactory) : Vi
     }
 
     private fun removeSchedule(scheduleId: String) {
-        stopObservation(scheduleId)
-        val data = schedules.mapValues { entry ->
-            entry.value
-                .filterNot { model -> model.scheduleId == scheduleId }
-        }
-        updateData(data)
+        coreViewModel.removeSchedule(scheduleId = scheduleId)
     }
 }

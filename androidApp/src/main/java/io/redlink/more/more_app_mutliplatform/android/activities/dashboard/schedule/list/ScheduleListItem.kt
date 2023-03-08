@@ -7,13 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleState
+import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.extensions.minuteDiff
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTitle
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel

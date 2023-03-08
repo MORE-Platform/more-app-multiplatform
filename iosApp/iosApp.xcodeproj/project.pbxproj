@@ -26,10 +26,11 @@
 		1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */; };
 		1F43997929B8D70800687906 /* ScheduleList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997229B8D70800687906 /* ScheduleList.swift */; };
 		1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F43997329B8D70800687906 /* ScheduleViewModel.strings */; };
-		1F43997B29B8D70800687906 /* StartObservationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997429B8D70800687906 /* StartObservationButton.swift */; };
+		1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997429B8D70800687906 /* ObservationButton.swift */; };
 		1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997529B8D70800687906 /* ObservationDetails.swift */; };
 		1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997629B8D70800687906 /* ScheduleListItem.swift */; };
 		1F43997E29B8D70800687906 /* ScheduleDateWithList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997729B8D70800687906 /* ScheduleDateWithList.swift */; };
+		1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998029B8EA5100687906 /* DictionaryExtension.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B629911E6E0023EF10 /* LoginViewModel.swift */; };
 		1F8847BA29914C8D0023EF10 /* Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B929914C8D0023EF10 /* Title.swift */; };
@@ -102,10 +103,11 @@
 		1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		1F43997229B8D70800687906 /* ScheduleList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleList.swift; sourceTree = "<group>"; };
 		1F43997329B8D70800687906 /* ScheduleViewModel.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = ScheduleViewModel.strings; sourceTree = "<group>"; };
-		1F43997429B8D70800687906 /* StartObservationButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
+		1F43997429B8D70800687906 /* ObservationButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationButton.swift; sourceTree = "<group>"; };
 		1F43997529B8D70800687906 /* ObservationDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationDetails.swift; sourceTree = "<group>"; };
 		1F43997629B8D70800687906 /* ScheduleListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
 		1F43997729B8D70800687906 /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
+		1F43998029B8EA5100687906 /* DictionaryExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F8847B629911E6E0023EF10 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		1F8847B929914C8D0023EF10 /* Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title.swift; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				1F17C08B29952C29000E124A /* ConsentView.strings */,
 				ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */,
 				ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */,
+				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 				1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */,
 				EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */,
 				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
+				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -369,8 +373,7 @@
 				1F43997729B8D70800687906 /* ScheduleDateWithList.swift */,
 				1F43997229B8D70800687906 /* ScheduleList.swift */,
 				1F43997629B8D70800687906 /* ScheduleListItem.swift */,
-				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
-				1F43997429B8D70800687906 /* StartObservationButton.swift */,
+				1F43997429B8D70800687906 /* ObservationButton.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -504,6 +507,7 @@
 				1F8847D4299158BD0023EF10 /* MoreImage.swift in Sources */,
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
 				1F13BA4B299398FD00938C1E /* MoreTextStyle.swift in Sources */,
+				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
@@ -515,7 +519,7 @@
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
-				1F43997B29B8D70800687906 /* StartObservationButton.swift in Sources */,
+				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,

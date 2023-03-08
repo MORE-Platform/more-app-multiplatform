@@ -14,6 +14,6 @@ class IOSObservationFactory: ObservationFactory {
     
     init() {
         super.init(networkService: NetworkService.create())
-        
+        observations.add(AccelerometerObservation(sensorPermission: []))
     }
 }

@@ -11,6 +11,7 @@ import shared
 import Foundation
 
 struct ScheduleList: View {
+    @EnvironmentObject var viewModel: ScheduleViewModel
     @State var scheduleModels: [ScheduleModel]?
     private let dateFormatter = DateFormatter()
     var body: some View {

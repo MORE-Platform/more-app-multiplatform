@@ -18,6 +18,7 @@ struct ScheduleDateWithList: View {
                 .font(Font.more.headline)
             Divider()
             ScheduleList(scheduleModels: viewModel.schedules[key])
+                .environmentObject(viewModel)
         }.padding(.bottom)
     }
 }
