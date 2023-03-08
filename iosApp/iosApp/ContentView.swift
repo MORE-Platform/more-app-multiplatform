@@ -7,7 +7,7 @@ struct ContentView: View {
         MoreMainBackgroundView {
             VStack {
                 if viewModel.hasCredentials {
-                    DashboardView(viewModel: viewModel.dashboardViewModel, scheduleViewModel: viewModel.scheduleViewModel)
+                    DashboardView(dashboardViewModel: viewModel.dashboardViewModel, scheduleViewModel: viewModel.scheduleViewModel)
                 } else {
                     if viewModel.loginViewScreenNr == 0 {
                         LoginView(model: viewModel.loginViewModel)

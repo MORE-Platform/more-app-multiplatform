@@ -46,7 +46,7 @@
 		1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		ED16C5F029B74FD900DA8AFE /* ObservationDetailsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EF29B74FD900DA8AFE /* ObservationDetailsButton.swift */; };
+		ED16C5F029B74FD900DA8AFE /* ObservationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */; };
 		ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */; };
 		ED16C5F729B764DC00DA8AFE /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */; };
 		ED16C5FB29B764FE00DA8AFE /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5FA29B764FE00DA8AFE /* ScheduleViewModel.swift */; };
@@ -115,7 +115,7 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		ED16C5EF29B74FD900DA8AFE /* ObservationDetailsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailsButton.swift; sourceTree = "<group>"; };
+		ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetails.swift; sourceTree = "<group>"; };
 		ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ScheduleListView.strings; sourceTree = "<group>"; };
 		ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 		ED16C5FA29B764FE00DA8AFE /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
@@ -310,7 +310,7 @@
 			children = (
 				ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */,
 				ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */,
-				ED16C5EF29B74FD900DA8AFE /* ObservationDetailsButton.swift */,
+				ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -454,7 +454,7 @@
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
-				ED16C5F029B74FD900DA8AFE /* ObservationDetailsButton.swift in Sources */,
+				ED16C5F029B74FD900DA8AFE /* ObservationDetails.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,

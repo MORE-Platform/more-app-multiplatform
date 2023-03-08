@@ -16,10 +16,12 @@ struct ScheduleList: View {
     var body: some View {
         Section {
             ForEach(scheduleModels!, id: \.self) { schedule in
-                    ScheduleListItem(scheduleModel: schedule)
+                ScheduleListItem(scheduleModel: schedule)
+                if schedule != scheduleModels![(scheduleModels!.endIndex)-1] {
                     Divider()
                 }
             }
+        }
     }
 }
 

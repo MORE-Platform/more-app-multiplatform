@@ -8,15 +8,12 @@
 
 import SwiftUI
 
-struct ObservationDetailsButton: View {
+struct ObservationDetails: View {
     @State var observationTitle: String
     @State var observationType: String
     var action: () -> Void = {}
     
     var body: some View {
-        Button {
-            action()
-        } label: {
             HStack{
                 VStack(alignment: .leading) {
                     BasicText(text: $observationTitle)
@@ -29,12 +26,12 @@ struct ObservationDetailsButton: View {
                 Spacer()
                 Image(systemName: "chevron.forward")
             }
-        }
+            .contentShape(Rectangle())
     }
 }
 
-struct ObservationDetailsButton_Previews: PreviewProvider {
+struct ObservationDetails_Previews: PreviewProvider {
     static var previews: some View {
-        ObservationDetailsButton(observationTitle:"Observation Title", observationType: "Observation Type")
+        ObservationDetails(observationTitle:"Observation Title", observationType: "Observation Type")
     }
 }

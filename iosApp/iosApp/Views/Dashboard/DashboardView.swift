@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct DashboardView: View {
-    @StateObject var viewModel: DashboardViewModel
+    @StateObject var dashboardViewModel: DashboardViewModel
     @StateObject var scheduleViewModel: ScheduleViewModel
     private let stringTable = "DashboardView"
     @State private var totalTasks: Double = 0
@@ -22,7 +22,7 @@ struct DashboardView: View {
                 
             } label: {
                 HStack {
-                    Title(titleText: $viewModel.studyTitle)
+                    Title(titleText: $dashboardViewModel.studyTitle)
                     Spacer()
                     Button {
                         
@@ -77,7 +77,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(viewModel: DashboardViewModel(), scheduleViewModel: ScheduleViewModel())
+            DashboardView(dashboardViewModel: DashboardViewModel(), scheduleViewModel: ScheduleViewModel())
         } topBarContent: {
             HStack {
                 Button {

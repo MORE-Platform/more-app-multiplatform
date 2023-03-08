@@ -18,8 +18,11 @@ struct ScheduleListItem: View {
     
     var body: some View {
         VStack {
-            ObservationDetailsButton(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationTitle)
-                .padding(0.5)
+            Button {} label: {
+                ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
+            }.buttonStyle(.plain)
+            .padding(0.5)
+            
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
@@ -35,7 +38,7 @@ struct ScheduleListItem: View {
                 
             } label: {
                 HStack {
-                    if scheduleModel.observationType.lowercased() == "simple-question-observation" {
+                    if scheduleModel.observationType.lowercased() == "question-observation" {
                         BasicText(text: .constant(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire")))
                     } else {
                         BasicText(text: .constant(String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "button to start observation")))
@@ -48,6 +51,6 @@ struct ScheduleListItem: View {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "simple-question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000))
+        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000))
     }
 }
