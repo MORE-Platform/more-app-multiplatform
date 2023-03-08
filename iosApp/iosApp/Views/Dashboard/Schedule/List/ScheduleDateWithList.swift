@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct ScheduleDateWithList: View {
-    var viewModel: ScheduleViewModel
+    @EnvironmentObject var viewModel: ScheduleViewModel
     var key: UInt64
     var body: some View {
         VStack(alignment: .leading) {

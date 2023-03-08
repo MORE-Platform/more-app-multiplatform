@@ -10,12 +10,12 @@ import SwiftUI
 import shared
 
 struct ScheduleView: View {
-    @StateObject var viewModel: ScheduleViewModel
+    @EnvironmentObject var viewModel: ScheduleViewModel 
     var body: some View {
         if #available(iOS 16.0, *) {
             List {
-                ForEach($viewModel.scheduleDates, id: \.self) { key in
-                    ScheduleDateWithList(viewModel: viewModel, key: key.wrappedValue)
+                ForEach(viewModel.scheduleDates, id: \.self) { key in
+                    ScheduleDateWithList(key: key)
                 }
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
@@ -25,8 +25,8 @@ struct ScheduleView: View {
             .scrollContentBackground(.hidden)
         } else {
             List {
-                ForEach($viewModel.scheduleDates, id: \.self) { key in
-                    ScheduleDateWithList(viewModel: viewModel, key: key.wrappedValue)
+                ForEach(viewModel.scheduleDates, id: \.self) { key in
+                    ScheduleDateWithList(key: key)
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.more.mainLight)
@@ -39,7 +39,8 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel())
+            ScheduleView()
+                .environmentObject(ScheduleViewModel())
         } topBarContent: {
             EmptyView()
         }

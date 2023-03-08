@@ -31,7 +31,8 @@ struct DashboardView: View {
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                  withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
             .padding(.bottom)
-            ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
+            ScheduleView()
+                .environmentObject(dashboardViewModel.scheduleViewModel)
         }
         .onAppear {
             dashboardViewModel.loadStudy()
