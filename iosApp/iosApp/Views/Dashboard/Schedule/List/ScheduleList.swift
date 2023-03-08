@@ -28,8 +28,8 @@ struct ScheduleList: View {
 struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
         ScheduleList(scheduleModels: [
-        ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000),
-        ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000)
+            ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000, currentlyRunning: false),
+            ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, currentlyRunning: false)
         ])
     }
 }
