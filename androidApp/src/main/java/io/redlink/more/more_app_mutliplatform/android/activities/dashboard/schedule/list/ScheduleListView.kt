@@ -31,7 +31,7 @@ fun ScheduleListView(scheduleViewModel: ScheduleViewModel) {
                     }
                     itemsIndexed(scheduleViewModel.schedules[date] ?: emptyList()) { _, item ->
                         MoreDivider(Modifier.fillMaxWidth())
-                        ScheduleListItem(scheduleModel = item)
+                        ScheduleListItem(scheduleModel = item, scheduleViewModel)
                     }
                     item {
                         Spacer(modifier = Modifier.height(30.dp))

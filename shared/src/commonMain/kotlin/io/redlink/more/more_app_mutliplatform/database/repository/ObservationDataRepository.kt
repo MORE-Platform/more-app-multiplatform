@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 
 class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
@@ -46,6 +47,8 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
     }
 
     fun deleteAllWithId(idSet: Set<String>) {
-        realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", list = idSet)
+        scope.launch {
+            realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", idSet.map { ObjectId(it) })
+        }
     }
 }
