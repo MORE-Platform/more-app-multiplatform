@@ -11,6 +11,7 @@ import shared
 
 struct SettingsView: View {
     private let stringTable = "SettingsView"
+    @StateObject var viewModel = SettingsViewModel()
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
@@ -19,7 +20,9 @@ struct SettingsView: View {
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
                     .foregroundColor(.more.icons)
                     .padding(.bottom)
-                Button {} label: {
+                Button {
+                    viewModel.reloadStudyConfig()
+                } label: {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
                 .frame(maxWidth: .infinity)

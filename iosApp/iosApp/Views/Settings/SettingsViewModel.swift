@@ -11,8 +11,19 @@ import shared
 
 class SettingsViewModel: ObservableObject {
     private var coreSettingsViewModel: CoreSettingsViewModel? = nil
+    private var storageRepository: UserDefaultsRepository = UserDefaultsRepository()
+    
+    init() {
+        coreSettingsViewModel = CoreSettingsViewModel(credentialRepository: CredentialRepository(sharedStorageRepository: storageRepository), endpointRepository: EndpointRepository(sharedStorageRepository: storageRepository))
+    }
     
     func createCoreViewModel() {
         
+    }
+    
+    func reloadStudyConfig() {
+        if let coreSettingsViewModel {
+            coreSettingsViewModel.reloadStudyConfig()
+        }
     }
 }
