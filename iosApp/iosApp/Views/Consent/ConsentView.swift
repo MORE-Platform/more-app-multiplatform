@@ -69,8 +69,8 @@ struct ConsentView: View {
     }
 }
 
-//struct ConsentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager)
-//    }
-//}
+struct ConsentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager())
+    }
+}

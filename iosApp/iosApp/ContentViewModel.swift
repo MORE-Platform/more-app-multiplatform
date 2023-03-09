@@ -21,6 +21,7 @@ class ContentViewModel: ObservableObject {
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
+    let permissionManager: PermissionManager
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -28,8 +29,9 @@ class ContentViewModel: ObservableObject {
         hasCredentials = credentialRepository.hasCredentials()
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
-        consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
+        permissionManager = PermissionManager()
+        consentViewModel = ConsentViewModel(registrationService: registrationService)
 
         loginViewModel.delegate = self
         consentViewModel.delegate = self
