@@ -17,6 +17,7 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
     init {
         scope.launch {
             observationDataRepository.count().collect{
+                Napier.i(tag = TAG) {"Current collected data count: $it"}
                 if (it >= DATA_COUNT_THRESHOLD) {
                     observationDataRepository.allAsBulk()?.let { dataBulk ->
                         sendRecordedData(dataBulk)
@@ -27,6 +28,7 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
     }
 
     fun add(data: ObservationDataSchema) {
+        Napier.i(tag = TAG) { "New data recorded: $data" }
         observationDataRepository.addData(data)
     }
 

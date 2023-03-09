@@ -1,0 +1,14 @@
+/* 
+  ScheduleListView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 07.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"start" = "Start";
+"active_for" = "Active for";
+"start_questionnaire" = "Start Questionnaire";
+"start_observation" = "Start Observation";
+"pause_observation" = "Pause Observation";
+"stop_observation" = "Stop Observation";

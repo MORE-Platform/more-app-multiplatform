@@ -7,12 +7,9 @@ import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
 import org.mongodb.kbson.ObjectId
 
 class ObservationDataSchema : RealmObject {
@@ -25,12 +22,16 @@ class ObservationDataSchema : RealmObject {
 
     fun asObservationData(): ObservationData =
         ObservationData(
-            dataId = this.dataId.toString(),
+            dataId = this.dataId.toHexString(),
             observationId = this.observationId,
             observationType = this.observationType,
             dataValue = Json.decodeFromString(dataValue),
             timestamp = this.timestamp?.toInstant() ?: Clock.System.now()
         )
+
+    override fun toString(): String {
+        return "dataId: $dataId; observationId: $observationId; observationType: $observationType, timestamp: $timestamp, data: $dataValue;"
+    }
 
     companion object {
         fun fromObservationData(observationData: ObservationData): ObservationDataSchema {

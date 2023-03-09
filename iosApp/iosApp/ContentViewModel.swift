@@ -30,7 +30,7 @@ class ContentViewModel: ObservableObject {
         loginViewModel = LoginViewModel(registrationService: registrationService)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
-        
+
         loginViewModel.delegate = self
         consentViewModel.delegate = self
     }
@@ -63,6 +63,9 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
-        self.hasCredentials = true
+        DispatchQueue.main.async {
+            self.hasCredentials = true
+        }
+
     }
 }

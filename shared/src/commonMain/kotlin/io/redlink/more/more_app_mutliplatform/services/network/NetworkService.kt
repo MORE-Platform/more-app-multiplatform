@@ -57,6 +57,40 @@ class NetworkService(
         }
     }
 
+    suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
+        try {
+            credentialRepository.credentials()?.let {
+                val httpClient = getHttpClient()
+                val url =  endpointRepository.endpoint()
+                val registrationApi =
+                    RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
+
+                registrationApi.setUsername(it.apiId)
+                registrationApi.setPassword(it.apiKey)
+
+                val registrationResponse =
+                    registrationApi.unregisterFromStudy()
+                Napier.d(registrationResponse.response.toString(), tag = TAG)
+                if (registrationResponse.success) {
+                    return Pair(true, null)
+                }
+                println("Error; Code: ${registrationResponse.response.status.value}")
+                val error = createErrorBody(
+                    registrationResponse.response.status.value,
+                    registrationResponse.response
+                )
+                return Pair(
+                    false,
+                    error
+                )
+            }
+            return Pair(false, NetworkServiceError(null, "No credentials"))
+        } catch (err: Exception) {
+            err.printStackTrace()
+            return Pair(false, getException(err))
+        }
+    }
+
     suspend fun validateRegistrationToken(
         registrationToken: String,
         endpoint: String? = null
