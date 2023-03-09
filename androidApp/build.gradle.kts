@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("com.android.application")
@@ -59,4 +58,6 @@ dependencies {
     implementation("io.realm.kotlin:library-base:1.6.0")
 
     implementation("androidx.work:work-runtime-ktx:$workVersion")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("io.github.aakira:napier:2.6.1")
 }
