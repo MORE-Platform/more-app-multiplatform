@@ -1,7 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.android.ui.theme
 
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -37,17 +41,46 @@ class MoreColors {
         val MainTitle = Color(0xff476580)
         val Main = Color(0xff6E8FAC)
         val MainDarker = Color(0xFF5A89B3)
+        val MainDarker2 = Color(0xFF4F7BA3)
+        val MainLighter = Color(0xFF9BBAD6)
         val InactiveText = Color(0xffC6D3DB)
         val ShadingBoxShadow = Color (0xffDCE2E7)
         val MainBackground = Color (0xffF4F9FD)
+        val MainCancel = Color (0xff707070)
         val Divider = Color(0x80AAAAAA)
         val Inactivity = Color (0xffAAAAAA)
+        val TextColor = Color(0xFF707070)
         val Shading = Color (0xffE8EBED)
         val InactiveBackground = Color (0xffF4F4F4)
         val TextDarkBackground = Color (0xffFCFCFC)
         val White = Color (0xffFFFFFF)
-        val Important = Color (0xffD57575)
+        val Important = Color (0xFFA37070)
         val ImportantBright = Color(0xFFEB171C)
-        val Done = Color (0xff4BA767)
+        val Done = Color(0xFF87BA9B)
+
+
+        fun borderDefault(active: Boolean) = BorderStroke(1.dp, if (active) Main else Inactivity)
+        fun borderImportant() = BorderStroke(1.dp, Important)
+        fun borderGray() = BorderStroke(1.dp, TextColor)
     }
 }
+
+@Composable
+fun ButtonDefaults.moreDefault() = buttonColors(
+    contentColor = MoreColors.White,
+    backgroundColor = MoreColors.Main,
+    disabledContentColor = MoreColors.InactiveText,
+    disabledBackgroundColor = MoreColors.InactiveBackground
+)
+
+@Composable
+fun ButtonDefaults.moreImportant() = buttonColors(
+    contentColor = MoreColors.White,
+    backgroundColor = MoreColors.Important,
+)
+
+@Composable
+fun ButtonDefaults.moreGray() = buttonColors(
+    contentColor = MoreColors.White,
+    backgroundColor = MoreColors.TextColor,
+)

@@ -24,7 +24,6 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
                     topBarContent()
                 }
                 .padding(.vertical, 16)
-                Spacer()
                 content()
                 Spacer()
             }

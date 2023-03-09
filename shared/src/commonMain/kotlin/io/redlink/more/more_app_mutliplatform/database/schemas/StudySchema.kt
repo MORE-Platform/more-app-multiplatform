@@ -1,21 +1,27 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.datetime.*
+import org.mongodb.kbson.ObjectId
 
 class StudySchema : RealmObject {
+    @PrimaryKey
+    var studyId: ObjectId = ObjectId.invoke()
     var studyTitle: String = ""
     var participantInfo: String = ""
     var consentInfo: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
-    var observations: RealmList<ObservationSchema>? = null
+    var observations: RealmList<ObservationSchema> = realmListOf()
     var version: Long = 0
+    var active: Boolean? = null
 
     companion object {
         fun toSchema(study: Study): StudySchema {

@@ -7,7 +7,7 @@ struct ContentView: View {
         MoreMainBackgroundView {
             VStack {
                 if viewModel.hasCredentials {
-                    EmptyView()
+                    DashboardView(dashboardViewModel: viewModel.dashboardViewModel)
                 } else {
                     if viewModel.loginViewScreenNr == 0 {
                         LoginView(model: viewModel.loginViewModel)
@@ -18,7 +18,24 @@ struct ContentView: View {
             }
             
         } topBarContent: {
-            EmptyView()
+            HStack {
+                if viewModel.hasCredentials {
+                    HStack {
+                        Button {
+                        } label: {
+                            Image(systemName: "bell.fill")
+                        }
+                        .padding(.horizontal)
+                        Button {
+                    
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                        }
+                    }.foregroundColor(Color.more.icons)
+                } else {
+                    EmptyView()
+                }
+            }
         }
         
     }

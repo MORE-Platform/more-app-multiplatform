@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_settings_title">Settings</string>
+    <string name="more_settings_permission_information">All necessary permissions have been accepted.<br />Permissions can be viewed here. If you wnat to withdraw permissions, you can only do so by withdrawing from the study.</string>
     <string name="more_settings_delete_button">Leave Study</string>
     <string name="more_settings_refresh_study">Refresh Study Configurations</string>
     <string name="more_settings_refresh_study_failure_okay">OK</string>
@@ -17,5 +18,4 @@
     <string name="more_settings_withdraw_question">Do you really want to withdraw?</string>
     <string name="more_settings_resign">Withdraw</string>
     <string name="more_settings_continue">Continue to participate</string>
-
 </resources>

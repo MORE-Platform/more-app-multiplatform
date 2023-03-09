@@ -1,13 +1,18 @@
 package io.redlink.more.more_app_mutliplatform.android.activities
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModelListener
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
+import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
@@ -26,6 +31,12 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     val hasCredentials = mutableStateOf(credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
+
+    fun openDashboard(context: Context) {
+        (context as? Activity)?.let {
+            showNewActivityAndClearStack(it, DashboardActivity::class.java)
+        }
+    }
 
     private fun showLoginView() {
         viewModelScope.launch(Dispatchers.Main) {
