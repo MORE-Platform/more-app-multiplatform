@@ -55,12 +55,14 @@ class MoreColors {
         val TextDarkBackground = Color (0xffFCFCFC)
         val White = Color (0xffFFFFFF)
         val Important = Color (0xFFA37070)
-        val ImportantBright = Color(0xFFEB171C)
+        val ImportantBright = Color(0xffd6b7b7)
         val Done = Color(0xFF87BA9B)
+        val DoneDark = Color(0xff6F9A80)
 
 
         fun borderDefault(active: Boolean) = BorderStroke(1.dp, if (active) Main else Inactivity)
         fun borderImportant() = BorderStroke(1.dp, Important)
+        fun borderDone() = BorderStroke(1.dp, DoneDark)
         fun borderGray() = BorderStroke(1.dp, TextColor)
     }
 }
@@ -77,6 +79,12 @@ fun ButtonDefaults.moreDefault() = buttonColors(
 fun ButtonDefaults.moreImportant() = buttonColors(
     contentColor = MoreColors.White,
     backgroundColor = MoreColors.Important,
+)
+
+@Composable
+fun ButtonDefaults.moreDone() = buttonColors(
+    contentColor = MoreColors.White,
+    backgroundColor = MoreColors.DoneDark,
 )
 
 @Composable
