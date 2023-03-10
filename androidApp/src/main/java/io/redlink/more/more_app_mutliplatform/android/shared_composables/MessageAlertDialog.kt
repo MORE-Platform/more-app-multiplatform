@@ -22,7 +22,7 @@ fun MessageAlertDialog(
     onPositive: () -> Unit,
     onNegative: () -> Unit = {},
 ) {
-    val defaultButtonColors = ButtonDefaults.textButtonColors(backgroundColor = MoreColors.MainBackground, contentColor = MoreColors.Main)
+    val defaultButtonColors = ButtonDefaults.textButtonColors(backgroundColor = MoreColors.PrimaryLight, contentColor = MoreColors.Primary)
     AlertDialog(
         onDismissRequest = { },
         title = {

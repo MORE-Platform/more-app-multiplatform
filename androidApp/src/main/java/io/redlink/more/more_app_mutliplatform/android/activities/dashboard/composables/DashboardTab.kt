@@ -37,7 +37,7 @@ fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {
                     color = Color.Transparent
                 )
             },
-            backgroundColor = MoreColors.Main,
+            backgroundColor = MoreColors.Primary,
             modifier = Modifier
                 .padding(vertical = 6.dp)
                 .height(50.dp)
@@ -51,10 +51,10 @@ fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {
                         onClick(tabIndex.value)
                     },
                     modifier = Modifier
-                        .background(if(tabIndex.value == index) MoreColors.Main else MoreColors.MainLighter)
-                        .border(if (tabIndex.value == index) BorderStroke(2.dp, MoreColors.MainDarker2) else BorderStroke(0.dp, Color.Transparent)),
-                    selectedContentColor = MoreColors.White,
-                    unselectedContentColor = MoreColors.InactiveText,
+                        .background(if(tabIndex.value == index) MoreColors.Primary else MoreColors.PrimaryMedium)
+                        .border(if (tabIndex.value == index) BorderStroke(2.dp, MoreColors.PrimaryDark) else BorderStroke(0.dp, MoreColors.PrimaryLight)),
+                    selectedContentColor = MoreColors.PrimaryLight,
+                    unselectedContentColor = MoreColors.PrimaryLight200,
 
                 ) {
                     Text(

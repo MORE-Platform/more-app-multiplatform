@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun NotificationButton(onClick: () -> Unit,
@@ -31,7 +32,7 @@ fun NotificationButton(onClick: () -> Unit,
             Icon(
                 Icons.Default.Notifications,
                 contentDescription = getString(R.string.more_main_notification_button_description),
-                tint = color(id = R.color.more_main_color),
+                tint = MoreColors.Primary,
                 modifier = modifier
             )
         }

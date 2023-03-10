@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDefault
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
 fun QuestionnaireButtons(model: QuestionnaireViewModel) {
@@ -42,7 +42,7 @@ fun QuestionnaireButtons(model: QuestionnaireViewModel) {
                         .show()
                 }
             },
-            colors = ButtonDefaults.moreDefault(),
+            colors = ButtonDefaults.morePrimary(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
@@ -57,7 +57,7 @@ fun QuestionnaireButtons(model: QuestionnaireViewModel) {
                       },
             colors = ButtonDefaults
                 .buttonColors(
-                    backgroundColor = MoreColors.MainCancel,
+                    backgroundColor = MoreColors.Secondary,
                     contentColor = MoreColors.White
                 ),
             modifier = Modifier

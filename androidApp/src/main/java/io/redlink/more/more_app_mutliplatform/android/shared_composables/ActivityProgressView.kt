@@ -35,14 +35,14 @@ fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, tota
             )
             Text(
                 text = "${(percent * 100).toInt()}%",
-                color = MoreColors.Main,
+                color = MoreColors.Primary,
                 maxLines = 1,
             )
         }
 
         LinearProgressIndicator(
             progress = percent,
-            color = MoreColors.Main,
+            color = MoreColors.Primary,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp)

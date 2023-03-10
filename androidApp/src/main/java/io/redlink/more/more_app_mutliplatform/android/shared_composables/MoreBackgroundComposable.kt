@@ -33,7 +33,7 @@ fun MoreBackground(
         Surface(
             modifier = Modifier
                 .fillMaxSize(1f),
-            color = color(id = R.color.more_main_background)
+            color = MoreColors.PrimaryLight
         ) {
             Column(verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -128,12 +128,12 @@ fun TableItem() {
                         Text(
                             text = "1.",
                             fontWeight = FontWeight.Medium,
-                            color = MoreColors.MainTitle
+                            color = MoreColors.PrimaryDark
                         )
                     }
                     2 -> {
                         when(infoOrError) {
-                            0 -> Icon(Icons.Default.Info, contentDescription = "Information notification", tint = MoreColors.Main)
+                            0 -> Icon(Icons.Default.Info, contentDescription = "Information notification", tint = MoreColors.Primary)
                             1 -> Icon(Icons.Default.PriorityHigh, contentDescription = "Important notification", tint = MoreColors.Important)
                             else -> {}
                         }
@@ -150,12 +150,12 @@ fun TableItem() {
                     text = "Bewegung am Abend",
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
-                    color = MoreColors.MainTitle,
+                    color = MoreColors.PrimaryDark,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
                     text = "Bewegungssensor",
-                    color = MoreColors.Main,
+                    color = MoreColors.Primary,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Row(
@@ -172,11 +172,11 @@ fun TableItem() {
                         Icon(
                             Icons.Default.Schedule,
                             contentDescription = "Activity is to to Time:",
-                            tint = MoreColors.Main
+                            tint = MoreColors.Primary
                         )
                         Text(
                             text = "17:00",
-                            color = MoreColors.Main,
+                            color = MoreColors.Primary,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -187,11 +187,11 @@ fun TableItem() {
                         Icon(
                             Icons.Default.Timelapse,
                             contentDescription = "Activity runs for:",
-                            tint = MoreColors.Main
+                            tint = MoreColors.Primary
                         )
                         Text(
                             text = "2 Stunden",
-                            color = MoreColors.Main,
+                            color = MoreColors.Primary,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -202,8 +202,8 @@ fun TableItem() {
                         colors = ButtonDefaults
                             .textButtonColors(
                                 contentColor = MoreColors.White,
-                                backgroundColor = MoreColors.Main,
-                                disabledContentColor = MoreColors.InactiveText),
+                                backgroundColor = MoreColors.Primary,
+                                disabledContentColor = MoreColors.TextInactive),
                         enabled = activityEnabled,
                         modifier = Modifier
                             .weight(0.1f)
@@ -224,7 +224,7 @@ fun TableItem() {
                 Icon(
                     Icons.Default.ArrowForwardIos,
                     contentDescription = "See Details",
-                    tint = MoreColors.Main,
+                    tint = MoreColors.Primary,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()

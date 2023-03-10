@@ -57,7 +57,7 @@ fun EndpointView(
                 text = getStringResource(id = R.string.more_endpoint_label),
                 fontWeight = FontWeight.Medium,
                 fontSize = 20.sp,
-                color = MoreColors.Main,
+                color = MoreColors.Primary,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
             IconButton(onClick = { isOpen = !isOpen },
@@ -65,7 +65,7 @@ fun EndpointView(
                 Icon(
                     Icons.Rounded.ExpandMore,
                     getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                    tint = MoreColors.Main,
+                    tint = MoreColors.Primary,
                     modifier = Modifier
                         .fillMaxSize(1.2f)
                         .rotate(angle)
@@ -114,19 +114,19 @@ fun EndpointInput(
         isError = model.isEndpointError(),
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MoreColors.Main,
-            focusedLabelColor = MoreColors.Main,
+            textColor = MoreColors.Primary,
+            focusedLabelColor = MoreColors.Primary,
             backgroundColor = Color.Transparent,
-            unfocusedLabelColor = MoreColors.Main,
+            unfocusedLabelColor = MoreColors.Primary,
             errorLabelColor = MoreColors.Important,
-            cursorColor = MoreColors.Main,
+            cursorColor = MoreColors.Primary,
             errorBorderColor = MoreColors.Important,
             errorCursorColor = MoreColors.Important,
             errorLeadingIconColor = MoreColors.Important,
             errorTrailingIconColor = MoreColors.Important,
-            placeholderColor = MoreColors.InactiveText,
-            unfocusedBorderColor = MoreColors.Main,
-            focusedBorderColor = MoreColors.Main
+            placeholderColor = MoreColors.TextInactive,
+            unfocusedBorderColor = MoreColors.Primary,
+            focusedBorderColor = MoreColors.Primary
         ),
         modifier = Modifier
             .focusRequester(focusRequester)

@@ -35,7 +35,7 @@ fun DashboardHeader(model: DashboardViewModel) {
             Icon(
                 Icons.Default.ArrowForwardIos,
                 contentDescription = getStringResource(id = R.string.study_details),
-                tint = MoreColors.MainDarker,
+                tint = MoreColors.Primary,
                 modifier = Modifier
             )
         }

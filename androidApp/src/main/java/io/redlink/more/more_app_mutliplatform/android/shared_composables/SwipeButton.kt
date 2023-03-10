@@ -72,7 +72,7 @@ fun SwipeButton(
     doneImageVector: ImageVector = Icons.Rounded.Done,
     modifier: Modifier = Modifier,
     borderStroke: BorderStroke = MoreColors.borderImportant(),
-    backgroundColor: Color = MoreColors.ImportantBright,
+    backgroundColor: Color = MoreColors.ImportantMedium,
     swipeBtnColor: Color = MoreColors.Important,
     textColor: Color = MoreColors.Important,
     iconColor: Color = MoreColors.White,

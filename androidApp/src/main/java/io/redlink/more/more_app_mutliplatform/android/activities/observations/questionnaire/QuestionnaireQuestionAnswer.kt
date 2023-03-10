@@ -21,7 +21,7 @@ fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        color = MoreColors.Main
+        color = MoreColors.Primary
     )
 
     Spacer(Modifier.height(12.dp))

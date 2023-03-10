@@ -25,7 +25,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDone
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
 
 class LeaveStudyLevelOneActivity: ComponentActivity() {
@@ -96,8 +96,8 @@ fun LeaveStudyLvlOneView(model: SettingsViewModel) {
 
         SmallTextButton(
             text = stringResource(id = R.string.more_settings_continue),
-            buttonColors = ButtonDefaults.moreDone(),
-            borderStroke = MoreColors.borderDone()
+            buttonColors = ButtonDefaults.moreApproved(),
+            borderStroke = MoreColors.borderApproved()
         ) {
             showNewActivityAndClearStack(context, DashboardActivity::class.java)
         }

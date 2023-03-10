@@ -27,7 +27,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDone
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
 
 class LeaveStudyLevelTwoActivity: ComponentActivity() {
@@ -87,7 +87,7 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         BasicText(
             text = stringResource(id = R.string.more_settings_withdraw_statement_long),
-            color = MoreColors.TextColor,
+            color = MoreColors.TextDefault,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -97,7 +97,7 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         SmallTitle(
             text = stringResource(id = R.string.more_settings_withdraw_question_confirm),
-            color = MoreColors.TextColor,
+            color = MoreColors.TextDefault,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -106,8 +106,8 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         SmallTextButton(
             text = stringResource(id = R.string.more_settings_continue),
-            buttonColors = ButtonDefaults.moreDone(),
-            borderStroke = MoreColors.borderDone()
+            buttonColors = ButtonDefaults.moreApproved(),
+            borderStroke = MoreColors.borderApproved()
         ) {
             showNewActivityAndClearStack(context, DashboardActivity::class.java)
         }

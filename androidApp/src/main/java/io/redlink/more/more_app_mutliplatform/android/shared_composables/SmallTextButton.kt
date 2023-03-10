@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDefault
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
-fun SmallTextButton(text: String, enabled: Boolean = true, borderStroke: BorderStroke = MoreColors.borderDefault(enabled), buttonColors: ButtonColors = ButtonDefaults.moreDefault(), onClick: (() -> Unit)){
+fun SmallTextButton(text: String, enabled: Boolean = true, borderStroke: BorderStroke = MoreColors.borderPrimary(enabled), buttonColors: ButtonColors = ButtonDefaults.morePrimary(), onClick: (() -> Unit)){
     OutlinedButton(
         onClick = onClick,
         border = borderStroke,

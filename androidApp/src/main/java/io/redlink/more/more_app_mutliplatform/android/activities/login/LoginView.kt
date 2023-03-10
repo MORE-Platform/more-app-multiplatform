@@ -58,12 +58,11 @@ fun LoginView(model: LoginViewModel) {
                     text = getStringResource(id = R.string.more_welcome_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp,
-                    color = MoreColors.MainTitle,
+                    color = MoreColors.PrimaryDark,
                     maxLines = 2,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-
                 Spacer(Modifier.height(24.dp))
 
                 LoginForm(model = model)

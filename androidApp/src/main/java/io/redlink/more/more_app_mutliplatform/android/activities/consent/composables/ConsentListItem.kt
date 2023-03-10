@@ -63,9 +63,9 @@ fun ConsentListItem(title: String, description: String? = null) {
                 Icons.Default.CheckBox,
                 contentDescription = getStringResource(
                     id = R.string.more_permission_check_icon_description),
-                tint = MoreColors.Main,
+                tint = MoreColors.Primary,
             )
-            Divider(color = MoreColors.Main, modifier = Modifier
+            Divider(color = MoreColors.Primary, modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp))
         }
@@ -79,7 +79,7 @@ fun ConsentListItem(title: String, description: String? = null) {
                     text = title,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MoreColors.Main,
+                    color = MoreColors.Primary,
                     modifier = Modifier
                         .weight(0.9f)
                 )
@@ -89,16 +89,16 @@ fun ConsentListItem(title: String, description: String? = null) {
                     Icon(
                         Icons.Rounded.ExpandMore,
                         contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                        tint = MoreColors.Main,
+                        tint = MoreColors.Primary,
                         modifier = Modifier.rotate(angle)
                     )
                 }
             }
-            Divider(color = MoreColors.Main)
+            Divider(color = MoreColors.Primary)
             Text(
                 text = description
                     ?: "Do you authorize MORE to access your protected resources? Click the resources for which you want to grant access:",
-                color = if (open.value) MoreColors.Main else MoreColors.InactiveText,
+                color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
                 maxLines = if(open.value) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
                 fontSize = if (open.value) TextUnit.Unspecified else 14.sp

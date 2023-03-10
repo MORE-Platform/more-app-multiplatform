@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun SettingsButton(onClick: () -> Unit,
@@ -23,7 +24,7 @@ fun SettingsButton(onClick: () -> Unit,
         Icon(
             Icons.Default.Settings,
             contentDescription = getString(R.string.more_main_settings_button_description),
-            tint = color(id = R.color.more_main_color),
+            tint = MoreColors.Primary,
             modifier = modifier
         )
     }

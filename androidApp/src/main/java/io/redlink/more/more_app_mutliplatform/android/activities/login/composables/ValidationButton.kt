@@ -32,21 +32,21 @@ fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
             enabled = model.participationKeyNotBlank() && !model.loadingState.value,
             colors = ButtonDefaults
                 .buttonColors(
-                    backgroundColor = MoreColors.Main,
+                    backgroundColor = MoreColors.Primary,
                     contentColor = MoreColors.White,
                     disabledBackgroundColor = Color.Transparent,
-                    disabledContentColor = MoreColors.Inactivity
+                    disabledContentColor = MoreColors.SecondaryMedium
                 ),
             border = if (model.participationKeyNotBlank() && !model.loadingState.value)
-                BorderStroke(0.dp, MoreColors.Main)
+                BorderStroke(0.dp, MoreColors.Primary)
             else
-                BorderStroke(2.dp, MoreColors.Inactivity),
+                BorderStroke(2.dp, MoreColors.SecondaryMedium),
             modifier = Modifier.fillMaxWidth(0.7f).height(50.dp)
         ) {
             Text(text = getStringResource(id = R.string.more_login_button_label))
         }
     } else {
-        CircularProgressIndicator(strokeWidth = 2.dp, color = MoreColors.Main)
+        CircularProgressIndicator(strokeWidth = 2.dp, color = MoreColors.Primary)
     }
 
 }

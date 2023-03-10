@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
-fun SmallTitle(text: String, modifier: Modifier = Modifier, color: Color = MoreColors.Main) {
+fun SmallTitle(text: String, modifier: Modifier = Modifier, color: Color = MoreColors.Primary) {
     Text(
         text = text,
         fontWeight = FontWeight.Medium,
