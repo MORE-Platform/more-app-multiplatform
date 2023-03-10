@@ -26,9 +26,9 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class DashboardActivity: ComponentActivity() {
-    private val dashboardViewModel = DashboardViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val dashboardViewModel = DashboardViewModel(this)
         setContent { 
             MoreBackground(rightCornerContent = {
                 IconButton(onClick = { dashboardViewModel.openSettings(this) }) {

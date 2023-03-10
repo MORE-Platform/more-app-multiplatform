@@ -11,7 +11,8 @@ data class ScheduleModel(
     val observationTitle: String,
     val done: Boolean,
     val start: Long,
-    val end: Long
+    val end: Long,
+    var currentlyRunning: Boolean = false
 ){
     companion object {
         fun createModelsFrom(observation: ObservationSchema): List<ScheduleModel> {
@@ -19,7 +20,7 @@ data class ScheduleModel(
                 val start = it.start ?: return@mapNotNull null
                 val end = it.end ?: return@mapNotNull null
                 ScheduleModel(
-                    scheduleId = it.scheduleId.toString(),
+                    scheduleId = it.scheduleId.toHexString(),
                     observationId = observation.observationId,
                     observationType = observation.observationType,
                     observationTitle = observation.observationTitle,

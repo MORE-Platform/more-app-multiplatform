@@ -1,4 +1,5 @@
 import SwiftUI
+import shared
 
 		@main
 struct iOSApp: App {
@@ -7,6 +8,9 @@ struct iOSApp: App {
 		WindowGroup {
 			ContentView()
                 .environmentObject(contentViewModel)
+                .onAppear{
+                    NapierProxyKt.napierDebugBuild()
+                }
 		}
 	}
 }

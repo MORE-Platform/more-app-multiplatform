@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_observation_start">Start Observation</string>
+    <string name="more_observation_pause">Pause Observation</string>
     <string name="more_observation_stop">Stop Observation</string>
     <string name="more_observation_running">Observation Running</string>
     <string name="more_questionnaire_start">Start Questionnaire</string>

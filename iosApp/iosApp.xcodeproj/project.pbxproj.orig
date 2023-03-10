@@ -20,17 +20,6 @@
 		1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */; };
 		1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */; };
 		1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */; };
-		1F43996C29B8D6D300687906 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A3F29B7A36300C724AB /* Realm */; };
-		1F43996D29B8D6D300687906 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A4129B7A36300C724AB /* RealmSwift */; };
-		1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43996E29B8D6FB00687906 /* ScheduleView.swift */; };
-		1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */; };
-		1F43997929B8D70800687906 /* ScheduleList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997229B8D70800687906 /* ScheduleList.swift */; };
-		1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F43997329B8D70800687906 /* ScheduleViewModel.strings */; };
-		1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997429B8D70800687906 /* ObservationButton.swift */; };
-		1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997529B8D70800687906 /* ObservationDetails.swift */; };
-		1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997629B8D70800687906 /* ScheduleListItem.swift */; };
-		1F43997E29B8D70800687906 /* ScheduleDateWithList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43997729B8D70800687906 /* ScheduleDateWithList.swift */; };
-		1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998029B8EA5100687906 /* DictionaryExtension.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B629911E6E0023EF10 /* LoginViewModel.swift */; };
 		1F8847BA29914C8D0023EF10 /* Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B929914C8D0023EF10 /* Title.swift */; };
@@ -64,9 +53,11 @@
 		ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */; };
 		ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */; };
 		ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */; };
-		ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */; };
+		ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2B29B0D78700BAF0A6 /* Realm */; };
+		ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */; };
 		ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */; };
-		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
+		ED5EBB3529B21A4000BAF0A6 /* ScheduleList.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */; };
+		ED5EBB3729B21A8A00BAF0A6 /* ScheduleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
 		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
 		EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13429B0D30200533F79 /* DashboardView.swift */; };
@@ -99,15 +90,6 @@
 		1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSObservationFactory.swift; sourceTree = "<group>"; };
 		1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceExtension.swift; sourceTree = "<group>"; };
 		1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerObservation.swift; sourceTree = "<group>"; };
-		1F43996E29B8D6FB00687906 /* ScheduleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
-		1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
-		1F43997229B8D70800687906 /* ScheduleList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleList.swift; sourceTree = "<group>"; };
-		1F43997329B8D70800687906 /* ScheduleViewModel.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = ScheduleViewModel.strings; sourceTree = "<group>"; };
-		1F43997429B8D70800687906 /* ObservationButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationButton.swift; sourceTree = "<group>"; };
-		1F43997529B8D70800687906 /* ObservationDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationDetails.swift; sourceTree = "<group>"; };
-		1F43997629B8D70800687906 /* ScheduleListItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
-		1F43997729B8D70800687906 /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
-		1F43998029B8EA5100687906 /* DictionaryExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F8847B629911E6E0023EF10 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		1F8847B929914C8D0023EF10 /* Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title.swift; sourceTree = "<group>"; };
@@ -135,7 +117,7 @@
 		1F9DB19F298CF44000DBB7DB /* MoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreColor.swift; sourceTree = "<group>"; };
 		1F9DB1A2298D022E00DBB7DB /* MoreImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreImages.xcassets; sourceTree = "<group>"; };
 		1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreColors.xcassets; sourceTree = "<group>"; };
-		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -143,16 +125,9 @@
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
 		ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProgressView.swift; sourceTree = "<group>"; };
-		ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetails.swift; sourceTree = "<group>"; };
-		ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ScheduleListView.strings; sourceTree = "<group>"; };
-		ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
-		ED16C5FA29B764FE00DA8AFE /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = DashboardView.strings; sourceTree = "<group>"; };
 		ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleList.swift; sourceTree = "<group>"; };
 		ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
-		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
-		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
-		EDC89B1029B899D400E0A160 /* StartObservationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
 		EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		EDEBA13429B0D30200533F79 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -163,8 +138,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F43996D29B8D6D300687906 /* RealmSwift in Frameworks */,
-				1F43996C29B8D6D300687906 /* Realm in Frameworks */,
+				ED5EBB2E29B0D78700BAF0A6 /* RealmSwift in Frameworks */,
+				ED5EBB2C29B0D78700BAF0A6 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,18 +154,12 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		1F0BFA2D29B8D399003B3AB9 /* Recovered References */ = {
+		1F34796E29B8AFC20030CA15 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */,
-				ED16C5FA29B764FE00DA8AFE /* ScheduleViewModel.swift */,
-				ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */,
-				ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */,
-				EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */,
-				EDC89B1029B899D400E0A160 /* StartObservationButton.swift */,
-				ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */,
+				1F34796F29B8AFCB0030CA15 /* Observations */,
 			);
-			name = "Recovered References";
+			path = Services;
 			sourceTree = "<group>";
 		};
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
@@ -216,6 +185,8 @@
 				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
 				1F13BA482993985800938C1E /* InactiveText.swift */,
 				1F60C58529951A5F00858581 /* ErrorText.swift */,
+				ED5EBB3429B21A4000BAF0A6 /* ScheduleList.swift */,
+				ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */,
 				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
 			);
 			path = Components;
@@ -247,8 +218,6 @@
 				1F8847C52991523D0023EF10 /* Default.strings */,
 				1F17C08B29952C29000E124A /* ConsentView.strings */,
 				ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */,
-				ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */,
-				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -257,10 +226,11 @@
 			isa = PBXGroup;
 			children = (
 				1F8847C029914FD60023EF10 /* StringExtension.swift */,
-				1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */,
+<<<<<<< Updated upstream
 				EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */,
-				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
-				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
+=======
+				1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */,
+>>>>>>> Stashed changes
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -320,7 +290,6 @@
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
-				1F0BFA2D29B8D399003B3AB9 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -335,7 +304,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
-				1F34796F29B8AFCB0030CA15 /* Observations */,
+				1F34796E29B8AFC20030CA15 /* Services */,
 				1F8847C22991517F0023EF10 /* Resources */,
 				1F8847CB299154650023EF10 /* Extensions */,
 				1F9DB1A1298CF57600DBB7DB /* Style */,
@@ -356,28 +325,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		ED16C5EE29B74C4A00DA8AFE /* Schedule */ = {
-			isa = PBXGroup;
-			children = (
-				1F43996E29B8D6FB00687906 /* ScheduleView.swift */,
-				1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */,
-				ED16C5F529B764B000DA8AFE /* List */,
-			);
-			path = Schedule;
-			sourceTree = "<group>";
-		};
-		ED16C5F529B764B000DA8AFE /* List */ = {
-			isa = PBXGroup;
-			children = (
-				1F43997529B8D70800687906 /* ObservationDetails.swift */,
-				1F43997729B8D70800687906 /* ScheduleDateWithList.swift */,
-				1F43997229B8D70800687906 /* ScheduleList.swift */,
-				1F43997629B8D70800687906 /* ScheduleListItem.swift */,
-				1F43997429B8D70800687906 /* ObservationButton.swift */,
-			);
-			path = List;
-			sourceTree = "<group>";
-		};
 		EDEBA13129B0D2CC00533F79 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -386,7 +333,6 @@
 				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
 				ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */,
 				ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */,
-				ED16C5EE29B74C4A00DA8AFE /* Schedule */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -410,8 +356,8 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				ED7B7A3F29B7A36300C724AB /* Realm */,
-				ED7B7A4129B7A36300C724AB /* RealmSwift */,
+				ED5EBB2B29B0D78700BAF0A6 /* Realm */,
+				ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */,
 			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
@@ -442,7 +388,7 @@
 			);
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
-				ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */,
+				ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -466,8 +412,6 @@
 				1F17C08C29952C29000E124A /* ConsentView.strings in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */,
-				1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */,
-				ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,7 +442,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F43997E29B8D70800687906 /* ScheduleDateWithList.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
 				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
@@ -507,10 +450,8 @@
 				1F8847D4299158BD0023EF10 /* MoreImage.swift in Sources */,
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
 				1F13BA4B299398FD00938C1E /* MoreTextStyle.swift in Sources */,
-				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
-				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
@@ -518,36 +459,35 @@
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
-				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
-				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
-				1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */,
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
+<<<<<<< Updated upstream
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
+=======
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
+>>>>>>> Stashed changes
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
+				ED5EBB3729B21A8A00BAF0A6 /* ScheduleListItem.swift in Sources */,
 				ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */,
 				1F13BA4F2993A2A600938C1E /* ContentViewModel.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
-				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
-				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
-				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
 				1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
+				ED5EBB3529B21A4000BAF0A6 /* ScheduleList.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -690,7 +630,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = VX2DSGURUH;
+				DEVELOPMENT_TEAM = UD5RW7QT26;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -725,7 +665,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = VX2DSGURUH;
+				DEVELOPMENT_TEAM = UD5RW7QT26;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -778,9 +718,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+		ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift.git";
+			repositoryURL = "https://github.com/realm/realm-swift";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -789,14 +729,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		ED7B7A3F29B7A36300C724AB /* Realm */ = {
+		ED5EBB2B29B0D78700BAF0A6 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
+			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = Realm;
 		};
-		ED7B7A4129B7A36300C724AB /* RealmSwift */ = {
+		ED5EBB2D29B0D78700BAF0A6 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
+			package = ED5EBB2A29B0D78700BAF0A6 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */

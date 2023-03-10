@@ -41,6 +41,7 @@ kotlin {
     val napierVersion = "2.6.1"
     val serializationVersion = "1.5.0-RC"
     val axayVersion = "0.1.2"
+    val gsonVersion = "2.10.1"
 
     sourceSets {
         val commonMain by getting {
@@ -75,6 +76,7 @@ kotlin {
                 implementation("androidx.security:security-crypto-ktx:1.1.0-alpha04")
 
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
+                implementation("com.google.code.gson:gson:$gsonVersion")
             }
         }
         val androidUnitTest by getting
