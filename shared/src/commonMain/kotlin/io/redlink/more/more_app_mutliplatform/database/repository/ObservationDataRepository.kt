@@ -1,7 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.ktor.utils.io.core.*
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.observations.QUEUE_COUNT_THRESHOLD

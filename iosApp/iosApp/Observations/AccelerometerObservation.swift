@@ -29,6 +29,7 @@ class AccelerometerObservation: Observation_ {
             self.motion.startAccelerometerUpdates()
             RunLoop.current.add(timer, forMode: .default)
             running = true
+            return true
         }
         return false
     }
