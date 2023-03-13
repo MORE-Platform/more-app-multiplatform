@@ -12,7 +12,7 @@ fun Heading(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         fontWeight = FontWeight.Bold,
-        color = MoreColors.MainDarker,
+        color = MoreColors.Primary,
         fontSize = 18.sp,
         modifier = Modifier
     )

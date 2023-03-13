@@ -40,7 +40,7 @@ struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
             ScheduleView()
-                .environmentObject(ScheduleViewModel())
+                .environmentObject(ScheduleViewModel(observationFactory: IOSObservationFactory()))
         } topBarContent: {
             EmptyView()
         } backButton: {

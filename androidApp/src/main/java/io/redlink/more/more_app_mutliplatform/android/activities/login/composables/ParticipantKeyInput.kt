@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
-import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
@@ -46,7 +45,7 @@ fun ParticipationKeyInput(
             text = getStringResource(id = R.string.more_registration_token_label),
             fontWeight = FontWeight.Medium,
             fontSize = 20.sp,
-            color = MoreColors.Main
+            color = MoreColors.Primary
         )
         Column(verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,19 +79,19 @@ fun ParticipationKeyInput(
                 isError = model.isTokenError(),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MoreColors.Main,
-                    focusedLabelColor = MoreColors.Main,
+                    textColor = MoreColors.Primary,
+                    focusedLabelColor = MoreColors.Primary,
                     backgroundColor = Color.Transparent,
-                    unfocusedLabelColor = MoreColors.Main,
+                    unfocusedLabelColor = MoreColors.Primary,
                     errorLabelColor = MoreColors.Important,
-                    cursorColor = MoreColors.Main,
+                    cursorColor = MoreColors.Primary,
                     errorBorderColor = MoreColors.Important,
                     errorCursorColor = MoreColors.Important,
                     errorLeadingIconColor = MoreColors.Important,
                     errorTrailingIconColor = MoreColors.Important,
-                    placeholderColor = MoreColors.InactiveText,
-                    unfocusedBorderColor = MoreColors.Main,
-                    focusedBorderColor = MoreColors.Main
+                    placeholderColor = MoreColors.TextInactive,
+                    unfocusedBorderColor = MoreColors.Primary,
+                    focusedBorderColor = MoreColors.Primary
                 ),
                 modifier = Modifier
                     .focusRequester(focusRequester)

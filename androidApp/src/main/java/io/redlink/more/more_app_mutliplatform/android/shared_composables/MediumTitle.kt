@@ -13,7 +13,7 @@ fun MediumTitle(text: String, modifier: Modifier = Modifier) {
         text = text,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
-        color = MoreColors.Main,
+        color = MoreColors.Primary,
         modifier = modifier
     )
 }

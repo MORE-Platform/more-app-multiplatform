@@ -25,14 +25,14 @@ fun FilterView() {
     ){
         Text(
             text = "Filters will be found here",
-            color = MoreColors.MainDarker,
+            color = MoreColors.Primary,
             modifier = Modifier
         )
         Icon(
             Icons.Default.Tune,
             contentDescription = getStringResource(id = R.string.more_main_tab_filters),
             modifier = Modifier.padding(start = 8.dp),
-            tint = MoreColors.MainDarker
+            tint = MoreColors.Primary
         )
     }
 }

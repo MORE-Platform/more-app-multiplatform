@@ -19,6 +19,10 @@ object DatabaseManager: Closeable {
         )
     }
 
+    fun deleteAll() {
+        database.deleteAll()
+    }
+
     override fun close() {
         database.close()
     }

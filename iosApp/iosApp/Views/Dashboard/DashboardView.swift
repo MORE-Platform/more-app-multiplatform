@@ -13,13 +13,13 @@ struct DashboardView: View {
     @StateObject var dashboardViewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State private var totalTasks: Double = 0
-    @State private var selection: Int = 0
+    @State var selection: Int = 0
     @State private var tasksCompleted: Double = 0
     var body: some View {
         VStack {
             StudyTitleForwardButton(title: $dashboardViewModel.studyTitle)
                 .padding(.bottom)
-            DashboardPicker(selection: selection, firstTab: .constant(String
+            DashboardPicker(selection: $selection, firstTab: .constant(String
                 .localizedString(forKey: "schedule_string", inTable: stringTable, withComment: "schedule tab is selected")),
             secondTab: .constant(String
                 .localizedString(forKey: "modules_string", inTable: stringTable, withComment: "modules tab is selected")))
@@ -31,12 +31,12 @@ struct DashboardView: View {
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                  withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
             .padding(.bottom)
-            ScheduleView()
-                .environmentObject(dashboardViewModel.scheduleViewModel)
-        }
-        .onAppear {
-            dashboardViewModel.loadStudy()
-            dashboardViewModel.scheduleViewModel.loadObservations()
+            if selection == 0 {
+                ScheduleView()
+                    .environmentObject(dashboardViewModel.scheduleViewModel)
+            } else {
+                EmptyView()
+            }
         }
     }
 }

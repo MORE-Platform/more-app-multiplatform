@@ -18,7 +18,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderDescription
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDefault
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 class QuestionnaireResponseActivity : ComponentActivity() {
     private val questionnaireViewModel = QuestionnaireViewModel()
@@ -57,7 +57,7 @@ fun QuestionnaireResponseView(model: QuestionnaireViewModel) {
             }
             TextButton(
                 onClick = { model.closeActivity(context, true) },
-                colors = ButtonDefaults.moreDefault(),
+                colors = ButtonDefaults.morePrimary(),
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth(0.8f)

@@ -16,9 +16,9 @@ class ScheduleSchema : RealmObject {
     var done: Boolean = false
 
     companion object {
-        fun toSchema(schedule: ObservationSchedule, id: String): ScheduleSchema {
+        fun toSchema(schedule: ObservationSchedule, observationId: String): ScheduleSchema {
             return ScheduleSchema().apply {
-                observationId = id
+                this.observationId = observationId
                 start = schedule.start?.toRealmInstant()
                 end = schedule.end?.toRealmInstant()
             }

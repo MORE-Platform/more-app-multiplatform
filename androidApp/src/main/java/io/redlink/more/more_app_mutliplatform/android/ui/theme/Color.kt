@@ -7,80 +7,75 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-
-val RedlinkRed = Color(0xFFf44336)
-val RedlinkRedLight = Color(0xFFff7961)
-val RedlinkRedDark = Color(0xFFba000d)
-
-val MoreBlue = Color(0xFF29b6f6)
-val MoreBlueLight = Color(0xFF73e8ff)
-val MoreBlueDark = Color(0xFF0086c3)
-
-val Primary = Color(0xFF6e8fac)
-val PrimaryLight = Color(0xFFc6d3db)
-val BackgroundOverlay = Color(0x80dce2e7)
-val PrimaryDark = Color(0xff476580)
-val White = Color.White
-val TextColor = Color(0xff707070)
-val TextColorLight = Color(0xffaaaaaa)
-val BGWidgetBoxes = Color(0xffFCFCFC)
-val BGWidgetBoxesPrep = Color(0xffedf1f4)
-val ErrorCol = Color(0xffd57575)
-val WarnCol = Color(0xffE5A44E)
-val OKCol = Color(0xff83DB9E)
-
 class MoreColors {
     companion object {
-        val MainTitle = Color(0xff476580)
-        val Main = Color(0xff6E8FAC)
-        val MainDarker = Color(0xFF5A89B3)
-        val MainDarker2 = Color(0xFF4F7BA3)
-        val MainLighter = Color(0xFF9BBAD6)
-        val InactiveText = Color(0xffC6D3DB)
-        val ShadingBoxShadow = Color (0xffDCE2E7)
-        val MainBackground = Color (0xffF4F9FD)
-        val MainCancel = Color (0xff707070)
-        val Divider = Color(0x80AAAAAA)
-        val Inactivity = Color (0xffAAAAAA)
-        val TextColor = Color(0xFF707070)
-        val Shading = Color (0xffE8EBED)
-        val InactiveBackground = Color (0xffF4F4F4)
-        val TextDarkBackground = Color (0xffFCFCFC)
+
+        val PrimaryDark = Color(0xff476580) // -> MainDark
+        val Primary = Color(0xFF6e8fac) // -> Main, Main Darker
+        val PrimaryMedium = Color(0xffa6bcd0) //-> MainLighter
+        val PrimaryLight200 = Color(0xFFdce2e7)
+        val PrimaryLight = Color(0xFFf4f9fd) // -> MainBackground
+
+        val Secondary = Color(0xff707070) // -> MainCancel
+        val SecondaryMedium = Color(0xffbbc3c7) // -> Inactivity
+        val SecondaryLight = Color(0xfff4f4f4) // -> InactiveBackground
+
+        val TextDefault = Secondary // -> TextColor
+        val TextInactive = SecondaryMedium // -> InactiveText
+
+        val Important = Color(0xffa37070)
+        val ImportantMedium = Color(0xffd6b7b7) // -> ImportantBright
+        val ImportantLight = Color(0xfff5e7e7)
+
+        val Approved = Color(0xff6f9a80) // -> DoneDark, Done
+        val ApprovedMedium = Color(0xffb0d8bf)
+        val ApprovedLight = Color(0xffe9f4ed)
+
         val White = Color (0xffFFFFFF)
-        val Important = Color (0xFFA37070)
-        val ImportantBright = Color(0xFFEB171C)
-        val Done = Color(0xFF87BA9B)
 
 
-        fun borderDefault(active: Boolean) = BorderStroke(1.dp, if (active) Main else Inactivity)
+        // Special Design ElementsA
+        val Divider = PrimaryLight200 // Devider Line between elements
+        val BackgroundOverlay = SecondaryMedium
+
+        // border definitions
+        fun borderPrimary(active: Boolean) = BorderStroke(1.dp, if (active) Primary else PrimaryLight200)
         fun borderImportant() = BorderStroke(1.dp, Important)
-        fun borderGray() = BorderStroke(1.dp, TextColor)
+        fun borderApproved() = BorderStroke(1.dp, Approved)
+        fun borderDefault() = BorderStroke(1.dp, Secondary)
     }
 }
 
 @Composable
-fun ButtonDefaults.moreDefault() = buttonColors(
-    contentColor = MoreColors.White,
-    backgroundColor = MoreColors.Main,
-    disabledContentColor = MoreColors.InactiveText,
-    disabledBackgroundColor = MoreColors.InactiveBackground
+fun ButtonDefaults.morePrimary() = buttonColors(
+    contentColor = MoreColors.PrimaryLight,
+    backgroundColor = MoreColors.Primary,
+    disabledContentColor = MoreColors.PrimaryMedium,
+    disabledBackgroundColor = MoreColors.PrimaryLight200
+)
+
+@Composable
+fun ButtonDefaults.moreSecondary() = buttonColors(
+    contentColor = MoreColors.SecondaryLight,
+    backgroundColor = MoreColors.Secondary,
+    disabledContentColor = MoreColors.SecondaryLight,
+    disabledBackgroundColor = MoreColors.SecondaryMedium
 )
 
 @Composable
 fun ButtonDefaults.moreImportant() = buttonColors(
-    contentColor = MoreColors.White,
+    contentColor = MoreColors.ImportantLight,
     backgroundColor = MoreColors.Important,
+    disabledContentColor = MoreColors.ImportantLight,
+    disabledBackgroundColor = MoreColors.ImportantMedium
 )
 
 @Composable
-fun ButtonDefaults.moreGray() = buttonColors(
-    contentColor = MoreColors.White,
-    backgroundColor = MoreColors.TextColor,
+fun ButtonDefaults.moreApproved() = buttonColors(
+    contentColor = MoreColors.ApprovedLight,
+    backgroundColor = MoreColors.Approved,
+    disabledContentColor = MoreColors.ApprovedLight,
+    disabledBackgroundColor = MoreColors.ApprovedMedium,
+
 )
+
