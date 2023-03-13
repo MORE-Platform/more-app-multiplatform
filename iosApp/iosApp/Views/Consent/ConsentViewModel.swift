@@ -12,6 +12,7 @@ import UIKit
 protocol ConsentViewModelListener {
     func credentialsStored()
     func decline()
+    func credentialsDeleted()
 }
 
 class ConsentViewModel: ObservableObject {

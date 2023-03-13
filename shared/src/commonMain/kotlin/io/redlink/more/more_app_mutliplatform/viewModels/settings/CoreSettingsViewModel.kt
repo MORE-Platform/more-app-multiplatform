@@ -3,6 +3,8 @@ package io.redlink.more.more_app_mutliplatform.viewModels.settings
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
@@ -23,6 +25,28 @@ class CoreSettingsViewModel(
 
     private val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+    fun loadStudy(): MutableStateFlow<StudySchema?> {
+        val study: MutableStateFlow<StudySchema?> = MutableStateFlow(StudySchema())
+        CoroutineScope(Dispatchers.Default + Job()).launch {
+            studyRepository.getStudy().collect {
+                study.value = it
+            }
+        }
+        return study
+    }
+
+    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)): Closeable {
+        val job = Job()
+        loadStudy().onEach {
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object: Closeable {
+            override fun close() {
+                job.cancel()
+            }
+        }
+    }
 
     fun exitStudy() {
         scope.launch {

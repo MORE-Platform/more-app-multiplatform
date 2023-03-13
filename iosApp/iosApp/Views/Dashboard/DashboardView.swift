@@ -58,6 +58,8 @@ struct DashboardView_Previews: PreviewProvider {
                     Image(systemName: "gearshape.fill")
                 }
             }.foregroundColor(Color.more.icons)
+        } backButton: {
+            EmptyView()
         }
     }
 }

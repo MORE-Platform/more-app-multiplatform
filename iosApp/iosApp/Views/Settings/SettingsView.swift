@@ -11,7 +11,10 @@ import shared
 
 struct SettingsView: View {
     private let stringTable = "SettingsView"
-    @StateObject var viewModel = SettingsViewModel()
+    @StateObject var viewModel: SettingsViewModel
+    @EnvironmentObject var contentViewModel: ContentViewModel
+    @Binding var showSettings: Bool
+    
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
@@ -31,13 +34,14 @@ struct SettingsView: View {
                 .background(Color.more.main)
                 .cornerRadius(.moreBorder.cornerRadius)
                 
-                ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", consentInfo: [
-                    PermissionConsentModel(title: "Study Consent", info: "Consent Info"),
-                    PermissionConsentModel(title: "Movement", info: "Accelerometer data"),
-                ])))
-                .padding(.top)
+                ConsentList(permissionModel: .constant(contentViewModel.permissionModel))
+                    .padding(.top)
                 
-                Button {} label: {
+                Button {
+                    viewModel.leaveStudy()
+                    contentViewModel.showLoginView()
+                    contentViewModel.credentialsDeleted()
+                } label: {
                     Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
                 .frame(maxWidth: .infinity)
@@ -47,10 +51,14 @@ struct SettingsView: View {
                 .cornerRadius(.moreBorder.cornerRadius)
             }
         } topBarContent: {
-            Button {
-                
-            } label: {
-                Image(systemName: "xmark")
+            EmptyView()
+        } backButton: {
+            HStack {
+                if #available(iOS 15.0, *) {
+                    MoreBackButton(showContent: $showSettings)
+                } else {
+                    MoreBackButtonIOS14(showContent: $showSettings)
+                }
             }
         }
     }
@@ -58,6 +66,7 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(viewModel: SettingsViewModel(), showSettings: .constant(true))
+            .environmentObject(ContentViewModel())
     }
 }

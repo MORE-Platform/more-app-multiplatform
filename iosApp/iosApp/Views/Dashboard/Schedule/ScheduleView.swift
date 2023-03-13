@@ -43,6 +43,8 @@ struct ScheduleView_Previews: PreviewProvider {
                 .environmentObject(ScheduleViewModel())
         } topBarContent: {
             EmptyView()
+        } backButton: {
+            EmptyView()
         }
     }
 }
