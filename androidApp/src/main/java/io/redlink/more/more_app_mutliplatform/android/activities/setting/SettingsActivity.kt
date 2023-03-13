@@ -4,16 +4,12 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,8 +19,8 @@ import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreGray
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary
 
 class SettingsActivity: ComponentActivity() {
 
@@ -70,7 +66,7 @@ fun SettingsView(
 
                 BasicText(
                     text = getStringResource(id = R.string.more_settings_permission_information),
-                    color = MoreColors.TextColor,
+                    color = MoreColors.TextDefault,
                 )
 
                 Spacer(Modifier.height(18.dp))
@@ -111,8 +107,8 @@ fun SettingsView(
 
                 SmallTextButton(
                     text = getStringResource(id = R.string.more_back),
-                    buttonColors = ButtonDefaults.moreGray(),
-                    borderStroke = MoreColors.borderGray(),
+                    buttonColors = ButtonDefaults.moreSecondary(),
+                    borderStroke = MoreColors.borderDefault(),
                     enabled = true
                 ) {
                     (context as? Activity)?.finish()

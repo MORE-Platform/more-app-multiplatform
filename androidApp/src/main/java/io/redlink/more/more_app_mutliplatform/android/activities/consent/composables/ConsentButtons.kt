@@ -61,7 +61,7 @@ fun ConsentButtons(model: ConsentViewModel) {
                     checkAndRequestLocationPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults
-                    .buttonColors(backgroundColor = MoreColors.Main,
+                    .buttonColors(backgroundColor = MoreColors.Primary,
                         contentColor = MoreColors.White
                     ),
                 enabled = !model.loading.value,
@@ -78,7 +78,7 @@ fun ConsentButtons(model: ConsentViewModel) {
             modifier = Modifier.fillMaxWidth()) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
-                color = MoreColors.Main
+                color = MoreColors.Primary
             )
         }
     }

@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
@@ -27,8 +25,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreDone
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
 
 class LeaveStudyLevelTwoActivity: ComponentActivity() {
     private val viewModel = SettingsViewModel()
@@ -87,7 +84,7 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         BasicText(
             text = stringResource(id = R.string.more_settings_withdraw_statement_long),
-            color = MoreColors.TextColor,
+            color = MoreColors.TextDefault,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -97,7 +94,7 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         SmallTitle(
             text = stringResource(id = R.string.more_settings_withdraw_question_confirm),
-            color = MoreColors.TextColor,
+            color = MoreColors.TextDefault,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -106,8 +103,8 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
 
         SmallTextButton(
             text = stringResource(id = R.string.more_settings_continue),
-            buttonColors = ButtonDefaults.moreDone(),
-            borderStroke = MoreColors.borderDone()
+            buttonColors = ButtonDefaults.moreApproved(),
+            borderStroke = MoreColors.borderApproved()
         ) {
             showNewActivityAndClearStack(context, DashboardActivity::class.java)
         }

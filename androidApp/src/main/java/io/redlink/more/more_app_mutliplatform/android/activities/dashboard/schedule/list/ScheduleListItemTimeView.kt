@@ -31,21 +31,21 @@ fun ScheduleListItemTimeView(startTime: Date, activeFor: Int) {
             Icon(
                 Icons.Default.Schedule,
                 contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
-                tint = MoreColors.Main
+                tint = MoreColors.Primary
             )
             Text(
                 text = "${getStringResource(id = R.string.more_schedule_view_start_time)} ${startTime.formattedString("HH:mm")}",
-                color = MoreColors.Main
+                color = MoreColors.Primary
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Timelapse,
                 contentDescription = getStringResource(R.string.more_table_item_icon_duration),
-                tint = MoreColors.Main
+                tint = MoreColors.Primary
             )
             Text(
                 text = String.format(getStringResource(id = R.string.more_schedule_view_active_for), activeFor),
-                color = MoreColors.Main
+                color = MoreColors.Primary
             )
         }
     }

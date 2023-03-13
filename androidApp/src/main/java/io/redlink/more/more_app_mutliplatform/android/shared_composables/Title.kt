@@ -13,7 +13,7 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 @Composable
 fun Title(text: String,
           modifier: Modifier = Modifier,
-          color: Color = MoreColors.MainTitle,
+          color: Color = MoreColors.PrimaryDark,
           textAlign: TextAlign = TextAlign.Left
 ) {
     Text(

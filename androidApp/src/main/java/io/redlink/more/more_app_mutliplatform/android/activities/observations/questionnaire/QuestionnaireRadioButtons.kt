@@ -49,9 +49,9 @@ fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
                     selected = isSelectedItem(item),
                     onClick = null,
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = MoreColors.Main,
-                        unselectedColor = MoreColors.Main,
-                        disabledColor = MoreColors.Inactivity
+                        selectedColor = MoreColors.Primary,
+                        unselectedColor = MoreColors.Primary,
+                        disabledColor = MoreColors.SecondaryMedium
                     ),
                     modifier = Modifier.padding(4.dp)
                 )
