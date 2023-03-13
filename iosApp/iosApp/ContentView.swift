@@ -33,7 +33,6 @@ struct ContentView: View {
                         .padding(.horizontal)
                         if #available(iOS 16.0, *) {
                             Button {
-                                viewModel.reloadConsent()
                                 showSettings = true
                             } label: {
                                 Image(systemName: "gearshape.fill")
@@ -43,7 +42,6 @@ struct ContentView: View {
                         } else {
                             NavigationLink(destination: SettingsView(viewModel: viewModel.settingsViewModel, showSettings: $showSettings), isActive: $showSettings) {
                                 Button {
-                                    viewModel.reloadConsent()
                                     showSettings = true
                                 } label: {
                                     Image(systemName: "gearshape.fill")

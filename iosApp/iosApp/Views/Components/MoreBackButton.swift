@@ -11,10 +11,10 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct MoreBackButton: View {
     @Environment(\.dismiss) private var dismiss
-    @Binding var showContent: Bool
+    var action: () -> Void = {}
     var body: some View {
         Button {
-            showContent = !showContent
+            action()
             dismiss()
         } label: {
             Image(systemName: "chevron.left")
@@ -22,15 +22,21 @@ struct MoreBackButton: View {
     }
 }
 
-struct MoreBackButtonIOS14: View {
+struct MoreBackButtonIOS14<DestinationView: View>: View {
     @Environment(\.presentationMode) var presentationMode
-    @Binding var showContent: Bool
+    var action: () -> Void = {}
+    var destinationView: DestinationView
+    @State private var isActive: Bool = false
     var body: some View {
-        Button {
-            showContent = !showContent
-            presentationMode.wrappedValue.dismiss()
-        } label: {
-            Image(systemName: "chevron.left")
+        HStack {
+            Button {
+                isActive = true
+            } label: {
+                Image(systemName: "chevron.left")
+            }
+            NavigationLink(destination: destinationView, isActive: $isActive) {
+                EmptyView()
+            }
         }
     }
 }

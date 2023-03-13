@@ -29,7 +29,7 @@ struct SettingsView: View {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
                 
-                ConsentList(permissionModel: .constant(contentViewModel.permissionModel))
+                ConsentList(permissionModel: .constant(viewModel.permissionModel))
                     .padding(.top)
                 
                 MoreActionButton(backgroundColor: Color.more.important) {
@@ -46,9 +46,11 @@ struct SettingsView: View {
         } backButton: {
             HStack {
                 if #available(iOS 15.0, *) {
-                    MoreBackButton(showContent: $showSettings)
+                    MoreBackButton {
+                        showSettings = false
+                    }
                 } else {
-                    MoreBackButtonIOS14(showContent: $showSettings)
+                    MoreBackButtonIOS14(action: {showSettings = false }, destinationView: ContentView())
                 }
             }
         }

@@ -21,7 +21,8 @@ struct MoreMainBackground<TopBarContent: View, Content: View, BackButton: View>:
             }
             .foregroundColor(.more.main)
             .padding(.horizontal, 24)
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 backButton()
             }

@@ -29,25 +29,22 @@ class SettingsViewModel(): ViewModel() {
     val permissionModel =
         mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel?.let {
-                it.loadStudy().collect { study ->
-                    withContext(Dispatchers.Main) {
-                        study?.let {
-                            studySchema.value = study
-                            permissionModel.value = PermissionModel.createFromSchema(study)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     fun createCoreViewModel(context: Context) {
         (context as? Activity)?.let {
             val storageRepository = SharedPreferencesRepository(it)
             coreSettingsViewModel = CoreSettingsViewModel(CredentialRepository(storageRepository), EndpointRepository(storageRepository))
+            viewModelScope.launch(Dispatchers.IO) {
+                coreSettingsViewModel?.let {
+                    it.loadStudy().collect { study ->
+                        withContext(Dispatchers.Main) {
+                            study?.let {
+                                studySchema.value = study
+                                permissionModel.value = PermissionModel.createFromSchema(study)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -13,27 +13,31 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View, BackButton: Vi
     var topBarContent: () -> TopBarContent
     var backButton: () -> BackButton
     var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                MoreMainBackground {
-                    content()
-                } backButton: {
-                    backButton()
-                } topBarContent: {
-                    topBarContent()
+        ZStack {
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    MoreMainBackground {
+                        content()
+                    } backButton: {
+                        backButton()
+                    } topBarContent: {
+                        topBarContent()
+                    }
                 }
-            }.navigationBarBackButtonHidden(true)
-        } else {
-            NavigationView {
-                MoreMainBackground {
-                    content()
-                } backButton: {
-                    backButton()
-                } topBarContent: {
-                    topBarContent()
+                .navigationBarBackButtonHidden(true)
+            } else {
+                NavigationView {
+                    MoreMainBackground {
+                        content()
+                    } backButton: {
+                        backButton()
+                    } topBarContent: {
+                        topBarContent()
+                    }
                 }
-            }.navigationBarBackButtonHidden(true)
-        }
+                .navigationBarBackButtonHidden(true)
+            }
+        }.background(Color.more.mainBackground)
     }
 }
 
