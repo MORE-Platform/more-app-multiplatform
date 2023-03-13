@@ -44,11 +44,15 @@ class AccelerometerObservation: Observation_ {
         motion.isAccelerometerAvailable
     }
     
+    override func setObservationConfig(settings: Dictionary<String, Any>){
+        
+    }
+    
     private func setTimer() -> Timer {
         Timer(fire: Date(), interval: accelerometerFrequency, repeats: true, block: { timer in
             if let data = self.motion.accelerometerData {
                 let dict = ["x": data.acceleration.x, "y": data.acceleration.y, "z": data.acceleration.z]
-                self.storeData(data: dict)
+                self.storeData(data: dict, dateTime: -1)
             }
         })
     }

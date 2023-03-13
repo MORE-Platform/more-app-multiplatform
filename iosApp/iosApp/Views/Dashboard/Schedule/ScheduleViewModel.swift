@@ -19,8 +19,8 @@ class ScheduleViewModel: ObservableObject {
         coreModel = CoreScheduleViewModel(observationFactory: observationFactory)
     }
     
-    func start(scheduleId: String, observationId: String, type: String) {
-        coreModel.start(scheduleId: scheduleId, observationId: observationId, type: type)
+    func start(scheduleModel: ScheduleModel) {
+        coreModel.start(scheduleModel: scheduleModel)
     }
     
     func pause(scheduleId: String) {

@@ -10,7 +10,6 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationTypes.GPSType
-import java.sql.Date
 import java.time.Instant
 import io.github.aakira.napier.Napier
 import java.time.LocalDateTime
@@ -50,6 +49,16 @@ class GPSObservation(
         return true
     }
 
+    override fun setObservationConfig(settings: Map<String, Any>) {
+        try {
+            (settings[LOCATION_INTERVAL_MILLIS_KEY] as? Double)?.toLong()?.let {
+                gpsService.setIntervalMillis(it)
+            }
+        } catch (e: java.lang.Exception) {
+            Log.e(TAG, e.stackTraceToString())
+        }
+    }
+
     fun observerIsAccessible(): Boolean =
         locationManager != null
                 && locationManager.isLocationEnabled
@@ -65,8 +74,7 @@ class GPSObservation(
                 TAG,
                 "Location to store at time ${dateTime}: LONG: ${location.longitude}, LAT: ${location.latitude}"
             )
-            // how should the data be stored?
-            storeData(mapOf("loc" to location, "time" to Date(location.time)))
+            storeData(mapOf("longitude" to location.longitude, "latitude" to location.latitude, "altitude" to location.altitude), dateTime = location.time)
         }
     }
 

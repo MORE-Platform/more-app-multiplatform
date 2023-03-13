@@ -47,4 +47,7 @@ class AccelerometerObservation(
     override fun observerAccessible(): Boolean {
         return this.sensor != null
     }
+
+    override fun setObservationConfig(settings: Map<String, Any>) {
+    }
 }

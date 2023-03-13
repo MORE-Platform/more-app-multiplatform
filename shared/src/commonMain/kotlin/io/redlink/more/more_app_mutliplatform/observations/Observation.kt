@@ -16,6 +16,8 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
 
     abstract fun observerAccessible(): Boolean
 
+    abstract fun setObservationConfig(settings: Map<String, Any>)
+
     fun setObservationId(id: String) {
         observationID = id
     }
@@ -24,11 +26,14 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         dataManager = observationDataManager
     }
 
-    fun storeData(data: Any) {
+    fun storeData(data: Any, dateTime: Long = -1) {
         observationID?.let {
             dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
                 this.observationId = it
-                if (this.timestamp == null) {
+                if (dateTime >= 0) {
+                    this.timestamp = RealmInstant.from(dateTime, 0)
+
+                } else if (this.timestamp == null) {
                     this.timestamp = RealmInstant.now()
                 }
                 this.dataValue = data.asString() ?: ""

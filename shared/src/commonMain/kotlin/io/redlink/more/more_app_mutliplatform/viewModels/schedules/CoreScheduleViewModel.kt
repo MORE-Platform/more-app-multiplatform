@@ -4,18 +4,14 @@ import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 
 class CoreScheduleViewModel(private val observationFactory: ObservationFactory) {
     private val observationRepository = ObservationRepository()
@@ -62,16 +58,16 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         }
     }
 
-    fun start(scheduleId: String, observationId: String, type: String) {
-        Napier.i { "Trying to start $scheduleId" }
-        if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
-            setObservationState(scheduleId, ScheduleState.RUNNING)
+    fun start(scheduleModel: ScheduleModel) {
+        Napier.i { "Trying to start ${scheduleModel.scheduleId}" }
+        if (observationMap[scheduleModel.scheduleId] != null && observationMap[scheduleModel.scheduleId]?.start(scheduleModel.observationId) == true) {
+            setObservationState(scheduleModel.scheduleId, ScheduleState.RUNNING)
         } else {
-            observationFactory.observation(observationId, type)?.let {
-                observationMap[scheduleId] = it
-                if (it.start(observationId)) {
-                    Napier.i { "Recording started of $scheduleId" }
-                    setObservationState(scheduleId, ScheduleState.RUNNING)
+            observationFactory.observation(id = scheduleModel.observationId, type = scheduleModel.observationType, config = scheduleModel.config)?.let {
+                observationMap[scheduleModel.scheduleId] = it
+                if (it.start(scheduleModel.observationId)) {
+                    Napier.i { "Recording started of ${scheduleModel.scheduleId}" }
+                    setObservationState(scheduleModel.scheduleId, ScheduleState.RUNNING)
                 }
             }
         }

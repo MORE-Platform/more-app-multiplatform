@@ -39,7 +39,7 @@ struct ScheduleListItem: View {
                 if currentState == ScheduleState.running {
                     viewModel.pause(scheduleId: scheduleModel.scheduleId)
                 } else {
-                    viewModel.start(scheduleId: scheduleModel.scheduleId, observationId: scheduleModel.observationId, type: scheduleModel.observationType)
+                    viewModel.start(scheduleModel: self.scheduleModel)
                 }
             }
             .buttonStyle(.plain)
@@ -49,6 +49,6 @@ struct ScheduleListItem: View {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, currentlyRunning: false))
+        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, config: [:], currentlyRunning: false))
     }
 }
