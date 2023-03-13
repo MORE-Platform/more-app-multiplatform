@@ -9,13 +9,17 @@
 import shared
 
 class DashboardViewModel: ObservableObject {
-    
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
+    private let observationFactory: IOSObservationFactory
+    let scheduleViewModel: ScheduleViewModel
     
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
-    @Published var scheduleViewModel: ScheduleViewModel = ScheduleViewModel()
     
+    init() {
+        self.observationFactory = IOSObservationFactory()
+        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory)
+    }
     
     func loadStudy() {
         coreModel.onLoadStudy { study in
