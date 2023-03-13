@@ -38,6 +38,12 @@ class ConsentViewModel: ObservableObject {
         }
     }
     
+    func reloadPermissions() {
+        coreModel.onConsentModelChange { model in
+            self.permissionModel = model
+        }
+    }
+    
     func acceptConsent() {
         if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
             coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in

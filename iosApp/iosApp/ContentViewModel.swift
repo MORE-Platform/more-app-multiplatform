@@ -63,6 +63,13 @@ extension ContentViewModel: LoginViewModelListener {
         }
         showConsentView()
     }
+    
+    func reloadConsent() {
+        self.consentViewModel.reloadPermissions()
+        DispatchQueue.main.async {
+            self.permissionModel = self.consentViewModel.permissionModel
+        }
+    }
 }
 
 extension ContentViewModel: ConsentViewModelListener {

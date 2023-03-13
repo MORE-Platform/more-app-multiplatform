@@ -23,32 +23,23 @@ struct SettingsView: View {
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
                     .foregroundColor(.more.icons)
                     .padding(.bottom)
-                Button {
+                MoreActionButton {
                     viewModel.reloadStudyConfig()
                 } label: {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .foregroundColor(.more.white)
-                .background(Color.more.main)
-                .cornerRadius(.moreBorder.cornerRadius)
                 
                 ConsentList(permissionModel: .constant(contentViewModel.permissionModel))
                     .padding(.top)
                 
-                Button {
+                MoreActionButton(backgroundColor: Color.more.important) {
                     viewModel.leaveStudy()
+                    showSettings = false
                     contentViewModel.showLoginView()
                     contentViewModel.credentialsDeleted()
                 } label: {
                     Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .foregroundColor(.more.white)
-                .background(Color.more.important)
-                .cornerRadius(.moreBorder.cornerRadius)
             }
         } topBarContent: {
             EmptyView()
