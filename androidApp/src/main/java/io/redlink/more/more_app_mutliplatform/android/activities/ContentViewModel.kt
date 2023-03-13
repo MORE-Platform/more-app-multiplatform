@@ -11,7 +11,6 @@ import io.redlink.more.more_app_mutliplatform.android.activities.consent.Consent
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
@@ -27,7 +26,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     private val credentialRepository: CredentialRepository = CredentialRepository(sharedPreferencesRepository)
 
     val loginViewModel: LoginViewModel = LoginViewModel(registrationService, this)
-    val consentViewModel: ConsentViewModel = ConsentViewModel(registrationService, this)
+    val consentViewModel: ConsentViewModel = ConsentViewModel(registrationService, this, context = MoreApplication.appContext!!)
 
     val hasCredentials = mutableStateOf(credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)

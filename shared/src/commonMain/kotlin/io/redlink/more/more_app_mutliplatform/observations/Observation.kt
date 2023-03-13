@@ -3,14 +3,18 @@ package io.redlink.more.more_app_mutliplatform.observations
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
 
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
     protected var running = false
 
     private var observationID: String? = null
+
+    abstract fun start(observationId: String): Boolean
+
+    abstract fun stop()
+
+    abstract fun observerAccessible(): Boolean
 
     fun setObservationId(id: String) {
         observationID = id
@@ -19,10 +23,6 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     fun setDataManager(observationDataManager: ObservationDataManager) {
         dataManager = observationDataManager
     }
-
-    abstract fun start(observationId: String): Boolean
-
-    abstract fun stop()
 
     fun storeData(data: Any) {
         observationID?.let {
@@ -39,8 +39,6 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     fun finish() {
         dataManager?.saveAndSend()
     }
-
-    abstract fun observerAccessible(): Boolean
 
     fun isRunning() = running
 }

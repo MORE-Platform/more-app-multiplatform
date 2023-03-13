@@ -11,11 +11,7 @@ class AndroidObservationFactory(context: Context, networkService: NetworkService
     init {
         observations.addAll(
             setOf(
-                AccelerometerObservation(context)
-            )
-        )
-        observations.addAll(
-            setOf(
+                AccelerometerObservation(context),
                 GPSObservation(context, gpsService = GPSService(context))
             )
         )
