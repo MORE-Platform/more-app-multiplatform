@@ -38,9 +38,6 @@ struct DashboardView: View {
                 EmptyView()
             }
         }
-        .onAppear {
-            dashboardViewModel.loadStudy()
-        }
     }
 }
 

@@ -15,7 +15,11 @@
     <string name="more_settings_question_perms">If you want to withdraw permissions, you can only do so by withdrawing from the study.</string>
     <string name="more_settings_accepted_perms">Accepted permissions</string>
     <string name="more_settings_withdraw_statement">If you withdraw from the study, you will not be able to re-enter at a later date.</string>
+    <string name="more_settings_withdraw_statement_long">If you leave this study, you may not re-enter. Your participation will be cancelled and your data will be deleted from your mobile phone!</string>
     <string name="more_settings_withdraw_question">Do you really want to withdraw?</string>
+    <string name="more_settings_withdraw_question_confirm">Are you sure you want to withdraw your participation?</string>
     <string name="more_settings_resign">Withdraw</string>
+    <string name="more_settings_resign_swipe">Swipe to withdraw</string>
     <string name="more_settings_continue">Continue to participate</string>
+    <string name="more_settings_withdraw_from_study">Withdraw from the study</string>
 </resources>

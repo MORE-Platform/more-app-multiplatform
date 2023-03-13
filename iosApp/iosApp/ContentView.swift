@@ -8,6 +8,10 @@ struct ContentView: View {
             VStack {
                 if viewModel.hasCredentials {
                     DashboardView(dashboardViewModel: viewModel.dashboardViewModel)
+                        .onAppear{
+                            viewModel.dashboardViewModel.loadStudy()
+                            viewModel.dashboardViewModel.scheduleViewModel.loadData()
+                        }
                 } else {
                     if viewModel.loginViewScreenNr == 0 {
                         LoginView(model: viewModel.loginViewModel)

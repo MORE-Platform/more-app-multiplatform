@@ -17,15 +17,6 @@ class ScheduleViewModel: ObservableObject {
     
     init(observationFactory: IOSObservationFactory) {
         coreModel = CoreScheduleViewModel(observationFactory: observationFactory)
-        coreModel.onScheduleStateChange { stateMap in
-            self.scheduleStates += stateMap
-        }
-        coreModel.onScheduleModelListChange { scheduleMap in
-            for (key, value) in scheduleMap {
-                self.schedules[UInt64(truncating: key)] = value
-            }
-            self.scheduleDates = Array(self.schedules.keys).sorted()
-        }
     }
     
     func start(scheduleId: String, observationId: String, type: String) {
@@ -40,5 +31,16 @@ class ScheduleViewModel: ObservableObject {
         coreModel.stop(scheduleId: scheduleId)
     }
     
+    func loadData() {
+        coreModel.onScheduleStateChange { stateMap in
+            self.scheduleStates += stateMap
+        }
+        coreModel.onScheduleModelListChange { scheduleMap in
+            for (key, value) in scheduleMap {
+                self.schedules[UInt64(truncating: key)] = value
+            }
+            self.scheduleDates = Array(self.schedules.keys).sorted()
+        }
+    }
     
 }

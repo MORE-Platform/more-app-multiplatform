@@ -13,6 +13,6 @@ fun HeaderDescription (description: String) {
         text = description,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        color = MoreColors.Main
+        color = MoreColors.Primary
     )
 }

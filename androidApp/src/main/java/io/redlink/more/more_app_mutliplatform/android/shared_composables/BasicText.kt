@@ -9,7 +9,7 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 @Composable
 fun BasicText(
     text: String,
-    color: Color = MoreColors.Main,
+    color: Color = MoreColors.Primary,
     modifier: Modifier = Modifier) {
     Text(
         text = text,
