@@ -20,7 +20,6 @@ import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.NotificationButton
 import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.SettingsButton
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
-import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MorePlatformTheme
 

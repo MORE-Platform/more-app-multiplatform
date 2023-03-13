@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

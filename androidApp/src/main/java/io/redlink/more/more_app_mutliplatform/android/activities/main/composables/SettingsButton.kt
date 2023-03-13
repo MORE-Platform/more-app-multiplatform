@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.extensions.color
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 

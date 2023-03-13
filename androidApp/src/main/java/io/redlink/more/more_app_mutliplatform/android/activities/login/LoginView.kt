@@ -14,7 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -22,10 +21,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.login.composabl
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ParticipationKeyInput
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ValidationButton
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 
 
 @Composable
