@@ -43,16 +43,6 @@ struct SettingsView: View {
             }
         } topBarContent: {
             EmptyView()
-        } backButton: {
-            HStack {
-                if #available(iOS 15.0, *) {
-                    MoreBackButton {
-                        showSettings = false
-                    }
-                } else {
-                    MoreBackButtonIOS14(action: {showSettings = false }, destinationView: ContentView())
-                }
-            }
         }
     }
 }

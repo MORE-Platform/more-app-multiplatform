@@ -43,8 +43,6 @@ struct ScheduleView_Previews: PreviewProvider {
                 .environmentObject(ScheduleViewModel(observationFactory: IOSObservationFactory()))
         } topBarContent: {
             EmptyView()
-        } backButton: {
-            EmptyView()
         }
     }
 }

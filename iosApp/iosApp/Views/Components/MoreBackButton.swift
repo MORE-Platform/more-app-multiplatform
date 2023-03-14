@@ -22,10 +22,8 @@ struct MoreBackButton: View {
     }
 }
 
-struct MoreBackButtonIOS14<DestinationView: View>: View {
-    @Environment(\.presentationMode) var presentationMode
+struct MoreBackButtonIOS14: View {
     var action: () -> Void = {}
-    var destinationView: DestinationView
     @State private var isActive: Bool = false
     var body: some View {
         HStack {
@@ -33,9 +31,6 @@ struct MoreBackButtonIOS14<DestinationView: View>: View {
                 isActive = true
             } label: {
                 Image(systemName: "chevron.left")
-            }
-            NavigationLink(destination: destinationView, isActive: $isActive) {
-                EmptyView()
             }
         }
     }

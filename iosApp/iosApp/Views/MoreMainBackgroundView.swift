@@ -8,36 +8,30 @@
 
 import SwiftUI
 
-struct MoreMainBackgroundView<TopBarContent: View, Content: View, BackButton: View>: View {
+struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
     var content: () -> Content
     var topBarContent: () -> TopBarContent
-    var backButton: () -> BackButton
     var body: some View {
         ZStack {
-            if #available(iOS 16.0, *) {
-                NavigationStack {
-                    MoreMainBackground {
-                        content()
-                    } backButton: {
-                        backButton()
-                    } topBarContent: {
-                        topBarContent()
-                    }
-                }
-                .navigationBarBackButtonHidden(true)
-            } else {
-                NavigationView {
-                    MoreMainBackground {
-                        content()
-                    } backButton: {
-                        backButton()
-                    } topBarContent: {
-                        topBarContent()
-                    }
-                }
-                .navigationBarBackButtonHidden(true)
+            Color.more.mainBackground.ignoresSafeArea()
+            VStack(alignment: .center) {
+                content()
+                Spacer()
             }
-        }.background(Color.more.mainBackground)
+            .foregroundColor(.more.main)
+            .padding(.horizontal, 24)
+        }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Image("more_logo_blue")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 100)
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                topBarContent()
+            }
+        }
     }
 }
 
@@ -47,11 +41,6 @@ struct MoreMainBackgroundView_Previews: PreviewProvider {
             Text("Hello World")
         } topBarContent: {
             Text("Hello World")
-        } backButton: {
-            Button {} label: {
-                Image(systemName: "chevron_left")
-            }
-        }
-        
+        }        
     }
 }

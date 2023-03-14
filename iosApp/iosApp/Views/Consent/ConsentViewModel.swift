@@ -31,7 +31,7 @@ class ConsentViewModel: ObservableObject {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
-        coreModel.onLoadingChange{ loading in
+        coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
                 self.isLoading = loading
             }
