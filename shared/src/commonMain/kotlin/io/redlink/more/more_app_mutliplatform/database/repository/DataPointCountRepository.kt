@@ -25,8 +25,8 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
         }
     }
 
-    fun get(scheduleId: ObjectId): Flow<DataPointCountSchema?> {
-        return realmDatabase.queryFirst(query = "scheduleId == $scheduleId")
+    fun get(scheduleId: String): Flow<DataPointCountSchema?> {
+        return realmDatabase.queryFirst(query = "scheduleId == $0", queryArgs = arrayOf(scheduleId))
     }
 
     fun delete(dataPointCountSchema: DataPointCountSchema) {
