@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
     private var dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
-    private var dataPointCount: MutableStateFlow<DataPointCountSchema> = MutableStateFlow(DataPointCountSchema().apply { count = 0 })
+    private var dataPointCount: MutableStateFlow<DataPointCountSchema> = MutableStateFlow(DataPointCountSchema())
     protected var running = false
 
     private var observationID: String? = null
@@ -24,8 +24,8 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         dataManager = observationDataManager
     }
 
-    fun setDataPointCount(count: MutableStateFlow<DataPointCountSchema>) {
-        dataPointCount = count
+    fun setDataPointCount(count: DataPointCountSchema) {
+        dataPointCount = MutableStateFlow(count)
     }
 
     abstract fun start(observationId: String): Boolean
