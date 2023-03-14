@@ -22,7 +22,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                
+
             } topBarContent: {
                 HStack {
                     if viewModel.hasCredentials {
