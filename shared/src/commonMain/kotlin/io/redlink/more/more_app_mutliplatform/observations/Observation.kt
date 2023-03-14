@@ -5,32 +5,27 @@ import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCount
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
 
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
     private var dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
-    private var dataPointCount: MutableStateFlow<DataPointCountSchema?> = MutableStateFlow(
-        DataPointCountSchema()
-    )
+    private var dataPointCount: MutableStateFlow<DataPointCountSchema> = MutableStateFlow(DataPointCountSchema().apply { count = 0 })
     protected var running = false
 
     private var observationID: String? = null
 
     fun setObservationId(id: String) {
         observationID = id
-        dataPointCount.value?.scheduleId = id
+        dataPointCount.value.scheduleId = id
     }
 
     fun setDataManager(observationDataManager: ObservationDataManager) {
         dataManager = observationDataManager
+    }
+
+    fun setDataPointCount(count: MutableStateFlow<DataPointCountSchema>) {
+        dataPointCount = count
     }
 
     abstract fun start(observationId: String): Boolean
@@ -46,21 +41,13 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
                 }
                 this.dataValue = data.asString() ?: ""
             }))
-            CoroutineScope(Dispatchers.Default + Job()).launch {
-                dataPointCount.collect {
-                    it?.let {
-                        dataPointCountRepository.upsert(it.apply { count += 1 })
-                    }
-                }
-            }
+            dataPointCountRepository.upsert(dataPointCount.value.apply { count += 1 })
         }
     }
 
     fun finish() {
         dataManager?.saveAndSend()
-        dataPointCount.value?.let {
-            dataPointCountRepository.delete(it)
-        }
+        dataPointCountRepository.delete(dataPointCount.value)
     }
 
     abstract fun observerAccessible(): Boolean

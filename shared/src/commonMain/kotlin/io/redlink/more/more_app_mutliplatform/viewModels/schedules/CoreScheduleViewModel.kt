@@ -3,19 +3,16 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 
 class CoreScheduleViewModel(private val observationFactory: ObservationFactory) {
     private val observationRepository = ObservationRepository()
@@ -66,8 +63,9 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         Napier.i { "Trying to start $scheduleId" }
         if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
             setObservationState(scheduleId, ScheduleState.RUNNING)
+            observationMap[scheduleId]!!.setDataPointCount(initializeDataCount(scheduleId))
         } else {
-            observationFactory.observation(observationId, type)?.let {
+            observationFactory.observation(observationId, type, initializeDataCount(scheduleId))?.let {
                 observationMap[scheduleId] = it
                 if (it.start(observationId)) {
                     Napier.i { "Recording started of $scheduleId" }
@@ -90,6 +88,15 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
             setObservationState(scheduleId, ScheduleState.STOPPED)
             observationMap.remove(scheduleId)
         }
+    }
+
+    private fun initializeDataCount(scheduleId: String): MutableStateFlow<DataPointCountSchema> {
+        return MutableStateFlow(DataPointCountSchema()
+            .apply
+         {
+             this.count = 0
+             this.scheduleId = scheduleId
+         })
     }
 
     private fun setObservationState(scheduleId: String, state: ScheduleState) {

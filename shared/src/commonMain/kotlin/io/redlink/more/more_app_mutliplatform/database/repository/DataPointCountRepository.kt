@@ -1,12 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 class DataPointCountRepository : Repository<DataPointCountSchema>() {
@@ -24,6 +21,7 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
             } else {
                 this.copyToRealm(dataPointCountSchema)
             }
+            Napier.i(tag = "DataPointCountRepository") { "Data Point Count incremented: ${dataPointCountSchema.count}" }
         }
     }
 
