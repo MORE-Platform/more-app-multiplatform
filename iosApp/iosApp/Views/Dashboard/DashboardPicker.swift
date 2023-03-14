@@ -20,7 +20,7 @@ struct DashboardPicker: View {
             BasicText(text: $secondTab).tag(1)
         }.pickerStyle(.segmented)
             .frame(height: 50)
-            .colorMultiply(Color.more.mainLight)
+            .colorMultiply(Color.more.primaryLight)
     }
 }
 

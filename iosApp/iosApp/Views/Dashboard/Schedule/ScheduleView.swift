@@ -19,7 +19,7 @@ struct ScheduleView: View {
                 }
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.mainLight)
+                .listRowBackground(Color.more.primaryLight)
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
@@ -29,7 +29,7 @@ struct ScheduleView: View {
                     ScheduleDateWithList(key: key)
                 }
                 .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.mainLight)
+                .listRowBackground(Color.more.primaryLight)
             }
             .listStyle(.plain)
         }

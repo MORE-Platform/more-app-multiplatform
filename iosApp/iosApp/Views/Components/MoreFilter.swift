@@ -19,7 +19,7 @@ struct MoreFilter: View {
             HStack {
                 BasicText(text: $text)
                 image
-                    .foregroundColor(Color.more.icons)
+                    .foregroundColor(Color.more.secondary)
             }
         }
     }

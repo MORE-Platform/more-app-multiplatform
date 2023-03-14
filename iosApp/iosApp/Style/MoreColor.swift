@@ -12,17 +12,31 @@ extension Color {
     static let more = Color.MoreColor()
     
     struct MoreColor {
-        let mainBackground = Color("MainBackground")
-        let mainTitle = Color("MainTitle")
-        let mainDarker = Color("MainDarker")
-        let pickerInactive = Color("PickerInactive")
-        let pickerTextInavtice = Color("PickerTextInactive")
-        let main = Color("Main")
-        let white = Color("White")
-        let inactiveText = Color("InactiveText")
-        let importantBright = Color("ImportantBright")
+        let primaryDark = Color("PrimaryDark")
+        let primary = Color("Primary")
+        let primaryMedium = Color("PrimaryMedium")
+        let primaryLight200 = Color("PrimaryLight200")
+        let primaryLight = Color("PrimaryLight")
+        
+        let secondary = Color("Secondary")
+        let secondaryMedium = Color("SecondaryMedium")
+        let secondaryLight = Color("SecondaryLight")
+        
+        let textDefault = Color("Secondary")
+        let textInactive = Color("SecondaryMedium")
+        
         let important = Color("Important")
-        let icons = Color("Icons")
-        let mainLight = Color("MainLight")
+        let importantMedium = Color("ImportantMedium")
+        let importantLight = Color("ImportantLight")
+        
+        let approved = Color("Approved")
+        let approvedMedium = Color("ApprovedMedium")
+        let approvedLight = Color("ApprovedLight")
+        
+        let white = Color("White")
+        
+        // special elements
+        let divider = Color("PrimaryLight")
+        let mainBackground = Color("PrimaryLight")
     }
 }
