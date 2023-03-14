@@ -57,7 +57,7 @@ struct DashboardView_Previews: PreviewProvider {
                 } label: {
                     Image(systemName: "gearshape.fill")
                 }
-            }.foregroundColor(Color.more.icons)
+            }.foregroundColor(Color.more.secondary)
         }
     }
 }

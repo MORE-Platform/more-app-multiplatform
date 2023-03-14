@@ -28,12 +28,12 @@ struct ScheduleListItem: View {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
                 Text(scheduleModel.start.toDateString(dateFormat: "HH:mm"))
-                    .foregroundColor(Color.more.icons)
+                    .foregroundColor(Color.more.secondary)
                 Spacer()
                 Image(systemName: "clock.arrow.circlepath")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "active_for", inTable: stringTable, withComment: "how long the observation has been active for"), 0)))
                 Text(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000))
-                    .foregroundColor(Color.more.icons)
+                    .foregroundColor(Color.more.secondary)
             }
             ObservationButton(observationType: scheduleModel.observationType, state: currentState) {
                 if currentState == ScheduleState.running {

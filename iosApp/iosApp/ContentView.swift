@@ -35,7 +35,7 @@ struct ContentView: View {
                         } label: {
                             Image(systemName: "gearshape.fill")
                         }
-                    }.foregroundColor(Color.more.icons)
+                    }.foregroundColor(Color.more.secondary)
                 } else {
                     EmptyView()
                 }
