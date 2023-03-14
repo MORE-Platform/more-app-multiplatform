@@ -10,7 +10,7 @@ struct ContentView: View {
                 VStack {
                     if viewModel.hasCredentials {
                         DashboardView(dashboardViewModel: viewModel.dashboardViewModel)
-                            .onAppear{fi
+                            .onAppear{
                                 viewModel.dashboardViewModel.loadStudy()
                                 viewModel.dashboardViewModel.scheduleViewModel.loadData()
                             }

@@ -36,7 +36,6 @@ struct SettingsView: View {
                     viewModel.leaveStudy()
                     showSettings = false
                     contentViewModel.showLoginView()
-                    contentViewModel.credentialsDeleted()
                 } label: {
                     Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
