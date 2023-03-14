@@ -17,7 +17,6 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
 
     fun setObservationId(id: String) {
         observationID = id
-        dataPointCount.value.scheduleId = id
     }
 
     fun setDataManager(observationDataManager: ObservationDataManager) {
