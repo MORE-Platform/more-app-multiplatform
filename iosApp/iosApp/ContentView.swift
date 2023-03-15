@@ -1,9 +1,8 @@
-import shared
 import SwiftUI
+import shared
 
 struct ContentView: View {
     @EnvironmentObject var viewModel: ContentViewModel
-    @State var showSettings = false
     var body: some View {
         VStack {
             if viewModel.hasCredentials {

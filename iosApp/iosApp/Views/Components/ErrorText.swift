@@ -12,7 +12,7 @@ struct ErrorText: View {
     @Binding var message: String
     var body: some View {
         Text(message)
-            .foregroundColor(.more.importantBright)
+            .foregroundColor(.more.important)
             .fontWeight(.more.error)
             
     }

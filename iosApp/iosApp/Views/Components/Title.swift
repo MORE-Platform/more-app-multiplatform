@@ -13,7 +13,7 @@ struct Title: View {
     var body: some View {
         Text(titleText)
             .font(.more.title)
-            .foregroundColor(.more.mainTitle)
+            .foregroundColor(.more.primary)
             .fontWeight(.more.title)
     }
 }

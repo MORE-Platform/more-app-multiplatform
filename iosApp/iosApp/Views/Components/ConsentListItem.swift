@@ -16,7 +16,7 @@ struct ConsentListItem: View {
         HStack {
             VStack {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.more.main)
+                    .foregroundColor(.more.primary)
                 
             }
             Divider()

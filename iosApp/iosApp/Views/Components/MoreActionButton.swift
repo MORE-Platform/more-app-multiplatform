@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MoreActionButton<ButtonLabel: View>: View {
-    var backgroundColor: Color = .more.main
+    var color: Color = .more.primary
     var alertOpen: Binding<Bool> = .constant(false)
     let action: () -> Void
     var label: () -> ButtonLabel

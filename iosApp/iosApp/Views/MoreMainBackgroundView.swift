@@ -17,7 +17,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
             VStack(alignment: .center) {
                 content()
             }
-            .foregroundColor(.more.main)
+            .foregroundColor(.more.primary)
             .padding(.horizontal, 24)
         }
     }

@@ -28,7 +28,7 @@ struct ConsentView: View {
                     .progressViewStyle(.circular)
             } else {
                 HStack {
-                    MoreActionButton(backgroundColor: .more.importantBright) {
+                    MoreActionButton(color: .more.important) {
                         viewModel.decline()
                     } label: {
                         Text(verbatim: .localizedString(
@@ -50,7 +50,7 @@ struct ConsentView: View {
                                 forKey: "error_dialog_title",
                                 inTable: stringsTable,
                                 withComment: "Error dialog title"))
-                                .foregroundColor(.more.importantBright),
+                                .foregroundColor(.more.important),
                             message: Text(viewModel.error),
                             primaryButton: .default(Text(
                                 verbatim: .localizedString(

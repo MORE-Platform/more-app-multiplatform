@@ -12,7 +12,7 @@ struct BasicText: View {
     @Binding var text: String
     var body: some View {
         Text(text)
-            .foregroundColor(.more.main)
+            .foregroundColor(.more.primary)
     }
 }
 

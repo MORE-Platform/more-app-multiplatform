@@ -22,7 +22,7 @@ struct ScheduleView: View {
             }.padding(.bottom)
             .hideListRowSeparator()
             .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.more.mainLight)
+            .listRowBackground(Color.more.primaryLight)
         }
         .listStyle(.plain)
         .clearListBackground()
