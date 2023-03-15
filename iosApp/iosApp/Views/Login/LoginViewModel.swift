@@ -42,6 +42,9 @@ class LoginViewModel: ObservableObject {
         self.error = ""
         coreModel.sendRegistrationToken(token: token, endpoint: endpoint) { study in
             self.delegate?.tokenValid(study: study)
+            DispatchQueue.main.async {
+                self.token = ""
+            }
         } onError: { error in
             DispatchQueue.main.async {
                 self.error = error?.message ?? ""

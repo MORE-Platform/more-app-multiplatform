@@ -13,7 +13,7 @@ struct ConsentList: View {
     @Binding var permissionModel: PermissionModel
     
     var body: some View {
-        List {
+        ScrollView {
             ForEach(permissionModel.consentInfo, id: \.self) { consentModel in
                 ConsentListItem(consentInfo: consentModel)
                     .listRowInsets(.moreListStyleEdgeInsets.listItem)

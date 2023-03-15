@@ -19,11 +19,7 @@ struct ScheduleListItem: View {
     var body: some View {
         let currentState = viewModel.scheduleStates[scheduleModel.scheduleId] ?? ScheduleState.non
         VStack {
-            Button {} label: {
-                ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
-            }.buttonStyle(.plain)
-                .padding(0.5)
-
+            ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))

@@ -15,17 +15,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
         ZStack {
             Color.more.mainBackground.ignoresSafeArea()
             VStack(alignment: .center) {
-                HStack{
-                    Image("more_logo_blue")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100)
-                    Spacer()
-                    topBarContent()
-                }
-                .padding(.vertical, 16)
                 content()
-                Spacer()
             }
             .foregroundColor(.more.primary)
             .padding(.horizontal, 24)
@@ -39,7 +29,6 @@ struct MoreMainBackgroundView_Previews: PreviewProvider {
             Text("Hello World")
         } topBarContent: {
             Text("Hello World")
-        }
-
+        }        
     }
 }
