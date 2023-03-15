@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,13 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
-import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
@@ -37,8 +34,7 @@ class LeaveStudyLevelTwoActivity: ComponentActivity() {
             MoreBackground(rightCornerContent = {
                 IconButton(
                     onClick = {
-                        showNewActivityAndClearStack(this, DashboardActivity::class.java)
-                        showNewActivity(this, SettingsActivity::class.java)
+                        finish()
                     }) {
                     Icon(
                         Icons.Default.Close,
@@ -106,7 +102,7 @@ fun LeaveStudyLvlOneTwo(model: SettingsViewModel) {
             buttonColors = ButtonDefaults.moreApproved(),
             borderStroke = MoreColors.borderApproved()
         ) {
-            showNewActivityAndClearStack(context, DashboardActivity::class.java)
+            (context as? Activity)?.finish()
         }
 
         Row(

@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
@@ -98,7 +98,7 @@ fun LeaveStudyLvlOneView(model: SettingsViewModel) {
             buttonColors = ButtonDefaults.moreApproved(),
             borderStroke = MoreColors.borderApproved()
         ) {
-            showNewActivityAndClearStack(context, DashboardActivity::class.java)
+            (context as? Activity)?.finish()
         }
 
         SmallTextButton(
@@ -107,6 +107,7 @@ fun LeaveStudyLvlOneView(model: SettingsViewModel) {
             borderStroke = MoreColors.borderImportant()
         ) {
             model.openLeaveStudyLvlTwo(context)
+            (context as? Activity)?.finish()
         }
     }
 }

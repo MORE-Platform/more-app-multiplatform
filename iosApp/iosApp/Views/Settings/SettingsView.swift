@@ -11,9 +11,7 @@ import shared
 
 struct SettingsView: View {
     private let stringTable = "SettingsView"
-    @StateObject var viewModel: SettingsViewModel
-    @EnvironmentObject var contentViewModel: ContentViewModel
-    @Binding var showSettings: Bool
+    @StateObject var viewModel: SettingsViewModel = SettingsViewModel()
     
     var body: some View {
         MoreMainBackgroundView {
@@ -34,8 +32,7 @@ struct SettingsView: View {
                 
                 MoreActionButton(backgroundColor: Color.more.important) {
                     viewModel.leaveStudy()
-                    showSettings = false
-                    contentViewModel.showLoginView()
+                    //contentViewModel.showLoginView()
                 } label: {
                     Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
@@ -43,12 +40,13 @@ struct SettingsView: View {
         } topBarContent: {
             EmptyView()
         }
+        .customNavigationTitle(with: "Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(viewModel: SettingsViewModel(), showSettings: .constant(true))
-            .environmentObject(ContentViewModel())
+        SettingsView()
     }
 }

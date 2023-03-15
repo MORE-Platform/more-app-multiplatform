@@ -12,31 +12,35 @@ import shared
 struct DashboardView: View {
     @StateObject var dashboardViewModel: DashboardViewModel
     private let stringTable = "DashboardView"
-    @State private var totalTasks: Double = 0
+    @State var totalTasks: Double = 0
     @State var selection: Int = 0
-    @State private var tasksCompleted: Double = 0
+    @State var tasksCompleted: Double = 0
     var body: some View {
-        VStack {
-            StudyTitleForwardButton(title: $dashboardViewModel.studyTitle)
-                .padding(.bottom)
-            DashboardPicker(selection: $selection, firstTab: .constant(String
-                .localizedString(forKey: "schedule_string", inTable: stringTable, withComment: "schedule tab is selected")),
-            secondTab: .constant(String
-                .localizedString(forKey: "modules_string", inTable: stringTable, withComment: "modules tab is selected")))
-                .padding(.bottom)
-            MoreFilter(text: .constant(String
-                .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
-            .padding(.bottom)
-            TaskProgressView(progressViewTitle: .constant(String
-                .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                 withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
-            .padding(.bottom)
-            if selection == 0 {
-                ScheduleView()
-                    .environmentObject(dashboardViewModel.scheduleViewModel)
-            } else {
+        Navigation {
+            MoreMainBackgroundView {
+                VStack {
+                    Title(titleText: $dashboardViewModel.studyTitle)
+                        .padding(.bottom)
+                        
+                    MoreFilter(text: .constant(String
+                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
+                    .padding(.bottom)
+                    TaskProgressView(progressViewTitle: .constant(String
+                        .localizedString(forKey: "tasks_completed", inTable: stringTable,
+                                         withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
+                    .padding(.bottom)
+                    if selection == 0 {
+                        ScheduleView()
+                            .environmentObject(dashboardViewModel.scheduleViewModel)
+                    } else {
+                        EmptyView()
+                    }
+                }
+            } topBarContent: {
                 EmptyView()
             }
+            .customNavigationTitle(with: "Dashboard")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

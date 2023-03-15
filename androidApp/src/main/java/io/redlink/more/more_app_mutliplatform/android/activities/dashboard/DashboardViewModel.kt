@@ -1,19 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard
 
-import android.app.Activity
 import android.content.Context
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsActivity
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
@@ -54,16 +47,6 @@ class DashboardViewModel(context: Context): ViewModel() {
                     studyTitle.value = study.studyTitle
                 }
             }
-        }
-    }
-
-    fun viewDidLoad(context: Context) {
-
-    }
-
-    fun openSettings(context: Context) {
-        (context as? Activity)?.let {
-            showNewActivity(it, SettingsActivity::class.java)
         }
     }
 }

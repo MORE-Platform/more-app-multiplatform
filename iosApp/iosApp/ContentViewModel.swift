@@ -18,6 +18,8 @@ class ContentViewModel: ObservableObject {
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
+    @Published var navigationTitle = ""
+    
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
@@ -52,6 +54,11 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
         }
     }
+    
+    func loadData() {
+        self.dashboardViewModel.loadStudy()
+        self.dashboardViewModel.scheduleViewModel.loadData()
+    }
 }
 
 extension ContentViewModel: LoginViewModelListener {
@@ -71,6 +78,7 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
+        self.loadData()
         DispatchQueue.main.async {
             self.hasCredentials = true
         }

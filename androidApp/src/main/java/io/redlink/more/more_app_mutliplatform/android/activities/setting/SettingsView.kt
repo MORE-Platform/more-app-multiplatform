@@ -1,69 +1,43 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting
 
 import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.Title
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary
 
-class SettingsActivity: ComponentActivity() {
-
-    private val viewModel = SettingsViewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.createCoreViewModel(this)
-        setContent {
-            MoreBackground(rightCornerContent = {
-                IconButton(onClick = { this.finish() }) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = stringResource(id = R.string.more_close_overlay))
-                }
-            }) {
-                SettingsView(model = viewModel)
-            }
-        }
-    }
-}
-
 
 @Composable
 fun SettingsView(
-    model: SettingsViewModel
+    model: SettingsViewModel,
 ) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.8f)
-    ) {
-        LazyColumn(modifier = Modifier
             .fillMaxWidth()
-            .weight(1f)
-            .padding(vertical = 16.dp)) {
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(vertical = 16.dp)
+        ) {
 
-        item{
-                Title(text = getStringResource(id = R.string.more_settings_title))
-
-                Spacer(Modifier.height(18.dp))
-
+            item {
                 BasicText(
                     text = getStringResource(id = R.string.more_settings_permission_information),
                     color = MoreColors.TextDefault,
@@ -71,7 +45,10 @@ fun SettingsView(
 
                 Spacer(Modifier.height(18.dp))
 
-                SmallTextButton(text = getStringResource(id = R.string.more_settings_refresh_study), enabled = true) {
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_settings_refresh_study),
+                    enabled = true
+                ) {
 
                 }
 
@@ -87,7 +64,8 @@ fun SettingsView(
             }
 
             items(model.permissionModel.value.consentInfo) { consentInfo ->
-                Accordion(title = consentInfo.title,
+                Accordion(
+                    title = consentInfo.title,
                     description = consentInfo.info,
                     hasCheck = true,
                     hasSmallTitle = true,
@@ -95,23 +73,15 @@ fun SettingsView(
                 )
             }
 
-            item{
+            item {
                 Spacer(Modifier.height(24.dp))
 
                 SmallTextButton(
                     text = getStringResource(id = R.string.more_settings_exit_dialog_title),
                     buttonColors = ButtonDefaults.moreImportant(),
-                    borderStroke = MoreColors.borderImportant()) {
-                        model.openLeaveStudyLvlOne(context)
-                }
-
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_back),
-                    buttonColors = ButtonDefaults.moreSecondary(),
-                    borderStroke = MoreColors.borderDefault(),
-                    enabled = true
+                    borderStroke = MoreColors.borderImportant()
                 ) {
-                    (context as? Activity)?.finish()
+                    model.openLeaveStudyLvlOne(context)
                 }
 
                 Spacer(Modifier.height(12.dp))
