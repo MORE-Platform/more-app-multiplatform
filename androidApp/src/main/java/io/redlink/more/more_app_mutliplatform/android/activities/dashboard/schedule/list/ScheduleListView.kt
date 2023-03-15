@@ -14,8 +14,6 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.sched
 import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.Heading
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
-import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import java.time.LocalDate
 
 @Composable
 fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleViewModel) {
@@ -39,7 +37,7 @@ fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleVi
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.title}/id=${item.scheduleId}")
+                                        navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/id=${item.scheduleId}")
                                     }
                             ) {
                                 ScheduleListItem(scheduleModel = item, scheduleViewModel)

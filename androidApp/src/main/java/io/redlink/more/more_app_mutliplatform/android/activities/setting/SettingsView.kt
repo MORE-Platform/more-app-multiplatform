@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.setting
 
-import android.app.Activity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,10 +13,8 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.Title
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary
 
 
 @Composable

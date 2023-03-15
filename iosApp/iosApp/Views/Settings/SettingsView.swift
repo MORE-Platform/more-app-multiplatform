@@ -12,12 +12,11 @@ import shared
 struct SettingsView: View {
     private let stringTable = "SettingsView"
     @StateObject var viewModel: SettingsViewModel = SettingsViewModel()
+    private let navigationStrings = "Navigation"
     
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
-                Title(titleText: .constant(String.localizedString(forKey: "settings_title", inTable: stringTable, withComment: "Settings title")))
-                    .padding(.bottom)
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
                     .foregroundColor(.more.icons)
                     .padding(.bottom)
@@ -40,7 +39,7 @@ struct SettingsView: View {
         } topBarContent: {
             EmptyView()
         }
-        .customNavigationTitle(with: "Settings")
+        .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
         .navigationBarTitleDisplayMode(.inline)
     }
 }

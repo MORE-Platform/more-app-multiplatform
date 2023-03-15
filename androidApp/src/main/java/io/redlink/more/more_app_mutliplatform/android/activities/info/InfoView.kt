@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 
 @Composable
 fun InfoView(navController: NavController) {
@@ -19,7 +20,7 @@ fun InfoView(navController: NavController) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Open Settings",
                 onClick = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
@@ -27,7 +28,7 @@ fun InfoView(navController: NavController) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Open Settings",
                 onClick = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
@@ -35,7 +36,7 @@ fun InfoView(navController: NavController) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Open Settings",
                 onClick = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
@@ -43,7 +44,7 @@ fun InfoView(navController: NavController) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Open Settings",
                 onClick = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
         }

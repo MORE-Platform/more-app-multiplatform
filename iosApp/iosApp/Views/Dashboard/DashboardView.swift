@@ -15,19 +15,18 @@ struct DashboardView: View {
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
     @State var tasksCompleted: Double = 0
+    private let navigationStrings = "Navigation"
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    Title(titleText: $dashboardViewModel.studyTitle)
-                        .padding(.bottom)
                         
-                    MoreFilter(text: .constant(String
-                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
-                    .padding(.bottom)
                     TaskProgressView(progressViewTitle: .constant(String
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                          withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
+                    .padding(.bottom)
+                    MoreFilter(text: .constant(String
+                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
                     .padding(.bottom)
                     if selection == 0 {
                         ScheduleView()
@@ -39,7 +38,7 @@ struct DashboardView: View {
             } topBarContent: {
                 EmptyView()
             }
-            .customNavigationTitle(with: "Dashboard")
+            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }

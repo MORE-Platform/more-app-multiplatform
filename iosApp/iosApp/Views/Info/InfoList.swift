@@ -11,6 +11,15 @@ import SwiftUI
 struct InfoList: View {
     var body: some View {
         VStack {
+            InfoListItem(title: "Study Details", icon: "gear", destination: {
+                SettingsView()
+            })
+            InfoListItem(title: "Running Observations", icon: "gear", destination: {
+                SettingsView()
+            })
+            InfoListItem(title: "Completed Observations", icon: "gear", destination: {
+                SettingsView()
+            })
             InfoListItem(title: "Settings", icon: "gear", destination: {
                 SettingsView()
             })

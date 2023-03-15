@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NotificationView: View {
+    private let navigationStrings = "Navigation"
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -16,7 +17,7 @@ struct NotificationView: View {
             } topBarContent: {
                 EmptyView()
             }
-            .customNavigationTitle(with: "Notifications")
+            .customNavigationTitle(with: NavigationScreens.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
             .navigationBarTitleDisplayMode(.inline)
         }
 

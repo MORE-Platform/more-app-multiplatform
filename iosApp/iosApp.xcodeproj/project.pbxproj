@@ -38,6 +38,8 @@
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
 		1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */; };
 		1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */; };
+		1F80EC4129C25025004667B1 /* Navigation.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F80EC4029C25025004667B1 /* Navigation.strings */; };
+		1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4429C2524F004667B1 /* NavigationScreens.swift */; };
 		1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B629911E6E0023EF10 /* LoginViewModel.swift */; };
 		1F8847BA29914C8D0023EF10 /* Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B929914C8D0023EF10 /* Title.swift */; };
 		1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F8847BF29914E7F0023EF10 /* LoginView.strings */; };
@@ -129,6 +131,8 @@
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
 		1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModelExtension.swift; sourceTree = "<group>"; };
 		1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreMainBackground.swift; sourceTree = "<group>"; };
+		1F80EC4029C25025004667B1 /* Navigation.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Navigation.strings; sourceTree = "<group>"; };
+		1F80EC4429C2524F004667B1 /* NavigationScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationScreens.swift; sourceTree = "<group>"; };
 		1F8847B629911E6E0023EF10 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		1F8847B929914C8D0023EF10 /* Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title.swift; sourceTree = "<group>"; };
 		1F8847BE29914E7F0023EF10 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LoginView.strings; sourceTree = "<group>"; };
@@ -299,6 +303,7 @@
 				ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */,
 				EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */,
 				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
+				1F80EC4029C25025004667B1 /* Navigation.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -314,6 +319,7 @@
 				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
 				1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */,
 				1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */,
+				1F80EC4429C2524F004667B1 /* NavigationScreens.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -526,6 +532,7 @@
 			files = (
 				ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */,
 				1F8847C62991523D0023EF10 /* Default.strings in Resources */,
+				1F80EC4129C25025004667B1 /* Navigation.strings in Resources */,
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
@@ -578,6 +585,7 @@
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
+				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,

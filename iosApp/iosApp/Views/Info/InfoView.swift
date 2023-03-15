@@ -10,6 +10,7 @@ import SwiftUI
 
 struct InfoView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
+    private let navigationStrings = "Navigation"
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -28,7 +29,7 @@ struct InfoView: View {
             } topBarContent: {
                 EmptyView()
             }
-            .customNavigationTitle(with: "Info")
+            .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }

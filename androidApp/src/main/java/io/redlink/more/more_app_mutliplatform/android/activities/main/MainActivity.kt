@@ -49,44 +49,44 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             viewModel.showBackButton.value = false
             viewModel.tabIndex.value = it
             when (it) {
-                0 -> navController.navigate(NavigationScreen.DASHBOARD.title)
-                1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.title)
-                2 -> navController.navigate(NavigationScreen.INFO.title)
+                0 -> navController.navigate(NavigationScreen.DASHBOARD.route)
+                1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.route)
+                2 -> navController.navigate(NavigationScreen.INFO.route)
             }
         }) {
-        NavHost(navController = navController, startDestination = NavigationScreen.DASHBOARD.title) {
-            composable(NavigationScreen.DASHBOARD.title) {
+        NavHost(navController = navController, startDestination = NavigationScreen.DASHBOARD.route) {
+            composable(NavigationScreen.DASHBOARD.route) {
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.DASHBOARD.title
+                title = NavigationScreen.DASHBOARD.stringRes()
                 DashboardView(navController, viewModel = viewModel.dashboardViewModel)
             }
-            composable(NavigationScreen.NOTIFICATIONS.title) {
+            composable(NavigationScreen.NOTIFICATIONS.route) {
                 viewModel.tabIndex.value = 1
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.NOTIFICATIONS.title
+                title = NavigationScreen.NOTIFICATIONS.stringRes()
                 Text("NotificationView")
             }
-            composable(NavigationScreen.INFO.title) {
+            composable(NavigationScreen.INFO.route) {
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.INFO.title
+                title = NavigationScreen.INFO.stringRes()
                 InfoView(navController)
             }
-            composable(NavigationScreen.SETTINGS.title) {
-                title = NavigationScreen.SETTINGS.title
+            composable(NavigationScreen.SETTINGS.route) {
+                title = NavigationScreen.SETTINGS.stringRes()
                 viewModel.showBackButton.value = true
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.title}/id={id}",
+                "${NavigationScreen.SCHEDULE_DETAILS.route}/id={id}",
                 arguments = listOf(navArgument("id") {
                     type = NavType.StringType
                 })
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val scheduleId = arguments.getString("id")
-                title = NavigationScreen.SCHEDULE_DETAILS.title
+                title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 Text("$scheduleId")
             }
