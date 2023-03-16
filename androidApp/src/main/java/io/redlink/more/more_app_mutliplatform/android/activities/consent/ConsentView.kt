@@ -40,20 +40,21 @@ fun ConsentView(model: ConsentViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.8f)
+            .fillMaxWidth(0.9f)
     ) {
-        ConsentHeader(studyTitle = model.permissionModel.value.studyTitle, model)
+        ConsentHeader(studyTitle = model.permissionModel.value.studyTitle, model.permissionModel.value.studyParticipantInfo, model)
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
             .weight(1f)
             .padding(vertical = 16.dp)) {
 
             items(model.permissionModel.value.consentInfo) { consentInfo ->
-                ConsentListItem(title = consentInfo.title, description = consentInfo.info)
+                ConsentListItem(title = consentInfo.title, description = consentInfo.info,
+                    openInit = (consentInfo.title == "Study Consent"))
             }
         }
 
-        Box(Modifier.weight(0.15f)) {
+        Box(Modifier.weight(0.35f)) {
             ConsentButtons(model = model)
         }
     }

@@ -3,21 +3,13 @@ package io.redlink.more.more_app_mutliplatform.android.activities.consent.compos
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,9 +28,9 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
-fun ConsentListItem(title: String, description: String? = null) {
+fun ConsentListItem(title: String, description: String? = null, openInit: Boolean) {
     val open = remember {
-        mutableStateOf(false)
+        mutableStateOf(openInit)
     }
 
     val angle: Float by animateFloatAsState(
@@ -55,26 +47,17 @@ fun ConsentListItem(title: String, description: String? = null) {
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(top = 12.5.dp)) {
-            Icon(
-                Icons.Default.CheckBox,
-                contentDescription = getStringResource(
-                    id = R.string.more_permission_check_icon_description),
-                tint = MoreColors.Primary,
-            )
-            Divider(color = MoreColors.Primary, modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp))
-        }
         Column(modifier = Modifier
-            .weight(1f)
-            .padding(start = 8.dp)) {
+            .weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()) {
+                Icon(
+                    Icons.Default.Check,
+                    contentDescription = getStringResource(
+                        id = R.string.more_permission_check_icon_description),
+                    tint = MoreColors.Approved,
+                )
                 Text(
                     text = title,
                     fontSize = 18.sp,
@@ -94,14 +77,17 @@ fun ConsentListItem(title: String, description: String? = null) {
                     )
                 }
             }
-            Divider(color = MoreColors.Primary)
+            Divider(
+                color = MoreColors.Primary,
+                modifier = Modifier.padding(bottom = 12.dp))
             Text(
-                text = description
-                    ?: "Do you authorize MORE to access your protected resources? Click the resources for which you want to grant access:",
-                color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
-                maxLines = if(open.value) Int.MAX_VALUE else 1,
+                text = if (open.value) description
+                    ?: "Do you authorize MORE to access your protected resources? Click the resources for which you want to grant access:"
+                    else "",
+                color = MoreColors.Secondary,
+                maxLines = Int.MAX_VALUE,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = if (open.value) TextUnit.Unspecified else 14.sp
+                fontSize = TextUnit.Unspecified
             )
         }
     }

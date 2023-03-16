@@ -13,7 +13,9 @@ import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
 import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val TAG = "ConsentViewModel"
 
@@ -30,7 +32,7 @@ class ConsentViewModel(
     private var consentInfo: String? = null
 
     val permissionModel =
-        mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
+        mutableStateOf(PermissionModel("Title", "Participation Info", "Study Consent Info", emptyList()))
     val loading = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
     val permissionsNotGranted = mutableStateOf(false)
