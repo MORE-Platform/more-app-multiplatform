@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 private const val TAG = "ObservationDataManager"
 
-class ObservationDataManager(private val networkService: NetworkService): Closeable {
+abstract class ObservationDataManager(private val networkService: NetworkService): Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val observationDataRepository = ObservationDataRepository()
     init {
@@ -19,9 +19,7 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
             observationDataRepository.count().collect{
                 Napier.i(tag = TAG) {"Current collected data count: $it"}
                 if (it >= DATA_COUNT_THRESHOLD) {
-                    observationDataRepository.allAsBulk()?.let { dataBulk ->
-                        sendRecordedData(dataBulk)
-                    }
+                    sendData()
                 }
             }
         }
@@ -35,22 +33,12 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
     fun saveAndSend() {
         scope.launch {
             observationDataRepository.storeAndQuery()?.let {
-                sendRecordedData(it)
+                sendData()
             }
         }
     }
 
-    private fun sendRecordedData(data: DataBulk) {
-        scope.launch {
-            val (idList, error) = networkService.sendData(data)
-            if (idList.isNotEmpty()) {
-                deleteAll(idList)
-            }
-            error?.let {
-                Napier.e(tag = TAG, message = it.message)
-            }
-        }
-    }
+    abstract fun sendData()
 
     private fun deleteAll(idSet: Set<String>) {
         observationDataRepository.deleteAllWithId(idSet)
