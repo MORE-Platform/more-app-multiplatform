@@ -19,21 +19,17 @@ struct ScheduleListItem: View {
     var body: some View {
         let currentState = viewModel.scheduleStates[scheduleModel.scheduleId] ?? ScheduleState.non
         VStack {
-            Button {} label: {
-                ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
-            }.buttonStyle(.plain)
-                .padding(0.5)
-
+            ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
                 Text(scheduleModel.start.toDateString(dateFormat: "HH:mm"))
-                    .foregroundColor(Color.more.icons)
+                    .foregroundColor(Color.more.secondary)
                 Spacer()
                 Image(systemName: "clock.arrow.circlepath")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "active_for", inTable: stringTable, withComment: "how long the observation has been active for"), 0)))
                 Text(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000))
-                    .foregroundColor(Color.more.icons)
+                    .foregroundColor(Color.more.secondary)
             }
             ObservationButton(observationType: scheduleModel.observationType, state: currentState) {
                 if currentState == ScheduleState.running {

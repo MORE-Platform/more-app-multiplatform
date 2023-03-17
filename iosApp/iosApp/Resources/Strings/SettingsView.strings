@@ -1,0 +1,12 @@
+/* 
+  SettingsView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 08.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"settings_title" = "Settings";
+"settings_text" = "All necessary permissions have been accepted. Permissions can be viewed here. If you want to withdraw permissions, you can only do so by withdrawing from the study.";
+"refresh_study_config" = "Refresh Study Configuration";
+"leave_study" = "Leave Study";

@@ -12,6 +12,7 @@ import UIKit
 protocol ConsentViewModelListener {
     func credentialsStored()
     func decline()
+    func credentialsDeleted()
 }
 
 class ConsentViewModel: ObservableObject {
@@ -30,10 +31,16 @@ class ConsentViewModel: ObservableObject {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
-        coreModel.onLoadingChange{ loading in
+        coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
                 self.isLoading = loading
             }
+        }
+    }
+    
+    func reloadPermissions() {
+        coreModel.onConsentModelChange { model in
+            self.permissionModel = model
         }
     }
     

@@ -1,0 +1,11 @@
+/* 
+  Navigation.strings
+  iosApp
+
+  Created by Jan Cortiel on 15.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+"Dashboard" = "Dashboard";
+"Notifications" = "Notifications";
+"Information" = "Information";
+"Settings" = "Settings";

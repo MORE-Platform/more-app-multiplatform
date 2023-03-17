@@ -18,9 +18,14 @@ class ContentViewModel: ObservableObject {
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
+    @Published var navigationTitle = ""
+    
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
+    let settingsViewModel: SettingsViewModel
+    
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", consentInfo: [])
     
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
@@ -30,14 +35,16 @@ class ContentViewModel: ObservableObject {
         loginViewModel = LoginViewModel(registrationService: registrationService)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
+        settingsViewModel = SettingsViewModel()
 
         loginViewModel.delegate = self
         consentViewModel.delegate = self
+        settingsViewModel.delegate = self
     }
     
     func showLoginView() {
-        self.registrationService.reset()
         DispatchQueue.main.async {
+            self.registrationService.reset()
             self.loginViewScreenNr = 0
         }
     }
@@ -47,12 +54,20 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
         }
     }
+    
+    func loadData() {
+        self.dashboardViewModel.loadStudy()
+        self.dashboardViewModel.scheduleViewModel.loadData()
+    }
 }
 
 extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
         self.consentViewModel.consentInfo = study.consentInfo
         self.consentViewModel.buildConsentModel()
+        DispatchQueue.main.async {
+            self.permissionModel = self.consentViewModel.permissionModel
+        }
         showConsentView()
     }
 }
@@ -63,9 +78,15 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
+        self.loadData()
         DispatchQueue.main.async {
             self.hasCredentials = true
         }
-
+    }
+    
+    func credentialsDeleted() {
+        DispatchQueue.main.async {
+            self.hasCredentials = false
+        }
     }
 }
