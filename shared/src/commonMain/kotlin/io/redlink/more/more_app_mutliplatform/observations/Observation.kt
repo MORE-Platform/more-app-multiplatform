@@ -9,31 +9,42 @@ import kotlinx.serialization.json.*
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
     protected var running = false
+    private val observationIds = mutableSetOf<String>()
 
-    private var observationID: String? = null
-
-    fun setObservationId(id: String) {
-        observationID = id
+    fun start(observationId: String): Boolean {
+        observationIds.add(observationId)
+        return if (!running) {
+            start()
+        } else true
     }
+
+    fun stop(observationId: String) {
+        observationIds.remove(observationId)
+        finish()
+        if (observationIds.isEmpty()) {
+            stop()
+        }
+    }
+
+    fun observationDataManagerAdded() = dataManager != null
 
     fun setDataManager(observationDataManager: ObservationDataManager) {
         dataManager = observationDataManager
     }
 
-    abstract fun start(observationId: String): Boolean
+    protected abstract fun start(): Boolean
 
-    abstract fun stop()
+    protected abstract fun stop()
 
     fun storeData(data: Any) {
-        observationID?.let {
-            dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
-                this.observationId = it
-                if (this.timestamp == null) {
-                    this.timestamp = RealmInstant.now()
-                }
-                this.dataValue = data.asString() ?: ""
-            }))
-        }
+        val observationDataSchemas = observationIds.map { ObservationDataSchema().apply {
+            this.observationId = it
+            if (this.timestamp == null) {
+                this.timestamp = RealmInstant.now()
+            }
+            this.dataValue = data.asString() ?: ""
+        } }
+        dataManager?.add(observationDataSchemas)
     }
 
     fun finish() {

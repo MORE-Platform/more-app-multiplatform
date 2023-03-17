@@ -1,9 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDate
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
+import io.redlink.more.more_app_mutliplatform.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -15,8 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class ScheduleViewModel(observationFactory: ObservationFactory) : ViewModel() {
-    private val coreViewModel = CoreScheduleViewModel(observationFactory)
+class ScheduleViewModel(observationFactory: ObservationFactory, androidDataRecorder: AndroidDataRecorder) : ViewModel() {
+    private val coreViewModel = CoreScheduleViewModel(observationFactory, androidDataRecorder)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
@@ -31,24 +34,20 @@ class ScheduleViewModel(observationFactory: ObservationFactory) : ViewModel() {
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.activeScheduleState.collect {
-                activeScheduleState.clear()
-                activeScheduleState.putAll(it)
-            }
-        }
     }
 
-    fun startObservation(scheduleId: String, observationId: String, type: String) {
-        coreViewModel.start(scheduleId, observationId, type)
+    fun startObservation(context: Context, scheduleId: String) {
+        ObservationRecordingService.start(context, scheduleId)
+        activeScheduleState[scheduleId] = ScheduleState.RUNNING
     }
 
-    fun pauseObservation(scheduleId: String) {
-        coreViewModel.pause(scheduleId)
+    fun pauseObservation(context: Context, scheduleId: String) {
+        ObservationRecordingService.pause(context, scheduleId)
+        activeScheduleState[scheduleId] = ScheduleState.PAUSED
     }
 
-    fun stopObservation(scheduleId: String) {
-        coreViewModel.stop(scheduleId)
+    fun stopObservation(context: Context, scheduleId: String) {
+        ObservationRecordingService.stop(context, scheduleId)
     }
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {

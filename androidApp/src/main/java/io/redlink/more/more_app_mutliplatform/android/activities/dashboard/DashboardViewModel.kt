@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardViewModel
@@ -29,7 +30,7 @@ class DashboardViewModel(context: Context): ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val scheduleViewModel = ScheduleViewModel(observationFactory)
+    val scheduleViewModel = ScheduleViewModel(observationFactory, AndroidDataRecorder(context))
 
     init {
         scope.launch {

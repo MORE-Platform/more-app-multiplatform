@@ -23,6 +23,7 @@ class AndroidObservationDataManager(context: Context) : ObservationDataManager(
         Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
+
     override fun sendData() {
         val dataWorker = OneTimeWorkRequestBuilder<DataUploadWorker>()
             .setConstraints(workerConstraints)

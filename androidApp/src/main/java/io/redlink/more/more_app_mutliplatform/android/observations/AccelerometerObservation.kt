@@ -34,7 +34,7 @@ class AccelerometerObservation(
         Log.i(TAG, "Sensor accuracy changed to $accuracy")
     }
 
-    override fun start(observationId: String): Boolean {
+    override fun start(): Boolean {
         return sensor?.let {
             running = sensorManager.registerListener(this, it, sampleFrequency)
             running

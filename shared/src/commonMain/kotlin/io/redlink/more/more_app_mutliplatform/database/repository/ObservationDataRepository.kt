@@ -23,6 +23,13 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
         }
     }
 
+    fun addMultiple(dataList: List<ObservationDataSchema>) {
+        queue.addAll(dataList)
+        if (queue.size >= QUEUE_COUNT_THRESHOLD) {
+            storeDataFromQueue()
+        }
+    }
+
     override fun count() = realmDatabase.count<ObservationDataSchema>()
 
     fun storeDataFromQueue() {
