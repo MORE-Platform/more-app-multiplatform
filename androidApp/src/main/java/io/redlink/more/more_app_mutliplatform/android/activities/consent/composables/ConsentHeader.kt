@@ -3,11 +3,11 @@ package io.redlink.more.more_app_mutliplatform.android.activities.consent.compos
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -21,12 +21,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
-fun ConsentHeader(studyTitle: String, studyParticipantInfo: String ,model: ConsentViewModel) {
+fun ConsentHeader(studyTitle: String, studyParticipantInfo: String) {
     var participantInfoOverflow by remember {mutableStateOf(false)}
     val open = remember {
         mutableStateOf(false)
@@ -39,7 +38,9 @@ fun ConsentHeader(studyTitle: String, studyParticipantInfo: String ,model: Conse
         )
     )
 
-    Column(modifier = Modifier
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
         .fillMaxWidth()
         .verticalScroll(rememberScrollState())) {
         Text(
@@ -70,23 +71,24 @@ fun ConsentHeader(studyTitle: String, studyParticipantInfo: String ,model: Conse
             Spacer(Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()){
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        open.value = !open.value
+                    }){
                 Text(
                     text = if (open.value) "Read Less" else "Read More",
                     color = MoreColors.Primary,
                     fontWeight = FontWeight.SemiBold,
                 )
-                IconButton(
-                    onClick = { open.value = !open.value},
-                ) {
                     Icon(
                         Icons.Rounded.ExpandMore,
                         contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
                         tint = MoreColors.Primary,
                         modifier = Modifier.rotate(angle)
                     )
-                }
             }
         }
+        Spacer(Modifier.padding(8.dp))
     }
 }
