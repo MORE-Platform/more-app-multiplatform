@@ -1,31 +1,26 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import kotlinx.coroutines.*
+import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class CoreScheduleViewModel(private val observationFactory: ObservationFactory) {
+class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     private val observationRepository = ObservationRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow(emptyMap())
-
-    val activeScheduleState: MutableStateFlow<Map<String, ScheduleState>> = MutableStateFlow(
-        emptyMap()
-    )
-
-    private val observationMap = mutableMapOf<String, Observation>()
 
     init {
         scope.launch {
@@ -59,51 +54,24 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         }
     }
 
-    fun start(scheduleId: String, observationId: String, type: String) {
-        Napier.i { "Trying to start $scheduleId" }
-        if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
-            setObservationState(scheduleId, ScheduleState.RUNNING)
-        } else {
-            observationFactory.observation(observationId, type, scheduleId)?.let {
-                observationMap[scheduleId] = it
-                if (it.start(observationId)) {
-                    Napier.i { "Recording started of $scheduleId" }
-                    setObservationState(scheduleId, ScheduleState.RUNNING)
-                }
-            }
-        }
+    fun start(scheduleId: String) {
+        dataRecorder.start(scheduleId)
     }
 
     fun pause(scheduleId: String) {
-        observationMap[scheduleId]?.let {
-            stopSensor(it)
-            setObservationState(scheduleId, ScheduleState.PAUSED)
-        }
+        dataRecorder.pause(scheduleId)
     }
 
     fun stop(scheduleId: String) {
-        observationMap[scheduleId]?.let {
-            stopSensor(it)
-            setObservationState(scheduleId, ScheduleState.STOPPED)
-            observationMap.remove(scheduleId)
+        dataRecorder.stop(scheduleId)
+    }
+
+    private fun initializeDataCount(scheduleId: String): DataPointCountSchema {
+        return DataPointCountSchema().apply {
+            this.count = 0
+            this.scheduleId = scheduleId
         }
     }
-
-    private fun setObservationState(scheduleId: String, state: ScheduleState) {
-        scope.launch {
-            activeScheduleState.firstOrNull()?.let {
-                val mutable = it.toMutableMap()
-                mutable[scheduleId] = state
-                activeScheduleState.emit(mutable)
-            }
-        }
-    }
-
-    private fun stopSensor(observation: Observation) {
-        observation.stop()
-        observation.finish()
-    }
-
 
     private fun createMap(observationList: List<ObservationSchema>): Map<Long, List<ScheduleModel>> {
         return observationList
@@ -117,10 +85,6 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
 
     fun onScheduleModelListChange(provideNewState: ((Map<Long, List<ScheduleModel>>) -> Unit)): Closeable {
         return scheduleModelList.asClosure(provideNewState)
-    }
-
-    fun onScheduleStateChange(provideNewState: (Map<String, ScheduleState>) -> Unit): Closeable {
-        return activeScheduleState.asClosure(provideNewState)
     }
 }
 
