@@ -3,10 +3,9 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.time
-import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
+import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -68,7 +67,7 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
             setObservationState(scheduleId, ScheduleState.RUNNING)
         } else {
-            observationFactory.observation(observationId, type)?.let {
+            observationFactory.observation(observationId, type, scheduleId)?.let {
                 observationMap[scheduleId] = it
                 if (it.start(observationId)) {
                     Napier.i { "Recording started of $scheduleId" }
@@ -90,6 +89,13 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
             stopSensor(it)
             setObservationState(scheduleId, ScheduleState.STOPPED)
             observationMap.remove(scheduleId)
+        }
+    }
+
+    private fun initializeDataCount(scheduleId: String): DataPointCountSchema {
+        return DataPointCountSchema().apply {
+            this.count = 0
+            this.scheduleId = scheduleId
         }
     }
 
