@@ -35,7 +35,7 @@ class ContentViewModel: ObservableObject {
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
-        permissionManager = PermissionManager()
+        permissionManager = PermissionManager.permObj
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         settingsViewModel = SettingsViewModel()
 

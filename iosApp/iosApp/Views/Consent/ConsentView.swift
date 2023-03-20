@@ -41,7 +41,6 @@ struct ConsentView: View {
                     MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
                         viewModel.acceptConsent()
                         permissionManager.requestPermission()
-                        permissionManager.requestPermissionCamera()
                     } label: {
                         Text(verbatim: .localizedString(
                             forKey: "accept_button",
@@ -71,6 +70,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager())
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager.permObj)
     }
 }

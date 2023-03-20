@@ -13,24 +13,27 @@ import CoreLocation
 class GPSObservation: Observation_, CLLocationManagerDelegate {
     private var manager: CLLocationManager?
     public var currentLocation = CLLocation()
+    private var permsManager = PermissionManager.permObj
     
     init(sensorPermissions: Set<String>) {
         super.init(observationTypeImpl: GPSType(sensorPermissions: sensorPermissions))
         manager = CLLocationManager()
         manager?.delegate = self
         manager?.desiredAccuracy = kCLLocationAccuracyBest
-        
+        permsManager.setGPSNeeded()
     }
     
     override func start(observationId: String) -> Bool {
         manager?.allowsBackgroundLocationUpdates = true
-        manager?.requestAlwaysAuthorization()
         manager?.showsBackgroundLocationIndicator = true
-        if ((manager?.allowsBackgroundLocationUpdates) != nil) {
-            manager?.requestAlwaysAuthorization()
+        manager?.requestAlwaysAuthorization()
+        
+        if (manager?.authorizationStatus == CLAuthorizationStatus.authorizedAlways) {
             manager?.startUpdatingLocation()
             running = true
             return true
+        } else {
+            manager?.requestAlwaysAuthorization()
         }
         return false
     }

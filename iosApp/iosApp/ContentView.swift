@@ -18,7 +18,7 @@ struct ContentView: View {
                             LoginView(model: viewModel.loginViewModel)
                         } else {
                             ConsentView(viewModel: viewModel.consentViewModel,
-                            permissionManager: PermissionManager())
+                                        permissionManager: viewModel.permissionManager)
                         }
                     }
                 } topBarContent: {

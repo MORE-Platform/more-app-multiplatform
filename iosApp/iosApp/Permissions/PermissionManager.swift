@@ -12,45 +12,62 @@ import AVFoundation
 
 class PermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
-    @Published var authorisationStatus: CLAuthorizationStatus = .notDetermined
-    @Published var authorizationStatus: CLAuthorizationStatus
+    var gpsAuthorizationStatus: CLAuthorizationStatus?
+    var cameraPermissionGranted = false
     
-    private let locationManager: CLLocationManager
+    public var locationManager: CLLocationManager?
     
-    @Published var permissionGranted = false
+    var gpsNeeded: Bool
+    var cameraNeeded: Bool
     
-    override init() {
+    static let permObj = PermissionManager()
+
+    
+    override private init() {
         locationManager = CLLocationManager()
-        authorizationStatus = locationManager.authorizationStatus
+        gpsAuthorizationStatus = locationManager?.authorizationStatus
+        self.gpsNeeded = false
+        self.cameraNeeded = false
         
         super.init()
         
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
+        locationManager?.delegate = self
+        locationManager?.desiredAccuracy = kCLLocationAccuracyBest
     }
     
-    public func requestAuthorisation(always: Bool = false) {
+    public func requestGpsAuthorization(always: Bool = true) {
         if always {
-            self.locationManager.requestAlwaysAuthorization()
+            self.locationManager?.requestAlwaysAuthorization()
         } else {
-            self.locationManager.requestWhenInUseAuthorization()
+            self.locationManager?.requestWhenInUseAuthorization()
         }
     }
     
     func requestPermission() {
-        locationManager.requestWhenInUseAuthorization()
+        if(self.gpsNeeded){
+            requestGpsAuthorization()
+        }
+        
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
+        gpsAuthorizationStatus = manager.authorizationStatus
     }
     
     func requestPermissionCamera() {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: {accessGranted in
             DispatchQueue.main.async {
-                self.permissionGranted = accessGranted
+                self.cameraPermissionGranted = accessGranted
             }
         })
     }
+    
+    public func setGPSNeeded() {
+        self.gpsNeeded = true
+    }
+    
+    public func setCameraNeeded() {
+        self.cameraNeeded = true
+    }
+    
 }
