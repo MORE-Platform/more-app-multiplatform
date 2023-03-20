@@ -39,8 +39,8 @@ struct ConsentView: View {
                     }
                     Spacer()
                     MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
-                        viewModel.acceptConsent()
                         permissionManager.requestPermission()
+                        viewModel.acceptConsent()
                     } label: {
                         Text(verbatim: .localizedString(
                             forKey: "accept_button",

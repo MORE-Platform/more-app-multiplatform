@@ -8,7 +8,6 @@
 
 import shared
 import UIKit
-import CoreLocation
 import AVFoundation
 
 protocol ConsentViewModelListener {
@@ -17,7 +16,7 @@ protocol ConsentViewModelListener {
     func credentialsDeleted()
 }
 
-class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+class ConsentViewModel: NSObject, ObservableObject {
     private let coreModel: CorePermissionViewModel
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
@@ -26,23 +25,15 @@ class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published private(set) var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
-    @Published var authorisationStatus: CLAuthorizationStatus = .notDetermined
-    @Published var authorizationStatus: CLAuthorizationStatus
-    
-    private let locationManager: CLLocationManager
-    
-    @Published var permissionGranted = false
+
+    var permManager = PermissionManager.permObj
+    var permissionGranted = false
     
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
-        locationManager = CLLocationManager()
-        authorizationStatus = locationManager.authorizationStatus
         
         super.init()
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
+    
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -60,40 +51,20 @@ class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func acceptConsent() {
-        if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
-            coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
-                self.delegate?.credentialsStored()
-            } onError: { error in
-                if let error {
-                    self.error = error.message
+        if(permManager.permissionsGranted){
+            if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+                coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
+                    self.delegate?.credentialsStored()
+                } onError: { error in
+                    if let error {
+                        self.error = error.message
+                    }
                 }
+                
             }
-            
+        } else if(permManager.permissionsDenied){
+            showErrorAlert = true
         }
-    }
-    
-    public func requestAuthorisation(always: Bool = false) {
-        if always {
-            self.locationManager.requestAlwaysAuthorization()
-        } else {
-            self.locationManager.requestWhenInUseAuthorization()
-        }
-    }
-    
-    func requestPermission() {
-        locationManager.requestWhenInUseAuthorization()
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
-    }
-    
-    func requestPermissionCamera() {
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: {accessGranted in
-            DispatchQueue.main.async {
-                self.permissionGranted = accessGranted
-            }
-        })
     }
     
     func buildConsentModel() {
