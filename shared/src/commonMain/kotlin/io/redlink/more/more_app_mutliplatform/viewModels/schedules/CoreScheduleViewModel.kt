@@ -89,13 +89,6 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         }
     }
 
-    private fun initializeDataCount(scheduleId: String): DataPointCountSchema {
-        return DataPointCountSchema().apply {
-            this.count = 0
-            this.scheduleId = scheduleId
-        }
-    }
-
     private fun setObservationState(scheduleId: String, state: ScheduleState) {
         scope.launch {
             activeScheduleState.firstOrNull()?.let {

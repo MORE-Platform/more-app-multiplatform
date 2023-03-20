@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context): ViewModel() {
@@ -17,6 +18,7 @@ class MainViewModel(context: Context): ViewModel() {
     val navigationBarTitle = mutableStateOf("")
 
     val dashboardViewModel = DashboardViewModel(context)
+    val taskDetailsViewModel = TaskDetailsViewModel(dashboardViewModel.scheduleViewModel.coreViewModel)
     val settingsViewModel = SettingsViewModel()
 
     init {

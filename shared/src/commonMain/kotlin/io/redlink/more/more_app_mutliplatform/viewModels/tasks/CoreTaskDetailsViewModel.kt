@@ -2,18 +2,42 @@ package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleViewModel) {
 
     private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
+    private val observationRepository: ObservationRepository = ObservationRepository()
+    private val scheduleRepository: ScheduleRepository = ScheduleRepository()
+    private var dataPointCount: MutableStateFlow<DataPointCountSchema?> = MutableStateFlow(null)
+    private val scope = CoroutineScope(Dispatchers.Default + Job())
+    var taskDetailsModel: MutableStateFlow<TaskDetailsModel?> = MutableStateFlow(null)
+
+    fun loadTaskDetails(observationId: String, scheduleId: String) {
+        scope.launch {
+            observationRepository.getObservationByObservationId(observationId)?.let { observation ->
+                scheduleRepository.scheduleWithId(scheduleId).collect {
+                    it?.let { schedule ->
+                        dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
+                            dataPointCount = MutableStateFlow(count)
+                            taskDetailsModel = MutableStateFlow(TaskDetailsModel.createModelsFrom(observation, schedule, dataPointCount.value))
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun loadDataCount(scheduleId: String): Flow<DataPointCountSchema?> {
         return dataPointCountRepository.get(scheduleId)
@@ -29,17 +53,5 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
                 job.cancel()
             }
         }
-    }
-
-    fun startObservation(scheduleId: String, observationId: String, type: String) {
-        coreScheduleViewModel.start(scheduleId, observationId, type)
-    }
-
-    fun pause(scheduleId: String) {
-        coreScheduleViewModel.pause(scheduleId)
-    }
-
-    fun stop(scheduleId: String) {
-        coreScheduleViewModel.stop(scheduleId)
     }
 }
