@@ -4,18 +4,19 @@ import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.extensions.*
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.time
+import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 
 class CoreScheduleViewModel(private val observationFactory: ObservationFactory) {
     private val observationRepository = ObservationRepository()
