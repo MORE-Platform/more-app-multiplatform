@@ -1,6 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.util.createUUID
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +14,8 @@ import kotlinx.coroutines.launch
 
 class ObservationManager(private val observationFactory: ObservationFactory) {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private val scheduleRepository = ScheduleRepository()
+    private val observationRepository = ObservationRepository()
 
     val activeScheduleState: MutableStateFlow<Map<String, ScheduleState>> = MutableStateFlow(
         emptyMap()
@@ -26,19 +30,36 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         } ?: ScheduleState.NON
     }
 
-    fun start(scheduleId: String, observationId: String, type: String) {
+    fun start(scheduleId: String) {
         Napier.i { "Trying to start $scheduleId" }
         if (restart(scheduleId)) {
             return
         }
-        val entry = runningObservations.entries.firstOrNull{it.value.observationTypeImpl.observationType == type}
-        if (entry != null) {
-            start(scheduleId, observationId, type, entry.value, entry.key)
+        val model = models.firstOrNull { it.scheduleId == scheduleId}
+        if (model != null) {
+            if (model.state != ScheduleState.RUNNING) {
+                start(model.scheduleId, model.observationId, model.observationType)
+            }
+        } else {
+            scope.launch {
+                scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
+                    observationRepository.getObservationByObservationId(it.observationId)?.let { observation ->
+                        start(scheduleId, observation.observationId, observation.observationType)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun start(scheduleId: String, observationId: String, type: String) {
+        val observationKey = runningObservations.entries.firstOrNull{it.value.observationTypeImpl.observationType == type}?.key
+        if (observationKey != null) {
+            start(scheduleId, observationId, type, observationKey)
         } else {
             observationFactory.observation(type)?.let {
                 val uuid = createUUID()
-                start(scheduleId, observationId, type, it, uuid)
                 runningObservations[uuid] = it
+                start(scheduleId, observationId, type, uuid)
             }
         }
     }
@@ -47,17 +68,33 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         scheduleId: String,
         observationId: String,
         type: String,
-        observation: Observation,
         observationUUID: String
     ) {
-        if (observation.start(observationId)) {
-            models.add(ObservationManagerModel(
-                scheduleId,
-                observationId,
-                type,
-                observationUUID,
-                ScheduleState.RUNNING
-            ))
+        Napier.i { "Starting $scheduleId with type $type" }
+        if (runningObservations[observationUUID]?.start(observationId) == true) {
+            val model = models.firstOrNull { it.scheduleId == scheduleId}
+            if (model != null) {
+                if (model.observationUUID == model.observationUUID) {
+                    model.state = ScheduleState.RUNNING
+                } else {
+                    models.remove(model)
+                    models.add(ObservationManagerModel(
+                        scheduleId,
+                        observationId,
+                        type,
+                        observationUUID,
+                        ScheduleState.RUNNING
+                    ))
+                }
+            } else {
+                models.add(ObservationManagerModel(
+                    scheduleId,
+                    observationId,
+                    type,
+                    observationUUID,
+                    ScheduleState.RUNNING
+                ))
+            }
             setObservationState(scheduleId, ScheduleState.RUNNING)
             Napier.i { "Recording started of $scheduleId" }
         }
@@ -65,9 +102,11 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
 
     private fun restart(scheduleId: String): Boolean {
         return models.firstOrNull{it.scheduleId == scheduleId && it.state == ScheduleState.PAUSED}?.let {
+            Napier.i { "Restarting schedule: $scheduleId" }
             if (runningObservations[it.observationUUID]?.start(it.observationId) == true) {
                 it.state = ScheduleState.RUNNING
                 setObservationState(scheduleId, ScheduleState.RUNNING)
+                Napier.i { "Recording started of $scheduleId" }
                 true
             } else false
         } ?: false

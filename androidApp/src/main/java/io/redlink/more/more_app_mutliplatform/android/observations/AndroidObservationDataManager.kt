@@ -9,15 +9,7 @@ import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepositor
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 
-class AndroidObservationDataManager(context: Context) : ObservationDataManager(
-    NetworkService(
-        EndpointRepository(
-            SharedPreferencesRepository(context)
-        ), CredentialRepository(
-            SharedPreferencesRepository(context)
-        )
-    )
-) {
+class AndroidObservationDataManager(context: Context) : ObservationDataManager() {
     private val workManager = WorkManager.getInstance(context)
     private val workerConstraints =
         Constraints.Builder()

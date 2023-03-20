@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
@@ -8,13 +9,15 @@ import kotlinx.serialization.json.*
 
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
-    protected var running = false
+    private var running = false
     private val observationIds = mutableSetOf<String>()
 
     fun start(observationId: String): Boolean {
         observationIds.add(observationId)
         return if (!running) {
-            start()
+            Napier.i { "Observation with type ${observationTypeImpl.observationType} starting" }
+            running = start()
+            return running
         } else true
     }
 
@@ -23,6 +26,7 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         finish()
         if (observationIds.isEmpty()) {
             stop()
+            running = false
         }
     }
 

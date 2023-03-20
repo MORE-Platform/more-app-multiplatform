@@ -20,15 +20,15 @@ class AccelerometerObservation: Observation_ {
         super.init(observationTypeImpl: AccelerometerType(sensorPermissions: sensorPermission))
     }
     
-    override func start(observationId: String) -> Bool {
+    override func start() -> Bool {
         if motion.isAccelerometerAvailable {
             self.timer = setTimer()
             guard let timer else {
                 return false
             }
             self.motion.startAccelerometerUpdates()
-            RunLoop.current.add(timer, forMode: .default)
-            running = true
+            RunLoop.main.add(timer, forMode: .default)
+            
             return true
         }
         return false
@@ -37,7 +37,6 @@ class AccelerometerObservation: Observation_ {
     override func stop() {
         timer?.invalidate()
         motion.stopAccelerometerUpdates()
-        running = false
     }
     
     override func observerAccessible() -> Bool {

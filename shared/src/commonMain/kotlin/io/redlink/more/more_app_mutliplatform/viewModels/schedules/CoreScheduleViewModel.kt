@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class CoreScheduleViewModel(observationFactory: ObservationFactory, private val dataRecorder: DataRecorder) {
+class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     private val observationRepository = ObservationRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 

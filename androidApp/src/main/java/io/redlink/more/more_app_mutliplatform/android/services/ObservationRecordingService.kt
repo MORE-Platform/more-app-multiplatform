@@ -19,10 +19,6 @@ import kotlinx.coroutines.launch
 private const val TAG = "ObservationRecordingService"
 class ObservationRecordingService: Service() {
     private var observationManager: ObservationManager? = null
-    private val scheduleRepository = ScheduleRepository()
-    private val observationRepository = ObservationRepository()
-
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -65,13 +61,7 @@ class ObservationRecordingService: Service() {
     }
 
     private fun startObservation(scheduleId: String) {
-        scope.launch {
-            scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
-                observationRepository.getObservationByObservationId(it.observationId)?.let { observation ->
-                    observationManager?.start(scheduleId, observation.observationId, observation.observationType)
-                }
-            }
-        }
+        observationManager?.start(scheduleId)
     }
 
     private fun pauseObservation(scheduleId: String) {

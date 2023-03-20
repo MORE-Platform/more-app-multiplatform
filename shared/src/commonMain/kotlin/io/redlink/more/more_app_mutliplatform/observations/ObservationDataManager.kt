@@ -12,7 +12,7 @@ import kotlinx.coroutines.*
 
 private const val TAG = "ObservationDataManager"
 
-abstract class ObservationDataManager(private val networkService: NetworkService): Closeable {
+abstract class ObservationDataManager: Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val observationDataRepository = ObservationDataRepository()
     init {

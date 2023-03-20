@@ -13,7 +13,7 @@ struct NavigationText: View {
     var body: some View {
         Text(text)
             .font(.headline)
-            .foregroundColor(.more.icons)
+            .foregroundColor(.more.secondary)
     }
 }
 

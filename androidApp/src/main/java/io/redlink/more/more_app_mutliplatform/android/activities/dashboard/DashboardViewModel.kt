@@ -26,11 +26,9 @@ class DashboardViewModel(context: Context): ViewModel() {
     val finishedTasks = mutableStateOf(0)
     val tabData = Views.values()
 
-    private val observationFactory = AndroidObservationFactory(context)
-
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val scheduleViewModel = ScheduleViewModel(observationFactory, AndroidDataRecorder(context))
+    val scheduleViewModel = ScheduleViewModel(AndroidDataRecorder(context))
 
     init {
         scope.launch {
