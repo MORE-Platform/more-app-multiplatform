@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ConsentView: View {
     @StateObject var viewModel: ConsentViewModel
+    @StateObject var permissionManager: PermissionManager
 
     private let stringsTable = "ConsentView"
     var body: some View {
@@ -39,6 +40,7 @@ struct ConsentView: View {
                     Spacer()
                     MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
                         viewModel.acceptConsent()
+                        permissionManager.requestPermission()
                     } label: {
                         Text(verbatim: .localizedString(
                             forKey: "accept_button",
@@ -68,6 +70,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager.permObj)
     }
 }

@@ -19,22 +19,24 @@ class ContentViewModel: ObservableObject {
     @Published var loginViewScreenNr = 0
     
     @Published var navigationTitle = ""
-    
+
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
+    let permissionManager: PermissionManager
     let settingsViewModel: SettingsViewModel
-    
+
     @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", consentInfo: [])
-    
+
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
         hasCredentials = credentialRepository.hasCredentials()
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
-        consentViewModel = ConsentViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
+        permissionManager = PermissionManager.permObj
+        consentViewModel = ConsentViewModel(registrationService: registrationService)
         settingsViewModel = SettingsViewModel()
 
         loginViewModel.delegate = self
@@ -54,7 +56,7 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
         }
     }
-    
+
     func loadData() {
         self.dashboardViewModel.loadStudy()
         self.dashboardViewModel.scheduleViewModel.loadData()
@@ -83,7 +85,7 @@ extension ContentViewModel: ConsentViewModelListener {
             self.hasCredentials = true
         }
     }
-    
+
     func credentialsDeleted() {
         DispatchQueue.main.async {
             self.hasCredentials = false
