@@ -46,7 +46,7 @@ class ConsentViewModel(
         EndpointRepository(sharedPreferencesRepository),
         CredentialRepository(sharedPreferencesRepository)
     )
-    private val observationFactory = AndroidObservationFactory(context, networkService)
+    private val observationFactory = AndroidObservationFactory(context)
 
 
     init {

@@ -15,7 +15,6 @@ data class ScheduleModel(
     val done: Boolean,
     val start: Long,
     val end: Long,
-    var config: Map<String, Any> = emptyMap(),
     var currentlyRunning: Boolean = false
 ) {
 
@@ -31,14 +30,6 @@ data class ScheduleModel(
                     observationType = observation.observationType,
                     observationTitle = observation.observationTitle,
                     done = it.done,
-                    config = observation.configuration?.let { config ->
-                        try {
-                            Json.decodeFromString<JsonObject>(config).toMap()
-                        } catch (e: Exception) {
-                            Napier.e { e.stackTraceToString() }
-                            emptyMap()
-                        }
-                    } ?: emptyMap(),
                     start = start.toInstant().toEpochMilliseconds(),
                     end = end.toInstant().toEpochMilliseconds()
                 )
