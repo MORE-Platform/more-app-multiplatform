@@ -9,10 +9,7 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationTypes.GPSType
-import java.time.Instant
 import io.github.aakira.napier.Napier
-import java.time.LocalDateTime
-import java.util.*
 
 private const val TAG = "GPSObservation"
 private val permissions = setOf(
@@ -21,14 +18,14 @@ private val permissions = setOf(
 )
 
 class GPSObservation(
-    val context: Context,
+    context: Context,
     private val gpsService: GPSService
 ) : Observation(observationTypeImpl = GPSType(permissions)), GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
+    private val hasPermission = this.hasPermissions(context)
 
     fun getPermission(): Set<String> = permissions
 
-    // Implement settingValues on start
     override fun start(observationId: String): Boolean {
         if (this.activate()) {
             gpsService.registerForLocationUpdates(this)
@@ -59,10 +56,6 @@ class GPSObservation(
 
     override fun onLocationResult(result: LocationResult) {
         result.locations.forEach { location ->
-            val dateTime = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(location.time),
-                TimeZone.getDefault().toZoneId()
-            )
             storeData(
                 mapOf(
                     "longitude" to location.longitude,
@@ -74,7 +67,7 @@ class GPSObservation(
     }
 
     private fun activate(): Boolean {
-        if (hasPermissions()) {
+        if (this.hasPermission) {
             running = true
             return true
         }
@@ -83,7 +76,7 @@ class GPSObservation(
         return false
     }
 
-    private fun hasPermissions(): Boolean {
+    private fun hasPermissions(context: Context): Boolean  {
         getPermission().forEach { permission ->
             if (ActivityCompat.checkSelfPermission(
                     context,
