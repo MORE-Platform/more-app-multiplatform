@@ -57,7 +57,11 @@ struct ConsentView: View {
                                     forKey: "dialog_retry",
                                     inTable: stringsTable,
                                     withComment: "Dialog button to retry sending your consent for this study")),
-                            action: { viewModel.acceptConsent() }),
+                            action: {
+                            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                            }
+                        }),
                             secondaryButton: .cancel())
                     }
                 }

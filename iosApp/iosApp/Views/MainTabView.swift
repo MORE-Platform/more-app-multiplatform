@@ -13,19 +13,29 @@ struct MainTabView: View {
     private let strings = "Navigation"
     var body: some View {
         TabView {
-            DashboardView(dashboardViewModel: contentViewModel.dashboardViewModel)
-                .tabItem {
-                    Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
-                }
-            NotificationView()
-                .tabItem {
-                    Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                }
-            InfoView()
-                .tabItem {
-                    Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
-                }
+            Group {
+                DashboardView(dashboardViewModel: contentViewModel.dashboardViewModel)
+                    .tabItem {
+                        Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
+                    }
+                NotificationView()
+                    .tabItem {
+                        Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                    }
+                InfoView()
+                    .tabItem {
+                        Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
+                    }
+            }
         }
+        .accent(color: .more.white)
+        .onAppear {
+            UITabBar.appearance().barTintColor = UIColor(Color.more.primary)
+            UITabBar.appearance().backgroundColor = UIColor(Color.more.primary)
+            UINavigationBar.appearance().tintColor = UIColor(Color.more.secondary)
+        }
+        
+        
     }
 }
 
