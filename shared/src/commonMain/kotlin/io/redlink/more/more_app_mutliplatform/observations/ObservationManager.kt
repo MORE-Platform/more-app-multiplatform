@@ -11,6 +11,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 class ObservationManager(private val observationFactory: ObservationFactory) {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
@@ -38,28 +41,36 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         val model = models.firstOrNull { it.scheduleId == scheduleId}
         if (model != null) {
             if (model.state != ScheduleState.RUNNING) {
-                start(model.scheduleId, model.observationId, model.observationType)
+                start(model.scheduleId, model.observationId, model.observationType, model.config)
             }
         } else {
             scope.launch {
                 scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
                     observationRepository.getObservationByObservationId(it.observationId)?.let { observation ->
-                        start(scheduleId, observation.observationId, observation.observationType)
+                        val config = observation.configuration?.let { config ->
+                            try {
+                                Json.decodeFromString<JsonObject>(config).toMap()
+                            } catch (e: Exception) {
+                                Napier.e { e.stackTraceToString() }
+                                emptyMap()
+                            }
+                        } ?: emptyMap()
+                        start(scheduleId, observation.observationId, observation.observationType, config)
                     }
                 }
             }
         }
     }
 
-    private fun start(scheduleId: String, observationId: String, type: String) {
+    private fun start(scheduleId: String, observationId: String, type: String, config: Map<String, Any>) {
         val observationKey = runningObservations.entries.firstOrNull{it.value.observationTypeImpl.observationType == type}?.key
         if (observationKey != null) {
-            start(scheduleId, observationId, type, observationKey)
+            start(scheduleId, observationId, type, observationKey, config)
         } else {
             observationFactory.observation(type)?.let {
                 val uuid = createUUID()
                 runningObservations[uuid] = it
-                start(scheduleId, observationId, type, uuid)
+                start(scheduleId, observationId, type, uuid, config)
             }
         }
     }
@@ -68,9 +79,11 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         scheduleId: String,
         observationId: String,
         type: String,
-        observationUUID: String
+        observationUUID: String,
+        config: Map<String, Any>
     ) {
         Napier.i { "Starting $scheduleId with type $type" }
+        runningObservations[observationUUID]?.observationConfig(config)
         if (runningObservations[observationUUID]?.start(observationId, scheduleId) == true) {
             val model = models.firstOrNull { it.scheduleId == scheduleId}
             if (model != null) {
@@ -83,6 +96,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                         observationId,
                         type,
                         observationUUID,
+                        config,
                         ScheduleState.RUNNING
                     ))
                 }
@@ -92,6 +106,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                     observationId,
                     type,
                     observationUUID,
+                    config,
                     ScheduleState.RUNNING
                 ))
             }

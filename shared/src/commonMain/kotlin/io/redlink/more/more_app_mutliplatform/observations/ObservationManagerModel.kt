@@ -7,5 +7,6 @@ data class ObservationManagerModel(
     val observationId: String,
     val observationType: String,
     val observationUUID: String,
+    val config: Map<String, Any>,
     var state: ScheduleState = ScheduleState.NON
 )

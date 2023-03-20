@@ -10,12 +10,19 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var running = false
     private val observationIds = mutableSetOf<String>()
     private val scheduleIds = mutableMapOf<String, String>()
+    private val config = mutableMapOf<String, Any>()
+    private var configChanged = false
 
     fun start(observationId: String, scheduleId: String): Boolean {
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId
+        if (configChanged) {
+            stopAndFinish()
+            configChanged = false
+        }
         return if (!running) {
             Napier.i { "Observation with type ${observationTypeImpl.observationType} starting" }
+            applyObservationConfig(config)
             running = start()
             return running
         } else true
@@ -36,9 +43,20 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         dataManager = observationDataManager
     }
 
+    fun observationConfig(settings: Map<String, Any>) {
+        if (settings.isNotEmpty()) {
+            this.config += settings
+            configChanged = true
+        }
+    }
+
     protected abstract fun start(): Boolean
 
     protected abstract fun stop()
+
+    abstract fun observerAccessible(): Boolean
+
+    protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
     fun storeData(data: Any) {
         val observationDataSchemas = observationIds.map { ObservationDataSchema().apply {
@@ -49,6 +67,11 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
             this.dataValue = data.asString() ?: ""
         } }
         dataManager?.add(observationDataSchemas, scheduleIds.keys.toSet())
+    }
+
+    private fun stopAndFinish() {
+        stop()
+        finish()
     }
 
     private fun finish() {
@@ -62,7 +85,6 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         scheduleIds.clear()
     }
 
-    abstract fun observerAccessible(): Boolean
 
     fun isRunning() = running
 }
