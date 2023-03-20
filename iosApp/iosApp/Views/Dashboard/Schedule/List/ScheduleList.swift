@@ -15,12 +15,18 @@ struct ScheduleList: View {
     @State var scheduleModels: [ScheduleModel]?
     private let dateFormatter = DateFormatter()
     var body: some View {
-        Section {
-            ForEach(scheduleModels!, id: \.self) { schedule in
+        ForEach(scheduleModels!, id: \.scheduleId) { schedule in
+            ZStack {
                 ScheduleListItem(scheduleModel: schedule)
                 if schedule != scheduleModels![(scheduleModels!.endIndex)-1] {
                     Divider()
                 }
+                NavigationLink {
+                    Text("Details for scheduleid: \(schedule.observationType)")
+                } label: {
+                    EmptyView()
+                }
+                .opacity(0)
             }
         }
     }

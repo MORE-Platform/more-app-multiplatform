@@ -5,9 +5,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardActivity
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,10 +26,6 @@ class QuestionnaireViewModel: ViewModel() {
 
     private fun finished(setObservationToDone: Boolean = true) {
         //observerManagement.stop(this, setObservationToDone)
-    }
-
-    fun returnToMain(context: Context) {
-        showNewActivityAndClearStack(context, DashboardActivity::class.java)
     }
 
     fun goToNextActivity(context: Context) {

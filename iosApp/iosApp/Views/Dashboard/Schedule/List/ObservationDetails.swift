@@ -18,10 +18,10 @@ struct ObservationDetails: View {
                 VStack(alignment: .leading) {
                     BasicText(text: $observationTitle)
                         .font(Font.more.headline)
-                        .foregroundColor(Color.more.main)
+                        .foregroundColor(Color.more.primary)
                         .padding(0.5)
                     Text(observationType)
-                        .foregroundColor(Color.more.icons)
+                        .foregroundColor(Color.more.secondary)
                 }
                 Spacer()
                 Image(systemName: "chevron.forward")

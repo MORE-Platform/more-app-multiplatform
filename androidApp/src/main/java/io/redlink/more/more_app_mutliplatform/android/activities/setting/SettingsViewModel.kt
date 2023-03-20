@@ -24,31 +24,27 @@ import kotlinx.coroutines.*
 class SettingsViewModel(): ViewModel() {
     private var coreSettingsViewModel: CoreSettingsViewModel? = null
     private val studySchema = mutableStateOf<StudySchema?>(null)
-    private val studyRepository: StudyRepository = StudyRepository();
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
 
     val permissionModel =
         mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            studyRepository.getStudy().collect() {
-                withContext(Dispatchers.Main) {
-                    studySchema.value = it
-                    it?.let { study ->
-                        studySchema.value = study
-                        permissionModel.value = PermissionModel.createFromSchema(it)
-                    }
-                }
-            }
-        }
-    }
 
     fun createCoreViewModel(context: Context) {
         (context as? Activity)?.let {
             val storageRepository = SharedPreferencesRepository(it)
             coreSettingsViewModel = CoreSettingsViewModel(CredentialRepository(storageRepository), EndpointRepository(storageRepository))
+            viewModelScope.launch(Dispatchers.IO) {
+                coreSettingsViewModel?.let {
+                    it.loadStudy().collect { study ->
+                        withContext(Dispatchers.Main) {
+                            study?.let {
+                                studySchema.value = study
+                                permissionModel.value = PermissionModel.createFromSchema(study)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

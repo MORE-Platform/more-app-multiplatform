@@ -53,7 +53,7 @@ fun QuestionnaireButtons(model: QuestionnaireViewModel) {
 
         Button(
             onClick = {
-                model.returnToMain(context)
+
                       },
             colors = ButtonDefaults
                 .buttonColors(
