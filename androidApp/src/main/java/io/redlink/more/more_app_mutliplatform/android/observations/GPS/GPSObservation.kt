@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationTypes.GPSType
-import io.github.aakira.napier.Napier
 
 private const val TAG = "GPSObservation"
 private val permissions = setOf(
@@ -26,7 +25,7 @@ class GPSObservation(
 
     fun getPermission(): Set<String> = permissions
 
-    override fun start(observationId: String): Boolean {
+    override fun start(): Boolean {
         if (this.activate()) {
             gpsService.registerForLocationUpdates(this)
             return true
@@ -44,7 +43,7 @@ class GPSObservation(
                 && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    override fun setObservationConfig(settings: Map<String, Any>) {
+    override fun applyObservationConfig(settings: Map<String, Any>) {
         try {
             (settings[LOCATION_INTERVAL_MILLIS_KEY] as? Double)?.toLong()?.let {
                 gpsService.setIntervalMillis(it)
@@ -67,13 +66,7 @@ class GPSObservation(
     }
 
     private fun activate(): Boolean {
-        if (this.hasPermission) {
-            running = true
-            return true
-        }
-        Napier.i(tag = TAG) { "Missing Permission" }
-        stop()
-        return false
+        return this.hasPermission
     }
 
     private fun hasPermissions(context: Context): Boolean  {

@@ -30,17 +30,15 @@ class AccelerometerObservation(
         Log.i(TAG, "Sensor accuracy changed to $accuracy")
     }
 
-    override fun start(observationId: String): Boolean {
+    override fun start(): Boolean {
         return sensor?.let {
-            running = sensorManager.registerListener(this, it, sampleFrequency)
-            running
+            sensorManager.registerListener(this, it, sampleFrequency)
         } ?: false
     }
 
     override fun stop() {
         sensor?.let {
             sensorManager.unregisterListener(this)
-            running = false
         }
     }
 
@@ -48,6 +46,6 @@ class AccelerometerObservation(
         return this.sensor != null
     }
 
-    override fun setObservationConfig(settings: Map<String, Any>) {
+    override fun applyObservationConfig(settings: Map<String, Any>) {
     }
 }

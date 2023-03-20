@@ -23,14 +23,13 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
         permsManager.setGPSNeeded()
     }
     
-    override func start(observationId: String) -> Bool {
+    override func start() -> Bool {
         manager?.allowsBackgroundLocationUpdates = true
         manager?.showsBackgroundLocationIndicator = true
         manager?.requestAlwaysAuthorization()
         
         if (manager?.authorizationStatus == CLAuthorizationStatus.authorizedAlways) {
             manager?.startUpdatingLocation()
-            running = true
             return true
         } else {
             manager?.requestAlwaysAuthorization()
@@ -40,14 +39,13 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
     
     override func stop() {
         manager?.stopUpdatingLocation()
-        running = false
     }
     
     override func observerAccessible() -> Bool {
         ((manager?.isAccessibilityElement) != nil)
     }
     
-    override func setObservationConfig(settings: Dictionary<String, Any>){
+    override func applyObservationConfig(settings: Dictionary<String, Any>){
         
     }
     
