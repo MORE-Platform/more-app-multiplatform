@@ -42,9 +42,7 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
                 viewModel.pauseObservation(scheduleModel.scheduleId)
             } else {
                 viewModel.startObservation(
-                    scheduleModel.scheduleId,
-                    scheduleModel.observationId,
-                    scheduleModel.observationType
+                    scheduleModel
                 )
             }
         }

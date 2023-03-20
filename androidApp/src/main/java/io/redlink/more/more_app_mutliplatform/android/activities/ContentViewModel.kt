@@ -26,7 +26,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     private val credentialRepository: CredentialRepository = CredentialRepository(sharedPreferencesRepository)
 
     val loginViewModel: LoginViewModel = LoginViewModel(registrationService, this)
-    val consentViewModel: ConsentViewModel = ConsentViewModel(registrationService, this)
+    val consentViewModel: ConsentViewModel = ConsentViewModel(registrationService, this, context = MoreApplication.appContext!!)
 
     val hasCredentials = mutableStateOf(credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)

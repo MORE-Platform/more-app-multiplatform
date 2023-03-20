@@ -11,6 +11,14 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var observationID: String? = null
     private var scheduleId: String? = null
 
+    abstract fun start(observationId: String): Boolean
+
+    abstract fun stop()
+
+    abstract fun observerAccessible(): Boolean
+
+    abstract fun setObservationConfig(settings: Map<String, Any>)
+
     fun setObservationId(id: String) {
         observationID = id
     }
@@ -23,21 +31,17 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         dataManager = observationDataManager
     }
 
-    abstract fun start(observationId: String): Boolean
-
-    abstract fun stop()
-
     fun storeData(data: Any) {
         observationID?.let {
-                scheduleId?.let { scheduleId ->
-                    dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
-                        this.observationId = it
-                        if (this.timestamp == null) {
-                            this.timestamp = RealmInstant.now()
-                        }
-                        this.dataValue = data.asString() ?: ""
-                    }), scheduleId)
-                }
+            scheduleId?.let { scheduleId ->
+                dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
+                    this.observationId = it
+                    if (this.timestamp == null) {
+                        this.timestamp = RealmInstant.now()
+                    }
+                    this.dataValue = data.asString() ?: ""
+                }), scheduleId)
+            }
         }
     }
 
@@ -46,8 +50,6 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
             dataManager?.saveAndSend(scheduleId)
         }
     }
-
-    abstract fun observerAccessible(): Boolean
 
     fun isRunning() = running
 }

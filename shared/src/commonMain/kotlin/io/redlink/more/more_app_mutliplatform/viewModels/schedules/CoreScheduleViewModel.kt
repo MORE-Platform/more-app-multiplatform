@@ -59,16 +59,16 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         }
     }
 
-    fun start(scheduleId: String, observationId: String, type: String) {
-        Napier.i { "Trying to start $scheduleId" }
-        if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
-            setObservationState(scheduleId, ScheduleState.RUNNING)
+    fun start(scheduleModel: ScheduleModel) {
+        Napier.i { "Trying to start ${scheduleModel.scheduleId}" }
+        if (observationMap[scheduleModel.scheduleId] != null && observationMap[scheduleModel.scheduleId]?.start(scheduleModel.observationId) == true) {
+            setObservationState(scheduleModel.scheduleId, ScheduleState.RUNNING)
         } else {
-            observationFactory.observation(observationId, type, scheduleId)?.let {
-                observationMap[scheduleId] = it
-                if (it.start(observationId)) {
-                    Napier.i { "Recording started of $scheduleId" }
-                    setObservationState(scheduleId, ScheduleState.RUNNING)
+            observationFactory.observation(id = scheduleModel.observationId, type = scheduleModel.observationType, config = scheduleModel.config, scheduleId = scheduleModel.scheduleId)?.let {
+                observationMap[scheduleModel.scheduleId] = it
+                if (it.start(scheduleModel.observationId)) {
+                    Napier.i { "Recording started of ${scheduleModel.scheduleId}" }
+                    setObservationState(scheduleModel.scheduleId, ScheduleState.RUNNING)
                 }
             }
         }
