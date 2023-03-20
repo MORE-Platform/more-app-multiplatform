@@ -12,27 +12,20 @@ import shared
 struct ScheduleView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel 
     var body: some View {
-        if #available(iOS 16.0, *) {
-            List {
-                ForEach(viewModel.scheduleDates, id: \.self) { key in
-                    ScheduleDateWithList(key: key)
-                }
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.mainLight)
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-        } else {
-            List {
-                ForEach(viewModel.scheduleDates, id: \.self) { key in
-                    ScheduleDateWithList(key: key)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.mainLight)
-            }
-            .listStyle(.plain)
+        List(viewModel.scheduleDates, id: \.self) { key in
+            VStack(alignment: .leading) {
+                BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
+                    .font(Font.more.headline)
+                Divider()
+                ScheduleList(scheduleModels: viewModel.schedules[key])
+                    .environmentObject(viewModel)
+            }.padding(.bottom)
+            .hideListRowSeparator()
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.more.primaryLight)
         }
+        .listStyle(.plain)
+        .clearListBackground()
     }
 }
 
@@ -40,7 +33,7 @@ struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
             ScheduleView()
-                .environmentObject(ScheduleViewModel())
+                .environmentObject(ScheduleViewModel(observationFactory: IOSObservationFactory()))
         } topBarContent: {
             EmptyView()
         }

@@ -15,6 +15,6 @@ fun HeaderTitle (title: String) {
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        color = MoreColors.MainDarker,
+        color = MoreColors.Primary,
     )
 }

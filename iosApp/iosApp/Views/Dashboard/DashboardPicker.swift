@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct DashboardPicker: View {
-    @State var selection: Int
+    @Binding var selection: Int
     private let stringTable = "DashboardView"
     @Binding var firstTab: String
     @Binding var secondTab: String
@@ -20,12 +20,12 @@ struct DashboardPicker: View {
             BasicText(text: $secondTab).tag(1)
         }.pickerStyle(.segmented)
             .frame(height: 50)
-            .colorMultiply(Color.more.mainLight)
+            .colorMultiply(Color.more.primaryLight)
     }
 }
 
 struct DashboardPicker_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardPicker(selection: 0, firstTab: .constant("tab 1"), secondTab: .constant("tab 2"))
+        DashboardPicker(selection: .constant(0), firstTab: .constant("tab 1"), secondTab: .constant("tab 2"))
     }
 }

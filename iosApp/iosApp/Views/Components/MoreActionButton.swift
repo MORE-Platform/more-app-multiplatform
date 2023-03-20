@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MoreActionButton<ButtonLabel: View>: View {
-    var color: Color = .more.main
+    var backgroundColor: Color = .more.primary
     var alertOpen: Binding<Bool> = .constant(false)
     let action: () -> Void
     var label: () -> ButtonLabel
@@ -17,10 +17,10 @@ struct MoreActionButton<ButtonLabel: View>: View {
 
     var body: some View {
         Button(action: action, label: label)
-            .frame(minWidth: .moreFrameStyle.buttonMaxWidth, maxWidth: .moreFrameStyle.buttonMaxWidth)
+            .frame(maxWidth: .infinity)
             .padding()
             .foregroundColor(.more.white)
-            .background(color)
+            .background(backgroundColor)
             .cornerRadius(.moreBorder.cornerRadius)
             .alert(isPresented: alertOpen, content: errorAlert)
     }

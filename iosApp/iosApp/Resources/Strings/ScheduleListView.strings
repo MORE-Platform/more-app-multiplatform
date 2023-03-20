@@ -10,3 +10,5 @@
 "active_for" = "Active for";
 "start_questionnaire" = "Start Questionnaire";
 "start_observation" = "Start Observation";
+"pause_observation" = "Pause Observation";
+"stop_observation" = "Stop Observation";

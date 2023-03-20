@@ -10,6 +10,13 @@ import Foundation
 import CryptoKit
 
 extension String {
+    func localize(useTable table: String?, withComment comment: String) -> String {
+        var result = NSLocalizedString(self, tableName: table, comment: comment)
+        if result == self {
+            result = NSLocalizedString(self, tableName: table, comment: comment)
+        }
+        return result
+    }
     static func localizedString(forKey key: String, inTable table: String?, withComment comment: String) -> String {
         var result = NSLocalizedString(key, tableName: table, comment: comment)
         if result == key {

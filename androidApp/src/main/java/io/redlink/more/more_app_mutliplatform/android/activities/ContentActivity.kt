@@ -5,6 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentView
 import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
@@ -14,9 +18,7 @@ class ContentActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MoreBackground {
-                ContentView(viewModel = viewModel)
-            }
+            ContentView(viewModel = viewModel)
         }
     }
 }
@@ -24,12 +26,14 @@ class ContentActivity: ComponentActivity() {
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
     if (viewModel.hasCredentials.value) {
-        viewModel.openDashboard(LocalContext.current)
+        viewModel.openMainActivity(LocalContext.current)
     } else {
-        if (viewModel.loginViewScreenNr.value == 0) {
-            LoginView(model = viewModel.loginViewModel)
-        } else {
-            ConsentView(model = viewModel.consentViewModel)
+        MoreBackground(showBackButton = false) {
+            if (viewModel.loginViewScreenNr.value == 0) {
+                LoginView(model = viewModel.loginViewModel)
+            } else {
+                ConsentView(model = viewModel.consentViewModel)
+            }
         }
     }
 }

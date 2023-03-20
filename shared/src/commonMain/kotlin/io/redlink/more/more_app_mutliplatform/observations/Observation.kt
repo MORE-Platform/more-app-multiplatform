@@ -2,25 +2,52 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
+import io.redlink.more.more_app_mutliplatform.extensions.asString
 
-open class Observation(
-    private val observationIdentification: String,
-    private val obsType: String,
-    private val dataManager: ObservationDataManager
-) {
+abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
+    private var dataManager: ObservationDataManager? = null
+    protected var running = false
 
-    fun storeData(observationDataSchema: ObservationDataSchema) {
-        dataManager.add(observationDataSchema.apply {
-            this.observationId = observationIdentification
-            this.observationType = obsType
-            if (this.timestamp == null) {
-                this.timestamp = RealmInstant.now()
-            }
-        })
+    private var observationID: String? = null
+    private var scheduleId: String? = null
+
+    fun setObservationId(id: String) {
+        observationID = id
     }
 
-    fun storeAndSend(observationDataSchema: ObservationDataSchema) {
-        storeData(observationDataSchema)
-        dataManager.saveAndSend()
+    fun setScheduleId(id: String) {
+        scheduleId = id
     }
+
+    fun setDataManager(observationDataManager: ObservationDataManager) {
+        dataManager = observationDataManager
+    }
+
+    abstract fun start(observationId: String): Boolean
+
+    abstract fun stop()
+
+    fun storeData(data: Any) {
+        observationID?.let {
+                scheduleId?.let { scheduleId ->
+                    dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
+                        this.observationId = it
+                        if (this.timestamp == null) {
+                            this.timestamp = RealmInstant.now()
+                        }
+                        this.dataValue = data.asString() ?: ""
+                    }), scheduleId)
+                }
+        }
+    }
+
+    fun finish() {
+        scheduleId?.let { scheduleId ->
+            dataManager?.saveAndSend(scheduleId)
+        }
+    }
+
+    abstract fun observerAccessible(): Boolean
+
+    fun isRunning() = running
 }

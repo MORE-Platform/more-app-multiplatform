@@ -26,7 +26,7 @@ class RegistrationService (
     var study: Study? = null
         private set
 
-    private var participationToken: String? = null
+    var participationToken: String? = null
     private var endpoint: String? = null
 
     private val scope = CoroutineScope(Job() + Dispatchers.Default)

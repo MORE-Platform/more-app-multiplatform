@@ -77,7 +77,7 @@ fun Accordion(
                     if(hasCheck) {
                         IconInline(
                             icon = Icons.Rounded.Done,
-                            color = MoreColors.Done,
+                            color = MoreColors.Approved,
                             contentDescription = getStringResource(id = R.string.more_approved))
                     }
 
@@ -89,14 +89,14 @@ fun Accordion(
                         Icon(
                             Icons.Rounded.ExpandMore,
                             contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                            tint = MoreColors.Main,
+                            tint = MoreColors.Primary,
                             modifier = Modifier.rotate(angle)
                         )
 
                 }
 
                 Divider(
-                    color = MoreColors.Main,
+                    color = MoreColors.Primary,
                     modifier = Modifier.padding(4.dp)
                 )
             }
@@ -105,7 +105,7 @@ fun Accordion(
                 Text(
                     text = description
                         ?: "",
-                    color = if (open.value) MoreColors.Main else MoreColors.InactiveText,
+                    color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
                     maxLines = if(open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = if (open.value) TextUnit.Unspecified else 14.sp
@@ -115,7 +115,7 @@ fun Accordion(
                 Text(
                     text = description
                         ?: stringResource(id = R.string.more_authorization_description),
-                    color = MoreColors.Main,
+                    color = MoreColors.Primary,
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = TextUnit.Unspecified

@@ -10,16 +10,41 @@ import shared
 
 class ScheduleViewModel: ObservableObject {
     
-    private let coreModel: CoreScheduleViewModel = CoreScheduleViewModel()
+    private let coreModel: CoreScheduleViewModel
     @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
     @Published var scheduleDates: [UInt64] = []
+    @Published var scheduleStates: [String: ScheduleState] = [:]
     
-    func loadObservations() {
-        coreModel.onScheduleModelListChange { scheduleMap in
-            for (key, value) in scheduleMap {
-                self.schedules[UInt64(truncating: key)] = value
+    init(observationFactory: IOSObservationFactory) {
+        coreModel = CoreScheduleViewModel(observationFactory: observationFactory)
+    }
+    
+    func start(scheduleId: String, observationId: String, type: String) {
+        coreModel.start(scheduleId: scheduleId, observationId: observationId, type: type)
+    }
+    
+    func pause(scheduleId: String) {
+        coreModel.pause(scheduleId: scheduleId)
+    }
+    
+    func stop(scheduleId: String) {
+        coreModel.stop(scheduleId: scheduleId)
+    }
+    
+    func loadData() {
+        coreModel.onScheduleStateChange { stateMap in
+            DispatchQueue.main.async {
+                self.scheduleStates += stateMap
             }
-            self.scheduleDates = Array(self.schedules.keys).sorted()
+        }
+        coreModel.onScheduleModelListChange { scheduleMap in
+            DispatchQueue.main.async {
+                for (key, value) in scheduleMap {
+                    self.schedules[UInt64(truncating: key)] = value
+                }
+                self.scheduleDates = Array(self.schedules.keys).sorted()
+            }
         }
     }
+    
 }

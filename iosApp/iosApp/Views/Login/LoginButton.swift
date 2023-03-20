@@ -13,7 +13,7 @@ struct LoginButton: View {
     @EnvironmentObject var model: LoginViewModel
     @Binding var stringTable: String
     var body: some View {
-        MoreActionButton {
+        MoreActionButton(backgroundColor: Color.more.primary) {
             model.validate()
         } label: {
             Text(verbatim:.localizedString(forKey: "login_button", inTable: stringTable, withComment: "button to log into a more study"))

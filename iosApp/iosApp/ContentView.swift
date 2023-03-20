@@ -4,46 +4,33 @@ import shared
 struct ContentView: View {
     @EnvironmentObject var viewModel: ContentViewModel
     var body: some View {
-        MoreMainBackgroundView {
-            VStack {
-                if viewModel.hasCredentials {
-                    DashboardView(dashboardViewModel: viewModel.dashboardViewModel)
-                } else {
-                    if viewModel.loginViewScreenNr == 0 {
-                        LoginView(model: viewModel.loginViewModel)
-                    } else {
-                        ConsentView(viewModel: viewModel.consentViewModel, permissionManager: viewModel.permissionManager)
+        VStack {
+            if viewModel.hasCredentials {
+                MainTabView()
+                    .environmentObject(viewModel)
+                    .onAppear{
+                        viewModel.loadData()
                     }
-                }
-            }
-            
-        } topBarContent: {
-            HStack {
-                if viewModel.hasCredentials {
-                    HStack {
-                        Button {
-                        } label: {
-                            Image(systemName: "bell.fill")
+            } else {
+                MoreMainBackground {
+                    VStack {
+                        if viewModel.loginViewScreenNr == 0 {
+                            LoginView(model: viewModel.loginViewModel)
+                        } else {
+                            ConsentView(viewModel: viewModel.consentViewModel)
                         }
-                        .padding(.horizontal)
-                        Button {
-                    
-                        } label: {
-                            Image(systemName: "gearshape.fill")
-                        }
-                    }.foregroundColor(Color.more.icons)
-                } else {
+                    }
+                } topBarContent: {
                     EmptyView()
                 }
             }
         }
-        
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
+    static var previews: some View {
+        ContentView()
             .environmentObject(ContentViewModel())
-	}
+    }
 }

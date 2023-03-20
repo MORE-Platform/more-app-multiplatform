@@ -25,15 +25,15 @@ fun ConsentHeader(studyTitle: String, model: ConsentViewModel) {
             text = studyTitle,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            color = MoreColors.Main,
+            color = MoreColors.Primary,
             maxLines = 3,
             modifier = Modifier.fillMaxWidth()
         )
-        Divider(color = MoreColors.Main,
+        Divider(color = MoreColors.Primary,
             modifier = Modifier.padding(vertical = 16.dp))
         Text(
             text = getStringResource(id = R.string.more_permissions_main_consent_text),
-            color = MoreColors.Main,
+            color = MoreColors.Primary,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
             maxLines = 4

@@ -9,10 +9,13 @@ import io.realm.kotlin.types.BaseRealmObject
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 object RealmDatabase {
@@ -96,11 +99,12 @@ object RealmDatabase {
 
     inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
-        list: Set<Any>
+        list: List<Any>
     ) {
         realm?.writeBlocking {
-            val itemsToDelete = this.query<T>("${field.trim()} IN $0", list).find()
-            this.delete(itemsToDelete)
+            list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
+                delete(it)
+            }
         }
     }
 

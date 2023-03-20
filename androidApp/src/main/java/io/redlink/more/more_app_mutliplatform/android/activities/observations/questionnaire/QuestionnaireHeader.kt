@@ -37,7 +37,7 @@ fun QuestionnaireHeader(model: QuestionnaireViewModel) {
                     text = getString(R.string.more_questionnaire_type),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = MoreColors.Main,
+                    color = MoreColors.Primary,
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
             }

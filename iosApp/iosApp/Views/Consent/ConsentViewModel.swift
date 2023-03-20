@@ -14,6 +14,7 @@ import AVFoundation
 protocol ConsentViewModelListener {
     func credentialsStored()
     func decline()
+    func credentialsDeleted()
 }
 
 class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -45,10 +46,16 @@ class ConsentViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
-        coreModel.onLoadingChange{ loading in
+        coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
                 self.isLoading = loading
             }
+        }
+    }
+    
+    func reloadPermissions() {
+        coreModel.onConsentModelChange { model in
+            self.permissionModel = model
         }
     }
     

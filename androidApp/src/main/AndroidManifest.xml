@@ -34,20 +34,29 @@
         android:theme="@style/Theme.MorePlatform">
         <activity
             android:name=".activities.ContentActivity"
+            android:screenOrientation="portrait"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.dashboard.DashboardActivity"
-            android:exported="true">
-        </activity>
 
-        <activity android:name=".activities.setting.SettingsActivity"
+        <activity android:name=".activities.setting.leave_study.LeaveStudyLevelOneActivity"
+            android:screenOrientation="portrait"
+
             android:exported="true"
-            ></activity>
+            />
+        <activity android:name=".activities.setting.leave_study.LeaveStudyLevelTwoActivity"
+            android:screenOrientation="portrait"
+
+            android:exported="true"
+            />
+        <activity
+            android:name=".activities.main.MainActivity"
+            android:screenOrientation="portrait"
+            android:exported="true" />
 
         <activity android:name=".activities.observations.questionnaire.QuestionnaireActivity"
             android:screenOrientation="portrait"
@@ -55,6 +64,7 @@
         <activity android:name=".activities.observations.questionnaire.QuestionnaireResponseActivity"
             android:screenOrientation="portrait"
             android:exported="true" />
+
 
     </application>
 </manifest> 
