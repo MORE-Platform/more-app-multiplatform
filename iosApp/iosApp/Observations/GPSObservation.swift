@@ -12,17 +12,22 @@ import CoreLocation
 
 class GPSObservation: Observation_, CLLocationManagerDelegate {
     private var manager: CLLocationManager?
+    public var currentLocation = CLLocation()
     
     init(sensorPermissions: Set<String>) {
         super.init(observationTypeImpl: GPSType(sensorPermissions: sensorPermissions))
         manager = CLLocationManager()
         manager?.delegate = self
         manager?.desiredAccuracy = kCLLocationAccuracyBest
+        
     }
     
     override func start(observationId: String) -> Bool {
+        manager?.allowsBackgroundLocationUpdates = true
+        manager?.requestAlwaysAuthorization()
+        manager?.showsBackgroundLocationIndicator = true
         if ((manager?.allowsBackgroundLocationUpdates) != nil) {
-            manager?.requestWhenInUseAuthorization()
+            manager?.requestAlwaysAuthorization()
             manager?.startUpdatingLocation()
             running = true
             return true
@@ -48,13 +53,9 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
             return
         }
         
-        let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude]
-    
+        let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude, "altitude": first.altitude]
         
-        print("latitude: \(first.coordinate.latitude), longitude: \(first.coordinate.longitude)")
-        
-        self.storeData(data: dict, dateTime: -1)
+        self.storeData(data: dict)
     }
-    
 }
  
