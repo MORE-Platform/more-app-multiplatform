@@ -4,24 +4,26 @@ import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import kotlinx.coroutines.flow.Flow
-import org.mongodb.kbson.ObjectId
 
 class DataPointCountRepository : Repository<DataPointCountSchema>() {
     override fun count(): Flow<Long> {
         return realmDatabase.count<DataPointCountSchema>()
     }
 
-    fun upsert(dataPointCountSchema: DataPointCountSchema) {
+    fun incrementCount(scheduleId: String) {
         realmDatabase.realm?.writeBlocking {
             val existingObject: DataPointCountSchema? =
-                this.query<DataPointCountSchema>(query = "id == $0", dataPointCountSchema.id)
+                this.query<DataPointCountSchema>(query = "scheduleId == $0", scheduleId)
                     .first().find()
             if (existingObject != null) {
-                existingObject.count = dataPointCountSchema.count
+                existingObject.count++
             } else {
-                this.copyToRealm(dataPointCountSchema)
+                this.copyToRealm(DataPointCountSchema().apply {
+                    count = 1
+                    this.scheduleId = scheduleId
+                })
             }
-            Napier.i(tag = "DataPointCountRepository") { "Data Point Count incremented: ${dataPointCountSchema.count}" }
+            Napier.i(tag = "DataPointCountRepository") { "Data Point Count incremented: ${existingObject?.count}" }
         }
     }
 
@@ -29,10 +31,10 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
         return realmDatabase.queryFirst(query = "scheduleId == $0", queryArgs = arrayOf(scheduleId))
     }
 
-    fun delete(dataPointCountSchema: DataPointCountSchema) {
+    fun delete(scheduleId: String) {
         realmDatabase.realm?.writeBlocking {
             val existingObject: DataPointCountSchema? = this.query<DataPointCountSchema>(
-                query = "id == $0", dataPointCountSchema.id).first().find()
+                query = "scheduleId == $0", scheduleId).first().find()
             existingObject?.let {
                 this.delete(it)
             }

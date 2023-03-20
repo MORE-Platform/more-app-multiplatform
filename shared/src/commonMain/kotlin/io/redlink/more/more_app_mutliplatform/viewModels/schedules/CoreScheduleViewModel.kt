@@ -63,9 +63,8 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
         Napier.i { "Trying to start $scheduleId" }
         if (observationMap[scheduleId] != null && observationMap[scheduleId]?.start(observationId) == true) {
             setObservationState(scheduleId, ScheduleState.RUNNING)
-            observationMap[scheduleId]!!.setDataPointCount(initializeDataCount(scheduleId))
         } else {
-            observationFactory.observation(observationId, type, initializeDataCount(scheduleId))?.let {
+            observationFactory.observation(observationId, type, scheduleId)?.let {
                 observationMap[scheduleId] = it
                 if (it.start(observationId)) {
                     Napier.i { "Recording started of $scheduleId" }

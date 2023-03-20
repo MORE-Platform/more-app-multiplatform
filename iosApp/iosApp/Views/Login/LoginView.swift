@@ -17,51 +17,53 @@ struct LoginView: View {
     private let stringTable = "LoginView"
     
     var body: some View {
-        VStack(alignment: .center) {
-            Title(titleText:
-                    .constant(String
-                        .localizedString(forKey: "login_welcome_title", inTable: stringTable, withComment: "welcome string on login view")))
-            
-            VStack() {
-                VStack(alignment: .leading) {
-                    HStack {
-                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
-                        
-                        Spacer()
-                        UIToggleFoldViewButton(isOpen: $endpointShowTextField)
-                    }
-                    .padding(.bottom, 4)
-                    Group {
-                        if endpointShowTextField {
-                            MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
-                        } else {
-                            BasicText(text: $model.endpoint)
-                                .lineLimit(1)
+        NavigationView {
+            VStack(alignment: .center) {
+                Title(titleText:
+                        .constant(String
+                            .localizedString(forKey: "login_welcome_title", inTable: stringTable, withComment: "welcome string on login view")))
+                
+                VStack() {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
+                            
+                            Spacer()
+                            UIToggleFoldViewButton(isOpen: $endpointShowTextField)
                         }
+                        .padding(.bottom, 4)
+                        Group {
+                            if endpointShowTextField {
+                                MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
+                            } else {
+                                BasicText(text: $model.endpoint)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .padding(.moreContainerEdgeInsets.bottom)
+                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
+                        
+                        MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
                     }
-                    .padding(.moreContainerEdgeInsets.bottom)
-                    SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
                     
-                    MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
+                    if !model.error.isEmpty {
+                        ErrorText(message: $model.error)
+                    }
+                }
+                .padding()
+                
+                if !model.isLoading {
+                    LoginButton(stringTable: .constant(stringTable))
+                        .environmentObject(model)
+                } else {
+                    ProgressView()
+                        .progressViewStyle(.circular)
                 }
                 
-                if !model.error.isEmpty {
-                    ErrorText(message: $model.error)
-                }
+                Spacer()
             }
-            .padding()
-            
-            if !model.isLoading {
-                LoginButton(stringTable: .constant(stringTable))
-                    .environmentObject(model)
-            } else {
-                ProgressView()
-                    .progressViewStyle(.circular)
-            }
-            
-            Spacer()
+            .frame(maxWidth: .moreFrameStyle.minWidth)
         }
-        .frame(maxWidth: .moreFrameStyle.minWidth)
     }
 }
 

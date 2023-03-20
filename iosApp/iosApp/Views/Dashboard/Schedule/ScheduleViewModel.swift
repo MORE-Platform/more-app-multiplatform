@@ -33,13 +33,17 @@ class ScheduleViewModel: ObservableObject {
     
     func loadData() {
         coreModel.onScheduleStateChange { stateMap in
-            self.scheduleStates += stateMap
+            DispatchQueue.main.async {
+                self.scheduleStates += stateMap
+            }
         }
         coreModel.onScheduleModelListChange { scheduleMap in
-            for (key, value) in scheduleMap {
-                self.schedules[UInt64(truncating: key)] = value
+            DispatchQueue.main.async {
+                for (key, value) in scheduleMap {
+                    self.schedules[UInt64(truncating: key)] = value
+                }
+                self.scheduleDates = Array(self.schedules.keys).sorted()
             }
-            self.scheduleDates = Array(self.schedules.keys).sorted()
         }
     }
     

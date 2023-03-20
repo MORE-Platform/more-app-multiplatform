@@ -13,7 +13,7 @@ struct InactiveText: View {
     var body: some View {
         Text(text)
             .font(.moreFont.inactiveText)
-            .foregroundColor(.more.inactiveText)
+            .foregroundColor(.more.textInactive)
             .lineLimit(1)
     }
 }

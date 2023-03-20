@@ -1,30 +1,26 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
-import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
-    private var dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
-    private var dataPointCount: MutableStateFlow<DataPointCountSchema> = MutableStateFlow(DataPointCountSchema())
     protected var running = false
 
     private var observationID: String? = null
+    private var scheduleId: String? = null
 
     fun setObservationId(id: String) {
         observationID = id
     }
 
-    fun setDataManager(observationDataManager: ObservationDataManager) {
-        dataManager = observationDataManager
+    fun setScheduleId(id: String) {
+        scheduleId = id
     }
 
-    fun setDataPointCount(count: DataPointCountSchema) {
-        dataPointCount = MutableStateFlow(count)
+    fun setDataManager(observationDataManager: ObservationDataManager) {
+        dataManager = observationDataManager
     }
 
     abstract fun start(observationId: String): Boolean
@@ -33,20 +29,22 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
 
     fun storeData(data: Any) {
         observationID?.let {
-            dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
-                this.observationId = it
-                if (this.timestamp == null) {
-                    this.timestamp = RealmInstant.now()
+                scheduleId?.let { scheduleId ->
+                    dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
+                        this.observationId = it
+                        if (this.timestamp == null) {
+                            this.timestamp = RealmInstant.now()
+                        }
+                        this.dataValue = data.asString() ?: ""
+                    }), scheduleId)
                 }
-                this.dataValue = data.asString() ?: ""
-            }))
-            dataPointCountRepository.upsert(dataPointCount.value.apply { count += 1 })
         }
     }
 
     fun finish() {
-        dataManager?.saveAndSend()
-        dataPointCountRepository.delete(dataPointCount.value)
+        scheduleId?.let { scheduleId ->
+            dataManager?.saveAndSend(scheduleId)
+        }
     }
 
     abstract fun observerAccessible(): Boolean
