@@ -28,7 +28,7 @@ struct ConsentView: View {
                     .progressViewStyle(.circular)
             } else {
                 HStack {
-                    MoreActionButton(color: .more.important) {
+                    MoreActionButton(backgroundColor: .more.important) {
                         viewModel.decline()
                     } label: {
                         Text(verbatim: .localizedString(

@@ -6,10 +6,11 @@ abstract class ObservationFactory(networkService: NetworkService) {
     private val dataManager = ObservationDataManager(networkService)
     val observations = mutableSetOf<Observation>()
 
-    fun observation(id: String, type: String, config: Map<String, Any> = emptyMap()): Observation? {
+    fun observation(id: String, type: String, scheduleId: String, config: Map<String, Any> = emptyMap()): Observation? {
         return observations.firstOrNull { it.observationTypeImpl.observationType == type }?.apply {
             setObservationId(id)
             setObservationConfig(config)
+            setScheduleId(scheduleId)
             setDataManager(dataManager)
         }
     }

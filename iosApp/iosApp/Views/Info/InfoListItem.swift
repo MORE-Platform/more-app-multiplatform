@@ -19,7 +19,7 @@ struct InfoListItem<Destination: View>: View {
             } label: {
                 HStack {
                     Image(systemName: icon)
-                        .foregroundColor(.more.icons)
+                        .foregroundColor(.more.secondary)
                     NavigationText(text: .constant(title))
                     Spacer()
                 }

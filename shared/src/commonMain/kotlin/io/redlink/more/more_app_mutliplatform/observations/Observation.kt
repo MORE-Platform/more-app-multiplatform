@@ -9,6 +9,7 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     protected var running = false
 
     private var observationID: String? = null
+    private var scheduleId: String? = null
 
     abstract fun start(observationId: String): Boolean
 
@@ -20,6 +21,10 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
 
     fun setObservationId(id: String) {
         observationID = id
+    }
+
+    fun setScheduleId(id: String) {
+        scheduleId = id
     }
 
     fun setDataManager(observationDataManager: ObservationDataManager) {
@@ -42,7 +47,9 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     }
 
     fun finish() {
-        dataManager?.saveAndSend()
+        scheduleId?.let { scheduleId ->
+            dataManager?.saveAndSend(scheduleId)
+        }
     }
 
     fun isRunning() = running

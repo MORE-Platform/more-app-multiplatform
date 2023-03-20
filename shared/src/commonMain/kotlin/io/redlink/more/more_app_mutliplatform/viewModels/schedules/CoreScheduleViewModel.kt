@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
@@ -85,6 +86,13 @@ class CoreScheduleViewModel(private val observationFactory: ObservationFactory) 
             stopSensor(it)
             setObservationState(scheduleId, ScheduleState.STOPPED)
             observationMap.remove(scheduleId)
+        }
+    }
+
+    private fun initializeDataCount(scheduleId: String): DataPointCountSchema {
+        return DataPointCountSchema().apply {
+            this.count = 0
+            this.scheduleId = scheduleId
         }
     }
 
