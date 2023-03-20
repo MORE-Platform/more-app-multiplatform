@@ -2,14 +2,11 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.time
-import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
+import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -67,6 +64,13 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
 
     fun stop(scheduleId: String) {
         dataRecorder.stop(scheduleId)
+    }
+
+    private fun initializeDataCount(scheduleId: String): DataPointCountSchema {
+        return DataPointCountSchema().apply {
+            this.count = 0
+            this.scheduleId = scheduleId
+        }
     }
 
     private fun createMap(observationList: List<ObservationSchema>): Map<Long, List<ScheduleModel>> {

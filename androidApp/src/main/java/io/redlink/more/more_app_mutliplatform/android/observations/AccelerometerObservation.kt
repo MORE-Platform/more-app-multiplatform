@@ -36,15 +36,13 @@ class AccelerometerObservation(
 
     override fun start(): Boolean {
         return sensor?.let {
-            running = sensorManager.registerListener(this, it, sampleFrequency)
-            running
+            sensorManager.registerListener(this, it, sampleFrequency)
         } ?: false
     }
 
     override fun stop() {
         sensor?.let {
             sensorManager.unregisterListener(this)
-            running = false
         }
     }
 

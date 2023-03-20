@@ -71,7 +71,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         observationUUID: String
     ) {
         Napier.i { "Starting $scheduleId with type $type" }
-        if (runningObservations[observationUUID]?.start(observationId) == true) {
+        if (runningObservations[observationUUID]?.start(observationId, scheduleId) == true) {
             val model = models.firstOrNull { it.scheduleId == scheduleId}
             if (model != null) {
                 if (model.observationUUID == model.observationUUID) {
@@ -103,7 +103,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     private fun restart(scheduleId: String): Boolean {
         return models.firstOrNull{it.scheduleId == scheduleId && it.state == ScheduleState.PAUSED}?.let {
             Napier.i { "Restarting schedule: $scheduleId" }
-            if (runningObservations[it.observationUUID]?.start(it.observationId) == true) {
+            if (runningObservations[it.observationUUID]?.start(it.observationId, it.scheduleId) == true) {
                 it.state = ScheduleState.RUNNING
                 setObservationState(scheduleId, ScheduleState.RUNNING)
                 Napier.i { "Recording started of $scheduleId" }

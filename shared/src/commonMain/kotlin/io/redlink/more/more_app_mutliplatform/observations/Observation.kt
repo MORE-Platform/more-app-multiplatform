@@ -4,16 +4,16 @@ import io.github.aakira.napier.Napier
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.*
 
 abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
     private var dataManager: ObservationDataManager? = null
     private var running = false
     private val observationIds = mutableSetOf<String>()
+    private val scheduleIds = mutableMapOf<String, String>()
 
-    fun start(observationId: String): Boolean {
+    fun start(observationId: String, scheduleId: String): Boolean {
         observationIds.add(observationId)
+        scheduleIds[scheduleId] = observationId
         return if (!running) {
             Napier.i { "Observation with type ${observationTypeImpl.observationType} starting" }
             running = start()
@@ -48,11 +48,18 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
             }
             this.dataValue = data.asString() ?: ""
         } }
-        dataManager?.add(observationDataSchemas)
+        dataManager?.add(observationDataSchemas, scheduleIds.keys.toSet())
     }
 
-    fun finish() {
+    private fun finish() {
         dataManager?.saveAndSend()
+    }
+
+    fun removeDataCount() {
+        scheduleIds.keys.forEach {
+            dataManager?.removeDataPointCount(it)
+        }
+        scheduleIds.clear()
     }
 
     abstract fun observerAccessible(): Boolean

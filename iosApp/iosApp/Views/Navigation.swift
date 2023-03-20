@@ -25,7 +25,7 @@ struct Navigation<Content: View>: View {
                 .navigationViewStyle(.stack)
                 .accentColor(.more.secondary)
             }
-        }.background(Color.more.mainBackground)
+        }.background(Color.more.primaryLight)
     }
 }
 
