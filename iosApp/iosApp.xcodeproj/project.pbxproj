@@ -215,6 +215,15 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		07EF6C3F29B5E09500CEF37D /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
+				07EF6C4229B5E0DF00CEF37D /* PermissionList.swift */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
 		1F0BFA2D29B8D399003B3AB9 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,15 +263,6 @@
 				1FDC264B29C1D1660011D8A4 /* InfoList.swift */,
 			);
 			path = Info;
-			sourceTree = "<group>";
-		};
-		07EF6C3F29B5E09500CEF37D /* Permissions */ = {
-			isa = PBXGroup;
-			children = (
-				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
-				07EF6C4229B5E0DF00CEF37D /* PermissionList.swift */,
-			);
-			path = Permissions;
 			sourceTree = "<group>";
 		};
 		1F8847B829914BD50023EF10 /* Components */ = {
@@ -794,7 +794,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 38JZH6K694;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -813,7 +813,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -829,7 +829,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 38JZH6K694;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -848,7 +848,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

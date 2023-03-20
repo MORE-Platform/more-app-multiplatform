@@ -24,12 +24,16 @@
 	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
+	<key>NSCameraUsageDescription</key>
+	<string>More needs your camera to scan QR-Code</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>More needs to access you location to track your position for certain studies</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>More always needs access to you location to track your position for certain studies</string>
 	<key>NSLocationUsageDescription</key>
 	<string>More needs to access you location to track your position for certain studies</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>More needs to access your location in order to track your position for certain studies</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -56,19 +60,5 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>More always needs access to you location to track your position for certain studies</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>More needs to access your location in order to track your position for certain studies</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>More needs to access you location to track your position for certain studies</string>
-	<key>NSLocationUsageDescription</key>
-	<string>More needs to access you location to track your position for certain studies</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
-	<key>NSCameraUsageDescription</key>
-	<string>More needs your camera to scan QR-Code</string>
 </dict>
 </plist>
