@@ -1,24 +1,20 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.TabItem
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 
 @Composable
 fun MainTabView(selectedIndex: Int, onTabChange: (Int) -> Unit) {
-    val selectedColor = MoreColors.PrimaryDark
-    val unselectedColor = MoreColors.Primary
     val nameSet = setOf(NavigationScreen.DASHBOARD.stringRes(), NavigationScreen.NOTIFICATIONS.stringRes(), NavigationScreen.INFO.stringRes())
     TabRow(
         selectedTabIndex = 0,
@@ -28,7 +24,6 @@ fun MainTabView(selectedIndex: Int, onTabChange: (Int) -> Unit) {
                 color = Color.Transparent
             )
         },
-        modifier = Modifier.()
     ) {
 
         Tab(selected = selectedIndex == 0,

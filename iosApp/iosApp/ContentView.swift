@@ -17,7 +17,8 @@ struct ContentView: View {
                         if viewModel.loginViewScreenNr == 0 {
                             LoginView(model: viewModel.loginViewModel)
                         } else {
-                            ConsentView(viewModel: viewModel.consentViewModel)
+                            ConsentView(viewModel: viewModel.consentViewModel,
+                                        permissionManager: viewModel.permissionManager)
                         }
                     }
                 } topBarContent: {
