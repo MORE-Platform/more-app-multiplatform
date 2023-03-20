@@ -20,6 +20,9 @@ class PermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var gpsNeeded: Bool
     var cameraNeeded: Bool
     
+    var permissionsGranted: Bool
+    var permissionsDenied: Bool
+    
     static let permObj = PermissionManager()
 
     
@@ -28,6 +31,8 @@ class PermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         gpsAuthorizationStatus = locationManager?.authorizationStatus
         self.gpsNeeded = false
         self.cameraNeeded = false
+        self.permissionsGranted = false
+        self.permissionsDenied = false
         
         super.init()
         
@@ -41,6 +46,10 @@ class PermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         } else {
             self.locationManager?.requestWhenInUseAuthorization()
         }
+        
+        if(self.locationManager?.authorizationStatus == CLAuthorizationStatus.denied || self.locationManager?.authorizationStatus == CLAuthorizationStatus.restricted){
+            permissionsDenied = true
+        }
     }
     
     func requestPermission() {
@@ -48,6 +57,14 @@ class PermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             requestGpsAuthorization()
         }
         
+        checkAcceptedPerms()
+        
+    }
+    
+    private func checkAcceptedPerms() {
+        if(self.cameraNeeded){
+            permissionsGranted = (self.locationManager?.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
+        }
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
