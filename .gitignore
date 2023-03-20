@@ -9,4 +9,3 @@ captures
 local.properties
 xcuserdata
 shared/src/commonMain/kotlin/generated
-/iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
