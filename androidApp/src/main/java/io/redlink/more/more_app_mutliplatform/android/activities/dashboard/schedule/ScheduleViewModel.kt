@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -39,8 +37,8 @@ class ScheduleViewModel(observationFactory: ObservationFactory) : ViewModel() {
         }
     }
 
-    fun startObservation(scheduleId: String, observationId: String, type: String) {
-        coreViewModel.start(scheduleId, observationId, type)
+    fun startObservation(scheduleModel: ScheduleModel) {
+        coreViewModel.start(scheduleModel)
     }
 
     fun pauseObservation(scheduleId: String) {

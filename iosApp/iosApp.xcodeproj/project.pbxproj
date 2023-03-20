@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		07D9046829C85166003D2912 /* GPSObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9046729C85166003D2912 /* GPSObservation.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -104,6 +105,7 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		07D9046729C85166003D2912 /* GPSObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSObservation.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 			children = (
 				1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */,
 				1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */,
+				07D9046729C85166003D2912 /* GPSObservation.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -613,6 +616,7 @@
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
+				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
@@ -776,9 +780,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 38JZH6K694;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -797,8 +802,9 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -811,9 +817,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 38JZH6K694;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -832,8 +839,9 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
