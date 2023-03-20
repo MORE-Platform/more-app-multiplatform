@@ -74,7 +74,7 @@ class GPSObservation(
                 TAG,
                 "Location to store at time ${dateTime}: LONG: ${location.longitude}, LAT: ${location.latitude}"
             )
-            storeData(mapOf("longitude" to location.longitude, "latitude" to location.latitude, "altitude" to location.altitude), dateTime = location.time)
+            storeData(mapOf("longitude" to location.longitude, "latitude" to location.latitude, "altitude" to location.altitude))
         }
     }
 

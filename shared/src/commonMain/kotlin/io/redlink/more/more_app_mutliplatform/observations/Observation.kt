@@ -31,18 +31,17 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
         dataManager = observationDataManager
     }
 
-    fun storeData(data: Any, dateTime: Long = -1) {
+    fun storeData(data: Any) {
         observationID?.let {
-            dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
-                this.observationId = it
-                if (dateTime >= 0) {
-                    this.timestamp = RealmInstant.from(dateTime, 0)
-
-                } else if (this.timestamp == null) {
-                    this.timestamp = RealmInstant.now()
-                }
-                this.dataValue = data.asString() ?: ""
-            }))
+            scheduleId?.let { scheduleId ->
+                dataManager?.add(observationTypeImpl.addObservationType(ObservationDataSchema().apply {
+                    this.observationId = it
+                    if (this.timestamp == null) {
+                        this.timestamp = RealmInstant.now()
+                    }
+                    this.dataValue = data.asString() ?: ""
+                }), scheduleId)
+            }
         }
     }
 
