@@ -5,13 +5,14 @@ import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG = "ObservationDataManager"
 
-class ObservationDataManager(private val networkService: NetworkService): Closeable {
+abstract class ObservationDataManager: Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val observationDataRepository = ObservationDataRepository()
     private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
@@ -20,11 +21,17 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
             observationDataRepository.count().collect{
                 Napier.i(tag = TAG) {"Current collected data count: $it"}
                 if (it >= DATA_COUNT_THRESHOLD) {
-                    observationDataRepository.allAsBulk()?.let { dataBulk ->
-                        sendRecordedData(dataBulk)
-                    }
+                    sendData()
                 }
             }
+        }
+    }
+
+    fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
+        observationDataRepository.addMultiple(dataList)
+        dataList.forEach { Napier.i(tag = TAG) { "New data recorded: $it" } }
+        scheduleIdList.forEach {
+            dataPointCountRepository.incrementCount(it)
         }
     }
 
@@ -34,26 +41,19 @@ class ObservationDataManager(private val networkService: NetworkService): Closea
         dataPointCountRepository.incrementCount(scheduleId)
     }
 
-    fun saveAndSend(scheduleId: String) {
+    fun saveAndSend() {
         scope.launch {
             observationDataRepository.storeAndQuery()?.let {
-                sendRecordedData(it)
+                sendData()
             }
-            dataPointCountRepository.delete(scheduleId)
         }
     }
 
-    private fun sendRecordedData(data: DataBulk) {
-        scope.launch {
-            val (idList, error) = networkService.sendData(data)
-            if (idList.isNotEmpty()) {
-                deleteAll(idList)
-            }
-            error?.let {
-                Napier.e(tag = TAG, message = it.message)
-            }
-        }
+    fun removeDataPointCount(scheduleId: String) {
+        dataPointCountRepository.delete(scheduleId)
     }
+
+    abstract fun sendData()
 
     private fun deleteAll(idSet: Set<String>) {
         observationDataRepository.deleteAllWithId(idSet)

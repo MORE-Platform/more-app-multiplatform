@@ -1,17 +1,20 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.consent
 
+import android.Manifest
 import android.content.Context
 import android.os.Build
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.getSecureID
-import io.redlink.more.more_app_mutliplatform.managers.ObservationsManager
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
-import io.redlink.more.more_app_mutliplatform.observations.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
+import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
+import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
+import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
+import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
 import kotlinx.coroutines.*
 
@@ -24,18 +27,26 @@ interface ConsentViewModelListener {
 
 class ConsentViewModel(
     registrationService: RegistrationService,
-    private val consentViewModelListener: ConsentViewModelListener
+    private val consentViewModelListener: ConsentViewModelListener,
+    context: Context
 ) : ViewModel() {
     private val coreModel = CorePermissionViewModel(registrationService)
     private var consentInfo: String? = null
 
-    val permissionModel =
-        mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
     val loading = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
+
+    val permissionModel = mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
     val permissionsNotGranted = mutableStateOf(false)
     val permissions = mutableSetOf<String>()
-    val observations = mutableStateOf<List<Observation>?>(null)
+
+    private val sharedPreferencesRepository = SharedPreferencesRepository(context)
+
+    private val networkService = NetworkService(
+        EndpointRepository(sharedPreferencesRepository),
+        CredentialRepository(sharedPreferencesRepository)
+    )
+    private val observationFactory = AndroidObservationFactory(context)
 
 
     init {
@@ -43,6 +54,7 @@ class ConsentViewModel(
             coreModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
+                    permissions.addAll(observationFactory.sensorPermissions())
                 }
             }
         }
@@ -54,23 +66,11 @@ class ConsentViewModel(
                 }
             }
         }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            coreModel.observations.collect {
-                withContext(Dispatchers.Main) {
-                    observations.value = it
-                }
-            }
-        }
     }
 
-    fun getNeededPermissions(obs: List<Observation>) {
-        obs.let { observations ->
-            permissions += ObservationsManager
-                .getAllPermissionsForFactories(observations.map { it.observationType })
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ObservationType.NOTIFICATION.sensorPermission?.let { permissions.add(it) }
-            }
+    fun getNeededPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 

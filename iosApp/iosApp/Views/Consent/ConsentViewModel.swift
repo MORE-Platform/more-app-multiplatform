@@ -8,6 +8,7 @@
 
 import shared
 import UIKit
+import AVFoundation
 
 protocol ConsentViewModelListener {
     func credentialsStored()
@@ -15,7 +16,7 @@ protocol ConsentViewModelListener {
     func credentialsDeleted()
 }
 
-class ConsentViewModel: ObservableObject {
+class ConsentViewModel: NSObject, ObservableObject {
     private let coreModel: CorePermissionViewModel
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
@@ -24,10 +25,15 @@ class ConsentViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
-    
+
+    var permManager = PermissionManager.permObj
+    var permissionGranted = false
     
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
+        
+        super.init()
+    
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -45,15 +51,19 @@ class ConsentViewModel: ObservableObject {
     }
     
     func acceptConsent() {
-        if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
-            coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
-                self.delegate?.credentialsStored()
-            } onError: { error in
-                if let error {
-                    self.error = error.message
+        if(permManager.permissionsGranted){
+            if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+                coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
+                    self.delegate?.credentialsStored()
+                } onError: { error in
+                    if let error {
+                        self.error = error.message
+                    }
                 }
+                
             }
-
+        } else if(permManager.permissionsDenied){
+            showErrorAlert = true
         }
     }
     
