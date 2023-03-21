@@ -17,8 +17,8 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.Dashb
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
-import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,23 +81,27 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}",
+                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}&scheduleState={scheduleState}",
                 arguments = listOf(
                     navArgument("observationId") {
                     type = NavType.StringType
                 }, navArgument("scheduleId") {
+                    type = NavType.StringType
+                }, navArgument("scheduleState") {
                     type = NavType.StringType
                 })
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val observationId = arguments.getString("observationId")
                 val scheduleId = arguments.getString("scheduleId")
+                val scheduleState = arguments.getString("scheduleState")
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     viewModel = viewModel.taskDetailsViewModel,
                     observationId = observationId,
-                    scheduleId = scheduleId)
+                    scheduleId = scheduleId,
+                    scheduleState = ScheduleState.valueOf(scheduleState?: "NON"))
             }
         }
     }

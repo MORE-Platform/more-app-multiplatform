@@ -12,14 +12,19 @@ class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
+    @Published var dataPointCount: DataPointCountSchema?
     
-    init(observationId: String, scheduleId: String) {
+    init(observationId: String, scheduleId: String, scheduleState: ScheduleState) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())
-        coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId) { taskDetails in
+        coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId, scheduleState: scheduleState) { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails
             }
         }
-        print(taskDetailsModel?.observationTitle ?? "")
+        coreModel.onLoadDataPointCount { dataPointCount in
+            if let dataPointCount {
+                self.dataPointCount = dataPointCount
+            }
+        }
     }
 }
