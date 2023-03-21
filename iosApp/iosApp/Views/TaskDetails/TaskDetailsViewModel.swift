@@ -9,13 +9,11 @@
 import shared
 
 class TaskDetailsViewModel: ObservableObject {
-    private let coreScheduleViewModel: CoreScheduleViewModel
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
     
-    init(coreScheduleViewModel: CoreScheduleViewModel, observationId: String, scheduleId: String) {
-        self.coreScheduleViewModel = coreScheduleViewModel
+    init(observationId: String, scheduleId: String) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())
         coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId) { taskDetails in
             if let taskDetails {
