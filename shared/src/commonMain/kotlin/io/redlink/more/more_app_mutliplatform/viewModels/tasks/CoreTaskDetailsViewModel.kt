@@ -5,8 +5,6 @@ import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCount
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +20,7 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
     private var dataPointCount: MutableStateFlow<DataPointCountSchema?> = MutableStateFlow(null)
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-    var taskDetailsModel: MutableStateFlow<TaskDetailsModel?> = MutableStateFlow(null)
+    val taskDetailsModel: MutableStateFlow<TaskDetailsModel?> = MutableStateFlow(null)
 
     fun loadTaskDetails(observationId: String, scheduleId: String) {
         scope.launch {
@@ -31,7 +29,7 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
                     it?.let { schedule ->
                         dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
                             dataPointCount = MutableStateFlow(count)
-                            taskDetailsModel = MutableStateFlow(TaskDetailsModel.createModelsFrom(observation, schedule, dataPointCount.value))
+                            taskDetailsModel.value = TaskDetailsModel.createModelsFrom(observation, schedule, dataPointCount.value)
                         }
                     }
                 }
@@ -39,13 +37,10 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
         }
     }
 
-    fun loadDataCount(scheduleId: String): Flow<DataPointCountSchema?> {
-        return dataPointCountRepository.get(scheduleId)
-    }
-
-    fun onLoadDataCount(scheduleId: String, provideNewState: ((DataPointCountSchema?) -> Unit)): Closeable {
+    fun onLoadTaskDetails(observationId: String, scheduleId: String, provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
         val job = Job()
-        loadDataCount(scheduleId).onEach {
+        loadTaskDetails(observationId, scheduleId)
+        taskDetailsModel.onEach {
             provideNewState(it)
         }.launchIn(CoroutineScope(Dispatchers.Main + job))
         return object: Closeable {
@@ -53,5 +48,13 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
                 job.cancel()
             }
         }
+    }
+
+    fun startObservation(scheduleId: String) {
+        coreScheduleViewModel.start(scheduleId)
+    }
+
+    fun stopObservation(scheduleId: String) {
+        coreScheduleViewModel.stop(scheduleId)
     }
 }
