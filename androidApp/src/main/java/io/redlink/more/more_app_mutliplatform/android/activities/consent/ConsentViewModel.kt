@@ -16,7 +16,9 @@ import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepositor
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val TAG = "ConsentViewModel"
 
@@ -33,10 +35,10 @@ class ConsentViewModel(
     private val coreModel = CorePermissionViewModel(registrationService)
     private var consentInfo: String? = null
 
+    val permissionModel =
+        mutableStateOf(PermissionModel("Title", "Participation Info", "Study Consent Info", emptyList()))
     val loading = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
-
-    val permissionModel = mutableStateOf(PermissionModel("Title", "Participation Info", emptyList()))
     val permissionsNotGranted = mutableStateOf(false)
     val permissions = mutableSetOf<String>()
 

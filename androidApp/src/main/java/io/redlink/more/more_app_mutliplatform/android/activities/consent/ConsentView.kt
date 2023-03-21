@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentHeader
-import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentListItem
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MessageAlertDialog
 
 
@@ -40,20 +40,21 @@ fun ConsentView(model: ConsentViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.8f)
+            .fillMaxWidth(0.9f)
     ) {
-        ConsentHeader(studyTitle = model.permissionModel.value.studyTitle, model)
+        ConsentHeader(studyTitle = model.permissionModel.value.studyTitle, model.permissionModel.value.studyParticipantInfo)
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
             .weight(1f)
             .padding(vertical = 16.dp)) {
 
             items(model.permissionModel.value.consentInfo) { consentInfo ->
-                ConsentListItem(title = consentInfo.title, description = consentInfo.info)
+                Accordion(title = consentInfo.title, description = consentInfo.info,
+                    hasCheck = true, hasPreview = (consentInfo.title == "Study Consent"))
             }
         }
 
-        Box(Modifier.weight(0.15f)) {
+        Box(Modifier.weight(0.35f)) {
             ConsentButtons(model = model)
         }
     }
