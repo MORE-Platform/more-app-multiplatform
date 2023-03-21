@@ -35,7 +35,7 @@ struct ScheduleListItem: View {
                 if currentState == ScheduleState.running {
                     viewModel.pause(scheduleId: scheduleModel.scheduleId)
                 } else {
-                    viewModel.start(scheduleId: scheduleModel.scheduleId, observationId: scheduleModel.observationId, type: scheduleModel.observationType)
+                    viewModel.start(scheduleId: scheduleModel.scheduleId)
                 }
             }
             .buttonStyle(.plain)

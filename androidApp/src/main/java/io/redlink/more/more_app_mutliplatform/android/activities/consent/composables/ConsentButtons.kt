@@ -46,7 +46,7 @@ fun ConsentButtons(model: ConsentViewModel) {
         ) {
             Button(
                 onClick = {
-                    model.observations.value?.let { model.getNeededPermissions(it) }
+                    model.getNeededPermissions()
                     checkAndRequestLocationPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults

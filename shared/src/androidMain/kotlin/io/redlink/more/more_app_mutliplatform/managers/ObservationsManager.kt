@@ -10,6 +10,7 @@ class ObservationsManager {
         const val QUESTION_OBSERVER_TYPE = "question-observation"
 
         private fun getPermsForType(observationType: String): Set<String>? =
+            // get ObsFactory and get all permissions according to the existing entities
             when (observationType) {
                 ACCELEROMETER_OBSERVER_TYPE -> ObservationSystemPermissions.ACCELEROMETER_OBSERVER_PERMISSIONS.permissions
                 POLAR_VERITY_HR_OBSERVER_TYPE -> ObservationSystemPermissions.POLAR_VERITY_HR_OBSERVER_PERMISSIONS.permissions
