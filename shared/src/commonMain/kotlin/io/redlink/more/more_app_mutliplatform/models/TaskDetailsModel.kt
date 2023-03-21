@@ -17,7 +17,7 @@ class TaskDetailsModel(
     val dataPointCount: MutableStateFlow<DataPointCountSchema?>
 ) {
     companion object {
-        fun createModelsFrom(observation: ObservationSchema, schedule: ScheduleSchema, count: DataPointCountSchema?): TaskDetailsModel {
+        fun createModelFrom(observation: ObservationSchema, schedule: ScheduleSchema, count: DataPointCountSchema?): TaskDetailsModel {
             return TaskDetailsModel(
                 observationTitle = observation.observationTitle,
                 observationType = observation.observationType,

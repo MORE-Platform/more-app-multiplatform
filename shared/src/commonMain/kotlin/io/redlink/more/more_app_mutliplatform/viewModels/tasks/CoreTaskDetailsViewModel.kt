@@ -29,7 +29,7 @@ class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
                     it?.let { schedule ->
                         dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
                             dataPointCount = MutableStateFlow(count)
-                            taskDetailsModel.value = TaskDetailsModel.createModelsFrom(observation, schedule, dataPointCount.value)
+                            taskDetailsModel.value = TaskDetailsModel.createModelFrom(observation, schedule, dataPointCount.value)
                         }
                     }
                 }

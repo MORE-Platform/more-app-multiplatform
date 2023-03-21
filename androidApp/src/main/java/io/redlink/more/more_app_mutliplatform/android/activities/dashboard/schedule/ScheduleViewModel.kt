@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder) : ViewModel() {
-    val coreViewModel = CoreScheduleViewModel(androidDataRecorder)
+    private val coreViewModel = CoreScheduleViewModel(androidDataRecorder)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 

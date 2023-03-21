@@ -10,7 +10,7 @@ import shared
 
 class ScheduleViewModel: ObservableObject {
     
-    private(set) var coreModel: CoreScheduleViewModel
+    private var coreModel: CoreScheduleViewModel
     @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
     @Published var scheduleDates: [UInt64] = []
     @Published var scheduleStates: [String: ScheduleState] = [:]
