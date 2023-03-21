@@ -22,7 +22,7 @@ struct ScheduleList: View {
                     Divider()
                 }
                 NavigationLink {
-                    Text("Details for scheduleid: \(schedule.observationType)")
+                    TaskDetailView(taskDetailViewModel: TaskDetailViewModel())
                 } label: {
                     EmptyView()
                 }

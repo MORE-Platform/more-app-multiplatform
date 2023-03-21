@@ -20,7 +20,7 @@ struct InfoView: View {
                         InfoList()
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.more.mainLight)
+                        .listRowBackground(Color.more.primaryLight)
                     }
                     .listStyle(.plain)
                     .clearListBackground()

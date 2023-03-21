@@ -17,13 +17,13 @@ struct Navigation<Content: View>: View {
                 NavigationStack {
                     content()
                 }
-                .tint(.more.icons)
+                .tint(.more.secondary)
             } else {
                 NavigationView {
                     content()
                 }
                 .navigationViewStyle(.stack)
-                .accentColor(.more.icons)
+                .accentColor(.more.secondary)
             }
         }.background(Color.more.mainBackground)
     }

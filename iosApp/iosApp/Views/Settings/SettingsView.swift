@@ -18,7 +18,7 @@ struct SettingsView: View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
-                    .foregroundColor(.more.icons)
+                    .foregroundColor(.more.secondary)
                     .padding(.bottom)
                 MoreActionButton {
                     viewModel.reloadStudyConfig()
