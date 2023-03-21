@@ -6,14 +6,14 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
+import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleViewModel) {
+class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
 
     private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
@@ -51,10 +51,10 @@ class CoreTaskDetailsViewModel(private val coreScheduleViewModel: CoreScheduleVi
     }
 
     fun startObservation(scheduleId: String) {
-        coreScheduleViewModel.start(scheduleId)
+        dataRecorder.start(scheduleId)
     }
 
     fun stopObservation(scheduleId: String) {
-        coreScheduleViewModel.stop(scheduleId)
+        dataRecorder.stop(scheduleId)
     }
 }

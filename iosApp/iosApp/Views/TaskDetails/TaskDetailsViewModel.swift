@@ -16,7 +16,7 @@ class TaskDetailsViewModel: ObservableObject {
     
     init(coreScheduleViewModel: CoreScheduleViewModel, observationId: String, scheduleId: String) {
         self.coreScheduleViewModel = coreScheduleViewModel
-        self.coreModel = CoreTaskDetailsViewModel(coreScheduleViewModel: coreScheduleViewModel)
+        self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())
         coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId) { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails
