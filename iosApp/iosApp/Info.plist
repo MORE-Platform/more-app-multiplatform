@@ -24,6 +24,8 @@
 	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
+	<key>NSCameraUsageDescription</key>
+	<string>More needs your camera to scan QR-Code</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>More needs to access you location to track your position for certain studies</string>
 	<key>NSLocationAlwaysUsageDescription</key>
