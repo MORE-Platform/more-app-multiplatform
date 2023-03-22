@@ -7,6 +7,13 @@ import kotlinx.coroutines.flow.Flow
 
 abstract class Repository<T: BaseRealmObject>: Closeable {
     protected val realmDatabase = DatabaseManager.database
+    private var cache: T? = null
+
+    protected fun setCache(item: T?) {
+        cache = item
+    }
+
+    fun readCache() = cache
 
     abstract fun count(): Flow<Long>
 

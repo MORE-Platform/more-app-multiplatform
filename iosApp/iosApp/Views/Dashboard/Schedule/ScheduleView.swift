@@ -10,22 +10,26 @@ import SwiftUI
 import shared
 
 struct ScheduleView: View {
-    @EnvironmentObject var viewModel: ScheduleViewModel 
+    @EnvironmentObject var viewModel: ScheduleViewModel
+
     var body: some View {
-        List(viewModel.scheduleDates, id: \.self) { key in
-            VStack(alignment: .leading) {
-                BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
-                    .font(Font.more.headline)
-                Divider()
-                ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
-                    .environmentObject(viewModel)
-            }.padding(.bottom)
-            .hideListRowSeparator()
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.more.primaryLight)
-        }
-        .listStyle(.plain)
-        .clearListBackground()
+            List(viewModel.scheduleDates, id: \.self) { key in
+                Section {
+                    ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
+                        .environmentObject(viewModel)
+                } header: {
+                    BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
+                        .font(Font.more.headline)
+                }
+                .padding(.bottom)
+                .hideListRowSeparator()
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.more.primaryLight)
+
+            }
+            .listStyle(.plain)
+            .clearListBackground()
+
     }
 }
 
