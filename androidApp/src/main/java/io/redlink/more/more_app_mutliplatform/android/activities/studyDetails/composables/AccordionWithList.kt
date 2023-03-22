@@ -43,14 +43,14 @@ fun AccordionWithList(title: String, observations: RealmList<ObservationSchema>)
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    open.value = !open.value
-                }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                    .clickable {
+                        open.value = !open.value
+                    }
             ) {
                 Heading(text = title)
                 Icon(

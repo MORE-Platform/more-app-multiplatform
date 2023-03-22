@@ -44,7 +44,7 @@ fun ObservationList(observations: RealmList<ObservationSchema>) {
                 Icon(
                     Icons.Default.ArrowForwardIos,
                     contentDescription = "View observation details",
-                    tint = MoreColors.Secondary,
+                    tint = MoreColors.Primary,
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }
