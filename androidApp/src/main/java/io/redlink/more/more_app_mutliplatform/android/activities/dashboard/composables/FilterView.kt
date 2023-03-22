@@ -23,10 +23,12 @@ fun FilterView() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 19.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 19.dp),
     ){
         Text(
-            text = "Filters will be found here",
+            text = getStringResource(id = R.string.more_filter_deactivated),
             color = MoreColors.Primary,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

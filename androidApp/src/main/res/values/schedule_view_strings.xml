@@ -2,4 +2,5 @@
 <resources>
     <string name="more_schedule_view_start_time">Start: </string>
     <string name="more_schedule_view_end_time">End</string>
+    <string name="more_schedule_timeframe">Timeframe: </string>
 </resources>

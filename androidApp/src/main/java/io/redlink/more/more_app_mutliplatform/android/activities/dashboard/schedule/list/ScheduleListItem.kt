@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
     val enabled = scheduleModel.start.toDate() <= Date() && Date() < scheduleModel.end.toDate()
     val currentState = viewModel.activeScheduleState[scheduleModel.scheduleId] ?: ScheduleState.NON
     Column(
+        verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp)

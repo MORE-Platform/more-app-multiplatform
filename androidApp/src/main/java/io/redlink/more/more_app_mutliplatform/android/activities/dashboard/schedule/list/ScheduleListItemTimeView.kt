@@ -31,8 +31,9 @@ fun ScheduleListItemTimeView(startTime: Date, endTime: Date) {
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
-            text = "Timeframe: ",
-            color = MoreColors.Primary
+            text = getStringResource(id = R.string.more_schedule_timeframe),
+            color = MoreColors.Primary,
+            modifier = Modifier.padding(end = 3.dp)
         )
         Text(
             text = "${startTime.formattedString("HH:mm")} - ${endTime.formattedString("HH:mm")}",
