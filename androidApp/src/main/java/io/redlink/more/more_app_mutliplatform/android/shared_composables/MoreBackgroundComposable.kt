@@ -122,7 +122,7 @@ fun MoreTopAppBar(
 
 @Composable
 fun MoreBottomAppBar(selectedIndex: Int, onTabChange: (Int) -> Unit) {
-    BottomAppBar(elevation = 2.dp) {
+    BottomAppBar(elevation = 2.dp, backgroundColor = MoreColors.PrimaryDark) {
         MainTabView(selectedIndex, onTabChange)
     }
 }

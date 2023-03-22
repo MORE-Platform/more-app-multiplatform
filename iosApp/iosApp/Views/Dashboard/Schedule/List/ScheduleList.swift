@@ -8,21 +8,23 @@
 
 import SwiftUI
 import shared
-import Foundation
 
 struct ScheduleList: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
     @State var scheduleModels: [ScheduleModel]?
+    @State var scheduleStates: [String:ScheduleState]
     private let dateFormatter = DateFormatter()
     var body: some View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
             ZStack {
-                ScheduleListItem(scheduleModel: schedule)
-                if schedule != scheduleModels![(scheduleModels!.endIndex)-1] {
+                VStack {
+                    ScheduleListItem(scheduleModel: schedule)
+                        .environmentObject(viewModel)
                     Divider()
                 }
                 NavigationLink {
-                    Text("Details for scheduleid: \(schedule.observationType)")
+                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))
+                        .environmentObject(viewModel)
                 } label: {
                     EmptyView()
                 }
@@ -37,7 +39,7 @@ struct ScheduleList_Previews: PreviewProvider {
         ScheduleList(scheduleModels: [
             ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000, currentlyRunning: false),
             ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, currentlyRunning: false)
-        ])
+        ], scheduleStates: [:])
     }
 }
 

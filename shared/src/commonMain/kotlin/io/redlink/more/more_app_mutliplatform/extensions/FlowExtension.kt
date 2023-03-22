@@ -21,10 +21,12 @@ fun <T: Any> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     }
 }
 
-fun <T: Any> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
+fun <T: Any> MutableStateFlow<T?>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Job()
     this.onEach {
-        provideNewState(it)
+        it?.let {
+            provideNewState(it)
+        }
     }.launchIn(CoroutineScope(Dispatchers.Main + job))
     return object : Closeable {
         override fun close() {
