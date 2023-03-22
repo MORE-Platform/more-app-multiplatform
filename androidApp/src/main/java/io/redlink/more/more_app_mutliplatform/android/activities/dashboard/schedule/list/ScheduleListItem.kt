@@ -1,9 +1,10 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForwardIos
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,7 +33,17 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
             .padding(vertical = 16.dp)
     ) {
         SmallTitle(text = scheduleModel.observationTitle, color = MoreColors.Primary)
-        BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+            ) {
+            BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
+            Icon(
+                Icons.Rounded.KeyboardArrowRight,
+                contentDescription = getStringResource(id = R.string.more_schedule_details),
+                tint = MoreColors.Primary
+            )
+        }
         ScheduleListItemTimeView(
             startTime = scheduleModel.start.toDate(),
             endTime = scheduleModel.end.toDate()
