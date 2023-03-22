@@ -7,7 +7,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,48 +29,26 @@ class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
                 scheduleRepository.scheduleWithId(scheduleId).collect {
                     it?.let { schedule ->
                         dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
-                            dataPointCount = MutableStateFlow(count)
-                            taskDetailsModel.value = TaskDetailsModel.createModelFrom(observation, schedule, dataPointCount.value)
+                            taskDetailsModel.value = TaskDetailsModel.createModelFrom(observation, schedule, count)
                         }
                     }
+                }
+            }
+            taskDetailsModel.collect {
+                it?.let {
+                    dataPointCount.value = it.dataPointCount
                 }
             }
         }
     }
 
-    fun loadDataPointCount(): MutableStateFlow<Long> {
-        val count: MutableStateFlow<Long> = MutableStateFlow(0)
-        CoroutineScope(Dispatchers.Default + Job()).launch {
-            dataPointCount.collect { dataPointcountSchema ->
-                count.value = dataPointcountSchema?.count?: 0
-            }
-        }
-        return count
-    }
-
     fun onLoadTaskDetails(observationId: String, scheduleId: String, provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
-        val job = Job()
         loadTaskDetails(observationId, scheduleId)
-        taskDetailsModel.onEach {
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object: Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
+        return taskDetailsModel.asClosure(provideNewState)
     }
 
     fun onLoadDataPointCount(provideNewState: ((DataPointCountSchema?) -> Unit)): Closeable {
-        val job = Job()
-        dataPointCount.onEach {
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object: Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
+        return dataPointCount.asClosure(provideNewState)
     }
 
     fun startObservation(scheduleId: String) {

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,18 +34,21 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
         Text(text = "start: ${taskDetails.value.start}")
         Text(text = "start: ${taskDetails.value.end}")
         Text(text = taskDetails.value.participantInformation)
-        SmallTextButton(
-            text = if (scheduleViewModel.activeScheduleState[scheduleId?: ""] == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
-                id = R.string.more_observation_start
-            ), enabled = viewModel.isEnabled.value
-        ) {
-            if (scheduleViewModel.activeScheduleState[scheduleId?: ""] == ScheduleState.RUNNING) {
-                scheduleViewModel.pauseObservation(context, taskDetails.value.scheduleId)
-            } else {
-                scheduleViewModel.startObservation(
-                    context,
-                    taskDetails.value.scheduleId
-                )
+
+        scheduleId?.let {
+            SmallTextButton(
+                text = if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
+                    id = R.string.more_observation_start
+                ), enabled = viewModel.isEnabled.value
+            ) {
+                if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) {
+                    scheduleViewModel.pauseObservation(context, taskDetails.value.scheduleId)
+                } else {
+                    scheduleViewModel.startObservation(
+                        context,
+                        taskDetails.value.scheduleId
+                    )
+                }
             }
         }
     }
