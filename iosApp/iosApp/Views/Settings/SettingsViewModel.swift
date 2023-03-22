@@ -13,7 +13,7 @@ class SettingsViewModel: ObservableObject {
     private var coreSettingsViewModel: CoreSettingsViewModel? = nil
     private var storageRepository: UserDefaultsRepository = UserDefaultsRepository()
     @Published var study: StudySchema? = StudySchema()
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", studyConsentInfo: "", consentInfo: [])
     var delegate: ConsentViewModelListener? = nil
     @Published var dataDeleted = false
     @Published var showSettings = false
