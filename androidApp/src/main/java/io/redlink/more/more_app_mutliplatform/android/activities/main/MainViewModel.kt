@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context): ViewModel() {
@@ -18,6 +19,7 @@ class MainViewModel(context: Context): ViewModel() {
 
     val dashboardViewModel = DashboardViewModel(context)
     val settingsViewModel = SettingsViewModel()
+    val studyDetailsViewModel = CoreStudyDetailsViewModel()
 
     init {
         settingsViewModel.createCoreViewModel(context)

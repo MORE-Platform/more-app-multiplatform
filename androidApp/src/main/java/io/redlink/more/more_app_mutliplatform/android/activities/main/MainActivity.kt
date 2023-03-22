@@ -16,6 +16,8 @@ import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScree
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class MainActivity : ComponentActivity() {
@@ -89,6 +91,11 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 Text("$scheduleId")
+            }
+            composable(NavigationScreen.STUDY_DETAILS.route) {
+                title = NavigationScreen.STUDY_DETAILS.stringRes()
+                viewModel.showBackButton.value = true
+                StudyDetailsView(viewModel = StudyDetailsViewModel(viewModel.studyDetailsViewModel))
             }
         }
     }

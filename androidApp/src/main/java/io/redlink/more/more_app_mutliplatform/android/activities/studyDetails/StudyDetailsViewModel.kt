@@ -23,8 +23,8 @@ class StudyDetailsViewModel(private val coreViewModel: CoreStudyDetailsViewModel
         coreViewModel.loadStudy()
         studyTitle.value = coreViewModel.studyTitle.value
         participantInfo.value = coreViewModel.participantInfo.value
-        start.value = coreViewModel.start.value.toDate()
-        end.value = coreViewModel.end.value.toDate()
+        start.value = (coreViewModel.start.value * 1000).toDate()
+        end.value = (coreViewModel.end.value * 1000).toDate()
         observations.value = coreViewModel.observations.value
         finishedTasks.value = coreViewModel.finishedTasks.value
         totalTasks.value = coreViewModel.totalTasks.value

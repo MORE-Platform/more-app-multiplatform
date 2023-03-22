@@ -20,7 +20,7 @@ fun InfoView(navController: NavController) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Open Settings",
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.STUDY_DETAILS.route)
                 }
             )
             InfoItem(
