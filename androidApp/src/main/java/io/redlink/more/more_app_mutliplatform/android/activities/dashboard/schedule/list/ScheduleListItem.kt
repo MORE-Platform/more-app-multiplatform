@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
@@ -20,6 +21,7 @@ import java.util.Date
 
 @Composable
 fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
+    val context = LocalContext.current
     val enabled = scheduleModel.start.toDate() <= Date() && Date() < scheduleModel.end.toDate()
     val currentState = viewModel.activeScheduleState[scheduleModel.scheduleId] ?: ScheduleState.NON
     Column(
@@ -39,12 +41,11 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
             ), enabled = enabled
         ) {
             if (currentState == ScheduleState.RUNNING) {
-                viewModel.pauseObservation(scheduleModel.scheduleId)
+                viewModel.pauseObservation(context, scheduleModel.scheduleId)
             } else {
                 viewModel.startObservation(
-                    scheduleModel.scheduleId,
-                    scheduleModel.observationId,
-                    scheduleModel.observationType
+                    context,
+                    scheduleModel.scheduleId
                 )
             }
         }

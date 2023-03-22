@@ -1,10 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.database
 
 import io.ktor.utils.io.core.*
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.*
 
 object DatabaseManager: Closeable {
     val database = RealmDatabase
@@ -14,7 +11,8 @@ object DatabaseManager: Closeable {
                 StudySchema::class,
                 ObservationSchema::class,
                 ScheduleSchema::class,
-                ObservationDataSchema::class
+                ObservationDataSchema::class,
+                DataPointCountSchema::class
             )
         )
     }
