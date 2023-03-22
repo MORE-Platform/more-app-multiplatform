@@ -26,7 +26,7 @@ class ContentViewModel: ObservableObject {
     let permissionManager: PermissionManager
     let settingsViewModel: SettingsViewModel
 
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", studyConsentInfo: "", consentInfo: [])
 
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)

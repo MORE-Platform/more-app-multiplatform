@@ -1,0 +1,12 @@
+/* 
+  StudyDetailsView.strings
+  iosApp
+
+  Created by Daniil Barkov on 22.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"no_filter_activated" = "No Filter activated";
+"tasks_completed" = "Completed Tasks";
+"schedule_string" = "Schedule";
+"modules_string" = "Modules";

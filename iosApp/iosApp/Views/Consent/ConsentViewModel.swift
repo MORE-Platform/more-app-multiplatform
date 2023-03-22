@@ -21,7 +21,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "", consentInfo: [])
     @Published private(set) var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
@@ -51,7 +51,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     }
     
     func acceptConsent() {
-        if(permManager.permissionsGranted){
+//        if(permManager.permissionsGranted){
             if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
                 coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
                     self.delegate?.credentialsStored()
@@ -62,9 +62,9 @@ class ConsentViewModel: NSObject, ObservableObject {
                 }
                 
             }
-        } else if(permManager.permissionsDenied){
-            showErrorAlert = true
-        }
+//        } else if(permManager.permissionsDenied){
+//            showErrorAlert = true
+//        }
     }
     
     func buildConsentModel() {

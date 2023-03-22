@@ -26,7 +26,7 @@ struct ConsentList: View {
 
 struct ConsentList_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", consentInfo: [
+        ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "", consentInfo: [
             PermissionConsentModel(title: "Study Consent", info: "Consent Info"),
             PermissionConsentModel(title: "Movement", info: "Accelerometer data"),
         ])))

@@ -13,6 +13,7 @@ enum NavigationScreens: String {
     case notifications = "Notifications"
     case info = "Information"
     case settings = "Settings"
+    case studyDetails = "Study Details"
 }
 
 extension NavigationScreens {

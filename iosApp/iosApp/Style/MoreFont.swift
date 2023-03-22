@@ -15,5 +15,7 @@ extension Font {
     struct More {
         let title = Font.title
         let headline = Font.headline
+        let subtitle = Font.title2
+        let subsubtitle = Font.title3
     }
 }
