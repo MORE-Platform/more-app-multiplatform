@@ -13,6 +13,9 @@ class TaskDetailsViewModel: ObservableObject {
     
     @Published var taskDetailsModel: TaskDetailsModel?
     @Published var dataPointCount: DataPointCountSchema?
+
+    @Published var observationRepetitionInterval: String = "1x/week"
+     
     
     init(observationId: String, scheduleId: String) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())

@@ -9,20 +9,26 @@
 import SwiftUI
 
 struct DatapointsCollection: View {
-    @Binding var datapoints: String
+    @Binding var datapoints: Int64
+    @Binding var running: Bool
     private let stringTable = "TaskDetail"
     var body: some View {
         VStack {
-            CircleActivityIndicator()
-            Title2(titleText: .constant(String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task.")))
-            Title2(titleText: $datapoints, color: .more.secondary)
+            if running {
+                CircleActivityIndicator()
+            }
+            Title2(titleText: .constant(String.localizedString(forKey: "Datapoints collected", inTable: stringTable, withComment: "Shows collected Datapoints beneath")))
+            
+            Text(String(datapoints))
+                .font(.more.title2)
+                .foregroundColor(.more.secondary)
+                .fontWeight(.more.title)
         }
-        
     }
 }
 
 struct DatapointsCollection_Previews: PreviewProvider {
     static var previews: some View {
-        DatapointsCollection(datapoints: .constant("10.584.773"))
+        DatapointsCollection(datapoints: .constant(100), running: .constant(false))
     }
 }

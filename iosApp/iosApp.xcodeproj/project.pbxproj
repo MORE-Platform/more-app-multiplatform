@@ -77,8 +77,6 @@
 		1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		B742E28529C493A200FB5EFA /* TaskDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B742E28429C493A200FB5EFA /* TaskDetailViewModel.swift */; };
-		B742E28729C493B100FB5EFA /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B742E28629C493B100FB5EFA /* TaskDetailView.swift */; };
 		B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */ = {isa = PBXBuildFile; fileRef = B748DF3329CAFBA90026C348 /* TaskDetail.strings */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
@@ -187,8 +185,6 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B742E28429C493A200FB5EFA /* TaskDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailViewModel.swift; sourceTree = "<group>"; };
-		B742E28629C493B100FB5EFA /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
 		B748DF3329CAFBA90026C348 /* TaskDetail.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = TaskDetail.strings; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
@@ -470,15 +466,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B742E28329C4936200FB5EFA /* TaskDetail */ = {
-			isa = PBXGroup;
-			children = (
-				B742E28429C493A200FB5EFA /* TaskDetailViewModel.swift */,
-				B742E28629C493B100FB5EFA /* TaskDetailView.swift */,
-			);
-			path = TaskDetail;
-			sourceTree = "<group>";
-		};
 		ED16C5EE29B74C4A00DA8AFE /* Schedule */ = {
 			isa = PBXGroup;
 			children = (
@@ -521,7 +508,6 @@
 		EDEBA13129B0D2CC00533F79 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
-				B742E28329C4936200FB5EFA /* TaskDetail */,
 				ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */,
 				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
 				EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */,
@@ -633,7 +619,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"c\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\" \n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -661,7 +647,6 @@
 				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
-				B742E28729C493B100FB5EFA /* TaskDetailView.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
@@ -717,7 +702,6 @@
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
-				B742E28529C493A200FB5EFA /* TaskDetailViewModel.swift in Sources */,
 				1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
