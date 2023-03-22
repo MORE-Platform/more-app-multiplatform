@@ -21,7 +21,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "Study Consent", consentInfo: [])
     @Published private(set) var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false

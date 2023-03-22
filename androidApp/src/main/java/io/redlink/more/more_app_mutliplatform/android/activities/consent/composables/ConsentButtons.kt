@@ -38,23 +38,12 @@ fun ConsentButtons(model: ConsentViewModel) {
     }
 
     if (!model.loading.value) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Button(
-                onClick = {
-                    model.decline()
-                },
-                colors = ButtonDefaults
-                    .buttonColors(backgroundColor = MoreColors.Important,
-                        contentColor = MoreColors.White),
-                enabled = !model.loading.value,
-                modifier = Modifier.width(IntrinsicSize.Min)
-            ) {
-                Text(text = getStringResource(id = R.string.more_permission_button_decline))
-            }
             Button(
                 onClick = {
                     model.getNeededPermissions()
@@ -66,12 +55,28 @@ fun ConsentButtons(model: ConsentViewModel) {
                     ),
                 enabled = !model.loading.value,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 32.dp)
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .padding(5.dp)
             ) {
                 Text(text = getStringResource(id = R.string.more_permission_button_accept))
             }
 
+            Button(
+                onClick = {
+                    model.decline()
+                },
+                colors = ButtonDefaults
+                    .buttonColors(backgroundColor = MoreColors.Important,
+                        contentColor = MoreColors.White),
+                enabled = !model.loading.value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .padding(5.dp)
+            ) {
+                Text(text = getStringResource(id = R.string.more_permission_button_decline))
+            }
         }
     } else {
         Column(horizontalAlignment = Alignment.CenterHorizontally,

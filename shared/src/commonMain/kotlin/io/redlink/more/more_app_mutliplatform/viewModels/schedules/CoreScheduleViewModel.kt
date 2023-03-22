@@ -1,12 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.extensions.*
+import io.redlink.more.more_app_mutliplatform.extensions.time
+import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import kotlinx.coroutines.CoroutineScope

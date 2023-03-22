@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 class CorePermissionViewModel(
     private val registrationService: RegistrationService
 ) {
-    val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(PermissionModel("Title", "info", consentInfo = emptyList()))
+    val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(PermissionModel("Title", "info", "consent info", consentInfo = emptyList()))
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val observations: MutableStateFlow<List<Observation>> = MutableStateFlow(emptyList())
 

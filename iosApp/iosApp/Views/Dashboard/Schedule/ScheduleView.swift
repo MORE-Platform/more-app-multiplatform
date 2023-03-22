@@ -11,11 +11,11 @@ import shared
 
 struct ScheduleView: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
-    
+
     var body: some View {
             List(viewModel.scheduleDates, id: \.self) { key in
                 Section {
-                    ScheduleList(scheduleModels: viewModel.schedules[key])
+                    ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
                         .environmentObject(viewModel)
                 } header: {
                     BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
@@ -25,11 +25,11 @@ struct ScheduleView: View {
                 .hideListRowSeparator()
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.more.primaryLight)
-                
+
             }
             .listStyle(.plain)
             .clearListBackground()
-        
+
     }
 }
 
