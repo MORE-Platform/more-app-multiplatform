@@ -10,11 +10,11 @@ import SwiftUI
 
 struct DatapointsCollection: View {
     @Binding var datapoints: String
+    private let stringTable = "TaskDetail"
     var body: some View {
         VStack {
             CircleActivityIndicator()
-            Title2(titleText: .constant("Datapoints Colelcted"))
-                .padding(.bottom, 0.5)
+            Title2(titleText: .constant(String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task.")))
             Title2(titleText: $datapoints, color: .more.secondary)
         }
         

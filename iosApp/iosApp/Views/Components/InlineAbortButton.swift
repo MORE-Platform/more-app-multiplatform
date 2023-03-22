@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct InlineAbortButton: View {
     @Environment(\.dismiss) private var dismiss
-    private let defaultStrings = "Default"
+    private let stringTable = "TaskDetail"
     var action: () -> Void = {}
     var body: some View {
         Button {
@@ -22,7 +22,7 @@ struct InlineAbortButton: View {
                 Image(systemName: "square.fill")
                     .padding(0.5)
                     .foregroundColor(.more.important)
-                Text("Abort")
+                Text(String.localizedString(forKey: "Abort", inTable: stringTable, withComment: "Abort running task."))
                     .foregroundColor(.more.secondary)
             }
             

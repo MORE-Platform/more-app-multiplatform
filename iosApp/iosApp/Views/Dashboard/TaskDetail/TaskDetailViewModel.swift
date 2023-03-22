@@ -20,6 +20,7 @@ class TaskDetailViewModel: ObservableObject {
     @Published var observationTimeframe: String = "12:00 - 18:00"
     @Published var observationRepetitionInterval: String = "1x/week"
     @Published var participantInfo: String = "Any Participant Information the researcher definded beforehand"
+    
     @Published var observationDates: String = "15.06.2023 - 30.12.2023"
     
     @Published var observationDatapoints: String = "10.54.773"

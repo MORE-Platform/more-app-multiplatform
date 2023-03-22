@@ -11,8 +11,8 @@ import shared
 
 struct TaskDetailView: View {
     @StateObject var taskDetailViewModel: TaskDetailViewModel
-    //private let stringTable = "TaskDetailView"
     //@State var taskComleted: Double = 0
+    private let stringTable = "TaskDetail"
     private let navigationStrings = "Navigation"
     
     var body: some View {
@@ -55,7 +55,7 @@ struct TaskDetailView: View {
                         HStack {
                             Image(systemName: "clock.fill")
                                 .padding(0.7)
-                            Text("Timeframe: ")
+                            Text(String.localizedString(forKey: "Timeframe", inTable: stringTable, withComment: "Timeframe of observation"))
                                 .foregroundColor(.more.primary)
                             BasicText(text: $taskDetailViewModel.observationTimeframe, color: .more.secondary)
                             Spacer()
@@ -64,16 +64,16 @@ struct TaskDetailView: View {
                     
                     
                     HStack {
-                        AccordionItem(title: "Participant Information", info: $taskDetailViewModel.participantInfo)
+                        AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: $taskDetailViewModel.participantInfo)
                     }
                     Spacer()
                     HStack{
                         DatapointsCollection(datapoints: $taskDetailViewModel.observationDatapoints)
                     }
                     Spacer()
-                    /*MoreActionButton(action: (String) -> () , label: {
+                    MoreActionButton(action: {}, label: {
                         Text("Pause Observation")
-                    })*/
+                    })
                     Spacer()
                 }
                 
@@ -82,7 +82,7 @@ struct TaskDetailView: View {
             } topBarContent: {
                 EmptyView()
             }
-            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Observation Detail"))
+            .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }
