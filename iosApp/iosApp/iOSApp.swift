@@ -1,7 +1,7 @@
 import SwiftUI
 import shared
 
-@main
+et@main
 struct iOSApp: App {
     @StateObject var contentViewModel = ContentViewModel()
     var body: some Scene {
