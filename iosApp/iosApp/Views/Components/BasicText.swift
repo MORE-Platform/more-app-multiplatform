@@ -10,9 +10,12 @@ import SwiftUI
 
 struct BasicText: View {
     @Binding var text: String
+    var color: Color = Color.more.primary
+    var font: Font = Font.body
     var body: some View {
         Text(text)
-            .foregroundColor(.more.primary)
+            .foregroundColor(color)
+            .font(font)
     }
 }
 

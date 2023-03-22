@@ -16,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScree
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
+import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class MainActivity : ComponentActivity() {
@@ -79,16 +80,24 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.route}/id={id}",
-                arguments = listOf(navArgument("id") {
+                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}",
+                arguments = listOf(
+                    navArgument("observationId") {
+                    type = NavType.StringType
+                }, navArgument("scheduleId") {
                     type = NavType.StringType
                 })
             ) {
                 val arguments = requireNotNull(it.arguments)
-                val scheduleId = arguments.getString("id")
+                val observationId = arguments.getString("observationId")
+                val scheduleId = arguments.getString("scheduleId")
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                Text("$scheduleId")
+                TaskDetailsView(
+                    viewModel = viewModel.taskDetailsViewModel,
+                    scheduleViewModel = viewModel.dashboardViewModel.scheduleViewModel,
+                    observationId = observationId,
+                    scheduleId = scheduleId)
             }
         }
     }

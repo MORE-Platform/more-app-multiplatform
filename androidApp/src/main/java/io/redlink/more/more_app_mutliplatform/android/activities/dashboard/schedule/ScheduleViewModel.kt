@@ -8,7 +8,6 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDate
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 import kotlinx.coroutines.Dispatchers

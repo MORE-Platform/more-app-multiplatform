@@ -17,7 +17,7 @@ struct ScheduleView: View {
                 BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
                     .font(Font.more.headline)
                 Divider()
-                ScheduleList(scheduleModels: viewModel.schedules[key])
+                ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
                     .environmentObject(viewModel)
             }.padding(.bottom)
             .hideListRowSeparator()
