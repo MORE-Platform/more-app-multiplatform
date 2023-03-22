@@ -27,7 +27,7 @@ fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleVi
                     schedules.keys.forEach { date ->
                         item {
                             Heading(
-                                text = date.formattedString(),
+                                text = date.formattedString("dd/MM/yyyy"),
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }

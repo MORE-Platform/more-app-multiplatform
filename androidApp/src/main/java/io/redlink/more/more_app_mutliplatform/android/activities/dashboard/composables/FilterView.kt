@@ -11,6 +11,8 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
@@ -21,18 +23,19 @@ fun FilterView() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 19.dp),
     ){
         Text(
             text = "Filters will be found here",
             color = MoreColors.Primary,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
         )
         Icon(
             Icons.Default.Tune,
             contentDescription = getStringResource(id = R.string.more_main_tab_filters),
             modifier = Modifier.padding(start = 8.dp),
-            tint = MoreColors.Primary
+            tint = Color.DarkGray
         )
     }
 }

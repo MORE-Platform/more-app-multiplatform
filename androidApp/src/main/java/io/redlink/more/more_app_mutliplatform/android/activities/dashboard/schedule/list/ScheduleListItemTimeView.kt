@@ -2,13 +2,11 @@ package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.sche
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,36 +15,28 @@ import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import java.time.LocalTime
-import java.util.Date
+import java.util.*
 
 @Composable
-fun ScheduleListItemTimeView(startTime: Date, activeFor: Int) {
+fun ScheduleListItemTimeView(startTime: Date, endTime: Date) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.padding(vertical = 10.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.Default.Schedule,
-                contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
-                tint = MoreColors.Primary
-            )
-            Text(
-                text = "${getStringResource(id = R.string.more_schedule_view_start_time)} ${startTime.formattedString("HH:mm")}",
-                color = MoreColors.Primary
-            )
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Timelapse,
-                contentDescription = getStringResource(R.string.more_table_item_icon_duration),
-                tint = MoreColors.Primary
-            )
-            Text(
-                text = String.format(getStringResource(id = R.string.more_schedule_view_active_for), activeFor),
-                color = MoreColors.Primary
-            )
-        }
+        Icon(
+            Icons.Default.AccessTimeFilled,
+            contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
+            tint = MoreColors.Primary,
+            modifier = Modifier.padding(end = 4.dp)
+        )
+        Text(
+            text = "Timeframe: ",
+            color = MoreColors.Primary
+        )
+        Text(
+            text = "${startTime.formattedString("HH:mm")} - ${endTime.formattedString("HH:mm")}",
+            color = MoreColors.Secondary
+        )
     }
 }
