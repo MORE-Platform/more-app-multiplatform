@@ -14,6 +14,13 @@ class ScheduleViewModel: ObservableObject {
     @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
     @Published var scheduleDates: [UInt64] = []
     @Published var scheduleStates: [String: ScheduleState] = [:]
+    @Published var selectedModel: ScheduleModel? = nil {
+        didSet {
+            print("Selected \(selectedModel?.scheduleId ?? "null")")
+        }
+    }
+    
+    private var dataJob: Ktor_ioCloseable? = nil
     
     init(observationFactory: IOSObservationFactory) {
         coreModel = CoreScheduleViewModel(dataRecorder: IOSDataRecorder())
@@ -34,8 +41,13 @@ class ScheduleViewModel: ObservableObject {
         scheduleStates[scheduleId] = .stopped
     }
     
+    func reinitList() {
+        coreModel.reinitList()
+    }
+    
     func loadData() {
-        coreModel.onScheduleModelListChange { scheduleMap in
+        dataJob?.close()
+        dataJob = coreModel.onScheduleModelListChange { scheduleMap in
             DispatchQueue.main.async {
                 for (key, value) in scheduleMap {
                     self.schedules[UInt64(truncating: key)] = value
