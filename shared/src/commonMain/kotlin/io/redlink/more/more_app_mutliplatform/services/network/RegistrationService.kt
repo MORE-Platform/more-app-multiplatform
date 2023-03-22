@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform
@@ -76,11 +77,11 @@ class RegistrationService (
                 }
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
-                credentialRepository.store(credentialModel)
-                if (credentialRepository.hasCredentials()) {
+                if (credentialRepository.store(credentialModel) && credentialRepository.hasCredentials()) {
                     studyRepository.storeStudy(study)
+                    onSuccess(credentialRepository.hasCredentials())
                 }
-                onSuccess(credentialRepository.hasCredentials())
+                onError(NetworkServiceError(null, "Could not store credentials"))
             }
             networkError?.let {
                 onError(it)

@@ -34,9 +34,9 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
         cache = null
     }
 
-    fun credentials() = cache
+    fun credentials() = cache ?: load()
 
-    fun hasCredentials() = cache != null
+    fun hasCredentials() = credentials() != null
 
     companion object {
         private const val CREDENTIAL_ID = "sharedStorageCredentialID"

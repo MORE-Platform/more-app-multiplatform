@@ -26,13 +26,14 @@ class ConsentViewModel: NSObject, ObservableObject {
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
 
-    var permManager = PermissionManager.permObj
+    let permissionManager = PermissionManager()
     var permissionGranted = false
     
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
-        
         super.init()
+        permissionManager.observer = self
+        
     
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
@@ -44,26 +45,29 @@ class ConsentViewModel: NSObject, ObservableObject {
         }
     }
     
+    func requestPermissions() {
+        permissionManager.requestPermission()
+    }
+    
     func reloadPermissions() {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
     }
     
-    func acceptConsent() {
-        if(permManager.permissionsGranted){
-            if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
-                coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
+    private func acceptConsent() {
+        if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+            coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
+                DispatchQueue.main.async {
                     self.delegate?.credentialsStored()
-                } onError: { error in
-                    if let error {
+                }
+            } onError: { error in
+                if let error {
+                    DispatchQueue.main.async {
                         self.error = error.message
                     }
                 }
-                
             }
-        } else if(permManager.permissionsDenied){
-            showErrorAlert = true
         }
     }
     
@@ -73,5 +77,15 @@ class ConsentViewModel: NSObject, ObservableObject {
     
     func decline() {
         delegate?.decline()
+    }
+}
+
+extension ConsentViewModel: PermissionManagerObserver {
+    func accepted() {
+        self.acceptConsent()
+    }
+    
+    func declined() {
+        self.showErrorAlert = true
     }
 }

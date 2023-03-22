@@ -1,9 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.*
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
@@ -12,21 +14,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     private val observationRepository = ObservationRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private var listJob: Job? = null
 
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
-        MutableStateFlow(emptyMap())
+        MutableStateFlow( emptyMap())
 
     init {
-        scope.launch {
-            observationRepository.observationWithUndoneSchedules().collect { observationList ->
-                scheduleModelList.value = createMap(observationList)
-            }
+        listJob = createListCollectingJob()
+    }
+
+    fun reinitList() {
+        listJob?.cancel()
+        listJob = createListCollectingJob()
+    }
+
+    private fun createListCollectingJob() = scope.launch {
+        observationRepository.observationWithUndoneSchedules().collect { observationList ->
+            scheduleModelList.value = createMap(observationList)
         }
     }
 
@@ -84,7 +96,15 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     }
 
     fun onScheduleModelListChange(provideNewState: ((Map<Long, List<ScheduleModel>>) -> Unit)): Closeable {
-        return scheduleModelList.asClosure(provideNewState)
+        val job = Job()
+        scheduleModelList.onEach {
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object: Closeable {
+            override fun close() {
+                job.cancel()
+            }
+        }
     }
 }
 

@@ -28,14 +28,12 @@ struct MainTabView: View {
                     }
             }
         }
-        .accent(color: .more.white)
+        .accent(color: .more.primaryDark)
         .onAppear {
-            UITabBar.appearance().barTintColor = UIColor(Color.more.primary)
-            UITabBar.appearance().backgroundColor = UIColor(Color.more.primary)
-            UINavigationBar.appearance().tintColor = UIColor(Color.more.secondary)
+            UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
+            UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
+            UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
         }
-        
-        
     }
 }
 

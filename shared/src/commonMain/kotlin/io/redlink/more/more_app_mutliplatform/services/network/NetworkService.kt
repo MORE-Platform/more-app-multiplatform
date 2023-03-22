@@ -35,7 +35,7 @@ class NetworkService(
     }
 
     private fun initConfigApi() {
-        if (configurationApi == null) {
+        if (configurationApi == null || dataApi == null) {
             credentialRepository.credentials()?.let {
                 val httpClient = getHttpClient()
                 val url = endpointRepository.endpoint()

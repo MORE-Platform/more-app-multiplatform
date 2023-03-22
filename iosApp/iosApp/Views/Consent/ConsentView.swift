@@ -11,7 +11,6 @@ import SwiftUI
 
 struct ConsentView: View {
     @StateObject var viewModel: ConsentViewModel
-    @StateObject var permissionManager: PermissionManager
 
     private let stringsTable = "ConsentView"
     var body: some View {
@@ -39,8 +38,7 @@ struct ConsentView: View {
                     }
                     Spacer()
                     MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
-                        permissionManager.requestPermission()
-                        viewModel.acceptConsent()
+                        viewModel.requestPermissions()
                     } label: {
                         Text(verbatim: .localizedString(
                             forKey: "accept_button",
@@ -48,23 +46,25 @@ struct ConsentView: View {
                             withComment: "Button to accept the study consent"))
                     } errorAlert: {
                         Alert(title:
-                                Text(verbatim: .localizedString(
-                                    forKey: "permissions_denied",
-                                    inTable: stringsTable,
-                                    withComment: "Error dialog title"))
-                                    .foregroundColor(.more.important),
-                              message: Text(viewModel.error),
-                              primaryButton: .default(Text(
+                            Text(verbatim: .localizedString(
+                                forKey: "permissions_denied",
+                                inTable: stringsTable,
+                                withComment: "Error dialog title"))
+                                .foregroundColor(.more.important),
+                            message: Text(viewModel.error),
+                            primaryButton: .default(Text(
                                 verbatim: .localizedString(
                                     forKey: "to_settings",
                                     inTable: stringsTable,
                                     withComment: "Dialog button to retry sending your consent for this study")),
                             action: {
                                 if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url, options: [:], completionHandler: nil)}
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                }
 
-                        }),
-                              secondaryButton: .cancel())
+                            }),
+                            secondaryButton: .cancel({ viewModel.decline() })
+                        )
                     }
                 }
             }
@@ -74,6 +74,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())), permissionManager: PermissionManager.permObj)
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
     }
 }
