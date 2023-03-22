@@ -22,12 +22,12 @@ fun ObservationList(observations: RealmList<ObservationSchema>) {
         verticalArrangement = Arrangement.Top
     ) {
         observations.forEach { observation ->
-            Spacer(Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .clickable {
 
-                    },
+                    }
+                    .padding(top = 12.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
@@ -48,7 +48,6 @@ fun ObservationList(observations: RealmList<ObservationSchema>) {
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }
-            Spacer(Modifier.height(8.dp))
             MoreDivider()
         }
     }
