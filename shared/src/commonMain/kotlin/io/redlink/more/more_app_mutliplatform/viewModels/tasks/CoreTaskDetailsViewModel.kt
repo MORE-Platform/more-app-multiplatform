@@ -22,15 +22,13 @@ class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
     private var dataPointCount: MutableStateFlow<DataPointCountSchema?> = MutableStateFlow(null)
     private val scope = CoroutineScope(Dispatchers.Default + Job())
     val taskDetailsModel: MutableStateFlow<TaskDetailsModel?> = MutableStateFlow(null)
-    val scheduleState: MutableStateFlow<ScheduleState> = MutableStateFlow(ScheduleState.NON)
 
-    fun loadTaskDetails(observationId: String, scheduleId: String, state: ScheduleState) {
+    fun loadTaskDetails(observationId: String, scheduleId: String) {
         scope.launch {
             observationRepository.getObservationByObservationId(observationId)?.let { observation ->
                 scheduleRepository.scheduleWithId(scheduleId).collect {
                     it?.let { schedule ->
                         dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
-                            scheduleState.value = state
                             dataPointCount = MutableStateFlow(count)
                             taskDetailsModel.value = TaskDetailsModel.createModelFrom(observation, schedule, dataPointCount.value)
                         }
@@ -40,9 +38,19 @@ class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
         }
     }
 
-    fun onLoadTaskDetails(observationId: String, scheduleId: String, scheduleState: ScheduleState, provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
+    fun loadDataPointCount(): MutableStateFlow<Long> {
+        val count: MutableStateFlow<Long> = MutableStateFlow(0)
+        CoroutineScope(Dispatchers.Default + Job()).launch {
+            dataPointCount.collect { dataPointcountSchema ->
+                count.value = dataPointcountSchema?.count?: 0
+            }
+        }
+        return count
+    }
+
+    fun onLoadTaskDetails(observationId: String, scheduleId: String, provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
         val job = Job()
-        loadTaskDetails(observationId, scheduleId, scheduleState)
+        loadTaskDetails(observationId, scheduleId)
         taskDetailsModel.onEach {
             provideNewState(it)
         }.launchIn(CoroutineScope(Dispatchers.Main + job))

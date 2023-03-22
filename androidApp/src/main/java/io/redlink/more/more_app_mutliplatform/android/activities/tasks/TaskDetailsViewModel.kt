@@ -24,39 +24,25 @@ class TaskDetailsViewModel(
 
     private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(dataRecorder)
     var isEnabled: MutableState<Boolean> = mutableStateOf(false)
-    var scheduleState: MutableState<ScheduleState> = mutableStateOf(coreViewModel.scheduleState.value)
+    var dataPointCount: MutableState<Long> = mutableStateOf(0)
     var taskDetailsModel: MutableState<TaskDetailsModel> = mutableStateOf(
         TaskDetailsModel(
             "", "", "", "", 0, 0, "", MutableStateFlow(DataPointCountSchema())
         )
     )
     private val scope = CoroutineScope(Dispatchers.Main + Job())
-    fun loadTaskDetails(observationId: String?, scheduleId: String?, scheduleState: ScheduleState) {
+    fun loadTaskDetails(observationId: String?, scheduleId: String?) {
         if (observationId != null && scheduleId != null) {
             scope.launch {
-                coreViewModel.loadTaskDetails(observationId, scheduleId, scheduleState)
+                coreViewModel.loadTaskDetails(observationId, scheduleId)
                 coreViewModel.taskDetailsModel.collect { details ->
                     details?.let {
                         taskDetailsModel = mutableStateOf(it)
+                        dataPointCount = mutableStateOf(coreViewModel.loadDataPointCount().value)
                         isEnabled = mutableStateOf(taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate())
                     }
                 }
             }
         }
-    }
-
-    fun startObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.start(context, scheduleId)
-        scheduleState.value = ScheduleState.RUNNING
-    }
-
-    fun stopObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.stop(context, scheduleId)
-        scheduleState.value = ScheduleState.STOPPED
-    }
-
-    fun pauseObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.pause(context, scheduleId)
-        scheduleState.value = ScheduleState.PAUSED
     }
 }

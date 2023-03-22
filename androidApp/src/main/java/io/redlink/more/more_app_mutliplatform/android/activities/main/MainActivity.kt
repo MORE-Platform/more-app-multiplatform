@@ -87,21 +87,18 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     type = NavType.StringType
                 }, navArgument("scheduleId") {
                     type = NavType.StringType
-                }, navArgument("scheduleState") {
-                    type = NavType.StringType
                 })
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val observationId = arguments.getString("observationId")
                 val scheduleId = arguments.getString("scheduleId")
-                val scheduleState = arguments.getString("scheduleState")
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     viewModel = viewModel.taskDetailsViewModel,
+                    scheduleViewModel = viewModel.dashboardViewModel.scheduleViewModel,
                     observationId = observationId,
-                    scheduleId = scheduleId,
-                    scheduleState = ScheduleState.valueOf(scheduleState?: "NON"))
+                    scheduleId = scheduleId)
             }
         }
     }
