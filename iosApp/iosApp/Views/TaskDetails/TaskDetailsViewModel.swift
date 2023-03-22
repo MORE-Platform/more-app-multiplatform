@@ -14,7 +14,7 @@ class TaskDetailsViewModel: ObservableObject {
     @Published var taskDetailsModel: TaskDetailsModel?
     @Published var dataPointCount: DataPointCountSchema?
     
-    init(observationId: String, scheduleId: String, scheduleState: ScheduleState) {
+    init(observationId: String, scheduleId: String) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())
         coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId) { taskDetails in
             if let taskDetails {

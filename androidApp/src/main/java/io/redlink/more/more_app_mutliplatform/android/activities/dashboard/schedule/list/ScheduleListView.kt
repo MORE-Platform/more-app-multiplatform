@@ -37,8 +37,7 @@ fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleVi
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        val status = scheduleViewModel.activeScheduleState[item.scheduleId]?: "NON"
-                                        navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/observationId=${item.observationId}&scheduleId=${item.scheduleId}&scheduleState=$status")
+                                        navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/observationId=${item.observationId}&scheduleId=${item.scheduleId}")
                                     }
                             ) {
                                 ScheduleListItem(scheduleModel = item, scheduleViewModel)

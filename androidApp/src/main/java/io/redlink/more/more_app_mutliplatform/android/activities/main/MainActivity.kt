@@ -18,7 +18,6 @@ import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +80,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}&scheduleState={scheduleState}",
+                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}",
                 arguments = listOf(
                     navArgument("observationId") {
                     type = NavType.StringType

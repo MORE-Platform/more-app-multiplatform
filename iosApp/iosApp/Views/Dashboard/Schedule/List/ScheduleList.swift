@@ -23,7 +23,7 @@ struct ScheduleList: View {
                     Divider()
                 }
                 NavigationLink {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, scheduleState: scheduleStates[schedule.scheduleId] ?? ScheduleState.non))
+                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))
                         .environmentObject(viewModel)
                 } label: {
                     EmptyView()
