@@ -6,7 +6,7 @@
   Copyright © 2023 orgName. All rights reserved.
 */
 
-"start" = "Start";
+"timeframe" = "Timeframe";
 "active_for" = "Active for";
 "start_questionnaire" = "Start Questionnaire";
 "start_observation" = "Start Observation";
