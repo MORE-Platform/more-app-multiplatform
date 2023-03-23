@@ -18,7 +18,7 @@ struct AccordionItem: View {
         HStack {
             VStack {
                 VStack(alignment: .leading) {
-                    ConsentListHeader(title: title, isOpen: $isOpen)
+                    ConsentListHeader(title: title, hasCheck: .constant(false), isOpen: $isOpen)
                     Divider()
                     if isOpen {
                         BasicText(text: .constant(info), color: .more.secondary)
