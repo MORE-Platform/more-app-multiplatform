@@ -18,7 +18,7 @@ struct TaskDetailsView: View {
     var body: some View {
         VStack {
             Text(viewModel.taskDetailsModel?.observationTitle ?? "")
-            ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non) {
+            ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: 0, end: 0) {
                 let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
                 if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                     scheduleViewModel.pause(scheduleId: scheduleId)

@@ -22,20 +22,12 @@ struct ScheduleListItem: View {
             ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
                 .padding(.bottom)
             HStack {
-                Image(systemName: "calendar")
-                Text(String(format: "%@ - %@", "12/03/2023", "22/03/2023"))
-                    .foregroundColor(Color.more.secondary)
-                // Spacer()
-            }
-            .padding(.bottom, 4)
-            HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
                 Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
                     .foregroundColor(Color.more.secondary)
-                // Spacer()
             }
-            ObservationButton(observationType: scheduleModel.observationType, state: currentState) {
+            ObservationButton(observationType: scheduleModel.observationType, state: currentState, start: scheduleModel.start, end: scheduleModel.end) {
                 if currentState == ScheduleState.running {
                     viewModel.pause(scheduleId: scheduleModel.scheduleId)
                 } else {
@@ -44,7 +36,6 @@ struct ScheduleListItem: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.bottom)
     }
 }
 
