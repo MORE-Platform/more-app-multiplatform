@@ -1,0 +1,14 @@
+/* 
+  TaskDetail.strings
+  iosApp
+
+  Created by Isabella Aigner on 22.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"Task Detail" = "Task Detail";
+"Abort" = "Abort";
+"Collected Datapoints" = "Collected Datapoints";
+"Timeframe" = "Timeframe: ";
+"Participant Information" = "Participant Information";
+"Pause Observation" = "Pause Observation";

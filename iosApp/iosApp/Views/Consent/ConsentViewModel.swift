@@ -33,8 +33,8 @@ class ConsentViewModel: NSObject, ObservableObject {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
         super.init()
         permissionManager.observer = self
-        
-    
+
+
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -48,7 +48,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     func requestPermissions() {
         permissionManager.requestPermission()
     }
-    
+
     func reloadPermissions() {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
@@ -84,7 +84,7 @@ extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
         self.acceptConsent()
     }
-    
+
     func declined() {
         self.showErrorAlert = true
     }

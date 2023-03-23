@@ -34,6 +34,7 @@ struct DashboardView: View {
                     } else {
                         EmptyView()
                     }
+                    
                 }
             } topBarContent: {
                 EmptyView()
