@@ -18,8 +18,11 @@ struct ScheduleView: View {
                     ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
                         .environmentObject(viewModel)
                 } header: {
-                    BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")))
-                        .font(Font.more.headline)
+                    VStack(alignment: .leading) {
+                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd/MM/yyyy")), color: Color.more.primaryDark)
+                            .font(Font.more.headline)
+                        Divider()
+                    }
                 }
                 .padding(.bottom)
                 .hideListRowSeparator()

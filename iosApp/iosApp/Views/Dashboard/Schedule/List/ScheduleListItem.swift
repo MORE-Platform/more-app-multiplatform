@@ -18,18 +18,22 @@ struct ScheduleListItem: View {
 
     var body: some View {
         let currentState = viewModel.scheduleStates[scheduleModel.scheduleId] ?? ScheduleState.non
-        VStack {
+        VStack(alignment: .leading) {
             ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
+                .padding(.bottom)
+            HStack {
+                Image(systemName: "calendar")
+                Text(String(format: "%@ - %@", "12/03/2023", "22/03/2023"))
+                    .foregroundColor(Color.more.secondary)
+                // Spacer()
+            }
+            .padding(.bottom, 4)
             HStack {
                 Image(systemName: "clock.fill")
-                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "start", inTable: stringTable, withComment: "when the observation was started"))))
-                Text(scheduleModel.start.toDateString(dateFormat: "HH:mm"))
+                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
+                Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
                     .foregroundColor(Color.more.secondary)
-                Spacer()
-                Image(systemName: "clock.arrow.circlepath")
-                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "active_for", inTable: stringTable, withComment: "how long the observation has been active for"), 0)))
-                Text(String(format: "%d min", (scheduleModel.end - scheduleModel.start) / 60000))
-                    .foregroundColor(Color.more.secondary)
+                // Spacer()
             }
             ObservationButton(observationType: scheduleModel.observationType, state: currentState) {
                 if currentState == ScheduleState.running {
@@ -39,7 +43,8 @@ struct ScheduleListItem: View {
                 }
             }
             .buttonStyle(.plain)
-        }.padding(.bottom)
+        }
+        .padding(.bottom)
     }
 }
 
