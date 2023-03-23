@@ -22,7 +22,7 @@ struct ConsentListItem: View {
             Divider()
             VStack(alignment: .leading) {
                 ConsentListHeader(title: consentInfo.title, isOpen: $isOpen)
-                Divider()
+                	Divider()
                 Group {
                     if isOpen {
                         BasicText(text: .constant(consentInfo.info))

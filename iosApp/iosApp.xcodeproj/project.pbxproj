@@ -77,6 +77,13 @@
 		1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */ = {isa = PBXBuildFile; fileRef = B748DF3329CAFBA90026C348 /* TaskDetail.strings */; };
+		B748DF3A29CC658C0026C348 /* ObservationDetailsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */; };
+		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
+		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
+		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
+		B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169729CA08850035D830 /* CircleActivityIndicator.swift */; };
+		B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169929CA18320035D830 /* DatapointsCollection.swift */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */; };
 		ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */; };
@@ -179,6 +186,13 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B748DF3329CAFBA90026C348 /* TaskDetail.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = TaskDetail.strings; sourceTree = "<group>"; };
+		B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailsData.swift; sourceTree = "<group>"; };
+		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
+		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
+		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
+		B784169729CA08850035D830 /* CircleActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleActivityIndicator.swift; sourceTree = "<group>"; };
+		B784169929CA18320035D830 /* DatapointsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointsCollection.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
@@ -283,6 +297,7 @@
 			children = (
 				1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */,
 				1F8847B929914C8D0023EF10 /* Title.swift */,
+				B784169129C9E3F50035D830 /* Title2.swift */,
 				1F8847E72992BEE30023EF10 /* BasicText.swift */,
 				1F8847CD299155F50023EF10 /* SectionHeading.swift */,
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
@@ -296,6 +311,11 @@
 				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
 				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
 				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
+				B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */,
+				B784169529C9FB2C0035D830 /* AccordionItem.swift */,
+				B784169729CA08850035D830 /* CircleActivityIndicator.swift */,
+				B784169929CA18320035D830 /* DatapointsCollection.swift */,
+				B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -330,6 +350,7 @@
 				EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */,
 				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
 				1F80EC4029C25025004667B1 /* Navigation.strings */,
+				B748DF3329CAFBA90026C348 /* TaskDetail.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -573,6 +594,7 @@
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
+				B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */,
 				1F17C08C29952C29000E124A /* ConsentView.strings in Resources */,
 				EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
@@ -600,7 +622,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\" \n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -609,6 +631,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
 				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
@@ -627,12 +650,14 @@
 				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
+				B748DF3A29CC658C0026C348 /* ObservationDetailsData.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
 				1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */,
+				B784169229C9E3F50035D830 /* Title2.swift in Sources */,
 				EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
@@ -647,6 +672,7 @@
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
 				1FDC264629C1C60F0011D8A4 /* ListViewExtension.swift in Sources */,
 				1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */,
+				B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */,
 				1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */,
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
@@ -664,6 +690,7 @@
 				1F13BA4F2993A2A600938C1E /* ContentViewModel.swift in Sources */,
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
+				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
@@ -675,6 +702,7 @@
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
 				1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */,
+				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
