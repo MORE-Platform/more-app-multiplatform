@@ -61,7 +61,7 @@ struct TaskDetailsView: View {
                         Spacer()
                     }
                    
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non) {
+                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
                             let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
                             if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                                 scheduleViewModel.pause(scheduleId: scheduleId)

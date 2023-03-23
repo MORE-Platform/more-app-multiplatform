@@ -19,7 +19,7 @@ struct ScheduleView: View {
                         .environmentObject(viewModel)
                 } header: {
                     VStack(alignment: .leading) {
-                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd/MM/yyyy")), color: Color.more.primaryDark)
+                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
                             .font(Font.more.headline)
                         Divider()
                     }
