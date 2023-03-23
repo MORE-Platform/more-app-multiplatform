@@ -12,22 +12,28 @@ import shared
 struct ConsentListItem: View {
     let consentInfo: PermissionConsentModel
     @State var isOpen: Bool = false
+    let hasCheckbox: Bool = false
+    @State var hasPreview: Bool = false
+    
     var body: some View {
         HStack {
-            VStack {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.more.primary)
-                
+            if hasCheckbox {
+                VStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.more.primary)
+                    
+                }
             }
-            Divider()
             VStack(alignment: .leading) {
-                ConsentListHeader(title: consentInfo.title, isOpen: $isOpen)
+                ConsentListHeader(title: consentInfo.title, hasCheck: .constant(!hasCheckbox), isOpen: $isOpen)
                 	Divider()
                 Group {
                     if isOpen {
                         BasicText(text: .constant(consentInfo.info))
-                    } else {
+                            .padding(.bottom, 20)
+                    } else if hasPreview && !isOpen {
                         InactiveText(text: .constant(consentInfo.info))
+                            .padding(.bottom, 20)
                     }
                 }
             }
