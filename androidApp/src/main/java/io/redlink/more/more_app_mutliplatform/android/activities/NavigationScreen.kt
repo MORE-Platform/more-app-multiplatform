@@ -10,7 +10,8 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     NOTIFICATIONS("Notifications", R.string.nav_notifications),
     INFO("Information", R.string.nav_info),
     SETTINGS("Settings", R.string.nav_settings),
-    SCHEDULE_DETAILS("Task Details", R.string.nav_task_detail);
+    SCHEDULE_DETAILS("Task Details", R.string.nav_task_detail),
+    STUDY_DETAILS("Study Details", R.string.nav_study_details);
 
     @Composable
     fun stringRes() = getStringResource(id = stringResource)

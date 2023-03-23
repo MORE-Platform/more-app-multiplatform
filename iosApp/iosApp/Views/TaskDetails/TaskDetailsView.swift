@@ -31,12 +31,11 @@ struct TaskDetailsView: View {
                                 .padding(0.5)
                             // abort button
                             Spacer()
-                            if #available(iOS 15.0, *) {
+                            if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                                 InlineAbortButton()
-                            } else {
-                                InlineAbortButtonIOS14()
                             }
                         }
+                        .frame(height: 40)
                         HStack(
                         ) {
                             BasicText(text: .constant(viewModel.taskDetailsModel?.observationType ?? ""), color: .more.secondary)
@@ -44,38 +43,11 @@ struct TaskDetailsView: View {
                         }
                     }
                     
-                    VStack {
-                        HStack {
-                            if(viewModel.taskDetailsModel?.start != nil && viewModel.taskDetailsModel?.end != nil) {
-                                Image(systemName: "calendar")
-                                    .padding(0.5)
-                                
-                                let date: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "dd/MM/yyyy") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "dd/MM/yyyy") ?? "")
-                                BasicText(text: .constant(date), color: .more.secondary)
-                                    .padding(1)
-                                
-                                Spacer()
-                            }
-                            
-                            Image(systemName: "repeat")
-                                .padding(0.7)
-                            BasicText(text: $viewModel.observationRepetitionInterval, color: .more.secondary)
-                                .padding(1)
-                        }
-                        HStack {
-                            if(viewModel.taskDetailsModel?.start != nil && viewModel.taskDetailsModel?.end != nil) {
-                                Image(systemName: "clock.fill")
-                                    .padding(0.7)
-                                Text(String.localizedString(forKey: "Timeframe", inTable: stringTable, withComment: "Timeframe of observation"))
-                                    .foregroundColor(.more.primary)
-                                let time: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
-                                
-                                BasicText(text: .constant(time), color: .more.secondary)
-                                Spacer()
-                            }
-                        }
-                    }
                     
+                    let date: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? "")
+                    let time: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
+                    
+                    ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
                     
                     HStack{
                         AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))

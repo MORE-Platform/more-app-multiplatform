@@ -8,48 +8,28 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
 struct InlineAbortButton: View {
-    @Environment(\.dismiss) private var dismiss
     private let stringTable = "TaskDetail"
     var action: () -> Void = {}
     var body: some View {
         Button {
             action()
-            dismiss()
         } label: {
             HStack{
                 Image(systemName: "square.fill")
                     .padding(0.5)
+                    
                     .foregroundColor(.more.important)
                 Text(String.localizedString(forKey: "Abort", inTable: stringTable, withComment: "Abort running task."))
                     .foregroundColor(.more.secondary)
             }
+            .padding(5)
             
         }
-        .buttonStyle(.bordered)
-        .tint(.more.primaryLight)
+        .accent(color: .more.primaryLight)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
                 .stroke(Color.more.secondaryMedium, lineWidth: 1)
         )
-    }
-}
-
-struct InlineAbortButtonIOS14: View {
-    var action: () -> Void = {}
-    @State private var isActive: Bool = false
-    var body: some View {
-        HStack {
-            Button {
-                isActive = true
-            } label: {
-                Image(systemName: "square.fill")
-                    .padding(0.5)
-                    .foregroundColor(.more.important)
-                Text("Abort")
-            }
-            
-        }
     }
 }
