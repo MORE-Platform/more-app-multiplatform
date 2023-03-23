@@ -40,7 +40,9 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
     }
     
     override func observerAccessible() -> Bool {
-        return CLLocationManager.locationServicesEnabled() && (manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedWhenInUse)
+        return CLLocationManager.locationServicesEnabled()
+            && (manager.authorizationStatus == .authorizedWhenInUse
+            || manager.authorizationStatus == .authorizedWhenInUse)
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){

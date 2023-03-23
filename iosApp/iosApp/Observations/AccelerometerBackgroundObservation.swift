@@ -23,13 +23,12 @@ class AccelerometerBackgroundObservation: Observation_ {
         super.init(observationType: AccelerometerType(sensorPermissions: sensorPermissions))
     }
     
-    
     override func start() -> Bool {
         if observerAccessible() {
             recorder.recordAccelerometer(forDuration: recordForDurationInSec)
             self.startRecording = Date()
             timer = Timer.scheduledTimer(withTimeInterval: 60 * 3.1, repeats: true, block: { timer in
-                self.collectNewData()
+                self.collectData()
                 if self.startRecording + self.recordForDurationInSec >= Date() {
                     timer.invalidate()
                 }
@@ -40,11 +39,26 @@ class AccelerometerBackgroundObservation: Observation_ {
     }
     
     override func stop() {
-        collectNewData()
+        self.collectData()
         timer?.invalidate()
     }
     
-    private func collectNewData() {
+    
+    override func applyObservationConfig(settings: [String : Any]) {
+        if let duration = settings[AccelerometerBackgroundObservation.ACCELEROMETER_RECORDING_DURATION] as? Double {
+            self.recordForDurationInSec = duration
+        }
+    }
+    
+    override func observerAccessible() -> Bool {
+        return CMSensorRecorder.isAccelerometerRecordingAvailable() && CMSensorRecorder.authorizationStatus() == .authorized
+    }
+    
+    
+}
+
+extension AccelerometerBackgroundObservation: ObservationCollector {
+    func collectData() {
         if let sensorData = self.recorder.accelerometerData(from: lastCollectedDataTimestamp <= Date() - TimeInterval(12 * 60) ? lastCollectedDataTimestamp : Date() - TimeInterval(12 * 60), to: Date()) {
             for data in sensorData {
                 if let accDatum = data as? CMRecordedAccelerometerData {
@@ -56,15 +70,5 @@ class AccelerometerBackgroundObservation: Observation_ {
             }
             lastCollectedDataTimestamp = Date()
         }
-    }
-    
-    override func applyObservationConfig(settings: [String : Any]) {
-        if let duration = settings[AccelerometerBackgroundObservation.ACCELEROMETER_RECORDING_DURATION] as? Double {
-            self.recordForDurationInSec = duration
-        }
-    }
-    
-    override func observerAccessible() -> Bool {
-        return CMSensorRecorder.isAccelerometerRecordingAvailable() && CMSensorRecorder.authorizationStatus() == .authorized
     }
 }
