@@ -12,6 +12,8 @@ import shared
 struct ObservationButton: View {
     var observationType: String
     var state: ScheduleState
+    var start: Int64
+    var end: Int64
     let action: () -> Void
     private let stringTable = "ScheduleListView"
     var body: some View {
@@ -20,6 +22,7 @@ struct ObservationButton: View {
                 MoreActionButton(action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
+                .disabled(!(start.toDate() < Date() && Date() < end.toDate()))
             } else {
                 MoreActionButton(action: action) {
                     VStack {
@@ -33,7 +36,7 @@ struct ObservationButton: View {
                             )
                         }
                     }
-                }
+                }.disabled(!(start.toDate() < Date() && Date() < end.toDate()))
             }
         }
     }
