@@ -7,6 +7,8 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
+import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,18 +30,28 @@ class CoreStudyDetailsViewModel {
     val finishedTasks: MutableStateFlow<Long> = MutableStateFlow(0)
     val totalTasks: MutableStateFlow<Long> = MutableStateFlow(0)
 
+    val studyDetailsModel: MutableStateFlow<StudyDetailsModel?> = MutableStateFlow(null)
+
     fun loadStudy(){
         scope.launch {
-            studyRepository.getStudy().collect { study ->
+            studyRepository.getStudy().collect{ study ->
                 study?.let {
-                    studyTitle.emit(it.studyTitle)
-                    participantInfo.emit(it.participantInfo)
-                    start.emit(it.start?.epochSeconds ?: 0)
-                    end.emit(it.end?.epochSeconds ?: 0)
-                    observations.emit(it.observations)
+                    studyDetailsModel.value = StudyDetailsModel.createModelFrom(it)
                 }
             }
         }
+
+//        scope.launch {
+//            studyRepository.getStudy().collect { study ->
+//                study?.let {
+//                    studyTitle.emit(it.studyTitle)
+//                    participantInfo.emit(it.participantInfo)
+//                    start.emit(it.start?.epochSeconds ?: 0)
+//                    end.emit(it.end?.epochSeconds ?: 0)
+//                    observations.emit(it.observations)
+//                }
+//            }
+//        }
         scope.launch {
             scheduleRepository.count().collect{
                 totalTasks.value = it
@@ -51,26 +63,29 @@ class CoreStudyDetailsViewModel {
             }
         }
     }
+    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
+        return studyDetailsModel.asClosure(provideNewState)
+    }
 
-    fun onStudyTitle(provideNewState: ((String) -> Unit)): Closeable {
+    fun onStudyTitle(provideNewState: ((String?) -> Unit)): Closeable {
         return studyTitle.asClosure(provideNewState)
     }
-    fun onParticipantInfo(provideNewState: ((String) -> Unit)): Closeable {
+    fun onParticipantInfo(provideNewState: ((String?) -> Unit)): Closeable {
         return participantInfo.asClosure(provideNewState)
     }
-    fun onObservations(provideNewState: ((RealmList<ObservationSchema>) -> Unit)): Closeable {
+    fun onObservations(provideNewState: ((RealmList<ObservationSchema>?) -> Unit)): Closeable {
         return observations.asClosure(provideNewState)
     }
-    fun onStart(provideNewState: ((Long) -> Unit)): Closeable {
+    fun onStart(provideNewState: ((Long?) -> Unit)): Closeable {
         return start.asClosure(provideNewState)
     }
-    fun onEnd(provideNewState: ((Long) -> Unit)): Closeable {
+    fun onEnd(provideNewState: ((Long?) -> Unit)): Closeable {
         return end.asClosure(provideNewState)
     }
-    fun onFinishedTasks(provideNewState: ((Long) -> Unit)): Closeable {
+    fun onFinishedTasks(provideNewState: ((Long?) -> Unit)): Closeable {
         return finishedTasks.asClosure(provideNewState)
     }
-    fun onTotalTasks(provideNewState: ((Long) -> Unit)): Closeable {
+    fun onTotalTasks(provideNewState: ((Long?) -> Unit)): Closeable {
         return totalTasks.asClosure(provideNewState)
     }
 }

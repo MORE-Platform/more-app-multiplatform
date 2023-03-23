@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct DetailsTitle: View {
-    @Binding var text: String
+    var text: String
     var color: Color = Color.more.primary
     var font: Font = Font.body
     var weight: Font.Weight = Font.Weight.semibold
@@ -22,6 +22,6 @@ struct DetailsTitle: View {
 
 struct DetailsTitle_Previews: PreviewProvider {
     static var previews: some View {
-        DetailsTitle(text: .constant("Hello World"))
+        DetailsTitle(text: "Hello World")
     }
 }

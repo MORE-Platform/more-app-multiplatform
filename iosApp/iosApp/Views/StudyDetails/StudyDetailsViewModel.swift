@@ -9,22 +9,29 @@
 import shared
 
 class StudyDetailsViewModel: ObservableObject {
-    private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
+    private let coreModel: CoreStudyDetailsViewModel
     
-    @Published var studyTitle: String = ""
-    @Published var study: StudySchema? = StudySchema()
+    @Published var studyDetailsModel: StudyDetailsModel?
+    @Published var totalTasks: Int64?
+    @Published var completedTasks: Int64?
     
     init() {
-        self.loadStudy()
-    }
-    
-    func loadStudy() {
-        coreModel.onLoadStudy { study in
-            if let study {
-                DispatchQueue.main.async {
-                    self.study = study
-                    self.studyTitle = study.studyTitle
-                }
+        self.coreModel = CoreStudyDetailsViewModel()
+        coreModel.loadStudy()
+        coreModel.onLoadStudyDetails() {
+            studyDetails in
+            if let studyDetails {
+                self.studyDetailsModel = studyDetails
+            }
+        }
+        coreModel.onTotalTasks() { totalT in
+            if let totalT {
+                self.totalTasks = totalT.int64Value
+            }
+        }
+        coreModel.onFinishedTasks() {
+            compT in if let compT {
+                self.completedTasks = compT.int64Value
             }
         }
     }

@@ -12,7 +12,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
     var content: () -> Content
     var topBarContent: () -> TopBarContent
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.more.mainBackground.ignoresSafeArea()
             VStack(alignment: .center) {
                 content()

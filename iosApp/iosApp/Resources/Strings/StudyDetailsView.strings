@@ -10,3 +10,5 @@
 "tasks_completed" = "Completed Tasks";
 "schedule_string" = "Schedule";
 "modules_string" = "Modules";
+
+"study_duration" = "Study duration:";
