@@ -32,18 +32,6 @@ struct CircleActivityIndicator: View {
                                             .repeatForever(autoreverses: false)) {
                                 self.isCircleRotating.toggle()
                             }
-                            /*withAnimation(Animation
-                                            .linear(duration: 1)
-                                            .delay(0.5)
-                                            .repeatForever(autoreverses: true)) {
-                                self.animateStart.toggle()
-                            }
-                            withAnimation(Animation
-                                            .linear(duration: 1)
-                                            .delay(1)
-                                            .repeatForever(autoreverses: true)) {
-                                self.animateEnd.toggle()
-                            }*/
                         }
                 }
     }

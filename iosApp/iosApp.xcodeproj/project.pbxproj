@@ -78,6 +78,7 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */ = {isa = PBXBuildFile; fileRef = B748DF3329CAFBA90026C348 /* TaskDetail.strings */; };
+		B748DF3A29CC658C0026C348 /* ObservationDetailsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
 		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
@@ -186,6 +187,7 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B748DF3329CAFBA90026C348 /* TaskDetail.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = TaskDetail.strings; sourceTree = "<group>"; };
+		B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailsData.swift; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
 		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				B784169529C9FB2C0035D830 /* AccordionItem.swift */,
 				B784169729CA08850035D830 /* CircleActivityIndicator.swift */,
 				B784169929CA18320035D830 /* DatapointsCollection.swift */,
+				B748DF3929CC658C0026C348 /* ObservationDetailsData.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -647,6 +650,7 @@
 				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
+				B748DF3A29CC658C0026C348 /* ObservationDetailsData.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
