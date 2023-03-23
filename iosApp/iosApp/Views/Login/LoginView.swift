@@ -11,59 +11,101 @@ import shared
 
 struct LoginView: View {
     @StateObject var model: LoginViewModel
-    @State private var endpointShowTextField = false
     @State private var rotationAngle = 0.0
+    
+    @State private var showTokenInput = true
+    @State private var endpointShowTextField = false
 
     private let stringTable = "LoginView"
+  
     
     var body: some View {
         NavigationView {
             VStack(alignment: .center) {
-                Title(titleText:
-                        .constant(String
-                            .localizedString(forKey: "login_welcome_title", inTable: stringTable, withComment: "welcome string on login view")))
                 
-                VStack() {
+                Image("more_welcome")
+                    .padding(.vertical, 40)
+
+                VStack {
                     VStack(alignment: .leading) {
-                        HStack {
-                            SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
-                            
+                        
+                        HStack{
                             Spacer()
-                            UIToggleFoldViewButton(isOpen: $endpointShowTextField)
+                            SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
+                            UIToggleFoldViewButton(isOpen: $showTokenInput)
+                            Spacer()
                         }
-                        .padding(.bottom, 4)
-                        Group {
-                            if endpointShowTextField {
-                                MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
+                        .padding(3)
+                        
+                        if showTokenInput {
+                            MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
+                        }
+                        
+                    }
+                }
+                .padding(.bottom, 12)
+                
+                if showTokenInput {
+                    VStack {
+                        if !model.error.isEmpty {
+                            ErrorText(message: $model.error)
+                                .padding(.bottom, 5)
+                        }
+                        
+                        VStack(alignment: .center) {
+                            if !model.isLoading {
+                                LoginButton(stringTable: .constant(stringTable))
+                                    .environmentObject(model)
                             } else {
-                                BasicText(text: $model.endpoint)
-                                    .lineLimit(1)
+                                ProgressView()
+                                    .progressViewStyle(.circular)
                             }
                         }
-                        .padding(.moreContainerEdgeInsets.bottom)
-                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
-                        
-                        MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
                     }
+                    .frame(minHeight: 75)
+                }
                     
-                    if !model.error.isEmpty {
-                        ErrorText(message: $model.error)
+                
+                VStack{
+                    Text(String.localizedString(forKey: "or", inTable: stringTable, withComment: "Choose either or of the two options."))
+                        .fontWeight(.more.title)
+                        
+                }
+                .padding(25)
+               
+                VStack {
+                    MoreActionButton{} label: {
+                        HStack {
+                            Text(String.localizedString(forKey: "qr_code_entry", inTable: stringTable, withComment: "Click to Scan QR Code to log in."))
+                            Spacer()
+                            Image(systemName: "chevron.forward")
+                        }
                     }
                 }
-                .padding()
-                
-                if !model.isLoading {
-                    LoginButton(stringTable: .constant(stringTable))
-                        .environmentObject(model)
-                } else {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
+                .padding(.vertical, 15)
                 
                 Spacer()
+                
+                VStack {
+                    HStack {
+                        BasicText(text: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")));
+                    
+                        UIToggleFoldViewButton(isOpen: $endpointShowTextField)
+                            
+                    }
+                    .padding(.bottom, 1)
+                    
+                    VStack {
+                        if endpointShowTextField {
+                            MoreTextFieldSmBottom(titleKey: $model.endpoint, inputText: $model.endpoint)
+                        }
+                    }
+                }
+                
             }
-            .frame(maxWidth: .moreFrameStyle.minWidth)
+            .padding(.horizontal, 60)
         }
+        
     }
 }
 
