@@ -9,9 +9,10 @@
 import Foundation
 import CoreLocation
 import AVFoundation
+import CoreMotion
 
 enum PermissionStatus {
-    case accepted, declined, requesting
+    case accepted, declined, requesting, non
     
 }
 
@@ -27,8 +28,18 @@ class PermissionManager: NSObject, ObservableObject {
     var gpsAuthorizationStatus: CLAuthorizationStatus?
     private var cameraPermissionGranted = false
     
-    private var gpsStatus: PermissionStatus = .accepted
+    private var gpsStatus: PermissionStatus = .non
     private var gpsNeeded: Bool = false
+    private var cmSensorRecorderNeeded = false
+    private var cmSensorStatus: PermissionStatus = .non {
+        didSet {
+            if cmSensorStatus == .accepted {
+                requestPermission()
+            } else if cmSensorStatus == .declined {
+                observer?.declined()
+            }
+        }
+    }
     private var cameraNeeded: Bool = false
     
     var permissionsGranted: Bool = true
@@ -55,25 +66,47 @@ class PermissionManager: NSObject, ObservableObject {
         }
         
         else if(self.locationManager.authorizationStatus == CLAuthorizationStatus.denied
-           || self.locationManager.authorizationStatus == CLAuthorizationStatus.restricted){
+                || self.locationManager.authorizationStatus == CLAuthorizationStatus.restricted || self.locationManager.accuracyAuthorization != .fullAccuracy){
             observer?.declined()
             return .declined
         }
         return .accepted
     }
     
+    func requestCMSensorRecorder() {
+        let status = CMSensorRecorder.authorizationStatus()
+        if status == .notDetermined {
+            let activityManager = CMMotionActivityManager()
+            activityManager.startActivityUpdates(to: OperationQueue.main) { activity in
+                self.cmSensorStatus = .accepted
+                activityManager.stopActivityUpdates()
+            }
+            let timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+                let status = CMSensorRecorder.authorizationStatus()
+                if status == .authorized {
+                    timer.invalidate()
+                } else if status == .restricted || status == .denied {
+                    self.cmSensorStatus = .declined
+                    timer.invalidate()
+                }
+            }
+        }
+    }
+    
     func requestPermission() {
-        if(self.gpsNeeded){
+        if self.gpsNeeded && gpsStatus != .accepted {
             gpsStatus = requestGpsAuthorization()
         }
-        
-        if (self.gpsStatus == .accepted) {
+        else if self.cmSensorRecorderNeeded && self.cmSensorStatus != .accepted {
+            requestCMSensorRecorder()
+        }
+        else {
             observer?.accepted()
         }
     }
     
     private func checkAcceptedPerms() {
-        if(self.cameraNeeded){
+        if self.cameraNeeded {
             permissionsGranted = (self.locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
         }
     }
@@ -90,15 +123,17 @@ class PermissionManager: NSObject, ObservableObject {
     private func setPermisssionValues(observationPermissions: Set<String> = []) {
         gpsNeeded = observationPermissions.contains("gpsAlways")
         cameraNeeded = observationPermissions.contains("camera")
+        cmSensorRecorderNeeded = observationPermissions.contains("cmsensorrecorder")
     }
 }
 
 extension PermissionManager: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied {
+        if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
             observer?.declined()
         }
         else if manager.authorizationStatus != .notDetermined {
+            self.gpsStatus = .accepted
             requestPermission()
         }
     }

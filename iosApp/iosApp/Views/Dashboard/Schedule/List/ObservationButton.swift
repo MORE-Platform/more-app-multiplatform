@@ -17,11 +17,11 @@ struct ObservationButton: View {
     var body: some View {
         HStack {
             if observationType.lowercased() == "question-observation" {
-                MoreActionButton(action: action) {
+                MoreActionButton(disabled: .constant(false), action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
             } else {
-                MoreActionButton(action: action) {
+                MoreActionButton(disabled: .constant(false), action: action) {
                     VStack {
                         if state == ScheduleState.running {
                             Text(

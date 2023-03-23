@@ -63,7 +63,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     }
 
     private fun start(scheduleId: String, observationId: String, type: String, config: Map<String, Any>) {
-        val observationKey = runningObservations.entries.firstOrNull{it.value.observationTypeImpl.observationType == type}?.key
+        val observationKey = runningObservations.entries.firstOrNull{it.value.observationType.observationType == type}?.key
         if (observationKey != null) {
             start(scheduleId, observationId, type, observationKey, config)
         } else {

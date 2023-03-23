@@ -4,8 +4,9 @@ import io.github.aakira.napier.Napier
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 
-abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
+abstract class Observation(val observationType: ObservationType) {
     private var dataManager: ObservationDataManager? = null
     private var running = false
     private val observationIds = mutableSetOf<String>()
@@ -21,7 +22,7 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
             configChanged = false
         }
         return if (!running) {
-            Napier.i { "Observation with type ${observationTypeImpl.observationType} starting" }
+            Napier.i { "Observation with type ${observationType.observationType} starting" }
             applyObservationConfig(config)
             running = start()
             return running
@@ -58,10 +59,12 @@ abstract class Observation(val observationTypeImpl: ObservationTypeImpl) {
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
-    fun storeData(data: Any) {
+    fun storeData(data: Any, timestamp: Long = -1) {
         val observationDataSchemas = observationIds.map { ObservationDataSchema().apply {
             this.observationId = it
-            if (this.timestamp == null) {
+            if (timestamp > -1) {
+                this.timestamp = RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
+            } else if (this.timestamp == null) {
                 this.timestamp = RealmInstant.now()
             }
             this.dataValue = data.asString() ?: ""

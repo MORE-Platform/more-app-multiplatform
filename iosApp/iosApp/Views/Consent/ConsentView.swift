@@ -28,7 +28,7 @@ struct ConsentView: View {
                     .progressViewStyle(.circular)
             } else {
                 HStack {
-                    MoreActionButton(backgroundColor: .more.important) {
+                    MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                         viewModel.decline()
                     } label: {
                         Text(verbatim: .localizedString(
@@ -37,13 +37,20 @@ struct ConsentView: View {
                             withComment: "Button to decline the study"))
                     }
                     Spacer()
-                    MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
+                    MoreActionButton(disabled: $viewModel.requestedPermissions, alertOpen: $viewModel.showErrorAlert) {
                         viewModel.requestPermissions()
                     } label: {
-                        Text(verbatim: .localizedString(
-                            forKey: "accept_button",
-                            inTable: stringsTable,
-                            withComment: "Button to accept the study consent"))
+                        VStack {
+                            if viewModel.requestedPermissions {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                            } else {
+                                Text(verbatim: .localizedString(
+                                    forKey: "accept_button",
+                                    inTable: stringsTable,
+                                    withComment: "Button to accept the study consent"))
+                            }
+                        }
                     } errorAlert: {
                         Alert(title:
                             Text(verbatim: .localizedString(

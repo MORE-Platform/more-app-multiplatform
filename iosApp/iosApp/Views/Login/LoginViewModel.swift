@@ -20,7 +20,7 @@ class LoginViewModel: ObservableObject {
     
     var delegate: LoginViewModelListener? = nil
 
-    @Published private(set) var isLoading = false
+    @Published var isLoading = false
     @Published var endpoint: String = ""
     @Published var token: String = ""
     @Published var error: String = ""

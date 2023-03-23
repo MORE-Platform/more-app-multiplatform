@@ -11,36 +11,36 @@ import shared
 import CoreLocation
 
 class GPSObservation: Observation_, CLLocationManagerDelegate {
-    private var manager: CLLocationManager?
+    
+    private let manager: CLLocationManager = CLLocationManager()
     public var currentLocation = CLLocation()
     
     init(sensorPermissions: Set<String>) {
-        super.init(observationTypeImpl: GPSType(sensorPermissions: sensorPermissions))
-        manager = CLLocationManager()
-        manager?.delegate = self
-        manager?.desiredAccuracy = kCLLocationAccuracyBest
+        super.init(observationType: GPSType(sensorPermissions: sensorPermissions))
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
     }
     
     override func start() -> Bool {
-        manager?.allowsBackgroundLocationUpdates = true
-        manager?.showsBackgroundLocationIndicator = true
-        manager?.requestAlwaysAuthorization()
         
-        if (manager?.authorizationStatus == CLAuthorizationStatus.authorizedAlways) {
-            manager?.startUpdatingLocation()
+        if (observerAccessible()) {
+            manager.allowsBackgroundLocationUpdates = true
+            manager.showsBackgroundLocationIndicator = true
+            manager.requestAlwaysAuthorization()
+            manager.startUpdatingLocation()
             return true
         } else {
-            manager?.requestAlwaysAuthorization()
+            manager.requestAlwaysAuthorization()
         }
         return false
     }
     
     override func stop() {
-        manager?.stopUpdatingLocation()
+        manager.stopUpdatingLocation()
     }
     
     override func observerAccessible() -> Bool {
-        ((manager?.isAccessibilityElement) != nil)
+        return CLLocationManager.locationServicesEnabled() && (manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedWhenInUse)
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){
@@ -54,7 +54,7 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
         
         let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude, "altitude": first.altitude]
         
-        self.storeData(data: dict)
+        self.storeData(data: dict, timestamp: -1)
     }
 }
  

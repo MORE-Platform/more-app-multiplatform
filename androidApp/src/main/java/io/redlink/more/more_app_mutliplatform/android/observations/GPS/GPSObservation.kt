@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.ObservationTypes.GPSType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 
 private const val TAG = "GPSObservation"
 private val permissions = setOf(
@@ -19,7 +19,7 @@ private val permissions = setOf(
 class GPSObservation(
     context: Context,
     private val gpsService: GPSService
-) : Observation(observationTypeImpl = GPSType(permissions)), GPSListener {
+) : Observation(observationType = GPSType(permissions)), GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
     private val hasPermission = this.hasPermissions(context)
 

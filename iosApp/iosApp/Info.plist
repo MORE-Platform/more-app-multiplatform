@@ -21,19 +21,21 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
+	<string>$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health devices</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>More needs access to Bluetooth to find and connect to supported health devices</string>
+	<string>$(PRODUCT_NAME)  needs access to Bluetooth to find and connect to supported health devices</string>
 	<key>NSCameraUsageDescription</key>
-	<string>More needs your camera to scan QR-Code</string>
+	<string>$(PRODUCT_NAME)  needs your camera to scan QR-Code</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>More needs to access you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain studies</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>More always needs access to you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME)  always needs access to you location to track your position for certain studies</string>
 	<key>NSLocationUsageDescription</key>
-	<string>More needs to access you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain studies</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>More needs to access you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs access to your location to track your position for certain studies</string>
+	<key>NSMotionUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your motion data to record your movement data in the background</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -41,7 +43,9 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>location</string>
+		<string>$(PRODUCT_NAME) needs to fetch and upload data</string>
+		<string>$(PRODUCT_NAME) needs to access your location in the background for certain studies</string>
+		<string>$(PRODUCT_NAME) needs to process collected data in the background</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
