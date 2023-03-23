@@ -20,7 +20,7 @@ struct ScheduleListItem: View {
         let currentState = viewModel.scheduleStates[scheduleModel.scheduleId] ?? ScheduleState.non
         VStack(alignment: .leading) {
             ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
-                .padding(.bottom)
+                .padding(.bottom, 4)
             HStack {
                 Image(systemName: "clock.fill")
                 BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
