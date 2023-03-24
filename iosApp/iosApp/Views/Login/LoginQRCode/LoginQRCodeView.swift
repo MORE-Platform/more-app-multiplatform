@@ -1,0 +1,72 @@
+//
+//  LoginQRCodeView.swift
+//  iosApp
+//
+//  Created by Isabella Aigner on 24.03.23.
+//  Copyright © 2023 orgName. All rights reserved.
+//
+
+import SwiftUI
+import shared
+
+struct LoginQRCodeView: View {
+    @StateObject var model: LoginViewModel
+    private let navigationStrings = "Navigation"
+    private let stringTable = "LoginView"
+    
+    //@available(iOS 15, *)
+    //@Environment(\.dismiss) var dismiss
+    
+    
+    var body: some View {
+        MoreMainBackgroundView {
+            VStack(alignment: .center) {
+                Image("more_welcome")
+                    .padding(.vertical, 40)
+                
+                BasicText(text: .constant(String.localizedString(forKey: "scan_qr_code", inTable: stringTable, withComment: "Login with QR Code.")))
+                    .padding(.bottom, 5)
+                
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
+                    .fill(Color.more.white)
+                    .frame(height: 300)
+                    .padding(.bottom, 12)
+                
+                VStack {
+                    if !model.error.isEmpty {
+                        ErrorText(message: $model.error)
+                            .padding(.bottom, 5)
+                    }
+                    VStack(alignment: .center) {
+                        if model.isLoading {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        }
+                    }
+                }
+                .frame(minHeight: 20)
+                .padding(.bottom, 20)
+                
+                MoreActionButton(backgroundColor: .more.secondary){
+                    if #available(iOS 15, *) {
+                        //dismiss()
+                    }
+                    else {
+                        // dismiss in ios 14??
+                    }
+                    
+                } label: {
+                    VStack {
+                        Text("Close")
+                    }
+                }
+                
+                Spacer()
+            }
+        } topBarContent: {
+            EmptyView()
+        }
+        .customNavigationTitle(with: NavigationScreens.scanQRCode.localize(useTable: navigationStrings, withComment: "Scan QR Code to Login"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}

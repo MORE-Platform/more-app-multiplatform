@@ -10,12 +10,14 @@ import SwiftUI
 import shared
 
 struct LoginView: View {
+    
     @StateObject var model: LoginViewModel
     @State private var rotationAngle = 0.0
     
     @State private var showTokenInput = true
     @State private var endpointShowTextField = false
 
+    
     private let stringTable = "LoginView"
   
     
@@ -74,13 +76,22 @@ struct LoginView: View {
                 .padding(25)
                
                 VStack {
-                    MoreActionButton{} label: {
+                    NavigationLink {
+                        LoginQRCodeView(model: model)
+                    } label: {
                         HStack {
                             Text(String.localizedString(forKey: "qr_code_entry", inTable: stringTable, withComment: "Click to Scan QR Code to log in."))
+                                .foregroundColor(.more.white)
                             Spacer()
                             Image(systemName: "chevron.forward")
+                                    .foregroundColor(.more.white)
                         }
                     }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous).fill(Color.more.primary)
+                    )
                 }
                 .padding(.vertical, 15)
                 
