@@ -77,7 +77,7 @@ abstract class Observation(val observationType: ObservationType) {
         finish()
     }
 
-    private fun finish() {
+    protected fun finish() {
         dataManager?.saveAndSend()
     }
 

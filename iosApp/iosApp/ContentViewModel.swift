@@ -8,6 +8,7 @@
 
 import Foundation
 import shared
+import BackgroundTasks
 
 class ContentViewModel: ObservableObject {
     private let userDefaults = UserDefaultsRepository()

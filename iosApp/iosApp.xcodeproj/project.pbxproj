@@ -11,6 +11,10 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		07D9046829C85166003D2912 /* GPSObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9046729C85166003D2912 /* GPSObservation.swift */; };
 		07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */; };
+		1F0026D929CC8AAB0034EF65 /* DataUploadBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026D829CC8AAB0034EF65 /* DataUploadBackgroundTask.swift */; };
+		1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DA29CC8E730034EF65 /* AppDelegate.swift */; };
+		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
+		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -119,6 +123,10 @@
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		07D9046729C85166003D2912 /* GPSObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSObservation.swift; sourceTree = "<group>"; };
 		07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		1F0026D829CC8AAB0034EF65 /* DataUploadBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadBackgroundTask.swift; sourceTree = "<group>"; };
+		1F0026DA29CC8E730034EF65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
+		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -256,6 +264,7 @@
 			children = (
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
+				1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -263,6 +272,8 @@
 		1F27536929CC53FE00324417 /* BackgroundTasks */ = {
 			isa = PBXGroup;
 			children = (
+				1F0026D829CC8AAB0034EF65 /* DataUploadBackgroundTask.swift */,
+				1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */,
 			);
 			path = BackgroundTasks;
 			sourceTree = "<group>";
@@ -462,6 +473,7 @@
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				1F27536029CC372500324417 /* AppState.swift */,
+				1F0026DA29CC8E730034EF65 /* AppDelegate.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 			);
 			path = iosApp;
@@ -641,7 +653,9 @@
 				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
 				1F8847CA299154120023EF10 /* MoreFont.swift in Sources */,
 				1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */,
+				1F0026D929CC8AAB0034EF65 /* DataUploadBackgroundTask.swift in Sources */,
 				1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */,
+				1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */,
 				ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */,
 				1F8847D4299158BD0023EF10 /* MoreImage.swift in Sources */,
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
@@ -653,6 +667,7 @@
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
 				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
+				1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
@@ -680,6 +695,7 @@
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
 				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
+				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,

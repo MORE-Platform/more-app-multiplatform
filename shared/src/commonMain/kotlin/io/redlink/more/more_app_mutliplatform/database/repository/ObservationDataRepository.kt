@@ -51,9 +51,7 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
         return realmDatabase.query<ObservationDataSchema>().firstOrNull()?.mapAsBulkData()
     }
 
-    fun deleteAllWithId(idSet: Set<String>) {
-        scope.launch {
-            realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", idSet.map { ObjectId(it) })
-        }
+    suspend fun deleteAllWithId(idSet: Set<String>) {
+        realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", idSet.map { ObjectId(it) })
     }
 }

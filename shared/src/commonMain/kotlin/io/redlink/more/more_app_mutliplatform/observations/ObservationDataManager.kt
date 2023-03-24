@@ -53,9 +53,9 @@ abstract class ObservationDataManager: Closeable {
         dataPointCountRepository.delete(scheduleId)
     }
 
-    abstract fun sendData()
+    abstract fun sendData(onCompletion: (Boolean) -> Unit = {})
 
-    private fun deleteAll(idSet: Set<String>) {
+    private suspend fun deleteAll(idSet: Set<String>) {
         observationDataRepository.deleteAllWithId(idSet)
     }
 

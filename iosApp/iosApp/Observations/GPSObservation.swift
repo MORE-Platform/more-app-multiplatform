@@ -10,7 +10,7 @@ import Foundation
 import shared
 import CoreLocation
 
-class GPSObservation: Observation_, CLLocationManagerDelegate {
+class GPSObservation: Observation_ {
     
     private let manager: CLLocationManager = CLLocationManager()
     public var currentLocation = CLLocation()
@@ -49,6 +49,10 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
         
     }
     
+    
+}
+
+extension GPSObservation: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let first = locations.first else {
             return
@@ -57,6 +61,10 @@ class GPSObservation: Observation_, CLLocationManagerDelegate {
         let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude, "altitude": first.altitude]
         
         self.storeData(data: dict, timestamp: -1)
+    }
+    
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        finish()
     }
 }
  

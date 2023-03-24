@@ -103,11 +103,11 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    suspend inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
-        realm?.writeBlocking {
+        realm?.write {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }
