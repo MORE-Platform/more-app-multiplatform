@@ -37,7 +37,7 @@ fun FilterView() {
             Icons.Default.Tune,
             contentDescription = getStringResource(id = R.string.more_main_tab_filters),
             modifier = Modifier.padding(start = 8.dp),
-            tint = Color.DarkGray
+            tint = MoreColors.Secondary
         )
     }
 }
