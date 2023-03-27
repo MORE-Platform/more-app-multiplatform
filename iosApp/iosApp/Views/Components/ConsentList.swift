@@ -15,7 +15,7 @@ struct ConsentList: View {
     var body: some View {
         ScrollView {
             ForEach(permissionModel.consentInfo, id: \.self) { consentModel in
-                ConsentListItem(consentInfo: consentModel)
+                ConsentListItem(consentInfo: consentModel, hasPreview: consentModel.title == "Study Consent")
                     .listRowInsets(.moreListStyleEdgeInsets.listItem)
                     .listRowBackground(Color.more.mainBackground)
             }
@@ -26,7 +26,7 @@ struct ConsentList: View {
 
 struct ConsentList_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "", consentInfo: [
+        ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "study consent", consentInfo: [
             PermissionConsentModel(title: "Study Consent", info: "Consent Info"),
             PermissionConsentModel(title: "Movement", info: "Accelerometer data"),
         ])))

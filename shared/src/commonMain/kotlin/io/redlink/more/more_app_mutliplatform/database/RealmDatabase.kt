@@ -40,6 +40,12 @@ object RealmDatabase {
         }
     }
 
+    suspend fun storeAsync(realmObject: RealmObject, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
+        realm?.write {
+            copyToRealm(realmObject, updatePolicy)
+        }
+    }
+
     fun storeAll(
         realmObjects: Collection<RealmObject>,
         updatePolicy: UpdatePolicy = UpdatePolicy.ERROR

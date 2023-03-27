@@ -15,7 +15,13 @@ class ContentViewModel: ObservableObject {
     private let registrationService: RegistrationService
     private let credentialRepository: CredentialRepository
     
-    @Published var hasCredentials = false
+    @Published var hasCredentials = false {
+        didSet {
+            if hasCredentials {
+                loadData()
+            }
+        }
+    }
     @Published var loginViewScreenNr = 0
     
     @Published var navigationTitle = ""
@@ -23,21 +29,17 @@ class ContentViewModel: ObservableObject {
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
-    let permissionManager: PermissionManager
     let settingsViewModel: SettingsViewModel
-
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", studyConsentInfo: "", consentInfo: [])
 
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
-        hasCredentials = credentialRepository.hasCredentials()
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
-        permissionManager = PermissionManager.permObj
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         settingsViewModel = SettingsViewModel()
+        hasCredentials = credentialRepository.hasCredentials()
 
         loginViewModel.delegate = self
         consentViewModel.delegate = self
@@ -57,9 +59,8 @@ class ContentViewModel: ObservableObject {
         }
     }
 
-    func loadData() {
-        self.dashboardViewModel.loadStudy()
-        self.dashboardViewModel.scheduleViewModel.loadData()
+    private func loadData() {
+        self.dashboardViewModel.loadData()
     }
 }
 
@@ -67,9 +68,6 @@ extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
         self.consentViewModel.consentInfo = study.consentInfo
         self.consentViewModel.buildConsentModel()
-        DispatchQueue.main.async {
-            self.permissionModel = self.consentViewModel.permissionModel
-        }
         showConsentView()
     }
 }
@@ -80,7 +78,6 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
-        self.loadData()
         DispatchQueue.main.async {
             self.hasCredentials = true
         }

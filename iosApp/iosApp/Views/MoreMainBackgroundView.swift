@@ -20,6 +20,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
             .foregroundColor(.more.primary)
             .padding(.horizontal, 24)
         }
+        
     }
 }
 

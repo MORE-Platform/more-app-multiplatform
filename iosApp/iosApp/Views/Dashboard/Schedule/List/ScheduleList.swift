@@ -8,7 +8,6 @@
 
 import SwiftUI
 import shared
-import Foundation
 
 struct ScheduleList: View {
     @EnvironmentObject var viewModel: ScheduleViewModel
@@ -18,9 +17,14 @@ struct ScheduleList: View {
     var body: some View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
             ZStack {
-                ScheduleListItem(scheduleModel: schedule)
-                if schedule != scheduleModels![(scheduleModels!.endIndex)-1] {
-                    Divider()
+                VStack {
+                    ScheduleListItem(scheduleModel: schedule)
+                        .environmentObject(viewModel)
+                    if schedule != scheduleModels!.last {
+                        Divider()
+                    } else {
+                        EmptyView()
+                    }
                 }
                 NavigationLink {
                     TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))

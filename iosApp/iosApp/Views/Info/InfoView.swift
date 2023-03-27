@@ -16,11 +16,12 @@ struct InfoView: View {
             MoreMainBackgroundView {
                 VStack {
                     Divider()
-                    List {
+                    VStack {
                         InfoList()
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.more.primaryLight)
+                        Spacer()
                     }
                     .listStyle(.plain)
                     .clearListBackground()
@@ -32,6 +33,7 @@ struct InfoView: View {
             .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"))
             .navigationBarTitleDisplayMode(.inline)
         }
+        
     }
 }
 

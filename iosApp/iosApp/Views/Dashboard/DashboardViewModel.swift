@@ -16,14 +16,20 @@ class DashboardViewModel: ObservableObject {
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
     
+    private var dataJob: Ktor_ioCloseable? = nil
+    
     init() {
         self.observationFactory = IOSObservationFactory()
         self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory)
+        
     }
     
-    func loadStudy() {
-        coreModel.onLoadStudy { study in
+    func loadData() {
+        scheduleViewModel.loadData()
+        dataJob?.close()
+        dataJob = coreModel.onLoadStudy { study in
             if let study {
+                self.scheduleViewModel.reinitList()
                 DispatchQueue.main.async {
                     self.study = study
                     self.studyTitle = study.studyTitle
