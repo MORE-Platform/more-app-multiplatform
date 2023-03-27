@@ -58,10 +58,10 @@
             android:screenOrientation="portrait"
             android:exported="true" />
 
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireActivity"
+        <activity android:name=".observations.questionnaire.QuestionnaireActivity"
             android:screenOrientation="portrait"
             android:exported="true" />
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireResponseActivity"
+        <activity android:name=".observations.questionnaire.QuestionnaireResponseActivity"
             android:screenOrientation="portrait"
             android:exported="true" />
 

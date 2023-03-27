@@ -9,6 +9,7 @@
     <string name="study_loading_problem">There was a problem loading the study!</string>
     <string name="study_details">Open study details</string>
     <string name="study_not_active">Study currently inactive</string>
+    <string name="participant_information">Participant Information</string>
 
     <string name="more_main_tab_schedule">Schedule</string>
     <string name="more_main_tab_modules">Modules</string>

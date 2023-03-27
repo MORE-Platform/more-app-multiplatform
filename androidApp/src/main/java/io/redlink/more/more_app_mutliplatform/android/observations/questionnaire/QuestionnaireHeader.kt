@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
+package io.redlink.more.more_app_mutliplatform.android.observations.questionnaire
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
