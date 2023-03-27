@@ -1,7 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.tasks
 
-import android.widget.ProgressBar
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -14,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
 
@@ -31,11 +34,22 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
             .fillMaxHeight()
             .padding(4.dp)
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp)){
-            HeaderTitle(title = taskDetails.value.observationTitle)
-            //TODO AbortButton()
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)){
+            HeaderTitle(title = taskDetails.value.observationTitle,
+            modifier = Modifier.weight(0.65f))
+            SmallTextIconButton(
+                text = getStringResource(id = R.string.more_abort),
+                imageText = getStringResource(id = R.string.more_abort),
+                image = Icons.Rounded.Square,
+                imageTint = MoreColors.Important,
+                borderStroke = MoreColors.borderDefault(),
+                buttonColors = ButtonDefaults.moreSecondary()) {
+            }
         }
         BasicText(
             text = taskDetails.value.observationType,
@@ -68,6 +82,7 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
         scheduleId?.let {
             if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) {
                 DatapointCollectionView(datapointsCollected)
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             SmallTextButton(

@@ -25,7 +25,7 @@ fun TimeframeHours(startTime: Date, endTime: Date, modifier: Modifier = Modifier
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
-            text = "Timeframe: ",
+            text = getStringResource(id = R.string.more_schedule_timeframe),
             color = MoreColors.Primary
         )
         Text(

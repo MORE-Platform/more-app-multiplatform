@@ -5,6 +5,7 @@
     <string name="more_study_consent">Study Consent</string>
     <string name="more_approved">Approved</string>
     <string name="more_cancel">Cancel</string>
+    <string name="more_abort">Abort</string>
     <string name="more_back">Back</string>
     <string name="more_danger">Danger</string>
     <string name="more_close_overlay">Close Overlay</string>

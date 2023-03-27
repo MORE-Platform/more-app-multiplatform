@@ -25,12 +25,16 @@ fun DatapointCollectionView (datapoints: MutableState<Long>){
             .fillMaxHeight(0.4f)
             .padding(8.dp)
     ){
-        CircularProgressIndicator(color = MoreColors.Approved)
+        CircularProgressIndicator(
+            color = MoreColors.Approved,
+            modifier = Modifier
+                .height(50.dp)
+                .width(50.dp))
         MediumTitle(text = getStringResource(id = R.string.more_observation_datapoints))
         Text(
             text = datapoints.value.toString(),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            color = MoreColors.Secondary,)
+            color = MoreColors.Secondary)
     }
 }
