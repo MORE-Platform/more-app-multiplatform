@@ -8,17 +8,13 @@ struct ContentView: View {
             if viewModel.hasCredentials {
                 MainTabView()
                     .environmentObject(viewModel)
-                    .onAppear{
-                        viewModel.loadData()
-                    }
             } else {
                 MoreMainBackground {
                     VStack {
                         if viewModel.loginViewScreenNr == 0 {
                             LoginView(model: viewModel.loginViewModel)
                         } else {
-                            ConsentView(viewModel: viewModel.consentViewModel,
-                                        permissionManager: viewModel.permissionManager)
+                            ConsentView(viewModel: viewModel.consentViewModel)
                         }
                     }
                 } topBarContent: {

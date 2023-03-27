@@ -13,14 +13,12 @@ import CoreLocation
 class GPSObservation: Observation_, CLLocationManagerDelegate {
     private var manager: CLLocationManager?
     public var currentLocation = CLLocation()
-    private var permsManager = PermissionManager.permObj
     
     init(sensorPermissions: Set<String>) {
         super.init(observationTypeImpl: GPSType(sensorPermissions: sensorPermissions))
         manager = CLLocationManager()
         manager?.delegate = self
         manager?.desiredAccuracy = kCLLocationAccuracyBest
-        permsManager.setGPSNeeded()
     }
     
     override func start() -> Bool {

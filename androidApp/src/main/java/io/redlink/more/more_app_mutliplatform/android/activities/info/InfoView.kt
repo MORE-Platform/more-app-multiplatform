@@ -18,9 +18,9 @@ fun InfoView(navController: NavController) {
             InfoItem(
                 title = "Study Details",
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Open Settings",
+                contentDescription = "Open Study Details",
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.STUDY_DETAILS.route)
                 }
             )
             InfoItem(
