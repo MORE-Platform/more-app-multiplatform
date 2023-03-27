@@ -13,6 +13,7 @@
     <string name="more_enpoint_error">URL Error</string>
     <string name="more_token_error">Token Error</string>
     <string name="more_qr_code_button">Scan QR Code</string>
+    <string name="or_text">or</string>
 
 
 </resources>

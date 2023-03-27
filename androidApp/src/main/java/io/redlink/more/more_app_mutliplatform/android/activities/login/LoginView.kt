@@ -19,6 +19,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.login.composabl
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.QRCodeButton
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ValidationButton
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 
 
 @Composable
@@ -80,7 +81,7 @@ fun LoginForm(model: LoginViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             ValidationButton(model = model, focusManager = focusManager)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "or")
+            Text(text = getStringResource(id = R.string.or_text))
             Spacer(modifier = Modifier.height(16.dp))
             QRCodeButton()
             Spacer(modifier = Modifier.fillMaxHeight(0.6f))
