@@ -49,7 +49,8 @@ fun EndpointView(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -79,14 +80,6 @@ fun EndpointView(
                 model = model,
                 focusRequester = focusRequester,
                 focusManager = focusManager
-            )
-        } else {
-            Text(
-                text = model.dataEndpoint.value,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MoreColors.Secondary
             )
         }
     }

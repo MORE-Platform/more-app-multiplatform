@@ -59,7 +59,7 @@ fun LoginForm(model: LoginViewModel) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    Box(modifier = Modifier.fillMaxWidth(0.80f)) {
+    Box(modifier = Modifier.fillMaxWidth(0.90f)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()

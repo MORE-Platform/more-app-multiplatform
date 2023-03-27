@@ -50,21 +50,22 @@ fun ParticipationKeyInput(
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row (verticalAlignment = Alignment.CenterVertically){
+        Row (verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()){
             Text(
                 text = getStringResource(id = R.string.more_registration_token_label),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 color = MoreColors.Primary
             )
-            IconButton(onClick = { isOpen = !isOpen },
-                modifier = Modifier.weight(0.2f)) {
+            IconButton(onClick = { isOpen = !isOpen }) {
                 Icon(
                     Icons.Rounded.ExpandMore,
                     getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
                     tint = MoreColors.Primary,
                     modifier = Modifier
-                        .fillMaxSize(1.2f)
+                        // .fillMaxSize(1.2f)
                         .rotate(angle)
                 )
             }
