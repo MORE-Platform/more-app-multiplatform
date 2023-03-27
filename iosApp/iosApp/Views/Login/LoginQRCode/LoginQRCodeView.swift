@@ -9,20 +9,22 @@
 import SwiftUI
 import shared
 
+
 struct LoginQRCodeView: View {
     @StateObject var model: LoginViewModel
     private let navigationStrings = "Navigation"
     private let stringTable = "LoginView"
     
-    //@available(iOS 15, *)
-    //@Environment(\.dismiss) var dismiss
-    
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
+        
+        
         MoreMainBackgroundView {
             VStack(alignment: .center) {
                 Image("more_welcome")
-                    .padding(.vertical, 40)
+                    .padding(.top, 15)
+                    .padding(.bottom, 40)
                 
                 BasicText(text: .constant(String.localizedString(forKey: "scan_qr_code", inTable: stringTable, withComment: "Login with QR Code.")))
                     .padding(.bottom, 5)
@@ -48,12 +50,8 @@ struct LoginQRCodeView: View {
                 .padding(.bottom, 20)
                 
                 MoreActionButton(backgroundColor: .more.secondary){
-                    if #available(iOS 15, *) {
-                        //dismiss()
-                    }
-                    else {
-                        // dismiss in ios 14??
-                    }
+                    
+                    self.presentationMode.wrappedValue.dismiss()
                     
                 } label: {
                     VStack {
