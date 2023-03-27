@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_schedule_view_start_time">Start: </string>
-    <string name="more_schedule_view_active_for">Active for: %1d min</string>
+    <string name="more_schedule_view_end_time">End</string>
+    <string name="more_schedule_timeframe">Timeframe: </string>
+    <string name="more_schedule_details">More Schedule Details</string>
 </resources>
