@@ -135,6 +135,6 @@ fun EndpointInput(
         modifier = Modifier
             .focusRequester(focusRequester)
             .fillMaxWidth()
-            .height(50.dp)
+            .height(60.dp)
     )
 }
