@@ -60,9 +60,24 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-                   
+                    
+                    if (viewModel.taskDetailsModel?.observationType == "question-observation") {
+                        NavigationLink {
+                            QuestionObservationView()
+                        } label: {
+                           Text("Start Questionnaire")
+                                .foregroundColor(.more.white)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous).fill(Color.more.primary)
+                        )
+                    }
+                    else {
                     ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
                             let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
+                        
                             if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                                 scheduleViewModel.pause(scheduleId: scheduleId)
                             } else {
@@ -70,6 +85,7 @@ struct TaskDetailsView: View {
                                 count = viewModel.dataPointCount?.count ?? 0
                             }
                         }
+                    }
                     Spacer()
                 }
                 

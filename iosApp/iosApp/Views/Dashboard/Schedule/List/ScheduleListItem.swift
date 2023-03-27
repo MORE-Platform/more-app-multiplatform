@@ -27,14 +27,24 @@ struct ScheduleListItem: View {
                 Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
                     .foregroundColor(Color.more.secondary)
             }
-            ObservationButton(observationType: scheduleModel.observationType, state: currentState, start: scheduleModel.start, end: scheduleModel.end) {
-                if currentState == ScheduleState.running {
-                    viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                } else {
-                    viewModel.start(scheduleId: scheduleModel.scheduleId)
+            
+                ObservationButton(observationType: scheduleModel.observationType, state: currentState, start: scheduleModel.start, end: scheduleModel.end) {
+                    if currentState == ScheduleState.running {
+                        viewModel.pause(scheduleId: scheduleModel.scheduleId)
+                        
+                        if scheduleModel.observationType == "question-observation" {
+                            NavigationLink {
+                                QuestionObservationView()
+                            } label: {
+                               EmptyView()
+                            }
+                        }
+                    } else {
+                        viewModel.start(scheduleId: scheduleModel.scheduleId)
+                    }
                 }
-            }
-            .buttonStyle(.plain)
+                .buttonStyle(.plain)
+        
         }
     }
 }

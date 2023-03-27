@@ -14,6 +14,7 @@ enum NavigationScreens: String {
     case info = "Information"
     case settings = "Settings"
     case taskDetails = "Task Detail"
+    case questionObservation = "Question Observation"
 }
 
 extension NavigationScreens {
