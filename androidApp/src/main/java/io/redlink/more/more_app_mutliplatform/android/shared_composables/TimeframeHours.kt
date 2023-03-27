@@ -26,7 +26,8 @@ fun TimeframeHours(startTime: Date, endTime: Date, modifier: Modifier = Modifier
         )
         Text(
             text = getStringResource(id = R.string.more_schedule_timeframe),
-            color = MoreColors.Primary
+            color = MoreColors.Primary,
+            modifier = Modifier.padding(end = 8.dp)
         )
         Text(
             text = "${startTime.formattedString("HH:mm")} - ${endTime.formattedString("HH:mm")}",
