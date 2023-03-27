@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 
+import io.realm.kotlin.types.RealmList
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema

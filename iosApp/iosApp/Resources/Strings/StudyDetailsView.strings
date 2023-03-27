@@ -12,3 +12,6 @@
 "modules_string" = "Modules";
 
 "study_duration" = "Study duration:";
+"open_settings" = "Go to settings";
+"close_view" = "Close";
+"participant_info" = "Participant information";

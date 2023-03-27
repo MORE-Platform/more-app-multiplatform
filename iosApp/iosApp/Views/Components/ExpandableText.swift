@@ -8,18 +8,21 @@
 
 import SwiftUI
 
+
 struct ExpandableText: View {
     @State private var expanded: Bool = false
     @State private var truncated: Bool = false
     private var text: String
     private var title: String
     private let stringTable = "ExpandableText"
-    
+    private let color: Color
     let lineLimit: Int
-    init(_ text: String,_ title: String, lineLimit: Int) {
+    
+    init(_ text: String,_ title: String, lineLimit: Int, color: Color = Color.more.primary) {
         self.text = text
         self.title = title
         self.lineLimit = lineLimit
+        self.color = color
     }
     
     private var moreLessText: String {
@@ -38,7 +41,7 @@ struct ExpandableText: View {
                    UIToggleFoldViewButton(isOpen: $expanded)
                        .padding(.bottom, 10)
                }
-               Text(text)
+               BasicText(text: .constant(text), color: self.color)
                    .lineLimit(expanded ? nil : lineLimit)
                    .background(
                        Text(text).lineLimit(lineLimit)

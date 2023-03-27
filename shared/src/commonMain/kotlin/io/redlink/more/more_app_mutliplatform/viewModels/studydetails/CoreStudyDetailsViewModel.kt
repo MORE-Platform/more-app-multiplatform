@@ -6,6 +6,7 @@ import io.realm.kotlin.types.RealmList
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
@@ -13,6 +14,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class CoreStudyDetailsViewModel {
@@ -37,21 +40,14 @@ class CoreStudyDetailsViewModel {
             studyRepository.getStudy().collect{ study ->
                 study?.let {
                     studyDetailsModel.value = StudyDetailsModel.createModelFrom(it)
+                    studyTitle.emit(it.studyTitle)
+                    participantInfo.emit(it.participantInfo)
+                    start.emit(it.start?.epochSeconds ?: 0)
+                    end.emit(it.end?.epochSeconds ?: 0)
+                    observations.emit(it.observations)
                 }
             }
         }
-
-//        scope.launch {
-//            studyRepository.getStudy().collect { study ->
-//                study?.let {
-//                    studyTitle.emit(it.studyTitle)
-//                    participantInfo.emit(it.participantInfo)
-//                    start.emit(it.start?.epochSeconds ?: 0)
-//                    end.emit(it.end?.epochSeconds ?: 0)
-//                    observations.emit(it.observations)
-//                }
-//            }
-//        }
         scope.launch {
             scheduleRepository.count().collect{
                 totalTasks.value = it
@@ -63,8 +59,30 @@ class CoreStudyDetailsViewModel {
             }
         }
     }
+
+    fun loadWholeStudy(): MutableStateFlow<StudySchema?> {
+        val study: MutableStateFlow<StudySchema?> = MutableStateFlow(StudySchema())
+        CoroutineScope(Dispatchers.Default + Job()).launch {
+            studyRepository.getStudy().collect {
+                study.value = it
+            }
+        }
+        return study
+    }
     fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
         return studyDetailsModel.asClosure(provideNewState)
+    }
+
+    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)): Closeable {
+        val job = Job()
+        loadWholeStudy().onEach {
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object: Closeable {
+            override fun close() {
+                job.cancel()
+            }
+        }
     }
 
     fun onStudyTitle(provideNewState: ((String?) -> Unit)): Closeable {
