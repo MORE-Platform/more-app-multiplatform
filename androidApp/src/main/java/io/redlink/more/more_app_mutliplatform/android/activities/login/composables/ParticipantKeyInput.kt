@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -122,14 +123,16 @@ fun ParticipationKeyInput(
                         .fillMaxWidth()
                         .height(50.dp)
                 )
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                ErrorMessage(
-                    hasError = model.error.value != null,
-                    errorMsg = model.error.value ?: getStringResource(
-                        id = R.string.more_token_error
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    ErrorMessage(
+                        hasError = model.error.value != null,
+                        errorMsg = model.error.value ?: getStringResource(
+                            id = R.string.more_token_error
+                        )
                     )
-                )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                ValidationButton(model = model, focusManager = focusManager)
             }
         } else {
             Text(
@@ -138,7 +141,8 @@ fun ParticipationKeyInput(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
-                color = MoreColors.Secondary
+                color = MoreColors.Secondary,
+                textAlign = TextAlign.Center
             )
         }
 

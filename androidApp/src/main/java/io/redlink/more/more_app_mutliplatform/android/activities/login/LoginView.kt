@@ -79,8 +79,6 @@ fun LoginForm(model: LoginViewModel) {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            ValidationButton(model = model, focusManager = focusManager)
-            Spacer(modifier = Modifier.height(16.dp))
             Text(text = getStringResource(id = R.string.or_text))
             Spacer(modifier = Modifier.height(16.dp))
             QRCodeButton()
