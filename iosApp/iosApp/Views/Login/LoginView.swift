@@ -48,7 +48,7 @@ struct LoginView: View {
                     }
                     .padding(25)
                    
-                    NavigationLinkButton  {
+                    NavigationLinkButton(disabled: .constant(false))  {
                         LoginQRCodeView(model: model)
                     } label: {
                         HStack {

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct NavigationLinkButton<Destination: View, Label: View>: View {
     
+    @Binding var disabled: Bool
     var destination: () -> Destination
     var label: () -> Label
     
@@ -17,14 +18,21 @@ struct NavigationLinkButton<Destination: View, Label: View>: View {
         
         VStack {
             NavigationLink {
-                destination()
+                if (!disabled) {
+                    destination()
+                }
             } label: {
                 label()
             }
             .padding()
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous).fill(Color.more.primary)
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
+                    .fill(disabled ? Color.more.primaryLight200 : Color.more.primary)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                    .stroke(disabled ? Color.more.secondaryMedium : Color.more.primary, lineWidth: 1)
             )
         }
     }

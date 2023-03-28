@@ -15,6 +15,7 @@ struct TaskDetailsView: View {
     @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
+    private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
         
     var body: some View {
@@ -62,17 +63,13 @@ struct TaskDetailsView: View {
                     }
                     
                     if (viewModel.taskDetailsModel?.observationType == "question-observation") {
-                        NavigationLink {
+
+                        NavigationLinkButton(disabled: .constant(!(Date() > viewModel.taskDetailsModel?.start.toDate() ?? Date() && Date() < viewModel.taskDetailsModel?.end.toDate() ?? Date()))) {
                             QuestionObservationView()
                         } label: {
-                           Text("Start Questionnaire")
-                                .foregroundColor(.more.white)
+                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                .foregroundColor((Date() > viewModel.taskDetailsModel?.start.toDate() ?? Date() && Date() < viewModel.taskDetailsModel?.end.toDate() ?? Date()) ? .more.white : .more.secondaryMedium)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous).fill(Color.more.primary)
-                        )
                     }
                     else {
                     ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {

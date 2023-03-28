@@ -31,21 +31,12 @@ struct ScheduleListItem: View {
                 ObservationButton(observationType: scheduleModel.observationType, state: currentState, start: scheduleModel.start, end: scheduleModel.end) {
                     if currentState == ScheduleState.running {
                         viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                        
-                        if scheduleModel.observationType == "question-observation" {
-                            NavigationLink {
-                                QuestionObservationView()
-                            } label: {
-                               EmptyView()
-                            }
-                        }
                     } else {
                         viewModel.start(scheduleId: scheduleModel.scheduleId)
                     }
                 }
                 .buttonStyle(.plain)
-        
-        }
+            }
     }
 }
 
