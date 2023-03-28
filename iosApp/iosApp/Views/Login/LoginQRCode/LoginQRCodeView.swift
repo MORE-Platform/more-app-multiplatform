@@ -49,7 +49,7 @@ struct LoginQRCodeView: View {
                 .frame(minHeight: 20)
                 .padding(.bottom, 20)
                 
-                MoreActionButton(backgroundColor: .more.secondary){
+                MoreActionButton(backgroundColor: .more.secondary, disabled: .constant(false)){
                     
                     self.presentationMode.wrappedValue.dismiss()
                     
