@@ -15,7 +15,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
-fun DatapointCollectionView (datapoints: MutableState<Long>){
+fun DatapointCollectionView (datapoints: Long){
 
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -32,7 +32,7 @@ fun DatapointCollectionView (datapoints: MutableState<Long>){
                 .width(50.dp))
         MediumTitle(text = getStringResource(id = R.string.more_observation_datapoints))
         Text(
-            text = datapoints.value.toString(),
+            text = datapoints.toString(),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             color = MoreColors.Secondary)

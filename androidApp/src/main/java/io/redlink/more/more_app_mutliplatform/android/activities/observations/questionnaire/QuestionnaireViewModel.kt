@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.observations.questionnaire
+package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
 
 import android.app.Activity
 import android.content.Context

@@ -11,7 +11,17 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
-fun SmallTextIconButton(text: String, imageText: String, image: ImageVector, imageTint: Color, modifier: Modifier = Modifier, enabled: Boolean = true, borderStroke: BorderStroke = MoreColors.borderPrimary(enabled), buttonColors: ButtonColors = ButtonDefaults.morePrimary(), onClick: (() -> Unit)){
+fun SmallTextIconButton(
+    text: String,
+    imageText: String,
+    image: ImageVector,
+    imageTint: Color,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    borderStroke: BorderStroke = MoreColors.borderPrimary(enabled),
+    buttonColors: ButtonColors = ButtonDefaults.morePrimary(),
+    onClick: (() -> Unit)
+) {
     OutlinedButton(
         onClick = onClick,
         border = borderStroke,
@@ -22,7 +32,7 @@ fun SmallTextIconButton(text: String, imageText: String, image: ImageVector, ima
     ) {
         Icon(
             imageVector = image,
-            contentDescription =  imageText,
+            contentDescription = imageText,
             tint = imageTint,
             modifier = modifier
         )
