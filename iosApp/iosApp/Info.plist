@@ -47,9 +47,6 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>$(PRODUCT_NAME) needs to access your location in the background for certain studies</string>
-		<string>$(PRODUCT_NAME) needs to fetch and upload data</string>
-		<string>$(PRODUCT_NAME) needs to process collected data in the background</string>
 		<string>fetch</string>
 		<string>location</string>
 		<string>processing</string>

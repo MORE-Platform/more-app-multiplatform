@@ -11,11 +11,9 @@ import Foundation
 
 class DataUploadBackgroundTask {
     static let taskID = "io.redlink.more.app.multiplatform.data-upload"
-    private static let MAX_RETRIES: UInt8 = 5
     static func schedule() {
         let request = BGProcessingTaskRequest(identifier: taskID)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 0)
-//        request.earliestBeginDate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())
+        request.earliestBeginDate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())
         request.requiresNetworkConnectivity = true
         request.requiresExternalPower = false
 
@@ -28,28 +26,18 @@ class DataUploadBackgroundTask {
     }
 
     private let uploadDataManager = DataUploadManager()
-    private var tries: UInt8 = 0
 
-    private func uploadCollectedData(maxRetries: UInt8 = MAX_RETRIES, completion: @escaping (Bool) -> Void) {
-        Task(priority: .high) {
+    private func uploadCollectedData(completion: @escaping (Bool) -> Void) {
+        Task {
             print("Uploading Data in background")
             await self.uploadDataManager.uploadData { success in
-                if self.tries >= maxRetries || success {
-                    self.uploadDataManager.close()
-                    self.tries = 0
-                    if success {
-                        print("Upload success!")
-                    } else if self.tries >= maxRetries {
-                        print("Max retries overstepped! Retrying later!")
-                    }
-                    completion(success)
+                if success {
+                    print("Upload success!")
                 } else {
-                    print("Upload failure! Retrying...")
-                    self.tries += 1
-                    Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
-                        self.uploadCollectedData(completion: completion)
-                    }
+                    print("Could not upload!")
                 }
+                self.uploadDataManager.close()
+                completion(success)
             }
         }
     }
@@ -57,15 +45,42 @@ class DataUploadBackgroundTask {
 
 extension DataUploadBackgroundTask: BackgroundTaskHandler {
     func handleProcessingTask(task: BGProcessingTask) {
-        uploadCollectedData {
+        print("Starting Background Processing Task")
+        task.expirationHandler = {
+            print("Task will soon expire! Cleaning up...")
+            self.uploadDataManager.close()
             DataUploadBackgroundTask.schedule()
-            task.setTaskCompleted(success: $0)
+            DispatchQueue.main.async {
+                print("Cleaned up!")
+                task.setTaskCompleted(success: false)
+            }
+        }
+        uploadCollectedData { success in
+            DataUploadBackgroundTask.schedule()
+            DispatchQueue.main.async {
+                print("Task finished with success: \(success)")
+                task.setTaskCompleted(success: success)
+            }
         }
     }
 
     func handleRefreshTask(task: BGAppRefreshTask) {
-        uploadCollectedData(maxRetries: 1) {
-            task.setTaskCompleted(success: $0)
+        print("Starting Background Refresh Task")
+        task.expirationHandler = {
+            print("Task will soon expire! Cleaning up...")
+            self.uploadDataManager.close()
+            DataUploadBackgroundTask.schedule()
+            DispatchQueue.main.async {
+                print("Cleaned up!")
+                task.setTaskCompleted(success: false)
+            }
+        }
+        uploadCollectedData { success in
+            DispatchQueue.main.async {
+                print("Task finished with success: \(success)")
+                task.setTaskCompleted(success: success)
+            }
         }
     }
+    
 }

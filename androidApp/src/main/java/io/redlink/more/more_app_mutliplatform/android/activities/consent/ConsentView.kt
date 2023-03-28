@@ -41,41 +41,43 @@ fun ConsentView(model: ConsentViewModel) {
         )
     }
 
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth(0.9f)
     ) {
-        Text(
-            text = model.permissionModel.value.studyTitle,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = MoreColors.Primary,
-            modifier = Modifier.fillMaxWidth())
-        Spacer(Modifier.padding(8.dp))
-        AccordionReadMore(title = "Participant Information",
-            description = model.permissionModel.value.studyParticipantInfo,
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()))
-        LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .padding(vertical = 16.dp)) {
-
-            items(model.permissionModel.value.consentInfo) { consentInfo ->
-                Accordion(title = consentInfo.title, description = consentInfo.info,
-                    hasCheck = true, hasPreview = (consentInfo.title == "Study Consent"))
-            }
+        item {
+            Text(
+                text = model.permissionModel.value.studyTitle,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = MoreColors.Primary,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.padding(8.dp))
+            AccordionReadMore(
+                title = "Participant Information",
+                description = model.permissionModel.value.studyParticipantInfo,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
-
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier.weight(0.45f)
-                .padding(bottom = 10.dp)) {
-            ConsentButtons(model = model)
+        items(model.permissionModel.value.consentInfo) { consentInfo ->
+            Accordion(
+                title = consentInfo.title, description = consentInfo.info,
+                hasCheck = true, hasPreview = (consentInfo.title == "Study Consent")
+            )
+        }
+        item {
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+            ) {
+                ConsentButtons(model = model)
+            }
         }
     }
 }

@@ -29,9 +29,6 @@ struct MoreActionButton<ButtonLabel: View>: View {
     }
 }
 
-extension MoreActionButton {
-}
-
 struct MoreActionButton_Previews: PreviewProvider {
     @State var open = false
     static var previews: some View {

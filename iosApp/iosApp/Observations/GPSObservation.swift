@@ -18,7 +18,7 @@ class GPSObservation: Observation_ {
     init(sensorPermissions: Set<String>) {
         super.init(observationType: GPSType(sensorPermissions: sensorPermissions))
         manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        manager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
     override func start() -> Bool {
@@ -42,7 +42,7 @@ class GPSObservation: Observation_ {
     override func observerAccessible() -> Bool {
         return CLLocationManager.locationServicesEnabled()
             && (manager.authorizationStatus == .authorizedWhenInUse
-            || manager.authorizationStatus == .authorizedWhenInUse)
+            || manager.authorizationStatus == .authorizedAlways)
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){
@@ -54,13 +54,11 @@ class GPSObservation: Observation_ {
 
 extension GPSObservation: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let first = locations.first else {
-            return
+        for location in locations {
+            let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
+            
+            self.storeData(data: dict, timestamp: location.timestamp.millisecondsSince1970)
         }
-        
-        let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude, "altitude": first.altitude]
-        
-        self.storeData(data: dict, timestamp: -1)
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {

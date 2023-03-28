@@ -57,6 +57,7 @@ class ContentViewModel: ObservableObject {
     func showConsentView() {
         DispatchQueue.main.async {
             self.loginViewScreenNr = 1
+            self.consentViewModel.onAppear()
         }
     }
 

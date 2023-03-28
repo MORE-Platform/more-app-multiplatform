@@ -20,7 +20,11 @@ struct ScheduleList: View {
                 VStack {
                     ScheduleListItem(scheduleModel: schedule)
                         .environmentObject(viewModel)
-                    Divider()
+                    if schedule != scheduleModels!.last {
+                        Divider()
+                    } else {
+                        EmptyView()
+                    }
                 }
                 NavigationLink {
                     TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))

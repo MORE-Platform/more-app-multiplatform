@@ -33,9 +33,6 @@ class ConsentViewModel: NSObject, ObservableObject {
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
         super.init()
-        permissionManager.observer = self
-        
-    
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -46,11 +43,19 @@ class ConsentViewModel: NSObject, ObservableObject {
         }
     }
     
+    func onAppear() {
+        permissionManager.observer = self
+    }
+    
+    func onDisappear() {
+        permissionManager.observer = nil
+    }
+    
     func requestPermissions() {
         self.requestedPermissions = true
         permissionManager.requestPermission()
     }
-    
+
     func reloadPermissions() {
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
@@ -87,7 +92,7 @@ extension ConsentViewModel: PermissionManagerObserver {
         self.acceptConsent()
         self.requestedPermissions = false
     }
-    
+
     func declined() {
         self.showErrorAlert = true
         self.requestedPermissions = false

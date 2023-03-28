@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.shared_composables
 
 import androidx.compose.foundation.layout.*
-import io.redlink.more.more_app_mutliplatform.android.R
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
@@ -9,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
@@ -29,7 +28,7 @@ fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, tota
         ) {
             Text(
                 text = headline,
-                color = Color.Gray,
+                color = MoreColors.Secondary,
                 maxLines = 1,
                 modifier = Modifier.weight(0.8f)
             )
@@ -45,7 +44,7 @@ fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, tota
             color = MoreColors.Primary,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(20.dp)
+                .height(26.dp)
                 .padding(2.dp)
                 .clip(RoundedCornerShape(20))
         )

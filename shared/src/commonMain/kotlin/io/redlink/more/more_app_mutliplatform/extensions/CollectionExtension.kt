@@ -9,8 +9,12 @@ fun Collection<ObservationDataSchema>.mapAsBulkData(): DataBulk? {
     if (isEmpty()) {
         return null
     }
-    return DataBulk(
-        bulkId = createUUID(),
-        dataPoints = this.map { it.asObservationData() }
-    )
+    val dataPoints = this.map { it.asObservationData() }.chunked(1000)
+    if (dataPoints.isNotEmpty() && dataPoints[0].isNotEmpty()){
+        return DataBulk(
+            bulkId = createUUID(),
+            dataPoints = dataPoints[0]
+        )
+    }
+    return null
 }

@@ -27,7 +27,5 @@ struct iOSApp: App {
                     }
                 }
 		}
-
-        
 	}
 }

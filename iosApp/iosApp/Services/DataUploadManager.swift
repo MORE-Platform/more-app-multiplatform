@@ -13,6 +13,7 @@ class DataUploadManager {
     private let networkService: NetworkService
     private let observationDataRepository = ObservationDataRepository()
     private let semaphore = Semaphore()
+    private var currentTask: Task<(), Never>? = nil
     
     init() {
         let userDefaults = UserDefaultsRepository()
@@ -20,22 +21,39 @@ class DataUploadManager {
     }
     
     func uploadData(completion: @escaping (Bool) -> Void) async {
+        print("Locking Semaphore")
+
         if await self.semaphore.tryLock() {
-            Task { @MainActor in
+            currentTask = Task { @MainActor in
                 do {
+                    print("Fetching Bulk")
                     if let dataBulk = try await self.observationDataRepository.allAsBulk() {
-                        let result = try await self.networkService.sendData(data: dataBulk)
-                        if let networkError = result.second {
-                            print(networkError.message)
+                        if Task.isCancelled {
                             completion(false)
-                        } else if let idSet = result.first as? Set<String> {
-                            try await self.observationDataRepository.deleteAllWithId(idSet: idSet)
-                            await semaphore.unlock()
+                            return taskIsCancelled()
+                        }
+                        if dataBulk.dataPoints.count > 0 {
+                            print("Sending data to backend...")
+                            let result = try await self.networkService.sendData(data: dataBulk)
+                            if Task.isCancelled {
+                                completion(false)
+                                return taskIsCancelled()
+                            }
+                            if let networkError = result.second {
+                                print(networkError.message)
+                                completion(false)
+                            } else if let idSet = result.first as? Set<String> {
+                                print("Sent data!")
+                                try await self.observationDataRepository.deleteAllWithId(idSet: idSet)
+                                completion(true)
+                            }
+                        } else {
                             completion(true)
                         }
                     } else {
-                        await self.semaphore.unlock()
+                        completion(false)
                     }
+                    await self.semaphore.unlock()
                 } catch {
                     print("Could not get databulk")
                     completion(false)
@@ -48,7 +66,16 @@ class DataUploadManager {
         }
     }
     
+    func taskIsCancelled() {
+        print("Data Upload task cancelled")
+        Task {
+            await self.semaphore.unlock()
+            currentTask = nil
+        }
+    }
+    
     func close() {
+        currentTask?.cancel()
         observationDataRepository.close()
     }
 }
