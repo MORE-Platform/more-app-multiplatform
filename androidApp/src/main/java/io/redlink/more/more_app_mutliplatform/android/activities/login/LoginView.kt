@@ -2,8 +2,6 @@ package io.redlink.more.more_app_mutliplatform.android.activities.login
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -12,16 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.EndpointView
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ParticipationKeyInput
-import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ValidationButton
+import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.QRCodeButton
+import io.redlink.more.more_app_mutliplatform.android.extensions.Image
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 
 @Composable
@@ -40,29 +35,18 @@ fun LoginView(model: LoginViewModel) {
         OpenPermActivity()
     }
     Column(
-        verticalArrangement = Arrangement.SpaceAround,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxHeight(0.9f)
     ) {
-        Box(Modifier.fillMaxHeight(0.1f))
-        Box(modifier = Modifier.fillMaxWidth(0.65f)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = getStringResource(id = R.string.more_welcome_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                    color = MoreColors.PrimaryDark,
-                    maxLines = 2,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(24.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Image(id = R.drawable.welcome_to_more, contentDescription = getStringResource(id = R.string.more_welcome_title))
+            Spacer(Modifier.height(24.dp))
 
-                LoginForm(model = model)
-            }
+            LoginForm(model = model)
         }
         Box(Modifier.fillMaxHeight(1f))
     }
@@ -73,21 +57,29 @@ fun LoginForm(model: LoginViewModel) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    Column(verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-    ) {
-        EndpointView(model = model, focusRequester = focusRequester, focusManager = focusManager)
-        Spacer(Modifier.height(32.dp))
-
-        ParticipationKeyInput(model = model,
-            focusRequester = focusRequester,
-            focusManager = focusManager)
+    Box(modifier = Modifier.fillMaxWidth(0.90f)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                verticalArrangement = Arrangement.SpaceAround,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                ParticipationKeyInput(
+                    model = model,
+                    focusRequester = focusRequester,
+                    focusManager = focusManager
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = getStringResource(id = R.string.more_or_text))
+            Spacer(modifier = Modifier.height(16.dp))
+            QRCodeButton()
+            Spacer(modifier = Modifier.fillMaxHeight(0.6f))
+            EndpointView(model = model, focusRequester = focusRequester, focusManager = focusManager)
+        }
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    ValidationButton(model = model, focusManager = focusManager)
 }
