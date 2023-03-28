@@ -15,6 +15,7 @@ struct LoginView: View {
     @State private var rotationAngle = 0.0
     
     @State private var showTokenInput = true
+    @State private var showEndpoint = false
     
     private let stringTable = "LoginView"
   
@@ -64,7 +65,7 @@ struct LoginView: View {
                     
                     VStack {
                         ExpandableInput(
-                            expanded: .constant(false),
+                            expanded: $showEndpoint,
                             isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
                             inputPlaceholder: $model.endpoint,
                             input: $model.endpoint
