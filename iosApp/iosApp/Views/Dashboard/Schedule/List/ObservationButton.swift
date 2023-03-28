@@ -20,19 +20,15 @@ struct ObservationButton: View {
     
     private let stringTable = "ScheduleListView"
     var body: some View {
-        HStack {
+        VStack {
             
             let disabled = !(Date() >= start.toDate() && Date() <= end.toDate())
-            
             if observationType.lowercased() == "question-observation" {
-                
                 /*
                 MoreActionButton(disabled: .constant(disabled), action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
                  */
-                
-                VStack(alignment: .leading) {
                     NavigationLinkButton(disabled: .constant(disabled)) {
                         QuestionObservationView()
                     } label: {
@@ -40,8 +36,6 @@ struct ObservationButton: View {
                                 .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
                                 .frame(maxWidth: .infinity, alignment: .center)
                     }
-                }
-                
             } else {
                 MoreActionButton(disabled: .constant(disabled), action: action) {
                     VStack {

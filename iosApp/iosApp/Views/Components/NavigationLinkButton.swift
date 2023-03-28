@@ -17,23 +17,29 @@ struct NavigationLinkButton<Destination: View, Label: View>: View {
     var body: some View {
         
         VStack {
-            NavigationLink {
-                if (!disabled) {
+            if (!disabled) {
+                NavigationLink {
                     destination()
+                } label: {
+                    label()
                 }
-            } label: {
-                label()
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
+                        .fill(disabled ? Color.more.primaryLight200 : Color.more.primary)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                        .stroke(disabled ? Color.more.secondaryMedium : Color.more.primary, lineWidth: 1)
+                )
+            } else {
+                MoreActionButton(disabled: .constant(true)) {
+                } label: {
+                    label()
+                }
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
-                    .fill(disabled ? Color.more.primaryLight200 : Color.more.primary)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
-                    .stroke(disabled ? Color.more.secondaryMedium : Color.more.primary, lineWidth: 1)
-            )
+            
         }
     }
 }
