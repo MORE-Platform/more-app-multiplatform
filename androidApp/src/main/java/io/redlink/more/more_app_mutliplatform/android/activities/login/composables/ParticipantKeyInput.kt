@@ -1,21 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -27,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -40,16 +32,21 @@ fun ParticipationKeyInput(
     focusRequester: FocusRequester,
     focusManager: FocusManager,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = getStringResource(id = R.string.more_registration_token_label),
             fontWeight = FontWeight.Medium,
-            fontSize = 20.sp,
-            color = MoreColors.Primary
+            fontSize = 16.sp,
+            color = MoreColors.Primary,
+            textAlign = TextAlign.Center
         )
-        Column(verticalArrangement = Arrangement.SpaceEvenly,
+        Spacer(modifier = Modifier.height(8.dp))
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()) {
+            modifier = Modifier.fillMaxWidth()
+        ) {
 
             OutlinedTextField(
                 value = model.participantKey.value,
@@ -98,14 +95,17 @@ fun ParticipationKeyInput(
                     .fillMaxWidth()
                     .height(60.dp)
             )
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            ErrorMessage(
-                hasError = model.error.value != null,
-                errorMsg = model.error.value ?: getStringResource(
-                    id = R.string.more_token_error
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ErrorMessage(
+                    hasError = model.error.value != null,
+                    errorMsg = model.error.value ?: getStringResource(
+                        id = R.string.more_token_error
+                    )
                 )
-            )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            ValidationButton(model = model, focusManager = focusManager)
         }
+
     }
 }
