@@ -94,6 +94,7 @@
 		ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */; };
 		ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EA29C8A2B200616B93 /* TaskDetailsViewModel.swift */; };
 		ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */; };
+		EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */ = {isa = PBXBuildFile; productRef = EDACF62629D2F31D0032327B /* PolarBleSdk */; };
 		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
@@ -228,6 +229,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F43996D29B8D6D300687906 /* RealmSwift in Frameworks */,
+				EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */,
 				1F43996C29B8D6D300687906 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -548,6 +550,7 @@
 			packageProductDependencies = (
 				ED7B7A3F29B7A36300C724AB /* Realm */,
 				ED7B7A4129B7A36300C724AB /* RealmSwift */,
+				EDACF62629D2F31D0032327B /* PolarBleSdk */,
 			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
@@ -579,6 +582,7 @@
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
 				ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */,
+				EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -955,6 +959,14 @@
 				kind = branch;
 			};
 		};
+		EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/polarofficial/polar-ble-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -967,6 +979,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		EDACF62629D2F31D0032327B /* PolarBleSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */;
+			productName = PolarBleSdk;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
