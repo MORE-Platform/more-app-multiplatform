@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -49,30 +48,35 @@ fun EndpointView(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceEvenly
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
+        Box(
             modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
+                .weight(1f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Text(
-                text = getStringResource(id = R.string.more_endpoint_label),
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                color = MoreColors.Primary
-            )
-            IconButton(onClick = { isOpen = !isOpen }) {
-                Icon(
-                    Icons.Rounded.ExpandMore,
-                    getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                    tint = MoreColors.Primary,
-                    modifier = Modifier
-                        .rotate(angle)
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = getStringResource(id = R.string.more_endpoint_label),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = MoreColors.Primary
                 )
+                IconButton(onClick = { isOpen = !isOpen }) {
+                    Icon(
+                        Icons.Rounded.ExpandMore,
+                        getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
+                        tint = MoreColors.Primary,
+                        modifier = Modifier
+                            .rotate(angle)
+                    )
+                }
             }
         }
         if (isOpen) {
@@ -103,7 +107,12 @@ fun EndpointInput(
                 Icon(Icons.Filled.Error, "URL Error", tint = MoreColors.Important)
             }
         },
-        placeholder = { Text(text = getStringResource(id = R.string.more_endpoint_input_placeholder), textAlign = TextAlign.Center) },
+        placeholder = {
+            Text(
+                text = getStringResource(id = R.string.more_endpoint_input_placeholder),
+                textAlign = TextAlign.Center
+            )
+        },
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
             autoCorrect = false,
@@ -129,5 +138,6 @@ fun EndpointInput(
             .focusRequester(focusRequester)
             .fillMaxWidth()
             .height(60.dp)
+            .padding(0.dp)
     )
 }
