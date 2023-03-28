@@ -89,6 +89,14 @@
 		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
 		B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169729CA08850035D830 /* CircleActivityIndicator.swift */; };
 		B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169929CA18320035D830 /* DatapointsCollection.swift */; };
+		B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3629D312F200A1F547 /* ErrorLogin.swift */; };
+		B79DBA3929D3130600A1F547 /* ExpandableInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3829D3130600A1F547 /* ExpandableInput.swift */; };
+		B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */; };
+		B79DBA3F29D313D000A1F547 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3E29D313D000A1F547 /* MoreTextFieldHL.swift */; };
+		B79DBA4129D313E400A1F547 /* MoreTextFieldSmBottom.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4029D313E400A1F547 /* MoreTextFieldSmBottom.swift */; };
+		B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */; };
+		B79DBA4929D3144500A1F547 /* UIToggleButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */; };
+		B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */; };
 		ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */; };
@@ -203,6 +211,14 @@
 		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
 		B784169729CA08850035D830 /* CircleActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleActivityIndicator.swift; sourceTree = "<group>"; };
 		B784169929CA18320035D830 /* DatapointsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointsCollection.swift; sourceTree = "<group>"; };
+		B79DBA3629D312F200A1F547 /* ErrorLogin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorLogin.swift; sourceTree = "<group>"; };
+		B79DBA3829D3130600A1F547 /* ExpandableInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableInput.swift; sourceTree = "<group>"; };
+		B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardButton.swift; sourceTree = "<group>"; };
+		B79DBA3E29D313D000A1F547 /* MoreTextFieldHL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldHL.swift; sourceTree = "<group>"; };
+		B79DBA4029D313E400A1F547 /* MoreTextFieldSmBottom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldSmBottom.swift; sourceTree = "<group>"; };
+		B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationLinkButton.swift; sourceTree = "<group>"; };
+		B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIToggleButtonView.swift; sourceTree = "<group>"; };
+		B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginQRCodeView.swift; path = LoginQRCode/LoginQRCodeView.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
@@ -305,29 +321,36 @@
 		1F8847B829914BD50023EF10 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */,
-				1F8847B929914C8D0023EF10 /* Title.swift */,
-				B784169129C9E3F50035D830 /* Title2.swift */,
-				1F8847E72992BEE30023EF10 /* BasicText.swift */,
-				1F8847CD299155F50023EF10 /* SectionHeading.swift */,
-				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
-				1F8847D729915C030023EF10 /* MoreTextField.swift */,
-				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
-				1F13BA422993951200938C1E /* ConsentList.swift */,
-				1F13BA462993972E00938C1E /* ConsentListItem.swift */,
-				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
-				1F13BA482993985800938C1E /* InactiveText.swift */,
-				1F60C58529951A5F00858581 /* ErrorText.swift */,
-				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
-				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
-				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
-				B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */,
 				B784169529C9FB2C0035D830 /* AccordionItem.swift */,
+				1F8847E72992BEE30023EF10 /* BasicText.swift */,
 				B784169729CA08850035D830 /* CircleActivityIndicator.swift */,
+				1F13BA422993951200938C1E /* ConsentList.swift */,
+				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
+				1F13BA462993972E00938C1E /* ConsentListItem.swift */,
 				B784169929CA18320035D830 /* DatapointsCollection.swift */,
+				B79DBA3629D312F200A1F547 /* ErrorLogin.swift */,
+				1F60C58529951A5F00858581 /* ErrorText.swift */,
+				B79DBA3829D3130600A1F547 /* ExpandableInput.swift */,
 				B748DF3529CC43990026C348 /* ExpandableText.swift */,
+				B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */,
+				1F13BA482993985800938C1E /* InactiveText.swift */,
+				B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */,
+				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
+				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
+				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
+				1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */,
+				1F8847D729915C030023EF10 /* MoreTextField.swift */,
+				B79DBA3E29D313D000A1F547 /* MoreTextFieldHL.swift */,
+				B79DBA4029D313E400A1F547 /* MoreTextFieldSmBottom.swift */,
+				B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */,
+				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
 				B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */,
 				B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */,
+				1F8847CD299155F50023EF10 /* SectionHeading.swift */,
+				1F8847B929914C8D0023EF10 /* Title.swift */,
+				B784169129C9E3F50035D830 /* Title2.swift */,
+				B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */,
+				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -415,6 +438,7 @@
 		1F9C3E8C298AAC0900B9AC82 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				B79DBA4C29D3161600A1F547 /* LoginQRCode */,
 				1F8847B629911E6E0023EF10 /* LoginViewModel.swift */,
 				1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */,
 				1F8847E5299182C90023EF10 /* LoginButton.swift */,
@@ -490,6 +514,14 @@
 				B748DF4929D1C08D0026C348 /* QuestionObservationView.swift */,
 			);
 			path = QuestionObservation;
+			sourceTree = "<group>";
+		};
+		B79DBA4C29D3161600A1F547 /* LoginQRCode */ = {
+			isa = PBXGroup;
+			children = (
+				B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */,
+			);
+			name = LoginQRCode;
 			sourceTree = "<group>";
 		};
 		ED16C5EE29B74C4A00DA8AFE /* Schedule */ = {
@@ -646,7 +678,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\" \t\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\" \t\nexport JAVA_HOME=/Users/iaigner/.sdkman/candidates/java/11.0.18-amzn\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -659,8 +691,10 @@
 				B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
+				B79DBA3929D3130600A1F547 /* ExpandableInput.swift in Sources */,
 				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
 				1F8847CA299154120023EF10 /* MoreFont.swift in Sources */,
+				B79DBA4129D313E400A1F547 /* MoreTextFieldSmBottom.swift in Sources */,
 				1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */,
 				1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */,
 				ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */,
@@ -668,6 +702,7 @@
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
 				1F13BA4B299398FD00938C1E /* MoreTextStyle.swift in Sources */,
 				1F43998529C0FE2200687906 /* Navigation.swift in Sources */,
+				B79DBA3F29D313D000A1F547 /* MoreTextFieldHL.swift in Sources */,
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */,
 				1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */,
@@ -677,6 +712,7 @@
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
+				B79DBA4929D3144500A1F547 /* UIToggleButtonView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				B748DF4A29D1C08D0026C348 /* QuestionObservationView.swift in Sources */,
@@ -705,7 +741,9 @@
 				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
+				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
+				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
@@ -719,6 +757,7 @@
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
+				B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
@@ -733,6 +772,7 @@
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
+				B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,

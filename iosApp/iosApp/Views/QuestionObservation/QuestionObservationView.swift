@@ -34,7 +34,7 @@ struct QuestionObservationView: View {
                                 })
                             }
                             
-                            MoreActionButton() {
+                            MoreActionButton(disabled: .constant(false)) {
                                 print($selected)
                             } label: {
                                 Text("Answer")
