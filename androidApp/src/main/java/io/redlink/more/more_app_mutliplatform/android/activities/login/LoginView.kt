@@ -2,8 +2,6 @@ package io.redlink.more.more_app_mutliplatform.android.activities.login
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,7 +15,6 @@ import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.EndpointView
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ParticipationKeyInput
 import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.QRCodeButton
-import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ValidationButton
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 
@@ -46,7 +43,7 @@ fun LoginView(model: LoginViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Image(id = R.drawable.welcome_to_more, contentDescription = "Welcome to more message")
+            Image(id = R.drawable.welcome_to_more, contentDescription = getStringResource(id = R.string.more_welcome_title))
             Spacer(Modifier.height(24.dp))
 
             LoginForm(model = model)
@@ -70,7 +67,6 @@ fun LoginForm(model: LoginViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
             ) {
                 ParticipationKeyInput(
                     model = model,
@@ -79,7 +75,7 @@ fun LoginForm(model: LoginViewModel) {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = getStringResource(id = R.string.or_text))
+            Text(text = getStringResource(id = R.string.more_or_text))
             Spacer(modifier = Modifier.height(16.dp))
             QRCodeButton()
             Spacer(modifier = Modifier.fillMaxHeight(0.6f))

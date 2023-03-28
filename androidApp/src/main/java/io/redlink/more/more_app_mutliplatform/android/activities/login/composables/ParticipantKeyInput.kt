@@ -66,7 +66,6 @@ fun ParticipationKeyInput(
                     getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
                     tint = MoreColors.Primary,
                     modifier = Modifier
-                        // .fillMaxSize(1.2f)
                         .rotate(angle)
                 )
             }
@@ -121,7 +120,7 @@ fun ParticipationKeyInput(
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(60.dp)
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     ErrorMessage(

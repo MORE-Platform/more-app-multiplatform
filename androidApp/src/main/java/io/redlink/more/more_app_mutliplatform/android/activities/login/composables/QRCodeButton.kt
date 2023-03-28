@@ -36,7 +36,7 @@ fun QRCodeButton() {
             Icon(
                 Icons.Default.ArrowForwardIos,
                 tint = MoreColors.White,
-                contentDescription = "Scan QR Code",
+                contentDescription = getStringResource(id = R.string.more_qr_code_button_description),
                 modifier = Modifier.fillMaxHeight(0.4f)
             )
         }
