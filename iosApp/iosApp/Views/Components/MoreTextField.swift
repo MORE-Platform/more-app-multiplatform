@@ -16,8 +16,10 @@ struct MoreTextField: View {
             .padding(.moreTextFieldPadding.textFieldInnerPadding)
             .overlay(
                 RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
-                    .stroke(Color.more.primary, lineWidth: .moreBorder.lineWidth)
+                    .stroke(Color.more.primaryMedium, lineWidth: .moreBorder.lineWidth)
             )
+            .background(Color.more.primaryLight)
+            
     }
 }
 

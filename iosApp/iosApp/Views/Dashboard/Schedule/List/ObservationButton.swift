@@ -19,12 +19,11 @@ struct ObservationButton: View {
     var body: some View {
         HStack {
             if observationType.lowercased() == "question-observation" {
-                MoreActionButton(action: action) {
+                MoreActionButton(disabled: .constant(!(start.toDate() < Date() && Date() < end.toDate())), action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
-                .disabled(!(start.toDate() < Date() && Date() < end.toDate()))
             } else {
-                MoreActionButton(action: action) {
+                MoreActionButton(disabled: .constant(!(start.toDate() < Date() && Date() < end.toDate())), action: action) {
                     VStack {
                         if state == ScheduleState.running {
                             Text(
@@ -36,7 +35,7 @@ struct ObservationButton: View {
                             )
                         }
                     }
-                }.disabled(!(start.toDate() < Date() && Date() < end.toDate()))
+                }
             }
         }
     }
