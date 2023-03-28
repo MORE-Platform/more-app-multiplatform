@@ -8,5 +8,8 @@
 
 "login_welcome_title" = "Welcome to More";
 "study_endpoint_headling" = "Study Endpoint";
-"participation_key_entry" = "Participation Key";
+"participation_key_entry" = "Enter Registration Token";
+"qr_code_entry" = "Scan QR Code";
 "login_button" = "Login";
+"or" = "or";
+"scan_qr_code" = "Scan QR Code";

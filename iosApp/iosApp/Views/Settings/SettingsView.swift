@@ -20,7 +20,7 @@ struct SettingsView: View {
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
                     .foregroundColor(.more.secondary)
                     .padding(.bottom)
-                MoreActionButton {
+                MoreActionButton(disabled: .constant(false)) {
                     viewModel.reloadStudyConfig()
                 } label: {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
@@ -29,7 +29,7 @@ struct SettingsView: View {
                 ConsentList(permissionModel: .constant(viewModel.permissionModel))
                     .padding(.top)
                 
-                MoreActionButton(backgroundColor: Color.more.important) {
+                MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
                     viewModel.leaveStudy()
                     //contentViewModel.showLoginView()
                 } label: {
