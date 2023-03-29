@@ -17,7 +17,6 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResour
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
@@ -32,7 +31,6 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
             .padding(4.dp)
     ) {
         item {
@@ -91,10 +89,8 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
             Spacer(modifier = Modifier.height(8.dp))
 
             scheduleId?.let {
-                if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) {
-                    DatapointCollectionView(viewModel.dataPointCount.value)
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
+                DatapointCollectionView(viewModel.dataPointCount.value, scheduleViewModel.activeScheduleState[scheduleId])
+                Spacer(modifier = Modifier.height(20.dp))
 
                 SmallTextButton(
                     text = if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) getStringResource(

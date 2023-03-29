@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.tasks
 
-import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
@@ -36,7 +35,7 @@ class TaskDetailsViewModel(
                         taskDetailsModel.value = it
                         taskDetailsModel.value.dataPointCount?.let { count ->
                             dataPointCount.value = count.count
-                        }
+                        } ?: run {dataPointCount.value = 0}
                         isEnabled.value = taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate()
                     }
                 }
