@@ -14,20 +14,37 @@ import RxSwift
 
 class PolarVerityHeartRateObservation: Observation_ {
     
-    var api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: [PolarBleSdkFeature.feature_hr])
+    let api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: [PolarBleSdkFeature.feature_hr])
     var deviceId = ""
     var connected = false
     var devicesSubscription: Disposable? = nil
     
     init(sensorPermissions: Set<String>) {
         super.init(observationTypeImpl: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
-        self.getDeviceId()
+        searchDevices()
     }
     
-    func getDeviceId() {
+    override func start() -> Bool {
+        return true
+    }
+    
+    override func stop() {
+        
+    }
+    
+    override func observerAccessible() -> Bool {
+        self.connected
+    }
+    
+    override func applyObservationConfig(settings: Dictionary<String, Any>){
+        
+    }
+    
+    func searchDevices() {
         self.devicesSubscription = api.searchForDevice().subscribe(onNext: { device in
             self.deviceId = device.deviceId
             if !self.connected {
+                print(self.deviceId)
                 self.connectDevice(deviceId: device.deviceId)
             } else {
                 self.disconnectDevice(deviceId: device.deviceId)
@@ -91,7 +108,7 @@ extension PolarVerityHeartRateObservation: PolarBleApiDeviceInfoObserver {
 
 extension PolarVerityHeartRateObservation: PolarBleApiDeviceFeaturesObserver {
     func hrFeatureReady(_ identifier: String) {
-        
+        print("feature ready")
     }
     
     func ftpFeatureReady(_ identifier: String) {
