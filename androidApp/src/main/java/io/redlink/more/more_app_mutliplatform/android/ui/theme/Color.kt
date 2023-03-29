@@ -63,6 +63,14 @@ fun ButtonDefaults.moreSecondary() = buttonColors(
 )
 
 @Composable
+fun ButtonDefaults.moreSecondary2() = buttonColors(
+    contentColor = MoreColors.Secondary,
+    backgroundColor = MoreColors.PrimaryLight,
+    disabledContentColor = MoreColors.SecondaryMedium,
+    disabledBackgroundColor = MoreColors.SecondaryLight
+)
+
+@Composable
 fun ButtonDefaults.moreImportant() = buttonColors(
     contentColor = MoreColors.ImportantLight,
     backgroundColor = MoreColors.Important,
