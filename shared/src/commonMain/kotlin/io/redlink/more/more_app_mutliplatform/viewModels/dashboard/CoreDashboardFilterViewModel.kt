@@ -27,9 +27,11 @@ class CoreDashboardFilterViewModel {
 
         if(currentFilter.hasObservationTypeFilter()){
             filteredMap.forEach { (key, value) ->
-                filteredMap.put(key, value.filter {
+                filteredMap[key] = value.filter {
                     currentFilter.observationTypeFilter.contains(it.observationType)
-                })
+                }
+                if(filteredMap[key]?.isEmpty() == true)
+                    filteredMap.remove(key)
             }
         }
         return filteredMap
