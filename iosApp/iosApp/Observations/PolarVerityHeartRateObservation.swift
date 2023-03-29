@@ -12,12 +12,7 @@ import PolarBleSdk
 import CoreBluetooth
 import RxSwift
 
-class PolarVerityHeartRateObservation: Observation_,
-                                       PolarBleApiObserver,
-                                       PolarBleApiPowerStateObserver,
-                                       PolarBleApiDeviceInfoObserver,
-                                       PolarBleApiDeviceFeaturesObserver,
-                                       PolarBleApiDeviceHrObserver {
+class PolarVerityHeartRateObservation: Observation_ {
     
     var api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: [PolarBleSdkFeature.feature_hr])
     var deviceId = ""
@@ -58,19 +53,23 @@ class PolarVerityHeartRateObservation: Observation_,
             print("Error: Could not disconnect")
         }
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiObserver {
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        print("try connecting to: \(identifier.name)")
+        
     }
     
     func deviceConnected(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        print("device connected: \(identifier.name)")
+        
     }
     
     func deviceDisconnected(_ identifier: PolarBleSdk.PolarDeviceInfo) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiPowerStateObserver {
     func blePowerOn() {
         
     }
@@ -78,7 +77,9 @@ class PolarVerityHeartRateObservation: Observation_,
     func blePowerOff() {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceInfoObserver {
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
         
     }
@@ -86,7 +87,9 @@ class PolarVerityHeartRateObservation: Observation_,
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceFeaturesObserver {
     func hrFeatureReady(_ identifier: String) {
         
     }
@@ -102,8 +105,11 @@ class PolarVerityHeartRateObservation: Observation_,
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceHrObserver {
     func hrValueReceived(_ identifier: String, data: (hr: UInt8, rrs: [Int], rrsMs: [Int], contact: Bool, contactSupported: Bool)) {
         
     }
 }
+
