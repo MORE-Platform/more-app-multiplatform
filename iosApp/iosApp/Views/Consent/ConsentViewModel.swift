@@ -32,9 +32,9 @@ class ConsentViewModel: NSObject, ObservableObject {
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
         super.init()
+        
         permissionManager.observer = self
-
-
+        
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
