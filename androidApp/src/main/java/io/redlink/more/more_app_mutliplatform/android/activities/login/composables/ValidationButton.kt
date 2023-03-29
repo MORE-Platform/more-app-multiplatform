@@ -33,7 +33,7 @@ fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
                 BorderStroke(2.dp, MoreColors.SecondaryMedium),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(60.dp)
         ) {
             Text(text = getStringResource(id = R.string.more_login_button_label))
         }

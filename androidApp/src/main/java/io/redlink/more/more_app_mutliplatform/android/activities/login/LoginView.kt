@@ -37,7 +37,7 @@ fun LoginView(model: LoginViewModel) {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight(0.9f)
+        modifier = Modifier.fillMaxHeight(0.95f)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,7 +78,6 @@ fun LoginForm(model: LoginViewModel) {
             Text(text = getStringResource(id = R.string.more_or_text))
             Spacer(modifier = Modifier.height(16.dp))
             QRCodeButton()
-            Spacer(modifier = Modifier.fillMaxHeight(0.6f))
             EndpointView(model = model, focusRequester = focusRequester, focusManager = focusManager)
         }
     }

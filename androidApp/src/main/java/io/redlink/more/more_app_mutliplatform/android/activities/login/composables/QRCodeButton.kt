@@ -23,7 +23,7 @@ fun QRCodeButton() {
         modifier = Modifier
             .fillMaxWidth(1f)
             .padding(vertical = 8.dp)
-            .height(50.dp),
+            .height(60.dp),
         colors = ButtonDefaults.morePrimary(),
         border = MoreColors.borderPrimary(true)
     ) {

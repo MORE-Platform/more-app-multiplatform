@@ -31,7 +31,7 @@ struct ConsentView: View {
                 ProgressView()
                     .progressViewStyle(.circular)
             } else {
-                MoreActionButton(alertOpen: $viewModel.showErrorAlert) {
+                MoreActionButton(disabled: .constant(false), alertOpen: $viewModel.showErrorAlert) {
                     viewModel.requestPermissions()
                 } label: {
                     Text(verbatim: .localizedString(
@@ -61,7 +61,7 @@ struct ConsentView: View {
                     )
                 }
                 Spacer()
-                MoreActionButton(backgroundColor: .more.important) {
+                MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                     viewModel.decline()
                 } label: {
                     Text(verbatim: .localizedString(
