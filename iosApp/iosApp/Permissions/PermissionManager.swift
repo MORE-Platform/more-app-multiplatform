@@ -86,8 +86,7 @@ class PermissionManager: NSObject, ObservableObject {
         }
         if self.bluetoothStatus == .declined {
             observer?.declined()
-        }
-        if (self.bluetoothStatus == .accepted && self.gpsStatus == .accepted) {
+        } else if (self.bluetoothStatus == .accepted && self.gpsStatus == .accepted) {
             observer?.accepted()
         }
     }
