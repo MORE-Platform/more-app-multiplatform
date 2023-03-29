@@ -16,5 +16,6 @@ class IOSObservationFactory: ObservationFactory {
         super.init(dataManager: iOSObservationDataManager())
         observations.add(AccelerometerObservation(sensorPermission: []))
         observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
+        observations.add(PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"]))
     }
 }

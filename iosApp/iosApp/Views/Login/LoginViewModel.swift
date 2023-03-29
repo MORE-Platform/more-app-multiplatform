@@ -19,6 +19,8 @@ class LoginViewModel: ObservableObject {
     private let coreModel: CoreLoginViewModel
     
     var delegate: LoginViewModelListener? = nil
+    
+    var polarObservation = PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"])
 
     @Published private(set) var isLoading = false
     @Published var endpoint: String = ""
