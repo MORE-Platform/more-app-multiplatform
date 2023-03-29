@@ -93,7 +93,7 @@ class PermissionManager: NSObject, ObservableObject {
     
     private func checkAcceptedPerms() {
         if(self.cameraNeeded){
-            permissionsGranted = (self.locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways && CBManager.authorization == CBManagerAuthorization.allowedAlways)
+            permissionsGranted = (self.locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
         }
     }
     

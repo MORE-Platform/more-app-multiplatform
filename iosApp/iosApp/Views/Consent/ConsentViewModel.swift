@@ -26,7 +26,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
 
-    var permissionManager = PermissionManager()
+    let permissionManager = PermissionManager()
     var permissionGranted = false
     
     init(registrationService: RegistrationService) {
