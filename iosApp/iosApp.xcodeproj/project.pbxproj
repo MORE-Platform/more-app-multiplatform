@@ -92,6 +92,12 @@
 		B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169929CA18320035D830 /* DatapointsCollection.swift */; };
 		B79DBA3329D2E7F000A1F547 /* NavigationLinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */; };
 		B79DBA3529D2F15C00A1F547 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3429D2F15C00A1F547 /* MoreTextFieldHL.swift */; };
+		B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5029D3431100A1F547 /* DashboardFilterView.swift */; };
+		B79DBA5329D3431B00A1F547 /* DashboardFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5229D3431B00A1F547 /* DashboardFilterViewModel.swift */; };
+		B79DBA5529D3470D00A1F547 /* DashboardFilter.strings in Resources */ = {isa = PBXBuildFile; fileRef = B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */; };
+		B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */; };
+		B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */; };
+		B79DBA5B29D34AB400A1F547 /* MoreFilterOptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */; };
 		ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */; };
@@ -209,6 +215,12 @@
 		B784169929CA18320035D830 /* DatapointsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointsCollection.swift; sourceTree = "<group>"; };
 		B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinkButton.swift; sourceTree = "<group>"; };
 		B79DBA3429D2F15C00A1F547 /* MoreTextFieldHL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreTextFieldHL.swift; sourceTree = "<group>"; };
+		B79DBA5029D3431100A1F547 /* DashboardFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardFilterView.swift; sourceTree = "<group>"; };
+		B79DBA5229D3431B00A1F547 /* DashboardFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardFilterViewModel.swift; sourceTree = "<group>"; };
+		B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = DashboardFilter.strings; sourceTree = "<group>"; };
+		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
+		B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterText.swift; sourceTree = "<group>"; };
+		B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOptionList.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
@@ -331,6 +343,9 @@
 				B79DBA3429D2F15C00A1F547 /* MoreTextFieldHL.swift */,
 				B748DF3D29CCA7DA0026C348 /* MoreTextFieldSmBottom.swift */,
 				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
+				B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */,
+				B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */,
+				B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */,
 				B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */,
 				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
 				B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */,
@@ -374,6 +389,7 @@
 				1F80EC4029C25025004667B1 /* Navigation.strings */,
 				B748DF3329CAFBA90026C348 /* TaskDetail.strings */,
 				B748DF3729CC4AD30026C348 /* ExpandableText.strings */,
+				B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -501,6 +517,15 @@
 			path = LoginQRCode;
 			sourceTree = "<group>";
 		};
+		B79DBA4F29D342FE00A1F547 /* DashboardFilter */ = {
+			isa = PBXGroup;
+			children = (
+				B79DBA5029D3431100A1F547 /* DashboardFilterView.swift */,
+				B79DBA5229D3431B00A1F547 /* DashboardFilterViewModel.swift */,
+			);
+			path = DashboardFilter;
+			sourceTree = "<group>";
+		};
 		ED16C5EE29B74C4A00DA8AFE /* Schedule */ = {
 			isa = PBXGroup;
 			children = (
@@ -543,6 +568,7 @@
 		EDEBA13129B0D2CC00533F79 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				B79DBA4F29D342FE00A1F547 /* DashboardFilter */,
 				ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */,
 				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
 				EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */,
@@ -629,6 +655,7 @@
 				B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */,
 				1F17C08C29952C29000E124A /* ConsentView.strings in Resources */,
 				EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */,
+				B79DBA5529D3470D00A1F547 /* DashboardFilter.strings in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */,
 				1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */,
@@ -655,7 +682,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\" \t\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\" \t  \n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -676,6 +703,7 @@
 				1F8847C82991535B0023EF10 /* MoreFontWeight.swift in Sources */,
 				1F13BA4B299398FD00938C1E /* MoreTextStyle.swift in Sources */,
 				1F43998529C0FE2200687906 /* Navigation.swift in Sources */,
+				B79DBA5B29D34AB400A1F547 /* MoreFilterOptionList.swift in Sources */,
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */,
 				1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */,
@@ -685,6 +713,7 @@
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
+				B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				B748DF3E29CCA7DA0026C348 /* MoreTextFieldSmBottom.swift in Sources */,
@@ -699,6 +728,7 @@
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B748DF4129CD95740026C348 /* LoginQRCodeView.swift in Sources */,
+				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
@@ -718,6 +748,7 @@
 				B748DF5229D2DA0C0026C348 /* ErrorLogin.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
+				B79DBA5329D3431B00A1F547 /* DashboardFilterViewModel.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				B748DF5029D1E5860026C348 /* ExpandableInput.swift in Sources */,
@@ -749,6 +780,7 @@
 				1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
+				B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
