@@ -9,6 +9,10 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationTypes.GPSType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG = "GPSObservation"
 private val permissions = setOf(
@@ -22,12 +26,16 @@ class GPSObservation(
 ) : Observation(observationTypeImpl = GPSType(permissions)), GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
     private val hasPermission = this.hasPermissions(context)
+    private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
         if (this.activate()) {
-            gpsService.registerForLocationUpdates(this)
+            val listener = this
+            scope.launch {
+                gpsService.registerForLocationUpdates(listener)
+            }
             return true
         }
         return false

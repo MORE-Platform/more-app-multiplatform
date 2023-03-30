@@ -1,11 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 
 data class ScheduleModel(
     val scheduleId: String,
