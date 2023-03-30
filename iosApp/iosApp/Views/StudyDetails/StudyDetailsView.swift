@@ -45,27 +45,26 @@ struct StudyDetailsView: View {
                     }.padding(.bottom)
                     
                     
-                    Group {
-                        ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4, color: Color.more.secondary)
-                            .padding(.bottom)
-        
-                    }
+                    
+                    ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4, color: Color.more.secondary)
+                        .padding(.bottom)
                     
                     
-                    Group {
-                        Collapsible(label: {BasicText(text: .constant(String
-                            .localizedString(forKey: "obs_modules", inTable: stringTable,
-                                             withComment: "string for observation modules")), font: .more.headline)},
-                        content: {
-                            
-                            VStack {
-                                ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
-                                    obs in
-                                    ModuleListItem(observation: obs).padding(.bottom)
-                                }
-                            }.padding()
-                        })
-                    }.padding(.top, (0.5))
+                    
+                    
+                    
+                    Collapsible(label: {BasicText(text: .constant(String
+                        .localizedString(forKey: "obs_modules", inTable: stringTable,
+                                         withComment: "string for observation modules")), font: .more.headline)},
+                                content: {
+                        
+                        VStack {
+                            ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
+                                obs in
+                                ModuleListItem(observation: obs).padding(.bottom)
+                            }
+                        }.padding()
+                    }).padding(.top, (0.5))
                     
                     Spacer()
                 }
