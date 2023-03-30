@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.TypeFilterModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -19,16 +20,34 @@ class CoreDashboardFilterViewModel {
 
     fun containsTypeFilter(type: TypeFilterModel) = currentTypeFilter.value.contains(type)
 
-    fun addTypeFilter(type: TypeFilterModel) = currentTypeFilter.value.add(type)
+    fun addTypeFilter(type: TypeFilterModel) {
+        val copy = currentTypeFilter.value.toMutableSet()
+        copy.add(type)
+        currentTypeFilter.update {
+            copy
+        }
+    }
 
-    fun removeTypeFilter(type: TypeFilterModel) = currentTypeFilter.value.remove(type)
+    fun removeTypeFilter(type: TypeFilterModel) {
+        val copy = currentTypeFilter.value.toMutableSet()
+        copy.remove(type)
+        currentTypeFilter.update {
+            copy
+        }
+    }
 
-    fun clearTypeFilters() = currentTypeFilter.value.clear()
+    fun clearTypeFilters() {
+        val copy = currentTypeFilter.value.toMutableSet()
+        copy.clear()
+        currentTypeFilter.update {
+            copy
+        }
+    }
 
     fun hasDateFilter(dateFilter: DateFilterModel) = currentDateFilter.value == dateFilter
 
     fun setDateFilter(dateFilter: DateFilterModel) {
-        currentDateFilter.value = dateFilter
+        currentDateFilter.update { dateFilter }
     }
 
     fun applyFilter(scheduleModelList: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
