@@ -21,10 +21,13 @@ struct DashboardFitlerView: View {
             MoreMainBackgroundView {
                 VStack {
                     VStack(alignment: .leading) {
-                        MoreFilterOptionList(title: constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration of the schedule time frame.")), filterList: .constant(dashboardFilterViewModel.dateFilterOptions))
-                        }
+                        /*MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration of the schedule time frame.")), filterList: .constant(dashboardFilterViewModel.dateFilterOptions))
+                         }*/
+                        BasicText(text: .constant("text"))
                     }
                 }
+            } topBarContent: {
+                EmptyView()
             }
         }
     }

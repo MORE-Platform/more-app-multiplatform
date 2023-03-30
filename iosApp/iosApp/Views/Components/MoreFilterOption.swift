@@ -23,15 +23,16 @@ struct MoreFilterOption: View {
                         .frame(width: 15)
                 }
                 
-                MoreFilterText(text: label, color: selected ? .more.primary : .more.secondary, underline: selected)
+                MoreFilterText(text: .constant(label), color: selected ? .constant(.more.primary) : .constant(.more.secondary), underline: $selected)
             }
         }
     }
 }
 
+/*
 struct Title_Preview: PreviewProvider {
     static var previews: some View {
         Title(titleText: .constant("Hello World"))
     }
 }
-
+*/

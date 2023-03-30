@@ -16,15 +16,10 @@ struct MoreFilterText: View {
     var body: some View {
         Text(text)
             .font(.more.title2)
-            .foregroundColor(COLOR)
-            .fontWeight(.more.title2)
+            .foregroundColor(color)
+            .fontWeight(.more.title)
             .underline(underline, color: color)
     }
 }
 
-struct Title_Preview: PreviewProvider {
-    static var previews: some View {
-        Title(text: .constant("Hello World"))
-    }
-}
 
