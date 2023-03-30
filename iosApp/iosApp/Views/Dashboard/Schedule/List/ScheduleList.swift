@@ -27,7 +27,7 @@ struct ScheduleList: View {
                     }
                 }
                 NavigationLink {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))
+                    TaskDetailsView(viewModel: TaskDetailsViewModel(dataRecorder: viewModel.dataRecorder, observationId: schedule.observationId, scheduleId: schedule.scheduleId))
                         .environmentObject(viewModel)
                 } label: {
                     EmptyView()
