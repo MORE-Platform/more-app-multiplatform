@@ -22,8 +22,7 @@ struct StudyDetailsView: View {
             ScrollView{
                 VStack(alignment: .leading) {
                     
-                    DetailsTitle(text: viewModel.studyDetailsModel?.studyTitle ?? "")
-                        .font(Font.more.subtitle)
+                    Title2(titleText: .constant(viewModel.studyDetailsModel?.studyTitle ?? ""))
                         .padding(.top)
                         .padding(.bottom)
                     
@@ -44,51 +43,40 @@ struct StudyDetailsView: View {
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)
-                
                     
-                    Group{
+                    
+                    Group {
                         ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4, color: Color.more.secondary)
                             .padding(.bottom)
-                        
-                        
-                        DetailsTitle(text: "Observation Modules")
-                            .font(Font.more.subtitle)
-                            .padding(.bottom, (0.1))
-                        
-                        Divider()
-                        
-                        ConsentList(permissionModel: .constant(viewModel.permissionModel))
-                            
-                        
-                    }.padding(.bottom)
-                    
-                   
-                    
-                    Group{
-                        MoreActionButton() {
-                            viewModel.settings()
-                        } label: {
-                            Text(String.localizedString(forKey: "open_settings", inTable: stringTable, withComment: "button to open settings view"))
-                            
-                        }.padding(.bottom, 0.5)
-                        
-                        MoreActionButton(backgroundColor: Color.more.secondary) {
-                            viewModel.exit()
-                        } label: {
-                            Text(String.localizedString(forKey: "close_view", inTable: stringTable, withComment: "button to close the view"))
-                            
-                        }
+        
                     }
+                    
+                    
+                    Group {
+                        Collapsible(label: {BasicText(text: .constant(String
+                            .localizedString(forKey: "obs_modules", inTable: stringTable,
+                                             withComment: "string for observation modules")), font: .more.headline)},
+                        content: {
+                            
+                            VStack {
+                                ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
+                                    obs in
+                                    ModuleListItem(observation: obs).padding(.bottom)
+                                }
+                            }.padding()
+                        })
+                    }.padding(.top, (0.5))
+                    
                     Spacer()
                 }
                 
             }
-            } topBarContent: {
-                EmptyView()
-            }
-            .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"))
-            .navigationBarTitleDisplayMode(.inline)
+        } topBarContent: {
+            EmptyView()
         }
+        .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
     
 }
 

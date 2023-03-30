@@ -23,7 +23,7 @@ struct UIToggleFoldViewButton: View {
             isOpen.toggle()
         } label: {
             Image.more.toggleFoldView
-                .imageScale(.large)
+//                .imageScale(.large)
                 .rotationEffect(Angle(degrees: rotationAngle))
         }
 

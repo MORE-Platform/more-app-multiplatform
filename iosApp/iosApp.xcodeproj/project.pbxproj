@@ -15,6 +15,8 @@
 		07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54B129CB47C400459267 /* DetailsTitle.swift */; };
 		07D9046829C85166003D2912 /* GPSObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9046729C85166003D2912 /* GPSObservation.swift */; };
 		07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */; };
+		07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293B29D57F0300853108 /* ModuleListItem.swift */; };
+		07FD293E29D58F7C00853108 /* Collapsible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293D29D58F7C00853108 /* Collapsible.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -130,6 +132,8 @@
 		07BC54B129CB47C400459267 /* DetailsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTitle.swift; sourceTree = "<group>"; };
 		07D9046729C85166003D2912 /* GPSObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSObservation.swift; sourceTree = "<group>"; };
 		07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		07FD293B29D57F0300853108 /* ModuleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleListItem.swift; sourceTree = "<group>"; };
+		07FD293D29D58F7C00853108 /* Collapsible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collapsible.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -339,6 +343,8 @@
 				B784169929CA18320035D830 /* DatapointsCollection.swift */,
 				B748DF3529CC43990026C348 /* ExpandableText.swift */,
 				B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */,
+				07FD293B29D57F0300853108 /* ModuleListItem.swift */,
+				07FD293D29D58F7C00853108 /* Collapsible.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -721,6 +727,7 @@
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
+				07FD293E29D58F7C00853108 /* Collapsible.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */,
@@ -735,6 +742,7 @@
 				1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
+				07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
