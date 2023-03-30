@@ -10,59 +10,71 @@ import SwiftUI
 import shared
 
 struct LoginView: View {
+    
     @StateObject var model: LoginViewModel
-    @State private var endpointShowTextField = false
     @State private var rotationAngle = 0.0
-
+    
+    @State private var showTokenInput = true
+    @State private var showEndpoint = false
+    
     private let stringTable = "LoginView"
+  
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .center) {
-                Title(titleText:
-                        .constant(String
-                            .localizedString(forKey: "login_welcome_title", inTable: stringTable, withComment: "welcome string on login view")))
-                
-                VStack() {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            SectionHeading(sectionTitle: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")))
-                            
-                            Spacer()
-                            UIToggleFoldViewButton(isOpen: $endpointShowTextField)
-                        }
-                        .padding(.bottom, 4)
-                        Group {
-                            if endpointShowTextField {
-                                MoreTextField(titleKey: .constant(.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "input field for endpoint")), inputText: $model.endpoint)
-                            } else {
-                                BasicText(text: $model.endpoint)
-                                    .lineLimit(1)
-                            }
-                        }
-                        .padding(.moreContainerEdgeInsets.bottom)
-                        SectionHeading(sectionTitle: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")))
-                        
-                        MoreTextField(titleKey: .constant(.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")), inputText: $model.token)
-                    }
+            ZStack {
+                Color.more.mainBackground.ignoresSafeArea()
+            
+                VStack(alignment: .center) {
                     
-                    if !model.error.isEmpty {
-                        ErrorText(message: $model.error)
+                    Image("more_welcome")
+                        .padding(.vertical, 40)
+
+                    MoreTextFieldHL(isSmTextfield: .constant(false),
+                                    headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                    inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                    input: $model.token)
+                    .padding(.bottom, 12)
+                    
+                    if showTokenInput {
+                        ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
+                            .environmentObject(model)
+                    }
+                        
+                    VStack{
+                        Text(String.localizedString(forKey: "or", inTable: stringTable, withComment: "Choose either or of the two options."))
+                            .fontWeight(.more.title)
+                            
+                    }
+                    .padding(25)
+                   
+                    NavigationLinkButton {
+                        LoginQRCodeView(model: model)
+                    } label: {
+                        HStack {
+                            Text(String.localizedString(forKey: "qr_code_entry", inTable: stringTable, withComment: "Click to Scan QR Code to log in."))
+                                .foregroundColor(.more.white)
+                            Spacer()
+                            Image(systemName: "chevron.forward")
+                                    .foregroundColor(.more.white)
+                        }
+                    }
+                    .padding(.vertical, 15)	
+                    
+                    Spacer()
+                    
+                    VStack {
+                        ExpandableInput(
+                            expanded: $showEndpoint,
+                            isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
+                            inputPlaceholder: $model.endpoint,
+                            input: $model.endpoint
+                        )
                     }
                 }
-                .padding()
-                
-                if !model.isLoading {
-                    LoginButton(stringTable: .constant(stringTable))
-                        .environmentObject(model)
-                } else {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
-                
-                Spacer()
+                .padding(.horizontal, 60)
             }
-            .frame(maxWidth: .moreFrameStyle.minWidth)
+            
         }
     }
 }

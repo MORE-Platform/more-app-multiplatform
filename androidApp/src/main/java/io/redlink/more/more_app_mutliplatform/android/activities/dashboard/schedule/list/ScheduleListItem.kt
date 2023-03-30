@@ -3,7 +3,6 @@ package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.sche
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTitle
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.TimeframeHours
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
@@ -44,10 +44,12 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
                 tint = MoreColors.Primary
             )
         }
-        ScheduleListItemTimeView(
+        TimeframeHours(
             startTime = scheduleModel.start.toDate(),
-            endTime = scheduleModel.end.toDate()
+            endTime = scheduleModel.end.toDate(),
+            modifier = Modifier.padding(vertical = 8.dp)
         )
+
         SmallTextButton(
             text = if (currentState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
                 id = R.string.more_observation_start

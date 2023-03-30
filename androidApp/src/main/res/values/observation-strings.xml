@@ -14,4 +14,6 @@
 
     <string name="more_observation_ready_title">Observation Ready</string>
     <string name="more_observation_ready_message">Please open the app and start the observation</string>
+
+    <string name="more_observation_datapoints">Datapoints Collected</string>
 </resources>

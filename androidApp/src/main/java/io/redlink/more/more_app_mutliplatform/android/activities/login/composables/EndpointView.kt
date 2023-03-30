@@ -17,12 +17,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -46,40 +45,45 @@ fun EndpointView(
             easing = LinearEasing
         )
     )
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)) {
-            Text(
-                text = getStringResource(id = R.string.more_endpoint_label),
-                fontWeight = FontWeight.Medium,
-                fontSize = 20.sp,
-                color = MoreColors.Primary,
-                modifier = Modifier.fillMaxWidth(0.8f)
-            )
-            IconButton(onClick = { isOpen = !isOpen },
-                modifier = Modifier.weight(0.2f)) {
-                Icon(
-                    Icons.Rounded.ExpandMore,
-                    getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                    tint = MoreColors.Primary,
-                    modifier = Modifier
-                        .fillMaxSize(1.2f)
-                        .rotate(angle)
+                .weight(1f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = getStringResource(id = R.string.more_endpoint_label),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = MoreColors.Primary
                 )
+                IconButton(onClick = { isOpen = !isOpen }) {
+                    Icon(
+                        Icons.Rounded.ExpandMore,
+                        getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
+                        tint = MoreColors.Primary,
+                        modifier = Modifier
+                            .rotate(angle)
+                    )
+                }
             }
         }
         if (isOpen) {
-            EndpointInput(model = model, focusRequester = focusRequester, focusManager = focusManager)
-        } else {
-            Text(
-                text = model.dataEndpoint.value,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth()
+            EndpointInput(
+                model = model,
+                focusRequester = focusRequester,
+                focusManager = focusManager
             )
         }
     }
@@ -91,19 +95,24 @@ fun EndpointInput(
     focusRequester: FocusRequester,
     focusManager: FocusManager
 ) {
-    OutlinedTextField(
+    TextField(
         value = model.dataEndpoint.value,
         onValueChange = {
             model.dataEndpoint.value = it
             model.endpointError.value = null
         },
-        textStyle = TextStyle(fontSize = 12.sp),
+        textStyle = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Center),
         trailingIcon = {
             if (model.isEndpointError()) {
                 Icon(Icons.Filled.Error, "URL Error", tint = MoreColors.Important)
             }
         },
-        placeholder = { Text(text = getStringResource(id = R.string.more_endpoint_input_placeholder)) },
+        placeholder = {
+            Text(
+                text = getStringResource(id = R.string.more_endpoint_input_placeholder),
+                textAlign = TextAlign.Center
+            )
+        },
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
             autoCorrect = false,
@@ -113,23 +122,22 @@ fun EndpointInput(
         isError = model.isEndpointError(),
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MoreColors.Primary,
-            focusedLabelColor = MoreColors.Primary,
-            backgroundColor = Color.Transparent,
-            unfocusedLabelColor = MoreColors.Primary,
+            textColor = MoreColors.Secondary,
+            focusedLabelColor = MoreColors.Secondary,
+            backgroundColor = MoreColors.PrimaryLight,
+            unfocusedLabelColor = MoreColors.Secondary,
             errorLabelColor = MoreColors.Important,
             cursorColor = MoreColors.Primary,
             errorBorderColor = MoreColors.Important,
             errorCursorColor = MoreColors.Important,
             errorLeadingIconColor = MoreColors.Important,
             errorTrailingIconColor = MoreColors.Important,
-            placeholderColor = MoreColors.TextInactive,
-            unfocusedBorderColor = MoreColors.Primary,
-            focusedBorderColor = MoreColors.Primary
+            placeholderColor = MoreColors.TextInactive
         ),
         modifier = Modifier
             .focusRequester(focusRequester)
             .fillMaxWidth()
             .height(60.dp)
+            .padding(0.dp)
     )
 }
