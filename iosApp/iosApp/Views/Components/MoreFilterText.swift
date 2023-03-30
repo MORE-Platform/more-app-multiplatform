@@ -15,9 +15,9 @@ struct MoreFilterText: View {
     
     var body: some View {
         Text(text)
-            .font(.more.title2)
+            .font(.system(size: 16))
+            .font(Font.body.bold())
             .foregroundColor(color)
-            .fontWeight(.more.title)
             .underline(underline, color: color)
     }
 }

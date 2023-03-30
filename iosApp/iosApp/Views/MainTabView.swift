@@ -14,7 +14,7 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Group {
-                DashboardView(dashboardViewModel: contentViewModel.dashboardViewModel)
+                DashboardView(dashboardViewModel: contentViewModel.dashboardViewModel, dashboardFilterViewModel: contentViewModel.dashboardFilterViewModel)
                     .tabItem {
                         Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
                     }

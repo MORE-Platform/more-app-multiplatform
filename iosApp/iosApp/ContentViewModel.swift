@@ -29,6 +29,7 @@ class ContentViewModel: ObservableObject {
     let loginViewModel: LoginViewModel
     let consentViewModel: ConsentViewModel
     let dashboardViewModel: DashboardViewModel
+    let dashboardFilterViewModel: DashboardFilterViewModel
     let settingsViewModel: SettingsViewModel
 
     init() {
@@ -37,6 +38,7 @@ class ContentViewModel: ObservableObject {
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
         dashboardViewModel = DashboardViewModel()
+        dashboardFilterViewModel = DashboardFilterViewModel()
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         settingsViewModel = SettingsViewModel()
         hasCredentials = credentialRepository.hasCredentials()

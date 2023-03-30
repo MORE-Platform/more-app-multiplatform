@@ -15,6 +15,7 @@ enum NavigationScreens: String {
     case settings = "Settings"
     case taskDetails = "Task Detail"
     case scanQRCode = "Scan QR Code"
+    case dashboardFilter = "Dashboard Filter"
 }
 
 extension NavigationScreens {

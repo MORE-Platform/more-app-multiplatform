@@ -8,13 +8,16 @@
 
 import SwiftUI
 
-struct MoreFilter: View {
+struct MoreFilter<Destination: View>: View {
+    
     @Binding var text: String
+    var destination: () -> Destination
+    
     var image = Image(systemName: "slider.horizontal.3")
     
     var body: some View {
-        Button {
-            
+        NavigationLink {
+           destination()
         } label: {
             HStack {
                 BasicText(text: $text)
@@ -27,6 +30,8 @@ struct MoreFilter: View {
 
 struct MoreFilter_Previews: PreviewProvider {
     static var previews: some View {
-        MoreFilter(text: .constant("test"))
+        MoreFilter(text: .constant(String("test"))) {
+            EmptyView()
+        }
     }
 }

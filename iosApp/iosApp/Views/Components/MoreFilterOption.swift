@@ -9,22 +9,37 @@
 import SwiftUI
 
 struct MoreFilterOption: View {
-    @State var selected: Bool
-    @Binding var label: String
+    let selected: Bool
+    let label: String
+    let callback: (String) -> ()
+    
+    init(
+        label: String,
+        selected: Bool = false,
+        callback: @escaping (String) -> ()
+    ) {
+        self.label = label
+        self.selected = selected
+        self.callback = callback
+    }
     
     var body: some View {
         VStack {
             HStack {
                 if selected {
                     Image(systemName: "checkmark")
-                        .frame(width: 15)
+                        .foregroundColor(.more.approved)
                 } else {
                     Spacer()
-                        .frame(width: 15)
+                        .frame(width: 5)
                 }
-                
-                MoreFilterText(text: .constant(label), color: selected ? .constant(.more.primary) : .constant(.more.secondary), underline: $selected)
+                Button(action: {
+                    self.callback(self.label)
+                }) {
+                    MoreFilterText(text: .constant(label), color: self.selected ? .constant(.more.primary) : .constant(.more.secondary), underline: .constant(self.selected))
+                }
             }
+            .padding(5)
         }
     }
 }
