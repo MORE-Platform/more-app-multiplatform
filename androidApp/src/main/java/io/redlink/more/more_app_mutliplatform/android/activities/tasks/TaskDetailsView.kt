@@ -39,21 +39,22 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
             ) {
                 HeaderTitle(
                     title = taskDetails.value.observationTitle,
-                    modifier = Modifier.weight(0.65f)
+                    modifier = Modifier
+                        .weight(0.65f)
+                        .padding(vertical = 11.dp)
                 )
-                SmallTextIconButton(
-                    text = getStringResource(id = R.string.more_abort),
-                    imageText = getStringResource(id = R.string.more_abort),
-                    image = Icons.Rounded.Square,
-                    imageTint = MoreColors.Important,
-                    borderStroke = MoreColors.borderDefault(),
-                    buttonColors = ButtonDefaults.moreSecondary2()
-                ) {
-                }
+                if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING)
+                    SmallTextIconButton(
+                        text = getStringResource(id = R.string.more_abort),
+                        imageText = getStringResource(id = R.string.more_abort),
+                        image = Icons.Rounded.Square,
+                        imageTint = MoreColors.Important,
+                        borderStroke = MoreColors.borderDefault(),
+                        buttonColors = ButtonDefaults.moreSecondary2()
+                    ) {}
             }
             BasicText(
                 text = taskDetails.value.observationType,
