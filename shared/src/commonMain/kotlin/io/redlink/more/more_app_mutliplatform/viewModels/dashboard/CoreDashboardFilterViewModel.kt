@@ -4,7 +4,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.models.TypeFilterModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
@@ -14,13 +13,13 @@ import kotlinx.datetime.todayIn
 
 class CoreDashboardFilterViewModel {
     val currentDateFilter = MutableStateFlow(DateFilterModel.ENTIRE_TIME)
-    val currentTypeFilter = MutableStateFlow(mutableSetOf<TypeFilterModel>())
+    val currentTypeFilter = MutableStateFlow(mutableSetOf<String>())
 
     fun hasAllTypes() = currentTypeFilter.value.isEmpty()
 
-    fun containsTypeFilter(type: TypeFilterModel) = currentTypeFilter.value.contains(type)
+    fun containsTypeFilter(type: String) = currentTypeFilter.value.contains(type)
 
-    fun addTypeFilter(type: TypeFilterModel) {
+    fun addTypeFilter(type: String) {
         val copy = currentTypeFilter.value.toMutableSet()
         copy.add(type)
         currentTypeFilter.update {
@@ -28,7 +27,7 @@ class CoreDashboardFilterViewModel {
         }
     }
 
-    fun removeTypeFilter(type: TypeFilterModel) {
+    fun removeTypeFilter(type: String) {
         val copy = currentTypeFilter.value.toMutableSet()
         copy.remove(type)
         currentTypeFilter.update {
@@ -64,9 +63,7 @@ class CoreDashboardFilterViewModel {
         if(currentTypeFilter.value.isNotEmpty()){
             filteredMap.forEach { (key, value) ->
                 filteredMap[key] = value.filter {
-                    currentTypeFilter.value.map{ typeFilterModel ->
-                        typeFilterModel.type
-                    }.contains(it.observationType)
+                    currentTypeFilter.value.contains(it.observationType)
                 }
                 if(filteredMap[key]?.isEmpty() == true)
                     filteredMap.remove(key)
