@@ -46,9 +46,8 @@ struct StudyDetailsView: View {
                     
                     
                     
-                    ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4, color: Color.more.secondary)
-                        .padding(.bottom)
-                    
+                    ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
+                        .padding(.bottom, 35)
                     
                     
                     
