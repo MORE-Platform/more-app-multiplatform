@@ -337,19 +337,14 @@
 		1F8847B829914BD50023EF10 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				B784169529C9FB2C0035D830 /* AccordionItem.swift */,
 				1F8847E72992BEE30023EF10 /* BasicText.swift */,
-				B784169729CA08850035D830 /* CircleActivityIndicator.swift */,
 				1F13BA422993951200938C1E /* ConsentList.swift */,
 				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
 				1F13BA462993972E00938C1E /* ConsentListItem.swift */,
-				B784169929CA18320035D830 /* DatapointsCollection.swift */,
 				B748DF5129D2DA0C0026C348 /* ErrorLogin.swift */,
 				1F60C58529951A5F00858581 /* ErrorText.swift */,
 				B748DF4F29D1E5860026C348 /* ExpandableInput.swift */,
-				B748DF3529CC43990026C348 /* ExpandableText.swift */,
 				1F13BA482993985800938C1E /* InactiveText.swift */,
-				B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */,
 				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
 				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
 				1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */,

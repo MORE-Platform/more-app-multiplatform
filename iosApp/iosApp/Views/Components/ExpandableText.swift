@@ -50,7 +50,7 @@ struct ExpandableText: View {
                                    Text(self.text)
                                        .background(GeometryReader { fullTextGeometry in
                                            Color.clear.onAppear {
-                                               self.truncated = fullTextGeometry.size.height > visibleTextGeometry.size.height
+                                               self.truncated = fullTextGeometry.size.height >= visibleTextGeometry.size.height
                                            }
                                        })
                                }
