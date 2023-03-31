@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
+import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,63 +13,67 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 
 class CoreDashboardFilterViewModel {
-    val currentDateFilter = MutableStateFlow(DateFilterModel.ENTIRE_TIME)
-    val currentTypeFilter = MutableStateFlow(mutableSetOf<String>())
+    val currentFilter = MutableStateFlow(FilterModel())
 
-    fun hasAllTypes() = currentTypeFilter.value.isEmpty()
+    fun hasAllTypes() = currentFilter.value.typeFilter.isEmpty()
 
-    fun containsTypeFilter(type: String) = currentTypeFilter.value.contains(type)
+    fun containsType(type: String) = currentFilter.value.typeFilter.contains(type)
 
     fun addTypeFilter(type: String) {
-        val copy = currentTypeFilter.value.toMutableSet()
-        copy.add(type)
-        currentTypeFilter.update {
-            copy
+        currentFilter.update {
+            currentFilter.value.copy(
+                typeFilter = currentFilter.value.typeFilter
+                    .toMutableSet().apply { add(type) }
+            )
         }
     }
 
     fun removeTypeFilter(type: String) {
-        val copy = currentTypeFilter.value.toMutableSet()
-        copy.remove(type)
-        currentTypeFilter.update {
-            copy
+        currentFilter.update {
+            currentFilter.value.copy(
+                typeFilter = currentFilter.value.typeFilter
+                    .toMutableSet().apply { remove(type) }
+            )
         }
     }
 
     fun clearTypeFilters() {
-        val copy = currentTypeFilter.value.toMutableSet()
-        copy.clear()
-        currentTypeFilter.update {
-            copy
+        currentFilter.update {
+            currentFilter.value.copy(
+                typeFilter = currentFilter.value.typeFilter
+                    .toMutableSet().apply { clear() }
+            )
         }
     }
-
-    fun hasDateFilter(dateFilter: DateFilterModel) = currentDateFilter.value == dateFilter
 
     fun setDateFilter(dateFilter: DateFilterModel) {
-        currentDateFilter.update { dateFilter }
+        currentFilter.update {
+            currentFilter.value.copy(dateFilter = dateFilter)
+        }
     }
 
-    fun applyFilter(scheduleModelList: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
-        val scheduleModelListAsLocalDate = scheduleModelList.mapKeys {
-            it.key.toLocalDate()
-        }
+    fun hasDateFilter(dateFilter: DateFilterModel) = currentFilter.value.dateFilter == dateFilter
 
-        val filteredMap = scheduleModelListAsLocalDate.filterKeys { date ->
-            currentDateFilter.value.duration?.let {
-                date <= Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(it) }
-                ?: true
+    fun applyFilter(scheduleModelList: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
+        val scheduleListAsLocalDate = scheduleModelList.mapKeys {
+            it.key.toLocalDate()
         }.toMutableMap()
 
-        if(currentTypeFilter.value.isNotEmpty()){
-            filteredMap.forEach { (key, value) ->
-                filteredMap[key] = value.filter {
-                    currentTypeFilter.value.contains(it.observationType)
+        if (currentFilter.value.typeFilter.isNotEmpty()) {
+            scheduleListAsLocalDate.forEach { (key, value) ->
+                scheduleListAsLocalDate[key] = value.filter {
+                    currentFilter.value.typeFilter.contains(it.observationType)
                 }
-                if(filteredMap[key]?.isEmpty() == true)
-                    filteredMap.remove(key)
             }
         }
+
+        val filteredMap = scheduleListAsLocalDate.filterKeys { date ->
+            currentFilter.value.dateFilter.duration?.let {
+                date <= Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(it)
+            } ?: true
+                    && scheduleListAsLocalDate[date]?.isNotEmpty() ?: false
+        }
+
         return filteredMap.mapKeys {
             it.key.time()
         }
