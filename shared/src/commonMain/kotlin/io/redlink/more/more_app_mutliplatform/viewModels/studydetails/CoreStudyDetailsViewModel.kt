@@ -6,16 +6,13 @@ import io.realm.kotlin.types.RealmList
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
-import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class CoreStudyDetailsViewModel {
@@ -37,73 +34,29 @@ class CoreStudyDetailsViewModel {
 
     fun loadStudy(){
         scope.launch {
+            scope.launch {
+                scheduleRepository.count().collect{
+                    totalTasks.value = it
+                }
+            }
+            scope.launch {
+                scheduleRepository.allSchedulesWithStatus(true).collect{
+                    finishedTasks.value = it.size.toLong()
+                }
+            }
             studyRepository.getStudy().collect{ study ->
                 study?.let {
-                    studyDetailsModel.value = StudyDetailsModel.createModelFrom(it)
+                    studyDetailsModel.value = StudyDetailsModel.createModelFrom(it, totalTasks.value, finishedTasks.value)
                     studyTitle.emit(it.studyTitle)
                     participantInfo.emit(it.participantInfo)
-                    start.emit(it.start?.epochSeconds ?: 0)
-                    end.emit(it.end?.epochSeconds ?: 0)
+                    start.emit(it.start?.toInstant()?.toEpochMilliseconds() ?: 0)
+                    end.emit(it.end?.toInstant()?.toEpochMilliseconds() ?: 0)
                     observations.emit(it.observations)
                 }
             }
         }
-        scope.launch {
-            scheduleRepository.count().collect{
-                totalTasks.value = it
-            }
-        }
-        scope.launch {
-            scheduleRepository.allSchedulesWithStatus(true).collect{
-                finishedTasks.value = it.size.toLong()
-            }
-        }
-    }
-
-    fun loadWholeStudy(): MutableStateFlow<StudySchema?> {
-        val study: MutableStateFlow<StudySchema?> = MutableStateFlow(StudySchema())
-        CoroutineScope(Dispatchers.Default + Job()).launch {
-            studyRepository.getStudy().collect {
-                study.value = it
-            }
-        }
-        return study
     }
     fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
         return studyDetailsModel.asClosure(provideNewState)
-    }
-
-    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)): Closeable {
-        val job = Job()
-        loadWholeStudy().onEach {
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object: Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
-    }
-
-    fun onStudyTitle(provideNewState: ((String?) -> Unit)): Closeable {
-        return studyTitle.asClosure(provideNewState)
-    }
-    fun onParticipantInfo(provideNewState: ((String?) -> Unit)): Closeable {
-        return participantInfo.asClosure(provideNewState)
-    }
-    fun onObservations(provideNewState: ((RealmList<ObservationSchema>?) -> Unit)): Closeable {
-        return observations.asClosure(provideNewState)
-    }
-    fun onStart(provideNewState: ((Long?) -> Unit)): Closeable {
-        return start.asClosure(provideNewState)
-    }
-    fun onEnd(provideNewState: ((Long?) -> Unit)): Closeable {
-        return end.asClosure(provideNewState)
-    }
-    fun onFinishedTasks(provideNewState: ((Long?) -> Unit)): Closeable {
-        return finishedTasks.asClosure(provideNewState)
-    }
-    fun onTotalTasks(provideNewState: ((Long?) -> Unit)): Closeable {
-        return totalTasks.asClosure(provideNewState)
     }
 }

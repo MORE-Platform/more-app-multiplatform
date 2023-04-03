@@ -10,12 +10,7 @@ import shared
 
 class StudyDetailsViewModel: ObservableObject {
     private let coreModel: CoreStudyDetailsViewModel
-    
     @Published var studyDetailsModel: StudyDetailsModel?
-    @Published var totalTasks: Int64?
-    @Published var completedTasks: Int64?
-    @Published var study: StudySchema? = StudySchema()
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", studyConsentInfo: "", consentInfo: [])
     
     init() {
         self.coreModel = CoreStudyDetailsViewModel()
@@ -26,33 +21,5 @@ class StudyDetailsViewModel: ObservableObject {
                 self.studyDetailsModel = studyDetails
             }
         }
-        
-        coreModel.onLoadStudy { study in
-            if let study {
-                self.study = study
-                self.permissionModel = PermissionModel.companion.createFromSchema(studySchema: study)
-            }
-        }
-        
-        
-        
-        coreModel.onTotalTasks() { totalT in
-            if let totalT {
-                self.totalTasks = totalT.int64Value
-            }
-        }
-        coreModel.onFinishedTasks() {
-            compT in if let compT {
-                self.completedTasks = compT.int64Value
-            }
-        }
-    }
-    
-    func exit(){
-        
-    }
-    
-    func settings(){
-        
     }
 }

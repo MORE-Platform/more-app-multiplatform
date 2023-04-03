@@ -1,14 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.models
 
-
-import io.realm.kotlin.types.RealmList
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
-
 
 data class StudyDetailsModel(
     val studyTitle: String,
@@ -18,10 +12,12 @@ data class StudyDetailsModel(
     val end: Long?,
     val observations: List<ObservationSchema>,
     val version: Long,
-    var active: Boolean?
+    var active: Boolean?,
+    var totalTasks: Long,
+    var finishedTasks: Long
 ) {
     companion object {
-        fun createModelFrom(study: StudySchema
+        fun createModelFrom(study: StudySchema, totalTasks: Long, finishedTasks: Long
         ): StudyDetailsModel {
             return StudyDetailsModel(
                 studyTitle = study.studyTitle,
@@ -31,7 +27,9 @@ data class StudyDetailsModel(
                 end = study.end?.toInstant()?.toEpochMilliseconds(),
                 observations = study.observations,
                 version = study.version,
-                active = study.active
+                active = study.active,
+                totalTasks = totalTasks,
+                finishedTasks = finishedTasks
             )
         }
     }

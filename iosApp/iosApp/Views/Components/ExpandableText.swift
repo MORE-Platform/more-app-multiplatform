@@ -72,13 +72,6 @@ struct ExpandableText: View {
             }
         }
     }
-    
-//    var toggleButton: some View {
-//        Button(action: { self.expanded.toggle() }) {
-//            Text(self.expanded ? String.localizedString(forKey: "Read Less", inTable: stringTable, withComment: "Read less information") : String.localizedString(forKey: "Read More", inTable: stringTable, withComment: "Read more information"))
-//                .font(.system(size: 16))
-//        }
-//    }
 }
 
 struct ExpandableText_Previews: PreviewProvider {

@@ -28,42 +28,35 @@ struct StudyDetailsView: View {
                     
                     TaskProgressView(progressViewTitle: .constant(String
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                         withComment: "string for completed tasks")), totalTasks: Double(viewModel.totalTasks ?? 0), tasksCompleted: Double(viewModel.completedTasks ?? 0))
+                                         withComment: "string for completed tasks")), totalTasks: Double(viewModel.studyDetailsModel?.totalTasks ?? 0), tasksCompleted: Double(viewModel.studyDetailsModel?.finishedTasks ?? 0))
                     .padding(.bottom, 0.2)
                     
                     HStack(alignment: .center) {
-                        
                         
                         BasicText(text: .constant(String
                             .localizedString(forKey: "study_duration", inTable: stringTable,
                                              withComment: "string for study duration")))
                         
                         Spacer()
-                        BasicText(text: .constant((viewModel.studyDetailsModel?.start?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "")+" - "+(viewModel.studyDetailsModel?.end?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "")),
+                        BasicText(text: .constant((viewModel.studyDetailsModel?.start?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.studyDetailsModel?.end?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "")),
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)
                     
-                    
-                    
-                    ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
+                    ExpandableText(viewModel.studyDetailsModel?.participantInformation ?? "", String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
                         .padding(.bottom, 35)
                     
-                    
-                    
-                    
-                    Collapsible(label: {BasicText(text: .constant(String
-                        .localizedString(forKey: "obs_modules", inTable: stringTable,
-                                         withComment: "string for observation modules")), font: .more.headline)},
-                                content: {
-                        
-                        VStack {
-                            ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
-                                obs in
-                                ModuleListItem(observation: obs).padding(.bottom)
+                    ExpandableContent(
+                        content: {
+                            VStack {
+                                ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
+                                    obs in
+                                    ModuleListItem(observation: obs).padding(.bottom)
+                                }
                             }
-                        }.padding()
-                    }).padding(.top, (0.5))
+                        },
+                        title: {String.localizedString(forKey: "obs_modules", inTable: stringTable, withComment: "Observation modules of study.")}
+                    ).padding(.top, (0.5))
                     
                     Spacer()
                 }
