@@ -9,6 +9,7 @@
 import Foundation
 import CoreLocation
 import AVFoundation
+import CoreBluetooth
 
 enum PermissionStatus {
     case accepted, declined, requesting
@@ -21,25 +22,29 @@ protocol PermissionManagerObserver {
 }
 
 class PermissionManager: NSObject, ObservableObject {
+    
     var observer: PermissionManagerObserver? = nil
     
     let locationManager: CLLocationManager = CLLocationManager()
     var gpsAuthorizationStatus: CLAuthorizationStatus?
+    
     private var cameraPermissionGranted = false
     
     private var gpsStatus: PermissionStatus = .accepted
     private var gpsNeeded: Bool = false
     private var cameraNeeded: Bool = false
     
+    private var bluetoothStatus: PermissionStatus = .requesting
+    private var bluetoothNeeded: Bool = false
+    
     var permissionsGranted: Bool = true
-
+    
     
     override init() {
         super.init()
         gpsAuthorizationStatus = locationManager.authorizationStatus
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-
         
         setPermisssionValues(observationPermissions: IOSObservationFactory().sensorPermissions())
     }
@@ -55,19 +60,33 @@ class PermissionManager: NSObject, ObservableObject {
         }
         
         else if(self.locationManager.authorizationStatus == CLAuthorizationStatus.denied
-           || self.locationManager.authorizationStatus == CLAuthorizationStatus.restricted){
+                || self.locationManager.authorizationStatus == CLAuthorizationStatus.restricted) {
             observer?.declined()
             return .declined
         }
         return .accepted
     }
     
+    func checkBluetoothAuthorization(always: Bool = true) -> PermissionStatus {
+        if CBManager.authorization == CBManagerAuthorization.notDetermined {
+            return .requesting
+        } else if CBManager.authorization == CBManagerAuthorization.denied {
+            return .declined
+        } else {
+            return .accepted
+        }
+    }
+    
     func requestPermission() {
+        if self.bluetoothNeeded {
+            bluetoothStatus = checkBluetoothAuthorization()
+        }
         if(self.gpsNeeded){
             gpsStatus = requestGpsAuthorization()
         }
-        
-        if (self.gpsStatus == .accepted) {
+        if self.bluetoothStatus == .declined {
+            observer?.declined()
+        } else if (self.bluetoothStatus == .accepted && self.gpsStatus == .accepted) {
             observer?.accepted()
         }
     }
@@ -77,7 +96,7 @@ class PermissionManager: NSObject, ObservableObject {
             permissionsGranted = (self.locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
         }
     }
-
+    
     
     func requestPermissionCamera() {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: {accessGranted in
@@ -90,6 +109,7 @@ class PermissionManager: NSObject, ObservableObject {
     private func setPermisssionValues(observationPermissions: Set<String> = []) {
         gpsNeeded = observationPermissions.contains("gpsAlways")
         cameraNeeded = observationPermissions.contains("camera")
+        bluetoothNeeded = observationPermissions.contains("bluetoothAlways")
     }
 }
 
