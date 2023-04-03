@@ -10,6 +10,7 @@ import SwiftUI
 import shared
 
 struct QuestionObservationView: View {
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: QuestionObservationViewModel = QuestionObservationViewModel()
     private let navigationStrings = "Navigation"
     
@@ -35,7 +36,8 @@ struct QuestionObservationView: View {
                             }
                             
                             MoreActionButton(disabled: .constant(false)) {
-                                print($selected)
+                                self.presentationMode.wrappedValue.dismiss()
+                                
                             } label: {
                                 Text("Answer")
                             }
