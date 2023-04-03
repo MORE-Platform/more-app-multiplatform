@@ -24,12 +24,7 @@ struct ScheduleListItem: View {
                     VStack(alignment: .leading) {
                         ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
                             .padding(.bottom, 4)
-                        HStack {
-                            Image(systemName: "clock.fill")
-                            BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
-                            Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
-                                .foregroundColor(Color.more.secondary)
-                        }
+                        ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                     }
                     NavigationLink {
                         TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId))

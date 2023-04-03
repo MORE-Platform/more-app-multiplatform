@@ -18,8 +18,12 @@ struct ScheduleList: View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
             VStack {
                 VStack {
-                    ScheduleListItem(scheduleModel: schedule)
-                        .environmentObject(viewModel)
+                    if (schedule.observationType == "question-observation") {
+                        QuestionListItem(schedule: schedule).environmentObject(viewModel)
+                    } else {
+                        ScheduleListItem(scheduleModel: schedule)
+                            .environmentObject(viewModel)
+                    }
                     
                     if schedule != scheduleModels!.last {
                         Divider()

@@ -17,7 +17,7 @@ struct TaskDetailsView: View {
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-        
+    
     var body: some View {
         let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
         
@@ -63,7 +63,7 @@ struct TaskDetailsView: View {
                     }
                     
                     if (viewModel.taskDetailsModel?.observationType == "question-observation") {
-
+                        
                         NavigationLinkButton(disabled: .constant(!(Date() > viewModel.taskDetailsModel?.start.toDate() ?? Date() && Date() < viewModel.taskDetailsModel?.end.toDate() ?? Date()))) {
                             QuestionObservationView()
                         } label: {
@@ -72,9 +72,9 @@ struct TaskDetailsView: View {
                         }
                     }
                     else {
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
+                        ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
                             let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
-                        
+                            
                             if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                                 scheduleViewModel.pause(scheduleId: scheduleId)
                             } else {

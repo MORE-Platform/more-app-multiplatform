@@ -23,31 +23,16 @@ struct ObservationButton: View {
         VStack {
             
             let disabled = !(Date() >= start.toDate() && Date() <= end.toDate())
-            if observationType.lowercased() == "question-observation" {
-                /*
-                MoreActionButton(disabled: .constant(disabled), action: action) {
-                    Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
-                }
-                 */
-                    NavigationLinkButton(disabled: .constant(disabled)) {
-                        QuestionObservationView()
-                    } label: {
-                            Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
-                                .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                    }
-            } else {
-                MoreActionButton(disabled: .constant(disabled), action: action) {
-                    VStack {
-                        if state == ScheduleState.running {
-                            Text(
-                                String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
-                            )
-                        } else {
-                            Text(
-                                String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
-                            )
-                        }
+            MoreActionButton(disabled: .constant(disabled), action: action) {
+                VStack {
+                    if state == ScheduleState.running {
+                        Text(
+                            String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
+                        )
+                    } else {
+                        Text(
+                            String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
+                        )
                     }
                 }
             }
