@@ -3,10 +3,12 @@ package io.redlink.more.more_app_mutliplatform.android.activities.consent
 import android.Manifest
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.getSecureID
+import io.redlink.more.more_app_mutliplatform.android.firebase.FCMService
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
@@ -85,6 +87,14 @@ class ConsentViewModel(
             getSecureID(context)?.let { uniqueDeviceId ->
                 coreModel.acceptConsent(info.toMD5(), uniqueDeviceId,
                     onSuccess = {
+                        FCMService.newFirebaseToken {
+                            if (!it.isSuccessful) {
+                                Log.w(TAG, "Fetching FCM registration token failed", it.exception)
+                                return@newFirebaseToken
+                            } else {
+                                Log.w(TAG, "FCM_Token: ${it.result}")
+                            }
+                        }
                         consentViewModelListener.credentialsStored()
                     }, onError = {
                         error.value = it?.message

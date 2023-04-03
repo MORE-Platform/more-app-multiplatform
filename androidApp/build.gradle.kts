@@ -2,7 +2,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-
+    id("com.google.gms.google-services")
     id("io.realm.kotlin") version "1.6.0"
 }
 
@@ -57,7 +57,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("io.realm.kotlin:library-base:1.6.0")
     implementation("androidx.navigation:navigation-compose:$navVersion")
-
+    implementation("com.google.firebase:firebase-messaging-ktx:23.1.2")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("io.github.aakira:napier:2.6.1")
