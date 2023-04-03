@@ -17,7 +17,6 @@ struct ScheduleList: View {
     var body: some View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
             VStack {
-                VStack {
                     if (schedule.observationType == "question-observation") {
                         QuestionListItem(schedule: schedule).environmentObject(viewModel)
                     } else {
@@ -30,7 +29,6 @@ struct ScheduleList: View {
                     } else {
                         EmptyView()
                     }
-                }
             }
         }
     }

@@ -41,10 +41,12 @@ struct QuestionListItem: View {
                     ObservationTimeDetails(start: schedule.start, end: schedule.end)
                 }
             }.buttonStyle(.plain)
-            MoreActionButton(disabled: .constant(false), action: {
+            MoreActionButton(disabled: .constant(!(Date() >= schedule.start.toDate() && Date() <= schedule.end.toDate())), action: {
                 observationActive = true
             }, label: {
                 Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
+                
+                
             }).buttonStyle(.plain)
         }.onAppear {
             taskDetailsActive = false
