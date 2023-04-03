@@ -52,7 +52,6 @@ class PolarVerityHeartRateObservation: Observation_ {
         self.devicesSubscription = api.searchForDevice().subscribe(onNext: { device in
             self.deviceId = device.deviceId
             if !self.connected {
-                print(self.deviceId)
                 self.connectDevice(deviceId: device.deviceId)
             }
         })
@@ -117,8 +116,7 @@ extension PolarVerityHeartRateObservation: PolarBleApiDeviceFeaturesObserver {
         print("feature ready")
         self.hrObservation = self.api.startHrStreaming(self.deviceId).subscribe { value in
             if let element = value.element {
-                let hrValue = element[0].hr
-                self.storeData(data: ["hr": hrValue])
+                self.storeData(data: ["hr": element[0].hr])
             }
         }
     }

@@ -11,7 +11,6 @@ import shared
 class ScheduleViewModel: ObservableObject {
     
     private let coreModel: CoreScheduleViewModel
-    let dataRecorder = IOSDataRecorder()
     @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
     @Published var scheduleDates: [UInt64] = []
     @Published var scheduleStates: [String: ScheduleState] = [:]
@@ -24,7 +23,7 @@ class ScheduleViewModel: ObservableObject {
     private var dataJob: Ktor_ioCloseable? = nil
     
     init(observationFactory: IOSObservationFactory) {
-        coreModel = CoreScheduleViewModel(dataRecorder: self.dataRecorder)
+        coreModel = CoreScheduleViewModel(dataRecorder: IOSDataRecorder())
     }
     
     func start(scheduleId: String) {

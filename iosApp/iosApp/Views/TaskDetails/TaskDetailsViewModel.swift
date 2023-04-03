@@ -17,8 +17,8 @@ class TaskDetailsViewModel: ObservableObject {
     @Published var observationRepetitionInterval: String = "1x/week"
      
     
-    init(dataRecorder: IOSDataRecorder, observationId: String, scheduleId: String) {
-        self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
+    init(observationId: String, scheduleId: String) {
+        self.coreModel = CoreTaskDetailsViewModel(dataRecorder: IOSDataRecorder())
         coreModel.onLoadTaskDetails(observationId: observationId, scheduleId: scheduleId) { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails
