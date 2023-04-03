@@ -35,7 +35,7 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
                 .replaceFirstChar { character ->
                     character.uppercase() },
             it.observationTypeImpl.observationType)
-    }.toMutableList().apply { this.add(0, Pair("All Items", null)) }
+    }.toMutableList().apply { this.add(0, Pair("All Items", null)) }.toList()
 
     init {
         scope.launch {
