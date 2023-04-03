@@ -9,7 +9,7 @@
 "error_dialog_title" = "We are sorry! There seems to be an error!";
 "dialog_retry" = "Retry";
 
-"permissions_denied" = "Please enable Location Services in the settings!";
+"permissions_denied" = "Please allow the necessary services in the settings!";
 "to_settings" = "Settings";
 
 "accept_button" = "Accept";

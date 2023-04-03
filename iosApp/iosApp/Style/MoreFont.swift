@@ -16,5 +16,6 @@ extension Font {
         let title = Font.title
         let title2 = Font.title2
         let headline = Font.headline
+        let subsubtitle = Font.title3
     }
 }

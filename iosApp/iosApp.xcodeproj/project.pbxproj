@@ -9,8 +9,14 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */; };
+		07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */; };
+		07BC54B029CB3CD600459267 /* StudyDetailsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */; };
+		07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54B129CB47C400459267 /* DetailsTitle.swift */; };
 		07D9046829C85166003D2912 /* GPSObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9046729C85166003D2912 /* GPSObservation.swift */; };
 		07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */; };
+		07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293B29D57F0300853108 /* ModuleListItem.swift */; };
+		07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293D29D58F7C00853108 /* ExpandableContent.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -105,6 +111,8 @@
 		ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */; };
 		ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EA29C8A2B200616B93 /* TaskDetailsViewModel.swift */; };
 		ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */; };
+		EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */ = {isa = PBXBuildFile; productRef = EDACF62629D2F31D0032327B /* PolarBleSdk */; };
+		EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */; };
 		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
@@ -133,8 +141,14 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsView.swift; sourceTree = "<group>"; };
+		07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsViewModel.swift; sourceTree = "<group>"; };
+		07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = StudyDetailsView.strings; sourceTree = "<group>"; };
+		07BC54B129CB47C400459267 /* DetailsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTitle.swift; sourceTree = "<group>"; };
 		07D9046729C85166003D2912 /* GPSObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSObservation.swift; sourceTree = "<group>"; };
 		07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		07FD293B29D57F0300853108 /* ModuleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleListItem.swift; sourceTree = "<group>"; };
+		07FD293D29D58F7C00853108 /* ExpandableContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContent.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -234,6 +248,7 @@
 		ED5EBB3629B21A8A00BAF0A6 /* ScheduleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListItem.swift; sourceTree = "<group>"; };
 		ED7AE1EA29C8A2B200616B93 /* TaskDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailsViewModel.swift; sourceTree = "<group>"; };
 		ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailsView.swift; sourceTree = "<group>"; };
+		EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarVerityHeartRateObservation.swift; sourceTree = "<group>"; };
 		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
 		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
 		EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -254,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F43996D29B8D6D300687906 /* RealmSwift in Frameworks */,
+				EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */,
 				1F43996C29B8D6D300687906 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -267,6 +283,15 @@
 				058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
+			isa = PBXGroup;
+			children = (
+				07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */,
+				07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */,
+			);
+			path = StudyDetails;
 			sourceTree = "<group>";
 		};
 		07EF6C3F29B5E09500CEF37D /* Permissions */ = {
@@ -300,6 +325,7 @@
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
 				1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */,
 				07D9046729C85166003D2912 /* GPSObservation.swift */,
+				EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -348,6 +374,12 @@
 				B79DBA4029D313E400A1F547 /* MoreTextFieldSmBottom.swift */,
 				B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */,
 				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
+				07BC54B129CB47C400459267 /* DetailsTitle.swift */,
+				B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */,
+				B784169529C9FB2C0035D830 /* AccordionItem.swift */,
+				B784169729CA08850035D830 /* CircleActivityIndicator.swift */,
+				B784169929CA18320035D830 /* DatapointsCollection.swift */,
+				B748DF3529CC43990026C348 /* ExpandableText.swift */,
 				B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */,
 				B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */,
 				1F8847CD299155F50023EF10 /* SectionHeading.swift */,
@@ -355,6 +387,8 @@
 				B784169129C9E3F50035D830 /* Title2.swift */,
 				B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */,
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
+				07FD293B29D57F0300853108 /* ModuleListItem.swift */,
+				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -389,6 +423,7 @@
 				EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */,
 				1F43997329B8D70800687906 /* ScheduleViewModel.strings */,
 				1F80EC4029C25025004667B1 /* Navigation.strings */,
+				07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */,
 				B748DF3329CAFBA90026C348 /* TaskDetail.strings */,
 				B748DF3729CC4AD30026C348 /* ExpandableText.strings */,
 			);
@@ -423,6 +458,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				07BC54AA29CB2F1D00459267 /* StudyDetails */,
 				B748DF4629D1C00D0026C348 /* QuestionObservation */,
 				ED7AE1E929C8A24000616B93 /* TaskDetails */,
 				1F43998D29C100FC00687906 /* Info */,
@@ -603,6 +639,7 @@
 			packageProductDependencies = (
 				ED7B7A3F29B7A36300C724AB /* Realm */,
 				ED7B7A4129B7A36300C724AB /* RealmSwift */,
+				EDACF62629D2F31D0032327B /* PolarBleSdk */,
 			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
@@ -634,6 +671,7 @@
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
 				ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */,
+				EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -652,6 +690,7 @@
 				ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */,
 				1F8847C62991523D0023EF10 /* Default.strings in Resources */,
 				1F80EC4129C25025004667B1 /* Navigation.strings in Resources */,
+				07BC54B029CB3CD600459267 /* StudyDetailsView.strings in Resources */,
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
@@ -684,7 +723,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\" \t\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -720,6 +759,7 @@
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				B79DBA4929D3144500A1F547 /* UIToggleButtonView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
+				07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				B748DF4A29D1C08D0026C348 /* QuestionObservationView.swift in Sources */,
 				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
@@ -733,6 +773,7 @@
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */,
+				B748DF4129CD95740026C348 /* LoginQRCodeView.swift in Sources */,
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
@@ -746,6 +787,7 @@
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
 				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
+				B79DBA3529D2F15C00A1F547 /* MoreTextFieldHL.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
@@ -755,6 +797,7 @@
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
+				B748DF5029D1E5860026C348 /* ExpandableInput.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
@@ -764,14 +807,17 @@
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
+				07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
+				07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
 				B748DF4829D1C07F0026C348 /* QuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
+				B79DBA3329D2E7F000A1F547 /* NavigationLinkButton.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
@@ -779,10 +825,13 @@
 				1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
+				07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */,
+				07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */,
+				EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 			);
@@ -927,7 +976,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = UD5RW7QT26;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -946,7 +995,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -962,7 +1011,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = UD5RW7QT26;
+				DEVELOPMENT_TEAM = WQKN757MVX;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -981,7 +1030,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform;
+				PRODUCT_BUNDLE_IDENTIFIER = io.redlink.more.app.multiplatform.daniil;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1023,6 +1072,14 @@
 				kind = branch;
 			};
 		};
+		EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/polarofficial/polar-ble-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1035,6 +1092,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED7B7A3E29B7A36300C724AB /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		EDACF62629D2F31D0032327B /* PolarBleSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDACF62529D2F31D0032327B /* XCRemoteSwiftPackageReference "polar-ble-sdk" */;
+			productName = PolarBleSdk;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
