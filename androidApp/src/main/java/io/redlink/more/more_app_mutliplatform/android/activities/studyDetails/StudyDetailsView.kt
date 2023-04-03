@@ -22,11 +22,11 @@ fun StudyDetailsView(viewModel: StudyDetailsViewModel) {
     ) {
         LazyColumn {
             item {
-                HeaderTitle(title = viewModel.studyTitle.value)
+                HeaderTitle(title = viewModel.studyDetailsModel.value.studyTitle)
                 Spacer(Modifier.height(12.dp))
                 ActivityProgressView(
-                    finishedTasks = viewModel.finishedTasks.value.toInt(),
-                    totalTasks = viewModel.totalTasks.value.toInt()
+                    finishedTasks = viewModel.studyDetailsModel.value.finishedTasks.toInt(),
+                    totalTasks = viewModel.studyDetailsModel.value.totalTasks.toInt()
                 )
                 Spacer(Modifier.height(8.dp))
                 Row(
@@ -47,14 +47,14 @@ fun StudyDetailsView(viewModel: StudyDetailsViewModel) {
                 Spacer(Modifier.height(40.dp))
                 AccordionReadMore(
                     title = getStringResource(R.string.participant_information),
-                    description = viewModel.participantInfo.value,
+                    description = viewModel.studyDetailsModel.value.participantInformation,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
                 Spacer(Modifier.height(16.dp))
                 AccordionWithList(
                     title = getStringResource(R.string.observation_modules),
-                    observations = viewModel.observations.value
+                    observations = viewModel.studyDetailsModel.value.observations
                 )
             }
         }
