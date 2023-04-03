@@ -44,6 +44,7 @@ android {
 val composeVersion = "1.3.1"
 val workVersion = "2.8.0"
 val navVersion = "2.5.3"
+val sdk_version = "3.3.6"
 
 dependencies {
     implementation(project(":shared"))
@@ -61,4 +62,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("io.github.aakira:napier:2.6.1")
+    implementation("com.github.polarofficial:polar-ble-sdk:${sdk_version}")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.6")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
 }
