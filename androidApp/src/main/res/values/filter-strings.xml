@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_filter_deactivated">No Filter activated</string>
+    <string name="more_filter_date">Date Filter activated</string>
+    <string name="more_filter_type">Type Filter activated</string>
+    <string name="more_filter_date_type">Date and Type Filter activated</string>
+
+    <string name="more_filter_selected">Filter Selected</string>
+    <string name="more_filter_set_duration">Set Duration</string>
+    <string name="more_filter_set_type">Set Observation Type</string>
 </resources>
