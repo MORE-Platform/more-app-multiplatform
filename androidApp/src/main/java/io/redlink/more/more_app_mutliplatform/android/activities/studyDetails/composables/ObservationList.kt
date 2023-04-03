@@ -18,7 +18,8 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 @Composable
 fun ObservationList(observations: List<ObservationSchema>) {
     Column(
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxWidth()
     ) {
         observations.forEach { observation ->
             Row(
@@ -26,12 +27,13 @@ fun ObservationList(observations: List<ObservationSchema>) {
                     .clickable {
 
                     }
-                    .padding(top = 12.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 12.dp, bottom = 0.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
                         .padding(bottom = 8.dp)
                 ) {
                     MediumTitle(text = observation.observationTitle)
@@ -41,7 +43,8 @@ fun ObservationList(observations: List<ObservationSchema>) {
                     Icons.Default.ArrowForwardIos,
                     contentDescription = "View observation details",
                     tint = MoreColors.Primary,
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .size(16.dp)
                 )
             }
             MoreDivider()
