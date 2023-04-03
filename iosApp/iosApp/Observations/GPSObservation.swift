@@ -35,8 +35,9 @@ class GPSObservation: Observation_ {
         return false
     }
     
-    override func stop() {
+    override func stop(onCompletion: @escaping () -> Void) {
         manager.stopUpdatingLocation()
+        onCompletion()
     }
     
     override func observerAccessible() -> Bool {
@@ -50,6 +51,10 @@ class GPSObservation: Observation_ {
     }
     
     
+    override func needsToRestartAfterAppClosure() -> Bool {
+        true
+    }
+    
 }
 
 extension GPSObservation: CLLocationManagerDelegate {
@@ -57,7 +62,7 @@ extension GPSObservation: CLLocationManagerDelegate {
         for location in locations {
             let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
             
-            self.storeData(data: dict, timestamp: location.timestamp.millisecondsSince1970)
+            self.storeData(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
         }
     }
     

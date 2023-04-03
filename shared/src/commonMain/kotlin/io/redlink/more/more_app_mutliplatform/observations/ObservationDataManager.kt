@@ -2,8 +2,11 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,14 +15,15 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ObservationDataManager"
 
-abstract class ObservationDataManager: Closeable {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
-    private val observationDataRepository = ObservationDataRepository()
-    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
+abstract class ObservationDataManager(database: RealmDatabase): Closeable {
+    private val scope = CoroutineScope(Job() + Dispatchers.Main)
+    private val observationDataRepository = ObservationDataRepository(database)
+    private val dataPointCountRepository = DataPointCountRepository(database)
+
     init {
         scope.launch {
-            observationDataRepository.count().collect{
-                Napier.i(tag = TAG) {"Current collected data count: $it"}
+            observationDataRepository.count().collect {
+                Napier.i(tag = TAG) { "Current collected data count: $it" }
                 if (it >= DATA_COUNT_THRESHOLD) {
                     sendData()
                 }
@@ -28,25 +32,33 @@ abstract class ObservationDataManager: Closeable {
     }
 
     fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
-        observationDataRepository.addMultiple(dataList)
-        dataList.forEach { Napier.i(tag = TAG) { "New data recorded: $it" } }
-        scheduleIdList.forEach {
-            dataPointCountRepository.incrementCount(it)
+        if (dataList.isNotEmpty()) {
+            val size = dataList.size.toLong()
+            observationDataRepository.addMultiple(dataList)
+            scope.launch(Dispatchers.Default) {
+                dataPointCountRepository.incrementCount(scheduleIdList, size)
+            }
         }
     }
 
     fun add(data: ObservationDataSchema, scheduleId: String) {
         Napier.i(tag = TAG) { "New data recorded: $data" }
         observationDataRepository.addData(data)
-        dataPointCountRepository.incrementCount(scheduleId)
+        dataPointCountRepository.incrementCount(setOf(scheduleId))
     }
 
     fun saveAndSend() {
         scope.launch {
             observationDataRepository.storeAndQuery()?.let {
-                sendData()
+                if (it.dataPoints.isNotEmpty()) {
+                    sendData()
+                }
             }
         }
+    }
+
+    fun store() {
+        observationDataRepository.storeDataFromQueue()
     }
 
     fun removeDataPointCount(scheduleId: String) {
@@ -60,6 +72,5 @@ abstract class ObservationDataManager: Closeable {
     }
 
     override fun close() {
-        observationDataRepository.close()
     }
 }

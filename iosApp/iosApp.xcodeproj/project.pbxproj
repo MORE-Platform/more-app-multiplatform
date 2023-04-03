@@ -25,7 +25,6 @@
 		1F27536129CC372500324417 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536029CC372500324417 /* AppState.swift */; };
 		1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */; };
 		1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */; };
-		1F27536829CC4D7B00324417 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536729CC4D7B00324417 /* DateExtension.swift */; };
 		1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536A29CC68FC00324417 /* ObservationExtension.swift */; };
 		1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */; };
 		1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */; };
@@ -46,8 +45,12 @@
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
+		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
+		1F69081329D44D900079C219 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F69081229D44D900079C219 /* DateExtension.swift */; };
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
 		1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */; };
+		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
+		1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094F29D4185200081B88 /* ArrayExtension.swift */; };
 		1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */; };
 		1F80EC4129C25025004667B1 /* Navigation.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F80EC4029C25025004667B1 /* Navigation.strings */; };
 		1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4429C2524F004667B1 /* NavigationScreens.swift */; };
@@ -146,7 +149,6 @@
 		1F27536029CC372500324417 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMSensorDataListExtension.swift; sourceTree = "<group>"; };
 		1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalExtension.swift; sourceTree = "<group>"; };
-		1F27536729CC4D7B00324417 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		1F27536A29CC68FC00324417 /* ObservationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationExtension.swift; sourceTree = "<group>"; };
 		1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSObservationFactory.swift; sourceTree = "<group>"; };
 		1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceExtension.swift; sourceTree = "<group>"; };
@@ -165,8 +167,12 @@
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
+		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
+		1F69081229D44D900079C219 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
 		1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModelExtension.swift; sourceTree = "<group>"; };
+		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
+		1F7F094F29D4185200081B88 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreMainBackground.swift; sourceTree = "<group>"; };
 		1F80EC4029C25025004667B1 /* Navigation.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Navigation.strings; sourceTree = "<group>"; };
 		1F80EC4429C2524F004667B1 /* NavigationScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationScreens.swift; sourceTree = "<group>"; };
@@ -305,6 +311,7 @@
 				1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */,
 				07D9046729C85166003D2912 /* GPSObservation.swift */,
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
+				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -406,8 +413,10 @@
 				1F80EC4429C2524F004667B1 /* NavigationScreens.swift */,
 				1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */,
 				1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */,
-				1F27536729CC4D7B00324417 /* DateExtension.swift */,
 				1F27536A29CC68FC00324417 /* ObservationExtension.swift */,
+				1F7F094F29D4185200081B88 /* ArrayExtension.swift */,
+				1F69081229D44D900079C219 /* DateExtension.swift */,
+				1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -599,7 +608,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1130;
-				ORGANIZATIONNAME = orgName;
+				ORGANIZATIONNAME = "Redlink GmbH";
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
 						CreatedOnToolsVersion = 11.3.1;
@@ -680,6 +689,7 @@
 				B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
+				1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */,
 				1F8847E4299180980023EF10 /* MoreBorder.swift in Sources */,
 				1F8847CA299154120023EF10 /* MoreFont.swift in Sources */,
 				1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */,
@@ -700,6 +710,7 @@
 				1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
+				1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
@@ -711,6 +722,7 @@
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
+				1F69081329D44D900079C219 /* DateExtension.swift in Sources */,
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,
@@ -726,6 +738,7 @@
 				1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */,
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
+				1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */,
 				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
@@ -735,7 +748,6 @@
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
-				1F27536829CC4D7B00324417 /* DateExtension.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,

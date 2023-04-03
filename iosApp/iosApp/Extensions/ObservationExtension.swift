@@ -10,5 +10,5 @@ import Foundation
 import shared
 
 protocol ObservationCollector {
-    func collectData()
+    func collectData(start: Date, end: Date, completion: @escaping () -> Void)
 }

@@ -1,40 +1,71 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.types.RealmInstant
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asString
+import io.redlink.more.more_app_mutliplatform.extensions.toInstant
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 abstract class Observation(val observationType: ObservationType) {
     private var dataManager: ObservationDataManager? = null
+    private val scheduleRepository = ScheduleRepository()
     private var running = false
     private val observationIds = mutableSetOf<String>()
     private val scheduleIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private var currentJob: Job? = null
+
+    fun apply(observationId: String, scheduleId: String) {
+        observationIds.add(observationId)
+        scheduleIds[scheduleId] = observationId
+    }
+
+    fun remove(observationId: String, scheduleId: String) {
+        observationIds.remove(observationId)
+        scheduleIds.remove(scheduleId)
+    }
 
     fun start(observationId: String, scheduleId: String): Boolean {
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId
-        if (configChanged) {
+        if (running && configChanged) {
             stopAndFinish()
-            configChanged = false
         }
+        configChanged = false
         return if (!running) {
             Napier.i { "Observation with type ${observationType.observationType} starting" }
             applyObservationConfig(config)
             running = start()
+
             return running
         } else true
     }
 
     fun stop(observationId: String) {
-        observationIds.remove(observationId)
-        finish()
-        if (observationIds.isEmpty()) {
-            stop()
-            running = false
+        if (observationIds.size <= 1) {
+            stop {
+                finish()
+                observationIds.remove(observationId)
+                scheduleIds.filterValues { it == observationId }.keys.forEach { scheduleId ->
+                    scheduleIds.remove(scheduleId)
+                }
+                if (observationIds.isEmpty()) {
+                    running = false
+                }
+            }
+        } else {
+            finish()
         }
     }
 
@@ -53,28 +84,36 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected abstract fun start(): Boolean
 
-    protected abstract fun stop()
+    protected abstract fun stop(onCompletion: () -> Unit)
 
     abstract fun observerAccessible(): Boolean
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
+    open fun needsToRestartAfterAppClosure() = false
+
     fun storeData(data: Any, timestamp: Long = -1) {
-        val observationDataSchemas = observationIds.map { ObservationDataSchema().apply {
-            this.observationId = it
-            if (timestamp > -1) {
-                this.timestamp = RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
-            } else if (this.timestamp == null) {
-                this.timestamp = RealmInstant.now()
-            }
-            this.dataValue = data.asString() ?: ""
-        } }
-        dataManager?.add(observationDataSchemas, scheduleIds.keys.toSet())
+        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
+            ObservationBulkModel(data, timestamp)
+        )).map { observationType.addObservationType(it) }
+        dataManager?.add(dataSchemas, scheduleIds.keys)
+    }
+
+    fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
+        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
+        dataManager?.add(dataSchemas, scheduleIds.keys)
+        onCompletion()
     }
 
     private fun stopAndFinish() {
-        stop()
-        finish()
+        stop {
+            finish()
+        }
+    }
+
+    open fun store(start: Long = -1, end: Long = -1, onCompletion: () -> Unit) {
+        dataManager?.store()
+        onCompletion()
     }
 
     protected fun finish() {
@@ -90,4 +129,10 @@ abstract class Observation(val observationType: ObservationType) {
 
 
     fun isRunning() = running
+
+    companion object {
+        const val CONFIG_TASK_START = "observation_start_date_time"
+        const val CONFIG_TASK_STOP = "observation_stop_date_time"
+        const val SCHEDULE_ID = "schedule_id"
+    }
 }

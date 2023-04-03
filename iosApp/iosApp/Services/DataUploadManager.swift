@@ -11,54 +11,58 @@ import shared
 
 class DataUploadManager {
     private let networkService: NetworkService
-    private let observationDataRepository = ObservationDataRepository()
+    private let observationDataRepository = ObservationDataRepository(database: RealmDatabase())
     private let semaphore = Semaphore()
     private var currentTask: Task<(), Never>? = nil
     
+    private var currentJob: Ktor_ioCloseable? = nil
+    
+    private let lockQueue = DispatchQueue(label: "lock-queue")
+    
     init() {
         let userDefaults = UserDefaultsRepository()
-        networkService = NetworkService(endpointRepository: EndpointRepository(sharedStorageRepository: userDefaults), credentialRepository: CredentialRepository(sharedStorageRepository: userDefaults))
+        networkService = NetworkService(endpointRepository: EndpointRepository(sharedStorageRepository: userDefaults),
+                                        credentialRepository: CredentialRepository(sharedStorageRepository: userDefaults))
     }
     
+    @MainActor
     func uploadData(completion: @escaping (Bool) -> Void) async {
-        print("Locking Semaphore")
-
         if await self.semaphore.tryLock() {
-            currentTask = Task { @MainActor in
-                do {
-                    print("Fetching Bulk")
-                    if let dataBulk = try await self.observationDataRepository.allAsBulk() {
+            do {
+                print("Fetching Bulk...")
+                if let dataBulk = try await self.observationDataRepository.allAsBulk() {
+                    if Task.isCancelled {
+                        completion(false)
+                        return
+                    }
+                    if !dataBulk.dataPoints.isEmpty {
+                        print("Sending data to backend...")
+                        let result = try await self.networkService.sendData(data: dataBulk)
                         if Task.isCancelled {
                             completion(false)
-                            return taskIsCancelled()
+                            return
                         }
-                        if dataBulk.dataPoints.count > 0 {
-                            print("Sending data to backend...")
-                            let result = try await self.networkService.sendData(data: dataBulk)
-                            if Task.isCancelled {
-                                completion(false)
-                                return taskIsCancelled()
-                            }
-                            if let networkError = result.second {
-                                print(networkError.message)
-                                completion(false)
-                            } else if let idSet = result.first as? Set<String> {
-                                print("Sent data!")
-                                try await self.observationDataRepository.deleteAllWithId(idSet: idSet)
-                                completion(true)
-                            }
-                        } else {
+                        if let networkError = result.second {
+                            print("Error: \(networkError.message)")
+                            completion(false)
+                        } else if let idSet = result.first as? Set<String> {
+                            print("Sent data! Deleting data from device...")
+                            try await self.observationDataRepository.deleteAllWithId(idSet: idSet)
+                            print("Deleted data!")
                             completion(true)
                         }
                     } else {
-                        completion(false)
+                        print("Data Bulk empty!")
+                        completion(true)
                     }
-                    await self.semaphore.unlock()
-                } catch {
-                    print("Could not get databulk")
+                } else {
                     completion(false)
-                    await self.semaphore.unlock()
                 }
+                await self.semaphore.unlock()
+            } catch {
+                print("Could not get databulk")
+                completion(false)
+                await self.semaphore.unlock()
             }
         }
         else {
@@ -66,16 +70,9 @@ class DataUploadManager {
         }
     }
     
-    func taskIsCancelled() {
-        print("Data Upload task cancelled")
-        Task {
-            await self.semaphore.unlock()
-            currentTask = nil
-        }
-    }
-    
     func close() {
+        self.currentJob?.close()
         currentTask?.cancel()
-        observationDataRepository.close()
+        print("Closed!")
     }
 }

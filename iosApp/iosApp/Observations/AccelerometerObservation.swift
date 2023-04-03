@@ -34,9 +34,10 @@ class AccelerometerObservation: Observation_ {
         return false
     }
     
-    override func stop() {
+    override func stop(onCompletion: @escaping () -> Void) {
         timer?.invalidate()
         motion.stopAccelerometerUpdates()
+        onCompletion()
     }
     
     override func observerAccessible() -> Bool {

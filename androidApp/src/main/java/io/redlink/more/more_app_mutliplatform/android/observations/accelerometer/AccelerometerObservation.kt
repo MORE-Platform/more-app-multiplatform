@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.observations
+package io.redlink.more.more_app_mutliplatform.android.observations.accelerometer
 
 import android.content.Context
 import android.hardware.Sensor
@@ -10,6 +10,7 @@ import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
 
 private const val TAG = "AccelerometerObservation"
+
 class AccelerometerObservation(
     context: Context
 ) : Observation(observationType = AccelerometerType(emptySet())), SensorEventListener {
@@ -36,10 +37,11 @@ class AccelerometerObservation(
         } ?: false
     }
 
-    override fun stop() {
+    override fun stop(onCompletion: () -> Unit) {
         sensor?.let {
             sensorManager.unregisterListener(this)
         }
+        onCompletion()
     }
 
     override fun observerAccessible(): Boolean {

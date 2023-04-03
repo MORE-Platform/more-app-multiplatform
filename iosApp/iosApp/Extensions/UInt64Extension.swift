@@ -1,5 +1,5 @@
 //
-//  TimestampExtension.swift
+//  DateExtension.swift
 //  iosApp
 //
 //  Created by Jan Cortiel on 23.03.23.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension TimeInterval {
-    func asTimestamp() -> Int64 {
-        Int64(self)
+extension Int64 {
+    func toDate() -> Date {
+        Date(timeIntervalSince1970: TimeInterval(self / 1000))
     }
 }

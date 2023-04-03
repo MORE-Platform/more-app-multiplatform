@@ -1,11 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 
 data class ScheduleModel(
     val scheduleId: String,
@@ -15,10 +11,8 @@ data class ScheduleModel(
     val done: Boolean,
     val start: Long,
     val end: Long,
-    var currentlyRunning: Boolean = false
+    var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
-
-
     companion object {
         fun createModelsFrom(observation: ObservationSchema): List<ScheduleModel> {
             return observation.schedules.mapNotNull {
@@ -31,7 +25,8 @@ data class ScheduleModel(
                     observationTitle = observation.observationTitle,
                     done = it.done,
                     start = start.toInstant().toEpochMilliseconds(),
-                    end = end.toInstant().toEpochMilliseconds()
+                    end = end.toInstant().toEpochMilliseconds(),
+                    scheduleState = if (it.done) ScheduleState.DEACTIVATED else it.getState()
                 )
             }
         }

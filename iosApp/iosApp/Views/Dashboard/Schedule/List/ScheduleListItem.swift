@@ -17,7 +17,6 @@ struct ScheduleListItem: View {
     private let stringTable = "ScheduleListView"
 
     var body: some View {
-        let currentState = viewModel.scheduleStates[scheduleModel.scheduleId] ?? ScheduleState.non
         VStack(alignment: .leading) {
             ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
                 .padding(.bottom, 4)
@@ -27,8 +26,8 @@ struct ScheduleListItem: View {
                 Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
                     .foregroundColor(Color.more.secondary)
             }
-            ObservationButton(observationType: scheduleModel.observationType, state: currentState, start: scheduleModel.start, end: scheduleModel.end) {
-                if currentState == ScheduleState.running {
+            ObservationButton(observationType: scheduleModel.observationType, state: scheduleModel.scheduleState, start: scheduleModel.start, end: scheduleModel.end) {
+                if scheduleModel.scheduleState == ScheduleState.running {
                     viewModel.pause(scheduleId: scheduleModel.scheduleId)
                 } else {
                     viewModel.start(scheduleId: scheduleModel.scheduleId)
@@ -41,6 +40,6 @@ struct ScheduleListItem: View {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, currentlyRunning: false))
+        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active))
     }
 }

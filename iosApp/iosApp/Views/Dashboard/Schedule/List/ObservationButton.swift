@@ -22,7 +22,7 @@ struct ObservationButton: View {
                 MoreActionButton(disabled: .constant(false), action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
-                .disabled(!(start.toDate() < Date() && Date() < end.toDate()))
+               
             } else {
                 MoreActionButton(disabled: .constant(false), action: action) {
                     VStack {
@@ -36,7 +36,7 @@ struct ObservationButton: View {
                             )
                         }
                     }
-                }.disabled(!(start.toDate() < Date() && Date() < end.toDate()))
+                }
             }
         }
     }

@@ -26,61 +26,81 @@ class DataUploadBackgroundTask {
     }
 
     private let uploadDataManager = DataUploadManager()
+    private let dataCollector = ObservationDataCollector()
+    
+    private var currentUploadingTask: Task<(), Never>? = nil
 
     private func uploadCollectedData(completion: @escaping (Bool) -> Void) {
-        Task {
-            print("Uploading Data in background")
-            await self.uploadDataManager.uploadData { success in
-                if success {
-                    print("Upload success!")
-                } else {
-                    print("Could not upload!")
+        print("Uploading Data in background")
+        currentUploadingTask = Task { @MainActor [weak self] in
+            if let self {
+                await self.uploadDataManager.uploadData { success in
+                    if success {
+                        print("Upload success!")
+                    } else {
+                        print("Could not upload!")
+                    }
+                    completion(success)
                 }
-                self.uploadDataManager.close()
-                completion(success)
+            } else {
+                print("Could not find self")
+                completion(false)
             }
         }
+    }
+    
+    private func collectRecordedData(completion: @escaping () -> Void) {
+        print("\(Date()): Collecting recorded data...")
+        dataCollector.collectData { dataCollected in
+            if dataCollected {
+                print("\(Date()): Data collected")
+            } else {
+                print("\(Date()): No data collected")
+            }
+            completion()
+        }
+    }
+    
+    private func close() {
+        self.currentUploadingTask?.cancel()
+        self.uploadDataManager.close()
+        self.dataCollector.close()
     }
 }
 
 extension DataUploadBackgroundTask: BackgroundTaskHandler {
+    @MainActor
     func handleProcessingTask(task: BGProcessingTask) {
         print("Starting Background Processing Task")
         task.expirationHandler = {
-            print("Task will soon expire! Cleaning up...")
-            self.uploadDataManager.close()
+            print("\(Date()): Task will soon expire! Cleaning up...")
+            self.close()
             DataUploadBackgroundTask.schedule()
+            print("\(Date()): Cleaned up!")
             DispatchQueue.main.async {
-                print("Cleaned up!")
                 task.setTaskCompleted(success: false)
             }
         }
-        uploadCollectedData { success in
-            DataUploadBackgroundTask.schedule()
-            DispatchQueue.main.async {
-                print("Task finished with success: \(success)")
-                task.setTaskCompleted(success: success)
+        collectRecordedData { [weak self] in
+            if let self {
+                self.uploadCollectedData(completion: { success in
+                    self.close()
+                    DataUploadBackgroundTask.schedule()
+                    DispatchQueue.main.async {
+                        print("\(Date()): Task finished with success: \(success)")
+                        task.setTaskCompleted(success: success)
+                    }
+                })
+            } else {
+                self?.close()
+                DataUploadBackgroundTask.schedule()
+                task.setTaskCompleted(success: false)
             }
         }
     }
 
     func handleRefreshTask(task: BGAppRefreshTask) {
-        print("Starting Background Refresh Task")
-        task.expirationHandler = {
-            print("Task will soon expire! Cleaning up...")
-            self.uploadDataManager.close()
-            DataUploadBackgroundTask.schedule()
-            DispatchQueue.main.async {
-                print("Cleaned up!")
-                task.setTaskCompleted(success: false)
-            }
-        }
-        uploadCollectedData { success in
-            DispatchQueue.main.async {
-                print("Task finished with success: \(success)")
-                task.setTaskCompleted(success: success)
-            }
-        }
+        task.setTaskCompleted(success: true)
     }
     
 }

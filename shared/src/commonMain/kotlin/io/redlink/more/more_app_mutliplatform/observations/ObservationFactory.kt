@@ -14,4 +14,8 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     fun sensorPermissions(): Set<String> {
         return observations.map { it.observationType.sensorPermissions }.flatten().toSet()
     }
+
+    fun observationTypesNeedingRestartingAfterAppClosure(): Set<String> {
+        return observations.filter { it.needsToRestartAfterAppClosure() }.map { it.observationType.observationType }.toSet()
+    }
 }

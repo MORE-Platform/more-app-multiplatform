@@ -15,7 +15,7 @@ struct ScheduleView: View {
     var body: some View {
             List(viewModel.scheduleDates, id: \.self) { key in
                 Section {
-                    ScheduleList(scheduleModels: viewModel.schedules[key], scheduleStates: viewModel.scheduleStates)
+                    ScheduleList(scheduleModels: viewModel.schedules[key])
                         .environmentObject(viewModel)
                 } header: {
                     VStack(alignment: .leading) {

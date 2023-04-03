@@ -6,21 +6,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
-import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
-fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: ScheduleViewModel, observationId: String?, scheduleId: String?) {
-    viewModel.loadTaskDetails(observationId, scheduleId)
-    val taskDetails: MutableState<TaskDetailsModel> = viewModel.taskDetailsModel
+fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -29,25 +24,22 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        Text(text = taskDetails.value.observationTitle)
-        Text(text = taskDetails.value.observationType)
-        Text(text = "start: ${taskDetails.value.start}")
-        Text(text = "start: ${taskDetails.value.end}")
-        Text(text = taskDetails.value.participantInformation)
+        Text(text = viewModel.taskDetailsModel.value.observationTitle)
+        Text(text = viewModel.taskDetailsModel.value.observationType)
+        Text(text = "start: ${viewModel.taskDetailsModel.value.start}")
+        Text(text = "start: ${viewModel.taskDetailsModel.value.end}")
+        Text(text = viewModel.taskDetailsModel.value.participantInformation)
 
         scheduleId?.let {
             SmallTextButton(
-                text = if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
+                text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
                     id = R.string.more_observation_start
                 ), enabled = viewModel.isEnabled.value
             ) {
-                if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) {
-                    scheduleViewModel.pauseObservation(context, taskDetails.value.scheduleId)
+                if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                    viewModel.pauseObservation()
                 } else {
-                    scheduleViewModel.startObservation(
-                        context,
-                        taskDetails.value.scheduleId
-                    )
+                    viewModel.startObservation()
                 }
             }
         }

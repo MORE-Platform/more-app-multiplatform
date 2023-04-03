@@ -1,10 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
+import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -14,52 +16,53 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class CoreTaskDetailsViewModel(private val dataRecorder: DataRecorder) {
+class CoreTaskDetailsViewModel(
+    private val scheduleId: String,
+    private val dataRecorder: DataRecorder
+) {
 
-    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
+    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository(RealmDatabase)
     private val observationRepository: ObservationRepository = ObservationRepository()
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    private var dataPointCount: MutableStateFlow<DataPointCountSchema?> = MutableStateFlow(null)
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-    val taskDetailsModel: MutableStateFlow<TaskDetailsModel?> = MutableStateFlow(null)
+    val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
 
-    fun loadTaskDetails(observationId: String, scheduleId: String) {
+    init {
         scope.launch {
-            observationRepository.getObservationByObservationId(observationId)?.let { observation ->
-                scheduleRepository.scheduleWithId(scheduleId).collect {
-                    it?.let { schedule ->
-                        dataPointCountRepository.get(schedule.scheduleId.toHexString()).collect { count ->
-                            taskDetailsModel.value = TaskDetailsModel.createModelFrom(observation, schedule, count)
-                        }
+            scheduleRepository.scheduleWithId(scheduleId).collect { schedule ->
+                schedule?.let { schedule ->
+                    observationRepository.observationById(schedule.observationId).firstOrNull()?.let {
+                        val count = dataPointCountRepository.get(schedule.scheduleId.toHexString()).firstOrNull()
+                        taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule, count?.count ?: 0))
                     }
                 }
             }
-            taskDetailsModel.collect {
-                it?.let {
-                    dataPointCount.value = it.dataPointCount
+        }
+        scope.launch {
+            dataPointCountRepository.get(scheduleId).collect { countSchema ->
+                countSchema?.let {
+                    taskDetailsModel.firstOrNull()?.let { model ->
+                        model.dataPointCount = it.count
+                        taskDetailsModel.emit(model)
+                    }
                 }
             }
         }
     }
 
-    fun onLoadTaskDetails(observationId: String, scheduleId: String, provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
-        loadTaskDetails(observationId, scheduleId)
+    fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
         return taskDetailsModel.asClosure(provideNewState)
     }
 
-    fun onLoadDataPointCount(provideNewState: ((DataPointCountSchema?) -> Unit)): Closeable {
-        return dataPointCount.asClosure(provideNewState)
-    }
-
-    fun startObservation(scheduleId: String) {
+    fun startObservation() {
         dataRecorder.start(scheduleId)
     }
 
-    fun stopObservation(scheduleId: String) {
+    fun stopObservation() {
         dataRecorder.stop(scheduleId)
     }
 
-    fun pauseObservation(scheduleId: String) {
+    fun pauseObservation() {
         dataRecorder.stop(scheduleId)
     }
 }

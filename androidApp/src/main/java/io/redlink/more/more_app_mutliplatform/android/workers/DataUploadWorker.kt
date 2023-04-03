@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.android.workers
 import android.content.Context
 import android.util.Log
 import androidx.work.*
+import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
@@ -29,7 +30,7 @@ class DataUploadWorker (
     private val credentialRepository: CredentialRepository
     private val networkService: NetworkService
     private var stopped = false
-    private val observationDataRepository = ObservationDataRepository()
+    private val observationDataRepository = ObservationDataRepository(RealmDatabase)
 
     init {
         val sharedPreferences = SharedPreferencesRepository(applicationContext)

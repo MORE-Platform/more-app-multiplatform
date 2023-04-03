@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
@@ -51,7 +52,8 @@ object RealmDatabase {
         updatePolicy: UpdatePolicy = UpdatePolicy.ERROR
     ) {
         realm?.writeBlocking {
-            realmObjects.forEach { copyToRealm(it, updatePolicy) }
+            realmObjects.map { copyToRealm(it, updatePolicy) }
+            Napier.i { "Stored new data" }
         }
     }
 
