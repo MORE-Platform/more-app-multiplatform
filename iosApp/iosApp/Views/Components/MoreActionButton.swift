@@ -12,6 +12,9 @@ struct MoreActionButton<ButtonLabel: View>: View {
     var color: Color = .more.primary
     var backgroundColor = Color.more.primary
     @Binding var disabled: Bool
+    var disabeldColor = Color.more.secondaryMedium
+    var disabledBackgroundColor = Color.more.primaryLight200
+    var disabeldBorderColor = Color.more.secondaryMedium
     var alertOpen: Binding<Bool> = .constant(false)
     let action: () -> Void
     var label: () -> ButtonLabel
@@ -22,10 +25,14 @@ struct MoreActionButton<ButtonLabel: View>: View {
             .disabled(disabled)
             .frame(maxWidth: .infinity)
             .padding()
-            .foregroundColor(.more.white)
-            .background(backgroundColor)
+            .foregroundColor(disabled ? disabeldColor : .more.white)
+            .background(disabled ? disabledBackgroundColor : backgroundColor)
             .cornerRadius(.moreBorder.cornerRadius)
             .alert(isPresented: alertOpen, content: errorAlert)
+            .overlay(
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                    .stroke(disabled ? disabeldBorderColor : backgroundColor, lineWidth: 1)
+            )
     }
 }
 

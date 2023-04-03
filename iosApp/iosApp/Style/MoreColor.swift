@@ -37,6 +37,6 @@ extension Color {
         
         // special elements
         let divider = Color("PrimaryLight")
-        let mainBackground = Color("PrimaryLight")
+        let mainBackground = Color("SecondaryLight")
     }
 }

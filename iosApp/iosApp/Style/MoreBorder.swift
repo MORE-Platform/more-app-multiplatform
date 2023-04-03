@@ -12,7 +12,7 @@ extension CGFloat {
     static let moreBorder = MoreBorder()
     
     struct MoreBorder {
-        let cornerRadius: CGFloat = 6
+        let cornerRadius: CGFloat = 4
         let lineWidth: CGFloat = 2
     }
 }

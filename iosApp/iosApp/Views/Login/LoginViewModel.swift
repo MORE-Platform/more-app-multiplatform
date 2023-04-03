@@ -51,4 +51,9 @@ class LoginViewModel: ObservableObject {
             }
         }
     }
+    
+    func checkTokenCount() -> Bool {
+        return self.token.count == 0
+    }
 }
+

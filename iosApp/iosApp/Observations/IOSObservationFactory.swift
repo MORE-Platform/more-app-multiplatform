@@ -10,11 +10,12 @@ import Foundation
 import shared
 
 class IOSObservationFactory: ObservationFactory {
-    
+
     init() {
         super.init(dataManager: iOSObservationDataManager(database: RealmDatabase()))
 //        observations.add(AccelerometerObservation(sensorPermission: []))
         observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
         observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))
+        observations.add(PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"]))
     }
 }
