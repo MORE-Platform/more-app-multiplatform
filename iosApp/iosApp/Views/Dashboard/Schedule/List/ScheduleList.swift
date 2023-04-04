@@ -16,23 +16,19 @@ struct ScheduleList: View {
     private let dateFormatter = DateFormatter()
     var body: some View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
-            ZStack {
-                VStack {
-                    ScheduleListItem(scheduleModel: schedule)
-                        .environmentObject(viewModel)
+            VStack {
+                    if (schedule.observationType == "question-observation") {
+                        QuestionListItem(schedule: schedule).environmentObject(viewModel)
+                    } else {
+                        ScheduleListItem(scheduleModel: schedule)
+                            .environmentObject(viewModel)
+                    }
+                    
                     if schedule != scheduleModels!.last {
                         Divider()
                     } else {
                         EmptyView()
                     }
-                }
-                NavigationLink {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))
-                        .environmentObject(viewModel)
-                } label: {
-                    EmptyView()
-                }
-                .opacity(0)
             }
         }
     }

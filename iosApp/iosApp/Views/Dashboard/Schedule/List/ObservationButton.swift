@@ -10,30 +10,29 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
+    @EnvironmentObject var model: ScheduleViewModel
+    
     var observationType: String
     var state: ScheduleState
     var start: Int64
     var end: Int64
     let action: () -> Void
+    
     private let stringTable = "ScheduleListView"
     var body: some View {
-        HStack {
-            if observationType.lowercased() == "question-observation" {
-                MoreActionButton(disabled: .constant(!(start.toDate() < Date() && Date() < end.toDate())), action: action) {
-                    Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
-                }
-            } else {
-                MoreActionButton(disabled: .constant(!(start.toDate() < Date() && Date() < end.toDate())), action: action) {
-                    VStack {
-                        if state == ScheduleState.running {
-                            Text(
-                                String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
-                            )
-                        } else {
-                            Text(
-                                String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
-                            )
-                        }
+        VStack {
+            
+            let disabled = !(Date() >= start.toDate() && Date() <= end.toDate())
+            MoreActionButton(disabled: .constant(disabled), action: action) {
+                VStack {
+                    if state == ScheduleState.running {
+                        Text(
+                            String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
+                        )
+                    } else {
+                        Text(
+                            String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
+                        )
                     }
                 }
             }

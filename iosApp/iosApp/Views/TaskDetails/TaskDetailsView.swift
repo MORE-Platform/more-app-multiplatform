@@ -15,8 +15,9 @@ struct TaskDetailsView: View {
     @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
+    private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-        
+    
     var body: some View {
         let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
         
@@ -60,9 +61,20 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-                   
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
+                    
+                    if (viewModel.taskDetailsModel?.observationType == "question-observation") {
+                        
+                        NavigationLinkButton(disabled: .constant(!(Date() > viewModel.taskDetailsModel?.start.toDate() ?? Date() && Date() < viewModel.taskDetailsModel?.end.toDate() ?? Date()))) {
+                            QuestionObservationView()
+                        } label: {
+                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                .foregroundColor((Date() > viewModel.taskDetailsModel?.start.toDate() ?? Date() && Date() < viewModel.taskDetailsModel?.end.toDate() ?? Date()) ? .more.white : .more.secondaryMedium)
+                        }
+                    }
+                    else {
+                        ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
                             let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
+                            
                             if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
                                 scheduleViewModel.pause(scheduleId: scheduleId)
                             } else {
@@ -70,6 +82,7 @@ struct TaskDetailsView: View {
                                 count = viewModel.dataPointCount?.count ?? 0
                             }
                         }
+                    }
                     Spacer()
                 }
                 
