@@ -15,19 +15,21 @@ struct ScheduleView: View {
     var body: some View {
         VStack {
             List(viewModel.scheduleDates, id: \.self) { key in
-                Section {
-                    ScheduleList(viewModel: viewModel, scheduleModels: viewModel.schedules[key])
-                } header: {
-                    VStack(alignment: .leading) {
-                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
-                            .font(Font.more.headline)
-                        Divider()
+                if let schedules = viewModel.schedules[key] {
+                    Section {
+                        ScheduleList(viewModel: viewModel, scheduleModels: schedules)
+                    } header: {
+                        VStack(alignment: .leading) {
+                            BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
+                                .font(Font.more.headline)
+                            Divider()
+                        }
                     }
+                    .padding(.bottom)
+                    .hideListRowSeparator()
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.more.secondaryLight)
                 }
-                .padding(.bottom)
-                .hideListRowSeparator()
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.secondaryLight)
                 
             }
             .listStyle(.plain)

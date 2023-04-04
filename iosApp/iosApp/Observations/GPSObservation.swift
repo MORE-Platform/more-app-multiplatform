@@ -22,17 +22,18 @@ class GPSObservation: Observation_ {
     }
     
     override func start() -> Bool {
-        
-        if (observerAccessible()) {
-            manager.allowsBackgroundLocationUpdates = true
-            manager.showsBackgroundLocationIndicator = true
-            manager.requestAlwaysAuthorization()
-            manager.startUpdatingLocation()
-            return true
-        } else {
-            manager.requestAlwaysAuthorization()
+        Task {
+            if (observerAccessible()) {
+                manager.allowsBackgroundLocationUpdates = true
+                manager.showsBackgroundLocationIndicator = true
+                manager.requestAlwaysAuthorization()
+                manager.startUpdatingLocation()
+            } else {
+                manager.requestAlwaysAuthorization()
+                stopAndSetState(state: .active)
+            }
         }
-        return false
+        return true
     }
     
     override func stop(onCompletion: @escaping () -> Void) {

@@ -19,8 +19,8 @@ class ObservationDataCollector {
     
     init() {
         let realm = RealmDatabase()
-        dataManager = iOSObservationDataManager(database: realm)
-        observationRepository = ObservationRepository(database: realm)
+        dataManager = iOSObservationDataManager()
+        observationRepository = ObservationRepository()
     }
 
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {

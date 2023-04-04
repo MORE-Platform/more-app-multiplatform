@@ -11,7 +11,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
 import kotlinx.coroutines.flow.*
 
-class ObservationRepository(database: RealmDatabase = DatabaseManager.database) : Repository<ObservationSchema>(database) {
+class ObservationRepository : Repository<ObservationSchema>() {
     private val scheduleRepository = ScheduleRepository()
 
     override fun count(): Flow<Long> = realmDatabase.count<ObservationSchema>()

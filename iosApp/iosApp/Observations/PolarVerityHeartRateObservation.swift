@@ -18,20 +18,28 @@ class PolarVerityHeartRateObservation: Observation_ {
     private var deviceId = ""
     private var connected = false
     private var devicesSubscription: Disposable? = nil
-    
+    private var hrObservation: Disposable? = nil
+
     init(sensorPermissions: Set<String>) {
         super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
         searchDevices()
     }
     
     override func start() -> Bool {
-        return true
+        if !self.connected {
+            self.searchDevices()
+        }
+        if self.connected {
+            self.hrFeatureReady(deviceId)
+            return true
+        }
+        return false
     }
     
     override func stop(onCompletion: @escaping () -> Void) {
+        hrObservation?.dispose()
         onCompletion()
     }
-    
     
     override func observerAccessible() -> Bool {
         self.connected
@@ -45,7 +53,6 @@ class PolarVerityHeartRateObservation: Observation_ {
         self.devicesSubscription = api.searchForDevice().subscribe(onNext: { device in
             self.deviceId = device.deviceId
             if !self.connected {
-                print(self.deviceId)
                 self.connectDevice(deviceId: device.deviceId)
             }
         })
@@ -108,6 +115,11 @@ extension PolarVerityHeartRateObservation: PolarBleApiDeviceInfoObserver {
 extension PolarVerityHeartRateObservation: PolarBleApiDeviceFeaturesObserver {
     func hrFeatureReady(_ identifier: String) {
         print("feature ready")
+        self.hrObservation = self.api.startHrStreaming(self.deviceId).subscribe { value in
+            if let element = value.element {
+                self.storeData(data: ["hr": element[0].hr], timestamp: -1)
+            }
+        }
     }
     
     func ftpFeatureReady(_ identifier: String) {

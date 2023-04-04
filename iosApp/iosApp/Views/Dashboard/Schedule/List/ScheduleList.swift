@@ -6,30 +6,25 @@
 //  Copyright © 2023 orgName. All rights reserved.
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct ScheduleList: View {
     @ObservedObject var viewModel: ScheduleViewModel
-    @State var scheduleModels: [ScheduleModel]?
-    private let dateFormatter = DateFormatter()
+    var scheduleModels: [ScheduleModel] = []
+    
     var body: some View {
-        ForEach(scheduleModels!, id: \.scheduleId) { schedule in
-            ZStack {
-                VStack {
+        ForEach(scheduleModels, id: \.scheduleId) { schedule in
+            VStack {
+                if schedule.observationType == "question-observation" {
+                    QuestionListItem(viewModel: viewModel, schedule: schedule)
+                } else {
                     ScheduleListItem(viewModel: viewModel, scheduleModel: schedule)
-                    if schedule != scheduleModels!.last {
-                        Divider()
-                    } else {
-                        EmptyView()
-                    }
                 }
-                NavigationLink {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, dataRecorder: viewModel.recorder))
-                } label: {
-                    EmptyView()
+                
+                if schedule != scheduleModels.last {
+                    Divider()
                 }
-                .opacity(0)
             }
         }
     }
@@ -39,8 +34,7 @@ struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
         ScheduleList(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()), scheduleModels: [
             ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000, scheduleState: .active),
-            ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, scheduleState: .active)
+            ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, scheduleState: .active),
         ])
     }
 }
-

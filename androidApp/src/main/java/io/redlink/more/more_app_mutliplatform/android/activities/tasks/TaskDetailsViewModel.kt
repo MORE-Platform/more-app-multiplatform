@@ -8,10 +8,8 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.tasks.CoreTaskDetailsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class TaskDetailsViewModel(
@@ -24,18 +22,26 @@ class TaskDetailsViewModel(
     val dataPointCount = mutableStateOf(0L)
     val taskDetailsModel = mutableStateOf(
         TaskDetailsModel(
-            "", "", "", "", 0, 0, "", ScheduleState.DEACTIVATED,0
+            "", "", "", "", 0, 0, "", ScheduleState.DEACTIVATED,
         )
     )
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
+    private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     init {
         scope.launch {
             coreViewModel.taskDetailsModel.collect { details ->
                 details?.let {
-                    taskDetailsModel.value = it
-                    dataPointCount.value = taskDetailsModel.value.dataPointCount
-                    isEnabled.value = taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate()
+                    withContext(Dispatchers.Main) {
+                        taskDetailsModel.value = it
+                        isEnabled.value = taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate()
+                    }
+                }
+            }
+        }
+        scope.launch {
+            coreViewModel.dataCount.collect {
+                withContext(Dispatchers.Main) {
+                    dataPointCount.value = it
                 }
             }
         }

@@ -13,31 +13,41 @@ import SwiftUI
 
 struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
-    @State var scheduleModel: ScheduleModel
+    var scheduleModel: ScheduleModel
     private let stringTable = "ScheduleListView"
 
     var body: some View {
-        VStack(alignment: .leading) {
-            ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
-                .padding(.bottom, 4)
-            HStack {
-                Image(systemName: "clock.fill")
-                BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
-                Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
-                    .foregroundColor(Color.more.secondary)
-            }
-            ObservationButton(observationType: scheduleModel.observationType, state: $scheduleModel.scheduleState, disabled: scheduleModel.scheduleState != .active
-                              && scheduleModel.scheduleState != .running
-                              && scheduleModel.scheduleState != .paused
-                              && (Date(timeIntervalSince1970: TimeInterval(scheduleModel.start)) > Date()
-                              || Date(timeIntervalSince1970: TimeInterval(scheduleModel.end)) <= Date())) {
-                if scheduleModel.scheduleState == ScheduleState.running {
-                    viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                } else {
-                    viewModel.start(scheduleId: scheduleModel.scheduleId)
+        VStack {
+            VStack {
+                ZStack {
+                    VStack(alignment: .leading) {
+                        ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
+                            .padding(.bottom, 4)
+                        ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
+                    }
+                    NavigationLink {
+                        TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder))
+                    } label: {
+                        EmptyView()
+                    }
+                    .opacity(0)
                 }
             }
-            .buttonStyle(.plain)
+
+            VStack(alignment: .leading) {
+                ObservationButton(observationType: scheduleModel.observationType, state: scheduleModel.scheduleState, disabled: scheduleModel.scheduleState != .active
+                    && scheduleModel.scheduleState != .running
+                    && scheduleModel.scheduleState != .paused
+                    && (Date(timeIntervalSince1970: TimeInterval(scheduleModel.start)) > Date()
+                        || Date(timeIntervalSince1970: TimeInterval(scheduleModel.end)) <= Date())) {
+                    if scheduleModel.scheduleState == ScheduleState.running {
+                        viewModel.pause(scheduleId: scheduleModel.scheduleId)
+                    } else {
+                        viewModel.start(scheduleId: scheduleModel.scheduleId)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 }

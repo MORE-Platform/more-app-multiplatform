@@ -12,6 +12,7 @@ class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
+    @Published var dataCount: Int64 = 0
 
     @Published var observationRepetitionInterval: String = "1x/week"
      
@@ -21,6 +22,12 @@ class TaskDetailsViewModel: ObservableObject {
         coreModel.onLoadTaskDetails { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails
+            }
+        }
+        
+        coreModel.onNewDataCount { [weak self] count in
+            if let self {
+                self.dataCount = count?.int64Value ?? 0
             }
         }
     }

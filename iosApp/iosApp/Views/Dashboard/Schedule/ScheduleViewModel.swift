@@ -25,10 +25,13 @@ class ScheduleViewModel: ObservableObject {
             let states = scheduleMap.flatMap({$0.value}).filter{ $0.scheduleState == ScheduleState.active || $0.scheduleState == ScheduleState.running || $0.scheduleState == ScheduleState.paused}
             if let self {
                 print("New scheduleMap: \(states)")
-                for (key, value) in scheduleMap {
-                    self.schedules[Int64(truncating: key)]?.removeAll()
-                    self.schedules[Int64(truncating: key)] = value
+                let test =  scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
                 }
+                
+                self.schedules = test
             }
         }
     }
