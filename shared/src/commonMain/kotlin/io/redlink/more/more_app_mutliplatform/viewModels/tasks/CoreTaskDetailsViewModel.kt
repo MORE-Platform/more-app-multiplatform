@@ -63,6 +63,6 @@ class CoreTaskDetailsViewModel(
     }
 
     fun pauseObservation() {
-        dataRecorder.stop(scheduleId)
+        dataRecorder.pause(scheduleId)
     }
 }

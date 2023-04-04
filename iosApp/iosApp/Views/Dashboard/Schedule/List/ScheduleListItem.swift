@@ -12,7 +12,7 @@ import shared
 import SwiftUI
 
 struct ScheduleListItem: View {
-    @EnvironmentObject var viewModel: ScheduleViewModel
+    @ObservedObject var viewModel: ScheduleViewModel
     @State var scheduleModel: ScheduleModel
     private let stringTable = "ScheduleListView"
 
@@ -26,7 +26,11 @@ struct ScheduleListItem: View {
                 Text(String(format: "%@ - %@", scheduleModel.start.toDateString(dateFormat: "HH:mm"), scheduleModel.end.toDateString(dateFormat: "HH:mm")))
                     .foregroundColor(Color.more.secondary)
             }
-            ObservationButton(observationType: scheduleModel.observationType, state: scheduleModel.scheduleState, start: scheduleModel.start, end: scheduleModel.end) {
+            ObservationButton(observationType: scheduleModel.observationType, state: $scheduleModel.scheduleState, disabled: scheduleModel.scheduleState != .active
+                              && scheduleModel.scheduleState != .running
+                              && scheduleModel.scheduleState != .paused
+                              && (Date(timeIntervalSince1970: TimeInterval(scheduleModel.start)) > Date()
+                              || Date(timeIntervalSince1970: TimeInterval(scheduleModel.end)) <= Date())) {
                 if scheduleModel.scheduleState == ScheduleState.running {
                     viewModel.pause(scheduleId: scheduleModel.scheduleId)
                 } else {
@@ -40,6 +44,6 @@ struct ScheduleListItem: View {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active))
+        ScheduleListItem(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()), scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active))
     }
 }

@@ -10,7 +10,6 @@ import SwiftUI
 import shared
 
 struct TaskDetailsView: View {
-    
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
@@ -29,7 +28,9 @@ struct TaskDetailsView: View {
                             // abort button
                             Spacer()
                             if viewModel.taskDetailsModel?.state == ScheduleState.running {
-                                InlineAbortButton()
+                                InlineAbortButton() {
+                                    viewModel.stop()
+                                }
                             }
                         }
                         .frame(height: 40)
@@ -58,14 +59,21 @@ struct TaskDetailsView: View {
                         Spacer()
                     }
                    
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: viewModel.taskDetailsModel?.state ?? ScheduleState.deactivated, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
-                            let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
+                    if let model = viewModel.taskDetailsModel {
+                        ObservationButton(observationType: model.observationType,
+                                          state: .constant(),
+                                          disabled: model.state != .active
+                                          && model.state != .running
+                                          && model.state != .paused
+                                          && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
+                                          || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())) {
                             if viewModel.taskDetailsModel?.state == ScheduleState.running {
                                 viewModel.pause()
                             } else {
                                 viewModel.start()
                             }
                         }
+                    }
                     Spacer()
                 }
                 

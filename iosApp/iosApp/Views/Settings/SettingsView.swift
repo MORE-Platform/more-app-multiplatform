@@ -25,9 +25,10 @@ struct SettingsView: View {
                 } label: {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
-                
-                ConsentList(permissionModel: .constant(viewModel.permissionModel))
-                    .padding(.top)
+                if let permissions = viewModel.permissionModel {
+                    ConsentList(permissionModel: .constant(permissions))
+                        .padding(.top)
+                }
                 
                 MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
                     viewModel.leaveStudy()

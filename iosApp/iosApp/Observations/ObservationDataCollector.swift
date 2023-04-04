@@ -28,22 +28,22 @@ class ObservationDataCollector {
         job = observationRepository.collectObservationsWithUndoneSchedules { [weak self] observations in
             if let self {
                 self.scheduleRepository.updateTaskStates(observationFactory: nil)
-                let observationMergerSet = observations.compactMap { $0.schedules as NSArray as? [ScheduleSchema] }
-                    .flatten()
-                    .filter { $0.getState() == .running }
+                let observationMergerSet = observations
+                    .mapValues{$0.filter{$0.getState() == .running}}
+                    .filter{!$0.value.isEmpty}
 
                 print("Schedule Set is empty: \(observationMergerSet.isEmpty)")
                 if !observationMergerSet.isEmpty {
-                    let observationTypeSet = Set(observationMergerSet.map { $0.observationType })
+                    let observationTypeSet = Set(observationMergerSet.keys.map { $0.observationType })
                     print("Observation Type set \(observationTypeSet)")
                     var i = 0
                     observationTypeSet.forEach { type in
                         print("Collecting type \(type)")
-                        let obsMerger = observationMergerSet.filter { $0.observationType == type }
+                        let obsMerger = observationMergerSet.flatMap{ $0.value}.filter{ $0.observationType == type }
                         
                         if !obsMerger.isEmpty,
                            let obs = self.observationFactory.observation(type: type),
-                           let start = observations.map({ Int64($0.collectionTimestamp.epochSeconds) }).max(),
+                           let start = observations.keys.filter({$0.observationType == type}).map({Int64($0.collectionTimestamp.epochSeconds)}).max(),
                            let end = obsMerger.map({Int64($0.end?.epochSeconds ?? 0)}).max() {
                             
                             obsMerger.forEach { obs.apply(observationId: $0.observationId, scheduleId: $0.scheduleId.toHexString()) }

@@ -10,20 +10,19 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
-    var observationType: String
-    var state: ScheduleState
-    var start: Int64
-    var end: Int64
+    @State var observationType: String
+    @Binding var state: ScheduleState
+    @State var disabled: Bool
     let action: () -> Void
     private let stringTable = "ScheduleListView"
     var body: some View {
         HStack {
             if observationType.lowercased() == "question-observation" {
-                MoreActionButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(start)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(end)))), action: action) {
+                MoreActionButton(disabled: $disabled, action: action) {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire"))
                 }
             } else {
-                MoreActionButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(start)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(end)))), action: action) {
+                MoreActionButton(disabled: $disabled, action: action) {
                     VStack {
                         if state == ScheduleState.running {
                             Text(

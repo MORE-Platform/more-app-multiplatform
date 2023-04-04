@@ -21,10 +21,8 @@ class DashboardViewModel: ObservableObject {
         self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory)
         coreModel.onLoadStudy { study in
             if let study {
-                DispatchQueue.main.async {
-                    self.study = study
-                    self.studyTitle = study.studyTitle
-                }
+                self.study = study
+                self.studyTitle = study.studyTitle
             }
         }
     }

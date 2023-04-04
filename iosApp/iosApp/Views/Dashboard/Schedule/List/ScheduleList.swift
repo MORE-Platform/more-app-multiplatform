@@ -10,15 +10,14 @@ import SwiftUI
 import shared
 
 struct ScheduleList: View {
-    @EnvironmentObject var viewModel: ScheduleViewModel
+    @ObservedObject var viewModel: ScheduleViewModel
     @State var scheduleModels: [ScheduleModel]?
     private let dateFormatter = DateFormatter()
     var body: some View {
         ForEach(scheduleModels!, id: \.scheduleId) { schedule in
             ZStack {
                 VStack {
-                    ScheduleListItem(scheduleModel: schedule)
-                        .environmentObject(viewModel)
+                    ScheduleListItem(viewModel: viewModel, scheduleModel: schedule)
                     if schedule != scheduleModels!.last {
                         Divider()
                     } else {
@@ -27,7 +26,6 @@ struct ScheduleList: View {
                 }
                 NavigationLink {
                     TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, dataRecorder: viewModel.recorder))
-                        .environmentObject(viewModel)
                 } label: {
                     EmptyView()
                 }
@@ -39,7 +37,7 @@ struct ScheduleList: View {
 
 struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleList(scheduleModels: [
+        ScheduleList(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()), scheduleModels: [
             ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000, scheduleState: .active),
             ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, scheduleState: .active)
         ])
