@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ForwardButton: View {
-    var color: Color = .more.main
+    var color: Color = .more.primary
     var image = Image(systemName: "chevron.forward")
 
     var body: some View {

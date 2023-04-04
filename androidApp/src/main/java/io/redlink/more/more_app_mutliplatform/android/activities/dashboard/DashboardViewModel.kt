@@ -11,8 +11,8 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.getQuantityStri
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class DashboardViewModel(context: Context, coreFilterModel: CoreDashboardFilterViewModel): ViewModel() {
+class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel): ViewModel() {
     private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
     private val coreFilterViewModel = coreFilterModel
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
@@ -34,9 +34,10 @@ class DashboardViewModel(context: Context, coreFilterModel: CoreDashboardFilterV
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val scheduleViewModel = ScheduleViewModel(AndroidDataRecorder(context), coreFilterViewModel)
+    val scheduleViewModel = ScheduleViewModel(dataRecorder, coreFilterViewModel)
 
     init {
+        scheduleViewModel.updateTaskStates(context)
         scope.launch {
             coreDashboardViewModel.loadStudy().collect {
                 study.value = it

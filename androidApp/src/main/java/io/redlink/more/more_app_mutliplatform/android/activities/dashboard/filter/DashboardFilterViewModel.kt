@@ -27,8 +27,8 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
 
     val typeFilters = observationFactory.observations.map {
         Pair<String, String?>(
-            it.observationTypeImpl.observationType.formatObservationTypeString(),
-            it.observationTypeImpl.observationType)
+            it.observationType.observationType.formatObservationTypeString(),
+            it.observationType.observationType)
     }.toMutableList().apply { this.add(0, Pair("All Items", null)) }.toList()
 
     init {

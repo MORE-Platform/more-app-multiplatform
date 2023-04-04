@@ -12,19 +12,19 @@ import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRe
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 
 class MainViewModel(context: Context): ViewModel() {
-
+    private val recorder = AndroidDataRecorder(context)
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val taskDetailsViewModel = TaskDetailsViewModel(AndroidDataRecorder(context))
+    val dashboardFilterViewModel = CoreDashboardFilterViewModel()
+    val dashboardViewModel = DashboardViewModel(context, recorder, dashboardFilterViewModel)
     val settingsViewModel = SettingsViewModel()
     val studyDetailsViewModel = CoreStudyDetailsViewModel()
-    val dashboardFilterViewModel = CoreDashboardFilterViewModel()
-    val dashboardViewModel = DashboardViewModel(context, dashboardFilterViewModel)
 
     init {
         settingsViewModel.createCoreViewModel(context)
     }
 
+    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
 }

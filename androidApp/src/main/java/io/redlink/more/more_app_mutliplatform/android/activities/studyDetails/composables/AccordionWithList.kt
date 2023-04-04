@@ -16,14 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import io.realm.kotlin.types.RealmList
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.Heading
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MediumTitle
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 
 @Composable
-fun AccordionWithList(title: String, observations: RealmList<ObservationSchema>) {
+fun AccordionWithList(title: String, observations: List<ObservationSchema>) {
     val open = remember {
         mutableStateOf(false)
     }
@@ -36,37 +35,35 @@ fun AccordionWithList(title: String, observations: RealmList<ObservationSchema>)
         )
     )
     Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .padding(start = 8.dp)
+            .fillMaxWidth()
     ) {
-        Column(verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .clickable {
+                    open.value = !open.value
+                }
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
-                    .clickable {
-                        open.value = !open.value
-                    }
-            ) {
-                Heading(text = title)
-                Icon(
-                    Icons.Rounded.ExpandMore,
-                    tint = MoreColors.Primary,
-                    contentDescription = "View observation modules of the study",
-                    modifier = Modifier.rotate(angle)
-                )
-            }
-            MoreDivider()
-            Spacer(Modifier.height(12.dp))
-            if (open.value) {
-                ObservationList(observations = observations)
-            }
+            MediumTitle(
+                text = title
+            )
+            Icon(
+                Icons.Rounded.ExpandMore,
+                tint = MoreColors.Primary,
+                contentDescription = "View observation modules of the study",
+                modifier = Modifier.rotate(angle)
+            )
+        }
+        MoreDivider()
+        Spacer(Modifier.height(12.dp))
+        if (open.value) {
+            ObservationList(observations = observations)
         }
     }
-
-
 }

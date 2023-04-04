@@ -12,7 +12,7 @@ struct InfoList: View {
     var body: some View {
         VStack {
             InfoListItem(title: "Study Details", icon: "gear", destination: {
-                SettingsView()
+                StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "gear", destination: {
                 SettingsView()

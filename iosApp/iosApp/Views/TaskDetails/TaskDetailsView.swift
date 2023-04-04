@@ -10,16 +10,13 @@ import SwiftUI
 import shared
 
 struct TaskDetailsView: View {
-    
     @StateObject var viewModel: TaskDetailsViewModel
-    @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
+    private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-        
+
     var body: some View {
-        let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
-        
         Navigation {
             MoreMainBackgroundView {
                 VStack(
@@ -31,7 +28,7 @@ struct TaskDetailsView: View {
                                 .padding(0.5)
                             // abort button
                             Spacer()
-                            if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
+                            if viewModel.taskDetailsModel?.state == ScheduleState.running {
                                 InlineAbortButton()
                             }
                         }
@@ -55,21 +52,34 @@ struct TaskDetailsView: View {
                     if viewModel.taskDetailsModel?.observationType != "question-observation" {
                         Spacer()
                         HStack{
-                            DatapointsCollection(datapoints: $count, running: .constant(scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running))
+                            DatapointsCollection(datapoints: .constant(viewModel.taskDetailsModel?.dataPointCount ?? 0), running: .constant(viewModel.taskDetailsModel?.state == ScheduleState.running))
                             
                         }
                         Spacer()
                     }
-                   
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: scheduleViewModel.scheduleStates[viewModel.taskDetailsModel?.scheduleId ?? ""] ?? ScheduleState.non, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
-                            let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
-                            if scheduleViewModel.scheduleStates[scheduleId] == ScheduleState.running {
-                                scheduleViewModel.pause(scheduleId: scheduleId)
-                            } else {
-                                scheduleViewModel.start(scheduleId: scheduleId)
-                                count = viewModel.dataPointCount?.count ?? 0
-                            }
+
+                    if (viewModel.taskDetailsModel?.observationType == "question-observation") {
+
+                        NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
+                            QuestionObservationView()
+                        } label: {
+                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)
                         }
+                    }
+                    else {
+                        if let model = viewModel.taskDetailsModel {
+                            
+                            ObservationButton(observationType: model.observationType, state: model.state, start: model.start, end: model.end) {
+                                if model.state == .running {
+                                    viewModel.pause()
+                                } else {
+                                    viewModel.start()
+                                }
+                            }
+                            
+                        }
+                    }
                     Spacer()
                 }
                 

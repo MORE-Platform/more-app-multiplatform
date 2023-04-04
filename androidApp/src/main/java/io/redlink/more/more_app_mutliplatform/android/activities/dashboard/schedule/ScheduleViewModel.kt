@@ -12,7 +12,7 @@ import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +46,10 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
         }
     }
 
+    fun updateTaskStates(context: Context) {
+        ObservationRecordingService.updateTaskStates(context)
+    }
+
     fun startObservation(context: Context, scheduleId: String) {
         ObservationRecordingService.start(context, scheduleId)
         activeScheduleState[scheduleId] = ScheduleState.RUNNING
@@ -61,10 +65,8 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
     }
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
-        val filteredData =
-            data.filter { entry -> entry.key >= LocalDate.now() && entry.value.isNotEmpty() }.toSortedMap()
         schedules.clear()
-        schedules.putAll(filteredData)
+        schedules.putAll(data.toSortedMap())
     }
 
     private fun updateFilteredData(data: Map<LocalDate, List<ScheduleModel>>) {

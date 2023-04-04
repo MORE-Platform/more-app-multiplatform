@@ -170,6 +170,28 @@ class NetworkService(
         }
     }
 
+    suspend fun sendNotificationToken(token: String): Pair<Boolean, NetworkServiceError?> {
+        initConfigApi()
+        configurationApi?.let {
+            try {
+                val tokenResponse = it.setPushNotificationToken(
+                    serviceType = PushNotificationServiceType.FCM,
+                    pushNotificationToken = PushNotificationToken(token = token)
+                )
+                if (tokenResponse.success) {
+                    return Pair(true, null)
+                }
+                return Pair(
+                    false,
+                    createErrorBody(tokenResponse.status, tokenResponse.response)
+                )
+            } catch (err: Exception) {
+                return Pair(false, getException(err))
+            }
+        }
+        return Pair(false, getException(Exception("No credentials found!")))
+    }
+
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         initConfigApi()
         try {
