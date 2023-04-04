@@ -28,7 +28,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     init() {
         //self.dateFilter = coreModel.currentFilter.dateFilter ?? DateFilterModel(name: Date().month, ordinal: Int32)
-        self.observationTypeFilter = coreModel.currentFilter.observationTypeFilter as! Set<String>
+        //self.observationTypeFilter = coreModel.currentFilter.observationTypeFilter as! Set<String>
         self.dateFilter = "Entire Time"
     }
 }
