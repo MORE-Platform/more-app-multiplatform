@@ -36,7 +36,9 @@ struct QuestionObservationView: View {
                             }
                             
                             MoreActionButton(disabled: .constant(false)) {
-                                self.presentationMode.wrappedValue.dismiss()
+                                if(self.selected != "") {
+                                    self.presentationMode.wrappedValue.dismiss()
+                                }
                                 
                             } label: {
                                 Text("Answer")
