@@ -8,6 +8,7 @@
 
 import Foundation
 import shared
+import BackgroundTasks
 
 class ContentViewModel: ObservableObject {
     private let userDefaults = UserDefaultsRepository()
@@ -15,13 +16,7 @@ class ContentViewModel: ObservableObject {
     private let registrationService: RegistrationService
     private let credentialRepository: CredentialRepository
     
-    @Published var hasCredentials = false {
-        didSet {
-            if hasCredentials {
-                loadData()
-            }
-        }
-    }
+    @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
     @Published var navigationTitle = ""
@@ -58,11 +53,8 @@ class ContentViewModel: ObservableObject {
     func showConsentView() {
         DispatchQueue.main.async {
             self.loginViewScreenNr = 1
+            self.consentViewModel.onAppear()
         }
-    }
-
-    private func loadData() {
-        self.dashboardViewModel.loadData()
     }
 }
 

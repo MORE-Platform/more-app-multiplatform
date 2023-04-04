@@ -1,12 +1,15 @@
 package io.redlink.more.more_app_mutliplatform.android.services
 
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.ContentActivity
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -19,6 +22,7 @@ import kotlinx.coroutines.launch
 private const val TAG = "ObservationRecordingService"
 class ObservationRecordingService: Service() {
     private var observationManager: ObservationManager? = null
+    private val scheduleRepository = ScheduleRepository()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -53,6 +57,10 @@ class ObservationRecordingService: Service() {
                     stopAll()
                     START_NOT_STICKY
                 }
+                SERVICE_RECEIVER_UPDATE_STATES -> {
+                    updateTaskStates()
+                    START_NOT_STICKY
+                }
                 else -> {
                     START_NOT_STICKY
                 }
@@ -61,7 +69,24 @@ class ObservationRecordingService: Service() {
     }
 
     private fun startObservation(scheduleId: String) {
-        observationManager?.start(scheduleId)
+        observationManager?.start(scheduleId) { started ->
+            if (started) {
+                try {
+                    Handler(Looper.getMainLooper()).post {
+                        startForeground(
+                            1001,
+                            buildNotification(
+                                channelId = getString(R.string.default_channel_id),
+                                notificationTitle = getString(R.string.more_observation_running),
+                                notificationText = getString(R.string.more_observation_notification_explanation)
+                            )
+                        )
+                    }
+                } catch (e: Exception) {
+                    Napier.e { e.stackTraceToString() }
+                }
+            }
+        }
     }
 
     private fun pauseObservation(scheduleId: String) {
@@ -70,10 +95,42 @@ class ObservationRecordingService: Service() {
 
     private fun stopObservation(scheduleId: String) {
         observationManager?.stop(scheduleId)
+        scheduleRepository.setCompletionStateFor(scheduleId, true)
     }
 
     private fun stopAll() {
         observationManager?.stopAll()
+    }
+
+    private fun updateTaskStates() {
+        observationManager?.updateTaskStates()
+    }
+
+    private fun buildNotification(
+        channelId: String,
+        notificationTitle: String,
+        notificationText: String,
+    ): Notification {
+        val channel = NotificationChannel(
+            channelId,
+            channelId,
+            NotificationManager.IMPORTANCE_LOW
+        )
+
+        val intent = Intent(this, ContentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        applicationContext.getSystemService(NotificationManager::class.java)
+            .createNotificationChannel(channel)
+        return Notification.Builder(applicationContext, channelId)
+            .setContentText(notificationText)
+            .setContentTitle(notificationTitle)
+            .setSmallIcon(R.mipmap.ic_more_logo_hf_v2)
+            .setContentIntent(pendingIntent)
+            .build()
     }
 
     companion object {
@@ -82,6 +139,7 @@ class ObservationRecordingService: Service() {
         const val SERVICE_RECEIVER_PAUSE_ACTION = "io.redlink.more.app.android.PAUSE_SERVICE"
         const val SERVICE_RECEIVER_STOP_ACTION = "io.redlink.more.app.android.STOP_SERVICE"
         const val SERVICE_RECEIVER_STOP_ALL_ACTION = "io.redlink.more.app.android.STOP_ALL_SERVICE"
+        const val SERVICE_RECEIVER_UPDATE_STATES = "io.redlink.more.app.android.UPDATE_STATES"
 
         fun start(
             context: Context,
@@ -116,6 +174,12 @@ class ObservationRecordingService: Service() {
         fun stopAll(context: Context) {
             val serviceIntent = Intent(context, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
+            context.startService(serviceIntent)
+        }
+
+        fun updateTaskStates(context: Context) {
+            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+            serviceIntent.action = SERVICE_RECEIVER_UPDATE_STATES
             context.startService(serviceIntent)
         }
     }

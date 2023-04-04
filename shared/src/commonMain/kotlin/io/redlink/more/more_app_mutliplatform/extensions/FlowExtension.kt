@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-fun <T: Any> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
+fun <T: Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Job()
     this.onEach {
         provideNewState(it)
@@ -21,7 +21,7 @@ fun <T: Any> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     }
 }
 
-fun <T: Any> MutableStateFlow<T?>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
+fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Job()
     this.onEach {
         it?.let {

@@ -12,35 +12,53 @@ import PolarBleSdk
 import CoreBluetooth
 import RxSwift
 
-class PolarVerityHeartRateObservation: Observation_,
-                                       PolarBleApiObserver,
-                                       PolarBleApiPowerStateObserver,
-                                       PolarBleApiDeviceInfoObserver,
-                                       PolarBleApiDeviceFeaturesObserver,
-                                       PolarBleApiDeviceHrObserver {
+class PolarVerityHeartRateObservation: Observation_ {
     
-    var api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: [PolarBleSdkFeature.feature_hr])
-    var deviceId = ""
-    var connected = false
-    var devicesSubscription: Disposable? = nil
-    
+    private let api = PolarBleApiDefaultImpl.polarImplementation(DispatchQueue.main, features: [PolarBleSdkFeature.feature_hr])
+    private var deviceId = ""
+    private var connected = false
+    private var devicesSubscription: Disposable? = nil
+    private var hrObservation: Disposable? = nil
+
     init(sensorPermissions: Set<String>) {
-        super.init(observationTypeImpl: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
-        self.getDeviceId()
+        super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
+        searchDevices()
     }
     
-    func getDeviceId() {
+    override func start() -> Bool {
+        if !self.connected {
+            self.searchDevices()
+        }
+        if self.connected {
+            self.hrFeatureReady(deviceId)
+            return true
+        }
+        return false
+    }
+    
+    override func stop(onCompletion: @escaping () -> Void) {
+        hrObservation?.dispose()
+        onCompletion()
+    }
+    
+    override func observerAccessible() -> Bool {
+        self.connected
+    }
+    
+    override func applyObservationConfig(settings: Dictionary<String, Any>){
+        
+    }
+    
+    private func searchDevices() {
         self.devicesSubscription = api.searchForDevice().subscribe(onNext: { device in
             self.deviceId = device.deviceId
             if !self.connected {
                 self.connectDevice(deviceId: device.deviceId)
-            } else {
-                self.disconnectDevice(deviceId: device.deviceId)
             }
         })
     }
     
-    func connectDevice(deviceId: String) {
+    private func connectDevice(deviceId: String) {
         do {
             try api.connectToDevice(deviceId)
             self.connected = true
@@ -50,7 +68,7 @@ class PolarVerityHeartRateObservation: Observation_,
         }
     }
     
-    func disconnectDevice(deviceId: String) {
+    private func disconnectDevice(deviceId: String) {
         do {
             try api.disconnectFromDevice(deviceId)
             self.connected = false
@@ -58,19 +76,23 @@ class PolarVerityHeartRateObservation: Observation_,
             print("Error: Could not disconnect")
         }
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiObserver {
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        print("try connecting to: \(identifier.name)")
+        
     }
     
     func deviceConnected(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        print("device connected: \(identifier.name)")
+        
     }
     
     func deviceDisconnected(_ identifier: PolarBleSdk.PolarDeviceInfo) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiPowerStateObserver {
     func blePowerOn() {
         
     }
@@ -78,7 +100,9 @@ class PolarVerityHeartRateObservation: Observation_,
     func blePowerOff() {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceInfoObserver {
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
         
     }
@@ -86,9 +110,16 @@ class PolarVerityHeartRateObservation: Observation_,
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceFeaturesObserver {
     func hrFeatureReady(_ identifier: String) {
-        
+        print("feature ready")
+        self.hrObservation = self.api.startHrStreaming(self.deviceId).subscribe { value in
+            if let element = value.element {
+                self.storeData(data: ["hr": element[0].hr], timestamp: -1)
+            }
+        }
     }
     
     func ftpFeatureReady(_ identifier: String) {
@@ -102,8 +133,11 @@ class PolarVerityHeartRateObservation: Observation_,
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         
     }
-    
+}
+
+extension PolarVerityHeartRateObservation: PolarBleApiDeviceHrObserver {
     func hrValueReceived(_ identifier: String, data: (hr: UInt8, rrs: [Int], rrsMs: [Int], contact: Bool, contactSupported: Bool)) {
         
     }
 }
+

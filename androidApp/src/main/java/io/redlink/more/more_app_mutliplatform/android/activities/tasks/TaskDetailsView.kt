@@ -19,12 +19,10 @@ import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
-fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: ScheduleViewModel, observationId: String?, scheduleId: String?) {
-    viewModel.loadTaskDetails(observationId, scheduleId)
-    val taskDetails: MutableState<TaskDetailsModel> = viewModel.taskDetailsModel
+fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
     val context = LocalContext.current
     LazyColumn(
         verticalArrangement = Arrangement.Top,
@@ -39,24 +37,25 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
             ) {
                 HeaderTitle(
-                    title = taskDetails.value.observationTitle,
-                    modifier = Modifier.weight(0.65f)
+                    title = viewModel.taskDetailsModel.value.observationTitle,
+                    modifier = Modifier
+                        .weight(0.65f)
+                        .padding(vertical = 11.dp)
                 )
-                SmallTextIconButton(
-                    text = getStringResource(id = R.string.more_abort),
-                    imageText = getStringResource(id = R.string.more_abort),
-                    image = Icons.Rounded.Square,
-                    imageTint = MoreColors.Important,
-                    borderStroke = MoreColors.borderDefault(),
-                    buttonColors = ButtonDefaults.moreSecondary2()
-                ) {
-                }
+                if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING)
+                    SmallTextIconButton(
+                        text = getStringResource(id = R.string.more_abort),
+                        imageText = getStringResource(id = R.string.more_abort),
+                        image = Icons.Rounded.Square,
+                        imageTint = MoreColors.Important,
+                        borderStroke = MoreColors.borderDefault(),
+                        buttonColors = ButtonDefaults.moreSecondary2()
+                    ) {}
             }
             BasicText(
-                text = taskDetails.value.observationType,
+                text = viewModel.taskDetailsModel.value.observationType,
                 color = MoreColors.Secondary,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -64,15 +63,15 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
             )
 
             TimeframeDays(
-                taskDetails.value.start.toDate(),
-                taskDetails.value.end.toDate(),
+                viewModel.taskDetailsModel.value.start.toDate(),
+                viewModel.taskDetailsModel.value.end.toDate(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
             )
             TimeframeHours(
-                taskDetails.value.start.toDate(),
-                taskDetails.value.end.toDate(),
+                viewModel.taskDetailsModel.value.start.toDate(),
+                viewModel.taskDetailsModel.value.end.toDate(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
@@ -82,30 +81,27 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleViewModel: Schedule
 
             Accordion(
                 title = getStringResource(id = R.string.participant_information),
-                description = taskDetails.value.participantInformation,
+                description = viewModel.taskDetailsModel.value.participantInformation,
                 hasCheck = false,
                 hasPreview = false
             )
             Spacer(modifier = Modifier.height(8.dp))
 
             scheduleId?.let {
-                DatapointCollectionView(viewModel.dataPointCount.value, scheduleViewModel.activeScheduleState[scheduleId])
+                DatapointCollectionView(viewModel.dataPointCount.value, viewModel.taskDetailsModel.value.state)
                 Spacer(modifier = Modifier.height(20.dp))
 
                 SmallTextButton(
-                    text = if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) getStringResource(
+                    text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
                         id = R.string.more_observation_pause
                     ) else getStringResource(
                         id = R.string.more_observation_start
                     ), enabled = viewModel.isEnabled.value
                 ) {
-                    if (scheduleViewModel.activeScheduleState[scheduleId] == ScheduleState.RUNNING) {
-                        scheduleViewModel.pauseObservation(context, taskDetails.value.scheduleId)
+                    if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                        viewModel.pauseObservation()
                     } else {
-                        scheduleViewModel.startObservation(
-                            context,
-                            taskDetails.value.scheduleId
-                        )
+                        viewModel.startObservation()
                     }
                 }
             }

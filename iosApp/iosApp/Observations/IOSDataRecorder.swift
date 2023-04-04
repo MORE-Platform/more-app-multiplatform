@@ -13,7 +13,9 @@ class IOSDataRecorder: DataRecorder {
     private let observationManager = ObservationManager(observationFactory: IOSObservationFactory())
     
     func start(scheduleId: String) {
-        observationManager.start(scheduleId: scheduleId)
+        observationManager.start(scheduleId: scheduleId) { _ in
+            
+        }
     }
     
     func pause(scheduleId: String) {
@@ -28,5 +30,8 @@ class IOSDataRecorder: DataRecorder {
         observationManager.stopAll()
     }
     
+    func updateTaskStates() {
+        observationManager.updateTaskStates()
+    }
     
 }
