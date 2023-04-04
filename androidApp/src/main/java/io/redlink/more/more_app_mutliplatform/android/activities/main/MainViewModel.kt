@@ -11,13 +11,12 @@ import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetai
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 
 class MainViewModel(context: Context): ViewModel() {
-
+    private val recorder = AndroidDataRecorder(context)
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val dashboardViewModel = DashboardViewModel(context)
-    val taskDetailsViewModel = TaskDetailsViewModel(AndroidDataRecorder(context))
+    val dashboardViewModel = DashboardViewModel(context, recorder)
     val settingsViewModel = SettingsViewModel()
     val studyDetailsViewModel = CoreStudyDetailsViewModel()
 
@@ -25,4 +24,5 @@ class MainViewModel(context: Context): ViewModel() {
         settingsViewModel.createCoreViewModel(context)
     }
 
+    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
 }

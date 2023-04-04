@@ -10,19 +10,16 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
-    @EnvironmentObject var model: ScheduleViewModel
-    
     var observationType: String
     var state: ScheduleState
     var start: Int64
     var end: Int64
     let action: () -> Void
-    
     private let stringTable = "ScheduleListView"
     var body: some View {
         VStack {
-            
-            let disabled = !(Date() >= start.toDate() && Date() <= end.toDate())
+
+            let disabled = !(Date(timeIntervalSince1970: TimeInterval(start)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(end)))
             MoreActionButton(disabled: .constant(disabled), action: action) {
                 VStack {
                     if state == ScheduleState.running {

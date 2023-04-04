@@ -10,51 +10,64 @@ import Foundation
 import shared
 import CoreLocation
 
-class GPSObservation: Observation_, CLLocationManagerDelegate {
-    private var manager: CLLocationManager?
+class GPSObservation: Observation_ {
+    
+    private let manager: CLLocationManager = CLLocationManager()
     public var currentLocation = CLLocation()
     
     init(sensorPermissions: Set<String>) {
-        super.init(observationTypeImpl: GPSType(sensorPermissions: sensorPermissions))
-        manager = CLLocationManager()
-        manager?.delegate = self
-        manager?.desiredAccuracy = kCLLocationAccuracyBest
+        super.init(observationType: GPSType(sensorPermissions: sensorPermissions))
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
     override func start() -> Bool {
-        manager?.allowsBackgroundLocationUpdates = true
-        manager?.showsBackgroundLocationIndicator = true
-        manager?.requestAlwaysAuthorization()
         
-        if (manager?.authorizationStatus == CLAuthorizationStatus.authorizedAlways) {
-            manager?.startUpdatingLocation()
+        if (observerAccessible()) {
+            manager.allowsBackgroundLocationUpdates = true
+            manager.showsBackgroundLocationIndicator = true
+            manager.requestAlwaysAuthorization()
+            manager.startUpdatingLocation()
             return true
         } else {
-            manager?.requestAlwaysAuthorization()
+            manager.requestAlwaysAuthorization()
         }
         return false
     }
     
-    override func stop() {
-        manager?.stopUpdatingLocation()
+    override func stop(onCompletion: @escaping () -> Void) {
+        manager.stopUpdatingLocation()
+        onCompletion()
     }
     
     override func observerAccessible() -> Bool {
-        ((manager?.isAccessibilityElement) != nil)
+        return CLLocationManager.locationServicesEnabled()
+            && (manager.authorizationStatus == .authorizedWhenInUse
+            || manager.authorizationStatus == .authorizedAlways)
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){
         
     }
     
+    
+    override func needsToRestartAfterAppClosure() -> Bool {
+        true
+    }
+    
+}
+
+extension GPSObservation: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let first = locations.first else {
-            return
+        for location in locations {
+            let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
+            
+            self.storeData(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
         }
-        
-        let dict = ["longitude": first.coordinate.longitude, "latitude": first.coordinate.latitude, "altitude": first.altitude]
-        
-        self.storeData(data: dict)
+    }
+    
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        finish()
     }
 }
  

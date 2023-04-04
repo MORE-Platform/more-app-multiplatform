@@ -17,7 +17,7 @@ class AccelerometerObservation: Observation_ {
     private var timer: Timer? = nil
     
     init(sensorPermission: Set<String>) {
-        super.init(observationTypeImpl: AccelerometerType(sensorPermissions: sensorPermission))
+        super.init(observationType: AccelerometerType(sensorPermissions: sensorPermission))
     }
     
     override func start() -> Bool {
@@ -34,9 +34,10 @@ class AccelerometerObservation: Observation_ {
         return false
     }
     
-    override func stop() {
+    override func stop(onCompletion: @escaping () -> Void) {
         timer?.invalidate()
         motion.stopAccelerometerUpdates()
+        onCompletion()
     }
     
     override func observerAccessible() -> Bool {
@@ -51,7 +52,7 @@ class AccelerometerObservation: Observation_ {
         Timer(fire: Date(), interval: accelerometerFrequency, repeats: true, block: { timer in
             if let data = self.motion.accelerometerData {
                 let dict = ["x": data.acceleration.x, "y": data.acceleration.y, "z": data.acceleration.z]
-                self.storeData(data: dict)
+                self.storeData(data: dict, timestamp: -1)
             }
         })
     }
