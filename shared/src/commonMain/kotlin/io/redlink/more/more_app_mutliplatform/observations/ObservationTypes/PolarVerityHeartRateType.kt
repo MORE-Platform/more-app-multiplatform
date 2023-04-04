@@ -1,6 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.observations.ObservationTypes
+package io.redlink.more.more_app_mutliplatform.observations.observationTypes
 
-import io.redlink.more.more_app_mutliplatform.observations.ObservationTypeImpl
-
-class PolarVerityHeartRateType(sensorPermissions: Set<String>): ObservationTypeImpl("polar-verity-observation", sensorPermissions) {
+class PolarVerityHeartRateType(sensorPermissions: Set<String>): ObservationType("polar-verity-observation", sensorPermissions) {
 }

@@ -4,7 +4,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     val observations = mutableSetOf<Observation>()
 
     fun observation(type: String): Observation? {
-        return observations.firstOrNull { it.observationTypeImpl.observationType == type }?.apply {
+        return observations.firstOrNull { it.observationType.observationType == type }?.apply {
             if (!this.observationDataManagerAdded()) {
                 setDataManager(dataManager)
             }
@@ -12,6 +12,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     }
 
     fun sensorPermissions(): Set<String> {
-        return observations.map { it.observationTypeImpl.sensorPermissions }.flatten().toSet()
+        return observations.map { it.observationType.sensorPermissions }.flatten().toSet()
+    }
+
+    fun observationTypesNeedingRestartingAfterAppClosure(): Set<String> {
+        return observations.filter { it.needsToRestartAfterAppClosure() }.map { it.observationType.observationType }.toSet()
     }
 }

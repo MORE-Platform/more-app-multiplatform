@@ -16,8 +16,4 @@ extension Int64 {
         dateFormatter.timeZone = TimeZone.current
         return dateFormatter.string(from: date)
     }
-    
-    func toDate() -> Date {
-        return Date(timeIntervalSince1970: TimeInterval(self / 1000))
-    }
 }

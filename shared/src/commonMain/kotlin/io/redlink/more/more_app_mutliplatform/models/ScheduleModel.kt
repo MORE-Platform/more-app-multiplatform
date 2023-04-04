@@ -11,10 +11,8 @@ data class ScheduleModel(
     val done: Boolean,
     val start: Long,
     val end: Long,
-    var currentlyRunning: Boolean = false
+    var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
-
-
     companion object {
         fun createModelsFrom(observation: ObservationSchema): List<ScheduleModel> {
             return observation.schedules.mapNotNull {
@@ -27,7 +25,8 @@ data class ScheduleModel(
                     observationTitle = observation.observationTitle,
                     done = it.done,
                     start = start.toInstant().toEpochMilliseconds(),
-                    end = end.toInstant().toEpochMilliseconds()
+                    end = end.toInstant().toEpochMilliseconds(),
+                    scheduleState = if (it.done) ScheduleState.DEACTIVATED else it.getState()
                 )
             }
         }
