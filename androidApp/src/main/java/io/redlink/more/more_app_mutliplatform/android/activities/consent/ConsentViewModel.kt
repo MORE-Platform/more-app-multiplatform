@@ -87,15 +87,8 @@ class ConsentViewModel(
             getSecureID(context)?.let { uniqueDeviceId ->
                 coreModel.acceptConsent(info.toMD5(), uniqueDeviceId,
                     onSuccess = {
-                        FCMService.newFirebaseToken {
-                            if (!it.isSuccessful) {
-                                Log.w(TAG, "Fetching FCM registration token failed", it.exception)
-                                return@newFirebaseToken
-                            } else {
-                                Log.w(TAG, "FCM_Token: ${it.result}")
-                            }
-                        }
                         consentViewModelListener.credentialsStored()
+                        FCMService.newFirebaseToken()
                     }, onError = {
                         error.value = it?.message
                     })

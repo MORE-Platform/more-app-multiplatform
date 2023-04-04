@@ -14,6 +14,7 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageReposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG = "FCMService"
 
@@ -22,16 +23,6 @@ Service to handle push notifications and firebase connections
  */
 
 class FCMService : FirebaseMessagingService() {
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
-
-    private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = MoreApplication.appContext!!)
-    private val credentialRepository = CredentialRepository(sharedPreferencesRepository)
-
-    private val networkService = NetworkService(
-        EndpointRepository(sharedPreferencesRepository),
-        CredentialRepository(sharedPreferencesRepository)
-    )
-
     /**
      * Method to handle incoming push notifications. Creates user facing push notification for notification data and worker for incoming background data.
      * IMPORTANT: Only work with the predefined Worker 'NotificationDataHandlerWorker' to handle incoming data.
@@ -64,15 +55,33 @@ class FCMService : FirebaseMessagingService() {
      */
     override fun onNewToken(token: String) {
         Log.d(TAG, "Refreshed token: $token")
-        val oldToken = sharedPreferencesRepository.load("FCM_TOKEN", "")
+        val oldToken = sharedPreferencesRepository.load(FCM_TOKEN, "")
         if (token.isNotEmpty() && token.isNotBlank() && oldToken != token) {
-            sharedPreferencesRepository.store("FCM_TOKEN", token)
+            sharedPreferencesRepository.store(FCM_TOKEN, token)
         }
     }
 
     companion object {
-        fun newFirebaseToken(completionHandler: OnCompleteListener<String>) {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener(completionHandler)
+        private const val FCM_TOKEN = "FCM_TOKEN"
+        private val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+        private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = MoreApplication.appContext!!)
+        private val networkService = NetworkService(
+            EndpointRepository(sharedPreferencesRepository),
+            CredentialRepository(sharedPreferencesRepository)
+        )
+        fun newFirebaseToken() {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                    return@OnCompleteListener
+                } else {
+                    Log.w(TAG, "FCM_Token: ${task.result}")
+                    scope.launch {
+                        networkService.sendNotificationToken(task.result)
+                    }
+                }
+            })
         }
 
         fun deleteFirebaseToken(completionHandler: OnCompleteListener<Void>) {
