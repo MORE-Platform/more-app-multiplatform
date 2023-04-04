@@ -15,8 +15,7 @@ struct ScheduleView: View {
     var body: some View {
             List(viewModel.scheduleDates, id: \.self) { key in
                 Section {
-                    ScheduleList(scheduleModels: viewModel.schedules[key])
-                        .environmentObject(viewModel)
+                    ScheduleList(viewModel: viewModel, scheduleModels: viewModel.schedules[key])
                 } header: {
                     VStack(alignment: .leading) {
                         BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)

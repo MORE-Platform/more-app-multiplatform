@@ -52,22 +52,23 @@ class ScheduleRepository: Repository<ScheduleSchema>() {
     fun updateTaskStates(observationFactory: ObservationFactory? = null) {
         scope.launch {
             Napier.i { "Updating all tasks" }
-            allSchedulesWithStatus().firstOrNull()?.let { schedules ->
-                Napier.i { schedules.toString() }
-                val changeMap = schedules.map {
-                    it to it.updateState()
-                }
-                Napier.i { changeMap.toString() }
-                changeMap.forEach {
-                    setRunningStateFor(it.first.scheduleId.toHexString(), it.second)
-                }
-                observationFactory?.observationTypesNeedingRestartingAfterAppClosure()?.forEach { type ->
-                    Napier.i { "Schedules with type $type need to reset; ${changeMap.filter { it.second == ScheduleState.RUNNING }}}" }
-                    changeMap.filter { it.second == ScheduleState.RUNNING && type == it.first.observationType }
-                        .forEach {
-                            Napier.i { "Resetting ${it.first.scheduleId}" }
-                            setRunningStateFor(it.first.scheduleId.toHexString(), ScheduleState.ACTIVE)
+            val restartableTypes = observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
+            val now = Clock.System.now()
+            realmDatabase.realm?.let {
+                it.writeBlocking {
+                    query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
+                        if (restartableTypes.isNotEmpty()
+                            && scheduleSchema.getState() == ScheduleState.RUNNING
+                            && scheduleSchema.observationType in restartableTypes
+                            && scheduleSchema.end?.let { it.toInstant() > now } == true
+                        ) {
+                            Napier.i { "Resetting ${scheduleSchema.scheduleId}" }
+                            scheduleSchema.updateState(ScheduleState.ACTIVE)
+                        } else {
+                            scheduleSchema.updateState()
                         }
+                    }
+
                 }
             }
         }

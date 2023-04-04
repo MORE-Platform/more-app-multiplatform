@@ -11,26 +11,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transform
 
 fun <T: BaseRealmObject> RealmQuery<T>.asMappedFlow(): Flow<List<T>> {
-    return this.asFlow().mapNotNull { results ->
-        when(results) {
-            is InitialResults-> {
-                return@mapNotNull results.list.map {
-                    (it as? ScheduleSchema)?.let {
-                        Napier.i { it.state }
-                    }
-                    it
-                }
-            }
-            is UpdatedResults -> {
-                return@mapNotNull results.list.map {
-                    (it as? ScheduleSchema)?.let {
-                        Napier.i { it.state }
-                    }
-                    it
-                }
-            }
-        }
-    }
+    return asFlow().transform { emit(it.list) }
 }
 
 fun <T: BaseRealmObject> RealmQuery<T>.firstAsFlow(): Flow<T?> {

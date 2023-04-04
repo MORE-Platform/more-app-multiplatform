@@ -10,12 +10,12 @@ import SwiftUI
 import shared
 
 struct TaskDetailsView: View {
-    
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
+    private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-        
+
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -57,15 +57,29 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-                   
-                    ObservationButton(observationType: viewModel.taskDetailsModel?.observationType ?? "", state: viewModel.taskDetailsModel?.state ?? ScheduleState.deactivated, start: viewModel.taskDetailsModel?.start ?? 0, end: viewModel.taskDetailsModel?.end ?? 0) {
-                            let scheduleId = viewModel.taskDetailsModel?.scheduleId ?? ""
-                            if viewModel.taskDetailsModel?.state == ScheduleState.running {
-                                viewModel.pause()
-                            } else {
-                                viewModel.start()
-                            }
+
+                    if (viewModel.taskDetailsModel?.observationType == "question-observation") {
+
+                        NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
+                            QuestionObservationView()
+                        } label: {
+                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)
                         }
+                    }
+                    else {
+                        if let model = viewModel.taskDetailsModel {
+                            
+                            ObservationButton(observationType: model.observationType, state: model.state, start: model.start, end: model.end) {
+                                if model.state == .running {
+                                    viewModel.pause()
+                                } else {
+                                    viewModel.start()
+                                }
+                            }
+                            
+                        }
+                    }
                     Spacer()
                 }
                 

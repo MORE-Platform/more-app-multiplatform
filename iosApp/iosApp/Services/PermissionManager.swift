@@ -44,7 +44,16 @@ class PermissionManager: NSObject, ObservableObject {
 
     private var cameraNeeded: Bool = false
 
-    private var bluetoothStatus: PermissionStatus = .requesting
+    private var bluetoothStatus: PermissionStatus = .requesting {
+        didSet {
+            if bluetoothStatus == .accepted {
+                requestPermission()
+            } else if bluetoothStatus == .declined {
+                observer?.declined()
+            }
+        }
+    }
+
     private var bluetoothNeeded: Bool = false
 
     var permissionsGranted: Bool = true
@@ -112,7 +121,7 @@ class PermissionManager: NSObject, ObservableObject {
         if let observer {
             if gpsNeeded && gpsStatus != .accepted {
                 gpsStatus = requestGpsAuthorization()
-            } else if bluetoothNeeded {
+            } else if bluetoothNeeded && bluetoothStatus != .accepted {
                 bluetoothStatus = checkBluetoothAuthorization()
             } else if cmSensorRecorderNeeded && cmSensorStatus != .accepted {
                 requestCMSensorRecorder()
@@ -122,7 +131,9 @@ class PermissionManager: NSObject, ObservableObject {
                 } else {
                     observer.accepted()
                 }
+                observer.accepted()
             }
+
         }
     }
 

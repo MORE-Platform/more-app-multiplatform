@@ -26,20 +26,15 @@ class TaskDetailsViewModel: ObservableObject {
     }
     
     func start() {
-        if let taskDetailsModel {
-            coreModel.startObservation()
-        }
+        coreModel.startObservation()
     }
     
     func pause() {
-        if let taskDetailsModel {
-            coreModel.pauseObservation()
-        }
+        coreModel.pauseObservation()
     }
     
     func stop() {
-        if let taskDetailsModel {
-            coreModel.stopObservation()
-        }
+        coreModel.stopObservation()
+
     }
 }
