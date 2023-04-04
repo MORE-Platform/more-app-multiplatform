@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.more_app_mutliplatform.android.extensions.formatDateFilterString
+import io.redlink.more.more_app_mutliplatform.android.extensions.getQuantityString
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
@@ -46,12 +48,22 @@ class DashboardViewModel(context: Context, coreFilterModel: CoreDashboardFilterV
     }
 
     fun getFilterString(): String {
-        if(!coreFilterViewModel.hasAllTypes() && !coreFilterViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME))
-            return getString(R.string.more_filter_date_type)
-        if(!coreFilterViewModel.hasAllTypes())
-            return getString(R.string.more_filter_type)
+        var filterString = ""
+        val typesAmount = coreFilterViewModel.currentFilter.value.typeFilter.size
+        val dateFilter = coreFilterViewModel.currentFilter.value.dateFilter.toString().formatDateFilterString()
+
         if(!coreFilterViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME))
-            return getString(R.string.more_filter_date)
-        return getString(R.string.more_filter_deactivated)
+            filterString += dateFilter
+
+        if(!coreFilterViewModel.hasAllTypes()) {
+            if(filterString.isNotBlank())
+                filterString += ", "
+            filterString += getQuantityString(R.plurals.filter_text, typesAmount, typesAmount)
+        }
+
+        if(filterString.isBlank())
+            filterString += getString(R.string.more_filter_deactivated)
+
+        return filterString
     }
 }

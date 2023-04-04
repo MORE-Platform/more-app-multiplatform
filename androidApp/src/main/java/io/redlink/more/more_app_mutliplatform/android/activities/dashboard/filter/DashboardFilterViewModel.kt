@@ -1,6 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter
 
 import io.redlink.more.more_app_mutliplatform.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.android.extensions.formatDateFilterString
+import io.redlink.more.more_app_mutliplatform.android.extensions.formatObservationTypeString
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
@@ -10,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.util.*
 
 class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterViewModel) {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
@@ -21,19 +22,12 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
     val dateFilters = DateFilterModel.values().map {
         Pair(
             it,
-            it.toString()
-                .replace('_', ' ')
-                .lowercase(Locale.ROOT)
-                .replaceFirstChar { character ->
-                    character.uppercase() })
+            it.toString().formatDateFilterString())
     }
 
     val typeFilters = observationFactory.observations.map {
         Pair<String, String?>(
-            it.observationTypeImpl.observationType
-                .replace('-', ' ')
-                .replaceFirstChar { character ->
-                    character.uppercase() },
+            it.observationTypeImpl.observationType.formatObservationTypeString(),
             it.observationTypeImpl.observationType)
     }.toMutableList().apply { this.add(0, Pair("All Items", null)) }.toList()
 
