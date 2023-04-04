@@ -13,7 +13,7 @@ struct LoginButton: View {
     @EnvironmentObject var model: LoginViewModel
     @Binding var stringTable: String
     @Binding var disabled: Bool
-    
+
     var body: some View {
         MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabled) {
             model.validate()

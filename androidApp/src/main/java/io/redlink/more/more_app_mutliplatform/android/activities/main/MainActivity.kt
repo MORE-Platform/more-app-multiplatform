@@ -91,15 +91,13 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 })
             ) {
                 val arguments = requireNotNull(it.arguments)
-                val observationId = arguments.getString("observationId")
                 val scheduleId = arguments.getString("scheduleId")
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
-                    viewModel = viewModel.taskDetailsViewModel,
-                    scheduleViewModel = viewModel.dashboardViewModel.scheduleViewModel,
-                    observationId = observationId,
-                    scheduleId = scheduleId)
+                    viewModel = viewModel.createNewTaskViewModel(scheduleId ?: ""),
+                    scheduleId = scheduleId
+                )
             }
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 title = NavigationScreen.STUDY_DETAILS.stringRes()

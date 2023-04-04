@@ -22,9 +22,10 @@ class ConsentViewModel: NSObject, ObservableObject {
     var delegate: ConsentViewModelListener? = nil
     
     @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "Study Consent", consentInfo: [])
-    @Published private(set) var isLoading = false
+    @Published var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
+    @Published var requestedPermissions = false
 
     let permissionManager = PermissionManager()
     var permissionGranted = false
@@ -32,9 +33,6 @@ class ConsentViewModel: NSObject, ObservableObject {
     init(registrationService: RegistrationService) {
         coreModel = CorePermissionViewModel(registrationService: registrationService)
         super.init()
-        
-        permissionManager.observer = self
-        
         coreModel.onConsentModelChange { model in
             self.permissionModel = model
         }
@@ -45,7 +43,16 @@ class ConsentViewModel: NSObject, ObservableObject {
         }
     }
     
+    func onAppear() {
+        permissionManager.observer = self
+    }
+
+    func onDisappear() {
+        permissionManager.observer = nil
+    }
+
     func requestPermissions() {
+        self.requestedPermissions = true
         permissionManager.requestPermission()
     }
 
@@ -83,9 +90,11 @@ class ConsentViewModel: NSObject, ObservableObject {
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
         self.acceptConsent()
+        self.requestedPermissions = false
     }
 
     func declined() {
         self.showErrorAlert = true
+        self.requestedPermissions = false
     }
 }

@@ -21,8 +21,7 @@ struct QuestionListItem: View {
         VStack(alignment: .leading) {
             ZStack {
                 NavigationLink(isActive: $taskDetailsActive) {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId))
-                        .environmentObject(viewModel)
+                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, dataRecorder: viewModel.recorder))
                 } label: {
                     EmptyView()
                 }.opacity(0)
@@ -41,7 +40,7 @@ struct QuestionListItem: View {
                     ObservationTimeDetails(start: schedule.start, end: schedule.end)
                 }
             }.buttonStyle(.plain)
-            MoreActionButton(disabled: .constant(!(Date() >= schedule.start.toDate() && Date() <= schedule.end.toDate())), action: {
+            MoreActionButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(schedule.start)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(schedule.end)))), action: {
                 observationActive = true
             }, label: {
                 Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))

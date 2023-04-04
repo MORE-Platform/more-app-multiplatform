@@ -15,7 +15,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class DashboardViewModel(context: Context): ViewModel() {
+class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder): ViewModel() {
     private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
     val studyTitle = mutableStateOf("Study Title")
@@ -28,9 +28,10 @@ class DashboardViewModel(context: Context): ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val scheduleViewModel = ScheduleViewModel(AndroidDataRecorder(context))
+    val scheduleViewModel = ScheduleViewModel(dataRecorder)
 
     init {
+        scheduleViewModel.updateTaskStates(context)
         scope.launch {
             coreDashboardViewModel.loadStudy().collect {
                 study.value = it
