@@ -28,6 +28,10 @@ class CoreDashboardFilterViewModel {
         }
     }
 
+    fun getEnumAsList(): List<DateFilterModel> {
+        return DateFilterModel.values().toList()
+    }
+
     fun removeTypeFilter(type: String) {
         currentFilter.update {
             currentFilter.value.copy(

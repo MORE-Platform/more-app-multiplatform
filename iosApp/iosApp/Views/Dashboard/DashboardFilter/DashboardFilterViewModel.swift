@@ -11,25 +11,40 @@ import shared
 
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
-    //let dateFilterModel: DateFilterModel = DateFilterModel()
-    //private let dateFilterModel: DateFilterModel = DateFilterModel()
-    //private let filterModel: FilterModel = FilterModel()
+    private let observationFactory: IOSObservationFactory
+    private let dashboardStringTable: String = "DashboardFilter"
     
-    //private let dateFilterModel: DateFilterModel
-    //private let filterModel: FilterModel
+    //@Published var typeFilterList: [String] = IOSObservationFactory().observations.map {String(($0 as AnyObject).observationType)}
+    @Published var typeFilterList: [String]
+    @Published var dateFilterList: [DateFilterModel]
     
-    let dateFilterOptions: Set<String> = ["Today and Tomorrow", "1 week", "1 month", "Entire Time"]
-    let observationTypeFilterOptions: Set<String> = ["All Items", "Polar Varity Sensor", "GPS Mobile Sensor", "Accelerometer Mobile", "Question Observation", "Lime Survey"]
+    //let dateFilterOptions: Set<String> = ["Today and Tomorrow", "1 week", "1 month", "Entire Time"]
+    //let observationTypeFilterOptions: Set<String> = ["All Items", "Polar Varity Sensor", "GPS Mobile Sensor", "Accelerometer Mobile", "Question Observation", "Lime Survey"]
     
-    //let dateFilterOptions = DateFilterModel.values
-    
-    @Published var dateFilter: String
-    @Published var observationTypeFilter: Set<String> = ["GPS Mobile Sensor", "Question Observation"]
+    @State var dateFilter: DateFilterModel
+    @State var observationTypeFilter: [IOSObservationFactory]
     
     init() {
-        //self.dateFilter = coreModel.currentFilter.dateFilter ?? DateFilterModel(name: Date().month, ordinal: Int32)
-        //self.observationTypeFilter = coreModel.currentFilter.observationTypeFilter as! Set<String>
-        self.dateFilter = "Entire Time"
+        self.observationFactory = IOSObservationFactory()
+        
+        self.typeFilterList = observationFactory.observations.map({ observation in
+            return (observation as AnyObject).observationType
+        })
+
+        
+        self.dateFilterList = coreModel.getEnumAsList()
+        self.dateFilter = DateFilterModel.entireTime
+        self.observationTypeFilter = []
+    }
+    
+    /*func getDateFilterList(): [String] {
+     
+         
+        return []
+    }*/
+    
+    func getDateEnumString(filter: DateFilterModel) -> String {
+        return filter.name
     }
 }
 

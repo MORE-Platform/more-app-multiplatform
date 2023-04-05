@@ -14,8 +14,10 @@ struct DashboardFilterView: View {
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
     
-    @State var dateFilter: String = "Entire Time"
-    @State var observationTypeFilter: Set<String> = ["GPS Mobile Sensor", "Lime Survey"]
+
+    
+    @State var dateFilter: DateFilterModel = DateFilterModel.entireTime
+    @State var observationTypeFilter: [String] = ["GPS Mobile Sensor", "Lime Survey"]
     
     var body: some View {
         Navigation {
@@ -23,11 +25,11 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            MoreFilterOptionList(
-                                                 title: .constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration for your dashboard view.")),
-                                                 selectOptionList: .constant( dashboardFilterViewModel.dateFilterOptions),
-                                                 selectedValue: dashboardFilterViewModel.dateFilter,
-                                                 optionCallback: { filter, bool in
+                            /*MoreFilterOptionList(
+                                            title: .constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration for your dashboard view.")),
+                                            selectOptionList: .constant( dashboardFilterViewModel.dateFilterOptions),
+                                            selectedValue: dashboardFilterViewModel.dateFilter,
+                                            optionCallback: { filter, bool in
                                                      print(filter)
                                                      print(bool)
 
@@ -36,12 +38,17 @@ struct DashboardFilterView: View {
                                                          self.dateFilter = filter
                                                      } else {
                                                          /*dashboardFilterViewModel.coreModel.setDateFilter(DateFilterModul.TODAY_AND_TOMORROW)*/
-                                                         self.dateFilter = "Today and Tomorrow"
+                                                         self.dateFilter = DateFilterModel.values()
                                                      }
 
                                                  }
                             )
-                                .padding(.vertical, 25)
+                                .padding(.vertical, 25)*/
+                            
+                            //Text(dashboardFilterViewModel.dateFilterList)
+                            /*ForEach(dashboardFilterViewModel.typeFilterList, id: \.self) { filter in
+                                Text(filter)
+                            }*/
                         }
                         
                         VStack {
@@ -49,15 +56,15 @@ struct DashboardFilterView: View {
                             MoreFilterOptionList(
                                 multiSelect: true,
                                 title: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")),
-                                selectOptionList: .constant(dashboardFilterViewModel.observationTypeFilterOptions),
+                                selectOptionList: .constant(dashboardFilterViewModel.typeFilterList),
                                 selectedValueList: observationTypeFilter,
                                 optionCallback: { filter, bool in
                                     if bool {
                                         //dashboardFilterViewModel.coreModel.addTypeFilter(filter)
-                                        self.observationTypeFilter.insert(filter)
+                                        //self.observationTypeFilter.insert(filter)
                                     } else {
                                         //dashboardFilterViewModel.coreModel.removeTypeFilter(filter)
-                                        self.observationTypeFilter.remove(filter)
+                                        //self.observationTypeFilter.remove(filter)
                                     }
                                     
                                 }

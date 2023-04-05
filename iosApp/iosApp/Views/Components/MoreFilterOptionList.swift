@@ -11,10 +11,10 @@ import SwiftUI
 struct MoreFilterOptionList: View {
     var multiSelect = false
     @Binding var title: String
-    @Binding var selectOptionList: Set<String>
+    @Binding var selectOptionList: [String]
     
-    @State var selectedValueList: Set<String> = []
-    @State var selectedValue: String = ""
+    @State var selectedValueList: [String] = []
+    //@State var selectedValue: String = ""
     
     let optionCallback: (String, Bool) -> ()
     
@@ -31,14 +31,15 @@ struct MoreFilterOptionList: View {
                         
                         if multiSelect {
                             if selectedValueList.contains(filter) {
-                                self.selectedValueList.remove(filter)
+                                let index = selectedValueList.firstIndex(of: filter)
+                                self.selectedValueList.remove(at: index ?? -1)
                                 optionCallback(filter, false)
                             } else {
-                                self.selectedValueList.insert(filter)
+                                self.selectedValueList.append(filter)
                                 optionCallback(filter, true)
                             }
                            
-                        } else {
+                        } /*else {
                             if self.selectedValue == filter {
                                 self.selectedValue = "Today and Tomorrow"
                                 optionCallback(self.selectedValue, false)
@@ -46,7 +47,7 @@ struct MoreFilterOptionList: View {
                                 self.selectedValue = filter
                                 optionCallback(self.selectedValue, true)
                             }
-                        }
+                        }*/
                     })
                 
                 Divider()
@@ -60,12 +61,16 @@ struct MoreFilterOptionList: View {
         }
         return false
     }
+    
+    
     func isSelectedSingleValue(label: String) -> Bool {
         print(label)
-        print(self.selectedValue)
-        if label == self.selectedValue {
+        //print(self.selectedValue)
+        /*if label == self.selectedValue {
                 return true
         }
+        return false*/
         return false
     }
+     
 }
