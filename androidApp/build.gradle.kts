@@ -43,7 +43,7 @@ android {
 val composeVersion = "1.3.1"
 val workVersion = "2.8.0"
 val navVersion = "2.5.3"
-val sdk_version = "3.3.6"
+val sdk_version = "5.0.2"
 
 dependencies {
     implementation(project(":shared"))
