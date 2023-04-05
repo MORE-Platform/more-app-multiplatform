@@ -11,7 +11,7 @@ import shared
 
 class DataUploadManager {
     private let networkService: NetworkService
-    private let observationDataRepository = ObservationDataRepository(database: RealmDatabase())
+    private let observationDataRepository = ObservationDataRepository()
     private let semaphore = Semaphore()
     private var currentTask: Task<(), Never>? = nil
     

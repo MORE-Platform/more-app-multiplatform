@@ -1,5 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.android.extensions
 
+import android.annotation.SuppressLint
+import io.realm.kotlin.internal.platform.isFrozen
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -15,6 +17,11 @@ fun Long.jvmLocalDateTime(): LocalDateTime {
 fun Long.jvmLocalDate(): LocalDate = this.jvmLocalDateTime().toLocalDate()
 
 fun LocalDate.formattedString(pattern: String = "dd.MM.yyyy"): String {
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    return this.format(formatter)
+}
+
+fun LocalDateTime.formattedString(pattern: String = "dd.MM.yyyy"): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return this.format(formatter)
 }

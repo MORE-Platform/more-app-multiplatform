@@ -1,30 +1,19 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asString
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 abstract class Observation(val observationType: ObservationType) {
-    private var dataManager: ObservationDataManager? = null
     private val scheduleRepository = ScheduleRepository()
+    private var dataManager: ObservationDataManager? = null
     private var running = false
     private val observationIds = mutableSetOf<String>()
     private val scheduleIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
-    private var currentJob: Job? = null
 
     fun apply(observationId: String, scheduleId: String) {
         observationIds.add(observationId)
@@ -105,9 +94,16 @@ abstract class Observation(val observationType: ObservationType) {
         onCompletion()
     }
 
-    private fun stopAndFinish() {
+    protected fun stopAndFinish() {
         stop {
             finish()
+        }
+    }
+
+    protected fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE) {
+        stop {
+            finish()
+            scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
         }
     }
 

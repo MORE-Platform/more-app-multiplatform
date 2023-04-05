@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 
 data class ScheduleModel(
@@ -14,15 +15,15 @@ data class ScheduleModel(
     var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
     companion object {
-        fun createModelsFrom(observation: ObservationSchema): List<ScheduleModel> {
-            return observation.schedules.mapNotNull {
+        fun createModelsFrom(observationTitle: String, schedules: List<ScheduleSchema>): List<ScheduleModel> {
+            return schedules.mapNotNull {
                 val start = it.start ?: return@mapNotNull null
                 val end = it.end ?: return@mapNotNull null
                 ScheduleModel(
                     scheduleId = it.scheduleId.toHexString(),
-                    observationId = observation.observationId,
-                    observationType = observation.observationType,
-                    observationTitle = observation.observationTitle,
+                    observationId = it.observationId,
+                    observationType = it.observationType,
+                    observationTitle = observationTitle,
                     done = it.done,
                     start = start.toInstant().toEpochMilliseconds(),
                     end = end.toInstant().toEpochMilliseconds(),

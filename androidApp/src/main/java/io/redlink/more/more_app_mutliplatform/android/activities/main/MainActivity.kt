@@ -104,7 +104,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 title = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = StudyDetailsViewModel(viewModel.studyDetailsViewModel))
+                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel)
             }
             composable(NavigationScreen.OBSERVATION_FILTER.route) {
                 title = NavigationScreen.OBSERVATION_FILTER.stringRes()

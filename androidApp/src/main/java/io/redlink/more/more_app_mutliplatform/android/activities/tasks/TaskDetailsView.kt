@@ -23,7 +23,6 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
 fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
-    val context = LocalContext.current
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

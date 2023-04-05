@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
-class ObservationDataRepository(database: RealmDatabase): Repository<ObservationDataSchema>(database) {
+class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     private val queue = mutableListOf<ObservationDataSchema>()
 

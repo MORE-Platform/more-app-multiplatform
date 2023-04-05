@@ -9,12 +9,10 @@
 import shared
 
 class StudyDetailsViewModel: ObservableObject {
-    private let coreModel: CoreStudyDetailsViewModel
+    private let coreModel = CoreStudyDetailsViewModel()
     @Published var studyDetailsModel: StudyDetailsModel?
     
     init() {
-        self.coreModel = CoreStudyDetailsViewModel()
-        coreModel.loadStudy()
         coreModel.onLoadStudyDetails() {
             studyDetails in
             if let studyDetails {
