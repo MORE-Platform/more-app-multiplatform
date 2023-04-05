@@ -10,6 +10,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyD
 import kotlinx.coroutines.launch
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
+import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 
 class MainViewModel(context: Context): ViewModel() {
     private val recorder = AndroidDataRecorder(context)
@@ -17,7 +18,8 @@ class MainViewModel(context: Context): ViewModel() {
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val dashboardViewModel = DashboardViewModel(context, recorder)
+    val dashboardFilterViewModel = CoreDashboardFilterViewModel()
+    val dashboardViewModel = DashboardViewModel(context, recorder, dashboardFilterViewModel)
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
 

@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardHeader
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardProgress
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.FilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list.ScheduleListView
@@ -27,7 +26,7 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
     ){
         Column(modifier = Modifier.height(IntrinsicSize.Min)) {
             DashboardProgress(model = viewModel)
-            FilterView()
+            FilterView(navController, model = viewModel)
         }
         Spacer(modifier = Modifier.height(10.dp))
         Column {
