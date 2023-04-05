@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
 import io.github.aakira.napier.Napier
+import io.realm.kotlin.internal.platform.freeze
 import io.realm.kotlin.notifications.InitialResults
 import io.realm.kotlin.notifications.UpdatedResults
 import io.realm.kotlin.query.RealmQuery

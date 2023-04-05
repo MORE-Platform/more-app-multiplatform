@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
+import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
@@ -10,10 +11,21 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class StudyRepository: Repository<StudySchema>() {
-    suspend fun storeStudy(study: Study) {
-        val studyItem = StudySchema.toSchema(study)
-        realmDatabase.storeAsync(studyItem)
+class StudyRepository : Repository<StudySchema>() {
+    fun storeStudy(study: Study) {
+        val realmObjects = mutableListOf<RealmObject>()
+        realmObjects.add(StudySchema.toSchema(study))
+        realmObjects.addAll(study.observations.map { ObservationSchema.toSchema(it) })
+        realmObjects.addAll(study.observations.map { observation ->
+            observation.schedule.mapNotNull {
+                ScheduleSchema.toSchema(
+                    it,
+                    observation.observationId,
+                    observation.observationType
+                )
+            }
+        }.flatten())
+        realmDatabase.store(realmObjects)
     }
 
     fun getStudy(): Flow<StudySchema?> {

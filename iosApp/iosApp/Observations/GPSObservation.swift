@@ -22,17 +22,18 @@ class GPSObservation: Observation_ {
     }
     
     override func start() -> Bool {
-        
-        if (observerAccessible()) {
-            manager.allowsBackgroundLocationUpdates = true
-            manager.showsBackgroundLocationIndicator = true
-            manager.requestAlwaysAuthorization()
-            manager.startUpdatingLocation()
-            return true
-        } else {
-            manager.requestAlwaysAuthorization()
+        Task {
+            if (observerAccessible()) {
+                manager.allowsBackgroundLocationUpdates = true
+                manager.showsBackgroundLocationIndicator = true
+                manager.requestAlwaysAuthorization()
+                manager.startUpdatingLocation()
+            } else {
+                manager.requestAlwaysAuthorization()
+                stopAndSetState(state: .active)
+            }
         }
-        return false
+        return true
     }
     
     override func stop(onCompletion: @escaping () -> Void) {
@@ -46,28 +47,31 @@ class GPSObservation: Observation_ {
             || manager.authorizationStatus == .authorizedAlways)
     }
     
-    override func applyObservationConfig(settings: Dictionary<String, Any>){
-        
-    }
+    override func applyObservationConfig(settings: Dictionary<String, Any>){}
     
     
     override func needsToRestartAfterAppClosure() -> Bool {
         true
     }
-    
 }
 
 extension GPSObservation: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        for location in locations {
+        let data = locations.compactMap { location in
             let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
-            
-            self.storeData(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
+            return ObservationBulkModel(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
         }
+        self.storeData(data: data) {}
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
         finish()
+    }
+    
+    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+        if isRunning() {
+            _ = start()
+        }
     }
 }
  

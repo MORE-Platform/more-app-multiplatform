@@ -9,4 +9,4 @@
 import Foundation
 import shared
 
-extension ScheduleModel: Identifiable {}
+extension ScheduleModel {}

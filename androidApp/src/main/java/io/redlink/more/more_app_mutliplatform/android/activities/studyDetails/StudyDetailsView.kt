@@ -10,52 +10,55 @@ import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.composables.AccordionWithList
 import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDateTime
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
+import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 
 @Composable
 fun StudyDetailsView(viewModel: StudyDetailsViewModel) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        LazyColumn {
-            item {
-                HeaderTitle(title = viewModel.studyDetailsModel.value.studyTitle)
-                Spacer(Modifier.height(12.dp))
-                ActivityProgressView(
-                    finishedTasks = viewModel.studyDetailsModel.value.finishedTasks.toInt(),
-                    totalTasks = viewModel.studyDetailsModel.value.totalTasks.toInt()
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    BasicText(text = "${getStringResource(R.string.study_duration)}: ")
-                    BasicText(
-                        text = "${viewModel.start.value.formattedString("dd/MM/yyyy")} - ${
-                            viewModel.end.value.formattedString(
-                                "dd/MM/yyyy"
-                            )
-                        }",
-                        color = MoreColors.Secondary
+    viewModel.model.value?.let {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn {
+                item {
+                    HeaderTitle(title = it.study.studyTitle)
+                    Spacer(Modifier.height(12.dp))
+                    ActivityProgressView(
+                        finishedTasks = it.finishedTasks.toInt(),
+                        totalTasks = it.totalTasks.toInt()
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        BasicText(text = "${getStringResource(R.string.study_duration)}: ")
+                        BasicText(
+                            text = "${it.study.start?.epochSeconds?.jvmLocalDateTime()?.formattedString()} - ${
+                                it.study.end?.epochSeconds?.jvmLocalDateTime()?.formattedString()
+                            }",
+                            color = MoreColors.Secondary
+                        )
+                    }
+                    Spacer(Modifier.height(40.dp))
+                    AccordionReadMore(
+                        title = getStringResource(R.string.participant_information),
+                        description = it.study.participantInfo,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    AccordionWithList(
+                        title = getStringResource(R.string.observation_modules),
+                        observations = it.observations
                     )
                 }
-                Spacer(Modifier.height(40.dp))
-                AccordionReadMore(
-                    title = getStringResource(R.string.participant_information),
-                    description = viewModel.studyDetailsModel.value.participantInformation,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Spacer(Modifier.height(16.dp))
-                AccordionWithList(
-                    title = getStringResource(R.string.observation_modules),
-                    observations = viewModel.studyDetailsModel.value.observations
-                )
             }
         }
     }
