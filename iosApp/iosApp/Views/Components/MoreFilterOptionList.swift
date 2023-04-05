@@ -11,12 +11,15 @@ import SwiftUI
 struct MoreFilterOptionList: View {
     var multiSelect = false
     @Binding var title: String
-    @Binding var selectOptionList: [String]
+    @Binding var optionList: [String]
+    private let dashboardStringTable: String = "DashboardFilter"
     
     @State var selectedValueList: [String] = []
-    //@State var selectedValue: String = ""
+    @State var selectedValue: String = ""
+    @State var selectedValueIndex: Int? = 1
     
     let optionCallback: (String, Bool) -> ()
+    
     
     var body: some View {
         
@@ -25,29 +28,33 @@ struct MoreFilterOptionList: View {
                 .padding(15)
             Divider()
             
-            ForEach(selectOptionList.sorted(), id: \.self) { filter in
+            ForEach(optionList, id: \.self) { filter in
 
-                    MoreFilterOption(label: filter, selected: multiSelect ? isSelectedMultiValue(label: filter) : isSelectedSingleValue(label: filter), callback: {_ in
+                    MoreFilterOption(
+                        label: String.localizedString(forKey: filter, inTable: dashboardStringTable, withComment: "Timeframe filter option"),
+                        selected: multiSelect ? isSelectedMultiValue(label: filter) : isSelectedSingleValue(label: filter),
+                        callback: {_ in
                         
                         if multiSelect {
                             if selectedValueList.contains(filter) {
                                 let index = selectedValueList.firstIndex(of: filter)
                                 self.selectedValueList.remove(at: index ?? -1)
-                                optionCallback(filter, false)
+                                //optionCallback(filter, false)
                             } else {
                                 self.selectedValueList.append(filter)
-                                optionCallback(filter, true)
+                                //optionCallback(filter, true)
                             }
                            
-                        } /*else {
+                        } else {
                             if self.selectedValue == filter {
                                 self.selectedValue = "Today and Tomorrow"
-                                optionCallback(self.selectedValue, false)
+                                optionCallback("TODAY_AND_TOMORROW", false)
                             } else {
-                                self.selectedValue = filter
-                                optionCallback(self.selectedValue, true)
+                                self.selectedValue = String(describing: filter)
+                                self.selectedValueIndex = optionList.firstIndex(of: filter)
+                                optionCallback(filter, true)
                             }
-                        }*/
+                        }
                     })
                 
                 Divider()
@@ -66,11 +73,11 @@ struct MoreFilterOptionList: View {
     func isSelectedSingleValue(label: String) -> Bool {
         print(label)
         //print(self.selectedValue)
-        /*if label == self.selectedValue {
+        if label == String(describing: self.selectedValue) {
                 return true
         }
-        return false*/
         return false
     }
+     
      
 }

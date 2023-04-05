@@ -12,39 +12,37 @@ import shared
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private let observationFactory: IOSObservationFactory
-    private let dashboardStringTable: String = "DashboardFilter"
     
-    //@Published var typeFilterList: [String] = IOSObservationFactory().observations.map {String(($0 as AnyObject).observationType)}
-    @Published var typeFilterList: [String]
     @Published var dateFilterList: [DateFilterModel]
-    
-    //let dateFilterOptions: Set<String> = ["Today and Tomorrow", "1 week", "1 month", "Entire Time"]
-    //let observationTypeFilterOptions: Set<String> = ["All Items", "Polar Varity Sensor", "GPS Mobile Sensor", "Accelerometer Mobile", "Question Observation", "Lime Survey"]
-    
+    @Published var dateFilterStringList: [String]
     @State var dateFilter: DateFilterModel
-    @State var observationTypeFilter: [IOSObservationFactory]
+    
+    @Published var typeFilterList: [ObservationType]
+    @State var observationTypeFilter: [String]
     
     init() {
         self.observationFactory = IOSObservationFactory()
         
-        self.typeFilterList = observationFactory.observations.map({ observation in
-            return (observation as AnyObject).observationType
-        })
+        self.typeFilterList = []
 
-        
         self.dateFilterList = coreModel.getEnumAsList()
-        self.dateFilter = DateFilterModel.entireTime
-        self.observationTypeFilter = []
+        self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
+            String(describing: filter)
+        })
+        
+        self.dateFilter = DateFilterModel.todayAndTomorrow
+        self.observationTypeFilter = [""]
     }
     
-    /*func getDateFilterList(): [String] {
-     
-         
-        return []
-    }*/
-    
-    func getDateEnumString(filter: DateFilterModel) -> String {
-        return filter.name
+    func getDateFilterValue(filter: String) -> DateFilterModel {
+        var filterModel : DateFilterModel = DateFilterModel.todayAndTomorrow
+        
+        if filter == "ENTIRE_TIME" { filterModel = DateFilterModel.entireTime }
+        else if filter == "TODAY_AND_TOMORROW" { filterModel = DateFilterModel.todayAndTomorrow }
+        else if filter == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
+        else if filter == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
+        
+        return filterModel
     }
 }
 

@@ -14,8 +14,6 @@ struct DashboardFilterView: View {
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
     
-
-    
     @State var dateFilter: DateFilterModel = DateFilterModel.entireTime
     @State var observationTypeFilter: [String] = ["GPS Mobile Sensor", "Lime Survey"]
     
@@ -25,35 +23,27 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            /*MoreFilterOptionList(
+                            
+                            MoreFilterOptionList(
                                             title: .constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration for your dashboard view.")),
-                                            selectOptionList: .constant( dashboardFilterViewModel.dateFilterOptions),
-                                            selectedValue: dashboardFilterViewModel.dateFilter,
+                                            optionList: .constant( dashboardFilterViewModel.dateFilterStringList),
+                                            selectedValue: String(describing: dashboardFilterViewModel.dateFilter),
                                             optionCallback: { filter, bool in
-                                                     print(filter)
-                                                     print(bool)
-
-                                                     if bool {
-                                                         //dashboardFilterViewModel.coreModel.setDateFilter(filter)
-                                                         self.dateFilter = filter
-                                                     } else {
-                                                         /*dashboardFilterViewModel.coreModel.setDateFilter(DateFilterModul.TODAY_AND_TOMORROW)*/
-                                                         self.dateFilter = DateFilterModel.values()
+                                                    if bool {
+                                                        dashboardFilterViewModel.coreModel.setDateFilter(dateFilter:
+                                                            dashboardFilterViewModel.getDateFilterValue(filter: filter)
+                                                        )
+                                                    } else {
+                                                         dashboardFilterViewModel.coreModel.setDateFilter(dateFilter: DateFilterModel.todayAndTomorrow)
                                                      }
-
                                                  }
                             )
-                                .padding(.vertical, 25)*/
-                            
-                            //Text(dashboardFilterViewModel.dateFilterList)
-                            /*ForEach(dashboardFilterViewModel.typeFilterList, id: \.self) { filter in
-                                Text(filter)
-                            }*/
+                                .padding(.vertical, 25)
                         }
                         
                         VStack {
                             
-                            MoreFilterOptionList(
+                            /*MoreFilterOptionList(
                                 multiSelect: true,
                                 title: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")),
                                 selectOptionList: .constant(dashboardFilterViewModel.typeFilterList),
@@ -68,7 +58,7 @@ struct DashboardFilterView: View {
                                     }
                                     
                                 }
-                            )
+                            )*/
                             /*SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")))*/
                         }
                         
