@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
@@ -51,7 +52,8 @@ object RealmDatabase {
         updatePolicy: UpdatePolicy = UpdatePolicy.ERROR
     ) {
         realm?.writeBlocking {
-            realmObjects.forEach { copyToRealm(it, updatePolicy) }
+            realmObjects.map { copyToRealm(it, updatePolicy) }
+            Napier.i { "Stored new data" }
         }
     }
 
@@ -103,11 +105,11 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    suspend inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
-        realm?.writeBlocking {
+        realm?.write {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -18,8 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
@@ -36,13 +33,16 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
         )
     )
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         modifier = modifier) {
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
+                .clickable {
+                open.value = !open.value
+            }
         )
         {
             MediumTitle(
@@ -50,19 +50,12 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
             )
 
             if (overflow) {
-                IconButton(
-                    onClick = {
-                        open.value = !open.value
-                    }
-                ) {
-                    Icon(
-                        Icons.Rounded.ExpandMore,
-                        contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                        tint = MoreColors.Primary,
-                        modifier = Modifier
-                            .rotate(angle)
-                    )
-                }
+                Icon(
+                    Icons.Rounded.ExpandMore,
+                    tint = MoreColors.Primary,
+                    contentDescription = "View observation modules of the study",
+                    modifier = Modifier.rotate(angle)
+                )
             }
         }
 

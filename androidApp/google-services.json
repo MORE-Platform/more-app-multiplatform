@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "867714323835",
+    "project_id": "more-adad0",
+    "storage_bucket": "more-adad0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867714323835:android:c18e2baa787d7a3a5019de",
+        "android_client_info": {
+          "package_name": "io.redlink.more.more_app_mutliplatform.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "867714323835-diq7io7nnpi78dmolkam7qreea5qpg71.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOamQrEMV2y3cieAIImOO59DDOYe_n_qQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "867714323835-diq7io7nnpi78dmolkam7qreea5qpg71.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

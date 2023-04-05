@@ -17,7 +17,7 @@ struct TaskProgressView: View {
     var body: some View {
         VStack {
             HStack {
-                BasicText(text: $progressViewTitle)
+                BasicText(text: $progressViewTitle, color: Color.more.secondary)
                 Spacer()
                 BasicText(text: .constant(String(format: "%d%%", (tasksCompleted / totalTasks) * 100)))
             }.foregroundColor(Color.more.secondary)

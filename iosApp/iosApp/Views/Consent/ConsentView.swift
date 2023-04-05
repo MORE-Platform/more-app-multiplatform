@@ -18,26 +18,31 @@ struct ConsentView: View {
         VStack {
             Title2(titleText: .constant(viewModel.permissionModel.studyTitle))
                 .padding(.bottom, 30)
-            
+
             ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "Participant Information", inTable: taskStringTable, withComment: "Participant Information of study."), lineLimit: 4)
                 .padding(.bottom, 35)
-            
-            
+
+
             ConsentList(permissionModel: .constant(viewModel.permissionModel))
             Spacer()
-            
-            
             if viewModel.isLoading {
                 ProgressView()
                     .progressViewStyle(.circular)
             } else {
-                MoreActionButton(disabled: .constant(false), alertOpen: $viewModel.showErrorAlert) {
+                MoreActionButton(disabled: $viewModel.requestedPermissions, alertOpen: $viewModel.showErrorAlert) {
                     viewModel.requestPermissions()
                 } label: {
-                    Text(verbatim: .localizedString(
-                        forKey: "accept_button",
-                        inTable: stringsTable,
-                        withComment: "Button to accept the study consent"))
+                    VStack {
+                        if viewModel.requestedPermissions {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        } else {
+                            Text(verbatim: .localizedString(
+                                forKey: "accept_button",
+                                inTable: stringsTable,
+                                withComment: "Button to accept the study consent"))
+                        }
+                    }
                 } errorAlert: {
                     Alert(title:
                         Text(verbatim: .localizedString(

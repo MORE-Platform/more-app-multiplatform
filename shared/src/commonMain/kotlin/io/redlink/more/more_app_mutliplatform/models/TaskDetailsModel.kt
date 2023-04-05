@@ -13,10 +13,11 @@ data class TaskDetailsModel(
     val start: Long,
     val end: Long,
     val participantInformation: String,
-    var dataPointCount: DataPointCountSchema?
+    val state: ScheduleState,
+    var dataPointCount: Long = 0
 ) {
     companion object {
-        fun createModelFrom(observation: ObservationSchema, schedule: ScheduleSchema, count: DataPointCountSchema?): TaskDetailsModel {
+        fun createModelFrom(observation: ObservationSchema, schedule: ScheduleSchema, count: Long): TaskDetailsModel {
             return TaskDetailsModel(
                 observationTitle = observation.observationTitle,
                 observationType = observation.observationType,
@@ -25,7 +26,8 @@ data class TaskDetailsModel(
                 start = schedule.start?.toInstant()?.toEpochMilliseconds()?: 0,
                 end = schedule.end?.toInstant()?.toEpochMilliseconds()?: 0,
                 participantInformation = observation.participantInfo,
-                dataPointCount = count
+                dataPointCount = count,
+                state = schedule.getState()
             )
         }
     }

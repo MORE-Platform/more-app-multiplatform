@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-    @EnvironmentObject var viewModel: ContentViewModel
+    @StateObject var viewModel = ContentViewModel()
     var body: some View {
         VStack {
             if viewModel.hasCredentials {
@@ -28,6 +28,5 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(ContentViewModel())
     }
 }

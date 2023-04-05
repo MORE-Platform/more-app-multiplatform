@@ -9,17 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.realm.kotlin.types.RealmList
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.Heading
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MediumTitle
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 
 @Composable
-fun ObservationList(observations: RealmList<ObservationSchema>) {
+fun ObservationList(observations: List<ObservationSchema>) {
     Column(
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxWidth()
     ) {
         observations.forEach { observation ->
             Row(
@@ -27,25 +27,24 @@ fun ObservationList(observations: RealmList<ObservationSchema>) {
                     .clickable {
 
                     }
-                    .padding(top = 12.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 12.dp, bottom = 0.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
                         .padding(bottom = 8.dp)
                 ) {
-                    Heading(
-                        text = observation.observationTitle,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    MediumTitle(text = observation.observationTitle)
                     BasicText(text = observation.observationType, color = MoreColors.Secondary)
                 }
                 Icon(
                     Icons.Default.ArrowForwardIos,
                     contentDescription = "View observation details",
                     tint = MoreColors.Primary,
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .size(16.dp)
                 )
             }
             MoreDivider()

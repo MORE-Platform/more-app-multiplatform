@@ -79,8 +79,9 @@ class RegistrationService (
                 if (credentialRepository.store(credentialModel) && credentialRepository.hasCredentials()) {
                     studyRepository.storeStudy(study)
                     onSuccess(credentialRepository.hasCredentials())
+                } else {
+                    onError(NetworkServiceError(null, "Could not store credentials"))
                 }
-                onError(NetworkServiceError(null, "Could not store credentials"))
             }
             networkError?.let {
                 onError(it)

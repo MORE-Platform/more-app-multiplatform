@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
 fun DatapointCollectionView (datapoints: Long, scheduleState: ScheduleState?){

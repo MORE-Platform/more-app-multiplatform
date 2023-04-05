@@ -1,6 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 data class ObservationManagerModel(
     val scheduleId: String,
@@ -8,5 +8,5 @@ data class ObservationManagerModel(
     val observationType: String,
     val observationUUID: String,
     val config: Map<String, Any>,
-    var state: ScheduleState = ScheduleState.NON
+    var state: ScheduleState = ScheduleState.DEACTIVATED
 )
