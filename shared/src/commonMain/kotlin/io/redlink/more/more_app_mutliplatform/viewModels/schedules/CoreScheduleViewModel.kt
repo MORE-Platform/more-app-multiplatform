@@ -4,7 +4,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
 import io.redlink.more.more_app_mutliplatform.extensions.time
@@ -23,21 +23,20 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     private val observationRepository = ObservationRepository()
     private val scheduleRepository = ScheduleRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
-    private var listJob: Job? = null
 
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow( emptyMap())
 
     init {
         scope.launch {
-//            scheduleRepository.allSchedulesWithStatus().collect {schemaList ->
-//                observationRepository.observationWithUndoneSchedules().firstOrNull()?.let {
-//                    scheduleModelList.value = createMap(it)
-//                }
-//            }
-            observationRepository.observationWithUndoneSchedules().firstOrNull()?.let { observationList ->
-                scheduleModelList.value = createMap(observationList)
-            }
+            scheduleRepository.allSchedulesWithStatus()
+                .combine(observationRepository.observations()){ schedules, observations ->
+                    observations.associate { observation ->
+                        observation.observationTitle to schedules
+                            .filter { it.observationId == observation.observationId } }
+                }.collect {
+                    scheduleModelList.emit(createMap(it))
+                }
         }
     }
 
@@ -79,10 +78,10 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
         dataRecorder.stop(scheduleId)
     }
 
-    private fun createMap(observationList: List<ObservationSchema>): Map<Long, List<ScheduleModel>> {
+    private fun createMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
         return observationList
             .asSequence()
-            .map { ScheduleModel.createModelsFrom(it) }
+            .map { ScheduleModel.createModelsFrom(it.key, it.value) }
             .flatten()
             .filter {
                         it.end > Clock.System.now().toEpochMilliseconds()
@@ -98,8 +97,17 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             .filterValues { it.isNotEmpty() }
     }
 
-    fun onScheduleModelListChange(provideNewState: ((Map<Long, List<ScheduleModel>>) -> Unit)): Closeable {
-        return scheduleModelList.asClosure(provideNewState)
+    fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
+        val job = Job()
+        scheduleModelList.onEach {
+            Napier.i { "New map state" }
+            provideNewState(it)
+        }.launchIn(CoroutineScope(Dispatchers.Main + job))
+        return object : Closeable {
+            override fun close() {
+                job.cancel()
+            }
+        }
     }
 }
 

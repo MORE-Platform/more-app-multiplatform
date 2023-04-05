@@ -28,11 +28,11 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
 
 class LeaveStudyLevelOneActivity: ComponentActivity() {
-    private val viewModel = SettingsViewModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.createCoreViewModel(this)
+        val viewModel = SettingsViewModel(this)
         setContent {
             MoreBackground(rightCornerContent = {
                 IconButton(onClick = { this.finish() }) {
@@ -58,7 +58,9 @@ fun LeaveStudyLvlOneView(model: SettingsViewModel) {
             .fillMaxWidth(0.8f)
     ) {
 
-        Title(text = model.permissionModel.value.studyTitle)
+        model.permissionModel.value?.let {
+            Title(text = it.studyTitle)
+        }
 
         Spacer(Modifier.height(80.dp))
 

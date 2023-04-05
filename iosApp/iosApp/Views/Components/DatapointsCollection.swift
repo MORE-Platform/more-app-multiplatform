@@ -10,7 +10,7 @@ import SwiftUI
 
 struct DatapointsCollection: View {
     @Binding var datapoints: Int64
-    @Binding var running: Bool
+    var running: Bool
     private let stringTable = "TaskDetail"
     var body: some View {
         VStack {
@@ -29,6 +29,6 @@ struct DatapointsCollection: View {
 
 struct DatapointsCollection_Previews: PreviewProvider {
     static var previews: some View {
-        DatapointsCollection(datapoints: .constant(100), running: .constant(false))
+        DatapointsCollection(datapoints: .constant(100), running: false)
     }
 }

@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ObservationDataManager"
 
-abstract class ObservationDataManager(database: RealmDatabase): Closeable {
+abstract class ObservationDataManager(): Closeable {
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
-    private val observationDataRepository = ObservationDataRepository(database)
-    private val dataPointCountRepository = DataPointCountRepository(database)
+    private val observationDataRepository = ObservationDataRepository()
+    private val dataPointCountRepository = DataPointCountRepository()
 
     init {
         scope.launch {
@@ -33,11 +33,8 @@ abstract class ObservationDataManager(database: RealmDatabase): Closeable {
 
     fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
-            val size = dataList.size.toLong()
             observationDataRepository.addMultiple(dataList)
-            scope.launch(Dispatchers.Default) {
-                dataPointCountRepository.incrementCount(scheduleIdList, size)
-            }
+            dataPointCountRepository.incrementCount(scheduleIdList, dataList.size.toLong())
         }
     }
 
