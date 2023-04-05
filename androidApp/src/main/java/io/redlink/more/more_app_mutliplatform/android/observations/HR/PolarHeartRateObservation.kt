@@ -61,16 +61,6 @@ class PolarHeartRateObservation(context: Context) : Observation(observationType 
         api.setPolarFilter(false)
         api.setApiCallback(polarCallback)
         return autoConnect()
-
-        // If there is need to log what is happening inside the SDK, it can be enabled like this:
-//        val enableSdkLogs = true
-//        if (enableSdkLogs) {
-//            api.setApiLogger { s: String -> Log.d(API_LOGGER_TAG, s) }
-//        }
-//
-//        startHR()
-//
-//        return autoConnect()
     }
 
     fun broadcast() {
@@ -79,14 +69,9 @@ class PolarHeartRateObservation(context: Context) : Observation(observationType 
             broadcastDisposable = api.startListenForPolarHrBroadcasts(null)
                 .subscribe(
                     { polarBroadcastData: PolarHrBroadcastData ->
-                        Log.d(
-                            TAG,
-                            "HR BROADCAST ${polarBroadcastData.polarDeviceInfo.deviceId} HR: ${polarBroadcastData.hr} batt: ${polarBroadcastData.batteryStatus}"
-                        )
+                        Log.d(TAG, "HR BROADCAST ${polarBroadcastData.polarDeviceInfo.deviceId} HR: ${polarBroadcastData.hr} batt: ${polarBroadcastData.batteryStatus}")
                     },
-                    { error: Throwable ->
-
-                        Log.e(TAG, "Broadcast listener failed. Reason $error")
+                    { error: Throwable -> Log.e(TAG, "Broadcast listener failed. Reason $error")
                     },
                     { Log.d(TAG, "complete") }
                 )
