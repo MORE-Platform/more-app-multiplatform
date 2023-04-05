@@ -30,7 +30,7 @@ class DataUploadWorker (
     private val credentialRepository: CredentialRepository
     private val networkService: NetworkService
     private var stopped = false
-    private val observationDataRepository = ObservationDataRepository(RealmDatabase)
+    private val observationDataRepository = ObservationDataRepository()
 
     init {
         val sharedPreferences = SharedPreferencesRepository(applicationContext)

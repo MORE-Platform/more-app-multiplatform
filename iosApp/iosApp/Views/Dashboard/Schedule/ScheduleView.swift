@@ -10,27 +10,31 @@ import SwiftUI
 import shared
 
 struct ScheduleView: View {
-    @EnvironmentObject var viewModel: ScheduleViewModel
+    @StateObject var viewModel: ScheduleViewModel
 
     var body: some View {
+        VStack {
             List(viewModel.scheduleDates, id: \.self) { key in
-                Section {
-                    ScheduleList(viewModel: viewModel, scheduleModels: viewModel.schedules[key])
-                } header: {
-                    VStack(alignment: .leading) {
-                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
-                            .font(Font.more.headline)
-                        Divider()
+                if let schedules = viewModel.schedules[key] {
+                    Section {
+                        ScheduleList(viewModel: viewModel, scheduleModels: schedules)
+                    } header: {
+                        VStack(alignment: .leading) {
+                            BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
+                                .font(Font.more.headline)
+                            Divider()
+                        }
                     }
+                    .padding(.bottom)
+                    .hideListRowSeparator()
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.more.secondaryLight)
                 }
-                .padding(.bottom)
-                .hideListRowSeparator()
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.more.secondaryLight)
-
+                
             }
             .listStyle(.plain)
             .clearListBackground()
+        }
 
     }
 }
@@ -38,8 +42,7 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView()
-                .environmentObject(ScheduleViewModel(observationFactory: IOSObservationFactory()))
+            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()))
         } topBarContent: {
             EmptyView()
         }

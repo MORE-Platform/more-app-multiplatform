@@ -19,7 +19,6 @@ class StudySchema : RealmObject {
     var consentInfo: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
-    var observations: RealmList<ObservationSchema> = realmListOf()
     var version: Long = 0
     var active: Boolean? = null
 
@@ -29,8 +28,6 @@ class StudySchema : RealmObject {
                 studyTitle = study.studyTitle
                 consentInfo = study.consentInfo
                 participantInfo = study.participantInfo
-                observations =
-                    study.observations.map { ObservationSchema.toSchema(it) }.toRealmList()
                 start = Instant.fromEpochMilliseconds(
                     study.start.atStartOfDayIn(TimeZone.currentSystemDefault())
                         .toEpochMilliseconds()

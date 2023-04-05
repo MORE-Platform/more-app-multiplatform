@@ -33,8 +33,7 @@ struct DashboardView: View {
                         }
                     .padding(.bottom)
                     if selection == 0 {
-                        ScheduleView()
-                            .environmentObject(dashboardViewModel.scheduleViewModel)
+                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
                     } else {
                         EmptyView()
                     }
@@ -46,9 +45,6 @@ struct DashboardView: View {
             }
             .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                
-            }
         }
     }
 }

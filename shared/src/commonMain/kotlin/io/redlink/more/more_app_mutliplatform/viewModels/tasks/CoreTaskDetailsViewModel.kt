@@ -21,31 +21,26 @@ class CoreTaskDetailsViewModel(
     private val dataRecorder: DataRecorder
 ) {
 
-    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository(RealmDatabase)
+    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
     private val scope = CoroutineScope(Dispatchers.Default + Job())
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
+    val dataCount = MutableStateFlow(0L)
 
     init {
         scope.launch {
             scheduleRepository.scheduleWithId(scheduleId).collect { schedule ->
                 schedule?.let { schedule ->
                     observationRepository.observationById(schedule.observationId).firstOrNull()?.let {
-                        val count = dataPointCountRepository.get(schedule.scheduleId.toHexString()).firstOrNull()
-                        taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule, count?.count ?: 0))
+                        taskDetailsModel.value = TaskDetailsModel.createModelFrom(it, schedule)
                     }
                 }
             }
         }
         scope.launch {
             dataPointCountRepository.get(scheduleId).collect { countSchema ->
-                countSchema?.let {
-                    taskDetailsModel.firstOrNull()?.let { model ->
-                        model.dataPointCount = it.count
-                        taskDetailsModel.emit(model)
-                    }
-                }
+                dataCount.value = countSchema?.count ?: 0
             }
         }
     }
@@ -53,6 +48,8 @@ class CoreTaskDetailsViewModel(
     fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
         return taskDetailsModel.asClosure(provideNewState)
     }
+
+    fun onNewDataCount(provideNewState: (Long?) -> Unit) = dataCount.asClosure(provideNewState)
 
     fun startObservation() {
         dataRecorder.start(scheduleId)

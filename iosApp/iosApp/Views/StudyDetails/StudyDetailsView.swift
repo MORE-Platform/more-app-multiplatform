@@ -22,7 +22,7 @@ struct StudyDetailsView: View {
             ScrollView{
                 VStack(alignment: .leading) {
                     
-                    Title2(titleText: .constant(viewModel.studyDetailsModel?.studyTitle ?? ""))
+                    Title2(titleText: .constant(viewModel.studyDetailsModel?.study.studyTitle ?? ""))
                         .padding(.top)
                         .padding(.bottom)
                     
@@ -38,12 +38,12 @@ struct StudyDetailsView: View {
                                              withComment: "string for study duration")))
                         
                         Spacer()
-                        BasicText(text: .constant((viewModel.studyDetailsModel?.start?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.studyDetailsModel?.end?.int64Value.toDateString(dateFormat: "dd.MM.yyyy") ?? "")),
+                        BasicText(text: .constant((viewModel.studyDetailsModel?.study.start?.epochSeconds.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.studyDetailsModel?.study.end?.epochSeconds.toDateString(dateFormat: "dd.MM.yyyy") ?? "")),
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)
                     
-                    ExpandableText(viewModel.studyDetailsModel?.participantInformation ?? "", String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
+                    ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
                         .padding(.bottom, 35)
                     
                     ExpandableContent(

@@ -11,9 +11,9 @@ import SwiftUI
 import shared
 
 struct QuestionListItem: View {
+    @ObservedObject var viewModel: ScheduleViewModel
     @State var taskDetailsActive = false
     @State var observationActive = false
-    @EnvironmentObject var viewModel: ScheduleViewModel
     private let stringTable = "ScheduleListView"
     
     var schedule: ScheduleModel

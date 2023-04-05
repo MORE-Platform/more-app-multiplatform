@@ -10,36 +10,30 @@ import Foundation
 import shared
 
 class SettingsViewModel: ObservableObject {
-    private var coreSettingsViewModel: CoreSettingsViewModel? = nil
+    private var coreSettingsViewModel: CoreSettingsViewModel
     private var storageRepository: UserDefaultsRepository = UserDefaultsRepository()
-    @Published var study: StudySchema? = StudySchema()
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "", studyParticipantInfo: "", studyConsentInfo: "Study Consent", consentInfo: [])
+    @Published var study: StudySchema?
+    @Published private(set) var permissionModel: PermissionModel?
     var delegate: ConsentViewModelListener? = nil
     @Published var dataDeleted = false
     @Published var showSettings = false
     
     init() {
         coreSettingsViewModel = CoreSettingsViewModel(credentialRepository: CredentialRepository(sharedStorageRepository: storageRepository), endpointRepository: EndpointRepository(sharedStorageRepository: storageRepository))
-        if let coreSettingsViewModel {
-            coreSettingsViewModel.onLoadStudy { study in
-                if let study {
-                    self.study = study
-                    self.permissionModel = PermissionModel.companion.createFromSchema(studySchema: study)
-                }
-            }
+        coreSettingsViewModel.onLoadStudy { study in
+            self.study = study
+        }
+        coreSettingsViewModel.onPermissionChange { permissions in
+            self.permissionModel = permissions
         }
     }
     
     func leaveStudy() {
-        if let coreSettingsViewModel {
-            coreSettingsViewModel.exitStudy()
-            self.delegate?.credentialsDeleted()
-        }
+        coreSettingsViewModel.exitStudy()
+        self.delegate?.credentialsDeleted()
     }
     
     func reloadStudyConfig() {
-        if let coreSettingsViewModel {
-            coreSettingsViewModel.reloadStudyConfig()
-        }
+        coreSettingsViewModel.reloadStudyConfig()
     }
 }

@@ -22,7 +22,7 @@ class CorePermissionViewModel(
     fun buildConsentModel() {
         registrationService.study?.let {
             permissionModel.value = PermissionModel.create(it)
-            observations.value = it.observations ?: emptyList()
+            observations.value = it.observations
         }
     }
 
