@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct MoreFilterOptionList: View {
+struct MoreFilterOptionList: View {    
     var multiSelect = false
     @Binding var title: String
     @Binding var optionList: [String]
@@ -37,12 +37,20 @@ struct MoreFilterOptionList: View {
                         
                         if multiSelect {
                             if selectedValueList.contains(filter) {
-                                let index = selectedValueList.firstIndex(of: filter)
-                                self.selectedValueList.remove(at: index ?? -1)
-                                //optionCallback(filter, false)
+                                if ((selectedValueList.firstIndex(of: filter)) != nil) {
+                                    let index = selectedValueList.firstIndex(of: filter)
+                                    self.selectedValueList.remove(at: index ?? -1)
+                                    optionCallback(filter, false)
+                                }
+                                
                             } else {
                                 self.selectedValueList.append(filter)
-                                //optionCallback(filter, true)
+                                
+                                if(filter == "All Filter") {
+                                    optionCallback("reset", false)
+                                } else {
+                                    optionCallback(filter, true)
+                                }
                             }
                            
                         } else {

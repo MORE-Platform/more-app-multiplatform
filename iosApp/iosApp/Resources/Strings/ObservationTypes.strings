@@ -5,3 +5,7 @@
   Created by Isabella Aigner on 05.04.23.
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
+
+"gps-mobile-observation" = "GPS Mobile Observation";
+"acc-mobile-observation" = "ACC Mobile Observation";
+"polar-verity-observytion" = "Polar Verity Observation";

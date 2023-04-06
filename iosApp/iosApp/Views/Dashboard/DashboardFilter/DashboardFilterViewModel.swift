@@ -8,22 +8,23 @@
 
 import SwiftUI
 import shared
+import RealmSwift
 
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
-    private let observationFactory: IOSObservationFactory
+    private let observationFactory: IOSObservationFactory = IOSObservationFactory()
     
     @Published var dateFilterList: [DateFilterModel]
     @Published var dateFilterStringList: [String]
-    @State var dateFilter: DateFilterModel
+    @Published var observationTypeFilterList: [String]
     
-    @Published var typeFilterList: [ObservationType]
+    @State var dateFilter: DateFilterModel
     @State var observationTypeFilter: [String]
     
+    
     init() {
-        self.observationFactory = IOSObservationFactory()
-        
-        self.typeFilterList = []
+                                                 
+        self.observationTypeFilterList = observationFactory.self.observations.map({ ($0 as AnyObject).observationType.observationType})
 
         self.dateFilterList = coreModel.getEnumAsList()
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
@@ -34,7 +35,7 @@ class DashboardFilterViewModel: ObservableObject {
         self.observationTypeFilter = [""]
     }
     
-    func getDateFilterValue(filter: String) -> DateFilterModel {
+    func setDateFilterValue(filter: String) {
         var filterModel : DateFilterModel = DateFilterModel.todayAndTomorrow
         
         if filter == "ENTIRE_TIME" { filterModel = DateFilterModel.entireTime }
@@ -42,7 +43,7 @@ class DashboardFilterViewModel: ObservableObject {
         else if filter == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
         else if filter == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
-        return filterModel
+        coreModel.setDateFilter(dateFilter: filterModel)
     }
 }
 

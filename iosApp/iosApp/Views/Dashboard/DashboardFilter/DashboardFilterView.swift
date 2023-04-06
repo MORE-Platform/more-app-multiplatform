@@ -14,8 +14,8 @@ struct DashboardFilterView: View {
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
     
-    @State var dateFilter: DateFilterModel = DateFilterModel.entireTime
-    @State var observationTypeFilter: [String] = ["GPS Mobile Sensor", "Lime Survey"]
+    @State var dateFilter: String = String(describing: DateFilterModel.todayAndTomorrow)
+    @State var observationTypeFilter: [String] = ["Today and Tomorrow"]
     
     var body: some View {
         Navigation {
@@ -30,35 +30,37 @@ struct DashboardFilterView: View {
                                             selectedValue: String(describing: dashboardFilterViewModel.dateFilter),
                                             optionCallback: { filter, bool in
                                                     if bool {
-                                                        dashboardFilterViewModel.coreModel.setDateFilter(dateFilter:
+                                                        /*dashboardFilterViewModel.coreModel.setDateFilter(dateFilter:
                                                             dashboardFilterViewModel.getDateFilterValue(filter: filter)
-                                                        )
+                                                        )*/
                                                     } else {
-                                                         dashboardFilterViewModel.coreModel.setDateFilter(dateFilter: DateFilterModel.todayAndTomorrow)
+                                                            //dashboardFilterViewModel.coreModel.setDateFilter(dateFilter: DateFilterModel.todayAndTomorrow)
+                                                        
                                                      }
-                                                 }
+                                            }
                             )
                                 .padding(.vertical, 25)
                         }
                         
                         VStack {
                             
-                            /*MoreFilterOptionList(
+                            MoreFilterOptionList(
                                 multiSelect: true,
                                 title: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")),
-                                selectOptionList: .constant(dashboardFilterViewModel.typeFilterList),
+                                optionList: .constant(dashboardFilterViewModel.observationTypeFilterList),
                                 selectedValueList: observationTypeFilter,
                                 optionCallback: { filter, bool in
                                     if bool {
-                                        //dashboardFilterViewModel.coreModel.addTypeFilter(filter)
-                                        //self.observationTypeFilter.insert(filter)
+                                        dashboardFilterViewModel.coreModel.addTypeFilter(type: filter)
                                     } else {
-                                        //dashboardFilterViewModel.coreModel.removeTypeFilter(filter)
-                                        //self.observationTypeFilter.remove(filter)
+                                        if (filter == "reset") {
+                                            dashboardFilterViewModel.coreModel.clearTypeFilters()
+                                        } else {
+                                            dashboardFilterViewModel.coreModel.removeTypeFilter(type: filter)
+                                        }
                                     }
-                                    
                                 }
-                            )*/
+                            )
                             /*SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")))*/
                         }
                         
