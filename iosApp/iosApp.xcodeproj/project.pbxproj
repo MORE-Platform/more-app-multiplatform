@@ -96,6 +96,7 @@
 		1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		B70CCE8529DEE06E00240EFA /* MoreFilterMulitOptionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70CCE8429DEE06E00240EFA /* MoreFilterMulitOptionList.swift */; };
 		B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */; };
 		B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */; };
 		B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */ = {isa = PBXBuildFile; fileRef = B748DF3329CAFBA90026C348 /* TaskDetail.strings */; };
@@ -250,6 +251,7 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B70CCE8429DEE06E00240EFA /* MoreFilterMulitOptionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterMulitOptionList.swift; sourceTree = "<group>"; };
 		B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldHL.swift; sourceTree = "<group>"; };
 		B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldSmBottom.swift; sourceTree = "<group>"; };
 		B748DF3329CAFBA90026C348 /* TaskDetail.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = TaskDetail.strings; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
 				B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */,
 				B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */,
+				B70CCE8429DEE06E00240EFA /* MoreFilterMulitOptionList.swift */,
 				B7CD760A29DEB8C7002B56EA /* MoreFilterSingleOptionList.swift */,
 				B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */,
 				B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */,
@@ -899,6 +902,7 @@
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				B70CCE8529DEE06E00240EFA /* MoreFilterMulitOptionList.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
 				1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */,
 				ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */,

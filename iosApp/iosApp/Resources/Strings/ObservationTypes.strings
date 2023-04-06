@@ -6,6 +6,7 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 
+"All Items" = "All Items";
 "gps-mobile-observation" = "GPS Mobile Observation";
 "acc-mobile-observation" = "ACC Mobile Observation";
-"polar-verity-observytion" = "Polar Verity Observation";
+"polar-verity-observation" = "Polar Verity Observation";
