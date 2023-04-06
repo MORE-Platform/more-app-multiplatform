@@ -18,8 +18,10 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var dateFilterStringList: [String]
     @Published var observationTypeFilterList: [String]
     
-    @State var dateFilter: DateFilterModel
-    @State var observationTypeFilter: [String]
+    @State var dateFilter: DateFilterModel = DateFilterModel.entireTime
+    @State var observationTypeFilter: [String] = []
+    
+    @State var currentFilter: FilterModel? = nil
     
     
     init() {
@@ -31,8 +33,7 @@ class DashboardFilterViewModel: ObservableObject {
             String(describing: filter)
         })
         
-        self.dateFilter = DateFilterModel.todayAndTomorrow
-        self.observationTypeFilter = [""]
+        setCurrentFilters()
     }
     
     func setDateFilterValue(filter: String) {
@@ -44,6 +45,15 @@ class DashboardFilterViewModel: ObservableObject {
         else if filter == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
         coreModel.setDateFilter(dateFilter: filterModel)
+    }
+    
+    func setCurrentFilters() {
+        coreModel.onLoadCurrentFilters { filters in
+            self.dateFilter = filters.dateFilter
+            self.observationTypeFilter = filters.typeFilter.map { value in
+                String(describing: value)
+            }
+        }
     }
 }
 

@@ -20,7 +20,7 @@ struct MoreFitlerSingleOptionList: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            SectionHeading(sectionTitle: .constant(title))
+            /* SectionHeading(sectionTitle: .constant(title))
                 .padding(15)
             Divider()
             
@@ -43,16 +43,8 @@ struct MoreFitlerSingleOptionList: View {
                 
                 Divider()
                 
-            }
+            } */
             
-        }
-        
-        func isSelectedSingleValue(label: String) -> Bool {
-            print(label)
-            if label == String(describing: self.selectedValue) {
-                return true
-            }
-            return false
         }
     }
 }

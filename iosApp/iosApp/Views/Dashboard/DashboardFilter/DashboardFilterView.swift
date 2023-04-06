@@ -48,7 +48,7 @@ struct DashboardFilterView: View {
                                 multiSelect: true,
                                 title: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")),
                                 optionList: .constant(dashboardFilterViewModel.observationTypeFilterList),
-                                selectedValueList: observationTypeFilter,
+                                selectedValueList: dashboardFilterViewModel.observationTypeFilter,
                                 optionCallback: { filter, bool in
                                     if bool {
                                         dashboardFilterViewModel.coreModel.addTypeFilter(type: filter)
@@ -71,6 +71,8 @@ struct DashboardFilterView: View {
                 }
             } topBarContent: {
                 EmptyView()
+            }.onAppear {
+                dashboardFilterViewModel.setCurrentFilters()
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
                 .navigationBarTitleDisplayMode(.inline)

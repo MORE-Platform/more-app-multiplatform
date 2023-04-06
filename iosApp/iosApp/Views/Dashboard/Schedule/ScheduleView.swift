@@ -15,7 +15,7 @@ struct ScheduleView: View {
     var body: some View {
         VStack {
             List(viewModel.scheduleDates, id: \.self) { key in
-                if let schedules = viewModel.schedules[key] {
+                if let schedules = viewModel.schedules[key.toKotlinLong()] {
                     Section {
                         ScheduleList(viewModel: viewModel, scheduleModels: schedules)
                     } header: {

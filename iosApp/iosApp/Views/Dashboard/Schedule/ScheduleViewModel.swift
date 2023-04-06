@@ -11,9 +11,13 @@ import shared
 class ScheduleViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
     private let coreModel: CoreScheduleViewModel
-    @Published var schedules: [Int64 : [ScheduleModel]] = [:] {
+    private let coreFilterViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
+    @Published var currentFilters: FilterModel? = nil
+    @Published var schedules: [KotlinLong : [ScheduleModel]] = [:] {
         didSet {
-            self.scheduleDates = Array(self.schedules.keys).sorted()
+            self.scheduleDates = Array(self.schedules.keys.map { key in
+                key.toInt64()
+            }).sorted()
         }
     }
     @Published var scheduleDates: [Int64] = []
@@ -23,17 +27,16 @@ class ScheduleViewModel: ObservableObject {
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             let states = scheduleMap.flatMap({$0.value}).filter{ $0.scheduleState == ScheduleState.active || $0.scheduleState == ScheduleState.running || $0.scheduleState == ScheduleState.paused}
-            if let self {
+            if self != nil {
                 print("New scheduleMap: \(states)")
                 let test =  scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
                     var result = partialResult
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
-                
-                self.schedules = test
             }
         }
+        loadCurrentFilters()
     }
     
     func start(scheduleId: String) {
@@ -46,5 +49,16 @@ class ScheduleViewModel: ObservableObject {
     
     func stop(scheduleId: String) {
         coreModel.stop(scheduleId: scheduleId)
+    }
+    
+    func applyFilterToAPI() {
+        schedules = coreFilterViewModel.applyFilter(scheduleModelList: schedules)
+        loadCurrentFilters()
+    }
+    
+    func loadCurrentFilters() {
+        coreFilterViewModel.onLoadCurrentFilters { filters in
+            self.currentFilters = filters
+        }
     }
 }

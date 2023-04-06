@@ -1,11 +1,19 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
+import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -81,5 +89,9 @@ class CoreDashboardFilterViewModel {
         return filteredMap.mapKeys {
             it.key.time()
         }
+    }
+
+    fun onLoadCurrentFilters(provideNewState: ((FilterModel) -> Unit)): Closeable {
+        return currentFilter.asClosure(provideNewState)
     }
 }
