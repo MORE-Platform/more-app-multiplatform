@@ -19,17 +19,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         ScheduleRepository().updateTaskStates(observationFactory: IOSObservationFactory())
         registerBackgroundTasks()
         FirebaseApp.configure()
-        FirebaseConfiguration.shared.setLoggerLevel(.min)
-        // 1
+        Messaging.messaging().delegate = self
+        FirebaseConfiguration.shared.setLoggerLevel(.max)
+        
         UNUserNotificationCenter.current().delegate = self
-        // 2
+        
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
           options: authOptions) { _, _ in }
-        // 3
-        application.registerForRemoteNotifications()
         
-        Messaging.messaging().delegate = self
+        application.registerForRemoteNotifications()
 
         return true
     }
@@ -62,7 +61,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler:
         @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([[.banner, .sound]])
+        completionHandler([[.badge, .sound]])
     }
     
     func userNotificationCenter(

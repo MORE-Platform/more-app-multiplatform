@@ -31,6 +31,7 @@ class SettingsViewModel: ObservableObject {
     func leaveStudy() {
         coreSettingsViewModel.exitStudy()
         self.delegate?.credentialsDeleted()
+        FCMService.deleteNotificationToken()
     }
     
     func reloadStudyConfig() {

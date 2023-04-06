@@ -38,8 +38,8 @@ struct ScheduleListItem: View {
                 ObservationButton(observationType: scheduleModel.observationType, state: scheduleModel.scheduleState, disabled: scheduleModel.scheduleState != .active
                     && scheduleModel.scheduleState != .running
                     && scheduleModel.scheduleState != .paused
-                    && (Date(timeIntervalSince1970: TimeInterval(scheduleModel.start)) > Date()
-                        || Date(timeIntervalSince1970: TimeInterval(scheduleModel.end)) <= Date())) {
+                    && (Date(timeIntervalSince1970: TimeInterval(scheduleModel.start) / 1000) > Date()
+                        || Date(timeIntervalSince1970: TimeInterval(scheduleModel.end) / 1000) <= Date())) {
                     if scheduleModel.scheduleState == ScheduleState.running {
                         viewModel.pause(scheduleId: scheduleModel.scheduleId)
                     } else {

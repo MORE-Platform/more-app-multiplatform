@@ -73,6 +73,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async {
             self.hasCredentials = true
         }
+        FCMService.getNotificationToken()
     }
 
     func credentialsDeleted() {

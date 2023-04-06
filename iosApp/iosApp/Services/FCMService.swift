@@ -21,14 +21,22 @@ class FCMService {
             if let error = error {
                 print("Error fetching FCM registration token: \(error)")
             } else if let token = token {
-                print("FCM registration token: \(token)")
                 Task { @MainActor in
                     do {
+                        print("FCM registration token: \(token)")
                         try await self.networkService.sendNotificationToken(token: token)
                     } catch {
-                        print(error)
+                        print("Token could not be stored")
                     }
                 }
+            }
+        }
+    }
+    
+    static func deleteNotificationToken() {
+        Messaging.messaging().deleteToken { error in
+            if let error = error {
+                print("Erro rdeleting FCM registration token: \(error)")
             }
         }
     }
