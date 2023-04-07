@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
-import com.polar.sdk.api.errors.PolarInvalidArgument
 import com.polar.sdk.api.model.*
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
@@ -32,188 +31,17 @@ private val permissions =
 class PolarHeartRateObservation(context: Context) :
     Observation(observationType = PolarVerityHeartRateType(permissions)), HeartRateListener {
 
-    private val api: PolarBleApi = PolarBleApiDefaultImpl.defaultImplementation(
-        context,
-        setOf(
-            PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_BATTERY_INFO,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
-        )
-    )
-    private val polarCallback = PolarObserverCallback()
     private val hasPermission = this.hasPermissions(context)
 
-    private var deviceId = ""
-
-    private lateinit var broadcastDisposable: Disposable
-    private var scanDisposable: Disposable? = null
-    private var autoConnectDisposable: Disposable? = null
-    private var hrDisposable: Disposable? = null
-
-    private var deviceConnected = false
     init {
-        Log.d(TAG, "version: " + PolarBleApiDefaultImpl.versionInfo())
-
-        api.setPolarFilter(false)
-        api.setApiCallback(polarCallback)
-        scanForDevices()
+        createPolarAPI(context)
     }
 
     override fun start(): Boolean {
-        Log.d(TAG, "version: " + PolarBleApiDefaultImpl.versionInfo())
-        Log.d(TAG, "Starting Observation")
-//        scanForDevices()
-//        return connectDevice(this.deviceId)
-//        return true
-
-        if (observerAccessible()) {
-            listeningToHR(this)
-            return true
-        }
-        return false
-
-        // If there is need to log what is happening inside the SDK, it can be enabled like this:
-//        val enableSdkLogs = true
-//        if (enableSdkLogs) {
-//            api.setApiLogger { s: String -> Log.d(API_LOGGER_TAG, s) }
-//        }
-//
-//        startHR()
-//
-//        return autoConnect()
-    }
-
-    fun listeningToHR(listener: HeartRateListener) = polarCallback.addListener(listener)
-
-    fun stopListenToHR(listener: HeartRateListener) {
-        if (polarCallback.removeListener(listener) == 0) {
-            api.cleanup()
-        }
-    }
-
-
-    fun broadcast() {
-        if (!this::broadcastDisposable.isInitialized || broadcastDisposable.isDisposed) {
-
-            broadcastDisposable = api.startListenForPolarHrBroadcasts(null)
-                .subscribe(
-                    { polarBroadcastData: PolarHrBroadcastData ->
-                        Log.d(
-                            TAG,
-                            "HR BROADCAST ${polarBroadcastData.polarDeviceInfo.deviceId} HR: ${polarBroadcastData.hr} batt: ${polarBroadcastData.batteryStatus}"
-                        )
-                    },
-                    { error: Throwable ->
-
-                        Log.e(TAG, "Broadcast listener failed. Reason $error")
-                    },
-                    { Log.d(TAG, "complete") }
-                )
-        } else {
-            broadcastDisposable.dispose()
-        }
-    }
-
-    fun connectDevice(device: String): Boolean {
-        try {
-            if (deviceConnected) {
-                api.disconnectFromDevice(device)
-            } else {
-                api.connectToDevice(device)
-                return true
-            }
-        } catch (polarInvalidArgument: PolarInvalidArgument) {
-            val attempt = if (deviceConnected) {
-                "disconnect"
-            } else {
-                "connect"
-            }
-            Log.e(TAG, "Failed to $attempt. Reason $polarInvalidArgument ")
-        }
         return true
     }
-
-    private fun autoConnect(): Boolean {
-        var success = false
-        if (autoConnectDisposable != null) {
-            autoConnectDisposable?.dispose()
-            return true
-        }
-        autoConnectDisposable = api.autoConnectToDevice(-60, null, null)
-            .subscribe(
-                {
-                    Log.d(TAG, "auto connect search complete")
-                    startHR()
-                    success = true
-                },
-                { throwable: Throwable -> Log.e(TAG, "" + throwable.toString()) }
-            )
-        return success
-    }
-
-    fun scanForDevices() {
-        val isDisposed = scanDisposable?.isDisposed ?: true
-        if (isDisposed) {
-        scanDisposable = api.searchForDevice()
-//                .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { polarDeviceInfo: PolarDeviceInfo ->
-                    Log.d(
-                        TAG,
-                        "polar device found id: " + polarDeviceInfo.deviceId + " address: " + polarDeviceInfo.address + " rssi: " + polarDeviceInfo.rssi + " name: " + polarDeviceInfo.name + " isConnectable: " + polarDeviceInfo.isConnectable
-                    )
-                    this.deviceId = polarDeviceInfo.deviceId
-                },
-                { error: Throwable ->
-                    Log.e(TAG, "Device scan failed. Reason $error")
-                },
-                {
-                    Log.d(TAG, "complete")
-                        scanDisposable?.dispose()
-                }
-            )
-        } else {
-            scanDisposable?.dispose()
-        }
-    }
-
-    fun startHR() {
-        val isDisposed = hrDisposable?.isDisposed ?: true
-        if (isDisposed) {
-            hrDisposable = api.startHrStreaming(deviceId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { hrData: PolarHrData ->
-                        for (sample in hrData.samples) {
-                            Log.d(
-                                TAG,
-                                "HR     bpm: ${sample.hr} rrs: ${sample.rrsMs} rrAvailable: ${sample.rrAvailable} contactStatus: ${sample.contactStatus} contactStatusSupported: ${sample.contactStatusSupported}"
-
-                            )
-                            Log.d(TAG, "HR Updated: ${sample.hr} BPM")
-                            if (sample.hr > 0) {
-                                storeData(sample.hr)
-                            }
-                        }
-                    },
-                    { error: Throwable ->
-                        Log.e(TAG, "HR stream failed. Reason $error")
-                    },
-                    { Log.d(TAG, "HR stream complete") }
-                )
-        } else {
-            // NOTE dispose will stop streaming if it is "running"
-            hrDisposable?.dispose()
-        }
-    }
-
     override fun stop(onCompletion: () -> Unit) {
-        stopListenToHR(this)
-        api.shutDown()
+
     }
 
     override fun observerAccessible(): Boolean {
@@ -223,10 +51,8 @@ class PolarHeartRateObservation(context: Context) :
     override fun applyObservationConfig(settings: Map<String, Any>) {
     }
 
-    private fun getPermission(): Set<String> = permissions
-
     private fun hasPermissions(context: Context): Boolean {
-        getPermission().forEach { permission ->
+        permissions.forEach { permission ->
             if (ActivityCompat.checkSelfPermission(
                     context,
                     permission
@@ -243,14 +69,61 @@ class PolarHeartRateObservation(context: Context) :
     }
 
     override fun onDeviceDisconnected() {
-        stopListenToHR(this)
-        api.shutDown()
+        scanForDevices()
     }
 
     override fun onHeartRateUpdate(hr: Int) {
         Log.d(TAG, "HR Updated: $hr BPM")
         if (hr > 0) {
             storeData(hr)
+        }
+    }
+
+    override fun onHeartRateReady() {
+
+    }
+
+    companion object {
+        private lateinit var api: PolarBleApi
+        private var scanDisposable: Disposable? = null
+        private var deviceId: String = ""
+        fun createPolarAPI(context: Context) {
+            api = PolarBleApiDefaultImpl.defaultImplementation(
+                context,
+                setOf(
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_BATTERY_INFO,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
+                    PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
+                )
+            )
+            api.setPolarFilter(false)
+            api.setApiCallback(PolarObserverCallback())
+        }
+
+
+        fun scanForDevices() {
+            scanDisposable = api.searchForDevice()
+                .subscribe(
+                    { polarDeviceInfo: PolarDeviceInfo ->
+                        connectDevice(polarDeviceInfo.deviceId)
+                    },
+                    { error: Throwable ->
+                        Log.e(TAG, "Device scan failed. Reason $error")
+                    },
+                    {
+                        Log.d(TAG, "complete")
+                    }
+                )
+        }
+
+        private fun connectDevice(device: String) {
+            api.connectToDevice(device)
+            deviceId = device
+            scanDisposable?.dispose()
         }
     }
 }

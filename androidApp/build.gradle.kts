@@ -63,6 +63,6 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx:23.1.2")
     implementation("io.github.aakira:napier:2.6.1")
     implementation("com.github.polarofficial:polar-ble-sdk:${sdk_version}")
-    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
-    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.6")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
 }
