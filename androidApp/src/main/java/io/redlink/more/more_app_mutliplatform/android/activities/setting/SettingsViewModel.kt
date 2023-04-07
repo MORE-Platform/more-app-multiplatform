@@ -18,31 +18,29 @@ import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SettingsViewModel(): ViewModel() {
-    private var coreSettingsViewModel: CoreSettingsViewModel? = null
-    private val studySchema = mutableStateOf<StudySchema?>(null)
-    var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
+class SettingsViewModel(context: Context): ViewModel() {
+    private val storageRepository = SharedPreferencesRepository(context)
+    private var coreSettingsViewModel = CoreSettingsViewModel(CredentialRepository(storageRepository), EndpointRepository(storageRepository))
+    val study = mutableStateOf<StudySchema?>(null)
+    val permissionModel = mutableStateOf<PermissionModel?>(null)
 
-    val permissionModel =
-        mutableStateOf(PermissionModel("Title", "Participation Info", "Study Consent Info", emptyList()))
-
-    fun createCoreViewModel(context: Context) {
-        (context as? Activity)?.let {
-            val storageRepository = SharedPreferencesRepository(it)
-            coreSettingsViewModel = CoreSettingsViewModel(CredentialRepository(storageRepository), EndpointRepository(storageRepository))
-            viewModelScope.launch(Dispatchers.IO) {
-                coreSettingsViewModel?.let {
-                    it.loadStudy().collect { study ->
-                        withContext(Dispatchers.Main) {
-                            study?.let {
-                                studySchema.value = study
-                                permissionModel.value = PermissionModel.createFromSchema(study)
-                            }
-                        }
-                    }
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            coreSettingsViewModel.study.collect {
+                withContext(Dispatchers.Main) {
+                    study.value = it
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            coreSettingsViewModel.permissionModel.collect {
+                withContext(Dispatchers.Main) {
+                    permissionModel.value = it
                 }
             }
         }
@@ -50,7 +48,7 @@ class SettingsViewModel(): ViewModel() {
 
     fun removeParticipation(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel?.dataDeleted?.collect {
+            coreSettingsViewModel.dataDeleted.collect {
                 if (it) {
                     (context as? Activity)?.let { activity ->
                         activity.finish()
@@ -59,7 +57,7 @@ class SettingsViewModel(): ViewModel() {
                 }
             }
         }
-        coreSettingsViewModel?.exitStudy()
+        coreSettingsViewModel.exitStudy()
     }
 
     fun openLeaveStudyLvlOne(context: Context) {

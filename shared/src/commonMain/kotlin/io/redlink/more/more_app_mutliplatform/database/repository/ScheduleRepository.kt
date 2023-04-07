@@ -5,6 +5,7 @@ import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -22,7 +24,7 @@ class ScheduleRepository: Repository<ScheduleSchema>() {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     override fun count(): Flow<Long> = realmDatabase.count<ScheduleSchema>()
 
-    fun allSchedulesWithStatus(done: Boolean = false) = realmDatabase.query<ScheduleSchema>(query = "done = $0", queryArgs = arrayOf(done))
+    fun allSchedulesWithStatus(done: Boolean = false) = realmDatabase.realm?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
 
     fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING) = realmDatabase.query<ScheduleSchema>(query = "state = $0", queryArgs = arrayOf(scheduleState.name))
 
@@ -51,7 +53,6 @@ class ScheduleRepository: Repository<ScheduleSchema>() {
 
     fun updateTaskStates(observationFactory: ObservationFactory? = null) {
         scope.launch {
-            Napier.i { "Updating all tasks" }
             val restartableTypes = observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
             val now = Clock.System.now()
             realmDatabase.realm?.let {
@@ -68,7 +69,6 @@ class ScheduleRepository: Repository<ScheduleSchema>() {
                             scheduleSchema.updateState()
                         }
                     }
-
                 }
             }
         }

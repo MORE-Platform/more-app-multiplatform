@@ -18,7 +18,6 @@ class ObservationSchema : RealmObject {
     var observationTitle: String = ""
     var participantInfo: String = ""
     var configuration: String? = null
-    var schedules: RealmList<ScheduleSchema> = realmListOf()
     var hidden: Boolean? = null
     var version: Long = 0
     var required: Boolean = false
@@ -35,14 +34,6 @@ class ObservationSchema : RealmObject {
                 hidden = observation.hidden
                 required = observation.required
                 version = observation.version
-                schedules = observation.schedule.mapNotNull {
-                    ScheduleSchema.toSchema(
-                        it,
-                        observation.observationId,
-                        observationType
-                    )
-                }
-                    .toRealmList()
             }
         }
     }

@@ -26,6 +26,7 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
     val context = LocalContext.current
     val enabled =
         (scheduleModel.scheduleState == ScheduleState.ACTIVE
+                || scheduleModel.scheduleState == ScheduleState.RUNNING
                 || scheduleModel.scheduleState == ScheduleState.PAUSED)
                 || (scheduleModel.start.toDate() <= Date() && Date() < scheduleModel.end.toDate())
     Column(

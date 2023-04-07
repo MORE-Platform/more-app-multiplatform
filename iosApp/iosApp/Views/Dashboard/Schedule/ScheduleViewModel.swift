@@ -11,18 +11,27 @@ import shared
 class ScheduleViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
     private let coreModel: CoreScheduleViewModel
-    @Published var schedules: [UInt64 : [ScheduleModel]] = [:]
-    @Published var scheduleDates: [UInt64] = []
+    @Published var schedules: [Int64 : [ScheduleModel]] = [:] {
+        didSet {
+            self.scheduleDates = Array(self.schedules.keys).sorted()
+        }
+    }
+    @Published var scheduleDates: [Int64] = []
     
     init(observationFactory: IOSObservationFactory) {
         recorder.updateTaskStates()
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
-        coreModel.onScheduleModelListChange { scheduleMap in
-            DispatchQueue.main.async {
-                for (key, value) in scheduleMap {
-                    self.schedules[UInt64(truncating: key)] = value
+        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
+            let states = scheduleMap.flatMap({$0.value}).filter{ $0.scheduleState == ScheduleState.active || $0.scheduleState == ScheduleState.running || $0.scheduleState == ScheduleState.paused}
+            if let self {
+                print("New scheduleMap: \(states)")
+                let test =  scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
                 }
-                self.scheduleDates = Array(self.schedules.keys).sorted()
+                
+                self.schedules = test
             }
         }
     }
