@@ -100,7 +100,6 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
         val job = Job()
         scheduleModelList.onEach {
-            Napier.i { "New map state" }
             provideNewState(it)
         }.launchIn(CoroutineScope(Dispatchers.Main + job))
         return object : Closeable {

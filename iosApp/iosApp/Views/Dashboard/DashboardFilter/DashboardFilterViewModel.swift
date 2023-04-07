@@ -8,7 +8,6 @@
 
 import SwiftUI
 import shared
-import RealmSwift
 
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
