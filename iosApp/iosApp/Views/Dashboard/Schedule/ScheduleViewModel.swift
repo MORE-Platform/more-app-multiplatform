@@ -13,11 +13,9 @@ class ScheduleViewModel: ObservableObject {
     private let coreModel: CoreScheduleViewModel
     private let coreFilterViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     @Published var currentFilters: FilterModel? = nil
-    @Published var schedules: [KotlinLong : [ScheduleModel]] = [:] {
+    @Published var schedules: [Int64 : [ScheduleModel]] = [:] {
         didSet {
-            self.scheduleDates = Array(self.schedules.keys.map { key in
-                key.toInt64()
-            }).sorted()
+            self.scheduleDates = Array(self.schedules.keys.sorted())
         }
     }
     @Published var scheduleDates: [Int64] = []
@@ -52,7 +50,9 @@ class ScheduleViewModel: ObservableObject {
     }
     
     func applyFilterToAPI() {
-        schedules = coreFilterViewModel.applyFilter(scheduleModelList: schedules)
+        /*schedules = coreFilterViewModel.applyFilter(scheduleModelList: schedules).map({ <#(key: KotlinLong, value: [ScheduleModel])#> in
+            <#code#>
+        })*/
         loadCurrentFilters()
     }
     

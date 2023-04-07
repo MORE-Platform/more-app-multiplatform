@@ -83,7 +83,8 @@ class CoreDashboardFilterViewModel {
             currentFilter.value.dateFilter.duration?.let {
                 date <= Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(it)
             } ?: true
-                    && scheduleListAsLocalDate[date]?.isNotEmpty() ?: false
+                    && scheduleListAsLocalDate[date]?.isNotEmpty()
+                    ?: false
         }
 
         return filteredMap.mapKeys {

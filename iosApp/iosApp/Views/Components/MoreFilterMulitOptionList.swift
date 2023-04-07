@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MoreFilterMultiOptionList: View {
-    private let observationStringTable: String = "ObservationTypes"
+    @Binding var stringTable: String
     @Binding var title: String
     @Binding var optionList: [String]
     @State var selectedValueList: [String] = []
@@ -25,10 +25,10 @@ struct MoreFilterMultiOptionList: View {
             ForEach(optionList, id: \.self) { filter in
 
                     MoreFilterOption(
-                        label: String.localizedString(forKey: filter, inTable: observationStringTable, withComment: "Observation filter option"),
+                        label: String.localizedString(forKey: filter, inTable: stringTable, withComment: "Multi selection filter option"),
                         selected: isSelectedMultiValue(
                             value: filter,
-                            label: String.localizedString(forKey: filter, inTable: observationStringTable, withComment: "Observation filter option")
+                            label: String.localizedString(forKey: filter, inTable: stringTable, withComment: "Observation filter option")
                         ),
                         callback: {_ in
                             if filter != "All Items" && self.selectedValueList.contains("All Items") {

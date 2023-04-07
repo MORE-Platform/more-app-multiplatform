@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct MoreFiltreSingleOptionList: View {
+    @Binding var stringTable: String
     @Binding var title: String
     @Binding var optionList: [String]
-    private let dashboardStringTable: String = "DashboardFilter"
     @State var selectedValue: String = ""
     let optionCallback: (String, Bool) -> ()
     
@@ -25,7 +25,7 @@ struct MoreFiltreSingleOptionList: View {
             ForEach(optionList, id: \.self) { filter in
 
                     MoreFilterOption(
-                        label: String.localizedString(forKey: filter, inTable: dashboardStringTable, withComment: "Timeframe filter option"),
+                        label: String.localizedString(forKey: filter, inTable: stringTable, withComment: "Single filter option"),
                         selected:isSelectedSingleValue(label: filter),
                         callback: {_ in
                         
