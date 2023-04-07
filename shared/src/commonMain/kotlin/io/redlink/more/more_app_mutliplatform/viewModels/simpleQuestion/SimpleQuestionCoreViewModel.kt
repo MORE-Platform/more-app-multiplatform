@@ -41,8 +41,7 @@ class SimpleQuestionCoreViewModel(
                                 taskDetailsModel.emit(
                                     TaskDetailsModel.createModelFrom(
                                         observationSchema,
-                                        schedule,
-                                        0
+                                        schedule
                                     )
                                 )
 

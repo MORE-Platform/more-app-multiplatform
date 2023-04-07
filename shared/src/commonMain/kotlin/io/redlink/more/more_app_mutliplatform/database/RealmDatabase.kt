@@ -10,13 +10,9 @@ import io.realm.kotlin.types.BaseRealmObject
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 object RealmDatabase {
@@ -41,15 +37,15 @@ object RealmDatabase {
         }
     }
 
-    suspend fun storeAsync(realmObject: RealmObject, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.write {
-            copyToRealm(realmObject, updatePolicy)
+    fun store(realmObjects: List<RealmObject>, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
+        realm?.writeBlocking {
+            realmObjects.map { copyToRealm(it, updatePolicy) }
         }
     }
 
     fun storeAll(
         realmObjects: Collection<RealmObject>,
-        updatePolicy: UpdatePolicy = UpdatePolicy.ERROR
+        updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
         realm?.writeBlocking {
             realmObjects.map { copyToRealm(it, updatePolicy) }

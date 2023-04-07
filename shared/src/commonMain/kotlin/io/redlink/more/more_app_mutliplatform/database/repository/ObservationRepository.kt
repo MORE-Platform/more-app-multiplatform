@@ -6,18 +6,22 @@ import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
 import kotlinx.coroutines.flow.*
 
-class ObservationRepository(database: RealmDatabase = DatabaseManager.database) : Repository<ObservationSchema>(database) {
+class ObservationRepository : Repository<ObservationSchema>() {
+    private val scheduleRepository = ScheduleRepository()
 
     override fun count(): Flow<Long> = realmDatabase.count<ObservationSchema>()
 
-    fun observationWithUndoneSchedules(): Flow<List<ObservationSchema>> {
-        return realmDatabase.query(
-            query = "schedules.done = false",
-            limit = 1000
-        )
+    fun observations() = realmDatabase.query<ObservationSchema>()
+
+    fun observationWithUndoneSchedules(): Flow<Map<ObservationSchema, List<ScheduleSchema>>> {
+        return scheduleRepository.allSchedulesWithStatus().combine(observations()){ schedules, observations ->
+            observations.associateWith { observation -> schedules.filter { it.observationId == observation.observationId } }
+        }
     }
 
     fun lastCollection(type: String, timestamp: Long) {
@@ -39,7 +43,7 @@ class ObservationRepository(database: RealmDatabase = DatabaseManager.database) 
        return collectionTimestamp(type).asClosure(newState)
     }
 
-    fun collectObservationsWithUndoneSchedules(newState: (List<ObservationSchema>) -> Unit): Closeable {
+    fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationSchema, List<ScheduleSchema>>) -> Unit): Closeable {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 

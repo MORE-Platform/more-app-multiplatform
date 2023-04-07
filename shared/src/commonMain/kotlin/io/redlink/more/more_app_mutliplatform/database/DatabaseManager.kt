@@ -18,7 +18,6 @@ object DatabaseManager: Closeable {
     }
 
     fun deleteAll() {
-
         database.deleteAll()
     }
 

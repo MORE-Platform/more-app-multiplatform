@@ -6,7 +6,7 @@ import io.redlink.more.more_app_mutliplatform.android.workers.DataUploadWorker
 import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 
-class AndroidObservationDataManager(context: Context) : ObservationDataManager(RealmDatabase) {
+class AndroidObservationDataManager(context: Context) : ObservationDataManager() {
     private val workManager = WorkManager.getInstance(context)
     private val workerConstraints =
         Constraints.Builder()

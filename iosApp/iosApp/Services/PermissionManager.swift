@@ -53,7 +53,6 @@ class PermissionManager: NSObject, ObservableObject {
             }
         }
     }
-
     private var bluetoothNeeded: Bool = false
 
     var permissionsGranted: Bool = true
@@ -126,14 +125,8 @@ class PermissionManager: NSObject, ObservableObject {
             } else if cmSensorRecorderNeeded && cmSensorStatus != .accepted {
                 requestCMSensorRecorder()
             } else {
-                if bluetoothStatus == .declined {
-                    observer.declined()
-                } else {
-                    observer.accepted()
-                }
                 observer.accepted()
             }
-
         }
     }
 

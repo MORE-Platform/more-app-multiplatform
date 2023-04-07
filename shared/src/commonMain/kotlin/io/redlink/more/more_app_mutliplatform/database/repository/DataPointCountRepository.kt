@@ -6,7 +6,7 @@ import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import kotlinx.coroutines.flow.Flow
 
-class DataPointCountRepository(database: RealmDatabase): Repository<DataPointCountSchema>(database) {
+class DataPointCountRepository : Repository<DataPointCountSchema>() {
     override fun count(): Flow<Long> {
         return realmDatabase.count<DataPointCountSchema>()
     }

@@ -14,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
@@ -102,7 +104,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 title = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = StudyDetailsViewModel(viewModel.studyDetailsViewModel))
+                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel)
+            }
+            composable(NavigationScreen.OBSERVATION_FILTER.route) {
+                title = NavigationScreen.OBSERVATION_FILTER.stringRes()
+                viewModel.showBackButton.value = true
+                DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.dashboardFilterViewModel))
             }
         }
     }
