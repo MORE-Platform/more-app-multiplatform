@@ -12,6 +12,7 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     SETTINGS("Settings", R.string.nav_settings),
     SCHEDULE_DETAILS("Task Details", R.string.nav_task_detail),
     STUDY_DETAILS("Study Details", R.string.nav_study_details),
+    NOTIFICATION_FILTER("Notification Filter", R.string.nav_notification_filter),
     OBSERVATION_FILTER("Observation Filter", R.string.nav_observation_filter);
 
     @Composable

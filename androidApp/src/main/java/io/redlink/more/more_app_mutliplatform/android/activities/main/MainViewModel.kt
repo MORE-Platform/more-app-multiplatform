@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
+import NotificationFilterViewModel
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ class MainViewModel(context: Context): ViewModel() {
     val studyDetailsViewModel = StudyDetailsViewModel()
 
     val notificationViewModel = NotificationViewModel()
+    val notificationFilterViewModel = NotificationFilterViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
 }

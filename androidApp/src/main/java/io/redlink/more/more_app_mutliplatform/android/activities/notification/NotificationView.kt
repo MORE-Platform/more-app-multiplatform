@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentButtons
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardProgress
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.FilterView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.NotificationFilterViewButton
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.AccordionReadMore
@@ -39,6 +42,7 @@ import io.redlink.more.more_app_mutliplatform.android.shared_composables.Message
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
     val context = LocalContext.current
 
+
     LazyColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,6 +50,15 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
             .fillMaxHeight()
             .fillMaxWidth(0.9f)
     ) {
+
+        item() {
+            Column(modifier = Modifier
+                .height(IntrinsicSize.Min
+                )) {
+                NotificationFilterViewButton(navController, viewModel = viewModel)
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+        }
 
         items(viewModel.notificationList) { notification ->
             NotificationItem(title = notification.title, message = notification.message, read = notification.read, isImportant = notification.isImportant)

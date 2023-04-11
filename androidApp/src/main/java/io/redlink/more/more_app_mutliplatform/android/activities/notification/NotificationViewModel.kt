@@ -18,9 +18,12 @@ data class Notification (
     val isImportant: Boolean
 )
 
+
 class NotificationViewModel: ViewModel() {
     //private val coreViewModel = CoreNotificationViewModel()
     val model = mutableStateOf<StudyDetailsModel?>(null)
+    var currentFilter = "All Notifications"
+
     val notificationList: List<Notification> = listOf(
         Notification(
             title = "Observation Accelerometer Test is ready to start",

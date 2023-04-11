@@ -1,5 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
+import NotificationFilterView
+import NotificationFilterViewModel
 import NotificationView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,6 +21,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filte
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.NotificationViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
@@ -111,6 +114,11 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 title = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
                 DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.dashboardFilterViewModel))
+            }
+            composable(NavigationScreen.NOTIFICATION_FILTER.route) {
+                title = NavigationScreen.NOTIFICATION_FILTER.stringRes()
+                viewModel.showBackButton.value = true
+                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel, notificationViewModel = viewModel.notificationViewModel)
             }
         }
     }
