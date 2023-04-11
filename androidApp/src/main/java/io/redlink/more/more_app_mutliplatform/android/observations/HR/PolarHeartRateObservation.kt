@@ -8,10 +8,10 @@ import androidx.core.app.ActivityCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.*
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val TAG = "PolarHearRateObservation"
 private val permissions =
@@ -32,16 +32,27 @@ class PolarHeartRateObservation(context: Context) :
     Observation(observationType = PolarVerityHeartRateType(permissions)), HeartRateListener {
 
     private val hasPermission = this.hasPermissions(context)
-
+    private val callback = PolarObserverCallback()
     init {
-        createPolarAPI(context)
+        callback.addListener(this)
+        createPolarAPI(context, callback)
     }
 
     override fun start(): Boolean {
+        heartRateDisposable = api.startHrStreaming(deviceId).subscribe(
+            { polarData ->
+                Log.i(TAG, "$polarData")
+                storeData(mapOf("hr" to polarData.samples[0].hr))
+            },
+            {
+                Log.e(TAG, "$it")
+            })
         return true
     }
-    override fun stop(onCompletion: () -> Unit) {
 
+    override fun stop(onCompletion: () -> Unit) {
+        heartRateDisposable?.dispose()
+        onCompletion()
     }
 
     override fun observerAccessible(): Boolean {
@@ -65,10 +76,12 @@ class PolarHeartRateObservation(context: Context) :
     }
 
     override fun onDeviceConnected() {
+        scanDisposable?.dispose()
         Log.d(TAG, "Device connected. Listening to HR")
     }
 
     override fun onDeviceDisconnected() {
+        hrReady.value = false
         scanForDevices()
     }
 
@@ -80,14 +93,16 @@ class PolarHeartRateObservation(context: Context) :
     }
 
     override fun onHeartRateReady() {
-
+        hrReady.value = true
     }
 
     companion object {
         private lateinit var api: PolarBleApi
         private var scanDisposable: Disposable? = null
+        private var heartRateDisposable: Disposable? = null
         private var deviceId: String = ""
-        fun createPolarAPI(context: Context) {
+        var hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        fun createPolarAPI(context: Context, callback: PolarObserverCallback) {
             api = PolarBleApiDefaultImpl.defaultImplementation(
                 context,
                 setOf(
@@ -101,7 +116,7 @@ class PolarHeartRateObservation(context: Context) :
                 )
             )
             api.setPolarFilter(false)
-            api.setApiCallback(PolarObserverCallback())
+            api.setApiCallback(callback)
         }
 
 
@@ -123,7 +138,6 @@ class PolarHeartRateObservation(context: Context) :
         private fun connectDevice(device: String) {
             api.connectToDevice(device)
             deviceId = device
-            scanDisposable?.dispose()
         }
     }
 }
