@@ -9,24 +9,17 @@
 import SwiftUI
 
 struct MoreFilterOption: View {
-    let selected: Bool
+    @Binding var selectedValuesInList: [String]
+    @State var underlineText = false
+    @State var isSelected = false
+    var option: String
     let label: String
-    let callback: (String) -> ()
-    
-    init(
-        label: String,
-        selected: Bool = false,
-        callback: @escaping (String) -> ()
-    ) {
-        self.label = label
-        self.selected = selected
-        self.callback = callback
-    }
+    var callback: () -> ()
     
     var body: some View {
         VStack {
             HStack {
-                if selected {
+                if selectedValuesInList.contains(option) {
                     Image(systemName: "checkmark")
                         .foregroundColor(.more.approved)
                 } else {
@@ -34,13 +27,15 @@ struct MoreFilterOption: View {
                         .frame(width: 5)
                 }
                 Button(action: {
-                    self.callback(self.label)
+                    self.callback()
                 }) {
-                    MoreFilterText(text: .constant(label), color: self.selected ? .constant(.more.primary) : .constant(.more.secondary), underline: .constant(self.selected))
+                    MoreFilterText(text: .constant(label), isSelected: $isSelected)
                 }
             }
             .padding(5)
-        }
+        }.onChange(of: selectedValuesInList, perform: { _ in
+            isSelected = selectedValuesInList.contains(option)
+        })
     }
 }
 

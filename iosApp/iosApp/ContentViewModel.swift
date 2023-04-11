@@ -32,8 +32,8 @@ class ContentViewModel: ObservableObject {
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
         
         loginViewModel = LoginViewModel(registrationService: registrationService)
-        dashboardViewModel = DashboardViewModel()
         dashboardFilterViewModel = DashboardFilterViewModel()
+        dashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel)
         consentViewModel = ConsentViewModel(registrationService: registrationService)
         settingsViewModel = SettingsViewModel()
         hasCredentials = credentialRepository.hasCredentials()

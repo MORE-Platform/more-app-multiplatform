@@ -10,15 +10,22 @@ import SwiftUI
 
 struct MoreFilterText: View {
     @Binding var text: String
-    @Binding var color: Color
-    @Binding var underline: Bool
+    @Binding var isSelected: Bool
     
     var body: some View {
-        Text(text)
-            .font(.system(size: 16))
-            .font(Font.body.bold())
-            .foregroundColor(color)
-            .underline(underline, color: color)
+        if isSelected {
+            Text(text)
+                .font(.system(size: 16))
+                .font(Font.body.bold())
+                .foregroundColor(Color.more.primary)
+                .underline(true, color: Color.more.primary)
+        } else {
+            Text(text)
+                .font(.system(size: 16))
+                .font(Font.body.bold())
+                .foregroundColor(Color.more.secondary)
+                .underline(false, color: Color.more.secondary)
+        }
     }
 }
 

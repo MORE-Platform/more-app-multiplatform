@@ -10,8 +10,8 @@ import shared
 
 class ScheduleViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
+    let filterViewModel: DashboardFilterViewModel
     private let coreModel: CoreScheduleViewModel
-    private let coreFilterViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private var currentFilters: FilterModel? = nil
     @Published var schedules: [Int64: [ScheduleModel]] = [:] {
         didSet {
@@ -21,18 +21,23 @@ class ScheduleViewModel: ObservableObject {
 
     @Published var scheduleDates: [Int64] = []
 
-    init(observationFactory: IOSObservationFactory) {
+    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
         recorder.updateTaskStates()
+        filterViewModel = dashboardFilterViewModel
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
                 self.schedules = scheduleMap.converttoInt64()
             }
         }
-        coreFilterViewModel.onLoadCurrentFilters { [weak self] filters in
+    }
+    
+    func loadCurrentFilters() {
+        filterViewModel.coreModel.onLoadCurrentFilters { [weak self] filters in
+            print(filters)
             if let self {
                 self.currentFilters = filters
-                applyFilterToAPI()
+                self.applyFilterToAPI()
             }
         }
     }
@@ -50,7 +55,7 @@ class ScheduleViewModel: ObservableObject {
     }
 
     func applyFilterToAPI() {
-        let filteredSchedules = coreFilterViewModel.applyFilter(scheduleModelList: schedules.convertToKotlinLong()).converttoInt64()
+        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: schedules.convertToKotlinLong()).converttoInt64()
     }
 
 }

@@ -93,7 +93,7 @@ class CoreDashboardFilterViewModel {
     fun onLoadCurrentFilters(provideNewState: ((FilterModel) -> Unit)): Closeable {
         val job = Job()
         currentFilter.onEach {
-            Napier.i { "New Filter Model" }
+            Napier.i { "New Filter Model: ${currentFilter.value}" }
             provideNewState(it)
         }.launchIn(CoroutineScope(Dispatchers.Main + job))
         return object : Closeable {

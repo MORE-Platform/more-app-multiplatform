@@ -414,6 +414,7 @@
 		1F8847B829914BD50023EF10 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				EDB51FA029E594D200F49136 /* Filters */,
 				1F8847E72992BEE30023EF10 /* BasicText.swift */,
 				1F13BA422993951200938C1E /* ConsentList.swift */,
 				1F13BA44299396B200938C1E /* ConsentListHeader.swift */,
@@ -430,11 +431,6 @@
 				B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */,
 				B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */,
 				B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */,
-				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
-				B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */,
-				B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */,
-				B70CCE8429DEE06E00240EFA /* MoreFilterMulitOptionList.swift */,
-				B7CD760A29DEB8C7002B56EA /* MoreFilterSingleOptionList.swift */,
 				B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */,
 				B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */,
 				1FDC264929C1CFE80011D8A4 /* NavigationText.swift */,
@@ -679,6 +675,18 @@
 				ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */,
 			);
 			path = TaskDetails;
+			sourceTree = "<group>";
+		};
+		EDB51FA029E594D200F49136 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */,
+				B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */,
+				B79DBA5A29D34AB400A1F547 /* MoreFilterOptionList.swift */,
+				B70CCE8429DEE06E00240EFA /* MoreFilterMulitOptionList.swift */,
+				B7CD760A29DEB8C7002B56EA /* MoreFilterSingleOptionList.swift */,
+			);
+			path = Filters;
 			sourceTree = "<group>";
 		};
 		EDBB2B4629B8CFAE00CA973E /* Settings */ = {

@@ -11,7 +11,6 @@ import shared
 
 struct DashboardView: View {
     @StateObject var dashboardViewModel: DashboardViewModel
-    @StateObject var dashboardFilterViewModel: DashboardFilterViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
@@ -29,7 +28,7 @@ struct DashboardView: View {
                     
                     MoreFilter(text: .constant(String
                         .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected"))) {
-                            DashboardFilterView(dashboardFilterViewModel: dashboardFilterViewModel)
+                            DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
                         }
                     .padding(.bottom)
                     if selection == 0 {
@@ -52,7 +51,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(), dashboardFilterViewModel: DashboardFilterViewModel())
+            DashboardView(dashboardViewModel: DashboardViewModel(dashboardFilterViewModel: DashboardFilterViewModel()))
         } topBarContent: {
             HStack {
                 Button {

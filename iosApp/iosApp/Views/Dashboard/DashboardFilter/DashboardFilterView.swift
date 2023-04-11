@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct DashboardFilterView: View {
-    @StateObject var dashboardFilterViewModel: DashboardFilterViewModel
+    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
     
@@ -20,51 +20,17 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            
-                            MoreFiltreSingleOptionList(
-                                stringTable: .constant("DashboardFilter"),
-                                title: .constant(String.localizedString(forKey: "Set duration", inTable: stringTable, withComment: "Set the duration for your dashboard view.")),
-                                optionList: .constant( dashboardFilterViewModel.dateFilterStringList),
-                                selectedValue: String(describing: dashboardFilterViewModel.dateFilter),
-                                optionCallback:
-                                            { filter, bool in
-                                                print("------------single-------------")
-                                    if bool {
-                                        print("true")
-                                        print(filter)
-                                        dashboardFilterViewModel.setDateFilterValue(filter: filter)
-                                    } else {
-                                        print("true")
-                                        dashboardFilterViewModel.coreModel.setDateFilter(dateFilter: DateFilterModel.todayAndTomorrow)
-                                    }
+                            MoreFilterOptionList(multiSelect: false, title: .constant("Set Time"), optionList: .constant(dashboardFilterViewModel.dateFilterStringList), selectedValueList: [""], optionCallback: { filter, bool  in
+                                dashboardFilterViewModel.setDateFilterValue(filter: filter)
                             })
                             .padding(.vertical,25)
                         }
                         
                         VStack {
-                            MoreFilterMultiOptionList(
-                                stringTable: .constant("ObservationTypes"), title: .constant(String.localizedString(forKey: "Set observation type", inTable: stringTable, withComment: "Set filter on what observation type should be shown in dashboard view.")),
-                                optionList: .constant(dashboardFilterViewModel.observationTypeFilterList),
-                                selectedValueList: dashboardFilterViewModel.observationTypeFilter,
-                                optionCallback: { filter, bool in
-                                    print("------------multi-------------")
-                                    if bool {
-                                        print("true")
-                                        print(filter)
-                                        dashboardFilterViewModel.coreModel.addTypeFilter(type: filter)
-                                    } else {
-                                        if (filter == "reset") {
-                                            print("reset")
-                                            print(filter)
-                                            dashboardFilterViewModel.coreModel.clearTypeFilters()
-                                        } else {
-                                            print("false")
-                                            print(filter)
-                                            dashboardFilterViewModel.coreModel.removeTypeFilter(type: filter)
-                                        }
-                                    }
-                                }
-                            )
+                            MoreFilterOptionList(multiSelect: true, title: .constant("Set Observation Type"), optionList: .constant(dashboardFilterViewModel.observationTypeFilterList), selectedValueList: [""], optionCallback: { filter, bool  in
+                                
+                            })
+                            .padding(.vertical,25)
                         }
                     }
                     Spacer()
@@ -75,7 +41,7 @@ struct DashboardFilterView: View {
                 dashboardFilterViewModel.setCurrentFilters()
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
-                .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

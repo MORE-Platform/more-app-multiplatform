@@ -7,6 +7,7 @@
 //
 
 import shared
+import SwiftUI
 
 class DashboardViewModel: ObservableObject {
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
@@ -16,9 +17,9 @@ class DashboardViewModel: ObservableObject {
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
     
-    init() {
+    init(dashboardFilterViewModel: DashboardFilterViewModel) {
         self.observationFactory = IOSObservationFactory()
-        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory)
+        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory, dashboardFilterViewModel: dashboardFilterViewModel)
         coreModel.onLoadStudy { study in
             if let study {
                 self.study = study
