@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
+import NotificationView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -70,7 +71,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 1
                 viewModel.showBackButton.value = false
                 title = NavigationScreen.NOTIFICATIONS.stringRes()
-                Text("NotificationView")
+                NotificationView(navController, viewModel = viewModel.notificationViewModel)
             }
             composable(NavigationScreen.INFO.route) {
                 viewModel.tabIndex.value = 2

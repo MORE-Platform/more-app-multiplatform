@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.NotificationViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
 import kotlinx.coroutines.launch
@@ -22,6 +23,8 @@ class MainViewModel(context: Context): ViewModel() {
     val dashboardViewModel = DashboardViewModel(context, recorder, dashboardFilterViewModel)
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
+
+    val notificationViewModel = NotificationViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
 }
