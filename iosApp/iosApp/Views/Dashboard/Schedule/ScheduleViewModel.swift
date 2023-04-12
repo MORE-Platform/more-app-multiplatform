@@ -13,6 +13,7 @@ class ScheduleViewModel: ObservableObject {
     let filterViewModel: DashboardFilterViewModel
     private let coreModel: CoreScheduleViewModel
     private var currentFilters: FilterModel? = nil
+    private var originalSchedules: [Int64: [ScheduleModel]] = [:]
     @Published var schedules: [Int64: [ScheduleModel]] = [:] {
         didSet {
             scheduleDates = Array(schedules.keys.sorted())
@@ -25,13 +26,10 @@ class ScheduleViewModel: ObservableObject {
         recorder.updateTaskStates()
         filterViewModel = dashboardFilterViewModel
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
-        loadSchedules()
-    }
-    
-    private func loadSchedules() {
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
                 self.schedules = scheduleMap.converttoInt64()
+                self.originalSchedules = self.schedules
             }
         }
     }
@@ -49,10 +47,10 @@ class ScheduleViewModel: ObservableObject {
     }
 
     func applyFilters() {
-        loadSchedules()
         filterViewModel.setDateFilterValue()
         filterViewModel.setObservationTypeFilters()
-        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: schedules.convertToKotlinLong()).converttoInt64()
+        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).converttoInt64()
+        print("Schedules: \(schedules)")
     }
 }
 

@@ -80,7 +80,6 @@ class CoreDashboardFilterViewModel {
                     && scheduleListAsLocalDate[date]?.isNotEmpty()
                     ?: false
         }
-
         return filteredMap.mapKeys {
             it.key.time()
         }

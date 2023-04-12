@@ -41,16 +41,19 @@ class DashboardFilterViewModel: ObservableObject {
         else if dateFilterString == "TODAY_AND_TOMORROW" { filterModel = DateFilterModel.todayAndTomorrow }
         else if dateFilterString == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
         else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
+        
+        print("SET_FILTERS: datefilter: \(filterModel)")
+        
         coreModel.setDateFilter(dateFilter: filterModel)
     }
     
     func setObservationTypeFilters() {
-        print("CHECK: Observation Type Filters when setting: \(observationTypeFilter)")
         coreModel.clearTypeFilters()
         observationTypeFilter.forEach { filter in
-            coreModel.addTypeFilter(type: filter)
+            if filter != "All Items" {
+                coreModel.addTypeFilter(type: filter)
+            }
         }
-        print("CHECK: Observation Type Filters after setting: \(observationTypeFilter)")
     }
 
     func setCurrentFilters() {

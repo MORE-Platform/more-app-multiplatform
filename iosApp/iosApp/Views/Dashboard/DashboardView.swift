@@ -40,7 +40,7 @@ struct DashboardView: View {
             .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                // dashboardViewModel.scheduleViewModel.applyFilters()
+                dashboardViewModel.scheduleViewModel.applyFilters()
             }
         }
     }
