@@ -9,6 +9,8 @@ enum class ScheduleState {
     ENDED
     ;
 
+    fun active() = this == ACTIVE || this == RUNNING || this == PAUSED
+
     companion object {
         fun getState(name: String) = ScheduleState.values().firstOrNull { it.name == name } ?: DEACTIVATED
     }

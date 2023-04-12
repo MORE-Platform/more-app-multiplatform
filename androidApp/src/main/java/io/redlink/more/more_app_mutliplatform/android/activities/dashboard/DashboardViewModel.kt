@@ -39,7 +39,7 @@ class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder, co
     init {
         scheduleViewModel.updateTaskStates(context)
         scope.launch {
-            coreDashboardViewModel.loadStudy().collect {
+            coreDashboardViewModel.study.collect {
                 study.value = it
                 study.value?.let { study ->
                     studyTitle.value = study.studyTitle
