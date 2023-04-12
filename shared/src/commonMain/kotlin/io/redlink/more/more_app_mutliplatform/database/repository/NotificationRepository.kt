@@ -1,10 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
+import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
-import io.realm.kotlin.ext.query
 
 class NotificationRepository : Repository<NotificationSchema>() {
     fun storeNotification(
@@ -12,7 +11,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
         channelId: String?,
         title: String?,
         body: String?,
-        timestamp: Instant,
+        timestamp: Long,
         priority: Long,
         read: Boolean = false,
         userFacing: Boolean = true,
@@ -21,6 +20,10 @@ class NotificationRepository : Repository<NotificationSchema>() {
         val realmObjects = mutableListOf<RealmObject>()
         realmObjects.add(NotificationSchema.toSchema(key, channelId, title, body, timestamp, priority, read, userFacing, additionalData))
         realmDatabase.store(realmObjects)
+    }
+
+    fun storeNotification(remoteMessage: NotificationSchema) {
+        realmDatabase.store(remoteMessage)
     }
 
     override fun count(): Flow<Long> = realmDatabase.count<NotificationSchema>()

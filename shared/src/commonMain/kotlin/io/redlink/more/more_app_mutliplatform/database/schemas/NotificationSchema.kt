@@ -5,7 +5,6 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import kotlinx.datetime.Instant
-import org.mongodb.kbson.ObjectId
 
 class NotificationSchema : RealmObject {
     @PrimaryKey
@@ -25,7 +24,7 @@ class NotificationSchema : RealmObject {
             channelId: String?,
             title: String?,
             notificationBody: String?,
-            timestamp: Instant?,
+            timestamp: Long,
             priority: Long,
             read: Boolean,
             userFacing: Boolean,
@@ -36,7 +35,7 @@ class NotificationSchema : RealmObject {
                 this.channelId = channelId
                 this.title = title
                 this.notificationBody = notificationBody
-                this.timestamp = timestamp?.toRealmInstant()
+                this.timestamp = Instant.fromEpochMilliseconds(timestamp).toRealmInstant()
                 this.priority = priority
                 this.read = read
                 this.userFacing = userFacing
