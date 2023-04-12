@@ -31,8 +31,6 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
 
-    val enabled = mutableStateOf(false)
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             coreViewModel.scheduleModelList.collect { map ->
