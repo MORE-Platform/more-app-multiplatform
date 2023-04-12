@@ -17,6 +17,7 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var observationTypes: [String]
     
     @Published var dateFilter: DateFilterModel = DateFilterModel.entireTime
+    @Published var dateFilterString: String = "ENTIRE_TIME"
     @Published var observationTypeFilter: [String] = ["All Items"]
     
     @Published var currentFilter: FilterModel? = nil
@@ -30,29 +31,28 @@ class DashboardFilterViewModel: ObservableObject {
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
             String(describing: filter)
         })
-        
         setCurrentFilters()
     }
     
-    func setDateFilterValue(filter: String) {
+    func setDateFilterValue() {
         var filterModel : DateFilterModel = DateFilterModel.todayAndTomorrow
         
-        if filter == "ENTIRE_TIME" { filterModel = DateFilterModel.entireTime }
-        else if filter == "TODAY_AND_TOMORROW" { filterModel = DateFilterModel.todayAndTomorrow }
-        else if filter == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
-        else if filter == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
-        
+        if dateFilterString == "ENTIRE_TIME" { filterModel = DateFilterModel.entireTime }
+        else if dateFilterString == "TODAY_AND_TOMORROW" { filterModel = DateFilterModel.todayAndTomorrow }
+        else if dateFilterString == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
+        else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         coreModel.setDateFilter(dateFilter: filterModel)
-        self.setCurrentFilters()
     }
     
-    func setObservationTypeFilters(filters: [String]) {
+    func setObservationTypeFilters() {
+        print("CHECK: Observation Type Filters when setting: \(observationTypeFilter)")
         coreModel.clearTypeFilters()
-        filters.forEach { filter in
+        observationTypeFilter.forEach { filter in
             coreModel.addTypeFilter(type: filter)
         }
+        print("CHECK: Observation Type Filters after setting: \(observationTypeFilter)")
     }
-    
+
     func setCurrentFilters() {
         coreModel.onLoadCurrentFilters { filters in
             self.dateFilter = filters.dateFilter

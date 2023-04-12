@@ -25,19 +25,13 @@ class ScheduleViewModel: ObservableObject {
         recorder.updateTaskStates()
         filterViewModel = dashboardFilterViewModel
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
+        loadSchedules()
+    }
+    
+    private func loadSchedules() {
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
                 self.schedules = scheduleMap.converttoInt64()
-            }
-        }
-    }
-    
-    func loadCurrentFilters() {
-        filterViewModel.coreModel.onLoadCurrentFilters { [weak self] filters in
-            print(filters)
-            if let self {
-                self.currentFilters = filters
-                self.applyFilters()
             }
         }
     }
@@ -55,9 +49,11 @@ class ScheduleViewModel: ObservableObject {
     }
 
     func applyFilters() {
+        loadSchedules()
+        filterViewModel.setDateFilterValue()
+        filterViewModel.setObservationTypeFilters()
         schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: schedules.convertToKotlinLong()).converttoInt64()
     }
-
 }
 
 extension Dictionary<KotlinLong, [ScheduleModel]> {

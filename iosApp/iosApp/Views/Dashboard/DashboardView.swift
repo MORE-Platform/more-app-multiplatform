@@ -24,11 +24,8 @@ struct DashboardView: View {
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                          withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
                     .padding(.bottom)
-                    MoreFilter(text: .constant(String
-                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected"))) {
-                            DashboardFilterView(callback: {
-                                dashboardViewModel.scheduleViewModel.applyFilters()
-                            }).environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
+                    MoreFilter(numberOfTypes: dashboardViewModel.scheduleViewModel.filterViewModel.observationTypeFilter.count - 1, timeFilter: String(describing: dashboardViewModel.scheduleViewModel.filterViewModel.dateFilter)) {
+                            DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
                         }
                     .padding(.bottom)
                     if selection == 0 {
@@ -42,6 +39,9 @@ struct DashboardView: View {
             }
             .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                // dashboardViewModel.scheduleViewModel.applyFilters()
+            }
         }
     }
 }

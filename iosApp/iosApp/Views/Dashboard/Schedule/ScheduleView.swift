@@ -34,7 +34,8 @@ struct ScheduleView: View {
             .listStyle(.plain)
             .clearListBackground()
         }.onAppear {
-            viewModel.loadCurrentFilters()
+            viewModel.applyFilters()
+            print("New Filter Model: \(viewModel.schedules.keys)")
         }
     }
 }

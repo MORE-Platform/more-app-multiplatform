@@ -14,7 +14,6 @@ struct DashboardFilterView: View {
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
     @State var filtersChanged = false
-    let callback: () -> Void
     
     var body: some View {
         Navigation {
@@ -23,16 +22,16 @@ struct DashboardFilterView: View {
                     VStack {
                         VStack {
                             MoreFilterOptionList(multiSelect: false, title: .constant("Set Time"), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], optionCallback: { filters  in
-                                viewModel.setDateFilterValue(filter: filters[0])
-                                filtersChanged = true
+                                if !filters.isEmpty {
+                                    viewModel.dateFilterString = filters[0]
+                                }
                             })
                             .padding(.vertical,25)
                         }
                         
                         VStack {
                             MoreFilterOptionList(multiSelect: true, title: .constant("Set Observation Type"), optionList: .constant(viewModel.observationTypes), selectedValueList: viewModel.observationTypeFilter, optionCallback: { filters  in
-                                viewModel.setObservationTypeFilters(filters: filters)
-                                filtersChanged = true
+                                viewModel.observationTypeFilter = filters
                             })
                             .padding(.vertical,25)
                         }
@@ -41,14 +40,9 @@ struct DashboardFilterView: View {
                 }
             } topBarContent: {
                 EmptyView()
-            }.onAppear {
-                viewModel.setCurrentFilters()
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
             .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: filtersChanged, perform: { _ in
-                callback()
-            })
         }
     }
 }

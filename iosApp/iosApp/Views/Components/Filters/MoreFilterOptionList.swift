@@ -49,15 +49,10 @@ struct MoreFilterOptionList: View {
                                 }
                             }
                         } else {
-                            if selectedValueList.contains(filter) {
+                            if !selectedValueList.isEmpty {
                                 selectedValueList.removeAll()
-                                selectedValueList.append("ENTIRE_TIME")
-                            } else {
-                                if !selectedValueList.isEmpty {
-                                    selectedValueList.removeAll()
-                                }
-                                selectedValueList.append(filter)
                             }
+                            selectedValueList.append(filter)
                             print("single filter: \(selectedValueList)")
                         }
                         optionCallback(selectedValueList)
