@@ -11,15 +11,27 @@ import kotlinx.coroutines.launch
 class CoreNotificationViewModel {
     private val notificationRepository: NotificationRepository = NotificationRepository()
     private val scope = CoroutineScope(Dispatchers.Default + Job())
+    var notificationList: MutableStateFlow<List<NotificationSchema?>> = MutableStateFlow(listOf())
 
-    var notificationList: MutableStateFlow<List<NotificationSchema>> = MutableStateFlow(listOf())
-
-    fun loadNotificationList() {
+    fun getNotificationList() : List<NotificationSchema> {
+        var list: List<NotificationSchema> = listOf()
         scope.launch {
             notificationRepository.getAllNotifications().collect {
                 notificationList.value = it
+                list = it
             }
         }
+        return list
+    }
+
+    fun getNotificationCount(): Long {
+        var count: Long = 0
+        scope.launch {
+            notificationRepository.count().collect {
+                count = it
+            }
+        }
+        return count
     }
 
     fun updateNotificationReadStatus(notification: NotificationSchema) {
