@@ -59,4 +59,22 @@ extension FCMService: MessagingDelegate {
 }
 
 extension FCMService: UNUserNotificationCenterDelegate {
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        let userInfo = notification.request.content.userInfo
+        
+        print(userInfo)
+        return [.sound,.badge, .banner, .list]
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        print(userInfo)
+    }
 }
