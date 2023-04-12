@@ -47,9 +47,7 @@ class PermissionManager: NSObject, ObservableObject {
     private var notificationStatus: PermissionStatus = .requesting {
         didSet {
             if notificationStatus == .accepted {
-                Task { @MainActor in
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
+                AppDelegate.registerForNotifications()
                 requestPermission()
             } else if notificationStatus == .declined {
                 observer?.declined()

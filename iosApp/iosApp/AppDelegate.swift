@@ -15,19 +15,23 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private let fcmService = FCMService()
+    private var fcmService: FCMService? = FCMService()
+    private var localNotifications: LocalPushNotifications? = LocalPushNotifications()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        ScheduleRepository().updateTaskStates(observationFactory: IOSObservationFactory())
         FirebaseApp.configure()
         
-        fcmService.register()
+        fcmService?.register()
         
         registerBackgroundTasks()
         return true
     }
     
+    func applicationWillTerminate(_ application: UIApplication) {
+        
+    }
     
-    func registerBackgroundTasks() {
+    
+    private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
             if let task = task as? BGProcessingTask {
                 DataUploadBackgroundTask().handleProcessingTask(task: task)
@@ -36,7 +40,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func scheduleTasks() {
+        localNotifications?.requestLocalNotification(title: "App Closed", subtitle: "Please restart the application to continue your study")
         DataUploadBackgroundTask.schedule()
+    }
+
+    static func registerForNotifications() {
+        DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+        }
+    }
+    deinit {
+        fcmService = nil
+        localNotifications = nil
     }
 }
 

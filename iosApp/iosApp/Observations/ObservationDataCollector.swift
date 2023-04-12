@@ -71,6 +71,7 @@ class ObservationDataCollector {
                 completion(false)
             }
         }
+        scheduleRepository.updateTaskStates(observationFactory: observationFactory)
     }
 
     func close() {
