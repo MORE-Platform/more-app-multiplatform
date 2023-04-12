@@ -28,9 +28,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
 
     override fun count(): Flow<Long> = realmDatabase.count<NotificationSchema>()
 
-    fun getAllNotifications(){
-        realmDatabase.query<NotificationSchema>()
-    }
+    fun getAllNotifications() = realmDatabase.query<NotificationSchema>()
 
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
         realmDatabase.realm?.writeBlocking {
