@@ -1,27 +1,30 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule
 
 import android.content.Context
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDate
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.ZoneId
 
 class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel) : ViewModel() {
     private val coreViewModel = CoreScheduleViewModel(androidDataRecorder)
     private val coreFilterViewModel = coreFilterModel
+
+    val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
     val filteredSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
@@ -34,6 +37,13 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
                 val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
                 withContext(Dispatchers.Main) {
                     updateData(javaConvertedMap)
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            PolarHeartRateObservation.hrReady.collect {
+                withContext(Dispatchers.Main) {
+                    polarHrReady.value = it
                 }
             }
         }

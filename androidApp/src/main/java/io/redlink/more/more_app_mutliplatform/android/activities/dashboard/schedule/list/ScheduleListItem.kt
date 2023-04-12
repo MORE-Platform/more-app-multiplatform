@@ -56,7 +56,7 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
         SmallTextButton(
             text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
                 id = R.string.more_observation_start
-            ), enabled = enabled
+            ), enabled = enabled && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
         ) {
             if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
                 viewModel.pauseObservation(context, scheduleModel.scheduleId)
