@@ -1,0 +1,47 @@
+package io.redlink.more.more_app_mutliplatform.database.schemas
+
+import io.realm.kotlin.types.RealmInstant
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
+import kotlinx.datetime.Instant
+import org.mongodb.kbson.ObjectId
+
+class NotificationSchema : RealmObject {
+    @PrimaryKey
+    var notificationId: String = ""
+    var channelId: String? = ""
+    var title: String? = ""
+    var notificationBody: String? = ""
+    var timestamp: RealmInstant? = null
+    var priority: Long = 0
+    var read: Boolean = false
+    var userFacing: Boolean = true
+    var notificationData: Map<String, String>? = null
+
+    companion object {
+        fun toSchema(
+            notificationId: String,
+            channelId: String?,
+            title: String?,
+            notificationBody: String?,
+            timestamp: Instant?,
+            priority: Long,
+            read: Boolean,
+            userFacing: Boolean,
+            notificationData: Map<String, String>?
+        ): NotificationSchema {
+            return NotificationSchema().apply {
+                this.notificationId = notificationId
+                this.channelId = channelId
+                this.title = title
+                this.notificationBody = notificationBody
+                this.timestamp = timestamp?.toRealmInstant()
+                this.priority = priority
+                this.read = read
+                this.userFacing = userFacing
+                this.notificationData = notificationData
+            }
+        }
+    }
+}
