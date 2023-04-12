@@ -41,8 +41,8 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                PolarHeartRateObservation.hrReady.collect {
+            PolarHeartRateObservation.hrReady.collect {
+                withContext(Dispatchers.Main) {
                     polarHrReady.value = it
                 }
             }
