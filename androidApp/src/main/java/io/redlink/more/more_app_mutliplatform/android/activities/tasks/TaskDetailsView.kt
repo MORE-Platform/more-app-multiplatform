@@ -6,19 +6,15 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
-import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
@@ -95,7 +91,7 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
                         id = R.string.more_observation_pause
                     ) else getStringResource(
                         id = R.string.more_observation_start
-                    ), enabled = viewModel.isEnabled.value
+                    ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
                 ) {
                     if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                         viewModel.pauseObservation()
