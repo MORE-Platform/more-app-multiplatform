@@ -12,11 +12,13 @@ import shared
 
 struct QuestionListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    var schedule: ScheduleModel
+    
+    
     @State var taskDetailsActive = false
     @State var observationActive = false
     private let stringTable = "ScheduleListView"
     
-    var schedule: ScheduleModel
     var body: some View {
         VStack(alignment: .leading) {
             ZStack {
@@ -40,7 +42,7 @@ struct QuestionListItem: View {
                     ObservationTimeDetails(start: schedule.start, end: schedule.end)
                 }
             }.buttonStyle(.plain)
-            MoreActionButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(schedule.start)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(schedule.end)))), action: {
+            MoreActionButton(disabled: .constant(!schedule.scheduleState.active()), action: {
                 observationActive = true
             }, label: {
                 Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
