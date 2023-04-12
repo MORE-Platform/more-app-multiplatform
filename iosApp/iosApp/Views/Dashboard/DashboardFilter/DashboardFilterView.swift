@@ -10,9 +10,11 @@ import SwiftUI
 import shared
 
 struct DashboardFilterView: View {
-    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
+    @EnvironmentObject var viewModel: DashboardFilterViewModel
     let stringTable = "DashboardFilter"
     let navigationStrings = "Navigation"
+    @State var filtersChanged = false
+    let callback: () -> Void
     
     var body: some View {
         Navigation {
@@ -20,15 +22,17 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            MoreFilterOptionList(multiSelect: false, title: .constant("Set Time"), optionList: .constant(dashboardFilterViewModel.dateFilterStringList), selectedValueList: [""], optionCallback: { filter, bool  in
-                                dashboardFilterViewModel.setDateFilterValue(filter: filter)
+                            MoreFilterOptionList(multiSelect: false, title: .constant("Set Time"), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], optionCallback: { filters  in
+                                viewModel.setDateFilterValue(filter: filters[0])
+                                filtersChanged = true
                             })
                             .padding(.vertical,25)
                         }
                         
                         VStack {
-                            MoreFilterOptionList(multiSelect: true, title: .constant("Set Observation Type"), optionList: .constant(dashboardFilterViewModel.observationTypeFilterList), selectedValueList: [""], optionCallback: { filter, bool  in
-                                
+                            MoreFilterOptionList(multiSelect: true, title: .constant("Set Observation Type"), optionList: .constant(viewModel.observationTypes), selectedValueList: viewModel.observationTypeFilter, optionCallback: { filters  in
+                                viewModel.setObservationTypeFilters(filters: filters)
+                                filtersChanged = true
                             })
                             .padding(.vertical,25)
                         }
@@ -38,10 +42,13 @@ struct DashboardFilterView: View {
             } topBarContent: {
                 EmptyView()
             }.onAppear {
-                dashboardFilterViewModel.setCurrentFilters()
+                viewModel.setCurrentFilters()
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
             .navigationBarTitleDisplayMode(.inline)
+            .onChange(of: filtersChanged, perform: { _ in
+                callback()
+            })
         }
     }
 }

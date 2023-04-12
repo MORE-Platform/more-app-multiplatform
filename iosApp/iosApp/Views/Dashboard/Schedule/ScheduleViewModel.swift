@@ -37,7 +37,7 @@ class ScheduleViewModel: ObservableObject {
             print(filters)
             if let self {
                 self.currentFilters = filters
-                self.applyFilterToAPI()
+                self.applyFilters()
             }
         }
     }
@@ -54,7 +54,7 @@ class ScheduleViewModel: ObservableObject {
         coreModel.stop(scheduleId: scheduleId)
     }
 
-    func applyFilterToAPI() {
+    func applyFilters() {
         schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: schedules.convertToKotlinLong()).converttoInt64()
     }
 

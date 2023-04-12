@@ -12,6 +12,11 @@ struct MoreFilterText: View {
     @Binding var text: String
     @Binding var isSelected: Bool
     
+    init(text: Binding<String>, isSelected: Binding<Bool>) {
+        self._text = text
+        self._isSelected = isSelected
+    }
+    
     var body: some View {
         if isSelected {
             Text(text)

@@ -16,7 +16,7 @@ struct MoreFilterOptionList: View {
     
     @State var selectedValueList: [String]
     
-    let optionCallback: (String, Bool) -> ()
+    let optionCallback: ([String]) -> ()
     
     
     var body: some View {
@@ -27,17 +27,21 @@ struct MoreFilterOptionList: View {
             Divider()
             
             ForEach(optionList, id: \.self) { filter in
-                
                 MoreFilterOption(
                     selectedValuesInList: $selectedValueList, option: filter, label: String.localizedString(forKey: filter, inTable: dashboardStringTable, withComment: "Timeframe filter option"),
                     callback: {
                         if multiSelect {
-                            print(filter)
-                            if filter == "All Filter" {
+                            if filter == "All Items" {
+                                if !selectedValueList.contains("All Items") {
+                                    selectedValueList.append("All Items")
+                                }
                                 selectedValueList.forEach { value in
-                                    selectedValueList = selectedValueList.filter { $0 == "All Filter" }
+                                    selectedValueList = selectedValueList.filter { $0 == "All Items" }
                                 }
                             } else {
+                                if selectedValueList.contains("All Items") {
+                                    self.selectedValueList.remove(at: selectedValueList.firstIndex(of: "All Items")!)
+                                }
                                 if selectedValueList.contains(filter) {
                                     self.selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
                                 } else {
@@ -56,8 +60,8 @@ struct MoreFilterOptionList: View {
                             }
                             print("single filter: \(selectedValueList)")
                         }
+                        optionCallback(selectedValueList)
                     })
-                
                 Divider()
             }
         }

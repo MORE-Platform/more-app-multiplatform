@@ -20,15 +20,15 @@ struct DashboardView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                        
                     TaskProgressView(progressViewTitle: .constant(String
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                          withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
                     .padding(.bottom)
-                    
                     MoreFilter(text: .constant(String
                         .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected"))) {
-                            DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
+                            DashboardFilterView(callback: {
+                                dashboardViewModel.scheduleViewModel.applyFilters()
+                            }).environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
                         }
                     .padding(.bottom)
                     if selection == 0 {
@@ -36,8 +36,6 @@ struct DashboardView: View {
                     } else {
                         EmptyView()
                     }
-                   
-                    
                 }
             } topBarContent: {
                 EmptyView()

@@ -13,9 +13,8 @@ class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private let observationFactory: IOSObservationFactory = IOSObservationFactory()
     
-    @Published var dateFilterList: [DateFilterModel]
     @Published var dateFilterStringList: [String]
-    @Published var observationTypeFilterList: [String]
+    @Published var observationTypes: [String]
     
     @Published var dateFilter: DateFilterModel = DateFilterModel.entireTime
     @Published var observationTypeFilter: [String] = ["All Items"]
@@ -26,9 +25,8 @@ class DashboardFilterViewModel: ObservableObject {
     init() {
         var list: [String] = observationFactory.self.observations.map({ ($0 as AnyObject).observationType.observationType})
         list.insert("All Items", at: 0)
-        self.observationTypeFilterList = list
+        self.observationTypes = list
         
-        self.dateFilterList = coreModel.getEnumAsList()
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
             String(describing: filter)
         })
@@ -45,16 +43,14 @@ class DashboardFilterViewModel: ObservableObject {
         else if filter == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
         coreModel.setDateFilter(dateFilter: filterModel)
-        print("current filter: \(coreModel.currentFilter)")
         self.setCurrentFilters()
     }
     
-    func removeObservationTypeFilter(filter: String) {
-        coreModel.removeTypeFilter(type: filter)
-    }
-    
-    func addObservationTypeFilter(filter: String) {
-        coreModel.addTypeFilter(type: filter)
+    func setObservationTypeFilters(filters: [String]) {
+        coreModel.clearTypeFilters()
+        filters.forEach { filter in
+            coreModel.addTypeFilter(type: filter)
+        }
     }
     
     func setCurrentFilters() {
