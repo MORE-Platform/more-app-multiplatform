@@ -21,6 +21,10 @@ struct NotificationItem: View {
             spacing: 5
         ) {
             HStack {
+                if isImportant {
+                    Image("more_warning_exclamation_small")
+                        .frame(height: 0.5)
+                }
                 SectionHeading(sectionTitle: .constant(title), font: getFontStyle())
                     .foregroundColor(isImportant ? Color.more.important : Color.more.primary)
                 Spacer()
