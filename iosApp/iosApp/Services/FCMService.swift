@@ -6,38 +6,57 @@
 //  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
-import Foundation
 import Firebase
-import FirebaseMessaging
 import FirebaseAnalytics
+import FirebaseMessaging
+import Foundation
 import shared
 
+class FCMService: NSObject {
 
-class FCMService {
-    private static let networkService = NetworkService.create()
-    
+    func register() {
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.delegate = self
+        Messaging.messaging().delegate = self
+        
+    }
+
     static func getNotificationToken() {
         Messaging.messaging().token { token, error in
-            if let error = error {
+            if let error {
                 print("Error fetching FCM registration token: \(error)")
-            } else if let token = token {
-                Task { @MainActor in
-                    do {
-                        print("FCM registration token: \(token)")
-                        try await self.networkService.sendNotificationToken(token: token)
-                    } catch {
-                        print("Token could not be stored")
-                    }
-                }
+            } else if let token {
+                sendToken(fcmToken: token)
             }
         }
     }
-    
-    static func deleteNotificationToken() {
+
+    func deleteNotificationToken() {
         Messaging.messaging().deleteToken { error in
             if let error = error {
                 print("Erro rdeleting FCM registration token: \(error)")
             }
         }
     }
+    
+    private static func sendToken(fcmToken: String) {
+        Task { @MainActor in
+            do {
+                print("FCM registration token: \(fcmToken)")
+                let networkService = NetworkService.create()
+                try await networkService.sendNotificationToken(token: fcmToken)
+            } catch {
+                print("Token could not be stored")
+            }
+        }
+    }
+}
+
+extension FCMService: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("FCM Token received: \(String(describing: fcmToken))")
+    }
+}
+
+extension FCMService: UNUserNotificationCenterDelegate {
 }

@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 23.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import Foundation
@@ -15,23 +15,17 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    private let fcmService = FCMService()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         ScheduleRepository().updateTaskStates(observationFactory: IOSObservationFactory())
-        registerBackgroundTasks()
         FirebaseApp.configure()
-        Messaging.messaging().delegate = self
-        FirebaseConfiguration.shared.setLoggerLevel(.max)
         
-        UNUserNotificationCenter.current().delegate = self
+        fcmService.register()
         
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-          options: authOptions) { _, _ in }
-        
-        application.registerForRemoteNotifications()
-
+        registerBackgroundTasks()
         return true
     }
+    
     
     func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
@@ -55,22 +49,34 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         Messaging.messaging().apnsToken = deviceToken
     }
     
-    func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler:
-        @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        completionHandler([[.badge, .sound]])
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        let userInfo = notification.request.content.userInfo
+        
+        print(userInfo)
+        return [.sound,.badge, .banner, .list]
     }
     
-    func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        completionHandler()
+//    func userNotificationCenter(
+//        _ center: UNUserNotificationCenter,
+//        willPresent notification: UNNotification,
+//        withCompletionHandler completionHandler:
+//        @escaping (UNNotificationPresentationOptions) -> Void
+//    ) {
+//        completionHandler([[.badge, .sound]])
+//    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        print(userInfo)
     }
+    
+//    func userNotificationCenter(
+//        _ center: UNUserNotificationCenter,
+//        didReceive response: UNNotificationResponse,
+//        withCompletionHandler completionHandler: @escaping () -> Void
+//    ) {
+//        completionHandler()
+//    }
 }
 
 extension AppDelegate: MessagingDelegate {
