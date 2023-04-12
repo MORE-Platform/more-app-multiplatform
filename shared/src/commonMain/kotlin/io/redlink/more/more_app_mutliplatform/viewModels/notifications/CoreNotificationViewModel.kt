@@ -1,3 +1,5 @@
+package io.redlink.more.more_app_mutliplatform.viewModels.notifications
+
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import kotlinx.coroutines.CoroutineScope
