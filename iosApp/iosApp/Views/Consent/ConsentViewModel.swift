@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 08.02.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import shared
@@ -94,7 +94,9 @@ extension ConsentViewModel: PermissionManagerObserver {
     }
 
     func declined() {
-        self.showErrorAlert = true
-        self.requestedPermissions = false
+        DispatchQueue.main.async {
+            self.showErrorAlert = true
+            self.requestedPermissions = false
+        }
     }
 }
