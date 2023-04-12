@@ -12,7 +12,8 @@ object DatabaseManager: Closeable {
                 ObservationSchema::class,
                 ScheduleSchema::class,
                 ObservationDataSchema::class,
-                DataPointCountSchema::class
+                DataPointCountSchema::class,
+                NotificationSchema::class
             )
         )
     }
