@@ -9,6 +9,7 @@ import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.*
 import io.reactivex.rxjava3.disposables.Disposable
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +83,7 @@ class PolarHeartRateObservation(context: Context) :
 
     override fun onDeviceDisconnected() {
         hrReady.value = false
+        stopAndSetState(ScheduleState.PAUSED)
         scanForDevices()
     }
 
