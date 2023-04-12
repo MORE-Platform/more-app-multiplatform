@@ -28,46 +28,12 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 @Composable
 fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationViewModel: NotificationViewModel) {
 
-    var notificationFilterList = viewModel.notificationFilterList
-
-    val onChangeFilterState: (String) -> Unit = {
-        viewModel.processFilter(it)
-        notificationViewModel.currentFilter = it
-        notificationFilterList = viewModel.notificationFilterList
-    }
-
     LazyColumn() {
         item {
             HeaderTitle(
                 title = getString(R.string.more_select_filter),
                 modifier = Modifier.padding(top = 20.dp)
             )
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        items(notificationFilterList) { filter ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if(filter.selected)
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(onClick = { onChangeFilterState(filter.title) })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = filter.title,
-                        color = MoreColors.Secondary
-                    )
-                }
-            }
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
     }

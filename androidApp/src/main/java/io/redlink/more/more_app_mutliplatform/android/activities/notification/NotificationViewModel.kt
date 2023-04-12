@@ -21,7 +21,6 @@ data class Notification (
 
 class NotificationViewModel: ViewModel() {
     //private val coreViewModel = CoreNotificationViewModel()
-    val model = mutableStateOf<StudyDetailsModel?>(null)
     var currentFilter = "All Notifications"
 
     val notificationList: List<Notification> = listOf(
