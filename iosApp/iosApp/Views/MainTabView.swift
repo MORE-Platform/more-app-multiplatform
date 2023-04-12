@@ -26,6 +26,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
                     }
+                    .environmentObject(contentViewModel)
             }
         }
         .accent(color: .more.primaryDark)

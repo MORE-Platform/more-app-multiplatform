@@ -33,7 +33,7 @@ struct InfoListItem<Destination: View>: View {
 struct InfoListItem_Previews: PreviewProvider {
     static var previews: some View {
         InfoListItem(title: "Test", icon: "info.circle") {
-            SettingsView()
+            SettingsView(viewModel: SettingsViewModel())
         }
     }
 }
