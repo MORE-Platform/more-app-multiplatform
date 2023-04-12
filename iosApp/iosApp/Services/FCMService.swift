@@ -73,6 +73,7 @@ extension FCMService: UNUserNotificationCenterDelegate {
         return [.sound,.badge, .banner, .list]
     }
     
+    @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
         print(userInfo)

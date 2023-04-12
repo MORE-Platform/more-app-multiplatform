@@ -30,6 +30,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
     }
     
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+        return UIBackgroundFetchResult.noData
+    }
+    
     
     private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
