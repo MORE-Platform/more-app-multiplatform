@@ -1,6 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.android.firebase
 
 import android.util.Log
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
@@ -18,6 +21,9 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageReposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import com.google.gson.Gson
+import io.redlink.more.more_app_mutliplatform.android.workers.NOTIFICATION_DATA
+import io.redlink.more.more_app_mutliplatform.android.workers.NotificationDataHandlerWorker
 import kotlinx.coroutines.launch
 
 private const val TAG = "FCMService"
@@ -28,8 +34,9 @@ Service to handle push notifications and firebase connections
 
 class FCMService : FirebaseMessagingService() {
 
+    lateinit var workManager : WorkManager
+
     private val notificationRepository = NotificationRepository()
-//    private val dataUploadWorker = DataUploadWorker
 
     override fun onNewToken(token: String) {
         Log.d(TAG, "Refreshed token: $token")
@@ -40,7 +47,6 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-//        super.onMessageReceived(message)
         Log.d(TAG, "From: ${message.from}")
         if (message.data.isNotEmpty() || message.notification != null) {
             scope.launch {
@@ -49,11 +55,11 @@ class FCMService : FirebaseMessagingService() {
             if (message.data.isNotEmpty()) {
                 Log.d(TAG, "Message data payload: ${message.data}")
                 try {
-//                    val inputData = workDataOf(NOTIFICATION_DATA to Gson().toJson(message.data))
-//                    val workRequest = OneTimeWorkRequestBuilder<NotificationDataHandlerWorker>()
-//                        .setInputData(inputData)
-//                        .build()
-//                    workManager.enqueue(workRequest)
+                    val inputData = workDataOf(NOTIFICATION_DATA to Gson().toJson(message.data))
+                    val workRequest = OneTimeWorkRequestBuilder<NotificationDataHandlerWorker>()
+                        .setInputData(inputData)
+                        .build()
+                    workManager.enqueue(workRequest)
                 } catch (e: Exception) {
                     Log.e(TAG, e.stackTraceToString())
                     Firebase.crashlytics.recordException(e)
