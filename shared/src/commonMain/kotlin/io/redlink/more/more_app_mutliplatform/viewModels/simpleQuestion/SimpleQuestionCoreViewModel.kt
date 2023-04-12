@@ -37,11 +37,12 @@ class SimpleQuestionCoreViewModel(
     }
 
     fun finishQuestion(data: String, setObservationToDone: Boolean){
-        simpleQuestionModel.value?.observationId?.let {
-            observation.start(it, scheduleId)
-            observation.storeData(object { val answer = data })
-            scheduleRepository.setCompletionStateFor(scheduleId, true)
-            observation.stop(it)
-        }
+        if(hasQuestionType)
+            simpleQuestionModel.value?.observationId?.let {
+                observation.start(it, scheduleId)
+                observation.storeData(object { val answer = data })
+                scheduleRepository.setCompletionStateFor(scheduleId, true)
+                observation.stop(it)
+            }
     }
 }
