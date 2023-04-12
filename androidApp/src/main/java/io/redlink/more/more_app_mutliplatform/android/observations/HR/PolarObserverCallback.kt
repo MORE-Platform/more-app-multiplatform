@@ -51,6 +51,7 @@ class PolarObserverCallback : PolarBleApiCallback() {
     override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
         super.bleSdkFeatureReady(identifier, feature)
         Log.i(TAG, "SDK Feature ready: ${feature.name}, identifier: $identifier")
+        updateListeners { it.onHeartRateReady() }
     }
 
     override fun disInformationReceived(identifier: String, uuid: UUID, value: String) {
