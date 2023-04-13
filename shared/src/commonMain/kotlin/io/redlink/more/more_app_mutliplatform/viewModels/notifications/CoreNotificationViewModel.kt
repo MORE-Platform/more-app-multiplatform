@@ -1,7 +1,10 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
+import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,29 +28,17 @@ class CoreNotificationViewModel {
                 count.value = it
             }
         }
+    }
 
-        fun setNotificationReadStatus(notification: NotificationSchema) {
+    fun onNotificationLoad(provideNewState: ((List<NotificationSchema?>) -> Unit)): Closeable {
+        return notificationList.asClosure(provideNewState)
+    }
+
+    fun onCountLoad(provideNewState: (Long?) -> Unit) = count.asClosure(provideNewState)
+
+    fun setNotificationReadStatus(notification: NotificationSchema) {
+        scope.launch {
             notificationRepository.setNotificationReadStatus(notification.notificationId)
         }
-    }
-
-    fun onNotificationLoad() : List<NotificationSchema> {
-        var list: List<NotificationSchema> = listOf()
-        scope.launch {
-            notificationRepository.getAllNotifications().collect {
-                list = it
-            }
-        }
-        return list
-    }
-
-    fun onCountLoad(): Long {
-        var count: Long = 0
-        scope.launch {
-            notificationRepository.count().collect {
-                count = it
-            }
-        }
-        return count
     }
 }
