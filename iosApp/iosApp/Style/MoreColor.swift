@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 03.02.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI

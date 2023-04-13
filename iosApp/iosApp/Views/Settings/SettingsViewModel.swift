@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 08.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import Foundation
@@ -31,6 +31,7 @@ class SettingsViewModel: ObservableObject {
     func leaveStudy() {
         coreSettingsViewModel.exitStudy()
         self.delegate?.credentialsDeleted()
+        FCMService().deleteNotificationToken()
     }
     
     func reloadStudyConfig() {

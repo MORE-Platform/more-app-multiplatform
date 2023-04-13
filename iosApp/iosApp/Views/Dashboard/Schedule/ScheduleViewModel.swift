@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 07.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import shared
@@ -28,8 +28,11 @@ class ScheduleViewModel: ObservableObject {
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
-                self.schedules = scheduleMap.converttoInt64()
-                self.originalSchedules = self.schedules
+                self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
+                }
             }
         }
     }

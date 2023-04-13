@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 02.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
@@ -33,6 +33,7 @@ struct DashboardView: View {
                     } else {
                         EmptyView()
                     }
+                    
                 }
             } topBarContent: {
                 EmptyView()

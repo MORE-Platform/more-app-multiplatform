@@ -1,15 +1,13 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.tasks
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.tasks.CoreTaskDetailsViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class TaskDetailsViewModel(
@@ -19,6 +17,7 @@ class TaskDetailsViewModel(
 
     private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(scheduleId, dataRecorder)
     val isEnabled= mutableStateOf(false)
+    val polarHrReady = mutableStateOf(false)
     val dataPointCount = mutableStateOf(0L)
     val taskDetailsModel = mutableStateOf(
         TaskDetailsModel(
@@ -28,12 +27,21 @@ class TaskDetailsViewModel(
     private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     init {
+
+        scope.launch(Dispatchers.IO) {
+            PolarHeartRateObservation.hrReady.collect {
+                withContext(Dispatchers.Main) {
+                    polarHrReady.value = it
+                }
+            }
+        }
+
         scope.launch {
             coreViewModel.taskDetailsModel.collect { details ->
                 details?.let {
                     withContext(Dispatchers.Main) {
                         taskDetailsModel.value = it
-                        isEnabled.value = taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate()
+                        isEnabled.value = it.state.active()
                     }
                 }
             }

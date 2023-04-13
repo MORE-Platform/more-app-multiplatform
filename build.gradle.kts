@@ -2,6 +2,7 @@
 buildscript {
     dependencies {
         classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.4")
     }
     repositories {
         google()  // Google's Maven repository

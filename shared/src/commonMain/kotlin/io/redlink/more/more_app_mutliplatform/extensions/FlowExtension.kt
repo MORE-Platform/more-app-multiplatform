@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

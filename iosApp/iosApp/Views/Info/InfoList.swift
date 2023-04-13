@@ -3,25 +3,26 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 15.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
 
 struct InfoList: View {
+    @EnvironmentObject var contentViewModel: ContentViewModel
     var body: some View {
         VStack {
             InfoListItem(title: "Study Details", icon: "gear", destination: {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "gear", destination: {
-                SettingsView()
+                SettingsView(viewModel: contentViewModel.settingsViewModel)
             })
             InfoListItem(title: "Completed Observations", icon: "gear", destination: {
-                SettingsView()
+                SettingsView(viewModel: contentViewModel.settingsViewModel)
             })
             InfoListItem(title: "Settings", icon: "gear", destination: {
-                SettingsView()
+                SettingsView(viewModel: contentViewModel.settingsViewModel)
             })
         }
     }

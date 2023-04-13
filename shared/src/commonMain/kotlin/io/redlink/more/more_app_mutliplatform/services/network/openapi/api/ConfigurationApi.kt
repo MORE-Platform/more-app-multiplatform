@@ -7,6 +7,7 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.api
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.*
@@ -147,6 +148,8 @@ open class ConfigurationApi(
 
         val localVariableBody = pushNotificationToken
 
+        Napier.i { "$localVariableBody" }
+
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
@@ -158,11 +161,13 @@ open class ConfigurationApi(
             requiresAuthentication = true,
         )
 
-        return jsonRequest(
+       var jsonRequest = jsonRequest(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )
+        Napier.i { "$jsonRequest" }
+        return jsonRequest.wrap()
     }
 
 

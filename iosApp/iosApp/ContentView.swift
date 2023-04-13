@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-    @StateObject var viewModel = ContentViewModel()
+    @StateObject var viewModel: ContentViewModel
     var body: some View {
         VStack {
             if viewModel.hasCredentials {
@@ -12,9 +12,13 @@ struct ContentView: View {
                 MoreMainBackground {
                     VStack {
                         if viewModel.loginViewScreenNr == 0 {
-                            LoginView(model: viewModel.loginViewModel)
+                            if let loginViewModel = viewModel.loginViewModel {
+                                LoginView(model: loginViewModel)
+                            }
                         } else {
-                            ConsentView(viewModel: viewModel.consentViewModel)
+                            if let consentViewModel = viewModel.consentViewModel {
+                                ConsentView(viewModel: consentViewModel)
+                            }
                         }
                     }
                 } topBarContent: {
@@ -27,6 +31,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(viewModel: ContentViewModel())
     }
 }

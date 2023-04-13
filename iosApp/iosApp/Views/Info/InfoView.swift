@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 14.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
@@ -18,6 +18,7 @@ struct InfoView: View {
                     Divider()
                     VStack {
                         InfoList()
+                            .environmentObject(contentViewModel)
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.more.primaryLight)
