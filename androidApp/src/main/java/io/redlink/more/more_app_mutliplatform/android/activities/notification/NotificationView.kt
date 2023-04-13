@@ -61,7 +61,7 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         items(viewModel.notificationList) { notification ->
-            NotificationItem(title = notification.title, message = notification.message, read = notification.read, isImportant = notification.isImportant)
+            NotificationItem(title = notification.title, body = notification.body, read = notification.read, isImportant = notification.isImportant)
         }
     }
 }

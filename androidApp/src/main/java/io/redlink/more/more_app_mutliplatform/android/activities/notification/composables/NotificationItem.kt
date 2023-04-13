@@ -21,7 +21,7 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 fun NotificationItem(
     title: String,
     titleColor: Color = MoreColors.Primary,
-    message: String,
+    body: String,
     read: Boolean,
     isImportant: Boolean,
     modifier: Modifier = Modifier
@@ -65,13 +65,13 @@ fun NotificationItem(
         }
         Divider()
         Text(
-            text = message,
+            text = body,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
             color = MoreColors.Secondary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = if (message.isNotEmpty()) 30.dp else 5.dp)
+                .padding(bottom = if (body.isNotEmpty()) 30.dp else 5.dp)
         )
     }
 }
