@@ -19,7 +19,6 @@ class ScheduleViewModel: ObservableObject {
     @Published var scheduleDates: [Int64] = []
     
     init(observationFactory: IOSObservationFactory) {
-        recorder.updateTaskStates()
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
