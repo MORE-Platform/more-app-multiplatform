@@ -131,4 +131,5 @@ abstract class Observation(val observationType: ObservationType) {
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"
     }
+    
 }
