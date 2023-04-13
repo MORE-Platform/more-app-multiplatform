@@ -25,18 +25,23 @@ protocol PermissionManagerObserver {
 
 class PermissionManager: NSObject, ObservableObject {
     var observer: PermissionManagerObserver?
+    private var permissionsRequested = false
 
     private let locationManager: CLLocationManager = CLLocationManager()
-    private var gpsAuthorizationStatus: CLAuthorizationStatus?
 
     private var cameraPermissionGranted = false
 
     private var gpsStatus: PermissionStatus = .non {
         didSet {
             if gpsStatus == .accepted {
+                locationManager.delegate = nil
                 requestPermission()
             } else if gpsStatus == .declined {
+                locationManager.delegate = nil
                 observer?.declined()
+            } else if gpsStatus == .requesting {
+                locationManager.delegate = self
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
             }
         }
     }
@@ -87,10 +92,6 @@ class PermissionManager: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        gpsAuthorizationStatus = locationManager.authorizationStatus
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-
         setPermisssionValues(observationPermissions: IOSObservationFactory().sensorPermissions())
     }
 
@@ -185,8 +186,11 @@ class PermissionManager: NSObject, ObservableObject {
         bluetoothStatus = observationPermissions.contains("bluetoothAlways") ?.requesting : .non
     }
 
-    func requestPermission() {
-        if let observer {
+    func requestPermission(permissionRequest: Bool = false) {
+        if permissionRequest {
+            permissionsRequested = true
+        }
+        if permissionsRequested, let observer {
             if notificationStatus != .accepted {
                 checkPushNotificationAuthorization()
             } else if gpsStatus == .requesting && gpsStatus != .accepted {
@@ -206,6 +210,7 @@ class PermissionManager: NSObject, ObservableObject {
         bluetoothStatus = .non
         cmSensorStatus = .non
         cameraStatus = .non
+        permissionsRequested = false
     }
 }
 

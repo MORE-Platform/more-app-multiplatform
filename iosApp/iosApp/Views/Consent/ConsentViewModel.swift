@@ -54,7 +54,7 @@ class ConsentViewModel: NSObject, ObservableObject {
 
     func requestPermissions() {
         self.requestedPermissions = true
-        permissionManager.requestPermission()
+        permissionManager.requestPermission(permissionRequest: true)
     }
 
     func reloadPermissions() {
