@@ -8,4 +8,6 @@
     <string name="nav_study_details">Study Details</string>
     <string name="nav_observation_filter">Observation Filter</string>
     <string name="nav_notification_filter">Notification Filter</string>
+    <string name="nav_simple_question">Simple Question</string>
+    <string name="nav_questionnaire_response">Simple Question</string>
 </resources>
