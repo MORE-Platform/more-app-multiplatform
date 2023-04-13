@@ -25,10 +25,8 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
             it.toString().formatDateFilterString())
     }
 
-    val typeFilters = observationFactory.observations.map {
-        Pair<String, String?>(
-            it.observationType.observationType.formatObservationTypeString(),
-            it.observationType.observationType)
+    val typeFilters = observationFactory.observationTypes().map {
+        Pair<String, String?>(it.formatObservationTypeString(), it)
     }.toMutableList().apply { this.add(0, Pair("All Items", null)) }.toList()
 
     init {

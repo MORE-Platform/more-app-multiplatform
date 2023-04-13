@@ -12,9 +12,13 @@ struct ContentView: View {
                 MoreMainBackground {
                     VStack {
                         if viewModel.loginViewScreenNr == 0 {
-                            LoginView(model: viewModel.loginViewModel)
+                            if let loginViewModel = viewModel.loginViewModel {
+                                LoginView(model: loginViewModel)
+                            }
                         } else {
-                            ConsentView(viewModel: viewModel.consentViewModel)
+                            if let consentViewModel = viewModel.consentViewModel {
+                                ConsentView(viewModel: consentViewModel)
+                            }
                         }
                     }
                 } topBarContent: {
