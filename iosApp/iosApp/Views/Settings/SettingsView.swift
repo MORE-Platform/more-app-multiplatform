@@ -10,8 +10,9 @@ import SwiftUI
 import shared
 
 struct SettingsView: View {
+    @StateObject var viewModel: SettingsViewModel
+    
     private let stringTable = "SettingsView"
-    @StateObject var viewModel: SettingsViewModel = SettingsViewModel()
     private let navigationStrings = "Navigation"
     
     var body: some View {
@@ -47,6 +48,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(viewModel: SettingsViewModel())
     }
 }

@@ -6,21 +6,24 @@ import BackgroundTasks
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) var scenePhase
+    @StateObject var contentViewModel = ContentViewModel()
     
     var body: some Scene {
 		WindowGroup {
-			ContentView()
+			ContentView(viewModel: contentViewModel)
                 .onAppear{
                     NapierProxyKt.napierDebugBuild()
                 }
                 .onChange(of: scenePhase) { newPhase in
-                    AppState.shared.scenePhase = newPhase
                     switch newPhase {
                     case .background:
                         appDelegate.scheduleTasks()
                     case .inactive:
                         break
                     case .active:
+                        DispatchQueue.main.async {
+                            ScheduleRepository().updateTaskStates(observationFactory: IOSObservationFactory())
+                        }
                         break
                     default:
                         break

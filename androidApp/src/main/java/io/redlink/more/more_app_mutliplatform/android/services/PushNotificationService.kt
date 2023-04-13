@@ -80,7 +80,6 @@ class PushNotificationService : Service(){
 
             notificationManager.notify(0, notificationBuilder.build())
         }
-
     }
 
     private fun storeNotification(key: String, title: String, message: String, channelId: String?) {

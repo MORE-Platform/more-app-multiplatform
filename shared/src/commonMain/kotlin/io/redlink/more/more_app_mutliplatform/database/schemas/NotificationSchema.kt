@@ -12,11 +12,11 @@ class NotificationSchema : RealmObject {
     var channelId: String? = ""
     var title: String? = ""
     var notificationBody: String? = ""
-    var timestamp: RealmInstant? = null
+    var timestamp: RealmInstant? = RealmInstant.now()
     var priority: Long = 0
     var read: Boolean = false
     var userFacing: Boolean = true
-    var notificationData: Map<String, String>? = null
+    var notificationData: Map<String, String>? = emptyMap()
 
     companion object {
         fun toSchema(

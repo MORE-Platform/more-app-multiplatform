@@ -3,9 +3,7 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 class NotificationRepository : Repository<NotificationSchema>() {
     fun storeNotification(
@@ -31,9 +29,6 @@ class NotificationRepository : Repository<NotificationSchema>() {
     override fun count(): Flow<Long> = realmDatabase.count<NotificationSchema>()
 
     fun getAllNotifications() = realmDatabase.query<NotificationSchema>()
-
-    fun getNotificationList() : Flow<List<NotificationSchema>> =
-        realmDatabase.realm?.query<NotificationSchema>()?.asMappedFlow() ?: emptyFlow()
 
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
         realmDatabase.realm?.writeBlocking {

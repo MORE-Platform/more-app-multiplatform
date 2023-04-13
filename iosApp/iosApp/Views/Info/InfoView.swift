@@ -18,6 +18,7 @@ struct InfoView: View {
                     Divider()
                     VStack {
                         InfoList()
+                            .environmentObject(contentViewModel)
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.more.primaryLight)
