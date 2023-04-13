@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 06.02.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 
@@ -27,7 +27,7 @@ class LoginViewModel: ObservableObject {
     
     
     init(registrationService: RegistrationService) {
-        
+        print("LoginViewModel allocated!")
         coreModel = CoreLoginViewModel(registrationService: registrationService)
         endpoint = registrationService.getEndpointRepository().endpoint()
         
@@ -54,6 +54,10 @@ class LoginViewModel: ObservableObject {
     
     func checkTokenCount() -> Bool {
         return self.token.count == 0
+    }
+    
+    deinit {
+        print("LoginViewModel deallocated")
     }
 }
 

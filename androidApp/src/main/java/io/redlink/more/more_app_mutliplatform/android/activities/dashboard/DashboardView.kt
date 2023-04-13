@@ -13,10 +13,12 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.compo
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.FilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
 
 
 @Composable
 fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
+    PolarHeartRateObservation.scanForDevices()
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = CenterHorizontally,

@@ -66,6 +66,17 @@
             </intent-filter>
         </service>
 
+        <service android:name=".services.PushNotificationService"/>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_channel_id" />
+
+        <receiver android:name=".broadcasts.NotificationBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.redlink.more.app.android.NOTIFICATION_ACTION_READ" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest> 

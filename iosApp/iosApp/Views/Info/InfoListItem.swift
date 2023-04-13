@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 15.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
@@ -33,7 +33,7 @@ struct InfoListItem<Destination: View>: View {
 struct InfoListItem_Previews: PreviewProvider {
     static var previews: some View {
         InfoListItem(title: "Test", icon: "info.circle") {
-            SettingsView()
+            SettingsView(viewModel: SettingsViewModel())
         }
     }
 }

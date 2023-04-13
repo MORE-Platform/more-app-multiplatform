@@ -26,11 +26,6 @@ import java.util.*
 @Composable
 fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
     val context = LocalContext.current
-    val enabled =
-        (scheduleModel.scheduleState == ScheduleState.ACTIVE
-                || scheduleModel.scheduleState == ScheduleState.RUNNING
-                || scheduleModel.scheduleState == ScheduleState.PAUSED)
-                || (scheduleModel.start.toDate() <= Date() && Date() < scheduleModel.end.toDate())
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -58,7 +53,7 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
         SmallTextButton(
             text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
                 id = R.string.more_observation_start
-            ), enabled = enabled
+            ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
         ) {
             if(scheduleModel.observationType == "question-observation")
                 navController.navigate(

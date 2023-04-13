@@ -6,10 +6,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
@@ -20,7 +18,6 @@ import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
-import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
@@ -53,7 +50,9 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
                         imageTint = MoreColors.Important,
                         borderStroke = MoreColors.borderDefault(),
                         buttonColors = ButtonDefaults.moreSecondary2()
-                    ) {}
+                    ) {
+                        viewModel.stopObservation()
+                    }
             }
             BasicText(
                 text = viewModel.taskDetailsModel.value.observationType,
@@ -97,7 +96,7 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
                         id = R.string.more_observation_pause
                     ) else getStringResource(
                         id = R.string.more_observation_start
-                    ), enabled = viewModel.isEnabled.value
+                    ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
                 ) {
                     if (viewModel.taskDetailsModel.value.observationType == "question-observation")
                         navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
