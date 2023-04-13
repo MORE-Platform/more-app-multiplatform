@@ -49,20 +49,29 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
             endTime = scheduleModel.end.toDate(),
             modifier = Modifier.padding(vertical = 8.dp)
         )
-
-        SmallTextButton(
-            text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
-                id = R.string.more_observation_start
-            ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
-        ) {
-            if(scheduleModel.observationType == "question-observation")
+        if (scheduleModel.observationType == "question-observation") {
+            SmallTextButton(
+                text = getStringResource(id = R.string.more_questionnaire_start),
+                enabled = scheduleModel.scheduleState.active()
+            ) {
                 navController.navigate(
                     "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
                 )
-            else if (scheduleModel.scheduleState == ScheduleState.RUNNING)
-                viewModel.pauseObservation(context, scheduleModel.scheduleId)
-            else
-                viewModel.startObservation(context, scheduleModel.scheduleId,)
+            }
+        } else {
+            SmallTextButton(
+                text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
+                    id = R.string.more_observation_start
+                ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
+            ) {
+                if (scheduleModel.scheduleState == ScheduleState.RUNNING){
+                    viewModel.pauseObservation(context, scheduleModel.scheduleId)}
+                else{
+                    viewModel.startObservation(context, scheduleModel.scheduleId,)
+                }
+
+            }
         }
+
     }
 }
