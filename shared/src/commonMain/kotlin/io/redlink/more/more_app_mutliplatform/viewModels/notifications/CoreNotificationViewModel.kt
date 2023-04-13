@@ -12,29 +12,29 @@ class CoreNotificationViewModel {
     private val notificationRepository: NotificationRepository = NotificationRepository()
     private val scope = CoroutineScope(Dispatchers.Default + Job())
     var notificationList: MutableStateFlow<List<NotificationSchema?>> = MutableStateFlow(listOf())
+    var count: MutableStateFlow<Long> = MutableStateFlow(0)
 
-    fun getNotificationList() : List<NotificationSchema> {
-        var list: List<NotificationSchema> = listOf()
+    init{
         scope.launch {
             notificationRepository.getAllNotifications().collect {
                 notificationList.value = it
-                list = it
             }
         }
-        return list
-    }
-
-    fun getNotificationCount(): Long {
-        var count: Long = 0
         scope.launch {
             notificationRepository.count().collect {
-                count = it
+                count.value = it
             }
         }
-        return count
     }
 
-    fun updateNotificationReadStatus(notification: NotificationSchema) {
-        notificationRepository.update(notification.notificationId, true, notification.priority)
+
+    fun setNotificationReadStatus(notification: NotificationSchema) {
+        notificationRepository.setNotificationReadStatus(notification.notificationId)
+
+        scope.launch {
+            notificationRepository.getAllNotifications().collect {
+                notificationList.value = it
+            }
+        }
     }
 }
