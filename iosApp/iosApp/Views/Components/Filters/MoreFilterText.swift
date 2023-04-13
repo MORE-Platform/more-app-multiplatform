@@ -18,19 +18,11 @@ struct MoreFilterText: View {
     }
     
     var body: some View {
-        if isSelected {
-            Text(text)
-                .font(.system(size: 16))
-                .font(Font.body.bold())
-                .foregroundColor(Color.more.primary)
-                .underline(true, color: Color.more.primary)
-        } else {
-            Text(text)
-                .font(.system(size: 16))
-                .font(Font.body.bold())
-                .foregroundColor(Color.more.secondary)
-                .underline(false, color: Color.more.secondary)
-        }
+        Text(text)
+            .font(.system(size: 16))
+            .font(Font.body.bold())
+            .foregroundColor(isSelected ? Color.more.primary : Color.more.secondary)
+            .underline(isSelected, color: isSelected ? Color.more.primary : Color.more.secondary)
     }
 }
 
