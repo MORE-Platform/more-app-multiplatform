@@ -1,3 +1,4 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
@@ -42,9 +43,8 @@ import io.redlink.more.more_app_mutliplatform.android.shared_composables.Message
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
     val context = LocalContext.current
 
-
     LazyColumn(
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
@@ -60,15 +60,16 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
             Spacer(modifier = Modifier.padding(10.dp))
         }
 
-        items(viewModel.notificationList) { notification ->
-            NotificationItem(title = notification.title, body = notification.body, read = notification.read, isImportant = notification.isImportant)
+        items(viewModel.notificationList.value) { notification ->
+            if (notification?.title != null) {
+                Column(
+                    modifier = Modifier.clickable {
+                        viewModel.setNotificationToRead(notification)
+                    }
+                ) {
+                NotificationItem(title = notification?.title, body = notification.notificationBody, read = notification.read, priority = notification.priority)
+                }
+            }
         }
     }
-}
-
-fun setNotificationColor(isImportant: Boolean): Color {
-    if (isImportant) {
-        return MoreColors.Important
-    }
-    return MoreColors.Primary
 }

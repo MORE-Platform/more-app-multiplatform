@@ -19,11 +19,11 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun NotificationItem(
-    title: String,
+    title: String?,
     titleColor: Color = MoreColors.Primary,
-    body: String,
-    read: Boolean,
-    isImportant: Boolean,
+    body: String?,
+    read: Boolean?,
+    priority: Long?,
     modifier: Modifier = Modifier
 ) {
     Column {
@@ -36,7 +36,7 @@ fun NotificationItem(
             Row(
                 verticalAlignment = Alignment.Top
             ) {
-                if(isImportant) {
+                if(priority?.toInt() == 2) {
                     Image(
                         id = R.drawable.warning_exclamation,
                         contentDescription = "More Logo",
@@ -44,18 +44,18 @@ fun NotificationItem(
                             .fillMaxWidth(0.06f)
                             .padding(top = 4.dp)
                     )
-                    Spacer(modifier = if (read) Modifier.width(5.dp) else Modifier.width(8.dp))
+                    Spacer(modifier = if (read != null && read) Modifier.width(5.dp) else Modifier.width(8.dp))
                 }
                 Text(
-                    text = title,
-                    fontWeight = if (read) FontWeight.Normal else FontWeight.Bold,
+                    text = title ?: "Notification",
+                    fontWeight = if (read != null && read) FontWeight.Normal else FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = if (isImportant) MoreColors.Important else titleColor,
+                    color = if (priority?.toInt() == 2) MoreColors.Important else titleColor,
                     modifier = Modifier.fillMaxWidth(0.96f)
                 )
             }
 
-            if(!read) {
+            if(read != null && !read) {
                     IconInline(
                         icon = Icons.Filled.Circle,
                         color = MoreColors.Important,
@@ -64,14 +64,16 @@ fun NotificationItem(
             }
         }
         Divider()
-        Text(
-            text = body,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            color = MoreColors.Secondary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = if (body.isNotEmpty()) 30.dp else 5.dp)
-        )
+        if (body != null) {
+            Text(
+                text = body,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = MoreColors.Secondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = if (body.isNotEmpty()) 30.dp else 5.dp)
+            )
+        }
     }
 }

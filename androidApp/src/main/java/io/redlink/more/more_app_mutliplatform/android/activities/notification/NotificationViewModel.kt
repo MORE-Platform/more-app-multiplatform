@@ -23,78 +23,34 @@ data class Notification (
 
 
 class NotificationViewModel: ViewModel() {
-    private val coreNotificationViewModel: CoreNotificationViewModel = CoreNotificationViewModel()
-    var notifications: MutableState<List<NotificationSchema?>> = mutableStateOf(listOf(
-        NotificationSchema()
-    ))
+    private val coreViewModel: CoreNotificationViewModel = CoreNotificationViewModel()
+    var notificationList: MutableState<List<NotificationSchema?>> = mutableStateOf(listOf())
     var notificationCount: MutableState<Long> = mutableStateOf(0)
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
     var currentFilter = "All Notifications"
 
-    val notificationList: List<Notification> = listOf(
-        Notification(
-            title = "Observation Accelerometer Test is ready to start",
-            body = "",
-            read = false,
-            isImportant = false
-        ),
-        Notification(
-            title = "Triggered Intervention Name",
-            body = "",
-            read = false,
-            isImportant = true
-        ),
-        Notification(
-            title = "Task on observation Distance Walked will end soon",
-            body = "The timeframe for the Task on Distance Walked has nearly ended. Please be sure to complete it in time.",
-            read = false,
-            isImportant = true
-        ),
-        Notification(
-            title = "Task on observation XXX will end soon",
-            body = "",
-            read = true,
-            isImportant = true
-        ),
-        Notification(
-            title = "Start Questionnaire is ready to start",
-            body = "",
-            read = true,
-            isImportant = false
-        ),
-        Notification(
-            title = "Task on observation Distance Walked will end soon",
-            body = "The timeframe for the Task on Distance Walked has nearly ended. Please be sure to complete it in time.",
-            read = true,
-            isImportant = true
-        ),
-        Notification(
-            title = "Task on observation Distance Walked will end soon",
-            body = "The timeframe for the Task on Distance Walked has nearly ended. Please be sure to complete it in time.",
-            read = true,
-            isImportant = true
-        ),
-        Notification(
-            title = "Task on observation Distance Walked will end soon",
-            body = "The timeframe for the Task on Distance Walked has nearly ended. Please be sure to complete it in time.",
-            read = true,
-            isImportant = true
-        )
-    )
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            scope.launch {
-                coreNotificationViewModel.notificationList.collect{
-                    notifications.value = it
+            coreViewModel.notificationList.collect {
+                withContext(Dispatchers.Main) {
+                    notificationList.value = it
                 }
             }
-            scope.launch {
-                coreNotificationViewModel.count.collect{
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            coreViewModel.count.collect{
+                withContext(Dispatchers.Main) {
                     notificationCount.value = it
                 }
             }
+        }
+    }
+
+    fun setNotificationToRead(notification: NotificationSchema) {
+        viewModelScope.launch {
+            coreViewModel.setNotificationReadStatus(notification)
         }
     }
 }
