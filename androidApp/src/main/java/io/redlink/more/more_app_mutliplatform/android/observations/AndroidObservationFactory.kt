@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.android.observations.GPS.GPSServic
 import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 
 class AndroidObservationFactory(context: Context) :
     ObservationFactory(AndroidObservationDataManager(context)) {
@@ -14,6 +15,7 @@ class AndroidObservationFactory(context: Context) :
             setOf(
                 AccelerometerObservation(context),
                 GPSObservation(context, gpsService = GPSService(context)),
+                SimpleQuestionObservation(),
                 PolarHeartRateObservation(context)
             )
         )
