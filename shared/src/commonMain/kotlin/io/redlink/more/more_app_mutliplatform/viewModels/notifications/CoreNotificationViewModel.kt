@@ -25,16 +25,29 @@ class CoreNotificationViewModel {
                 count.value = it
             }
         }
+
+        fun setNotificationReadStatus(notification: NotificationSchema) {
+            notificationRepository.setNotificationReadStatus(notification.notificationId)
+        }
     }
 
-
-    fun setNotificationReadStatus(notification: NotificationSchema) {
-        notificationRepository.setNotificationReadStatus(notification.notificationId)
-
+    fun onNotificationLoad() : List<NotificationSchema> {
+        var list: List<NotificationSchema> = listOf()
         scope.launch {
             notificationRepository.getAllNotifications().collect {
-                notificationList.value = it
+                list = it
             }
         }
+        return list
+    }
+
+    fun onCountLoad(): Long {
+        var count: Long = 0
+        scope.launch {
+            notificationRepository.count().collect {
+                count = it
+            }
+        }
+        return count
     }
 }
