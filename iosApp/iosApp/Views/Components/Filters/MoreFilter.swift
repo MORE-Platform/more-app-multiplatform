@@ -10,11 +10,12 @@ import SwiftUI
 
 struct MoreFilter<Destination: View>: View {
     
-    @State var text: String = "No Filter Applied"
-    @State var typeFilterText: String = ""
-    @State var dateFilterText: String = ""
     @EnvironmentObject var filterViewModel: DashboardFilterViewModel
     var destination: () -> Destination
+    
+    @State var text: String = ""
+    @State var typeFilterText: String = ""
+    @State var dateFilterText: String = ""
     var stringTable = "DashboardFilter"
     
     var image = Image(systemName: "slider.horizontal.3")
@@ -28,23 +29,20 @@ struct MoreFilter<Destination: View>: View {
                 image
                     .foregroundColor(Color.more.secondary)
             }
-        }.onChange(of: filterViewModel.dateFilterString, perform: { _ in
+        }.onAppear {
             getFilterText()
-        })
-        .onChange(of: filterViewModel.observationTypeFilter, perform: { _ in
-            getFilterText()
-        })
+        }
     }
     
     func getFilterText() {
-        if filterViewModel.observationTypeFilter.isEmpty && filterViewModel.dateFilterString == "ENTIRE_TIME" {
-            text = String.localizedString(forKey: "no_filter_applied", inTable: stringTable, withComment: "No filter set")
+        if noFilterSet() {
+            text = String.localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "No filter set")
         } else {
             if typeFilterSet() {
                 if filterViewModel.observationTypeFilter.count == 1 {
-                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) Type"
+                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type", inTable: stringTable, withComment: "Observation type"))"
                 } else {
-                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) Types"
+                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type_plural", inTable: stringTable, withComment: "Observation types"))"
                 }
             }
             if dateFilterSet() {
@@ -66,6 +64,10 @@ struct MoreFilter<Destination: View>: View {
     
     func typeFilterSet() -> Bool {
         return !filterViewModel.observationTypeFilter.isEmpty
+    }
+    
+    func noFilterSet() -> Bool {
+        return !dateFilterSet() && !typeFilterSet()
     }
 }
 

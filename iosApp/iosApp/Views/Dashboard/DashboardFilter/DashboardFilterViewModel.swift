@@ -12,6 +12,7 @@ import shared
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private let observationFactory: IOSObservationFactory = IOSObservationFactory()
+    private let stringTable = "DashboardFilter"
     
     @Published var dateFilterStringList: [String]
     @Published var observationTypes: [String]
@@ -25,7 +26,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     init() {
         var list: [String] = observationFactory.self.observations.map({ ($0 as AnyObject).observationType.observationType})
-        list.insert("All Items", at: 0)
+        list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
         self.observationTypes = list
         
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
@@ -46,7 +47,6 @@ class DashboardFilterViewModel: ObservableObject {
     }
     
     func setObservationTypeFilters() {
-        print("Type Filters: \(observationTypeFilter)")
         coreModel.setTypeFilters(filters: observationTypeFilter)
     }
 

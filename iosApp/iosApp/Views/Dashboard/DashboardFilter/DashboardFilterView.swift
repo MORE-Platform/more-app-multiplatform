@@ -21,19 +21,16 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            MoreFilterOptionList(multiSelect: false, title: .constant("Set Time"), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], optionCallback: { filters  in
+                            MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Select Time", inTable: stringTable, withComment: "Set time filter")), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], multiSelect: false, optionCallback: { filters  in
                                 if !filters.isEmpty {
                                     viewModel.dateFilterString = filters[0]
                                 }
                             })
-                            .padding(.vertical,25)
-                        }
-                        
+                        }.padding(.vertical, 20)
                         VStack {
-                            MoreFilterOptionList(multiSelect: true, title: .constant("Set Observation Type"), optionList: .constant(viewModel.observationTypes), selectedValueList: viewModel.observationTypeFilter, optionCallback: { filters  in
+                            MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Select Type", inTable: stringTable, withComment: "Set type filter")), optionList: .constant(viewModel.observationTypes), selectedValueList: viewModel.observationTypeFilter, multiSelect: true, optionCallback: { filters  in
                                 viewModel.observationTypeFilter = filters
                             })
-                            .padding(.vertical,25)
                         }
                     }
                     Spacer()
@@ -43,9 +40,6 @@ struct DashboardFilterView: View {
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                viewModel.setCurrentFilters()
-            }
         }
     }
 }

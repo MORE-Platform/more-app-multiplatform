@@ -8,16 +8,14 @@
 
 import SwiftUI
 
-struct MoreFilterOptionList: View {    
-    var multiSelect = false
+struct MoreFilterOptionList: View {
     @Binding var title: String
     @Binding var optionList: [String]
-    private let dashboardStringTable: String = "DashboardFilter"
-    
     @State var selectedValueList: [String]
-    
+    let multiSelect: Bool
     let optionCallback: ([String]) -> ()
     
+    private let stringTable: String = "DashboardFilter"
     
     var body: some View {
         
@@ -28,10 +26,9 @@ struct MoreFilterOptionList: View {
             
             ForEach(optionList, id: \.self) { filter in
                 MoreFilterOption(
-                    selectedValuesInList: $selectedValueList, option: filter, label: String.localizedString(forKey: filter, inTable: dashboardStringTable, withComment: "Timeframe filter option"),
-                    callback: {
+                    selectedValuesInList: $selectedValueList, option: filter, callback: {
                         if multiSelect {
-                            if filter == "All Items" {
+                            if filter == String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items") {
                                 selectedValueList.removeAll()
                             } else {
                                 if selectedValueList.contains(filter) {

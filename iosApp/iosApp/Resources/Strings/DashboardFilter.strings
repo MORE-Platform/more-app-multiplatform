@@ -6,12 +6,21 @@
   Copyright © 2023 orgName. All rights reserved.
 */
 
-"Set duration" = "Set duration";
-"Set observation type" = "Set observation type";
+"Select Time" = "Select Time";
+"Select Type" = "Select Type";
 
 "ENTIRE_TIME" = "Entire time";
 "TODAY_AND_TOMORROW" = "Today and Tomorrow";
 "ONE_WEEK" = "1 Week";
 "ONE_MONTH" = "1 Month";
 
-"no_filter_applied" = "No Filter applied";
+"no_filter_activated" = "No Filter activated";
+"type" = "Type";
+"type_plural" = "Types";
+
+// Observation Types
+
+"All Items" = "All Items";
+"gps-mobile-observation" = "GPS Mobile Observation";
+"acc-mobile-observation" = "ACC Mobile Observation";
+"polar-verity-observation" = "Polar Verity Observation";

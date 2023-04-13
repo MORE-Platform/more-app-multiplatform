@@ -9,16 +9,17 @@
 import SwiftUI
 
 struct MoreFilterOption: View {
-    @Binding var selectedValuesInList: [String]
-    @State private var isSelected: Bool = false
+    
     var option: String
-    var label: String
     var callback: () -> Void
+    @Binding var selectedValuesInList: [String]
+    
+    @State private var isSelected: Bool = false
+    private let stringTable = "DashboardFilter"
 
-    init(selectedValuesInList: Binding<[String]>, option: String, label: String, callback: @escaping () -> Void) {
+    init(selectedValuesInList: Binding<[String]>, option: String, callback: @escaping () -> Void) {
         self._selectedValuesInList = selectedValuesInList
         self.option = option
-        self.label = label
         self.callback = callback
         self.isSelected = self.selectedValuesInList.contains(self.option)
     }
@@ -36,20 +37,22 @@ struct MoreFilterOption: View {
                 Button(action: {
                     callback()
                 }) {
-                    MoreFilterText(text: .constant(label), isSelected: $isSelected)
+                    MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
                 }
             }
             .padding(5)
         }
         .onAppear {
-            if option == "All Items" && selectedValuesInList.isEmpty {
+            let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
+            if option == allItemsString && selectedValuesInList.isEmpty {
                 isSelected = true
             } else {
                 isSelected = selectedValuesInList.contains(option)
             }
         }
         .onChange(of: selectedValuesInList, perform: { _ in
-            if option == "All Items" && selectedValuesInList.isEmpty {
+            let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
+            if option == allItemsString && selectedValuesInList.isEmpty {
                 isSelected = true
             } else {
                 isSelected = selectedValuesInList.contains(option)
