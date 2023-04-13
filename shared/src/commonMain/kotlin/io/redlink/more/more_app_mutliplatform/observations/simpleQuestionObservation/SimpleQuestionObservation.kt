@@ -3,7 +3,7 @@ package io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObserv
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 
-class SimpleQuestionObservation : Observation(observationType = SimpleQuestionType(emptySet())){
+class SimpleQuestionObservation : Observation(observationType = SimpleQuestionType()){
     override fun start(): Boolean {
         return true
     }

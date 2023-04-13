@@ -10,13 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
-fun QuestionnaireButtons(model: QuestionnaireViewModel) {
+fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewModel) {
     val context = LocalContext.current
 
     Column(
@@ -30,9 +31,9 @@ fun QuestionnaireButtons(model: QuestionnaireViewModel) {
     ) {
         Button(
             onClick = {
-                if (model.answerSet.value) {
-                    //model.uploadChosenAnswer()
-                    model.goToNextActivity(context)
+                if (model.answerSet.value.isNotBlank()) {
+                    model.finish()
+                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.route)
                 } else {
                     Toast.makeText(
                         context,
@@ -49,23 +50,6 @@ fun QuestionnaireButtons(model: QuestionnaireViewModel) {
                 .padding(6.dp)
         ) {
             Text(text = getString(R.string.more_quest_complete))
-        }
-
-        Button(
-            onClick = {
-
-                      },
-            colors = ButtonDefaults
-                .buttonColors(
-                    backgroundColor = MoreColors.Secondary,
-                    contentColor = MoreColors.White
-                ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .padding(6.dp)
-        ) {
-            Text(text = getString(R.string.more_quest_abort))
         }
     }
 }

@@ -58,14 +58,6 @@
             android:screenOrientation="portrait"
             android:exported="true" />
 
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireResponseActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-
-
         <service android:name=".services.ObservationRecordingService" />
         <service android:name=".firebase.FCMService"
             android:exported="false">

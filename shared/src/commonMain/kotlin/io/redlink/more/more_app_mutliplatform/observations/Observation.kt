@@ -107,6 +107,10 @@ abstract class Observation(val observationType: ObservationType) {
         }
     }
 
+    protected fun setState(state: ScheduleState = ScheduleState.ACTIVE) {
+        scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
+    }
+
     open fun store(start: Long = -1, end: Long = -1, onCompletion: () -> Unit) {
         dataManager?.store()
         onCompletion()
