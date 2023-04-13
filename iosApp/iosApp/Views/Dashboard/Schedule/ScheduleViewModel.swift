@@ -12,6 +12,7 @@ class ScheduleViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
     let filterViewModel: DashboardFilterViewModel
     private let coreModel: CoreScheduleViewModel
+    
     private var currentFilters: FilterModel? = nil
     private var originalSchedules: [Int64: [ScheduleModel]] = [:]
     @Published var schedules: [Int64: [ScheduleModel]] = [:] {
@@ -33,6 +34,7 @@ class ScheduleViewModel: ObservableObject {
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
+                self.originalSchedules = self.schedules
             }
         }
     }
