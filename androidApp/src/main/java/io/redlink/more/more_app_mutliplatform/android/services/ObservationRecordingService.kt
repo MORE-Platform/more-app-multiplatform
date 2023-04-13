@@ -39,7 +39,7 @@ class ObservationRecordingService: Service() {
                         startObservation(it)
                         return super.onStartCommand(intent, flags, startId)
                     }
-                    START_REDELIVER_INTENT
+                    START_NOT_STICKY
                 }
                 SERVICE_RECEIVER_PAUSE_ACTION -> {
                     intent.getStringExtra(SCHEDULE_ID)?.let {
@@ -85,6 +85,8 @@ class ObservationRecordingService: Service() {
                 } catch (e: Exception) {
                     Napier.e { e.stackTraceToString() }
                 }
+            } else if (observationManager?.hasRunningTasks() == false) {
+
             }
         }
     }
@@ -96,10 +98,18 @@ class ObservationRecordingService: Service() {
     private fun stopObservation(scheduleId: String) {
         observationManager?.stop(scheduleId)
         scheduleRepository.setCompletionStateFor(scheduleId, true)
+        if (observationManager?.hasRunningTasks() == false) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+        }
     }
 
     private fun stopAll() {
         observationManager?.stopAll()
+        if (observationManager?.hasRunningTasks() == false) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+        }
     }
 
     private fun updateTaskStates() {

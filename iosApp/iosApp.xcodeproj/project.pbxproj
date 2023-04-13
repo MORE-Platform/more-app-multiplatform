@@ -51,6 +51,7 @@
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
 		1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */; };
+		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
 		1F69081329D44D900079C219 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F69081229D44D900079C219 /* DateExtension.swift */; };
@@ -198,6 +199,7 @@
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
 		1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
 		1F69081229D44D900079C219 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
 				1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */,
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
+				1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -684,6 +687,7 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
+				1F26F9B029E6DF3D00602DB9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -766,6 +770,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1F26F9B029E6DF3D00602DB9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		7555FFB5242A651A00829871 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -857,6 +880,7 @@
 				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
+				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
