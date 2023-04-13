@@ -26,7 +26,7 @@ fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
     val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
     val onChangeState: (String) -> Unit = {
         selectedValue.value = it
-        model.setAnswer()
+        model.setAnswer(it)
     }
 
     val items = remember {

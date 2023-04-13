@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class SimpleQuestionCoreViewModel(
     private val scheduleId: String,
-    private val observationFactory: ObservationFactory //TODO
+    private val observationFactory: ObservationFactory
 ) {
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()

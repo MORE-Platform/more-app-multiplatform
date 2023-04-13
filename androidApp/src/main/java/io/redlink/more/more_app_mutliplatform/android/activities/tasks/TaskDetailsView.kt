@@ -9,7 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
@@ -18,7 +21,7 @@ import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 
 @Composable
-fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
+fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, observationTitle: String) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,7 +98,9 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
                         id = R.string.more_observation_start
                     ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
                 ) {
-                    if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                    if (viewModel.taskDetailsModel.value.observationType == "question-observation")
+                        navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
+                    else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                         viewModel.pauseObservation()
                     } else {
                         viewModel.startObservation()

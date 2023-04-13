@@ -1,8 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -10,9 +7,10 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 import io.redlink.more.more_app_mutliplatform.android.extensions.getString
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderDescription
@@ -20,20 +18,8 @@ import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderT
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
-class QuestionnaireResponseActivity : ComponentActivity() {
-    private val questionnaireViewModel = QuestionnaireViewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            QuestionnaireResponseView(model = questionnaireViewModel)
-        }
-    }
-}
-
 @Composable
-fun QuestionnaireResponseView(model: QuestionnaireViewModel) {
-    val context = LocalContext.current
+fun QuestionnaireResponseView(navController: NavController) {
     val title = getString(R.string.more_quest_thank_you)
 
     MoreBackground {
@@ -56,7 +42,7 @@ fun QuestionnaireResponseView(model: QuestionnaireViewModel) {
                 HeaderDescription(description = getString(R.string.more_quest_thank_you_full))
             }
             TextButton(
-                onClick = { model.closeActivity(context, true) },
+                onClick = { navController.navigate(NavigationScreen.DASHBOARD.route) },
                 colors = ButtonDefaults.morePrimary(),
                 modifier = Modifier
                     .padding(bottom = 16.dp)

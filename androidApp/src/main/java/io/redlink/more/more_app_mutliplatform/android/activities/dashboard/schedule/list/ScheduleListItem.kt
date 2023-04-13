@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
@@ -22,7 +24,7 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import java.util.*
 
 @Composable
-fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
+fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -53,14 +55,14 @@ fun ScheduleListItem(scheduleModel: ScheduleModel, viewModel: ScheduleViewModel)
                 id = R.string.more_observation_start
             ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
         ) {
-            if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
-                viewModel.pauseObservation(context, scheduleModel.scheduleId)
-            } else {
-                viewModel.startObservation(
-                    context,
-                    scheduleModel.scheduleId
+            if(scheduleModel.observationType == "question-observation")
+                navController.navigate(
+                    "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
                 )
-            }
+            else if (scheduleModel.scheduleState == ScheduleState.RUNNING)
+                viewModel.pauseObservation(context, scheduleModel.scheduleId)
+            else
+                viewModel.startObservation(context, scheduleModel.scheduleId,)
         }
     }
 }

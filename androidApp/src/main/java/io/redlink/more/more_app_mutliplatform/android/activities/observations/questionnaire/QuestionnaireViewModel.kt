@@ -6,40 +6,41 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
+import kotlinx.coroutines.*
 
-class QuestionnaireViewModel: ViewModel() {
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+class QuestionnaireViewModel(coreModel: SimpleQuestionCoreViewModel): ViewModel() {
+    private val coreViewModel: SimpleQuestionCoreViewModel = coreModel
 
-    val observationTitle = mutableStateOf("Observation Title")
-    val observationParticipantInfo = mutableStateOf("Here you will find your participant informations")
+    val observationTitle = mutableStateOf("")
+    val question = mutableStateOf("")
+    var answers = mutableStateListOf("")
+    val answerSet = mutableStateOf("")
+    val observationParticipantInfo = mutableStateOf("")
 
-    val answers = mutableStateListOf(
-        "Answer 1",
-        "Answer 2",
-        "Answer 3")
-    val answerSet = mutableStateOf(false)
+    private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val question = mutableStateOf("Here you will find the Questionnaire question")
-
-    private fun finished(setObservationToDone: Boolean = true) {
-        //observerManagement.stop(this, setObservationToDone)
+    init {
+        scope.launch {
+            coreViewModel.simpleQuestionModel.collect { model ->
+                model?.let {
+                    withContext(Dispatchers.Main) {
+                        observationTitle.value = it.observationTitle
+                        question.value = it.question
+                        answers.clear()
+                        answers.addAll(it.answers)
+                        observationParticipantInfo.value = it.participantInfo
+                    }
+                }
+            }
+        }
     }
 
-    fun goToNextActivity(context: Context) {
-        finished()
-        showNewActivity(context, QuestionnaireResponseActivity::class.java)
-        (context as? Activity)?.finish()
+    fun finish(setObservationToDone: Boolean = true) {
+        coreViewModel.finishQuestion(answerSet.value, setObservationToDone)
     }
 
-    fun closeActivity(context: Context, setObservationToDone: Boolean) {
-        finished(setObservationToDone)
-        (context as? Activity)?.finish()
-    }
-
-    fun setAnswer() {
-        this.answerSet.value = true
+    fun setAnswer(answer: String) {
+        answerSet.value = answer
     }
 }
