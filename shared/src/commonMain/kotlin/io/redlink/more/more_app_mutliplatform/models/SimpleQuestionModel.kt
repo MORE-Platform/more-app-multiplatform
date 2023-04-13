@@ -21,9 +21,9 @@ class SimpleQuestionModel(
                     Json.decodeFromString<JsonObject>(config).toMap()
                 } ?: emptyMap()
             return SimpleQuestionModel(
-                config["question"]?.toString()?.replace("\"", "") ?: "",
+                config["question"]?.toString()?.trim('\"') ?: "",
                 config["answers"]?.jsonArray?.map {
-                    it.toString().replace("\"", "")
+                    it.toString().trim('\"')
                 }?.toMutableSet() ?: mutableSetOf(),
                 observationSchema.participantInfo,
                 observationSchema.observationId,
