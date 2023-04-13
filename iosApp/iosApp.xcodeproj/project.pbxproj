@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		07190FEA29E80A7C00A8CB1F /* ExitStudyLevelOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FE929E80A7C00A8CB1F /* ExitStudyLevelOneView.swift */; };
+		07190FEC29E834E800A8CB1F /* ExitStudyLevelTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FEB29E834E800A8CB1F /* ExitStudyLevelTwoView.swift */; };
 		07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */; };
 		07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */; };
 		07BC54B029CB3CD600459267 /* StudyDetailsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */; };
@@ -159,6 +161,8 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		07190FE929E80A7C00A8CB1F /* ExitStudyLevelOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitStudyLevelOneView.swift; sourceTree = "<group>"; };
+		07190FEB29E834E800A8CB1F /* ExitStudyLevelTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitStudyLevelTwoView.swift; sourceTree = "<group>"; };
 		07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsView.swift; sourceTree = "<group>"; };
 		07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsViewModel.swift; sourceTree = "<group>"; };
 		07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = StudyDetailsView.strings; sourceTree = "<group>"; };
@@ -320,6 +324,15 @@
 				058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
+			isa = PBXGroup;
+			children = (
+				07190FE929E80A7C00A8CB1F /* ExitStudyLevelOneView.swift */,
+				07190FEB29E834E800A8CB1F /* ExitStudyLevelTwoView.swift */,
+			);
+			path = ExitConfirmation;
 			sourceTree = "<group>";
 		};
 		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
@@ -656,6 +669,7 @@
 		EDBB2B4629B8CFAE00CA973E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				07190FE829E809A700A8CB1F /* ExitConfirmation */,
 				EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */,
 				EDBB2B4929B8CFF000CA973E /* SettingsView.swift */,
 			);
@@ -863,6 +877,7 @@
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,
 				EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */,
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
+				07190FEA29E80A7C00A8CB1F /* ExitStudyLevelOneView.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
@@ -890,6 +905,7 @@
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
+				07190FEC29E834E800A8CB1F /* ExitStudyLevelTwoView.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
 				1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */,

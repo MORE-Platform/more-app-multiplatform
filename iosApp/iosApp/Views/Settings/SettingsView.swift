@@ -30,13 +30,18 @@ struct SettingsView: View {
                     ConsentList(permissionModel: .constant(permissions))
                         .padding(.top)
                 }
-                
-                MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
-                    viewModel.leaveStudy()
-                    //contentViewModel.showLoginView()
+                NavigationLink {
+                    ExitStudyLevelOneView(viewModel: viewModel)
                 } label: {
-                    Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
+                    MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
+                        //                        viewModel.leaveStudy()
+                        //contentViewModel.showLoginView()
+                    } label: {
+                        Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
+                    }.padding(.bottom)
                 }
+                
+                Spacer()
             }
         } topBarContent: {
             EmptyView()
