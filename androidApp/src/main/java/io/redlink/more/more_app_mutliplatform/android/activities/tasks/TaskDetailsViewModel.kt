@@ -41,7 +41,7 @@ class TaskDetailsViewModel(
                 details?.let {
                     withContext(Dispatchers.Main) {
                         taskDetailsModel.value = it
-                        isEnabled.value = taskDetailsModel.value.start.toDate() <= Date() && Date() < taskDetailsModel.value.end.toDate()
+                        isEnabled.value = it.state.active()
                     }
                 }
             }

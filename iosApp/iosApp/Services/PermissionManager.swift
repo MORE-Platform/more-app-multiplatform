@@ -31,9 +31,16 @@ class PermissionManager: NSObject, ObservableObject {
 
     private var cameraPermissionGranted = false
 
-    private var gpsStatus: PermissionStatus = .non
-    private var gpsNeeded: Bool = false
-    private var cmSensorRecorderNeeded = false
+    private var gpsStatus: PermissionStatus = .non {
+        didSet {
+            if gpsStatus == .accepted {
+                requestPermission()
+            } else if gpsStatus == .declined {
+                observer?.declined()
+            }
+        }
+    }
+
     private var cmSensorStatus: PermissionStatus = .non {
         didSet {
             if cmSensorStatus == .accepted {
@@ -44,12 +51,10 @@ class PermissionManager: NSObject, ObservableObject {
         }
     }
     
-    private var notificationStatus: PermissionStatus = .requesting {
+    private var notificationStatus: PermissionStatus = .non {
         didSet {
             if notificationStatus == .accepted {
-                Task { @MainActor in
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
+                AppDelegate.registerForNotifications()
                 requestPermission()
             } else if notificationStatus == .declined {
                 observer?.declined()
@@ -57,9 +62,17 @@ class PermissionManager: NSObject, ObservableObject {
         }
     }
 
-    private var cameraNeeded: Bool = false
+    private var cameraStatus: PermissionStatus = .non {
+        didSet {
+            if cameraStatus == .accepted {
+                requestPermission()
+            } else if cameraStatus == .declined {
+                observer?.declined()
+            }
+        }
+    }
 
-    private var bluetoothStatus: PermissionStatus = .requesting {
+    private var bluetoothStatus: PermissionStatus = .non {
         didSet {
             if bluetoothStatus == .accepted {
                 requestPermission()
@@ -68,7 +81,7 @@ class PermissionManager: NSObject, ObservableObject {
             }
         }
     }
-    private var bluetoothNeeded: Bool = false
+    
 
     var permissionsGranted: Bool = true
 
@@ -81,20 +94,19 @@ class PermissionManager: NSObject, ObservableObject {
         setPermisssionValues(observationPermissions: IOSObservationFactory().sensorPermissions())
     }
 
-    private func requestGpsAuthorization(always: Bool = true) -> PermissionStatus {
+    private func requestGpsAuthorization(always: Bool = true) {
         if locationManager.authorizationStatus == .notDetermined {
             if always {
                 locationManager.requestAlwaysAuthorization()
             } else {
                 locationManager.requestWhenInUseAuthorization()
             }
-            return .requesting
+            gpsStatus = .requesting
         } else if locationManager.authorizationStatus == CLAuthorizationStatus.denied
             || locationManager.authorizationStatus == CLAuthorizationStatus.restricted || locationManager.accuracyAuthorization != .fullAccuracy {
-            observer?.declined()
-            return .declined
+            gpsStatus = .declined
         }
-        return .accepted
+        gpsStatus = .accepted
     }
 
     private func requestCMSensorRecorder() {
@@ -154,9 +166,8 @@ class PermissionManager: NSObject, ObservableObject {
     }
     
     private func checkAcceptedPerms() {
-        if cameraNeeded {
-            permissionsGranted = (locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
-        }
+        permissionsGranted = (locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
+
     }
     
     private func requestPermissionCamera() {
@@ -168,37 +179,42 @@ class PermissionManager: NSObject, ObservableObject {
     }
     
     private func setPermisssionValues(observationPermissions: Set<String> = []) {
-        gpsNeeded = observationPermissions.contains("gpsAlways")
-        cameraNeeded = observationPermissions.contains("camera")
-        cmSensorRecorderNeeded = observationPermissions.contains("cmsensorrecorder")
-        bluetoothNeeded = observationPermissions.contains("bluetoothAlways")
+        gpsStatus = observationPermissions.contains("gpsAlways") ? .requesting : .non
+        cameraStatus = observationPermissions.contains("camera") ? .requesting : .non
+        cmSensorStatus = observationPermissions.contains("cmsensorrecorder") ? .requesting : .non
+        bluetoothStatus = observationPermissions.contains("bluetoothAlways") ?.requesting : .non
     }
 
     func requestPermission() {
         if let observer {
             if notificationStatus != .accepted {
                 checkPushNotificationAuthorization()
-            } else if gpsNeeded && gpsStatus != .accepted {
-                gpsStatus = requestGpsAuthorization()
-            } else if bluetoothNeeded && bluetoothStatus != .accepted {
+            } else if gpsStatus == .requesting && gpsStatus != .accepted {
+                requestGpsAuthorization()
+            } else if bluetoothStatus == .requesting && bluetoothStatus != .accepted {
                 bluetoothStatus = checkBluetoothAuthorization()
-            } else if cmSensorRecorderNeeded && cmSensorStatus != .accepted {
+            } else if cmSensorStatus == .requesting && cmSensorStatus != .accepted {
                 requestCMSensorRecorder()
             } else {
                 observer.accepted()
             }
         }
     }
-
+    func reset() {
+        notificationStatus = .non
+        gpsStatus = .non
+        bluetoothStatus = .non
+        cmSensorStatus = .non
+        cameraStatus = .non
+    }
 }
 
 extension PermissionManager: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
-            observer?.declined()
+            gpsStatus = .declined
         } else if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             gpsStatus = .accepted
-            requestPermission()
         }
     }
 }

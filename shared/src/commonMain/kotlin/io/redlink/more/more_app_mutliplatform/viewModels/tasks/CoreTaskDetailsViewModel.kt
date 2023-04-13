@@ -1,19 +1,17 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class CoreTaskDetailsViewModel(

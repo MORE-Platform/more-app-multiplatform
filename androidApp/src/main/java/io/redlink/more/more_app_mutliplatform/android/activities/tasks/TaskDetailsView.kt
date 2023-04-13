@@ -47,7 +47,9 @@ fun TaskDetailsView(viewModel: TaskDetailsViewModel, scheduleId: String?) {
                         imageTint = MoreColors.Important,
                         borderStroke = MoreColors.borderDefault(),
                         buttonColors = ButtonDefaults.moreSecondary2()
-                    ) {}
+                    ) {
+                        viewModel.stopObservation()
+                    }
             }
             BasicText(
                 text = viewModel.taskDetailsModel.value.observationType,
