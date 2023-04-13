@@ -42,10 +42,18 @@ struct MoreFilterOption: View {
             .padding(5)
         }
         .onAppear {
-            isSelected = selectedValuesInList.contains(option)
+            if option == "All Items" && selectedValuesInList.isEmpty {
+                isSelected = true
+            } else {
+                isSelected = selectedValuesInList.contains(option)
+            }
         }
         .onChange(of: selectedValuesInList, perform: { _ in
-            isSelected = selectedValuesInList.contains(option)
+            if option == "All Items" && selectedValuesInList.isEmpty {
+                isSelected = true
+            } else {
+                isSelected = selectedValuesInList.contains(option)
+            }
         })
     }
 }

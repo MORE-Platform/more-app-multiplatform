@@ -50,7 +50,6 @@ class ScheduleViewModel: ObservableObject {
         filterViewModel.setDateFilterValue()
         filterViewModel.setObservationTypeFilters()
         schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).converttoInt64()
-        print("Schedules: \(schedules)")
     }
 }
 

@@ -32,7 +32,6 @@ class CoreDashboardFilterViewModel {
             typeFilter = currentFilter.value.typeFilter
                 .toMutableSet().apply { add(type) }
         ))
-        Napier.i { "Current Filters: ${currentFilter.value}" }
     }
 
     fun getEnumAsList(): List<DateFilterModel> {
@@ -51,11 +50,15 @@ class CoreDashboardFilterViewModel {
             typeFilter = currentFilter.value.typeFilter
                 .toMutableSet().apply { clear() }
         ))
-        Napier.i { "Cleared filters: ${currentFilter.value}" }
     }
 
     fun setDateFilter(dateFilter: DateFilterModel) {
         update(currentFilter.value.copy(dateFilter = dateFilter))
+    }
+
+    fun setTypeFilters(filters: List<String>) {
+        currentFilter.value.typeFilter.clear()
+        currentFilter.value.typeFilter.addAll(filters)
     }
 
     fun hasDateFilter(dateFilter: DateFilterModel) = currentFilter.value.dateFilter == dateFilter

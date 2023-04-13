@@ -10,9 +10,10 @@ import SwiftUI
 
 struct MoreFilter<Destination: View>: View {
     
-    @State var text: String = ""
-    var numberOfTypes: Int = 0
-    var timeFilter: String = ""
+    @State var text: String = "No Filter Applied"
+    @State var typeFilterText: String = ""
+    @State var dateFilterText: String = ""
+    @EnvironmentObject var filterViewModel: DashboardFilterViewModel
     var destination: () -> Destination
     var stringTable = "DashboardFilter"
     
@@ -27,33 +28,51 @@ struct MoreFilter<Destination: View>: View {
                 image
                     .foregroundColor(Color.more.secondary)
             }
-        }.onAppear {
+        }.onChange(of: filterViewModel.dateFilterString, perform: { _ in
             getFilterText()
-        }
+        })
+        .onChange(of: filterViewModel.observationTypeFilter, perform: { _ in
+            getFilterText()
+        })
     }
     
     func getFilterText() {
-        if numberOfTypes == 0 && timeFilter == "ENTIRE_TIME" {
+        if filterViewModel.observationTypeFilter.isEmpty && filterViewModel.dateFilterString == "ENTIRE_TIME" {
             text = String.localizedString(forKey: "no_filter_applied", inTable: stringTable, withComment: "No filter set")
         } else {
-            if numberOfTypes > 0 {
-                if numberOfTypes == 1 {
-                    text = "\(numberOfTypes) Type"
+            if typeFilterSet() {
+                if filterViewModel.observationTypeFilter.count == 1 {
+                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) Type"
                 } else {
-                    text = "\(numberOfTypes) Types"
+                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) Types"
                 }
             }
-            if timeFilter != "ENTIRE_TIME" {
-                text = "\(text), \(String.localizedString(forKey: timeFilter, inTable: stringTable, withComment: "Time filter"))"
+            if dateFilterSet() {
+                dateFilterText = String.localizedString(forKey: filterViewModel.dateFilterString, inTable: stringTable, withComment: "Time filter")
+            }
+            if dateFilterSet() && typeFilterSet() {
+                text = "\(typeFilterText), \(dateFilterText)"
+            } else if dateFilterSet(){
+                text = dateFilterText
+            } else {
+                text = typeFilterText
             }
         }
+    }
+    
+    func dateFilterSet() -> Bool {
+        return filterViewModel.dateFilterString != "ENTIRE_TIME"
+    }
+    
+    func typeFilterSet() -> Bool {
+        return !filterViewModel.observationTypeFilter.isEmpty
     }
 }
 
 struct MoreFilter_Previews: PreviewProvider {
     static var previews: some View {
-        MoreFilter(numberOfTypes: 1, timeFilter: "ENTIRE_TIME") {
+        MoreFilter() {
             EmptyView()
-        }
+        }.environmentObject(DashboardFilterViewModel())
     }
 }

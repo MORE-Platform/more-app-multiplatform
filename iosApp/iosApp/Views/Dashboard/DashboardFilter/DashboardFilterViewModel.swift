@@ -18,7 +18,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     @Published var dateFilter: DateFilterModel = DateFilterModel.entireTime
     @Published var dateFilterString: String = "ENTIRE_TIME"
-    @Published var observationTypeFilter: [String] = ["All Items"]
+    @Published var observationTypeFilter: [String] = []
     
     @Published var currentFilter: FilterModel? = nil
     
@@ -42,28 +42,20 @@ class DashboardFilterViewModel: ObservableObject {
         else if dateFilterString == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
         else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
-        print("SET_FILTERS: datefilter: \(filterModel)")
-        
         coreModel.setDateFilter(dateFilter: filterModel)
     }
     
     func setObservationTypeFilters() {
-        coreModel.clearTypeFilters()
-        observationTypeFilter.forEach { filter in
-            if filter != "All Items" {
-                coreModel.addTypeFilter(type: filter)
-            }
-        }
+        print("Type Filters: \(observationTypeFilter)")
+        coreModel.setTypeFilters(filters: observationTypeFilter)
     }
 
     func setCurrentFilters() {
         coreModel.onLoadCurrentFilters { filters in
             self.dateFilter = filters.dateFilter
+            self.dateFilterString = String(describing: self.dateFilter)
             self.observationTypeFilter = filters.typeFilter.map { value in
                 String(describing: value)
-            }
-            if self.observationTypeFilter.isEmpty {
-                self.observationTypeFilter = ["All Items"]
             }
         }
     }

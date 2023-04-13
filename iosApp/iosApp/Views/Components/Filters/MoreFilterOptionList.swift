@@ -32,16 +32,8 @@ struct MoreFilterOptionList: View {
                     callback: {
                         if multiSelect {
                             if filter == "All Items" {
-                                if !selectedValueList.contains("All Items") {
-                                    selectedValueList.append("All Items")
-                                }
-                                selectedValueList.forEach { value in
-                                    selectedValueList = selectedValueList.filter { $0 == "All Items" }
-                                }
+                                selectedValueList.removeAll()
                             } else {
-                                if selectedValueList.contains("All Items") {
-                                    self.selectedValueList.remove(at: selectedValueList.firstIndex(of: "All Items")!)
-                                }
                                 if selectedValueList.contains(filter) {
                                     self.selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
                                 } else {
@@ -53,7 +45,6 @@ struct MoreFilterOptionList: View {
                                 selectedValueList.removeAll()
                             }
                             selectedValueList.append(filter)
-                            print("single filter: \(selectedValueList)")
                         }
                         optionCallback(selectedValueList)
                     })

@@ -43,6 +43,9 @@ struct DashboardFilterView: View {
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                viewModel.setCurrentFilters()
+            }
         }
     }
 }

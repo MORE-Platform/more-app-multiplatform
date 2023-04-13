@@ -24,9 +24,9 @@ struct DashboardView: View {
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                          withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
                     .padding(.bottom)
-                    MoreFilter(numberOfTypes: dashboardViewModel.scheduleViewModel.filterViewModel.observationTypeFilter.count - 1, timeFilter: String(describing: dashboardViewModel.scheduleViewModel.filterViewModel.dateFilter)) {
+                    MoreFilter() {
                             DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
-                        }
+                    }.environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
                     .padding(.bottom)
                     if selection == 0 {
                         ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
