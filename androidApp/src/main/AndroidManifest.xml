@@ -58,14 +58,6 @@
             android:screenOrientation="portrait"
             android:exported="true" />
 
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-        <activity android:name=".activities.observations.questionnaire.QuestionnaireResponseActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-
-
         <service android:name=".services.ObservationRecordingService" />
         <service android:name=".firebase.FCMService"
             android:exported="false">
@@ -74,6 +66,17 @@
             </intent-filter>
         </service>
 
+        <service android:name=".services.PushNotificationService"/>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_channel_id" />
+
+        <receiver android:name=".broadcasts.NotificationBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.redlink.more.app.android.NOTIFICATION_ACTION_READ" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest> 

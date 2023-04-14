@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,9 +18,10 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.Dashb
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
+import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireResponseView
+import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
-import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
@@ -84,9 +86,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationId={observationId}&scheduleId={scheduleId}",
+                "${NavigationScreen.SCHEDULE_DETAILS.route}/observationTitle={observationTitle}&scheduleId={scheduleId}",
                 arguments = listOf(
-                    navArgument("observationId") {
+                    navArgument("observationTitle") {
                     type = NavType.StringType
                 }, navArgument("scheduleId") {
                     type = NavType.StringType
@@ -94,11 +96,14 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val scheduleId = arguments.getString("scheduleId")
+                val observationTitle = arguments.getString("observationTitle")
                 title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
+                    navController = navController,
                     viewModel = viewModel.createNewTaskViewModel(scheduleId ?: ""),
-                    scheduleId = scheduleId
+                    scheduleId = scheduleId,
+                    observationTitle = observationTitle ?: ""
                 )
             }
             composable(NavigationScreen.STUDY_DETAILS.route) {
@@ -110,6 +115,24 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 title = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
                 DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.dashboardFilterViewModel))
+            }
+            composable(
+                "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
+                arguments = listOf(
+                    navArgument("scheduleId") {
+                        type = NavType.StringType
+                    })
+            ) {
+                val arguments = requireNotNull(it.arguments)
+                val scheduleId = arguments.getString("scheduleId")
+                title = NavigationScreen.SIMPLE_QUESTION.stringRes()
+                viewModel.showBackButton.value = true
+                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(scheduleId ?: "", LocalContext.current))
+            }
+            composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
+                title =NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
+                viewModel.showBackButton.value = false
+                QuestionnaireResponseView(navController)
             }
         }
     }

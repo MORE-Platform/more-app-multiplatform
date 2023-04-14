@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 08.02.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import shared
@@ -27,10 +27,11 @@ class ConsentViewModel: NSObject, ObservableObject {
     @Published var showErrorAlert: Bool = false
     @Published var requestedPermissions = false
 
-    let permissionManager = PermissionManager()
+    lazy var permissionManager = PermissionManager()
     var permissionGranted = false
     
     init(registrationService: RegistrationService) {
+        print("ConsentViewModel allocated!")
         coreModel = CorePermissionViewModel(registrationService: registrationService)
         super.init()
         coreModel.onConsentModelChange { model in
@@ -53,7 +54,7 @@ class ConsentViewModel: NSObject, ObservableObject {
 
     func requestPermissions() {
         self.requestedPermissions = true
-        permissionManager.requestPermission()
+        permissionManager.requestPermission(permissionRequest: true)
     }
 
     func reloadPermissions() {
@@ -85,16 +86,24 @@ class ConsentViewModel: NSObject, ObservableObject {
     func decline() {
         delegate?.decline()
     }
+    
+    deinit {
+        print("ConsentViewModel deallocated!")
+    }
 }
 
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
-        self.acceptConsent()
-        self.requestedPermissions = false
+        DispatchQueue.main.async {
+            self.acceptConsent()
+            self.requestedPermissions = false            
+        }
     }
 
     func declined() {
-        self.showErrorAlert = true
-        self.requestedPermissions = false
+        DispatchQueue.main.async {
+            self.showErrorAlert = true
+            self.requestedPermissions = false
+        }
     }
 }

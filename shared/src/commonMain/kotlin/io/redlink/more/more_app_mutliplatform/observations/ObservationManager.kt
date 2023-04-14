@@ -121,6 +121,8 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         scheduleRepository.updateTaskStates(observationFactory)
     }
 
+    fun hasRunningTasks() = runningObservations.isNotEmpty()
+
     private fun stopAllInList() {
         runningObservations.forEach {
             it.value.stop(it.key.observationId)
