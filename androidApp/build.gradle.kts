@@ -13,8 +13,8 @@ android {
         applicationId = "io.redlink.more.more_app_mutliplatform.android"
         minSdk = 29
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0-rc1"
     }
     buildFeatures {
         compose = true
