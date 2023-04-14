@@ -9,11 +9,13 @@
 import SwiftUI
 
 struct MoreFilterOptionList: View {
+    
+    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
+    
     @Binding var title: String
     @Binding var optionList: [String]
     @State var selectedValueList: [String]
     let multiSelect: Bool
-    let optionCallback: ([String]) -> ()
     
     private let stringTable: String = "DashboardFilter"
     
@@ -26,25 +28,8 @@ struct MoreFilterOptionList: View {
             
             ForEach(optionList, id: \.self) { filter in
                 MoreFilterOption(
-                    selectedValuesInList: $selectedValueList, option: filter, callback: {
-                        if multiSelect {
-                            if filter == String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items") {
-                                selectedValueList.removeAll()
-                            } else {
-                                if selectedValueList.contains(filter) {
-                                    self.selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
-                                } else {
-                                    self.selectedValueList.append(filter)
-                                }
-                            }
-                        } else {
-                            if !selectedValueList.isEmpty {
-                                selectedValueList.removeAll()
-                            }
-                            selectedValueList.append(filter)
-                        }
-                        optionCallback(selectedValueList)
-                    })
+                    multiSelect: multiSelect, selectedValuesInList: $selectedValueList, option: filter)
+                .environmentObject(dashboardFilterViewModel)
                 Divider()
             }
         }

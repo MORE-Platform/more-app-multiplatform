@@ -16,6 +16,7 @@ class DashboardViewModel: ObservableObject {
     
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
+    @Published var filterText: String = ""
     
     init(dashboardFilterViewModel: DashboardFilterViewModel) {
         self.observationFactory = IOSObservationFactory()
@@ -26,6 +27,7 @@ class DashboardViewModel: ObservableObject {
                 self.studyTitle = study.studyTitle
             }
         }
+        self.filterText = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
     }
 
 }

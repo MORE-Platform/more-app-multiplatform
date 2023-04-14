@@ -9,10 +9,16 @@
 import SwiftUI
 import shared
 
+protocol DashboardFilterObserver {
+    func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String]
+}
+
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private let observationFactory: IOSObservationFactory = IOSObservationFactory()
     private let stringTable = "DashboardFilter"
+    
+    var delegate: DashboardFilterObserver? = nil
     
     @Published var dateFilterStringList: [String]
     @Published var observationTypes: [String]
@@ -22,7 +28,6 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var observationTypeFilter: [String] = []
     
     @Published var currentFilter: FilterModel? = nil
-    
     
     init() {
         var list: [String] = observationFactory.self.observations.map({ ($0 as AnyObject).observationType.observationType})
@@ -49,7 +54,11 @@ class DashboardFilterViewModel: ObservableObject {
     func setObservationTypeFilters() {
         coreModel.setTypeFilters(filters: observationTypeFilter)
     }
-
+    
+    func updateFilters(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
+        return self.delegate?.onFilterChanged(multiSelect: multiSelect, filter: filter, list: list, stringTable: stringTable) ?? []
+    }
+    
     func setCurrentFilters() {
         coreModel.onLoadCurrentFilters { filters in
             self.dateFilter = filters.dateFilter
@@ -58,6 +67,17 @@ class DashboardFilterViewModel: ObservableObject {
                 String(describing: value)
             }
         }
+    }
+    
+    func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
+        var isSelected = false
+        let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
+        if option == allItemsString && selectedValuesInList.isEmpty {
+            isSelected = true
+        } else {
+            isSelected = selectedValuesInList.contains(option)
+        }
+        return isSelected
     }
 }
 

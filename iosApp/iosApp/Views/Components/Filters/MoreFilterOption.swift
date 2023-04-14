@@ -11,16 +11,17 @@ import SwiftUI
 struct MoreFilterOption: View {
     
     var option: String
-    var callback: () -> Void
     @Binding var selectedValuesInList: [String]
+    let multiSelect: Bool
+    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     
     @State private var isSelected: Bool = false
     private let stringTable = "DashboardFilter"
 
-    init(selectedValuesInList: Binding<[String]>, option: String, callback: @escaping () -> Void) {
+    init(multiSelect: Bool, selectedValuesInList: Binding<[String]>, option: String) {
         self._selectedValuesInList = selectedValuesInList
         self.option = option
-        self.callback = callback
+        self.multiSelect = multiSelect
         self.isSelected = self.selectedValuesInList.contains(self.option)
     }
     
@@ -35,7 +36,7 @@ struct MoreFilterOption: View {
                         .frame(width: 5)
                 }
                 Button(action: {
-                    callback()
+                    selectedValuesInList = (dashboardFilterViewModel.updateFilters(multiSelect: multiSelect, filter: option, list: selectedValuesInList, stringTable: stringTable))
                 }) {
                     MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
                 }
@@ -43,20 +44,10 @@ struct MoreFilterOption: View {
             .padding(5)
         }
         .onAppear {
-            let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
-            if option == allItemsString && selectedValuesInList.isEmpty {
-                isSelected = true
-            } else {
-                isSelected = selectedValuesInList.contains(option)
-            }
+            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
         }
         .onChange(of: selectedValuesInList, perform: { _ in
-            let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
-            if option == allItemsString && selectedValuesInList.isEmpty {
-                isSelected = true
-            } else {
-                isSelected = selectedValuesInList.contains(option)
-            }
+            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
         })
     }
 }

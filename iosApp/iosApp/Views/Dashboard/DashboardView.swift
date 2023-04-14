@@ -26,7 +26,8 @@ struct DashboardView: View {
                     .padding(.bottom)
                     MoreFilter() {
                             DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
-                    }.environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
+                    }
+                    .environmentObject(dashboardViewModel)
                     .padding(.bottom)
                     if selection == 0 {
                         ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
@@ -40,9 +41,6 @@ struct DashboardView: View {
             }
             .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                dashboardViewModel.scheduleViewModel.applyFilters()
-            }
         }
     }
 }
