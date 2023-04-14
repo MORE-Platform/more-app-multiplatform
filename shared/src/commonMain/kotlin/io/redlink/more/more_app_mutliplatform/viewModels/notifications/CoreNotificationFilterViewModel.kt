@@ -26,8 +26,9 @@ class CoreNotificationFilterViewModel {
     }
 
     fun applyFilter(notificationList: List<NotificationSchema>): List<NotificationSchema> {
+        val filteredList = notificationList.toMutableList()
         if(hasFilters())
-            notificationList.filter {(
+            filteredList.filter {(
                     if(currentFilter.value.filterUnimportant)
                         it.priority == 2L else true
                         ) && (
@@ -35,6 +36,6 @@ class CoreNotificationFilterViewModel {
                         !it.read else true
                     )
             }
-        return notificationList
+        return filteredList
     }
 }
