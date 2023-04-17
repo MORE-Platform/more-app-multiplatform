@@ -5,7 +5,7 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-class CoreNotificationFilterViewModel {
+class CoreNotificationFilterViewModel(private val highPriority: Long) {
     private val currentFilter = MutableStateFlow(NotificationFilterModel())
 
     fun hasFilters(): Boolean = (currentFilter.value.filterRead || currentFilter.value.filterUnimportant)
@@ -30,7 +30,7 @@ class CoreNotificationFilterViewModel {
         if(hasFilters())
             filteredList.filter {(
                     if(currentFilter.value.filterUnimportant)
-                        it.priority == 2L else true
+                        it.priority == highPriority else true
                         ) && (
                     if(currentFilter.value.filterRead)
                         !it.read else true
