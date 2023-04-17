@@ -7,7 +7,6 @@
 //
 
 import shared
-import SwiftUI
 
 class DashboardViewModel: ObservableObject {
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
