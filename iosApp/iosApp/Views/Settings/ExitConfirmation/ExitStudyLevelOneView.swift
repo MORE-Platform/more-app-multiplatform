@@ -30,7 +30,7 @@ struct ExitStudyLevelOneView: View {
                     Spacer()
                 
                 }.padding(.top)
-                Text("If you withdraw from the study, you will not be able to continue!")
+                Text(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message"))
                     .foregroundColor(Color.more.important)
                     .fontWeight(.bold)
                     .padding(.bottom, 2)
@@ -38,7 +38,7 @@ struct ExitStudyLevelOneView: View {
                 
                 HStack{
                     Spacer()
-                    Text("Do you really want to withdraw?")
+                    Text(String.localizedString(forKey: "really_message", inTable: stringTable, withComment: "second question message"))
                         .padding(.bottom)
                     Spacer()
                 }
@@ -47,7 +47,7 @@ struct ExitStudyLevelOneView: View {
                 } label: {
                     MoreActionButton(backgroundColor: Color.more.approved, disabled: .constant(false)) {
                     } label: {
-                        Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
+                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study"))
                     }
                 }
                 NavigationLink {
@@ -55,7 +55,7 @@ struct ExitStudyLevelOneView: View {
                 } label: {
                     MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
                     } label: {
-                        Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
+                        Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study"))
                     }
                 }
                 

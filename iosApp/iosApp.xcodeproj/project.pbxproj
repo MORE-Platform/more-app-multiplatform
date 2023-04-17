@@ -11,6 +11,8 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		07190FEA29E80A7C00A8CB1F /* ExitStudyLevelOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FE929E80A7C00A8CB1F /* ExitStudyLevelOneView.swift */; };
 		07190FEC29E834E800A8CB1F /* ExitStudyLevelTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FEB29E834E800A8CB1F /* ExitStudyLevelTwoView.swift */; };
+		071ABEF529ED8C440013C1CF /* TriggerSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071ABEF429ED8C440013C1CF /* TriggerSlider.swift */; };
+		071ABEF729ED8C660013C1CF /* TriggerSliderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */; };
 		07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */; };
 		07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */; };
 		07BC54B029CB3CD600459267 /* StudyDetailsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */; };
@@ -163,6 +165,8 @@
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		07190FE929E80A7C00A8CB1F /* ExitStudyLevelOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitStudyLevelOneView.swift; sourceTree = "<group>"; };
 		07190FEB29E834E800A8CB1F /* ExitStudyLevelTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitStudyLevelTwoView.swift; sourceTree = "<group>"; };
+		071ABEF429ED8C440013C1CF /* TriggerSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerSlider.swift; sourceTree = "<group>"; };
+		071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerSliderSettings.swift; sourceTree = "<group>"; };
 		07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsView.swift; sourceTree = "<group>"; };
 		07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsViewModel.swift; sourceTree = "<group>"; };
 		07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = StudyDetailsView.strings; sourceTree = "<group>"; };
@@ -448,6 +452,8 @@
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
 				07FD293B29D57F0300853108 /* ModuleListItem.swift */,
 				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
+				071ABEF429ED8C440013C1CF /* TriggerSlider.swift */,
+				071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -864,6 +870,7 @@
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				B748DF4A29D1C08D0026C348 /* QuestionObservationView.swift in Sources */,
 				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
+				071ABEF529ED8C440013C1CF /* TriggerSlider.swift in Sources */,
 				1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */,
 				B784169229C9E3F50035D830 /* Title2.swift in Sources */,
 				EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */,
@@ -886,6 +893,7 @@
 				1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */,
 				B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */,
 				B748DF3C29CC6B380026C348 /* ObservatinoDetailsData.swift in Sources */,
+				071ABEF729ED8C660013C1CF /* TriggerSliderSettings.swift in Sources */,
 				1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */,
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
