@@ -27,9 +27,18 @@ struct MoreFilterOptionList: View {
             Divider()
             
             ForEach(optionList, id: \.self) { filter in
-                MoreFilterOption(
-                    multiSelect: multiSelect, selectedValuesInList: $selectedValueList, option: filter)
-                .environmentObject(dashboardFilterViewModel)
+                Button {
+                    selectedValueList = dashboardFilterViewModel.updateFilters(multiSelect: multiSelect, filter: filter, list: selectedValueList, stringTable: stringTable)
+                } label: {
+                    HStack {
+                        MoreFilterOption(
+                            multiSelect: multiSelect, option: filter, selectedValuesInList: $selectedValueList)
+                        .environmentObject(dashboardFilterViewModel)
+                        Spacer()
+                    }
+                }
+                .buttonStyle(.borderless)
+                .frame(maxWidth: .infinity)
                 Divider()
             }
         }

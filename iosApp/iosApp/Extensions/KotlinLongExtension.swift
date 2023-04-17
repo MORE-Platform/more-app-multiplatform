@@ -12,7 +12,7 @@ import shared
 extension KotlinLong {
 
     func toInt64() -> Int64 {
-        return Int64(truncating: self)
+        return self.int64Value
     }
 }
 

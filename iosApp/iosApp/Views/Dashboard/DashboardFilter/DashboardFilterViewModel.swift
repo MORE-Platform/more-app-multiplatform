@@ -6,7 +6,6 @@
 //  Copyright © 2023 orgName. All rights reserved.
 //
 
-import SwiftUI
 import shared
 
 protocol DashboardFilterObserver {
@@ -30,7 +29,7 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var currentFilter: FilterModel? = nil
     
     init() {
-        var list: [String] = observationFactory.self.observations.map({ ($0 as AnyObject).observationType.observationType})
+        var list: [String] = Array(observationFactory.observationTypes())
         list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
         self.observationTypes = list
         

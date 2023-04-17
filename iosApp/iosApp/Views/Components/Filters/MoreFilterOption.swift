@@ -10,20 +10,13 @@ import SwiftUI
 
 struct MoreFilterOption: View {
     
+    let multiSelect: Bool
     var option: String
     @Binding var selectedValuesInList: [String]
-    let multiSelect: Bool
     @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     
     @State private var isSelected: Bool = false
     private let stringTable = "DashboardFilter"
-
-    init(multiSelect: Bool, selectedValuesInList: Binding<[String]>, option: String) {
-        self._selectedValuesInList = selectedValuesInList
-        self.option = option
-        self.multiSelect = multiSelect
-        self.isSelected = self.selectedValuesInList.contains(self.option)
-    }
     
     var body: some View {
         VStack {
@@ -35,11 +28,7 @@ struct MoreFilterOption: View {
                     Spacer()
                         .frame(width: 5)
                 }
-                Button(action: {
-                    selectedValuesInList = (dashboardFilterViewModel.updateFilters(multiSelect: multiSelect, filter: option, list: selectedValuesInList, stringTable: stringTable))
-                }) {
-                    MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
-                }
+                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
             }
             .padding(5)
         }

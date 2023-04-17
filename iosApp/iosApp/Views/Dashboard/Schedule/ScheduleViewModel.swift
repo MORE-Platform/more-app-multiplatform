@@ -24,7 +24,6 @@ class ScheduleViewModel: ObservableObject {
     @Published var scheduleDates: [Int64] = []
 
     init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
-        recorder.updateTaskStates()
         filterViewModel = dashboardFilterViewModel
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in

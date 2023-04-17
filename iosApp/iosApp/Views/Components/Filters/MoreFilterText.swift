@@ -12,11 +12,6 @@ struct MoreFilterText: View {
     @Binding var text: String
     @Binding var isSelected: Bool
     
-    init(text: Binding<String>, isSelected: Binding<Bool>) {
-        self._text = text
-        self._isSelected = isSelected
-    }
-    
     var body: some View {
         Text(text)
             .font(.system(size: 16))

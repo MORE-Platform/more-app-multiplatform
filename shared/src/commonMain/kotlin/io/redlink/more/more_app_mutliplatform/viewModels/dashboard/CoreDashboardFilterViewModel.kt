@@ -1,7 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
@@ -11,8 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -95,15 +93,6 @@ class CoreDashboardFilterViewModel {
     }
 
     fun onLoadCurrentFilters(provideNewState: ((FilterModel) -> Unit)): Closeable {
-        val job = Job()
-        currentFilter.onEach {
-            Napier.i { "New Filter Model: ${currentFilter.value}" }
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
+        return currentFilter.asClosure(provideNewState)
     }
 }
