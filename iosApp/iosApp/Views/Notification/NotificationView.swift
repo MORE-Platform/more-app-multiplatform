@@ -21,32 +21,22 @@ struct NotificationView: View {
                         .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
                     .padding(.bottom)
                     
-                    // add for each loop for notificationlist and send each in an NotificationItem
                     
-                    NotificationItem(
-                        title: .constant("Test Notification"),
-                        message: .constant("Some Message"),
-                        read: .constant(false),
-                        isImportant: .constant(true)
-                    )
-                    NotificationItem(
-                        title: .constant("Test Notification"),
-                        message: .constant("Some Message"),
-                        read: .constant(true),
-                        isImportant: .constant(true)
-                    )
-                    NotificationItem(
-                        title: .constant("Test Notification"),
-                        message: .constant("Some Message"),
-                        read: .constant(false),
-                        isImportant: .constant(false)
-                    )
-                    NotificationItem(
-                        title: .constant("Test Notification"),
-                        message: .constant("Some Message"),
-                        read: .constant(true),
-                        isImportant: .constant(false)
-                    )
+                    ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in
+                        
+                        VStack {
+                            NotificationItem(
+                                title: .constant(notification.title ?? "Notification"),
+                                message: .constant(notification.notificationBody ?? ""),
+                                read: .constant(notification.read),
+                                isImportant: .constant((notification.priority == 2))
+                            )
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            notificationViewModel.setNotificationToRead(notification: notification)
+                        }
+                    }                    
                 }
             } topBarContent: {
                 EmptyView()
