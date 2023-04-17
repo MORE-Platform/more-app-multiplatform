@@ -104,8 +104,8 @@
 		B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3529CC43990026C348 /* ExpandableText.swift */; };
 		B748DF3829CC4AD30026C348 /* ExpandableText.strings in Resources */ = {isa = PBXBuildFile; fileRef = B748DF3729CC4AD30026C348 /* ExpandableText.strings */; };
 		B748DF3C29CC6B380026C348 /* ObservatinoDetailsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */; };
-		B748DF4829D1C07F0026C348 /* QuestionObservationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4729D1C07F0026C348 /* QuestionObservationViewModel.swift */; };
-		B748DF4A29D1C08D0026C348 /* QuestionObservationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4929D1C08D0026C348 /* QuestionObservationView.swift */; };
+		B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */; };
+		B748DF4A29D1C08D0026C348 /* SimpleQuetionObservationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */; };
 		B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
@@ -261,8 +261,8 @@
 		B748DF3529CC43990026C348 /* ExpandableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableText.swift; sourceTree = "<group>"; };
 		B748DF3729CC4AD30026C348 /* ExpandableText.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ExpandableText.strings; sourceTree = "<group>"; };
 		B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservatinoDetailsData.swift; sourceTree = "<group>"; };
-		B748DF4729D1C07F0026C348 /* QuestionObservationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionObservationViewModel.swift; sourceTree = "<group>"; };
-		B748DF4929D1C08D0026C348 /* QuestionObservationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionObservationView.swift; sourceTree = "<group>"; };
+		B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionObservationViewModel.swift; sourceTree = "<group>"; };
+		B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuetionObservationView.swift; sourceTree = "<group>"; };
 		B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonField.swift; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
@@ -629,8 +629,8 @@
 		B748DF4629D1C00D0026C348 /* QuestionObservation */ = {
 			isa = PBXGroup;
 			children = (
-				B748DF4729D1C07F0026C348 /* QuestionObservationViewModel.swift */,
-				B748DF4929D1C08D0026C348 /* QuestionObservationView.swift */,
+				B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */,
+				B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */,
 			);
 			path = QuestionObservation;
 			sourceTree = "<group>";
@@ -894,7 +894,7 @@
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
 				07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */,
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
-				B748DF4A29D1C08D0026C348 /* QuestionObservationView.swift in Sources */,
+				B748DF4A29D1C08D0026C348 /* SimpleQuetionObservationView.swift in Sources */,
 				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
 				1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */,
 				B784169229C9E3F50035D830 /* Title2.swift in Sources */,
@@ -954,7 +954,7 @@
 				07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
-				B748DF4829D1C07F0026C348 /* QuestionObservationViewModel.swift in Sources */,
+				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,

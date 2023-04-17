@@ -12,6 +12,7 @@ import shared
 
 struct QuestionListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    @ObservedObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
     var schedule: ScheduleModel
     
     
@@ -23,12 +24,12 @@ struct QuestionListItem: View {
         VStack(alignment: .leading) {
             ZStack {
                 NavigationLink(isActive: $taskDetailsActive) {
-                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, dataRecorder: viewModel.recorder))
+                    TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: schedule.observationId, scheduleId: schedule.scheduleId, dataRecorder: viewModel.recorder), simpleQuestionViewModel: simpleQuestionViewModel)
                 } label: {
                     EmptyView()
                 }.opacity(0)
                 NavigationLink(isActive: $observationActive) {
-                    QuestionObservationView().environmentObject(QuestionObservationViewModel())
+                    SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId))
                 } label: {
                     EmptyView()
                 }.opacity(0)

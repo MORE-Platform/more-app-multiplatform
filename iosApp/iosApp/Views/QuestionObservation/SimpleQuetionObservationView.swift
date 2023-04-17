@@ -1,5 +1,5 @@
 //
-//  QuestionObservationView.swift
+//  SimpleQuetionObservationView.swift
 //  iosApp
 //
 //  Created by Isabella Aigner on 27.03.23.
@@ -9,9 +9,9 @@
 import SwiftUI
 import shared
 
-struct QuestionObservationView: View {
+struct SimpleQuetionObservationView: View {
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var viewModel: QuestionObservationViewModel = QuestionObservationViewModel()
+    @StateObject var viewModel: SimpleQuestionObservationViewModel
     private let navigationStrings = "Navigation"
     
     @State private var selected = ""
@@ -21,22 +21,26 @@ struct QuestionObservationView: View {
         Navigation {
             MoreMainBackground {
                 VStack {
-                    Title2(titleText: .constant(viewModel.questionString))
+                    Title2(titleText: .constant(viewModel.simpleQuestoinModel?.question ?? "Question"))
                         .padding(.bottom, 20)
                         .padding(.top, 40)
                     
+
                     VStack(
                         alignment: .leading) {
-                            ForEach(viewModel.answerOptions, id: \.self) { answerOption in
+                            
+                            ForEach(viewModel.answers, id: \.self) { answerOption in
                                 RadioButtonField(id: answerOption, label: answerOption, isMarked: $selected.wrappedValue == answerOption ? true : false,
-                                                 callback: { selected in
+                                callback: { selected in
                                     self.selected = selected
+                                    viewModel.setAnswer(answer: answerOption)
                                     print("Selected item is \(selected)")
                                 })
                             }
-                            
+                             
                             MoreActionButton(disabled: .constant(false)) {
                                 if(self.selected != "") {
+                                    viewModel.finish()
                                     self.presentationMode.wrappedValue.dismiss()
                                 }
                                 
@@ -46,6 +50,7 @@ struct QuestionObservationView: View {
                             .padding(.top, 30)
                         }
                         .padding(.horizontal, 10)
+                    
             
                     Spacer()
                 }

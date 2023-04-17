@@ -13,6 +13,7 @@ import SwiftUI
 
 struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    @ObservedObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
     var scheduleModel: ScheduleModel
     
     private let stringTable = "ScheduleListView"
@@ -27,7 +28,7 @@ struct ScheduleListItem: View {
                         ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                     }
                     NavigationLink {
-                        TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder))
+                        TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), simpleQuestionViewModel: simpleQuestionViewModel)
                     } label: {
                         EmptyView()
                     }
@@ -53,6 +54,6 @@ struct ScheduleListItem: View {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()), scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active))
+        ScheduleListItem(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()), simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: "schedule-id"), scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active))
     }
 }

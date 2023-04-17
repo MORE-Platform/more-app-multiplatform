@@ -11,6 +11,7 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
+    @StateObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
     @State var count: Int64 = 0
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
@@ -62,7 +63,7 @@ struct TaskDetailsView: View {
 
                     if viewModel.taskDetailsModel?.observationType == "question-observation" {
                         NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
-                            QuestionObservationView()
+                            SimpleQuetionObservationView(viewModel: simpleQuestionViewModel)
                         } label: {
                             Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
                                 .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)

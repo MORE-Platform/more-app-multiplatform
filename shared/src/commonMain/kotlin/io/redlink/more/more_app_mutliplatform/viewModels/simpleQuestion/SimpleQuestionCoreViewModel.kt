@@ -1,7 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion
 
+import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.SimpleQuestionModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -10,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -44,5 +47,9 @@ class SimpleQuestionCoreViewModel(
             scheduleRepository.setCompletionStateFor(scheduleId, true)
             observation.stop(it)
         }
+    }
+
+    fun onLoadSimpleQuestionObservation(provideNewState: ((SimpleQuestionModel?) -> Unit)): Closeable {
+        return simpleQuestionModel.asClosure(provideNewState)
     }
 }
