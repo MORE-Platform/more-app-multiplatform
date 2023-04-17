@@ -30,7 +30,12 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel()
+    lazy var dashboardFilterViewModel: DashboardFilterViewModel = {
+        let viewModel = DashboardFilterViewModel()
+        viewModel.delegate = self
+        return viewModel
+    }()
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel)
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self
@@ -40,7 +45,7 @@ class ContentViewModel: ObservableObject {
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
-        
+
         hasCredentials = credentialRepository.hasCredentials()
     }
     
@@ -89,4 +94,70 @@ extension ContentViewModel: ConsentViewModelListener {
         }
         showLoginView()
     }
+}
+
+extension ContentViewModel: DashboardFilterObserver {
+    func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
+        var selectedValueList = list
+        if multiSelect {
+            if filter == String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items") {
+                dashboardFilterViewModel.observationTypeFilter.removeAll()
+            } else {
+                if dashboardFilterViewModel.observationTypeFilter.contains(filter) {
+                    dashboardFilterViewModel.observationTypeFilter.remove(at: dashboardFilterViewModel.observationTypeFilter.firstIndex(of: filter)!)
+                } else {
+                    dashboardFilterViewModel.observationTypeFilter.append(filter)
+                }
+            }
+            selectedValueList = dashboardFilterViewModel.observationTypeFilter
+        } else {
+            if !selectedValueList.isEmpty {
+                selectedValueList.removeAll()
+            }
+            selectedValueList.append(filter)
+            dashboardFilterViewModel.dateFilterString = filter
+        }
+        dashboardViewModel.scheduleViewModel.applyFilters()
+        updateFilterText(stringTable: stringTable)
+        return selectedValueList
+    }
+    
+    func updateFilterText(stringTable: String) {
+        var typeFilterText = ""
+        var dateFilterText = ""
+        if noFilterSet() {
+            dashboardViewModel.filterText = String.localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "No filter set")
+        } else {
+            if typeFilterSet() {
+                if dashboardFilterViewModel.observationTypeFilter.count == 1 {
+                    typeFilterText = "\(dashboardFilterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type", inTable: stringTable, withComment: "Observation type"))"
+                } else {
+                    typeFilterText = "\(dashboardFilterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type_plural", inTable: stringTable, withComment: "Observation types"))"
+                }
+            }
+            if dateFilterSet() {
+                dateFilterText = String.localizedString(forKey: dashboardFilterViewModel.dateFilterString, inTable: stringTable, withComment: "Time filter")
+            }
+            if dateFilterSet() && typeFilterSet() {
+                dashboardViewModel.filterText = "\(typeFilterText), \(dateFilterText)"
+            } else if dateFilterSet(){
+                dashboardViewModel.filterText = dateFilterText
+            } else {
+                dashboardViewModel.filterText = typeFilterText
+            }
+        }
+    }
+    
+    func dateFilterSet() -> Bool {
+        return dashboardFilterViewModel.dateFilterString != "ENTIRE_TIME"
+    }
+    
+    func typeFilterSet() -> Bool {
+        return !dashboardFilterViewModel.observationTypeFilter.isEmpty
+    }
+    
+    func noFilterSet() -> Bool {
+        return !dateFilterSet() && !typeFilterSet()
+    }
+    
 }
