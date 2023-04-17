@@ -27,7 +27,7 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
 
     private fun enqueueNewWorker(delay: Long) {
         val worker = OneTimeWorkRequestBuilder<ScheduleUpdateWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInitialDelay(delay, TimeUnit.SECONDS)
             .build()
         workManager.enqueueUniqueWork(
             WORKER_TAG,
