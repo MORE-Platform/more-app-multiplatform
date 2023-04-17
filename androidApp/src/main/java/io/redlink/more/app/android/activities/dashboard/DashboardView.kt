@@ -41,7 +41,7 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
                         .fillMaxWidth(0.8f)
                         .padding(top = 16.dp)
                 ){
-                    Text(text = getStringResource(id = R.string.study_not_active))
+                    Text(text = getStringResource(id = R.string.more_dashboard_study_not_active))
                 }
             } else {
                 ScheduleListView(navController, scheduleViewModel = viewModel.scheduleViewModel)

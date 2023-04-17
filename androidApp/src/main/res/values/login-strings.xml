@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="login_header">Enter your Participation Token to login!</string>
-    <string name="endpoint_placeholder">Enter Study URL</string>
-
     <string name="more_welcome_title">Welcome to More</string>
-    <string name="more_endpoint_label">Change Study Endpoint</string>
+    <string name="more_endpoint_label">Study Endpoint</string>
     <string name="more_endpoint_rotatable_arrow_description">Edit Study Endpoint</string>
     <string name="more_registration_token_label">Enter Registration Token</string>
     <string name="more_registration_token_placeholder">Enter Token</string>
     <string name="more_login_button_label">Login</string>
     <string name="more_endpoint_input_placeholder">Enter Study URL</string>
-    <string name="more_enpoint_error">URL Error</string>
     <string name="more_token_error">Token Error</string>
     <string name="more_qr_code_button">Scan QR Code</string>
-    <string name="more_qr_code_button_description">Button to scan a QR code</string>
+    <string name="more_qr_code_button_description">Open camera to scan a QR code</string>
     <string name="more_or_text">or</string>
 
 
