@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import shared
 
 extension Int64 {
     func toDateString(dateFormat: String) -> String {
@@ -15,5 +16,9 @@ extension Int64 {
         dateFormatter.dateFormat = dateFormat
         dateFormatter.timeZone = TimeZone.current
         return dateFormatter.string(from: date)
+    }
+    
+    func toKotlinLong() -> KotlinLong {
+        return KotlinLong(value: self)
     }
 }

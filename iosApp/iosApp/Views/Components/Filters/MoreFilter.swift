@@ -1,24 +1,24 @@
-
 //
 //  MoreFilter.swift
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 07.03.23.
-//  Copyright © 2023 Redlink GmbH. All rights reserved.
+//  Copyright © 2023 orgName. All rights reserved.
 //
 
 import SwiftUI
 
-struct MoreFilter: View {
-    @Binding var text: String
+struct MoreFilter<Destination: View>: View {
+    @EnvironmentObject var viewModel: DashboardViewModel
+    var destination: () -> Destination
     var image = Image(systemName: "slider.horizontal.3")
-
+    
     var body: some View {
-        Button {
-
+        NavigationLink {
+           destination()
         } label: {
             HStack {
-                BasicText(text: $text)
+                BasicText(text: $viewModel.filterText)
                 image
                     .foregroundColor(Color.more.secondary)
             }
@@ -28,6 +28,8 @@ struct MoreFilter: View {
 
 struct MoreFilter_Previews: PreviewProvider {
     static var previews: some View {
-        MoreFilter(text: .constant("test"))
+        MoreFilter() {
+            EmptyView()
+        }
     }
 }
