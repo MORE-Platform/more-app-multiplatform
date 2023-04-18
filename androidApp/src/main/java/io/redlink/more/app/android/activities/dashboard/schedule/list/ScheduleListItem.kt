@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.dashboard.schedule.list
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,7 +25,7 @@ import io.redlink.more.app.android.R
 
 
 @Composable
-fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
+fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, running: Boolean) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -43,6 +44,16 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                 contentDescription = getStringResource(id = R.string.more_schedule_details),
                 tint = MoreColors.Primary
             )
+        }
+        if (running) {
+            Row (modifier = Modifier.padding(top = 4.dp)){
+                Icon(
+                    Icons.Default.CalendarMonth,
+                    contentDescription = "Schedule Date Range",
+                    tint = MoreColors.Primary
+                )
+                BasicText(text = "18.04.2023 - 29.04.2023")
+            }
         }
         TimeframeHours(
             startTime = scheduleModel.start.toDate(),
