@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -43,9 +44,15 @@ class SimpleQuestionCoreViewModel(
     fun finishQuestion(data: String, setObservationToDone: Boolean){
         simpleQuestionModel.value?.observationId?.let {
             observation.start(it, scheduleId)
+            Napier.i("---------finishQuestion----------")
+            Napier.i("observation started")
             observation.storeData(object { val answer = data })
+            Napier.i("---------finishQuestion----------")
+            Napier.i("observation stored data")
             scheduleRepository.setCompletionStateFor(scheduleId, true)
+            Napier.i("stored data")
             observation.stop(it)
+            Napier.i("observation stop observation")
         }
     }
 

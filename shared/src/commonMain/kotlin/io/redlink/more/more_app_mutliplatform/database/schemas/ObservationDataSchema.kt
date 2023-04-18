@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.copyFromRealm
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
@@ -62,7 +63,12 @@ class ObservationDataSchema : RealmObject {
                     this.timestamp =
                         RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
                 }
+                Napier.i { "fromData last-------------"}
+                println("data:")
+                println(data)
+                println(data.asString())
                 this.dataValue = data.asString() ?: ""
+                Napier.i {this.dataValue}
             }
         }
 
@@ -78,8 +84,12 @@ class ObservationDataSchema : RealmObject {
             observationIdSet: Set<String>,
             data: Collection<ObservationBulkModel>
         ): List<ObservationDataSchema> {
+            Napier.i { "fromData set---------------" }
             val schemas = fromData(data)
+            println(schemas)
+            println("data----")
             return observationIdSet.flatMap { id ->
+                println(id)
                 schemas.map {
                     it.clone().apply { this.observationId = id }
                 }
