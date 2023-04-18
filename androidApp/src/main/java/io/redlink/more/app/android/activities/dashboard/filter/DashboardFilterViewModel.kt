@@ -1,9 +1,9 @@
-package io.redlink.more.app.android.activities.dashboard.filter
+package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter
 
-import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.extensions.formatDateFilterString
-import io.redlink.more.app.android.extensions.formatObservationTypeString
-import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.android.extensions.formatDateFilterString
+import io.redlink.more.more_app_mutliplatform.android.extensions.formatObservationTypeString
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel

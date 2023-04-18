@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.login.composables
+package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.login.LoginViewModel
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
 fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {

@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.firebase
+package io.redlink.more.more_app_mutliplatform.android.firebase
 
 import android.util.Log
 import androidx.work.OneTimeWorkRequestBuilder
@@ -10,8 +10,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.services.PushNotificationService
+import io.redlink.more.more_app_mutliplatform.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.android.services.PushNotificationService
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
@@ -22,8 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import com.google.gson.Gson
-import io.redlink.more.app.android.workers.NOTIFICATION_DATA
-import io.redlink.more.app.android.workers.NotificationDataHandlerWorker
+import io.redlink.more.more_app_mutliplatform.android.workers.NOTIFICATION_DATA
+import io.redlink.more.more_app_mutliplatform.android.workers.NotificationDataHandlerWorker
 import kotlinx.coroutines.launch
 
 private const val TAG = "FCMService"

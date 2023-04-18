@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.observations.questionnaire
+package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.app.android.extensions.getString
-import io.redlink.more.app.android.shared_composables.HeaderDescription
-import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.extensions.getString
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderDescription
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 @Composable

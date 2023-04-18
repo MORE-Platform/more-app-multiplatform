@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.observations.questionnaire
+package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.extensions.getString
-import io.redlink.more.app.android.ui.theme.morePrimary
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
+import io.redlink.more.more_app_mutliplatform.android.extensions.getString
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 @Composable

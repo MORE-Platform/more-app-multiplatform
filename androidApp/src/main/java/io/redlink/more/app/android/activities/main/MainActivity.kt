@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.main
+package io.redlink.more.more_app_mutliplatform.android.activities.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,17 +13,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.dashboard.DashboardView
-import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
-import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
-import io.redlink.more.app.android.activities.info.InfoView
-import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
-import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
-import io.redlink.more.app.android.activities.setting.SettingsView
-import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
-import io.redlink.more.app.android.activities.tasks.TaskDetailsView
-import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterView
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
+import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireResponseView
+import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireView
+import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

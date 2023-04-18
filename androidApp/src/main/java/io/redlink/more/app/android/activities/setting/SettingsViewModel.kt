@@ -1,15 +1,15 @@
-package io.redlink.more.app.android.activities.setting
+package io.redlink.more.more_app_mutliplatform.android.activities.setting
 
 import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.app.android.activities.ContentActivity
-import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyLevelOneActivity
-import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyLevelTwoActivity
-import io.redlink.more.app.android.extensions.showNewActivity
-import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.more_app_mutliplatform.android.activities.ContentActivity
+import io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study.LeaveStudyLevelOneActivity
+import io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study.LeaveStudyLevelTwoActivity
+import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivity
+import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository

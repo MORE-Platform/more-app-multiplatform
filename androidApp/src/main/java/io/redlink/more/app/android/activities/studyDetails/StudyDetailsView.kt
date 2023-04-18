@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.studyDetails
+package io.redlink.more.more_app_mutliplatform.android.activities.studyDetails
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -6,17 +6,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
-import io.redlink.more.app.android.extensions.formattedString
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.jvmLocalDateTime
-import io.redlink.more.app.android.shared_composables.AccordionReadMore
-import io.redlink.more.app.android.shared_composables.ActivityProgressView
-import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.shared_composables.*
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.composables.AccordionWithList
+import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDateTime
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.AccordionReadMore
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.ActivityProgressView
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 @Composable

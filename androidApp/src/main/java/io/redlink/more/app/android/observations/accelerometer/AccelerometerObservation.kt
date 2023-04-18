@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.observations.accelerometer
+package io.redlink.more.more_app_mutliplatform.android.observations.accelerometer
 
 import android.content.Context
 import android.hardware.Sensor

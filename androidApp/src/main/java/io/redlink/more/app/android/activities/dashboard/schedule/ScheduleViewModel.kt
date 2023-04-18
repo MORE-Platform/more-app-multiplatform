@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.dashboard.schedule
+package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
@@ -7,10 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.app.android.extensions.jvmLocalDate
-import io.redlink.more.app.android.observations.AndroidDataRecorder
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
-import io.redlink.more.app.android.services.ObservationRecordingService
+import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDate
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.more_app_mutliplatform.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel

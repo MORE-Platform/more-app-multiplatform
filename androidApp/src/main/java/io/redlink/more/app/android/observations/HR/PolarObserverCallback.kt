@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.more_app_mutliplatform.android.observations.HR
 
 
 import android.util.Log
