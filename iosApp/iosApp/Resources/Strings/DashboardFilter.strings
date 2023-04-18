@@ -1,0 +1,26 @@
+/* 
+  DashboardFilter.strings
+  iosApp
+
+  Created by Isabella Aigner on 28.03.23.
+  Copyright © 2023 orgName. All rights reserved.
+*/
+
+"Select Time" = "Select Time";
+"Select Type" = "Select Type";
+
+"ENTIRE_TIME" = "Entire time";
+"TODAY_AND_TOMORROW" = "Today and Tomorrow";
+"ONE_WEEK" = "1 Week";
+"ONE_MONTH" = "1 Month";
+
+"no_filter_activated" = "No Filter activated";
+"type" = "Type";
+"type_plural" = "Types";
+
+// Observation Types
+
+"All Items" = "All Items";
+"gps-mobile-observation" = "GPS Mobile Observation";
+"acc-mobile-observation" = "ACC Mobile Observation";
+"polar-verity-observation" = "Polar Verity Observation";

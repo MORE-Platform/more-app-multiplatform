@@ -11,7 +11,6 @@ import shared
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
-
     var body: some View {
         VStack {
             List(viewModel.scheduleDates, id: \.self) { key in
@@ -35,14 +34,13 @@ struct ScheduleView: View {
             .listStyle(.plain)
             .clearListBackground()
         }
-
     }
 }
 
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()))
+            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()))
         } topBarContent: {
             EmptyView()
         }
