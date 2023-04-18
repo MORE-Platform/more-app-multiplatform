@@ -15,38 +15,56 @@ struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
     var scheduleModel: ScheduleModel
     
+    @State var taskDetailsIsActive = false
+    @State var observationIsActive = false
+    
     private let stringTable = "ScheduleListView"
 
     var body: some View {
         VStack {
             VStack {
                 ZStack {
-                    VStack(alignment: .leading) {
-                        ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
-                            .padding(.bottom, 4)
-                        ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
-                    }
-                    NavigationLink {
-                        TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder))
+                    NavigationLink(isActive: $observationIsActive) {
+                        QuestionObservationView().environmentObject(QuestionObservationViewModel())
                     } label: {
                         EmptyView()
-                    }
-                    .opacity(0)
+                    }.opacity(0)
+                }
+            }
+            
+            NavigationLink {
+                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder))
+            } label: {
+                VStack(alignment: .leading) {
+                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
+                        .padding(.bottom, 4)
+                    ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                 }
             }
 
             VStack(alignment: .leading) {
-                ObservationButton(observationType: scheduleModel.observationType,
-                                  state: scheduleModel.scheduleState,
-                                  disabled: !scheduleModel.scheduleState.active()){
-                    if scheduleModel.scheduleState == ScheduleState.running {
-                        viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                    } else {
-                        viewModel.start(scheduleId: scheduleModel.scheduleId)
+                if scheduleModel.observationType == "question-observation" {
+                    MoreActionButton(disabled: .constant(!scheduleModel.scheduleState.active()), action: {
+                        observationIsActive = true
+                    }, label: {
+                        Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
+                        
+                    })
+                } else {
+                    ObservationButton(observationType: scheduleModel.observationType,
+                                      state: scheduleModel.scheduleState,
+                                      disabled: !scheduleModel.scheduleState.active()){
+                        if scheduleModel.scheduleState == ScheduleState.running {
+                            viewModel.pause(scheduleId: scheduleModel.scheduleId)
+                        } else {
+                            viewModel.start(scheduleId: scheduleModel.scheduleId)
+                        }
                     }
                 }
-                .buttonStyle(.plain)
             }
+        }.onAppear {
+            taskDetailsIsActive = false
+            observationIsActive = false
         }
     }
 }
