@@ -13,7 +13,8 @@
 "continue_study" = "Continue to participate";
 "withdraw_study" = "Withdraw from the study";
 "withdraw_swipe" = "Swipe to withdraw";
-"first_message" = "If you withdraw from the study, you will not be able to continue!";
+"back_to_settings" = "I want to continue participating!";
+"first_message" = "If you withdraw from the study, you will not be able to re-enter at a later date.";
+"second_message" = "If you leave this study, you may not re-enter. Your participation will be cancelled and your data will be deleted from your mobile phone!";
+"sure_message" ="Are you sure you want to withdraw your participation?";
 "really_message" = "Do you really want to withdraw?";
-"second_message" = "If you leave this study, you may not re-enter. Your praticipation will be cancelled and your data will be deleted from your mobile phone!";
-"sure_message" ="Are you sure, you want to withdraw your participation?";

@@ -19,6 +19,7 @@ struct ExitStudyLevelTwoView: View {
     @State private var rectangularSliderOffsetX: CGFloat = 0
     @State private var  neumorphicSliderOffsetX: CGFloat = 0
     @State private var alertPresented: Bool = false
+    @State var continueButton = Color.more.approved
     
     
     var body: some View {
@@ -50,13 +51,10 @@ struct ExitStudyLevelTwoView: View {
                 
                 Spacer()
                 
-                NavigationLink {
+                BasicNavLinkButton(backgroundColor: $continueButton) {
                     InfoView()
                 } label: {
-                    MoreActionButton(backgroundColor: Color.more.approved, disabled: .constant(false)) {
-                    } label: {
-                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study configuration"))
-                    }.padding(.bottom)
+                    Text(String.localizedString(forKey: "back_to_settings", inTable: stringTable, withComment: "button to continue taking part in the study")).foregroundColor(Color.more.white)
                 }.padding(.bottom)
                 
                 

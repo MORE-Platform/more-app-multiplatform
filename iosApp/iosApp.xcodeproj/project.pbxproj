@@ -19,6 +19,7 @@
 		07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54B129CB47C400459267 /* DetailsTitle.swift */; };
 		07D9046829C85166003D2912 /* GPSObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9046729C85166003D2912 /* GPSObservation.swift */; };
 		07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */; };
+		07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */; };
 		07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293B29D57F0300853108 /* ModuleListItem.swift */; };
 		07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293D29D58F7C00853108 /* ExpandableContent.swift */; };
 		1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DA29CC8E730034EF65 /* AppDelegate.swift */; };
@@ -173,6 +174,7 @@
 		07BC54B129CB47C400459267 /* DetailsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTitle.swift; sourceTree = "<group>"; };
 		07D9046729C85166003D2912 /* GPSObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPSObservation.swift; sourceTree = "<group>"; };
 		07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicNavLinkButton.swift; sourceTree = "<group>"; };
 		07FD293B29D57F0300853108 /* ModuleListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleListItem.swift; sourceTree = "<group>"; };
 		07FD293D29D58F7C00853108 /* ExpandableContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContent.swift; sourceTree = "<group>"; };
 		1F0026DA29CC8E730034EF65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -454,6 +456,7 @@
 				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
 				071ABEF429ED8C440013C1CF /* TriggerSlider.swift */,
 				071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */,
+				07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -907,6 +910,7 @@
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
 				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
+				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,

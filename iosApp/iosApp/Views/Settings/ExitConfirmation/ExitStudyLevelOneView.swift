@@ -13,6 +13,8 @@ struct ExitStudyLevelOneView: View {
     
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
+    @State var accButton = Color.more.approved
+    @State var decButton = Color.more.important
     
     var body: some View {
         MoreMainBackgroundView {
@@ -28,7 +30,7 @@ struct ExitStudyLevelOneView: View {
                         .foregroundColor(Color.more.important)
                         .padding()
                     Spacer()
-                
+                    
                 }.padding(.top)
                 Text(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message"))
                     .foregroundColor(Color.more.important)
@@ -42,22 +44,18 @@ struct ExitStudyLevelOneView: View {
                         .padding(.bottom)
                     Spacer()
                 }
-                NavigationLink {
-                    InfoView()
+                BasicNavLinkButton(backgroundColor: $accButton){
+                    SettingsView(viewModel: viewModel)
                 } label: {
-                    MoreActionButton(backgroundColor: Color.more.approved, disabled: .constant(false)) {
-                    } label: {
-                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study"))
-                    }
+                    Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                 }
-                NavigationLink {
+                
+                BasicNavLinkButton(backgroundColor: $decButton){
                     ExitStudyLevelTwoView(viewModel: viewModel)
                 } label: {
-                    MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
-                    } label: {
-                        Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study"))
-                    }
+                    Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study")).foregroundColor(Color.more.white)
                 }
+                
                 
                 Spacer()
             }
