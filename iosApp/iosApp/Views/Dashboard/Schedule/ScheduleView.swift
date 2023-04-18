@@ -26,9 +26,6 @@ struct ScheduleView: View {
                             }.background(Color.more.secondaryLight)
                         }
                         .padding(.bottom)
-                        .hideListRowSeparator()
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.more.secondaryLight)
                     }
                 }
             }.background(Color.more.secondaryLight)
