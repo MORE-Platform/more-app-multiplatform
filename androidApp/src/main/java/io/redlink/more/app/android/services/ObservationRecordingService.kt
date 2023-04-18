@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.services
+package io.redlink.more.more_app_mutliplatform.android.services
 
 import android.app.*
 import android.content.Context
@@ -8,9 +8,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.ContentActivity
-import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.ContentActivity
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 
@@ -140,11 +140,11 @@ class ObservationRecordingService: Service() {
 
     companion object {
         const val SCHEDULE_ID = "SCHEDULE_ID"
-        const val SERVICE_RECEIVER_START_ACTION = "io.redlink.more.app.android.START_SERVICE"
-        const val SERVICE_RECEIVER_PAUSE_ACTION = "io.redlink.more.app.android.PAUSE_SERVICE"
-        const val SERVICE_RECEIVER_STOP_ACTION = "io.redlink.more.app.android.STOP_SERVICE"
-        const val SERVICE_RECEIVER_STOP_ALL_ACTION = "io.redlink.more.app.android.STOP_ALL_SERVICE"
-        const val SERVICE_RECEIVER_UPDATE_STATES = "io.redlink.more.app.android.UPDATE_STATES"
+        const val SERVICE_RECEIVER_START_ACTION = "io.redlink.more.more_app_mutliplatform.android.START_SERVICE"
+        const val SERVICE_RECEIVER_PAUSE_ACTION = "io.redlink.more.more_app_mutliplatform.android.PAUSE_SERVICE"
+        const val SERVICE_RECEIVER_STOP_ACTION = "io.redlink.more.more_app_mutliplatform.android.STOP_SERVICE"
+        const val SERVICE_RECEIVER_STOP_ALL_ACTION = "io.redlink.more.more_app_mutliplatform.android.STOP_ALL_SERVICE"
+        const val SERVICE_RECEIVER_UPDATE_STATES = "io.redlink.more.more_app_mutliplatform.android.UPDATE_STATES"
 
         fun start(
             context: Context,

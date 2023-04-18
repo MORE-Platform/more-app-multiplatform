@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.dashboard.composables
+package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -16,8 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 @Composable
 fun DashboardTab(model: DashboardViewModel, onClick: (Int) -> Unit = {}) {

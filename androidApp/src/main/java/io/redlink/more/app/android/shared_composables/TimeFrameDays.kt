@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.shared_composables
+package io.redlink.more.more_app_mutliplatform.android.shared_composables
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -9,10 +9,10 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.formattedString
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import java.util.*
 
 @Composable

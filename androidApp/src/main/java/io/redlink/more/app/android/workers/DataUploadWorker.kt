@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.workers
+package io.redlink.more.more_app_mutliplatform.android.workers
 
 import android.content.Context
 import android.util.Log

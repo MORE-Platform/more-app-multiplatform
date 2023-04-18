@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.setting.leave_study
+package io.redlink.more.more_app_mutliplatform.android.activities.setting.leave_study
 
 import android.app.Activity
 import android.os.Bundle
@@ -16,16 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.activities.setting.SettingsViewModel
-import io.redlink.more.app.android.extensions.Image
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.app.android.shared_composables.SmallTextButton
-import io.redlink.more.app.android.shared_composables.*
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreApproved
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
+import io.redlink.more.more_app_mutliplatform.android.extensions.Image
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreApproved
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 class LeaveStudyLevelTwoActivity: ComponentActivity() {

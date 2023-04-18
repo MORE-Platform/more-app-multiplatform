@@ -75,7 +75,7 @@
         <receiver android:name=".broadcasts.NotificationBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="io.redlink.more.app.android.NOTIFICATION_ACTION_READ" />
+                <action android:name="io.redlink.more.more_app_mutliplatform.android.NOTIFICATION_ACTION_READ" />
             </intent-filter>
         </receiver>
     </application>

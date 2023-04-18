@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.login.composables
+package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ButtonDefaults
@@ -11,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 @Composable

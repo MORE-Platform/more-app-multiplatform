@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.shared_composables
+package io.redlink.more.more_app_mutliplatform.android.shared_composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.morePrimary
 
 @Composable
 fun SmallTextIconButton(

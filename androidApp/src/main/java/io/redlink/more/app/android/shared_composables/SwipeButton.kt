@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.shared_composables
+package io.redlink.more.more_app_mutliplatform.android.shared_composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import kotlin.math.roundToInt
 
 @Composable

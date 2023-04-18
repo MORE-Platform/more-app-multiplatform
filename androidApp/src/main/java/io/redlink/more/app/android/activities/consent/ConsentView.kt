@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.consent
+package io.redlink.more.more_app_mutliplatform.android.activities.consent
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,13 +11,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.shared_composables.Accordion
-import io.redlink.more.app.android.shared_composables.AccordionReadMore
-import io.redlink.more.app.android.shared_composables.MessageAlertDialog
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.consent.composables.ConsentButtons
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.AccordionReadMore
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.MessageAlertDialog
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 
 
 @Composable

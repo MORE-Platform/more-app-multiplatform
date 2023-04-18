@@ -1,7 +1,7 @@
-package io.redlink.more.app.android.activities.tasks
+package io.redlink.more.more_app_mutliplatform.android.activities.tasks
 
 import androidx.compose.runtime.mutableStateOf
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder

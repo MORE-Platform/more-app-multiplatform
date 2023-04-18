@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.consent
+package io.redlink.more.more_app_mutliplatform.android.activities.consent
 
 import android.Manifest
 import android.content.Context
@@ -6,9 +6,9 @@ import android.os.Build
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.app.android.extensions.getSecureID
-import io.redlink.more.app.android.firebase.FCMService
-import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.android.extensions.getSecureID
+import io.redlink.more.more_app_mutliplatform.android.firebase.FCMService
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService

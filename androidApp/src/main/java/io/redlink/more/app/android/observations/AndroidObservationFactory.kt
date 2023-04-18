@@ -1,11 +1,11 @@
-package io.redlink.more.app.android.observations
+package io.redlink.more.more_app_mutliplatform.android.observations
 
 import android.content.Context
-import io.redlink.more.app.android.observations.AndroidObservationDataManager
-import io.redlink.more.app.android.observations.GPS.GPSObservation
-import io.redlink.more.app.android.observations.GPS.GPSService
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
-import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationDataManager
+import io.redlink.more.more_app_mutliplatform.android.observations.GPS.GPSObservation
+import io.redlink.more.more_app_mutliplatform.android.observations.GPS.GPSService
+import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.more_app_mutliplatform.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 

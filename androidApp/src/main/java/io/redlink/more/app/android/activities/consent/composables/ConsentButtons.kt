@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.consent.composables
+package io.redlink.more.more_app_mutliplatform.android.activities.consent.composables
 
 import android.Manifest
 import android.app.AlertDialog
@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import io.redlink.more.app.android.activities.consent.ConsentViewModel
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
+import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.android.R
 
 
 @Composable

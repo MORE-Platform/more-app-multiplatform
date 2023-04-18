@@ -1,8 +1,8 @@
-package io.redlink.more.app.android.workers
+package io.redlink.more.more_app_mutliplatform.android.workers
 
 import android.content.Context
 import androidx.work.*
-import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
