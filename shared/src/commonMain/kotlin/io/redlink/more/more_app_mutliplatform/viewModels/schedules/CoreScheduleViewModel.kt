@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -27,6 +28,8 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
 
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow( emptyMap())
+
+    val runningScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> = MutableStateFlow(mutableMapOf())
 
     init {
         scope.launch {
@@ -80,7 +83,7 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     }
 
     private fun createMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
-        return observationList
+        val map =  observationList
             .asSequence()
             .map { ScheduleModel.createModelsFrom(it.key, it.value) }
             .flatten()
@@ -92,8 +95,20 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             }
             .sortedBy { it.start }
             .groupBy { it.start.toLocalDate().time() }
-            .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
+            .filterKeys {
+                it >= Clock.System.now().localDateTime().date.time()
+            }
             .filterValues { it.isNotEmpty() }
+        map.keys.forEach { key ->
+            if (!map[key].isNullOrEmpty()) {
+                val schedules = map[key]!!.filter { value ->
+                    value.scheduleState == ScheduleState.RUNNING
+                }.toList()
+                runningScheduleModelList.value[key] = schedules
+            }
+        }
+        Napier.i { "Running observations: ${runningScheduleModelList.value}" }
+        return map
     }
 
     fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
