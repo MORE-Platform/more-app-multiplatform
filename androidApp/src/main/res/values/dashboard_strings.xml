@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_dashboard_study_not_active">Study currently inactive</string>
+
+    <string name="more_main_tab_schedule">Schedule</string>
+    <string name="more_main_tab_observations">Observations</string>
+    <string name="more_main_tab_filters">Open Filter Settings</string>
+
+    <string name="more_main_completed_tasks">Completed Tasks</string>
+    <string name="more_main_overall_progress">Overall Progress</string>
+</resources>

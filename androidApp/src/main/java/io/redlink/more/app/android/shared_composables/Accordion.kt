@@ -106,8 +106,7 @@ fun Accordion(
 
             if(hasPreview) {
                 Text(
-                    text = description
-                        ?: "",
+                    text = description,
                     color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
                     maxLines = if(open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
@@ -116,8 +115,7 @@ fun Accordion(
                 Spacer(Modifier.height(12.dp))
             } else if(open.value) {
                 Text(
-                    text = description
-                        ?: stringResource(id = R.string.more_authorization_description),
+                    text = description,
                     color = MoreColors.Primary,
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
