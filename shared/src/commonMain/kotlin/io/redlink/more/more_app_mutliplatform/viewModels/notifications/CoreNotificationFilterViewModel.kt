@@ -2,11 +2,17 @@ package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class CoreNotificationFilterViewModel(private val highPriority: Long) {
-    private val currentFilter = MutableStateFlow(NotificationFilterModel())
+class CoreNotificationFilterViewModel {
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private var highPriority: Long = 1
+
+    val currentFilter = MutableStateFlow(NotificationFilterModel())
 
     fun hasFilters(): Boolean = (currentFilter.value.filterRead || currentFilter.value.filterUnimportant)
 
@@ -15,27 +21,40 @@ class CoreNotificationFilterViewModel(private val highPriority: Long) {
     fun hasUnimportantFilter(): Boolean = currentFilter.value.filterUnimportant
 
     fun changeReadFilter() {
-        currentFilter.update {
-            it.copy(filterRead = !it.filterRead)
-        }
-    }
-    fun changeUnimportantFilter() {
-        currentFilter.update {
-            it.copy(filterUnimportant = !it.filterUnimportant)
+        scope.launch {
+            currentFilter.emit(NotificationFilterModel(
+                !currentFilter.value.filterRead,
+                currentFilter.value.filterUnimportant
+            ))
         }
     }
 
-    fun applyFilter(notificationList: List<NotificationSchema>): List<NotificationSchema> {
+    fun changeUnimportantFilter() {
+        scope.launch {
+            currentFilter.emit(NotificationFilterModel(
+                currentFilter.value.filterRead,
+                !currentFilter.value.filterUnimportant
+            ))
+        }
+    }
+
+    fun setPlatformHighPriority(priority: Long) {
+        highPriority = priority
+    }
+
+    fun applyFilter(notificationList: List<NotificationSchema?>): List<NotificationSchema?> {
         val filteredList = notificationList.toMutableList()
         if(hasFilters())
-            filteredList.filter {(
-                    if(currentFilter.value.filterUnimportant)
-                        it.priority == highPriority else true
-                        ) && (
-                    if(currentFilter.value.filterRead)
-                        !it.read else true
-                    )
+            filteredList.filter {
+                it?.let { (
+                            if(currentFilter.value.filterUnimportant)
+                                it.priority == highPriority else true
+                            ) && (
+                            if(currentFilter.value.filterRead)
+                                !it.read else true
+                            )
+                } ?: false
             }
-        return filteredList
+        return filteredList.toList()
     }
 }
