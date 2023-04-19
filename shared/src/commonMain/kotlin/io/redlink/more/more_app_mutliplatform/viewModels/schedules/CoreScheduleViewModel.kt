@@ -92,10 +92,10 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             }
             .sortedBy { it.start }
             .groupBy {
-                if(it.start <= Clock.System.now().toEpochMilliseconds())
+                if(it.start <= Clock.System.now().toEpochMilliseconds()) {
                     Clock.System.now().localDateTime().date.time()
-                else
-                    it.start.toLocalDate().time()
+                }
+                else { it.start.toLocalDate().time() }
             }
             .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
             .filterValues { it.isNotEmpty() }
