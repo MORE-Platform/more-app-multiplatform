@@ -20,7 +20,7 @@ import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.ZoneId
 
-class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel) : ViewModel() {
+class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel, runningSchedules: Boolean) : ViewModel() {
     private val coreViewModel = CoreScheduleViewModel(androidDataRecorder)
     private val coreFilterViewModel = coreFilterModel
 
@@ -33,7 +33,8 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.scheduleModelList.collect { map ->
+            (if (runningSchedules) coreViewModel.runningScheduleModelList
+                    else coreViewModel.scheduleModelList).collect { map ->
                 val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
                 withContext(Dispatchers.Main) {
                     updateData(javaConvertedMap)
