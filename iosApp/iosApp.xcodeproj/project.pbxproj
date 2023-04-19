@@ -143,7 +143,6 @@
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
 		EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */; };
-		EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCCC30F29DAC103006D252F /* QuestionListItem.swift */; };
 		EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */; };
 		EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD808D629BF4C3A005779DC /* MoreBackButton.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
@@ -309,7 +308,6 @@
 		EDBB2B4929B8CFF000CA973E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsView.strings; sourceTree = "<group>"; };
 		EDC89B1029B899D400E0A160 /* StartObservationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
-		EDCCC30F29DAC103006D252F /* QuestionListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionListItem.swift; sourceTree = "<group>"; };
 		EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationTimeDetails.swift; sourceTree = "<group>"; };
 		EDD808D629BF4C3A005779DC /* MoreBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreBackButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
@@ -672,7 +670,6 @@
 				1F43997229B8D70800687906 /* ScheduleList.swift */,
 				1F43997629B8D70800687906 /* ScheduleListItem.swift */,
 				1F43997429B8D70800687906 /* ObservationButton.swift */,
-				EDCCC30F29DAC103006D252F /* QuestionListItem.swift */,
 				EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */,
 			);
 			path = List;
@@ -912,7 +909,6 @@
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,
-				EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */,
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
