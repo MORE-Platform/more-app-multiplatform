@@ -16,7 +16,7 @@ struct InfoList: View {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "gear", destination: {
-                SettingsView(viewModel: contentViewModel.settingsViewModel)
+                RunningSchedules()
             })
             InfoListItem(title: "Completed Observations", icon: "gear", destination: {
                 SettingsView(viewModel: contentViewModel.settingsViewModel)

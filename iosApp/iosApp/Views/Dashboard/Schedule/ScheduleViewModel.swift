@@ -23,16 +23,17 @@ class ScheduleViewModel: ObservableObject {
 
     @Published var scheduleDates: [Int64] = []
 
-    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
+    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel, runningSchedules: Bool) {
         filterViewModel = dashboardFilterViewModel
         coreModel = CoreScheduleViewModel(dataRecorder: recorder)
-        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
+        coreModel.onScheduleModelListChange(runningSchedules: runningSchedules) { [weak self] scheduleMap in
             if let self {
                 self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
                     var result = partialResult
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
+                print("schedules, running: \(runningSchedules): \(self.schedules)")
                 self.originalSchedules = self.schedules
             }
         }

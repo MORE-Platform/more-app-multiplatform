@@ -19,7 +19,7 @@ class DashboardViewModel: ObservableObject {
     
     init(dashboardFilterViewModel: DashboardFilterViewModel) {
         self.observationFactory = IOSObservationFactory()
-        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory, dashboardFilterViewModel: dashboardFilterViewModel)
+        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, runningSchedules: false)
         coreModel.onLoadStudy { study in
             if let study {
                 self.study = study

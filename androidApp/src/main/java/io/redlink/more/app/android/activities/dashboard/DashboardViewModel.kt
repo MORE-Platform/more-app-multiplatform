@@ -34,7 +34,7 @@ class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder, co
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val scheduleViewModel = ScheduleViewModel(dataRecorder, coreFilterViewModel, true)
+    val scheduleViewModel = ScheduleViewModel(dataRecorder, coreFilterViewModel, false)
 
     init {
         scheduleViewModel.updateTaskStates(context)

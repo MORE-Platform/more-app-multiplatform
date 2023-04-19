@@ -111,8 +111,9 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
         return map
     }
 
-    fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
-        return scheduleModelList.asClosure(provideNewState)
+    fun onScheduleModelListChange(runningSchedules: Boolean, provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
+        return if (runningSchedules) runningScheduleModelList.asClosure(provideNewState)
+        else scheduleModelList.asClosure(provideNewState)
     }
 }
 
