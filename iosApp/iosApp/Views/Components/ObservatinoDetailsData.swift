@@ -25,10 +25,10 @@ struct ObservationDetailsData: View {
                     .padding(1)
                 Spacer()
                 
-                Image(systemName: "repeat")
-                    .padding(0.7)
-                
                 if repetition != "" {
+                    Image(systemName: "repeat")
+                        .padding(0.7)
+                
                     BasicText(text: .constant(repetition), color: .more.secondary)
                         .padding(1)
                 }
