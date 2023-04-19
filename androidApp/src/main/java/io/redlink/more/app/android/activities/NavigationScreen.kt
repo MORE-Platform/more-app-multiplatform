@@ -14,7 +14,7 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     STUDY_DETAILS("Study Details", R.string.nav_study_details),
     OBSERVATION_FILTER("Observation Filter", R.string.nav_observation_filter),
     SIMPLE_QUESTION("Simple Observation", R.string.nav_simple_question),
-    QUESTIONNAIRE_RESPONSE("Questionnaire Response", R.string.nav_questionnaire_response);
+    QUESTIONNAIRE_RESPONSE("Questionnaire Response", R.string.nav_simple_question);
 
     @Composable
     fun stringRes() = getStringResource(id = stringResource)

@@ -15,16 +15,19 @@ class ContentViewModel: ObservableObject {
     
     private let registrationService: RegistrationService
     private let credentialRepository: CredentialRepository
+    private lazy var scheduleRepository = ScheduleRepository()
+    
+    private lazy var taskSchedulingService = TaskScheduleService()
     
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
-
-    lazy var loginViewModel: LoginViewModel? = {
+    
+    lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
         viewModel.delegate = self
         return viewModel
     }()
-    lazy var consentViewModel: ConsentViewModel? = {
+    lazy var consentViewModel: ConsentViewModel = {
         let viewModel = ConsentViewModel(registrationService: registrationService)
         viewModel.delegate = self
         return viewModel
@@ -59,15 +62,19 @@ class ContentViewModel: ObservableObject {
     func showConsentView() {
         DispatchQueue.main.async {
             self.loginViewScreenNr = 1
-            self.consentViewModel?.onAppear()
+            self.consentViewModel.onAppear()
         }
+    }
+    
+    func updateSchedules() {
+        taskSchedulingService.startUpdateTimer()
     }
 }
 
 extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
-        self.consentViewModel?.consentInfo = study.consentInfo
-        self.consentViewModel?.buildConsentModel()
+        self.consentViewModel.consentInfo = study.consentInfo
+        self.consentViewModel.buildConsentModel()
         showConsentView()
     }
 }

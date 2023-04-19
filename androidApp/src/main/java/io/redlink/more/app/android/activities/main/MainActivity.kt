@@ -45,9 +45,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController) {
-    var title by remember { mutableStateOf("") }
     MoreBackground(
-        navigationTitle = title,
+        navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
         onBackButtonClick = { navController.popBackStack() },
         showTabRow = true,
@@ -65,23 +64,23 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.DASHBOARD.route) {
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.DASHBOARD.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
                 DashboardView(navController, viewModel = viewModel.dashboardViewModel)
             }
             composable(NavigationScreen.NOTIFICATIONS.route) {
                 viewModel.tabIndex.value = 1
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.NOTIFICATIONS.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATIONS.stringRes()
                 Text("NotificationView")
             }
             composable(NavigationScreen.INFO.route) {
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
-                title = NavigationScreen.INFO.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
                 InfoView(navController)
             }
             composable(NavigationScreen.SETTINGS.route) {
-                title = NavigationScreen.SETTINGS.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
                 viewModel.showBackButton.value = true
                 SettingsView(model = viewModel.settingsViewModel)
             }
@@ -96,8 +95,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val scheduleId = arguments.getString("scheduleId")
+                viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 val observationTitle = arguments.getString("observationTitle")
-                title = NavigationScreen.SCHEDULE_DETAILS.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     navController = navController,
@@ -107,12 +107,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 )
             }
             composable(NavigationScreen.STUDY_DETAILS.route) {
-                title = NavigationScreen.STUDY_DETAILS.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
                 StudyDetailsView(viewModel = viewModel.studyDetailsViewModel)
             }
             composable(NavigationScreen.OBSERVATION_FILTER.route) {
-                title = NavigationScreen.OBSERVATION_FILTER.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
                 DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.dashboardFilterViewModel))
             }
@@ -125,12 +125,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             ) {
                 val arguments = requireNotNull(it.arguments)
                 val scheduleId = arguments.getString("scheduleId")
-                title = NavigationScreen.SIMPLE_QUESTION.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
                 QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(scheduleId ?: "", LocalContext.current))
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
-                title = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
             }
