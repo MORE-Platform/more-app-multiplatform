@@ -14,6 +14,7 @@ import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
@@ -33,6 +34,8 @@ class MainViewModel(context: Context): ViewModel() {
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
 
+    private val bleConnector = AndroidBluetoothConnector(context)
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()
@@ -43,6 +46,7 @@ class MainViewModel(context: Context): ViewModel() {
                 ExistingWorkPolicy.KEEP,
                 worker)
         }
+        bleConnector.scan()
     }
 
     fun creteNewSimpleQuestionViewModel(scheduleId: String, context: Context): QuestionnaireViewModel {
