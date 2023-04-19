@@ -44,7 +44,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func scheduleTasks() {
-        localNotifications?.requestLocalNotification(title: "App Closed", subtitle: "Please restart the application to continue your study")
         DataUploadBackgroundTask.schedule()
     }
 
