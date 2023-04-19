@@ -16,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetai
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.android.workers.ScheduleUpdateWorker
+import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,6 @@ class MainViewModel(context: Context): ViewModel() {
     val studyDetailsViewModel = StudyDetailsViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()
