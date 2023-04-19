@@ -65,53 +65,8 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     func stopScanning() {
         centralManager.stopScan()
     }
-
-
-//    var deviceList: [BluetoothDevice] = []
-//    private let polarApi = PolarBleApiDefaultImpl
-//        .polarImplementation(DispatchQueue.main, features: [
-//            .feature_hr,
-//            .feature_battery_info,
-//            .feature_device_info,
-//            .feature_polar_offline_recording,
-//            .feature_polar_online_streaming,
-//            .feature_polar_sdk_mode
-//        ])
-//    private var disposable: Disposable?
-//
-//    func connect(device: BluetoothDevice) {
-//        do {
-//            try self.polarApi.connectToDevice(device.deviceId)
-//        } catch {
-//            print(error)
-//        }
-//    }
-//
-//    func disconnect(device: BluetoothDevice) {
-//        do {
-//            try self.polarApi.disconnectFromDevice(device.deviceId)
-//        } catch {
-//            print(error)
-//        }
-//    }
-//
-//    func scan() {
-//        self.disposable = polarApi.searchForDevice().subscribe(onNext: { [weak self] deviceInfo in
-//            if let self {
-//                let bluetoothDevice = BluetoothDevice(deviceId: deviceInfo.deviceId, deviceName: deviceInfo.name, address: deviceInfo.address.uuidString, isConnectable: deviceInfo.connectable)
-//                self.deviceList.append(bluetoothDevice)
-//            }
-//        }, onError: { [weak self] err in
-//            print(err)
-//            self?.disposable?.dispose()
-//        })
-//    }
-//
-//    func stopScanning() {
-//        self.disposable?.dispose()
-//    }
 }
-//
+
 extension IOSBluetoothConnector: CBCentralManagerDelegate {
     internal func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("connected to \(peripheral.description)")

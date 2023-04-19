@@ -31,10 +31,8 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
             if (bluetoothAdapter != null && bluetoothAdapter.isEnabled) {
                 bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
             } else {
-                // Handle the case where the device does not support Bluetooth or Bluetooth is disabled
             }
         } else {
-            // Handle the case where the necessary permissions are not granted
         }
     }
 
@@ -56,7 +54,6 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
 
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
-            // Handle the scan failure
         }
     }
 
@@ -79,7 +76,6 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
             if (androidBluetoothDevice.bondState == AndroidBluetoothDevice.BOND_NONE) {
                 androidBluetoothDevice.createBond()
             } else {
-                // Connect to the device's GATT server and perform other operations if necessary
                 val gattCallback = object : BluetoothGattCallback() {
                     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
                         when (newState) {
@@ -92,19 +88,16 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
                             }
                         }
                     }
-
-                    // Implement other BluetoothGattCallback methods as needed
                 }
                 androidBluetoothDevice.connectGatt(context, false, gattCallback)
             }
-            // Connect to the device's GATT server and perform other operations if necessary
         }
     }
 
     override fun disconnect(device: BluetoothDevice) {
         val androidBluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
         if (androidBluetoothDevice != null) {
-//            deviceList.removeIf { it.address == androidBluetoothDevice.address }
+            connectedDevices.remove(device)
         }
     }
 
@@ -115,49 +108,4 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
             isScanning = false
         }
     }
-
-//    private val polarApi = PolarBleApiDefaultImpl.defaultImplementation(
-//        context,
-//        setOf(
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_BATTERY_INFO,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-//            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
-//        )
-//    )
-//    private val scope = CoroutineScope(Job() + Dispatchers.Main)
-//    private var disposable: Disposable? = null
-//
-//    val deviceList = mutableStateListOf<BluetoothDevice>()
-//
-//    init {
-//        polarApi.setPolarFilter(false)
-//        polarApi.setApiCallback(callback)
-//    }
-//
-//    override fun scan(){
-//        disposable = polarApi.searchForDevice().subscribe({ deviceInfo ->
-//            scope.launch {
-//                deviceList.add(BluetoothDevice(deviceInfo.deviceId, deviceInfo.name, deviceInfo.address, deviceInfo.isConnectable))
-//            }
-//        }, { onError ->
-//            Log.e(TAG, onError.stackTraceToString())
-//            stopScanning()
-//        })
-//    }
-//
-//    override fun stopScanning() {
-//        disposable?.dispose()
-//    }
-//
-//    override fun connect(device: BluetoothDevice) {
-//        polarApi.connectToDevice(device.deviceId)
-//    }
-//
-//    override fun disconnect(device: BluetoothDevice) {
-//        polarApi.disconnectFromDevice(device.deviceId)
-//    }
 }

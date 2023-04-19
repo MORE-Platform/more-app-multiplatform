@@ -33,9 +33,6 @@ class MainViewModel(context: Context): ViewModel() {
     val studyDetailsViewModel = StudyDetailsViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
-
-    private val bleConnector = AndroidBluetoothConnector(context)
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()
@@ -46,7 +43,6 @@ class MainViewModel(context: Context): ViewModel() {
                 ExistingWorkPolicy.KEEP,
                 worker)
         }
-        bleConnector.scan()
     }
 
     fun creteNewSimpleQuestionViewModel(scheduleId: String, context: Context): QuestionnaireViewModel {

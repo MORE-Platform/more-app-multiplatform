@@ -17,12 +17,9 @@ class DashboardViewModel: ObservableObject {
     @Published var study: StudySchema? = StudySchema()
     @Published var filterText: String = ""
     
-    let bleConnector = IOSBluetoothConnector()
-    
     init(dashboardFilterViewModel: DashboardFilterViewModel) {
         self.observationFactory = IOSObservationFactory()
         self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory, dashboardFilterViewModel: dashboardFilterViewModel)
-        bleConnector.delegate = self
         coreModel.onLoadStudy { study in
             if let study {
                 self.study = study
@@ -32,10 +29,4 @@ class DashboardViewModel: ObservableObject {
         self.filterText = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
     }
 
-}
-
-extension DashboardViewModel: BLEConnectorDelegate {
-    func bleHasPower() {
-        self.bleConnector.scan()
-    }
 }
