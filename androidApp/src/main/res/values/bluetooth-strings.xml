@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_ble_connected_devices">Connected Devices</string>
+    <string name="more_ble_discovered_devices">Discovered Devices</string>
+    <string name="more_ble_searching">Searching for new devices</string>
+    <string name="more_ble_view_title">Bluetooth Connection</string>
+</resources>
