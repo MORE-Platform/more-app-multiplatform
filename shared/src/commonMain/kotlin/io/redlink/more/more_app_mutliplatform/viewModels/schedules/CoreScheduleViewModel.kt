@@ -11,6 +11,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,13 +21,17 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
+class CoreScheduleViewModel(
+    private val dataRecorder: DataRecorder,
+    private val coreFilterModel: CoreDashboardFilterViewModel
+    ) {
     private val observationRepository = ObservationRepository()
     private val scheduleRepository = ScheduleRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
-        MutableStateFlow( emptyMap())
+        MutableStateFlow( emptyMap() )
+    private val originalScheduleList = mutableMapOf<Long, List<ScheduleModel>>()
 
     init {
         scope.launch {
@@ -36,33 +41,16 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
                         observation.observationTitle to schedules
                             .filter { it.observationId == observation.observationId } }
                 }.collect {
-                    scheduleModelList.emit(createMap(it))
+                    originalScheduleList.clear()
+                    originalScheduleList.putAll(createMap(it))
+                    scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+
                 }
         }
-    }
 
-    fun reloadData() {
         scope.launch {
-            scheduleModelList.firstOrNull()?.let { map ->
-                val currentTime = Clock.System.now().toEpochMilliseconds()
-                scheduleModelList.emit(map.mapValues { entry ->
-                    entry.value.filter { it.end > currentTime && !it.done }
-                }
-                    .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
-                    .filterValues { it.isNotEmpty() })
-            }
-        }
-    }
-
-    fun removeSchedule(scheduleId: String) {
-        stop(scheduleId)
-        scope.launch {
-            scheduleModelList.firstOrNull()?.let { map ->
-                val currentTime = Clock.System.now().toEpochMilliseconds()
-                scheduleModelList.emit(map.mapValues { entry ->
-                    entry.value.filter { it.end > currentTime && !it.done }
-                        .filterNot { it.scheduleId == scheduleId }
-                }.filter { entry -> entry.value.isNotEmpty() })
+            coreFilterModel.currentFilter.collect {
+                scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
             }
         }
     }
