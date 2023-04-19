@@ -16,13 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MediumTitle
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
 import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import org.mongodb.kbson.ObjectId
 
 @Composable
-fun AccordionWithList(title: String, observations: List<ObservationSchema>) {
+fun AccordionWithList(navController: NavController, title: String, observations: List<ObservationSchema>) {
     val open = remember {
         mutableStateOf(false)
     }
@@ -62,8 +65,11 @@ fun AccordionWithList(title: String, observations: List<ObservationSchema>) {
         }
         MoreDivider()
         Spacer(Modifier.height(12.dp))
+
         if (open.value) {
-            ObservationList(observations = observations)
+            ObservationList(observations = observations, navController = navController)
         }
+
+
     }
 }

@@ -10,7 +10,8 @@ import androidx.work.WorkManager
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
+import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
@@ -49,5 +50,9 @@ class MainViewModel(context: Context): ViewModel() {
         return QuestionnaireViewModel(
             SimpleQuestionCoreViewModel(scheduleId, AndroidObservationFactory(context))
         )
+    }
+
+    fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
+       return ObservationDetailsViewModel(observationId)
     }
 }
