@@ -91,7 +91,12 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
                                 || it.scheduleState == ScheduleState.DEACTIVATED
             }
             .sortedBy { it.start }
-            .groupBy { it.start.toLocalDate().time() }
+            .groupBy {
+                if(it.start <= Clock.System.now().toEpochMilliseconds()) {
+                    Clock.System.now().localDateTime().date.time()
+                }
+                else { it.start.toLocalDate().time() }
+            }
             .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
             .filterValues { it.isNotEmpty() }
     }
