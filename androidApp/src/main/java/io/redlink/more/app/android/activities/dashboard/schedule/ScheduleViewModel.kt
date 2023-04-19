@@ -7,11 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
@@ -20,21 +22,23 @@ import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.ZoneId
 
-class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel, runningSchedules: Boolean) : ViewModel() {
-    private val coreViewModel = CoreScheduleViewModel(androidDataRecorder)
+class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder) : ViewModel() {
+
+    val coreViewModel = CoreScheduleViewModel(dataRecorder)
     private val coreFilterViewModel = coreFilterModel
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
+    val runningSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
+    val completedSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
     val filteredSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            (if (runningSchedules) coreViewModel.runningScheduleModelList
-                    else coreViewModel.scheduleModelList).collect { map ->
+            coreViewModel.scheduleModelList.collect { map ->
                 val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
                 withContext(Dispatchers.Main) {
                     updateData(javaConvertedMap)
@@ -52,6 +56,8 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
             coreFilterViewModel.currentFilter.collect{
                 withContext(Dispatchers.Main) {
                     updateFilteredData(schedules)
+                    updateFilteredData(runningSchedules)
+                    updateFilteredData(completedSchedules)
                 }
             }
         }
@@ -77,7 +83,14 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
         schedules.clear()
+        runningSchedules.clear()
+        completedSchedules.clear()
+
         schedules.putAll(data.toSortedMap())
+        runningSchedules.putAll(coreViewModel.runningScheduleModelList.value
+            .mapKeys { it.key.jvmLocalDate() }.toSortedMap())
+        completedSchedules.putAll(coreViewModel.completedScheduleModelList.value
+            .mapKeys { it.key.jvmLocalDate() }.toSortedMap())
     }
 
     private fun updateFilteredData(data: Map<LocalDate, List<ScheduleModel>>) {
@@ -89,10 +102,16 @@ class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterMode
         coreViewModel.removeSchedule(scheduleId = scheduleId)
     }
 
-    fun getScheduleMap(): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
-        return if(hasNoFilters())
-             schedules
-        else filteredSchedules
+    fun getScheduleMap(type: ScheduleListType): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
+        return if (hasNoFilters()) {
+            when (type) {
+                ScheduleListType.ALL -> { schedules }
+                ScheduleListType.RUNNING -> { runningSchedules }
+                else -> { completedSchedules }
+            }
+        } else {
+            filteredSchedules
+        }
     }
 
     fun hasNoFilters() = coreFilterViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME) && coreFilterViewModel.hasAllTypes()

@@ -11,11 +11,12 @@ import shared
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
+    var scheduleListType: ScheduleListType
     var body: some View {
         ScrollView(.vertical) {
             LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
                 ForEach(viewModel.scheduleDates, id: \.self) { key in
-                    if let schedules = viewModel.schedules[key] {
+                    if let schedules = viewModel.getSchedules(type: scheduleListType) {
                         Section {
                             ScheduleList(viewModel: viewModel, scheduleModels: schedules)
                         } header: {
@@ -36,7 +37,7 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), runningSchedules: false))
+            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()))
         } topBarContent: {
             EmptyView()
         }

@@ -10,16 +10,14 @@ import shared
 
 class DashboardViewModel: ObservableObject {
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
-    private let observationFactory: IOSObservationFactory
     let scheduleViewModel: ScheduleViewModel
     
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
     @Published var filterText: String = ""
     
-    init(dashboardFilterViewModel: DashboardFilterViewModel) {
-        self.observationFactory = IOSObservationFactory()
-        self.scheduleViewModel = ScheduleViewModel(observationFactory: self.observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, runningSchedules: false)
+    init(dashboardFilterViewModel: DashboardFilterViewModel, scheduleViewModel: ScheduleViewModel) {
+        self.scheduleViewModel = scheduleViewModel
         coreModel.onLoadStudy { study in
             if let study {
                 self.study = study

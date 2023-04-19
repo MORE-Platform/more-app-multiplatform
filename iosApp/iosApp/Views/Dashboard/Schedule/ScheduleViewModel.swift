@@ -15,46 +15,61 @@ class ScheduleViewModel: ObservableObject {
     
     private var currentFilters: FilterModel? = nil
     private var originalSchedules: [Int64: [ScheduleModel]] = [:]
+    @Published var runningSchedules: [Int64: [ScheduleModel]] = [:]
+    @Published var completedSchedules: [Int64: [ScheduleModel]] = [:]
     @Published var schedules: [Int64: [ScheduleModel]] = [:] {
         didSet {
             scheduleDates = Array(schedules.keys.sorted())
         }
     }
-
+    
     @Published var scheduleDates: [Int64] = []
-
-    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel, runningSchedules: Bool) {
-        filterViewModel = dashboardFilterViewModel
-        coreModel = CoreScheduleViewModel(dataRecorder: recorder)
-        coreModel.onScheduleModelListChange(runningSchedules: runningSchedules) { [weak self] scheduleMap in
+    
+    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
+        self.filterViewModel = dashboardFilterViewModel
+        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder)
+        self.loadSchedules()
+    }
+    
+    func start(scheduleId: String) {
+        coreModel.start(scheduleId: scheduleId)
+    }
+    
+    func pause(scheduleId: String) {
+        coreModel.pause(scheduleId: scheduleId)
+    }
+    
+    func stop(scheduleId: String) {
+        coreModel.stop(scheduleId: scheduleId)
+    }
+    
+    func applyFilters() {
+        filterViewModel.setDateFilterValue()
+        filterViewModel.setObservationTypeFilters()
+        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).converttoInt64()
+    }
+    
+    func loadSchedules() {
+        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {
                 self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
                     var result = partialResult
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
-                print("schedules, running: \(runningSchedules): \(self.schedules)")
                 self.originalSchedules = self.schedules
             }
         }
     }
-
-    func start(scheduleId: String) {
-        coreModel.start(scheduleId: scheduleId)
-    }
-
-    func pause(scheduleId: String) {
-        coreModel.pause(scheduleId: scheduleId)
-    }
-
-    func stop(scheduleId: String) {
-        coreModel.stop(scheduleId: scheduleId)
-    }
-
-    func applyFilters() {
-        filterViewModel.setDateFilterValue()
-        filterViewModel.setObservationTypeFilters()
-        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).converttoInt64()
+    
+    func getSchedules(key: Int64, type: ScheduleListType) -> [ScheduleModel] {
+        if type == ScheduleListType.running {
+            
+        } else if type == ScheduleListType.completed {
+            
+        } else {
+            return schedules[key] ?? []
+        }
     }
 }
 

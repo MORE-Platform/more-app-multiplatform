@@ -22,10 +22,11 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
 @Composable
-fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, running: Boolean) {
+fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -45,16 +46,7 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                 tint = MoreColors.Primary
             )
         }
-        if (running) {
-            Row (modifier = Modifier.padding(top = 4.dp)){
-                Icon(
-                    Icons.Default.CalendarMonth,
-                    contentDescription = "Schedule Date Range",
-                    tint = MoreColors.Primary
-                )
-                BasicText(text = "18.04.2023 - 29.04.2023")
-            }
-        }
+
         TimeframeHours(
             startTime = scheduleModel.start.toDate(),
             endTime = scheduleModel.end.toDate(),

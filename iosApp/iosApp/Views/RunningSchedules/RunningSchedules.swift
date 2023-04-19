@@ -7,9 +7,17 @@
 //
 
 import SwiftUI
+import shared
 
 struct RunningSchedules: View {
+    @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     var body: some View {
-        ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), runningSchedules: true))
+        MoreMainBackground {
+            ScheduleView(viewModel: scheduleViewModel)
+        } topBarContent: {
+            EmptyView()
+        }.onAppear {
+            scheduleViewModel.loadSchedules()
+        }
     }
 }

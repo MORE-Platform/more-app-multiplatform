@@ -20,6 +20,7 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
+import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
@@ -133,6 +134,11 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
+            }
+            composable(NavigationScreen.RUNNING_OBSERVATIONS.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_OBSERVATIONS.stringRes()
+                viewModel.showBackButton.value = true
+                RunningSchedulesView(viewModel = viewModel.scheduleViewModel, navController = navController)
             }
         }
     }

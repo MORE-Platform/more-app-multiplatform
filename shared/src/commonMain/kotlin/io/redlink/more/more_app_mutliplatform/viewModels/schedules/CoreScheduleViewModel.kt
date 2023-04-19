@@ -9,6 +9,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
@@ -29,7 +30,10 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow( emptyMap())
 
-    val runningScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> = MutableStateFlow(mutableMapOf())
+    val runningScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> =
+        MutableStateFlow(mutableMapOf())
+    val completedScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> =
+        MutableStateFlow(mutableMapOf())
 
     init {
         scope.launch {
@@ -41,6 +45,16 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
                 }.collect {
                     scheduleModelList.emit(createMap(it))
                 }
+        }
+        scope.launch {
+            runningScheduleModelList.collect {
+                runningScheduleModelList.emit(it)
+            }
+        }
+        scope.launch {
+            completedScheduleModelList.collect {
+                completedScheduleModelList.emit(it)
+            }
         }
     }
 
@@ -102,21 +116,27 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             }
             .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
             .filterValues { it.isNotEmpty() }
-        map.keys.forEach { key ->
-            if (!map[key].isNullOrEmpty()) {
-                val schedules = map[key]!!.filter { value ->
-                    value.scheduleState == ScheduleState.RUNNING
-                }.toList()
-                runningScheduleModelList.value[key] = schedules
-            }
-        }
-        Napier.i { "Running observations: ${runningScheduleModelList.value}" }
+        filterRunningAndCompleted(map)
         return map
     }
 
-    fun onScheduleModelListChange(runningSchedules: Boolean, provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
-        return if (runningSchedules) runningScheduleModelList.asClosure(provideNewState)
-        else scheduleModelList.asClosure(provideNewState)
+    private fun filterRunningAndCompleted(map: Map<Long, List<ScheduleModel>>) {
+        runningScheduleModelList.value.clear()
+        completedScheduleModelList.value.clear()
+        map.forEach { (key, values) ->
+            val runningSchedules = values.filter { it.scheduleState == ScheduleState.RUNNING }
+            val completedSchedules = values.filter { it.scheduleState == ScheduleState.DONE || it.scheduleState == ScheduleState.ENDED }
+            if (runningSchedules.isNotEmpty()) {
+                runningScheduleModelList.value[key] = runningSchedules
+            }
+            if (completedSchedules.isNotEmpty()) {
+                completedScheduleModelList.value[key] = completedSchedules
+            }
+        }
+    }
+
+    fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
+        return runningScheduleModelList.asClosure(provideNewState)
     }
 }
 

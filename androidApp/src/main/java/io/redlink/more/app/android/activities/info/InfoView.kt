@@ -26,9 +26,9 @@ fun InfoView(navController: NavController) {
             InfoItem(
                 title = "Running Observations",
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Open Settings",
+                contentDescription = "Go to running observations",
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.RUNNING_OBSERVATIONS.route)
                 }
             )
             InfoItem(
