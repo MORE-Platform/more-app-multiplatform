@@ -54,8 +54,5 @@ fun ObservationList(navController: NavController, observations: List<Observation
                 }
                 MoreDivider()
             }
-
-
-
     }
 }

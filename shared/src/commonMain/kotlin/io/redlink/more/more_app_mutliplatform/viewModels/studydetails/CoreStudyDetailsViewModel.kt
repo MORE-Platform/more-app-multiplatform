@@ -53,4 +53,8 @@ class CoreStudyDetailsViewModel {
                 }
         }
     }
+
+    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
+        return studyModel.asClosure(provideNewState)
+    }
 }
