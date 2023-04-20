@@ -57,6 +57,7 @@ class ScheduleViewModel: ObservableObject {
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
+                self.originalSchedules = self.schedules
             }
         }
     }

@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
@@ -103,14 +102,10 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
     }
 
     fun getScheduleMap(type: ScheduleListType): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
-        return if (hasNoFilters()) {
-            when (type) {
-                ScheduleListType.ALL -> { schedules }
-                ScheduleListType.RUNNING -> { runningSchedules }
-                else -> { completedSchedules }
-            }
-        } else {
-            filteredSchedules
+        return when (type) {
+            ScheduleListType.COMPLETED -> { completedSchedules }
+            ScheduleListType.RUNNING -> { runningSchedules }
+            else -> { if (hasNoFilters()) return schedules else filteredSchedules }
         }
     }
 
