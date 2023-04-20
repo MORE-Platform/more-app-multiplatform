@@ -27,10 +27,6 @@ struct BasicNavLinkButton<Destination: View, Label: View>: View {
                 RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
                     .fill(backgroundColor)
             )
-//            .overlay(
-//                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
-//                    .stroke(Color.more.primary, lineWidth: 1)
-//            )
         }
     }
 }
