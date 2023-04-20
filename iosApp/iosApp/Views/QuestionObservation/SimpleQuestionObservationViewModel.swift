@@ -42,10 +42,11 @@ class SimpleQuestionObservationViewModel: ObservableObject {
         self.answerSet = answer
     }
     
-    func finish(setObservationToDone: Bool = true) {
+    func finish() {
+        print("finish-----------------")
         if !self.answerSet.isEmpty {
             print(self.answerSet)
-            coreModel.finishQuestion(data: self.answerSet, setObservationToDone: setObservationToDone)
+            coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
         }
     }
 }

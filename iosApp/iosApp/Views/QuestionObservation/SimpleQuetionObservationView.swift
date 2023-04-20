@@ -13,6 +13,7 @@ struct SimpleQuetionObservationView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var viewModel: SimpleQuestionObservationViewModel
     private let navigationStrings = "Navigation"
+    private let simpleQuestionStrings = "SimpleQuestinoObservation"
     
     @State private var selected = ""
     
@@ -33,7 +34,9 @@ struct SimpleQuetionObservationView: View {
                                 RadioButtonField(id: answerOption, label: answerOption, isMarked: $selected.wrappedValue == answerOption ? true : false,
                                 callback: { selected in
                                     self.selected = selected
-                                    viewModel.setAnswer(answer: answerOption)
+                                    viewModel.setAnswer(answer: selected)
+
+                                    print("------------------------")
                                     print("Selected item is \(selected)")
                                 })
                             }
@@ -45,7 +48,7 @@ struct SimpleQuetionObservationView: View {
                                 }
                                 
                             } label: {
-                                Text("Answer")
+                                Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
                             }
                             .padding(.top, 30)
                         }
