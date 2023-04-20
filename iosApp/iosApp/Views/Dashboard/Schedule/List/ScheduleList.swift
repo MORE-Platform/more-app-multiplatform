@@ -20,18 +20,6 @@ struct ScheduleList: View {
                 if schedule != scheduleModels.last {
                     Divider()
                 }
-
-                /*
-                 if schedule.observationType == "question-observation" {
-                     QuestionListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), schedule: schedule)
-                 } else {
-                     ScheduleListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), scheduleModel: schedule)
-                 }
-
-                 if schedule != scheduleModels.last {
-                     Divider()
-                 }
-                 */
             }
 
         }

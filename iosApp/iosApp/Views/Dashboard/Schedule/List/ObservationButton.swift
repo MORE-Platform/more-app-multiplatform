@@ -10,6 +10,7 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
+    var scheduleId: String
     var observationType: String
     var state: ScheduleState
     var disabled: Bool
@@ -19,7 +20,7 @@ struct ObservationButton: View {
         VStack {
             if observationType == "question-observation" {
                 NavigationLinkButton(disabled: .constant(disabled)) {
-                    QuestionObservationView().environmentObject(QuestionObservationViewModel())
+                    SimpleQuetionObservationView().environmentObject(SimpleQuestionObservationViewModel(scheduleId: scheduleId))
                 } label: {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
                         .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
