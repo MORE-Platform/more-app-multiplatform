@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.studyDetails
+package io.redlink.more.app.android.activities.studyDetails
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,16 +8,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.composables.AccordionWithList
-import io.redlink.more.more_app_mutliplatform.android.extensions.formattedString
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.extensions.jvmLocalDateTime
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.AccordionReadMore
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.ActivityProgressView
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.HeaderTitle
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
+import io.redlink.more.app.android.extensions.formattedString
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
+import io.redlink.more.app.android.shared_composables.AccordionReadMore
+import io.redlink.more.app.android.shared_composables.ActivityProgressView
+import io.redlink.more.app.android.shared_composables.BasicText
+import io.redlink.more.app.android.shared_composables.HeaderTitle
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import org.mongodb.kbson.ObjectId

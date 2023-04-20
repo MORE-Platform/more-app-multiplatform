@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.observations.GPS
+package io.redlink.more.app.android.observations.GPS
 
 import android.annotation.SuppressLint
 import android.content.Context

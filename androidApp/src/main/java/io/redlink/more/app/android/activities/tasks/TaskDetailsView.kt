@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.tasks
+package io.redlink.more.app.android.activities.tasks
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,15 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.*
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreSecondary2
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.shared_composables.*
+import io.redlink.more.app.android.shared_composables.*
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.R
 
 
 @Composable

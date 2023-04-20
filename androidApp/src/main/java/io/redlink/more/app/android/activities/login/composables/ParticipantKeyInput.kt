@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
+package io.redlink.more.app.android.activities.login.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,10 +21,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.login.LoginViewModel
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun ParticipationKeyInput(

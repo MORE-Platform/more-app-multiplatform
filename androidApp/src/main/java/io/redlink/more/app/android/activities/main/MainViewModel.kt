@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.main
+package io.redlink.more.app.android.activities.main
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
@@ -7,15 +7,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
+import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
+import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.tasks.ObservationDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder
-import io.redlink.more.more_app_mutliplatform.android.observations.AndroidObservationFactory
-import io.redlink.more.more_app_mutliplatform.android.workers.ScheduleUpdateWorker
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
+import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
+import io.redlink.more.app.android.observations.AndroidDataRecorder
+import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel

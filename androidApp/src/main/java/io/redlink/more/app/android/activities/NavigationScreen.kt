@@ -1,9 +1,9 @@
-package io.redlink.more.more_app_mutliplatform.android.activities
+package io.redlink.more.app.android.activities
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.getStringResource
 
 enum class NavigationScreen(val route: String, @StringRes val stringResource: Int) {
     DASHBOARD("Dashboard", R.string.nav_dashboard),

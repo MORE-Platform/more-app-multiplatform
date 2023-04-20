@@ -1,8 +1,8 @@
-package io.redlink.more.more_app_mutliplatform.android.extensions
+package io.redlink.more.app.android.extensions
 
 import android.content.Context
 import android.provider.Settings
-import io.redlink.more.more_app_mutliplatform.android.MoreApplication
+import io.redlink.more.app.android.MoreApplication
 
 
 fun getString(id: Int) = MoreApplication.appContext?.getString(id) ?: ""

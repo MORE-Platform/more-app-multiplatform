@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.composables
+package io.redlink.more.app.android.activities.studyDetails.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MediumTitle
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.shared_composables.BasicText
+import io.redlink.more.app.android.shared_composables.MediumTitle
+import io.redlink.more.app.android.shared_composables.MoreDivider
+import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import org.mongodb.kbson.ObjectId

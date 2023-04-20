@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.ui.theme
+package io.redlink.more.app.android.ui.theme
 
 
 import androidx.compose.foundation.BorderStroke

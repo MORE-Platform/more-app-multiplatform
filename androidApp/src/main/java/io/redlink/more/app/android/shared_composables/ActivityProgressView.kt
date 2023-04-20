@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.shared_composables
+package io.redlink.more.app.android.shared_composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,9 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
 
 
 @Composable

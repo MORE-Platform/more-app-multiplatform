@@ -1,17 +1,17 @@
-package io.redlink.more.more_app_mutliplatform.android.activities
+package io.redlink.more.app.android.activities
 
 import android.app.Activity
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.more_app_mutliplatform.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.consent.ConsentViewModelListener
-import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.login.LoginViewModelListener
-import io.redlink.more.more_app_mutliplatform.android.activities.main.MainActivity
-import io.redlink.more.more_app_mutliplatform.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.activities.consent.ConsentViewModel
+import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
+import io.redlink.more.app.android.activities.login.LoginViewModel
+import io.redlink.more.app.android.activities.login.LoginViewModelListener
+import io.redlink.more.app.android.activities.main.MainActivity
+import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository

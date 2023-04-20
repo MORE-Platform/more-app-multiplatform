@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.shared_composables
+package io.redlink.more.app.android.shared_composables
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,10 +23,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTitle
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.SmallTitle
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
 
 
 @Composable

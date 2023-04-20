@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list
+package io.redlink.more.app.android.activities.dashboard.schedule.list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
@@ -9,18 +9,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.ScheduleViewModel
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.extensions.toDate
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTitle
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.TimeframeHours
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.shared_composables.BasicText
+import io.redlink.more.app.android.shared_composables.SmallTextButton
+import io.redlink.more.app.android.shared_composables.SmallTitle
+import io.redlink.more.app.android.shared_composables.TimeframeHours
+import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.R
 
 
 @Composable

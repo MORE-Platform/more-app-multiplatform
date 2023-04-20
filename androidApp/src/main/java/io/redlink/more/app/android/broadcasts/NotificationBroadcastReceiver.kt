@@ -1,9 +1,9 @@
-package io.redlink.more.more_app_mutliplatform.android.broadcasts
+package io.redlink.more.app.android.broadcasts
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.redlink.more.more_app_mutliplatform.android.services.PushNotificationService
+import io.redlink.more.app.android.services.PushNotificationService
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +28,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val NOTIFICATION_SET_ON_READ_ACTION = "io.redlink.more.more_app_mutliplatform.android.NOTIFICATION_ACTION_READ"
+        const val NOTIFICATION_SET_ON_READ_ACTION = "io.redlink.more.app.android.NOTIFICATION_ACTION_READ"
     }
 }

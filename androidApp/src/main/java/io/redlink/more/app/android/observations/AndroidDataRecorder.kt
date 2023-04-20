@@ -1,7 +1,7 @@
-package io.redlink.more.more_app_mutliplatform.android.observations
+package io.redlink.more.app.android.observations
 
 import android.content.Context
-import io.redlink.more.more_app_mutliplatform.android.services.ObservationRecordingService
+import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 
 class AndroidDataRecorder(private val context: Context): DataRecorder {
