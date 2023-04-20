@@ -4,26 +4,25 @@ import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel) {
     private val notificationRepository: NotificationRepository = NotificationRepository()
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-    var notificationList: MutableStateFlow<List<NotificationSchema?>> = MutableStateFlow(listOf())
-    var filteredNotificationList: MutableStateFlow<List<NotificationSchema?>> = MutableStateFlow(listOf())
+    private val originalNotificationList = mutableListOf<NotificationSchema?>()
+    val notificationList: MutableStateFlow<List<NotificationSchema?>> = MutableStateFlow(listOf())
     var count: MutableStateFlow<Long> = MutableStateFlow(0)
 
     init{
         scope.launch {
             notificationRepository.getAllNotifications().collect {
-                notificationList.value = it
-                filteredNotificationList.value = it
+                originalNotificationList.clear()
+                originalNotificationList.addAll(it)
+                notificationList.emit(it)
             }
         }
         scope.launch {
@@ -33,7 +32,7 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
         }
         scope.launch {
             coreFilterModel.currentFilter.collect {
-                filteredNotificationList.emit(coreFilterModel.applyFilter(notificationList.value))
+                notificationList.emit(coreFilterModel.applyFilter(originalNotificationList))
             }
         }
     }

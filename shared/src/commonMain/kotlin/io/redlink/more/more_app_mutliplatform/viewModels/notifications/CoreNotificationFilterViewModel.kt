@@ -1,6 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
+import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,5 +58,9 @@ class CoreNotificationFilterViewModel {
                 } ?: false
             }
         return filteredList.toList()
+    }
+
+    fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {
+        return currentFilter.asClosure(provideNewState)
     }
 }
