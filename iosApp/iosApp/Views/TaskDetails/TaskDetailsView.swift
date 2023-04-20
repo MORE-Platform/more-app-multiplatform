@@ -43,8 +43,8 @@ struct TaskDetailsView: View {
                         }
                     }
 
-                    let date: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? "")
-                    let time: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
+                    let date: String = viewModel.getDateRangeString()
+                    let time: String = viewModel.getTimeRangeString()
 
                     ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
 

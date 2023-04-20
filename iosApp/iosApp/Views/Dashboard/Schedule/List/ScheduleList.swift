@@ -16,16 +16,24 @@ struct ScheduleList: View {
     var body: some View {
         ForEach(scheduleModels, id: \.scheduleId) { schedule in
             VStack {
-                if schedule.observationType == "question-observation" {
-                    QuestionListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), schedule: schedule)
-                } else {
-                    ScheduleListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), scheduleModel: schedule)
-                }
-                
+                ScheduleListItem(viewModel: viewModel, scheduleModel: schedule)
                 if schedule != scheduleModels.last {
                     Divider()
                 }
+
+                /*
+                 if schedule.observationType == "question-observation" {
+                     QuestionListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), schedule: schedule)
+                 } else {
+                     ScheduleListItem(viewModel: viewModel, simpleQuestionViewModel: SimpleQuestionObservationViewModel(scheduleId: schedule.scheduleId), scheduleModel: schedule)
+                 }
+
+                 if schedule != scheduleModels.last {
+                     Divider()
+                 }
+                 */
             }
+
         }
     }
 }

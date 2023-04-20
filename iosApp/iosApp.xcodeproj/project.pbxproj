@@ -21,6 +21,7 @@
 		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F0FA80729ED7A1300B8D80E /* TaskScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */; };
+		1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -143,7 +144,6 @@
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
 		EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */ = {isa = PBXBuildFile; fileRef = EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */; };
-		EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCCC30F29DAC103006D252F /* QuestionListItem.swift */; };
 		EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */; };
 		EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD808D629BF4C3A005779DC /* MoreBackButton.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
@@ -179,6 +179,7 @@
 		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskScheduleService.swift; sourceTree = "<group>"; };
+		1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSBluetoothConnector.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -309,7 +310,6 @@
 		EDBB2B4929B8CFF000CA973E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EDBB2B4B29B8D1C500CA973E /* SettingsView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = SettingsView.strings; sourceTree = "<group>"; };
 		EDC89B1029B899D400E0A160 /* StartObservationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartObservationButton.swift; sourceTree = "<group>"; };
-		EDCCC30F29DAC103006D252F /* QuestionListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionListItem.swift; sourceTree = "<group>"; };
 		EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationTimeDetails.swift; sourceTree = "<group>"; };
 		EDD808D629BF4C3A005779DC /* MoreBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreBackButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
@@ -375,6 +375,7 @@
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
 				1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */,
 				1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */,
+				1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -672,7 +673,6 @@
 				1F43997229B8D70800687906 /* ScheduleList.swift */,
 				1F43997629B8D70800687906 /* ScheduleListItem.swift */,
 				1F43997429B8D70800687906 /* ObservationButton.swift */,
-				EDCCC30F29DAC103006D252F /* QuestionListItem.swift */,
 				EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */,
 			);
 			path = List;
@@ -912,7 +912,6 @@
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,
-				EDCCC31029DAC103006D252F /* QuestionListItem.swift in Sources */,
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
@@ -951,6 +950,7 @@
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
+				1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */,
 				07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */,
