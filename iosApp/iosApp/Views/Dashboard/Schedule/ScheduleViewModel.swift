@@ -57,16 +57,39 @@ class ScheduleViewModel: ObservableObject {
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
-                self.originalSchedules = self.schedules
+            }
+        }
+    }
+    
+    func loadRunningSchedules() {
+        coreModel.getRunningSchedules { [weak self] scheduleMap in
+            if let self {
+                self.runningSchedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
+                }
+            }
+        }
+    }
+    
+    func loadCompletedSchedules() {
+        coreModel.getCompletedSchedules { [weak self] scheduleMap in
+            if let self {
+                self.completedSchedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
+                }
             }
         }
     }
     
     func getSchedules(key: Int64, type: ScheduleListType) -> [ScheduleModel] {
         if type == ScheduleListType.running {
-            
+            return runningSchedules[key] ?? []
         } else if type == ScheduleListType.completed {
-            
+            return completedSchedules[key] ?? []
         } else {
             return schedules[key] ?? []
         }

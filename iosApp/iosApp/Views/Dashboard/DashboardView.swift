@@ -30,7 +30,7 @@ struct DashboardView: View {
                     .environmentObject(dashboardViewModel)
                     .padding(.bottom)
                     if selection == 0 {
-                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
+                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel, scheduleListType: .all)
                     } else {
                         EmptyView()
                     }

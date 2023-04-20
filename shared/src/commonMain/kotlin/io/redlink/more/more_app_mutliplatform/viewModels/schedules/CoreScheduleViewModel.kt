@@ -46,16 +46,6 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
                     scheduleModelList.emit(createMap(it))
                 }
         }
-        scope.launch {
-            runningScheduleModelList.collect {
-                runningScheduleModelList.emit(it)
-            }
-        }
-        scope.launch {
-            completedScheduleModelList.collect {
-                completedScheduleModelList.emit(it)
-            }
-        }
     }
 
     fun reloadData() {
@@ -133,10 +123,19 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
                 completedScheduleModelList.value[key] = completedSchedules
             }
         }
+        Napier.i { "Running schedules: ${runningScheduleModelList.value}" }
     }
 
     fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
+        return scheduleModelList.asClosure(provideNewState)
+    }
+
+    fun getRunningSchedules(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
         return runningScheduleModelList.asClosure(provideNewState)
+    }
+
+    fun getCompletedSchedules(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
+        return completedScheduleModelList.asClosure(provideNewState)
     }
 }
 

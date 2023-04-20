@@ -13,11 +13,11 @@ struct RunningSchedules: View {
     @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     var body: some View {
         MoreMainBackground {
-            ScheduleView(viewModel: scheduleViewModel)
+            ScheduleView(viewModel: scheduleViewModel, scheduleListType: ScheduleListType.running)
         } topBarContent: {
             EmptyView()
         }.onAppear {
-            scheduleViewModel.loadSchedules()
+            scheduleViewModel.loadRunningSchedules()
         }
     }
 }

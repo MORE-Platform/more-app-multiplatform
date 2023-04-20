@@ -16,17 +16,21 @@ struct ScheduleView: View {
         ScrollView(.vertical) {
             LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
                 ForEach(viewModel.scheduleDates, id: \.self) { key in
-                    if let schedules = viewModel.getSchedules(type: scheduleListType) {
-                        Section {
-                            ScheduleList(viewModel: viewModel, scheduleModels: schedules)
-                        } header: {
-                            VStack(alignment: .leading) {
-                                BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
-                                    .font(Font.more.headline)
-                                Divider()
-                            }.background(Color.more.secondaryLight)
+                    if let schedules = viewModel.getSchedules(key: key, type: scheduleListType) {
+                        if !schedules.isEmpty {
+                            Section {
+                                ScheduleList(viewModel: viewModel, scheduleModels: schedules)
+                            } header: {
+                                VStack(alignment: .leading) {
+                                    BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
+                                        .font(Font.more.headline)
+                                    Divider()
+                                }.background(Color.more.secondaryLight)
+                            }
+                            .padding(.bottom)
+                        } else {
+                            EmptyView()
                         }
-                        .padding(.bottom)
                     }
                 }
             }.background(Color.more.secondaryLight)
@@ -37,7 +41,7 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()))
+            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()), scheduleListType: .all)
         } topBarContent: {
             EmptyView()
         }
