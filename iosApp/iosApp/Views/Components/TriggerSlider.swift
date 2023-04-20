@@ -18,17 +18,17 @@ public struct TriggerSlider<SliderView: View, BackgroundView: View, TextView: Vi
     public var didSlideToEnd: ()->Void
     
     var settings: TriggerSliderSettings
-
+    
     @Binding var offsetX: CGFloat
     
     /**
-    Initializer
+     Initializer
      - Parameter sliderView:  The slider view
      - Parameter textView: Text view that is located between the slider view and the background. Does not have to be a Text, can be any other view.
      - Parameter backgroundView: The background view of the slider.
      - Parameter offsetX: The horizontal offset of the slider view.  Should be set to 0 as initial value.  Value changes as the slider is moved by the user's drag gesture.
      - Parameter didSlideToEnd: Closure is called when the slider is moved to the end position. In your code, determine what should happend in that case.
-    */
+     */
     public init(@ViewBuilder sliderView: ()->SliderView, textView: ()->TextView, backgroundView: ()->BackgroundView, offsetX: Binding<CGFloat>, didSlideToEnd: @escaping ()->Void, settings: TriggerSliderSettings = TriggerSliderSettings()) {
         self.sliderView = sliderView()
         self.backgroundView = backgroundView()
@@ -59,20 +59,24 @@ public struct TriggerSlider<SliderView: View, BackgroundView: View, TextView: Vi
                         .padding(.horizontal, settings.sliderViewHPadding)
                         .padding(.vertical, settings.sliderViewVPadding)
                         .offset(x: self.offsetX, y: 0)
-                        .gesture(DragGesture(coordinateSpace: .local).onChanged({ value in
-                            
-                            self.dragOnChanged(value: value, totalWidth: proxy.size.width)
-                            
-                    }).onEnded({ value in
-                        self.dragOnEnded(value: value, totalWidth: proxy.size.width)
-               
-                    }))
+                        .gesture(DragGesture(coordinateSpace: .local)
+                            .onChanged(
+                                {
+                                    value in
+                                    self.dragOnChanged(value: value, totalWidth: proxy.size.width)
+                                }
+                            ).onEnded(
+                                {
+                                    value in
+                                    self.dragOnEnded(value: value, totalWidth: proxy.size.width)
+                                    
+                                }))
                     
                     if settings.slideDirection == .right {
                         Spacer()
                     }
                 }
-  
+                
             }
         }
     }
@@ -83,7 +87,7 @@ public struct TriggerSlider<SliderView: View, BackgroundView: View, TextView: Vi
         let leftSlidingChangeCondition = settings.slideDirection == .left && value.translation.width < 0 && offsetX >= -totalWidth  + settings.sliderViewWidth + settings.sliderViewHPadding * 2
         
         if rightSlidingChangeCondition || leftSlidingChangeCondition  {
-                self.offsetX = value.translation.width
+            self.offsetX = value.translation.width
         }
     }
     
@@ -117,11 +121,11 @@ struct TriggerSlider_Previews: PreviewProvider {
             }, textView: {
                 Text("Slide to Unlock").foregroundColor(Color.orange)
             },
-            backgroundView: {
+                          backgroundView: {
                 RoundedRectangle(cornerRadius: 30, style: .continuous)
                     .fill(Color.orange.opacity(0.5))
             }, offsetX: $0,
-              didSlideToEnd: {
+                          didSlideToEnd: {
                 print("trigger!")
             }, settings: TriggerSliderSettings(sliderViewVPadding: 5, slideDirection: .right)).padding(10).padding(.horizontal, 20)
         }
@@ -131,11 +135,11 @@ struct TriggerSlider_Previews: PreviewProvider {
 struct StatefulPreviewWrapper<Value, Content: View>: View {
     @State var value: Value
     var content: (Binding<Value>) -> Content
-
+    
     var body: some View {
         content($value)
     }
-
+    
     init(_ value: Value, content: @escaping (Binding<Value>) -> Content) {
         self._value = State(wrappedValue: value)
         self.content = content

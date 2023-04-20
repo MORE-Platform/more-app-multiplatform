@@ -19,23 +19,27 @@ struct ExitStudyLevelOneView: View {
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
+                
                 Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
                     .padding(.top)
                     .padding(.bottom)
+                
+                Spacer()
+                
                 HStack(alignment: .center) {
                     Spacer()
-                    
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.system(size: 48))
                         .foregroundColor(Color.more.important)
                         .padding()
                     Spacer()
-                    
                 }.padding(.top)
+                
                 Text(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message"))
                     .foregroundColor(Color.more.important)
                     .fontWeight(.bold)
                     .padding(.bottom, 2)
+                
                 Spacer()
                 
                 HStack{
@@ -44,6 +48,7 @@ struct ExitStudyLevelOneView: View {
                         .padding(.bottom)
                     Spacer()
                 }
+                
                 BasicNavLinkButton(backgroundColor: $accButton){
                     SettingsView(viewModel: viewModel)
                 } label: {
@@ -70,9 +75,3 @@ struct ExitStudyLevelOneView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
-//struct ExitStudyLevelOneView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ExitStudyLevelOneView()
-//    }
-//}
