@@ -17,16 +17,25 @@ struct ObservationButton: View {
     private let stringTable = "ScheduleListView"
     var body: some View {
         VStack {
-            MoreActionButton(disabled: .constant(disabled), action: action) {
-                VStack {
-                    if state == ScheduleState.running {
-                        Text(
-                            String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
-                        )
-                    } else {
-                        Text(
-                            String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
-                        )
+            if observationType == "question-observation" {
+                NavigationLinkButton(disabled: .constant(disabled)) {
+                    QuestionObservationView().environmentObject(QuestionObservationViewModel())
+                } label: {
+                    Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
+                        .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
+                }
+            } else {
+                MoreActionButton(disabled: .constant(disabled), action: action) {
+                    VStack {
+                        if state == ScheduleState.running {
+                            Text(
+                                String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
+                            )
+                        } else {
+                            Text(
+                                String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
+                            )
+                        }
                     }
                 }
             }

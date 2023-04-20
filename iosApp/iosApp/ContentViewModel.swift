@@ -44,12 +44,15 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
+    
+    
 
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
 
         hasCredentials = credentialRepository.hasCredentials()
+        
     }
     
     func showLoginView() {
