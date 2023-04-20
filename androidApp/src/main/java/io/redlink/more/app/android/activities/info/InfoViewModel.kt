@@ -29,7 +29,7 @@ class InfoViewModel: ViewModel() {
     val studyTitle = mutableStateOf<String>("")
 
     // TODO: inforopository with infodata (not yet in bakcend) - exchange mock data to backend data after it exists
-    val institute: String = "Ludwig Boltzmann Institute for Digital Health and Prevention"
+    val institute: String = "Ludwig Boltzmann Institute "
     val contactPerson: String = "Dr. Markus Mustermann"
     val contactEmail: String? = "markus.mustermann@bolzmann.at"
     val contactTel: String? = null
