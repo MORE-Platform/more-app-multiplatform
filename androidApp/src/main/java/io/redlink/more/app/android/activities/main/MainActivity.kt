@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
@@ -135,10 +136,15 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
             }
-            composable(NavigationScreen.RUNNING_OBSERVATIONS.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_OBSERVATIONS.stringRes()
+            composable(NavigationScreen.RUNNING_SCHEDULES.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
                 RunningSchedulesView(viewModel = viewModel.scheduleViewModel, navController = navController)
+            }
+            composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
+                viewModel.showBackButton.value = true
+                CompletedSchedulesView(viewModel = viewModel.scheduleViewModel, navController = navController)
             }
         }
     }

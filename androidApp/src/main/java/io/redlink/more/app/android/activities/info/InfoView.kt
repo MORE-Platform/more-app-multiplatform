@@ -24,19 +24,19 @@ fun InfoView(navController: NavController) {
                 }
             )
             InfoItem(
-                title = "Running Observations",
+                title = "Running Schedules",
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Go to running observations",
+                contentDescription = "Go to running schedules",
                 onClick = {
-                    navController.navigate(NavigationScreen.RUNNING_OBSERVATIONS.route)
+                    navController.navigate(NavigationScreen.RUNNING_SCHEDULES.route)
                 }
             )
             InfoItem(
-                title = "Completed Observations",
+                title = "Completed Schedules",
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Open Settings",
+                contentDescription = "Go to completed schedules",
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.COMPLETED_SCHEDULES.route)
                 }
             )
             InfoItem(

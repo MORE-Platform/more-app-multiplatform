@@ -58,6 +58,8 @@ class ScheduleViewModel: ObservableObject {
                     return result
                 }
                 self.originalSchedules = self.schedules
+                self.loadRunningSchedules()
+                self.loadCompletedSchedules()
             }
         }
     }

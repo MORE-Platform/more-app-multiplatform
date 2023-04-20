@@ -139,6 +139,7 @@
 		ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */; };
 		EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */ = {isa = PBXBuildFile; productRef = EDACF62629D2F31D0032327B /* PolarBleSdk */; };
 		EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */; };
+		EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */; };
 		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
@@ -303,6 +304,7 @@
 		ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailsView.swift; sourceTree = "<group>"; };
 		EDAC149529DEF2010084CE1C /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarVerityHeartRateObservation.swift; sourceTree = "<group>"; };
+		EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedSchedules.swift; sourceTree = "<group>"; };
 		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
 		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
 		EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -535,6 +537,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EDAF93ED29F17A210093F1DA /* CompletedSchedules */,
 				EDEF4C8129EFD4B200E830DA /* RunningSchedules */,
 				07BC54AA29CB2F1D00459267 /* StudyDetails */,
 				B748DF4629D1C00D0026C348 /* QuestionObservation */,
@@ -685,6 +688,14 @@
 				ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */,
 			);
 			path = TaskDetails;
+			sourceTree = "<group>";
+		};
+		EDAF93ED29F17A210093F1DA /* CompletedSchedules */ = {
+			isa = PBXGroup;
+			children = (
+				EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */,
+			);
+			path = CompletedSchedules;
 			sourceTree = "<group>";
 		};
 		EDB51FA029E594D200F49136 /* Filters */ = {
@@ -957,6 +968,7 @@
 				ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */,
 				1F13BA4F2993A2A600938C1E /* ContentViewModel.swift in Sources */,
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
+				EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
 				07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */,
