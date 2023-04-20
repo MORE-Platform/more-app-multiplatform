@@ -34,6 +34,7 @@ struct MainTabView: View {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
             UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
+            contentViewModel.updateSchedules()
         }
     }
 }

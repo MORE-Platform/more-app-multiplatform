@@ -14,19 +14,18 @@ struct ObservationDetails: View {
     var action: () -> Void = {}
     
     var body: some View {
-            HStack{
-                VStack(alignment: .leading) {
-                    BasicText(text: $observationTitle)
-                        .font(Font.more.headline)
-                        .foregroundColor(Color.more.primary)
-                        .padding(0.5)
-                    Text(observationType)
-                        .foregroundColor(Color.more.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.forward")
+        HStack{
+            VStack(alignment: .leading) {
+                BasicText(text: $observationTitle)
+                    .font(Font.more.headline)
+                    .foregroundColor(Color.more.primary)
+                    .padding(0.5)
+                Text(observationType)
+                    .foregroundColor(Color.more.secondary)
             }
-            .contentShape(Rectangle())
+            Spacer()
+            Image(systemName: "chevron.forward")
+        }
     }
 }
 
