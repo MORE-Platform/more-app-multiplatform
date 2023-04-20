@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.setting
+package io.redlink.more.app.android.activities.setting
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.Accordion
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.BasicText
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.SmallTextButton
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.moreImportant
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.Accordion
+import io.redlink.more.app.android.shared_composables.BasicText
+import io.redlink.more.app.android.shared_composables.SmallTextButton
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.ui.theme.moreImportant
+import io.redlink.more.app.android.R
 
 
 

@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.info
+package io.redlink.more.app.android.activities.info
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.NavigationScreen
 
 @Composable
 fun InfoView(navController: NavController) {

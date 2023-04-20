@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables
+package io.redlink.more.app.android.activities.dashboard.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun FilterView(navController: NavController, model: DashboardViewModel) {

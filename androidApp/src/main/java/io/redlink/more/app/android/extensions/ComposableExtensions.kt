@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.extensions
+package io.redlink.more.app.android.extensions
 
 
 import android.app.Activity

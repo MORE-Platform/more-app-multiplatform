@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.login
+package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

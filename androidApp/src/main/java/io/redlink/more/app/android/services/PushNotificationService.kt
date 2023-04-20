@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.services
+package io.redlink.more.app.android.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,10 +10,10 @@ import android.os.IBinder
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.RemoteMessage
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.activities.main.MainActivity
-import io.redlink.more.more_app_mutliplatform.android.broadcasts.NotificationBroadcastReceiver.Companion.NOTIFICATION_SET_ON_READ_ACTION
-import io.redlink.more.more_app_mutliplatform.android.extensions.getSystemService
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.main.MainActivity
+import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver.Companion.NOTIFICATION_SET_ON_READ_ACTION
+import io.redlink.more.app.android.extensions.getSystemService
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import kotlinx.coroutines.CoroutineScope

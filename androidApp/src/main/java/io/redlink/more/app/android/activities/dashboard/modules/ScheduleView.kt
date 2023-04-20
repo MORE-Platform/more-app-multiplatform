@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.dashboard.modules
+package io.redlink.more.app.android.activities.dashboard.modules
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,7 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 
 @Composable
 fun ScheduleView(model: DashboardViewModel) {

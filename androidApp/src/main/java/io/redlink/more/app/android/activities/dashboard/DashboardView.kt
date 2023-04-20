@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.dashboard
+package io.redlink.more.app.android.activities.dashboard
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -8,12 +8,12 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.DashboardProgress
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.composables.FilterView
-import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.schedule.list.ScheduleListView
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.observations.HR.PolarHeartRateObservation
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.activities.dashboard.composables.DashboardProgress
+import io.redlink.more.app.android.activities.dashboard.composables.FilterView
+import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.app.android.R
 
 
 

@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.login.composables
+package io.redlink.more.app.android.activities.login.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun ErrorMessage(hasError: Boolean, errorMsg: String) {

@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire
+package io.redlink.more.app.android.activities.observations.questionnaire
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf

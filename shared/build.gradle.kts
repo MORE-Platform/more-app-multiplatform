@@ -105,7 +105,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.redlink.more.more_app_mutliplatform"
+    namespace = "io.redlink.more.app"
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {

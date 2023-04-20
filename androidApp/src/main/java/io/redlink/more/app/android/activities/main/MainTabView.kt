@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.main
+package io.redlink.more.app.android.activities.main
 
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -9,8 +9,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import io.redlink.more.more_app_mutliplatform.android.activities.NavigationScreen
-import io.redlink.more.more_app_mutliplatform.android.activities.main.composables.TabItem
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.main.composables.TabItem
 
 
 @Composable

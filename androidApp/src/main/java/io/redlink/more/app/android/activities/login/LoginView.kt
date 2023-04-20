@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.login
+package io.redlink.more.app.android.activities.login
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
@@ -11,12 +11,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.EndpointView
-import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.ParticipationKeyInput
-import io.redlink.more.more_app_mutliplatform.android.activities.login.composables.QRCodeButton
-import io.redlink.more.more_app_mutliplatform.android.extensions.Image
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.R
+import io.redlink.more.app.android.activities.login.composables.EndpointView
+import io.redlink.more.app.android.activities.login.composables.ParticipationKeyInput
+import io.redlink.more.app.android.activities.login.composables.QRCodeButton
+import io.redlink.more.app.android.extensions.Image
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.R
 
 
 

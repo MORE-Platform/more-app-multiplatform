@@ -1,8 +1,8 @@
-package io.redlink.more.more_app_mutliplatform.android.observations
+package io.redlink.more.app.android.observations
 
 import android.content.Context
 import androidx.work.*
-import io.redlink.more.more_app_mutliplatform.android.workers.DataUploadWorker
+import io.redlink.more.app.android.workers.DataUploadWorker
 import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 

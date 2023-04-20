@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.composables
+package io.redlink.more.app.android.activities.studyDetails.composables
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -16,9 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MediumTitle
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreDivider
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.shared_composables.MediumTitle
+import io.redlink.more.app.android.shared_composables.MoreDivider
+import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 
 @Composable
