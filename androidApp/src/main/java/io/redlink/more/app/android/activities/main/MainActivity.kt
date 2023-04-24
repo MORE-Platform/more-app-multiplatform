@@ -4,6 +4,7 @@ import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -20,10 +21,12 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
+import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
 
@@ -79,7 +82,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
-                InfoView(navController)
+                InfoView(navController, viewModel = InfoViewModel())
             }
             composable(NavigationScreen.SETTINGS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
