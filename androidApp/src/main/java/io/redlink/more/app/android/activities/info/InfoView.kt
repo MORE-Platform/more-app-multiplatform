@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +15,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.SmallTitle
@@ -26,41 +29,49 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         item {
             Divider()
             InfoItem(
-                title = "Study Details",
+                title = getStringResource(id = R.string.info_study_details),
                 imageVector = Icons.Default.Info,
-                contentDescription = "Open Study Details",
+                contentDescription = getStringResource(id = R.string.info_study_details_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.STUDY_DETAILS.route)
                 }
             )
             InfoItem(
-                title = "Running Observations",
-                imageVector = Icons.Outlined.Circle,
-                contentDescription = "Open Settings",
+                title = getStringResource(id = R.string.info_running_observations),
+                imageVector = Icons.Outlined.Autorenew,
+                contentDescription = getStringResource(id = R.string.info_running_observations_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
-                title = "Completed Observations",
+                title = getStringResource(id = R.string.info_completed_observations),
                 imageVector = Icons.Default.Check,
-                contentDescription = "Open Settings",
+                contentDescription = getStringResource(id = R.string.info_completed_observations_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
-                title = "Settings",
+                title = getStringResource(id = R.string.info_devices),
+                imageVector = Icons.Default.Watch,
+                contentDescription = getStringResource(id = R.string.info_devices_desc),
+                onClick = {
+                    navController.navigate(NavigationScreen.SETTINGS.route)
+                }
+            )
+            InfoItem(
+                title = getStringResource(id = R.string.info_consent_settings),
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Open Settings",
+                contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
             InfoItem(
-                title = "Leave Study",
+                title = getStringResource(id = R.string.info_leave_study),
                 imageVector = Icons.Default.ExitToApp,
-                contentDescription = "Exit Application",
+                contentDescription = getStringResource(id = R.string.info_leave_study_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
@@ -68,6 +79,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         }
 
         item {
+            Spacer(modifier = Modifier.padding(0.5.dp))
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,7 +137,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     Divider()
 
                     BasicText(
-                        text = viewModel.info,
+                        text = getStringResource(id = R.string.info_disclaimer),
                         color = MoreColors.Secondary,
                         textAlign = TextAlign.Center,
                         fontSize = 14.sp,

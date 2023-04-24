@@ -33,7 +33,6 @@ class InfoViewModel: ViewModel() {
     val contactPerson: String = "Dr. Markus Mustermann"
     val contactEmail: String? = "markus.mustermann@bolzmann.at"
     val contactTel: String? = null
-    val info: String = "Fell free to contact u when you encounter problems."
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
