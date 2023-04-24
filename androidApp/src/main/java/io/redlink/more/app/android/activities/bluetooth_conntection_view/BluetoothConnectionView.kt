@@ -80,29 +80,6 @@ fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothCo
                 Heading(
                     text = getStringResource(id = R.string.more_ble_discovered_devices)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                ) {
-                    if (viewModel.bluetoothIsScanning.value) {
-                        CircularProgressIndicator(
-                            strokeWidth = 2.dp,
-                            color = MoreColors.Primary,
-                            modifier = Modifier
-                                .height(progressSize)
-                                .width(progressSize)
-                        )
-                        BasicText(
-                            text = "${getStringResource(id = R.string.more_ble_searching)}...",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 8.dp)
-                        )
-                    }
-                }
             }
         }
         item {
@@ -121,6 +98,31 @@ fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothCo
                 MoreDivider()
                 SmallTitle(text = device.deviceName ?: getStringResource(id = R.string.more_ble_unknown_device))
                 BasicText(text = device.address ?: getStringResource(id = R.string.more_ble_unknown_device))
+            }
+        }
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp)
+            ) {
+                if (viewModel.bluetoothIsScanning.value) {
+                    CircularProgressIndicator(
+                        strokeWidth = 2.dp,
+                        color = MoreColors.Primary,
+                        modifier = Modifier
+                            .height(progressSize)
+                            .width(progressSize)
+                    )
+                    BasicText(
+                        text = "${getStringResource(id = R.string.more_ble_searching)}...",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp)
+                    )
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun EmptyListView(text: String) {
-    Box(contentAlignment = Alignment.Center,
+    Box(contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
