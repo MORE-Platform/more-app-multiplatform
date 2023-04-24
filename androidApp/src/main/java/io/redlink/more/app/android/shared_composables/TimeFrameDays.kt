@@ -25,7 +25,15 @@ fun TimeframeDays(startTime: Date, endTime: Date, modifier: Modifier = Modifier)
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
-            text = "${startTime.formattedString("dd.MM.yyyy")} - ${endTime.formattedString("dd.MM.yyyy")}",
+            text = startTime.let {
+                val start: String = startTime.formattedString("dd.MM.yyyy")
+                val end: String = endTime.formattedString("dd.MM.yyyy")
+                if(start != end) {
+                   "$start - $end"
+                }else {
+                    start
+                }
+            },
             color = MoreColors.Secondary
         )
     }

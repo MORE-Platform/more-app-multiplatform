@@ -41,6 +41,18 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         return allScheduleWithRunningState(forState).asClosure(provideNewState)
     }
 
+    fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleSchema?, ScheduleSchema?>> {
+        return realmDatabase.query<ScheduleSchema>(
+            query = "observationId = $0",
+            queryArgs = arrayOf(observationId)
+        ).transform {
+            val start = it.sortedBy { it.start }.firstOrNull()
+            val end = it.sortedBy { it.end }.lastOrNull()
+
+            emit(Pair(start, end))
+        }
+    }
+
     fun setRunningStateFor(id: String, scheduleState: ScheduleState) {
         realmDatabase.realm?.writeBlocking {
             this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()?.let {

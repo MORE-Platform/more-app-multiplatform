@@ -12,10 +12,12 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
+import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
@@ -37,7 +39,6 @@ class MainViewModel(context: Context): ViewModel() {
     val studyDetailsViewModel = StudyDetailsViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()
@@ -54,5 +55,9 @@ class MainViewModel(context: Context): ViewModel() {
         return QuestionnaireViewModel(
             SimpleQuestionCoreViewModel(scheduleId, AndroidObservationFactory(context))
         )
+    }
+
+    fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
+       return ObservationDetailsViewModel(observationId)
     }
 }

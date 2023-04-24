@@ -21,6 +21,7 @@
 		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F0FA80729ED7A1300B8D80E /* TaskScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */; };
+		1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
 		1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA462993972E00938C1E /* ConsentListItem.swift */; };
@@ -113,6 +114,10 @@
 		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
 		B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169729CA08850035D830 /* CircleActivityIndicator.swift */; };
 		B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169929CA18320035D830 /* DatapointsCollection.swift */; };
+		B78B4A7C29F041F900A1BA58 /* ObservationDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78B4A7B29F041F900A1BA58 /* ObservationDetailsView.swift */; };
+		B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78B4A7D29F0420700A1BA58 /* ObservationDetailsViewModel.swift */; };
+		B78B4A8029F0445E00A1BA58 /* ObservationDetails.strings in Resources */ = {isa = PBXBuildFile; fileRef = B78B4A7F29F0445E00A1BA58 /* ObservationDetails.strings */; };
+		B78B4A8429F04BEA00A1BA58 /* ExpandableContentWithLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78B4A8329F04BEA00A1BA58 /* ExpandableContentWithLink.swift */; };
 		B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3629D312F200A1F547 /* ErrorLogin.swift */; };
 		B79DBA3929D3130600A1F547 /* ExpandableInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3829D3130600A1F547 /* ExpandableInput.swift */; };
 		B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */; };
@@ -180,6 +185,7 @@
 		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskScheduleService.swift; sourceTree = "<group>"; };
+		1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSBluetoothConnector.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
 		1F13BA462993972E00938C1E /* ConsentListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListItem.swift; sourceTree = "<group>"; };
@@ -272,6 +278,10 @@
 		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
 		B784169729CA08850035D830 /* CircleActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleActivityIndicator.swift; sourceTree = "<group>"; };
 		B784169929CA18320035D830 /* DatapointsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatapointsCollection.swift; sourceTree = "<group>"; };
+		B78B4A7B29F041F900A1BA58 /* ObservationDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailsView.swift; sourceTree = "<group>"; };
+		B78B4A7D29F0420700A1BA58 /* ObservationDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailsViewModel.swift; sourceTree = "<group>"; };
+		B78B4A7F29F0445E00A1BA58 /* ObservationDetails.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ObservationDetails.strings; sourceTree = "<group>"; };
+		B78B4A8329F04BEA00A1BA58 /* ExpandableContentWithLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContentWithLink.swift; sourceTree = "<group>"; };
 		B79DBA3229D2E7F000A1F547 /* NavigationLinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationLinkButton.swift; sourceTree = "<group>"; };
 		B79DBA3629D312F200A1F547 /* ErrorLogin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorLogin.swift; sourceTree = "<group>"; };
 		B79DBA3829D3130600A1F547 /* ExpandableInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableInput.swift; sourceTree = "<group>"; };
@@ -377,6 +387,7 @@
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
 				1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */,
 				1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */,
+				1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -460,6 +471,7 @@
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
 				07FD293B29D57F0300853108 /* ModuleListItem.swift */,
 				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
+				B78B4A8329F04BEA00A1BA58 /* ExpandableContentWithLink.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -498,6 +510,7 @@
 				B748DF3329CAFBA90026C348 /* TaskDetail.strings */,
 				B748DF3729CC4AD30026C348 /* ExpandableText.strings */,
 				B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */,
+				B78B4A7F29F0445E00A1BA58 /* ObservationDetails.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -542,6 +555,7 @@
 				07BC54AA29CB2F1D00459267 /* StudyDetails */,
 				B748DF4629D1C00D0026C348 /* QuestionObservation */,
 				ED7AE1E929C8A24000616B93 /* TaskDetails */,
+				B78B4A7929F0409400A1BA58 /* ObservationDetails */,
 				1F43998D29C100FC00687906 /* Info */,
 				1F43998A29C1005200687906 /* Notification */,
 				EDBB2B4629B8CFAE00CA973E /* Settings */,
@@ -640,6 +654,15 @@
 				B748DF4929D1C08D0026C348 /* QuestionObservationView.swift */,
 			);
 			path = QuestionObservation;
+			sourceTree = "<group>";
+		};
+		B78B4A7929F0409400A1BA58 /* ObservationDetails */ = {
+			isa = PBXGroup;
+			children = (
+				B78B4A7B29F041F900A1BA58 /* ObservationDetailsView.swift */,
+				B78B4A7D29F0420700A1BA58 /* ObservationDetailsViewModel.swift */,
+			);
+			path = ObservationDetails;
 			sourceTree = "<group>";
 		};
 		B79DBA4C29D3161600A1F547 /* LoginQRCode */ = {
@@ -827,6 +850,7 @@
 				1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */,
+				B78B4A8029F0445E00A1BA58 /* ObservationDetails.strings in Resources */,
 				1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */,
 				ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */,
 				B748DF3829CC4AD30026C348 /* ExpandableText.strings in Resources */,
@@ -971,18 +995,22 @@
 				EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */,
 				ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */,
 				B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */,
+				1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */,
 				07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */,
+				B78B4A7C29F041F900A1BA58 /* ObservationDetailsView.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
 				B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
+				B78B4A8429F04BEA00A1BA58 /* ExpandableContentWithLink.swift in Sources */,
 				B748DF4829D1C07F0026C348 /* QuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
+				B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
