@@ -10,10 +10,10 @@ import SwiftUI
 import shared
 
 struct RunningSchedules: View {
-    @EnvironmentObject var scheduleViewModel: ScheduleViewModel
+    @StateObject var scheduleViewModel: ScheduleViewModel
     var body: some View {
         MoreMainBackground {
-            ScheduleView(viewModel: scheduleViewModel, scheduleListType: ScheduleListType.running)
+            ScheduleView(viewModel: scheduleViewModel)
         } topBarContent: {
             EmptyView()
         }

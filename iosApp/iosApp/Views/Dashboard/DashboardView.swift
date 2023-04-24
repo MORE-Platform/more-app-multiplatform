@@ -30,7 +30,7 @@ struct DashboardView: View {
                     .environmentObject(dashboardViewModel)
                     .padding(.bottom)
                     if selection == 0 {
-                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel, scheduleListType: .all)
+                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
                     } else {
                         EmptyView()
                     }
@@ -48,7 +48,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(dashboardFilterViewModel: DashboardFilterViewModel(), scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel())))
+            DashboardView(dashboardViewModel: DashboardViewModel(dashboardFilterViewModel: DashboardFilterViewModel(), scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), scheduleListType: .all)))
         } topBarContent: {
             HStack {
                 Button {

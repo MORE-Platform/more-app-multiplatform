@@ -11,6 +11,7 @@ import shared
 class ScheduleViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
     let filterViewModel: DashboardFilterViewModel
+    let scheduleListType: ScheduleListType
     private let coreModel: CoreScheduleViewModel
     
     private var currentFilters: FilterModel? = nil
@@ -25,9 +26,10 @@ class ScheduleViewModel: ObservableObject {
     
     @Published var scheduleDates: [Int64] = []
     
-    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
+    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel, scheduleListType: ScheduleListType) {
+        self.scheduleListType = scheduleListType
         self.filterViewModel = dashboardFilterViewModel
-        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder)
+        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType)
         self.loadSchedules()
     }
     
@@ -58,53 +60,7 @@ class ScheduleViewModel: ObservableObject {
                     return result
                 }
                 self.originalSchedules = self.schedules
-                self.loadRunningSchedules()
-                self.loadCompletedSchedules()
             }
-        }
-    }
-    
-    func loadRunningSchedules() {
-        coreModel.getRunningSchedules { [weak self] scheduleMap in
-            if let self {
-                self.runningSchedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
-                    var result = partialResult
-                    result[Int64(truncating: pair.key)] = pair.value
-                    return result
-                }
-            }
-        }
-    }
-    
-    func loadCompletedSchedules() {
-        coreModel.getCompletedSchedules { [weak self] scheduleMap in
-            if let self {
-                self.completedSchedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
-                    var result = partialResult
-                    result[Int64(truncating: pair.key)] = pair.value
-                    return result
-                }
-            }
-        }
-    }
-    
-    func getSchedules(key: Int64, type: ScheduleListType) -> [ScheduleModel] {
-        if type == .running {
-            return runningSchedules[key] ?? []
-        } else if type == .completed {
-            return completedSchedules[key] ?? []
-        } else {
-            return schedules[key] ?? []
-        }
-    }
-    
-    func getScheduleDates(type: ScheduleListType) -> [Int64] {
-        if type == .running {
-            return Array(runningSchedules.keys.sorted())
-        } else if type == .completed {
-            return Array(completedSchedules.keys.sorted())
-        } else {
-            return scheduleDates
         }
     }
 }

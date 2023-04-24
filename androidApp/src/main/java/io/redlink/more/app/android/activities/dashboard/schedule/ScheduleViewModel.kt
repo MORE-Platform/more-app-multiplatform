@@ -21,16 +21,15 @@ import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.ZoneId
 
-class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder) : ViewModel() {
+class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
+                        private val scheduleListType: ScheduleListType) : ViewModel() {
 
-    val coreViewModel = CoreScheduleViewModel(dataRecorder)
+    val coreViewModel = CoreScheduleViewModel(dataRecorder, scheduleListType)
     private val coreFilterViewModel = coreFilterModel
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
-    val runningSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
-    val completedSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
     val filteredSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
@@ -55,8 +54,6 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
             coreFilterViewModel.currentFilter.collect{
                 withContext(Dispatchers.Main) {
                     updateFilteredData(schedules)
-                    updateFilteredData(runningSchedules)
-                    updateFilteredData(completedSchedules)
                 }
             }
         }
@@ -82,14 +79,8 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
         schedules.clear()
-        runningSchedules.clear()
-        completedSchedules.clear()
 
         schedules.putAll(data.toSortedMap())
-        runningSchedules.putAll(coreViewModel.runningScheduleModelList.value
-            .mapKeys { it.key.jvmLocalDate() }.toSortedMap())
-        completedSchedules.putAll(coreViewModel.completedScheduleModelList.value
-            .mapKeys { it.key.jvmLocalDate() }.toSortedMap())
     }
 
     private fun updateFilteredData(data: Map<LocalDate, List<ScheduleModel>>) {
@@ -101,12 +92,8 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
         coreViewModel.removeSchedule(scheduleId = scheduleId)
     }
 
-    fun getScheduleMap(type: ScheduleListType): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
-        return when (type) {
-            ScheduleListType.COMPLETED -> { completedSchedules }
-            ScheduleListType.RUNNING -> { runningSchedules }
-            else -> { if (hasNoFilters()) return schedules else filteredSchedules }
-        }
+    fun getScheduleMap(): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
+        return if (!hasNoFilters() && scheduleListType == ScheduleListType.ALL) return filteredSchedules else schedules
     }
 
     fun hasNoFilters() = coreFilterViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME) && coreFilterViewModel.hasAllTypes()

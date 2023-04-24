@@ -16,12 +16,10 @@ struct InfoList: View {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "gear", destination: {
-                RunningSchedules()
-                    .environmentObject(contentViewModel.scheduleViewModel)
+                RunningSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, dashboardFilterViewModel: contentViewModel.dashboardFilterViewModel, scheduleListType: .running))
             })
             InfoListItem(title: "Completed Observations", icon: "gear", destination: {
-                CompletedSchedules()
-                    .environmentObject(contentViewModel.scheduleViewModel)
+                CompletedSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, dashboardFilterViewModel: contentViewModel.dashboardFilterViewModel, scheduleListType: .completed))
             })
             InfoListItem(title: "Settings", icon: "gear", destination: {
                 SettingsView(viewModel: contentViewModel.settingsViewModel)

@@ -19,6 +19,7 @@ import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedu
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
+import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
@@ -28,6 +29,7 @@ import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,12 +161,18 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
-                RunningSchedulesView(viewModel = viewModel.scheduleViewModel, navController = navController)
+                RunningSchedulesView(viewModel = ScheduleViewModel(
+                    viewModel.dashboardFilterViewModel,
+                    viewModel.recorder,
+                    ScheduleListType.RUNNING), navController = navController)
             }
             composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
-                CompletedSchedulesView(viewModel = viewModel.scheduleViewModel, navController = navController)
+                CompletedSchedulesView(viewModel = ScheduleViewModel(
+                    viewModel.dashboardFilterViewModel,
+                    viewModel.recorder,
+                    ScheduleListType.COMPLETED), navController = navController)
             }
         }
     }

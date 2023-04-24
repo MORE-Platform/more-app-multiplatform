@@ -16,8 +16,8 @@ fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleVi
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        if (scheduleViewModel.getScheduleMap(type).isNotEmpty()) {
-            scheduleViewModel.getScheduleMap(type).toSortedMap().let { schedules ->
+        if (scheduleViewModel.getScheduleMap().isNotEmpty()) {
+            scheduleViewModel.getScheduleMap().toSortedMap().let { schedules ->
                 ScheduleList(schedules = schedules, navController = navController, viewModel = scheduleViewModel, showButton = showButton)
             }
         }

@@ -26,14 +26,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context): ViewModel() {
-    private val recorder = AndroidDataRecorder(context)
+    val recorder = AndroidDataRecorder(context)
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    private val coreScheduleViewModel = CoreScheduleViewModel(recorder)
     val dashboardFilterViewModel = CoreDashboardFilterViewModel()
-    val scheduleViewModel = ScheduleViewModel(dashboardFilterViewModel, recorder)
+    val scheduleViewModel = ScheduleViewModel(dashboardFilterViewModel, recorder, ScheduleListType.ALL)
     val dashboardViewModel = DashboardViewModel(context, dashboardFilterViewModel, scheduleViewModel)
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()

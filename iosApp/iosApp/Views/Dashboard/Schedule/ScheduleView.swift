@@ -11,15 +11,14 @@ import shared
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
-    var scheduleListType: ScheduleListType
     var body: some View {
         ScrollView(.vertical) {
             LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-                ForEach(viewModel.getScheduleDates(type: scheduleListType), id: \.self) { key in
-                    if let schedules = viewModel.getSchedules(key: key, type: scheduleListType) {
+                ForEach(viewModel.scheduleDates, id: \.self) { key in
+                    if let schedules = viewModel.schedules[key] {
                         if !schedules.isEmpty {
                             Section {
-                                ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: scheduleListType)
+                                ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType)
                             } header: {
                                 VStack(alignment: .leading) {
                                     BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
@@ -41,7 +40,7 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()), scheduleListType: .all)
+            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), scheduleListType: .all))
         } topBarContent: {
             EmptyView()
         }

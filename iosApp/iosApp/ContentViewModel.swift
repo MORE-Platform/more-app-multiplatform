@@ -22,6 +22,8 @@ class ContentViewModel: ObservableObject {
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
+    let observationFactory = IOSObservationFactory()
+    
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
         viewModel.delegate = self
@@ -38,8 +40,7 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-    lazy var scheduleViewModel: ScheduleViewModel = ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: dashboardFilterViewModel)
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel, scheduleViewModel: scheduleViewModel)
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel, scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, scheduleListType: .all))
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self
