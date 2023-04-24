@@ -13,7 +13,7 @@ struct InfoListItem<Destination: View>: View {
     var icon: String
     var destination: () -> Destination
     var body: some View {
-        VStack {
+        VStack(spacing: 14) {
             NavigationLink {
                 destination()
             } label: {
