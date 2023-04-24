@@ -1,13 +1,14 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
-import NotificationFilterViewModel
+
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsViewModel
-import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.NotificationViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.notification.NotificationViewModel
+import io.redlink.more.more_app_mutliplatform.android.activities.notification.filter.NotificationFilterViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.android.observations.AndroidDataRecorder

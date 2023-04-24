@@ -71,8 +71,9 @@ class FCMService : FirebaseMessagingService() {
                 Log.d(TAG, "Message Notification Body: ${it.body}")
                 val title = it.title ?: return
                 val body = it.body ?: return
+                val priority = it.notificationPriority
 
-                PushNotificationService.sendNotification(this, title, body)
+                PushNotificationService.sendNotification(this, title, body, priority = priority?.toLong(), shouldBeStored = false)
             }
         }
     }

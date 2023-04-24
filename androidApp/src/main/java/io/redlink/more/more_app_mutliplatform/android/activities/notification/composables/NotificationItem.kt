@@ -1,3 +1,5 @@
+package io.redlink.more.more_app_mutliplatform.android.activities.notification.composables
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -10,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.android.R
 import io.redlink.more.more_app_mutliplatform.android.extensions.Image
 import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
@@ -23,8 +24,7 @@ fun NotificationItem(
     titleColor: Color = MoreColors.Primary,
     body: String?,
     read: Boolean?,
-    priority: Long?,
-    modifier: Modifier = Modifier
+    priority: Long?
 ) {
     Column {
         Row(
@@ -36,7 +36,7 @@ fun NotificationItem(
             Row(
                 verticalAlignment = Alignment.Top
             ) {
-                if(priority?.toInt() == 2) {
+                if (priority?.toInt() == 2) {
                     Image(
                         id = R.drawable.warning_exclamation,
                         contentDescription = "More Logo",
@@ -44,7 +44,11 @@ fun NotificationItem(
                             .fillMaxWidth(0.06f)
                             .padding(top = 4.dp)
                     )
-                    Spacer(modifier = if (read != null && read) Modifier.width(5.dp) else Modifier.width(8.dp))
+                    Spacer(
+                        modifier = if (read != null && read) Modifier.width(5.dp) else Modifier.width(
+                            8.dp
+                        )
+                    )
                 }
                 Text(
                     text = title ?: "Notification",
@@ -55,12 +59,12 @@ fun NotificationItem(
                 )
             }
 
-            if(read != null && !read) {
-                    IconInline(
-                        icon = Icons.Filled.Circle,
-                        color = MoreColors.Important,
-                        contentDescription = getStringResource(id = R.string.more_notification_view_show_unread),
-                    )
+            if (read != null && !read) {
+                IconInline(
+                    icon = Icons.Filled.Circle,
+                    color = MoreColors.Important,
+                    contentDescription = getStringResource(id = R.string.more_notification_view_show_unread),
+                )
             }
         }
         Divider()

@@ -1,3 +1,5 @@
+package io.redlink.more.more_app_mutliplatform.android.activities.notification.filter
+
 import androidx.lifecycle.ViewModel
 
 data class NotificationFitler (

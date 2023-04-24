@@ -1,12 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.android.activities.main
 
-import NotificationFilterView
-import NotificationFilterViewModel
-import NotificationView
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -21,10 +18,11 @@ import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.Dashb
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.info.InfoView
+import io.redlink.more.more_app_mutliplatform.android.activities.notification.NotificationView
+import io.redlink.more.more_app_mutliplatform.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.more_app_mutliplatform.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.more_app_mutliplatform.android.activities.setting.SettingsView
-import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.NotificationViewModel
 import io.redlink.more.more_app_mutliplatform.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.more_app_mutliplatform.android.activities.tasks.TaskDetailsView
 import io.redlink.more.more_app_mutliplatform.android.shared_composables.MoreBackground
