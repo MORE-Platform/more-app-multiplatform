@@ -19,7 +19,7 @@ import io.redlink.more.app.android.R
 
 @Composable
 fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
-    PolarHeartRateObservation.scanForDevices()
+//    PolarHeartRateObservation.scanForDevices()
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = CenterHorizontally,

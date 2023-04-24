@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +51,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
-        onBackButtonClick = { navController.popBackStack() },
+        onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
         tabSelectionIndex = viewModel.tabIndex.value,
         onTabChange = {
@@ -140,9 +141,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
                 viewModel.showBackButton.value = true
-                val vm = BluetoothConnectionViewModel(LocalContext.current)
-                BluetoothConnectionView(viewModel = vm)
-                vm.viewDidAppear()
+                BluetoothConnectionView(navController, viewModel.bluetoothConnectionViewModel)
             }
         }
     }

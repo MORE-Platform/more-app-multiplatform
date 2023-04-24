@@ -7,7 +7,7 @@ interface BluetoothConnectorObserver {
 
     fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice)
 
-    fun discoveredBLEUpdated(discoveredDevices: Set<BluetoothDevice>)
+    fun discoveredDevice(device: BluetoothDevice)
 
-    fun connectedBLEUpdated(connectedDevices: Set<BluetoothDevice>)
+    fun removeDiscoveredDevice(device: BluetoothDevice)
 }

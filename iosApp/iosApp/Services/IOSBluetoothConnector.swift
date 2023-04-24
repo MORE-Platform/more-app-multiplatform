@@ -19,13 +19,17 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
+    var specificBluetoothConnectors: [String : BluetoothConnector] = [:]
+    
+    
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
     private var connectedDevices: BluetoothDeviceList = [:]
+    private var scanning = false
     
     var observer: BluetoothConnectorObserver?
     var delegate: BLEConnectorDelegate?
-
+    
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -39,13 +43,18 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
             return KotlinError(message: "Could not find device")
         }
     }
-
+    
     func disconnect(device: BluetoothDevice) {
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.cancelPeripheralConnection(cbPeripheral)
         }
     }
-
+    
+    func isScanning() -> Bool {
+        scanning
+    }
+    
+    
     func scan() {
         switch centralManager.state {
         case .unknown:
@@ -65,9 +74,15 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
             print("Bluetooth state unknown default")
         }
     }
-
+    
     func stopScanning() {
         centralManager.stopScan()
+    }
+    
+    
+    
+    func close() {
+        stopScanning()
     }
     
     deinit {
@@ -116,7 +131,7 @@ extension IOSBluetoothConnector: CBPeripheralDelegate {
 
 extension CBPeripheral {
     func toBluetoothDevice() -> BluetoothDevice {
-        BluetoothDevice(
+        BluetoothDevice.Companion().create(
             deviceId: self.identifier.uuidString,
             deviceName: self.name ?? "Unknown",
             address: self.identifier.uuidString,

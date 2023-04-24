@@ -4,11 +4,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.extensions.getStringResource
 
 @Composable
 fun InfoView(navController: NavController) {
@@ -37,6 +41,14 @@ fun InfoView(navController: NavController) {
                 contentDescription = "Open Settings",
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
+                }
+            )
+            InfoItem(
+                title = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
+                imageVector = Icons.Outlined.Devices,
+                contentDescription = getStringResource(id = R.string.more_ble_icon_description),
+                onClick = {
+                    navController.navigate(NavigationScreen.BLUETOOTH_CONNECTION.route)
                 }
             )
             InfoItem(
