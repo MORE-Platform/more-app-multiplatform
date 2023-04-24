@@ -7,19 +7,24 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.shared_composables.ScheduleList
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
 @Composable
-fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleViewModel, type: ScheduleListType, showButton: Boolean) {
+fun ScheduleListView(
+    navController: NavController,
+    scheduleViewModel: ScheduleViewModel,
+    showButton: Boolean
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        if (scheduleViewModel.getScheduleMap().isNotEmpty()) {
-            scheduleViewModel.getScheduleMap().toSortedMap().let { schedules ->
-                ScheduleList(schedules = schedules, navController = navController, viewModel = scheduleViewModel, showButton = showButton)
-            }
+        if (scheduleViewModel.schedules.isNotEmpty()) {
+            ScheduleList(
+                navController = navController,
+                viewModel = scheduleViewModel,
+                showButton = showButton
+            )
         }
     }
 }

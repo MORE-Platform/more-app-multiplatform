@@ -48,7 +48,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(dashboardFilterViewModel: DashboardFilterViewModel(), scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), scheduleListType: .all)))
+            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), scheduleListType: .all)))
         } topBarContent: {
             HStack {
                 Button {

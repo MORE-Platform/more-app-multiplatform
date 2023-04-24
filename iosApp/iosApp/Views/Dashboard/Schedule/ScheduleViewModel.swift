@@ -25,21 +25,8 @@ class ScheduleViewModel: ObservableObject {
     init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel, scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
         self.filterViewModel = dashboardFilterViewModel
-        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType)
+        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: dashboardFilterViewModel.coreModel)
         self.loadSchedules()
-
-    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
-        filterViewModel = dashboardFilterViewModel
-        coreModel = CoreScheduleViewModel(dataRecorder: recorder, coreFilterModel: dashboardFilterViewModel.coreModel)
-        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
-            if let self {
-                self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
-                    var result = partialResult
-                    result[Int64(truncating: pair.key)] = pair.value
-                    return result
-                }
-            }
-        }
     }
 
     func start(scheduleId: String) {
@@ -62,7 +49,6 @@ class ScheduleViewModel: ObservableObject {
                     result[Int64(truncating: pair.key)] = pair.value
                     return result
                 }
-                self.originalSchedules = self.schedules
             }
         }
     }

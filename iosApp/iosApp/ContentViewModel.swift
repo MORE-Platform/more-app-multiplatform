@@ -40,7 +40,7 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel, scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, scheduleListType: .all))
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, scheduleListType: .all))
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self

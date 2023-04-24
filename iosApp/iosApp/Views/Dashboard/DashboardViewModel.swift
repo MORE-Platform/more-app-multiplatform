@@ -16,7 +16,7 @@ class DashboardViewModel: ObservableObject {
     @Published var study: StudySchema? = StudySchema()
     @Published var filterText: String = ""
     
-    init(dashboardFilterViewModel: DashboardFilterViewModel, scheduleViewModel: ScheduleViewModel) {
+    init(scheduleViewModel: ScheduleViewModel) {
         self.scheduleViewModel = scheduleViewModel
         coreModel.onLoadStudy { study in
             if let study {

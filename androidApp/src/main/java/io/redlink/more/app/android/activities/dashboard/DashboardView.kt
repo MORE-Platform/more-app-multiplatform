@@ -14,7 +14,6 @@ import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleLi
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.R
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
 @Composable
@@ -44,7 +43,7 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
                     Text(text = getStringResource(id = R.string.more_dashboard_study_not_active))
                 }
             } else {
-                ScheduleListView(navController, scheduleViewModel = viewModel.scheduleViewModel, type = ScheduleListType.ALL, showButton = true)
+                ScheduleListView(navController, scheduleViewModel = viewModel.scheduleViewModel, showButton = true)
             }
         }
     }

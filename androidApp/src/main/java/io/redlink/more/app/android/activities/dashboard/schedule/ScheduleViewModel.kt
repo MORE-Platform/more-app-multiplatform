@@ -10,7 +10,6 @@ import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
-import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
@@ -24,8 +23,7 @@ import java.time.LocalDate
 class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
                         private val scheduleListType: ScheduleListType) : ViewModel() {
 
-    val coreViewModel = CoreScheduleViewModel(dataRecorder, scheduleListType)
-    private val coreFilterViewModel = coreFilterModel
+    val coreViewModel = CoreScheduleViewModel(dataRecorder, coreFilterModel = coreFilterModel, scheduleListType = scheduleListType)
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
@@ -72,30 +70,5 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
         schedules.clear()
         schedules.putAll(data.toSortedMap())
-    }
-
-    private fun updateFilteredData(data: Map<LocalDate, List<ScheduleModel>>) {
-        filteredSchedules.clear()
-        filteredSchedules.putAll(applyFilter(schedules))
-    }
-
-    private fun removeSchedule(scheduleId: String) {
-        coreViewModel.removeSchedule(scheduleId = scheduleId)
-    }
-
-    fun getScheduleMap(): SnapshotStateMap<LocalDate, List<ScheduleModel>> {
-        return if (!hasNoFilters() && scheduleListType == ScheduleListType.ALL) return filteredSchedules else schedules
-    }
-
-    fun hasNoFilters() = coreFilterViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME) && coreFilterViewModel.hasAllTypes()
-
-    private fun applyFilter(scheduleModelList: Map<LocalDate, List<ScheduleModel>>): Map<LocalDate, List<ScheduleModel>> {
-        val scheduleModelListAsLong = scheduleModelList.mapKeys {
-            it.key.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        }
-
-        return coreFilterViewModel.applyFilter(scheduleModelListAsLong).mapKeys {
-            it.key.jvmLocalDate()
-        }
     }
 }
