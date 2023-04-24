@@ -13,44 +13,47 @@ class ScheduleViewModel: ObservableObject {
     let filterViewModel: DashboardFilterViewModel
     let scheduleListType: ScheduleListType
     private let coreModel: CoreScheduleViewModel
-    
-    private var currentFilters: FilterModel? = nil
-    private var originalSchedules: [Int64: [ScheduleModel]] = [:]
-    @Published var runningSchedules: [Int64: [ScheduleModel]] = [:]
-    @Published var completedSchedules: [Int64: [ScheduleModel]] = [:]
+
     @Published var schedules: [Int64: [ScheduleModel]] = [:] {
         didSet {
             scheduleDates = Array(schedules.keys.sorted())
         }
     }
-    
+
     @Published var scheduleDates: [Int64] = []
-    
+
     init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel, scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
         self.filterViewModel = dashboardFilterViewModel
         self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType)
         self.loadSchedules()
+
+    init(observationFactory: IOSObservationFactory, dashboardFilterViewModel: DashboardFilterViewModel) {
+        filterViewModel = dashboardFilterViewModel
+        coreModel = CoreScheduleViewModel(dataRecorder: recorder, coreFilterModel: dashboardFilterViewModel.coreModel)
+        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
+            if let self {
+                self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
+                    var result = partialResult
+                    result[Int64(truncating: pair.key)] = pair.value
+                    return result
+                }
+            }
+        }
     }
-    
+
     func start(scheduleId: String) {
         coreModel.start(scheduleId: scheduleId)
     }
-    
+
     func pause(scheduleId: String) {
         coreModel.pause(scheduleId: scheduleId)
     }
-    
+
     func stop(scheduleId: String) {
         coreModel.stop(scheduleId: scheduleId)
     }
-    
-    func applyFilters() {
-        filterViewModel.setDateFilterValue()
-        filterViewModel.setObservationTypeFilters()
-        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).convertToInt64()
-    }
-    
+
     func loadSchedules() {
         coreModel.onScheduleModelListChange { [weak self] scheduleMap in
             if let self {

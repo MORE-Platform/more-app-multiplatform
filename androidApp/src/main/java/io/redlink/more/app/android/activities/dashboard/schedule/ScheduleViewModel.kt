@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.extensions.jvmLocalDate
@@ -14,12 +13,13 @@ import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.ZoneId
 
 class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
                         private val scheduleListType: ScheduleListType) : ViewModel() {
@@ -30,7 +30,6 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
-    val filteredSchedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
 
@@ -47,13 +46,6 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
-                }
-            }
-        }
-        viewModelScope.launch (Dispatchers.IO) {
-            coreFilterViewModel.currentFilter.collect{
-                withContext(Dispatchers.Main) {
-                    updateFilteredData(schedules)
                 }
             }
         }
@@ -79,7 +71,6 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
         schedules.clear()
-
         schedules.putAll(data.toSortedMap())
     }
 
