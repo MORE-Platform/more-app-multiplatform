@@ -18,7 +18,6 @@ class InfoViewModel: ObservableObject {
     var contactPerson: String = "Dr. Markus Mustermann"
     var contactEmail: String? = "markus.mustermann@bolzmann.at"
     var contactTel: String? = nil
-    var info: String = "Fell free to contact u when you encounter problems."
     
     init() {
         studyCoreModel.onLoadStudyDetails() {

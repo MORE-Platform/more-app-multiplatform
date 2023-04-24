@@ -12,6 +12,7 @@ struct InfoView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
     @StateObject var viewModel: InfoViewModel
     private let navigationStrings = "Navigation"
+    private let infoStrings = "Info"
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -34,7 +35,7 @@ struct InfoView: View {
                         studyTitle: .constant(viewModel.studyTitle  ?? ""),
                         institute: .constant(viewModel.institute),
                         contactPerson: .constant(viewModel.contactPerson),
-                        info: .constant(viewModel.info),
+                        info: .constant(String.localizedString(forKey: "info_disclaimer", inTable: infoStrings, withComment: "Contact us.")),
                         contactEmail: viewModel.contactEmail,
                         contactTel: viewModel.contactTel
                     )
