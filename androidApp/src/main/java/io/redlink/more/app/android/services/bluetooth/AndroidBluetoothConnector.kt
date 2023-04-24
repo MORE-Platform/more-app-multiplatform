@@ -20,7 +20,7 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnec
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothDevice as AndroidBluetoothDevice
 
-class AndroidBluetoothConnector(private val context: Context): BluetoothConnector, BluetoothConnectorObserver {
+class AndroidBluetoothConnector(private val context: Context): BluetoothConnector {
     override val specificBluetoothConnectors: Map<String, BluetoothConnector> = mapOf("polar" to PolarConnector(context))
     private val bluetoothAdapter: BluetoothAdapter? = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     private var bluetoothLeScanner: BluetoothLeScanner? = null

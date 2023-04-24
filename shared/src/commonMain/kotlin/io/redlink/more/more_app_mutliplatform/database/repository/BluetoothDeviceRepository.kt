@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -58,6 +59,8 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     fun getDevices() = realmDatabase.query<BluetoothDevice>()
 
     fun getConnectedDevices(connected: Boolean = true) = realmDatabase.query<BluetoothDevice>(query = "connected = $0", queryArgs = arrayOf(connected))
+
+    fun connectedDevicesChange(connected: Boolean, provideNewState: (List<BluetoothDevice>) -> Unit) = getConnectedDevices(connected).asClosure(provideNewState)
 
     fun removeDevices(deviceIds: Set<BluetoothDevice>) {
         realmDatabase.deleteItems(deviceIds)

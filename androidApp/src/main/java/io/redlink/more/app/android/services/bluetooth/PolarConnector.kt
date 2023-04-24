@@ -16,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListener {
@@ -109,6 +110,26 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
     override fun close() {
         observer = null
         stopScanning()
+    }
+
+    override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didConnectToDevice(bluetoothDevice)
+    }
+
+    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didDisconnectFromDevice(bluetoothDevice)
+    }
+
+    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didFailToConnectToDevice(bluetoothDevice)
+    }
+
+    override fun discoveredDevice(device: BluetoothDevice) {
+        observer?.discoveredDevice(device)
+    }
+
+    override fun removeDiscoveredDevice(device: BluetoothDevice) {
+        observer?.removeDiscoveredDevice(device)
     }
 
 }

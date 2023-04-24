@@ -5,6 +5,7 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.appendIfNotContains
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.remove
 import io.redlink.more.more_app_mutliplatform.extensions.removeWhere
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
@@ -122,6 +123,12 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         discoveredDevices.removeWhere { it.address == device.address }
     }
+
+    fun discoveredDevicesListChanges(providedState: (Set<BluetoothDevice>) -> Unit) = discoveredDevices.asClosure(providedState)
+
+    fun connectedDevicesListChanges(providedState: (Set<BluetoothDevice>) -> Unit) = connectedDevices.asClosure(providedState)
+
+    fun scanningIsChanging(providedState: (Boolean) -> Unit) = isScanning.asClosure(providedState)
 
     override fun close() {
         scanJob?.cancel()

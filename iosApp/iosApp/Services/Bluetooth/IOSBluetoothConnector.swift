@@ -19,8 +19,7 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
-    var specificBluetoothConnectors: [String : BluetoothConnector] = [:]
-    
+    internal let specificBluetoothConnectors: [String : BluetoothConnector] = ["polar": PolarConnector()]
     
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
@@ -33,9 +32,18 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        specificBluetoothConnectors.values.forEach{ $0.observer = self }
     }
 
     func connect(device: BluetoothDevice) -> KotlinError? {
+        let (hasConnected, error) = connectToSpecificDevice(device: device)
+        if (hasConnected) {
+            guard let error else {
+                return nil
+            }
+            print(error)
+            return error
+        }
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.connect(cbPeripheral)
             return nil
@@ -56,30 +64,67 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     
     
     func scan() {
-        switch centralManager.state {
-        case .unknown:
-            print("Bluetooth state unknown")
-        case .resetting:
-            print("Bluetooth state resetting")
-        case .unsupported:
-            print("Bluetooth state unsupported")
-        case .unauthorized:
-            print("Bluetooth state unauthorized")
-        case .poweredOff:
-            print("Bluetooth state powered off")
-        case .poweredOn:
-            print("Bluetooth state powered on")
-            centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
-        @unknown default:
-            print("Bluetooth state unknown default")
+        if !scanning {
+            switch centralManager.state {
+            case .unknown:
+                print("Bluetooth state unknown")
+            case .resetting:
+                print("Bluetooth state resetting")
+            case .unsupported:
+                print("Bluetooth state unsupported")
+            case .unauthorized:
+                print("Bluetooth state unauthorized")
+            case .poweredOff:
+                print("Bluetooth state powered off")
+            case .poweredOn:
+                print("Bluetooth state powered on")
+                scanning = true
+                centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
+            @unknown default:
+                print("Bluetooth state unknown default")
+            }
         }
     }
     
     func stopScanning() {
+        scanning = false
         centralManager.stopScan()
     }
     
+    func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didConnectToDevice(bluetoothDevice: bluetoothDevice)
+    }
     
+    func didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)
+    }
+    
+    func didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
+    }
+    
+    func discoveredDevice(device: BluetoothDevice) {
+        observer?.discoveredDevice(device: device)
+    }
+    
+    func removeDiscoveredDevice(device: BluetoothDevice) {
+        observer?.removeDiscoveredDevice(device: device)
+    }
+    
+    private func connectToSpecificDevice(device: BluetoothDevice) -> (Bool, KotlinError?) {
+        if let connector = specificBluetoothConnectors.first(where: {device.deviceName?.lowercased().contains($0.key.lowercased()) ?? false}) {
+            return (true, connector.value.connect(device: device))
+        }
+        return (false, nil)
+    }
+    
+    private func disconnectFromSpecificDevice(device: BluetoothDevice) -> Bool {
+        if let connector = specificBluetoothConnectors.first(where: {device.deviceName?.lowercased().contains($0.key.lowercased()) ?? false}) {
+            connector.value.disconnect(device: device)
+            return true
+        }
+        return false
+    }
     
     func close() {
         stopScanning()
@@ -89,6 +134,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         stopScanning()
         observer = nil
         delegate = nil
+        self.specificBluetoothConnectors.values.forEach{ $0.observer = nil }
     }
 }
 
@@ -108,7 +154,7 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
     }
     
     private func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        self.observer?.didConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
+        self.observer?.didFailToConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
     
     internal func centralManagerDidUpdateState(_ central: CBCentralManager) {
