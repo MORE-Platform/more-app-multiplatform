@@ -8,5 +8,5 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 @Composable
 fun CompletedSchedulesView(viewModel: ScheduleViewModel, navController: NavController) {
-    ScheduleListView(navController = navController, scheduleViewModel = viewModel, type = ScheduleListType.COMPLETED)
+    ScheduleListView(navController = navController, scheduleViewModel = viewModel, type = ScheduleListType.COMPLETED, showButton = false)
 }

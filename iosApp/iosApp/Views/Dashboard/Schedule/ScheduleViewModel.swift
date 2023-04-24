@@ -46,7 +46,7 @@ class ScheduleViewModel: ObservableObject {
     func applyFilters() {
         filterViewModel.setDateFilterValue()
         filterViewModel.setObservationTypeFilters()
-        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).converttoInt64()
+        schedules = filterViewModel.coreModel.applyFilter(scheduleModelList: originalSchedules.convertToKotlinLong()).convertToInt64()
     }
     
     func loadSchedules() {
@@ -89,18 +89,28 @@ class ScheduleViewModel: ObservableObject {
     }
     
     func getSchedules(key: Int64, type: ScheduleListType) -> [ScheduleModel] {
-        if type == ScheduleListType.running {
+        if type == .running {
             return runningSchedules[key] ?? []
-        } else if type == ScheduleListType.completed {
+        } else if type == .completed {
             return completedSchedules[key] ?? []
         } else {
             return schedules[key] ?? []
         }
     }
+    
+    func getScheduleDates(type: ScheduleListType) -> [Int64] {
+        if type == .running {
+            return Array(runningSchedules.keys.sorted())
+        } else if type == .completed {
+            return Array(completedSchedules.keys.sorted())
+        } else {
+            return scheduleDates
+        }
+    }
 }
 
 extension Dictionary<KotlinLong, [ScheduleModel]> {
-    func converttoInt64() -> [Int64: [ScheduleModel]] {
+    func convertToInt64() -> [Int64: [ScheduleModel]] {
         reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
             var result = partialResult
             result[Int64(truncating: pair.key)] = pair.value

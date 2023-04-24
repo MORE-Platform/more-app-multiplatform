@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -9,7 +8,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
@@ -30,9 +28,9 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow( emptyMap())
 
-    val runningScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> =
+    val runningScheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow(mutableMapOf())
-    val completedScheduleModelList: MutableStateFlow<MutableMap<Long, List<ScheduleModel>>> =
+    val completedScheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow(mutableMapOf())
 
     init {
@@ -87,7 +85,7 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
     }
 
     private fun createMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
-        val map =  observationList
+        val map = observationList
             .asSequence()
             .map { ScheduleModel.createModelsFrom(it.key, it.value) }
             .flatten()
@@ -106,26 +104,30 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             }
             .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
             .filterValues { it.isNotEmpty() }
-        filterRunningAndCompleted(map)
+        runningScheduleModelList.value = filterRunning(map)
+        completedScheduleModelList.value = filterCompleted(observationList)
         return map
     }
 
-    private fun filterRunningAndCompleted(map: Map<Long, List<ScheduleModel>>) {
-        runningScheduleModelList.value.clear()
-        completedScheduleModelList.value.clear()
-        map.forEach { (key, values) ->
-            val runningSchedules = values.filter { it.scheduleState == ScheduleState.RUNNING }
-            val completedSchedules = values.filter { it.scheduleState == ScheduleState.DONE || it.scheduleState == ScheduleState.ENDED }
-            if (runningSchedules.isNotEmpty()) {
-                runningScheduleModelList.value[key] = runningSchedules
-            }
-            if (completedSchedules.isNotEmpty()) {
-                completedScheduleModelList.value[key] = completedSchedules
-            }
-        }
-        Napier.i { "Running schedules: ${runningScheduleModelList.value}" }
+    private fun filterCompleted(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
+        val map = observationList
+            .flatMap { ScheduleModel.createModelsFrom(it.key, it.value) }
+            .filter { scheduleModel -> scheduleModel.scheduleState.completed() }
+            .sortedBy { it.start }
+            .groupBy {
+                it.start.toLocalDate().time()
+            }.filterValues { it.isNotEmpty() }
+        return map
     }
 
+    private fun filterRunning(map: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
+        val filteredMap = map.mapValues {
+            it.value.filter { scheduleModel ->
+                scheduleModel.scheduleState == ScheduleState.RUNNING
+            }
+        }.filterValues { it.isNotEmpty() }
+        return filteredMap
+    }
     fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
         return scheduleModelList.asClosure(provideNewState)
     }

@@ -15,11 +15,11 @@ struct ScheduleView: View {
     var body: some View {
         ScrollView(.vertical) {
             LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-                ForEach(viewModel.scheduleDates, id: \.self) { key in
+                ForEach(viewModel.getScheduleDates(type: scheduleListType), id: \.self) { key in
                     if let schedules = viewModel.getSchedules(key: key, type: scheduleListType) {
                         if !schedules.isEmpty {
                             Section {
-                                ScheduleList(viewModel: viewModel, scheduleModels: schedules)
+                                ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: scheduleListType)
                             } header: {
                                 VStack(alignment: .leading) {
                                     BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)

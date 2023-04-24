@@ -15,13 +15,12 @@ import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListItem
 import io.redlink.more.app.android.extensions.formattedString
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import java.time.LocalDate
 import java.util.*
 
 @Composable
-fun ScheduleList(schedules: SortedMap<LocalDate, List<ScheduleModel>>, viewModel: ScheduleViewModel, navController: NavController) {
+fun ScheduleList(schedules: SortedMap<LocalDate, List<ScheduleModel>>, viewModel: ScheduleViewModel, navController: NavController, showButton: Boolean) {
     LazyColumn {
         schedules.keys.forEach { date ->
             item {
@@ -39,7 +38,7 @@ fun ScheduleList(schedules: SortedMap<LocalDate, List<ScheduleModel>>, viewModel
                             navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/observationTitle=${item.observationTitle}&scheduleId=${item.scheduleId}")
                         }
                 ) {
-                    ScheduleListItem(navController = navController, scheduleModel = item, viewModel)
+                    ScheduleListItem(navController = navController, scheduleModel = item, viewModel, showButton = showButton)
                 }
             }
             item {

@@ -44,7 +44,7 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
                     Text(text = getStringResource(id = R.string.more_dashboard_study_not_active))
                 }
             } else {
-                ScheduleListView(navController, scheduleViewModel = viewModel.scheduleViewModel, type = ScheduleListType.ALL)
+                ScheduleListView(navController, scheduleViewModel = viewModel.scheduleViewModel, type = ScheduleListType.ALL, showButton = true)
             }
         }
     }
