@@ -1,6 +1,8 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -67,7 +69,8 @@ fun ObservationDetailsView(
                 title = getStringResource(id = R.string.participant_information),
                 description = viewModel.observationDetailsModel.value.participantInformation,
                 hasCheck = false,
-                hasPreview = false
+                hasPreview = false,
+                isOpen = true
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
