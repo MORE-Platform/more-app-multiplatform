@@ -19,6 +19,7 @@ import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ class MainViewModel(context: Context): ViewModel() {
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
 
-    val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
+    private val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
     val notificationViewModel = NotificationViewModel()
     val notificationFilterViewModel = NotificationFilterViewModel(coreNotificationFilterViewModel)
 

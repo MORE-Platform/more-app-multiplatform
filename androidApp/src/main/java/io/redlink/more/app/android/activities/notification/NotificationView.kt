@@ -15,9 +15,6 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
-    val context = LocalContext.current
-
-
     LazyColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,

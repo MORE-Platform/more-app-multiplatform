@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,7 +21,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 @Composable
 fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
 
-    val notificationFilterList = viewModel.notificationFilterMap.toList()
+    val notificationFilterList = viewModel.notificationFilterList
 
     val onChangeFilterState: (String?) -> Unit = {
         viewModel.processFilter(it)
@@ -39,9 +40,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if(filter.second?.let { viewModel.currentFilter.collectAsState().value.contains(it) }
-                        ?: viewModel.currentFilter.collectAsState().value.isEmpty()
-                )
+                if(filter.let { viewModel.currentFilter.collectAsState().value.contains(filter.second) })
                     IconInline(
                         icon = Icons.Rounded.Done,
                         color = MoreColors.Approved,
