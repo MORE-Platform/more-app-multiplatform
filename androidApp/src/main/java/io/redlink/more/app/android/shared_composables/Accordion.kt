@@ -35,10 +35,11 @@ fun Accordion(
     description: String,
     hasCheck: Boolean = false,
     hasSmallTitle: Boolean = false,
-    hasPreview: Boolean = true
+    hasPreview: Boolean = true,
+    isOpen: Boolean = false
 ) {
     val open = remember {
-        mutableStateOf(false)
+        mutableStateOf(isOpen)
     }
 
     val angle: Float by animateFloatAsState(
@@ -106,8 +107,7 @@ fun Accordion(
 
             if(hasPreview) {
                 Text(
-                    text = description
-                        ?: "",
+                    text = description,
                     color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
                     maxLines = if(open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
@@ -116,8 +116,7 @@ fun Accordion(
                 Spacer(Modifier.height(12.dp))
             } else if(open.value) {
                 Text(
-                    text = description
-                        ?: stringResource(id = R.string.more_authorization_description),
+                    text = description,
                     color = MoreColors.Primary,
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,

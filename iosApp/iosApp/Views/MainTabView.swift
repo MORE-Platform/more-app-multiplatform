@@ -22,7 +22,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
                     }
-                InfoView()
+                InfoView(viewModel: InfoViewModel())
                     .tabItem {
                         Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
                     }
@@ -34,6 +34,7 @@ struct MainTabView: View {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
             UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
+            contentViewModel.updateSchedules()
         }
     }
 }

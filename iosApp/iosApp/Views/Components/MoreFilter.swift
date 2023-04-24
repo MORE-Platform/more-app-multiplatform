@@ -1,3 +1,4 @@
+
 //
 //  MoreFilter.swift
 //  iosApp
@@ -11,10 +12,10 @@ import SwiftUI
 struct MoreFilter: View {
     @Binding var text: String
     var image = Image(systemName: "slider.horizontal.3")
-    
+
     var body: some View {
         Button {
-            
+
         } label: {
             HStack {
                 BasicText(text: $text)
