@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.notification.filter
+package io.redlink.more.app.android.activities.notification.filter
 
 import androidx.lifecycle.ViewModel
 

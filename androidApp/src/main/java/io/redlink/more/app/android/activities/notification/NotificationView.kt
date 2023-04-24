@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.notification
+package io.redlink.more.app.android.activities.notification
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,8 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.more_app_mutliplatform.android.activities.notification.composables.NotificationFilterViewButton
-import io.redlink.more.more_app_mutliplatform.android.activities.notification.composables.NotificationItem
+import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
+import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 
 
 @Composable

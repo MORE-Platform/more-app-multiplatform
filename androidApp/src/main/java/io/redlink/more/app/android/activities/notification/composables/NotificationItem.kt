@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.notification.composables
+package io.redlink.more.app.android.activities.notification.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
@@ -12,11 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.more.more_app_mutliplatform.android.R
-import io.redlink.more.more_app_mutliplatform.android.extensions.Image
-import io.redlink.more.more_app_mutliplatform.android.extensions.getStringResource
-import io.redlink.more.more_app_mutliplatform.android.shared_composables.IconInline
-import io.redlink.more.more_app_mutliplatform.android.ui.theme.MoreColors
+import io.redlink.more.app.android.extensions.Image
+import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.IconInline
 
 @Composable
 fun NotificationItem(

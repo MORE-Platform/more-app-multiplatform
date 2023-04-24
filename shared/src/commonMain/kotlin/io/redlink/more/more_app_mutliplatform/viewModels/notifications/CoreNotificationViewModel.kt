@@ -10,7 +10,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel) {
+class CoreNotificationViewModel() {
+    private val coreFilterModel: CoreNotificationFilterViewModel = CoreNotificationFilterViewModel()
     private val notificationRepository: NotificationRepository = NotificationRepository()
     private val scope = CoroutineScope(Dispatchers.Default + Job())
     private val originalNotificationList = mutableListOf<NotificationSchema?>()

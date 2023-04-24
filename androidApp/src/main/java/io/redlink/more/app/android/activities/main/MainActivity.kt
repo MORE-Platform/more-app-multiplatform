@@ -18,13 +18,12 @@ import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
-import io.redlink.more.more_app_mutliplatform.android.activities.notification.NotificationView
-import io.redlink.more.more_app_mutliplatform.android.activities.notification.filter.NotificationFilterView
+import io.redlink.more.app.android.activities.notification.NotificationView
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
-import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
 
@@ -156,7 +155,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 QuestionnaireResponseView(navController)
             }
             composable(NavigationScreen.NOTIFICATION_FILTER.route) {
-                title = NavigationScreen.NOTIFICATION_FILTER.stringRes()
+                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
                 NotificationFilterView(viewModel = viewModel.notificationFilterViewModel, notificationViewModel = viewModel.notificationViewModel)
             }

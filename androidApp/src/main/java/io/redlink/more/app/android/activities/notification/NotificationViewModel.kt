@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.android.activities.notification
+package io.redlink.more.app.android.activities.notification
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
