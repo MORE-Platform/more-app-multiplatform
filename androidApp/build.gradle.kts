@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    namespace = "io.redlink.more.more_app_mutliplatform.android"
+    namespace = "io.redlink.more.app.android"
     compileSdk = 33
     defaultConfig {
-        applicationId = "io.redlink.more.more_app_mutliplatform.android"
+        applicationId = "io.redlink.more.app.android"
         minSdk = 29
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0-rc1"
     }
     buildFeatures {
         compose = true

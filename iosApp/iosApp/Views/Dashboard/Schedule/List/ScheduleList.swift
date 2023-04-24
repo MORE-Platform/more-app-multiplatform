@@ -16,12 +16,7 @@ struct ScheduleList: View {
     var body: some View {
         ForEach(scheduleModels, id: \.scheduleId) { schedule in
             VStack {
-                if schedule.observationType == "question-observation" {
-                    QuestionListItem(viewModel: viewModel, schedule: schedule)
-                } else {
-                    ScheduleListItem(viewModel: viewModel, scheduleModel: schedule)
-                }
-                
+                ScheduleListItem(viewModel: viewModel, scheduleModel: schedule)
                 if schedule != scheduleModels.last {
                     Divider()
                 }
@@ -32,7 +27,7 @@ struct ScheduleList: View {
 
 struct ScheduleList_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleList(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory()), scheduleModels: [
+        ScheduleList(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel()), scheduleModels: [
             ScheduleModel(scheduleId: "id-1", observationId: "observation-id-1", observationType: "type-1", observationTitle: "title-1", done: false, start: 4000000, end: 4500000, scheduleState: .active),
             ScheduleModel(scheduleId: "id-2", observationId: "observation-id-2", observationType: "type-2", observationTitle: "title-2", done: false, start: 4000000, end: 4500000, scheduleState: .active),
         ])
