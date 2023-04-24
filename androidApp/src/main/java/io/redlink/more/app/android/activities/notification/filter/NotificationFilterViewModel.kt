@@ -1,51 +1,40 @@
 import androidx.lifecycle.ViewModel
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.getString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
-data class NotificationFitler (
-    val title: String,
-    val value: String,
-    var selected: Boolean
-)
+class NotificationFilterViewModel(coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
+    private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-class NotificationFilterViewModel(): ViewModel() {
-    //val coreNotificationViewModel = coreNotificationViewModel
+    val currentFilter = MutableStateFlow(NotificationFilterModel())
 
-    var notificationFilterList: List<NotificationFitler> = listOf(
-        NotificationFitler(
-            title = "All Notifications",
-            value = "",
-            selected = true
+    var notificationFilterMap = mapOf(
+        Pair(
+            getString(R.string.more_all_notification_filter),
+            null
         ),
-        NotificationFitler(
-            title = "Show unread messages",
-            value = "unread",
-            selected = false
+        Pair(
+            getString(R.string.more_unread_notifications),
+            "unread"
         ),
-        NotificationFitler(
-            title = "Show important messages",
-            value = "important",
-            selected = false
+        Pair(
+            getString(R.string.more_important_notifications),
+            "important"
         )
     )
-
-    /*init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.studyModel.collect{
-                withContext(Dispatchers.Main) {
-                    model.value = it
-                }
+    init {
+        scope.launch {
+            coreViewModel.currentFilter.collect {
+                currentFilter.emit(it)
             }
         }
-    }*/
+    }
 
-    fun processFilter(filterTitle: String) {
-        //coreViewModel.setFilter(filter)
-
-        notificationFilterList.forEach{
-            println("----------------------")
-            println(filterTitle)
-            println(it.title)
-            println(it.title == filterTitle)
-            it.selected = (it.title == filterTitle)
-        }
+    fun processFilter(filter: String?) {
+        coreViewModel.processFilterChange(filter)
     }
 }

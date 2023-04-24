@@ -158,7 +158,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.NOTIFICATION_FILTER.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
-                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel, notificationViewModel = viewModel.notificationViewModel)
+                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel)
             }
         }
     }

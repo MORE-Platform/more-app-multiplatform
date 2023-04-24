@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.getString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
@@ -19,14 +18,12 @@ import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationViewModel: NotificationViewModel) {
+fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
 
-    var notificationFilterList = viewModel.notificationFilterList
+    val notificationFilterList = viewModel.notificationFilterMap.toList()
 
-    val onChangeFilterState: (String) -> Unit = {
+    val onChangeFilterState: (String?) -> Unit = {
         viewModel.processFilter(it)
-        notificationViewModel.currentFilter = it
-        notificationFilterList = viewModel.notificationFilterList
     }
 
     LazyColumn() {
@@ -42,7 +39,9 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationV
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if(filter.selected)
+                if(filter.second?.let { viewModel.currentFilter.collectAsState().value.contains(it) }
+                        ?: viewModel.currentFilter.collectAsState().value.isEmpty()
+                )
                     IconInline(
                         icon = Icons.Rounded.Done,
                         color = MoreColors.Approved,
@@ -52,11 +51,11 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationV
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { onChangeFilterState(filter.title) })
+                        .clickable(onClick = { onChangeFilterState(filter.second) })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = filter.title,
+                        description = filter.first,
                         color = MoreColors.Secondary
                     )
                 }

@@ -34,8 +34,9 @@ class MainViewModel(context: Context): ViewModel() {
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
 
+    val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
     val notificationViewModel = NotificationViewModel()
-    val notificationFilterViewModel = NotificationFilterViewModel()
+    val notificationFilterViewModel = NotificationFilterViewModel(coreNotificationFilterViewModel)
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
     init {
