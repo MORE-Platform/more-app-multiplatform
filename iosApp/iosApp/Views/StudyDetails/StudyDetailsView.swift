@@ -17,6 +17,9 @@ struct StudyDetailsView: View {
     @State var selection: Int = 0
     private let navigationStrings = "Study Details"
     
+    @State private var isObservationListOpen = false
+
+    
     var body: some View {
         MoreMainBackgroundView {
             ScrollView{
@@ -46,16 +49,21 @@ struct StudyDetailsView: View {
                     ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
                         .padding(.bottom, 35)
                     
-                    ExpandableContent(
+                    ExpandableContentWithLink(
                         content: {
                             VStack {
                                 ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
                                     obs in
-                                    ModuleListItem(observation: obs).padding(.bottom)
+                                    
+                                    NavigationLink(isActive: $isObservationListOpen.not) {
+                                            ObservationDetailsView(viewModel: ObservationDetailsViewModel(observationId: obs.observationId))
+                                        } label: {
+                                            ModuleListItem(observation: obs).padding(.bottom)
+                                        }
                                 }
                             }
                         },
-                        title: {String.localizedString(forKey: "obs_modules", inTable: stringTable, withComment: "Observation modules of study.")}
+                        title: {String.localizedString(forKey: "obs_modules", inTable: stringTable, withComment: "Observation modules of study.")}, expanded: $isObservationListOpen
                     ).padding(.top, (0.5))
                     
                     Spacer()
@@ -68,7 +76,6 @@ struct StudyDetailsView: View {
         .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"))
         .navigationBarTitleDisplayMode(.inline)
     }
-    
 }
 
 struct StudyDetailsView_Previews: PreviewProvider {
@@ -76,3 +83,14 @@ struct StudyDetailsView_Previews: PreviewProvider {
         StudyDetailsView(viewModel: StudyDetailsViewModel())
     }
 }
+
+extension Binding where Value == Bool {
+    var not: Binding<Value> {
+        Binding<Value>(
+            get: { !self.wrappedValue },
+            set: { self.wrappedValue = !$0 }
+        )
+    }
+}
+    
+

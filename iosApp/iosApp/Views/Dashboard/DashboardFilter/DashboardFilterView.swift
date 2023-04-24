@@ -21,8 +21,7 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Select Time", inTable: stringTable, withComment: "Set time filter")), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], multiSelect: false)
-                                .environmentObject(viewModel)
+                            MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Select Time", inTable: stringTable, withComment: "Set time filter")), optionList: .constant(viewModel.dateFilterStringList), selectedValueList: [viewModel.dateFilter.name], multiSelect: false).environmentObject(viewModel)
                         }.padding(.vertical, 20)
                         VStack {
                             MoreFilterOptionList(title: .constant(String.localizedString(forKey: "Select Type", inTable: stringTable, withComment: "Set type filter")), optionList: .constant(viewModel.observationTypes), selectedValueList: viewModel.observationTypeFilter, multiSelect: true).environmentObject(viewModel)

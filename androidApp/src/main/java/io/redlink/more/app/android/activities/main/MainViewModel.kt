@@ -12,15 +12,13 @@ import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
-import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
-import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
-import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
@@ -60,5 +58,9 @@ class MainViewModel(context: Context): ViewModel() {
         return QuestionnaireViewModel(
             SimpleQuestionCoreViewModel(scheduleId, AndroidObservationFactory(context))
         )
+    }
+
+    fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
+       return ObservationDetailsViewModel(observationId)
     }
 }
