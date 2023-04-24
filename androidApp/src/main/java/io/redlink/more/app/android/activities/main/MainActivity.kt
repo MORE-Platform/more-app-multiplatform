@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.main
 
+import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,7 @@ import io.redlink.more.app.android.activities.observations.questionnaire.Questio
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
 
@@ -107,10 +109,28 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     observationTitle = observationTitle ?: ""
                 )
             }
+
+            composable(
+                "${NavigationScreen.OBSERVATION_DETAILS.route}/observationId={observationId}",
+                arguments = listOf(
+                    navArgument("observationId") {
+                        type = NavType.StringType
+                    })
+            ) {
+                val arguments = requireNotNull(it.arguments)
+                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                val observationId = arguments.getString("observationId")
+                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                viewModel.showBackButton.value = true
+                ObservationDetailsView(
+                    viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                )
+            }
+
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel)
+                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController)
             }
             composable(NavigationScreen.OBSERVATION_FILTER.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
