@@ -9,4 +9,6 @@
     <string name="nav_study_details">Study Details</string>
     <string name="nav_observation_filter">Observation Filter</string>
     <string name="nav_simple_question">Simple Question</string>
+    <string name="nav_running_schedules">Running Schedules</string>
+    <string name="nav_completed_schedules">Completed Schedules</string>
 </resources>

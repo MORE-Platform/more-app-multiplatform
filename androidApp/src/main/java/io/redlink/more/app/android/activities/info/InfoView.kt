@@ -41,7 +41,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Outlined.Autorenew,
                 contentDescription = getStringResource(id = R.string.info_running_observations_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.RUNNING_SCHEDULES.route)
                 }
             )
             InfoItem(
@@ -49,7 +49,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.Check,
                 contentDescription = getStringResource(id = R.string.info_completed_observations_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.COMPLETED_SCHEDULES.route)
                 }
             )
             InfoItem(
