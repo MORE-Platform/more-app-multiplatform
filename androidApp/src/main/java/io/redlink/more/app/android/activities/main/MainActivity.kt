@@ -19,6 +19,7 @@ import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
+import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.setting.SettingsView
@@ -79,7 +80,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
-                InfoView(navController)
+                InfoView(navController, viewModel = InfoViewModel())
             }
             composable(NavigationScreen.SETTINGS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
