@@ -35,10 +35,11 @@ fun Accordion(
     description: String,
     hasCheck: Boolean = false,
     hasSmallTitle: Boolean = false,
-    hasPreview: Boolean = true
+    hasPreview: Boolean = true,
+    isOpen: Boolean = false
 ) {
     val open = remember {
-        mutableStateOf(false)
+        mutableStateOf(isOpen)
     }
 
     val angle: Float by animateFloatAsState(
