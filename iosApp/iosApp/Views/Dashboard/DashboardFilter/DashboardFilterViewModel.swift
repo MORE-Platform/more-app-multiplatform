@@ -26,8 +26,6 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var dateFilterString: String = "ENTIRE_TIME"
     @Published var observationTypeFilter: [String] = []
     
-    @Published var currentFilter: FilterModel? = nil
-    
     init() {
         var list: [String] = Array(observationFactory.observationTypes())
         list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
@@ -48,6 +46,7 @@ class DashboardFilterViewModel: ObservableObject {
         else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
         coreModel.setDateFilter(dateFilter: filterModel)
+        dateFilter = filterModel
     }
     
     func setObservationTypeFilters() {
@@ -79,4 +78,3 @@ class DashboardFilterViewModel: ObservableObject {
         return isSelected
     }
 }
-

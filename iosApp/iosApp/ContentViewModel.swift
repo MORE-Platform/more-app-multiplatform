@@ -120,14 +120,15 @@ extension ContentViewModel: DashboardFilterObserver {
                 }
             }
             selectedValueList = dashboardFilterViewModel.observationTypeFilter
+            dashboardFilterViewModel.setObservationTypeFilters()
         } else {
             if !selectedValueList.isEmpty {
                 selectedValueList.removeAll()
             }
             selectedValueList.append(filter)
             dashboardFilterViewModel.dateFilterString = filter
+            dashboardFilterViewModel.setDateFilterValue()
         }
-        dashboardViewModel.scheduleViewModel.applyFilters()
         updateFilterText(stringTable: stringTable)
         return selectedValueList
     }
