@@ -23,8 +23,8 @@ fun ScheduleListView(navController: NavController, scheduleViewModel: ScheduleVi
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn {
-            if (scheduleViewModel.getScheduleMap().isNotEmpty()) {
-                scheduleViewModel.getScheduleMap().toSortedMap().let { schedules ->
+            if (scheduleViewModel.schedules.isNotEmpty()) {
+                scheduleViewModel.schedules.toSortedMap().let { schedules ->
                     schedules.keys.forEach { date ->
                         item {
                             Heading(
