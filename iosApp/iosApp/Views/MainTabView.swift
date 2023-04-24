@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 14.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
@@ -26,6 +26,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
                     }
+                    .environmentObject(contentViewModel)
             }
         }
         .accent(color: .more.primaryDark)
@@ -33,6 +34,7 @@ struct MainTabView: View {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
             UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
+            contentViewModel.updateSchedules()
         }
     }
 }

@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -15,7 +14,9 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -86,28 +87,22 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder) {
             .filter {
                         it.end > Clock.System.now().toEpochMilliseconds()
                         && !it.done
-                        && it.scheduleState == ScheduleState.ACTIVE
-                        || it.scheduleState == ScheduleState.PAUSED
-                        || it.scheduleState == ScheduleState.DEACTIVATED
-                        || it.scheduleState == ScheduleState.RUNNING
+                        && it.scheduleState.active()
+                                || it.scheduleState == ScheduleState.DEACTIVATED
             }
             .sortedBy { it.start }
-            .groupBy { it.start.toLocalDate().time() }
+            .groupBy {
+                if(it.start <= Clock.System.now().toEpochMilliseconds()) {
+                    Clock.System.now().localDateTime().date.time()
+                }
+                else { it.start.toLocalDate().time() }
+            }
             .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
             .filterValues { it.isNotEmpty() }
     }
 
     fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
-        val job = Job()
-        scheduleModelList.onEach {
-            Napier.i { "New map state" }
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
+        return scheduleModelList.asClosure(provideNewState)
     }
 }
 

@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 20.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import shared
@@ -42,8 +42,8 @@ struct TaskDetailsView: View {
                         }
                     }
 
-                    let date: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? "")
-                    let time: String = (viewModel.taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
+                    let date: String = viewModel.getDateRangeString()
+                    let time: String = viewModel.getTimeRangeString()
 
                     ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
 

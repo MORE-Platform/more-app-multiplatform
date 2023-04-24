@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 15.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import Foundation
@@ -17,6 +17,7 @@ enum NavigationScreens: String {
     case studyDetails = "Study Details"
     case scanQRCode = "Scan QR Code"
     case questionObservation = "Question Observation"
+    case dashboardFilter = "Dashboard Filter"
 }
 
 extension NavigationScreens {

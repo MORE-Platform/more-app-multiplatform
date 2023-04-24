@@ -3,12 +3,14 @@
   iosApp
 
   Created by Jan Cortiel on 15.03.23.
-  Copyright © 2023 orgName. All rights reserved.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 "Dashboard" = "Dashboard";
+"Dashboard Fitler" = "Dashboard Filter";
 "Notifications" = "Notifications";
 "Information" = "Information";
 "Settings" = "Settings";
 "Task Detail" = "Task Detail";
 "Scan QR Code" = "Scan QR Code";
 "Question Observation" = "Question Observation";
+"Observation Details" = "Observation Details";

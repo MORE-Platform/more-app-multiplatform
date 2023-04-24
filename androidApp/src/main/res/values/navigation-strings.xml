@@ -5,7 +5,9 @@
     <string name="nav_info">Information</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_task_detail">Task Detail</string>
+    <string name="nav_observation_detail">Observation Detail</string>
     <string name="nav_study_details">Study Details</string>
     <string name="nav_observation_filter">Observation Filter</string>
+    <string name="nav_simple_question">Simple Question</string>
     <string name="nav_notification_filter">Notification Filter</string>
 </resources>

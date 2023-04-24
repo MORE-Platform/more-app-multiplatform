@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 20.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import shared
@@ -42,5 +42,18 @@ class TaskDetailsViewModel: ObservableObject {
     
     func stop() {
         coreModel.stopObservation()
+    }
+    
+    func getDateRangeString() -> String {
+        let startDate = taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
+        let endDate = taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
+        if(startDate != endDate) {
+            return startDate + " - " + endDate
+        }
+        return startDate
+    }
+    
+    func getTimeRangeString() -> String {
+        return (taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
     }
 }

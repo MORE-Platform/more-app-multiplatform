@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 08.02.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import Foundation
@@ -15,30 +15,44 @@ class ContentViewModel: ObservableObject {
     
     private let registrationService: RegistrationService
     private let credentialRepository: CredentialRepository
+    private lazy var scheduleRepository = ScheduleRepository()
+    
+    private lazy var taskSchedulingService = TaskScheduleService()
     
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
-    @Published var navigationTitle = ""
-
-    let loginViewModel: LoginViewModel
-    let consentViewModel: ConsentViewModel
-    let dashboardViewModel: DashboardViewModel
-    let settingsViewModel: SettingsViewModel
+    lazy var loginViewModel: LoginViewModel = {
+        let viewModel = LoginViewModel(registrationService: registrationService)
+        viewModel.delegate = self
+        return viewModel
+    }()
+    lazy var consentViewModel: ConsentViewModel = {
+        let viewModel = ConsentViewModel(registrationService: registrationService)
+        viewModel.delegate = self
+        return viewModel
+    }()
+    
+    lazy var dashboardFilterViewModel: DashboardFilterViewModel = {
+        let viewModel = DashboardFilterViewModel()
+        viewModel.delegate = self
+        return viewModel
+    }()
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel)
+    lazy var settingsViewModel: SettingsViewModel = {
+        let viewModel = SettingsViewModel()
+        viewModel.delegate = self
+        return viewModel
+    }()
+    
+    
 
     init() {
         registrationService = RegistrationService(sharedStorageRepository: userDefaults)
         credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
-        
-        loginViewModel = LoginViewModel(registrationService: registrationService)
-        dashboardViewModel = DashboardViewModel()
-        consentViewModel = ConsentViewModel(registrationService: registrationService)
-        settingsViewModel = SettingsViewModel()
-        hasCredentials = credentialRepository.hasCredentials()
 
-        loginViewModel.delegate = self
-        consentViewModel.delegate = self
-        settingsViewModel.delegate = self
+        hasCredentials = credentialRepository.hasCredentials()
+        
     }
     
     func showLoginView() {
@@ -53,6 +67,10 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
             self.consentViewModel.onAppear()
         }
+    }
+    
+    func updateSchedules() {
+        taskSchedulingService.startUpdateTimer()
     }
 }
 
@@ -70,14 +88,86 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
-        DispatchQueue.main.async {
-            self.hasCredentials = true
+        DispatchQueue.main.async { [weak self] in
+            if let self {
+                self.hasCredentials = true
+            }
         }
+        FCMService.getNotificationToken()
     }
 
     func credentialsDeleted() {
-        DispatchQueue.main.async {
-            self.hasCredentials = false
+        DispatchQueue.main.async { [weak self] in
+            if let self {
+                self.hasCredentials = false
+            }
+        }
+        showLoginView()
+    }
+}
+
+extension ContentViewModel: DashboardFilterObserver {
+    func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
+        var selectedValueList = list
+        if multiSelect {
+            if filter == String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items") {
+                dashboardFilterViewModel.observationTypeFilter.removeAll()
+            } else {
+                if dashboardFilterViewModel.observationTypeFilter.contains(filter) {
+                    dashboardFilterViewModel.observationTypeFilter.remove(at: dashboardFilterViewModel.observationTypeFilter.firstIndex(of: filter)!)
+                } else {
+                    dashboardFilterViewModel.observationTypeFilter.append(filter)
+                }
+            }
+            selectedValueList = dashboardFilterViewModel.observationTypeFilter
+        } else {
+            if !selectedValueList.isEmpty {
+                selectedValueList.removeAll()
+            }
+            selectedValueList.append(filter)
+            dashboardFilterViewModel.dateFilterString = filter
+        }
+        dashboardViewModel.scheduleViewModel.applyFilters()
+        updateFilterText(stringTable: stringTable)
+        return selectedValueList
+    }
+    
+    func updateFilterText(stringTable: String) {
+        var typeFilterText = ""
+        var dateFilterText = ""
+        if noFilterSet() {
+            dashboardViewModel.filterText = String.localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "No filter set")
+        } else {
+            if typeFilterSet() {
+                if dashboardFilterViewModel.observationTypeFilter.count == 1 {
+                    typeFilterText = "\(dashboardFilterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type", inTable: stringTable, withComment: "Observation type"))"
+                } else {
+                    typeFilterText = "\(dashboardFilterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type_plural", inTable: stringTable, withComment: "Observation types"))"
+                }
+            }
+            if dateFilterSet() {
+                dateFilterText = String.localizedString(forKey: dashboardFilterViewModel.dateFilterString, inTable: stringTable, withComment: "Time filter")
+            }
+            if dateFilterSet() && typeFilterSet() {
+                dashboardViewModel.filterText = "\(typeFilterText), \(dateFilterText)"
+            } else if dateFilterSet(){
+                dashboardViewModel.filterText = dateFilterText
+            } else {
+                dashboardViewModel.filterText = typeFilterText
+            }
         }
     }
+    
+    func dateFilterSet() -> Bool {
+        return dashboardFilterViewModel.dateFilterString != "ENTIRE_TIME"
+    }
+    
+    func typeFilterSet() -> Bool {
+        return !dashboardFilterViewModel.observationTypeFilter.isEmpty
+    }
+    
+    func noFilterSet() -> Bool {
+        return !dateFilterSet() && !typeFilterSet()
+    }
+    
 }

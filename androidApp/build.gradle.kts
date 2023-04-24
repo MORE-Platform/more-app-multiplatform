@@ -3,17 +3,18 @@ plugins {
     id("com.google.gms.google-services")
     kotlin("android")
     id("io.realm.kotlin") version "1.6.0"
+    id("com.google.firebase.crashlytics")
 }
 
 android {
-    namespace = "io.redlink.more.more_app_mutliplatform.android"
+    namespace = "io.redlink.more.app.android"
     compileSdk = 33
     defaultConfig {
-        applicationId = "io.redlink.more.more_app_mutliplatform.android"
+        applicationId = "io.redlink.more.app.android"
         minSdk = 29
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0-rc1"
     }
     buildFeatures {
         compose = true
@@ -65,4 +66,10 @@ dependencies {
     implementation("com.github.polarofficial:polar-ble-sdk:${sdk_version}")
     implementation("io.reactivex.rxjava3:rxjava:3.1.6")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-inappmessaging-ktx")
+    implementation("com.google.firebase:firebase-inappmessaging-display-ktx")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

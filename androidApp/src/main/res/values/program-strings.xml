@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="more_program_title">Your Program</string>
-    <string name="more_program_empty">You have no more tasks in this study.\n\nThank you!</string>
-    <string name="more_program_observation_stop_warning_title">Warning!</string>
-    <string name="more_program_observation_stop_warning_message">You are about to stop the progress of a running task. Stopping the task will flag the task as done and will be removed from your schedule! Would you like to proceed?</string>
-    <string name="more_program_observation_stop_warning_proceed">Stop</string>
-    <string name="more_program_observation_stop_warning_cancel">Cancel</string>
-</resources>

@@ -3,7 +3,7 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 07.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import SwiftUI
@@ -14,19 +14,18 @@ struct ObservationDetails: View {
     var action: () -> Void = {}
     
     var body: some View {
-            HStack{
-                VStack(alignment: .leading) {
-                    BasicText(text: $observationTitle)
-                        .font(Font.more.headline)
-                        .foregroundColor(Color.more.primary)
-                        .padding(0.5)
-                    Text(observationType)
-                        .foregroundColor(Color.more.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.forward")
+        HStack{
+            VStack(alignment: .leading) {
+                BasicText(text: $observationTitle)
+                    .font(Font.more.headline)
+                    .foregroundColor(Color.more.primary)
+                    .padding(0.5)
+                Text(observationType)
+                    .foregroundColor(Color.more.secondary)
             }
-            .contentShape(Rectangle())
+            Spacer()
+            Image(systemName: "chevron.forward")
+        }
     }
 }
 

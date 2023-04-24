@@ -3,10 +3,11 @@
 //  iosApp
 //
 //  Created by Julia Mayrhauser on 08.03.23.
-//  Copyright © 2023 orgName. All rights reserved.
+//  Copyright © 2023 Redlink GmbH. All rights reserved.
 //
 
 import Foundation
+import shared
 
 extension Int64 {
     func toDateString(dateFormat: String) -> String {
@@ -15,5 +16,9 @@ extension Int64 {
         dateFormatter.dateFormat = dateFormat
         dateFormatter.timeZone = TimeZone.current
         return dateFormatter.string(from: date)
+    }
+    
+    func toKotlinLong() -> KotlinLong {
+        return KotlinLong(value: self)
     }
 }
