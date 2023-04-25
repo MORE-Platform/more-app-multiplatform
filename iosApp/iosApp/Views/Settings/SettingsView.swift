@@ -31,12 +31,6 @@ struct SettingsView: View {
                     ConsentList(permissionModel: .constant(permissions))
                         .padding(.top)
                 }
-                BasicNavLinkButton(backgroundColor: $exitButton) {
-                    ExitStudyLevelOneView(viewModel: viewModel)
-                } label: {
-                    Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration")).foregroundColor(Color.more.white)
-                }.padding(.bottom)
-                
                 
                 Spacer()
             }
