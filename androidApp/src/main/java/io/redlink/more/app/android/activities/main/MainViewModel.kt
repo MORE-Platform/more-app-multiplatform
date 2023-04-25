@@ -29,12 +29,14 @@ class MainViewModel(context: Context): ViewModel() {
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val dashboardFilterViewModel = CoreDashboardFilterViewModel()
-    val dashboardViewModel = DashboardViewModel(context, ScheduleViewModel(dashboardFilterViewModel, recorder, ScheduleListType.ALL))
+    val allSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
+    val runningSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.RUNNING)
+    val completedSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.COMPLETED)
+    val dashboardViewModel = DashboardViewModel(context, allSchedulesViewModel)
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
 
-    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder, )
+    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()

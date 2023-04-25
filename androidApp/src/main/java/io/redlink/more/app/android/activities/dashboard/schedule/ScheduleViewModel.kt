@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
+class ScheduleViewModel(val coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
                         val scheduleListType: ScheduleListType) : ViewModel() {
 
     val coreViewModel = CoreScheduleViewModel(dataRecorder, coreFilterModel = coreFilterModel, scheduleListType = scheduleListType)

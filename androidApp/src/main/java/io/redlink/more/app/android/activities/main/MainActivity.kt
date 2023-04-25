@@ -19,7 +19,6 @@ import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedu
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
-import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
@@ -133,10 +132,26 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController)
             }
-            composable(NavigationScreen.OBSERVATION_FILTER.route) {
+            composable("${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType={scheduleListType}",
+            arguments = listOf(
+                navArgument("scheduleListType") {
+                    type = NavType.StringType
+                })
+            ) {
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
-                DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.dashboardFilterViewModel))
+                val arguments = requireNotNull(it.arguments)
+                when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
+                    ScheduleListType.ALL -> {
+                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel))
+                    }
+                    ScheduleListType.RUNNING -> {
+                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel))
+                    }
+                    ScheduleListType.COMPLETED -> {
+                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel))
+                    }
+                }
             }
             composable(
                 "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
@@ -159,10 +174,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
-                RunningSchedulesView(viewModel = ScheduleViewModel(
-                    viewModel.dashboardFilterViewModel,
-                    viewModel.recorder,
-                    ScheduleListType.RUNNING), navController = navController)
+                RunningSchedulesView(
+                    viewModel = viewModel.runningSchedulesViewModel,
+                    navController = navController)
             }
             composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
@@ -170,10 +184,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 CompletedSchedulesView(
                     totalTasks = viewModel.dashboardViewModel.totalTasks.value,
                     finishedTasks = viewModel.dashboardViewModel.finishedTasks.value,
-                    viewModel = ScheduleViewModel(
-                    viewModel.dashboardFilterViewModel,
-                    viewModel.recorder,
-                    ScheduleListType.COMPLETED), navController = navController)
+                    viewModel = viewModel.completedSchedulesViewModel,
+                    navController = navController)
             }
         }
     }

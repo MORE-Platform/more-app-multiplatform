@@ -14,6 +14,6 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 fun ScheduleListHeader(finishedTasks: Int, totalTasks: Int, viewModel: ScheduleViewModel, navController: NavController) {
     Column(modifier = Modifier.height(IntrinsicSize.Min)) {
         DashboardProgress(finishedTasks = finishedTasks, totalTasks = totalTasks)
-        FilterView(navController, model = viewModel.filterModel)
+        FilterView(navController, model = viewModel.filterModel, scheduleListType = viewModel.scheduleListType)
     }
 }
