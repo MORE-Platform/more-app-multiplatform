@@ -21,7 +21,7 @@ struct ScheduleListItem: View {
     var body: some View {
         VStack {
             NavigationLink {
-                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder))
+                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), scheduleListType: viewModel.scheduleListType)
             } label: {
                 VStack(alignment: .leading) {
                     ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
