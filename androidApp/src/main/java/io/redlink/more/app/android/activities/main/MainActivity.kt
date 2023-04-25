@@ -25,6 +25,8 @@ import io.redlink.more.app.android.activities.observations.questionnaire.Questio
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.more.app.android.activities.setting.SettingsView
+import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConfirmView
+import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
@@ -186,6 +188,16 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     finishedTasks = viewModel.dashboardViewModel.finishedTasks.value,
                     viewModel = viewModel.completedSchedulesViewModel,
                     navController = navController)
+            }
+            composable(NavigationScreen.LEAVE_STUDY.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY.stringRes()
+                viewModel.showBackButton.value = true
+                LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
+            }
+            composable(NavigationScreen.LEAVE_STUDY_CONFIRM.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY_CONFIRM.stringRes()
+                viewModel.showBackButton.value = true
+                LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
             }
         }
     }

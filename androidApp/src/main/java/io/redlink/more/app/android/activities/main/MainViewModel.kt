@@ -9,6 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -35,6 +36,7 @@ class MainViewModel(context: Context): ViewModel() {
     val dashboardViewModel = DashboardViewModel(context, allSchedulesViewModel)
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
+    val leaveStudyViewModel = LeaveStudyViewModel(context)
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
     init {
