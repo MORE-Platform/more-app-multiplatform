@@ -73,7 +73,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.ExitToApp,
                 contentDescription = getStringResource(id = R.string.info_leave_study_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.LEAVE_STUDY.route)
                 }
             )
         }

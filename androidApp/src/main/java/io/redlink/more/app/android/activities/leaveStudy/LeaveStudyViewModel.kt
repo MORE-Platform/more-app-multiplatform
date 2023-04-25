@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.setting
+package io.redlink.more.app.android.activities.leaveStudy
 
 import android.app.Activity
 import android.content.Context
@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SettingsViewModel(context: Context): ViewModel() {
+class LeaveStudyViewModel(context: Context): ViewModel() {
     private val storageRepository = SharedPreferencesRepository(context)
     private var coreSettingsViewModel = CoreSettingsViewModel(CredentialRepository(storageRepository), EndpointRepository(storageRepository))
     val study = mutableStateOf<StudySchema?>(null)
