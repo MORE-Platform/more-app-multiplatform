@@ -22,7 +22,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
                     }
-                InfoView()
+                InfoView(viewModel: InfoViewModel())
                     .tabItem {
                         Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
                     }

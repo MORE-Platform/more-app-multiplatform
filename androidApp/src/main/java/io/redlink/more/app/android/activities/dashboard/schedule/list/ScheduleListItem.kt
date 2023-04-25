@@ -24,7 +24,7 @@ import io.redlink.more.app.android.R
 
 
 @Composable
-fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel) {
+fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, showButton: Boolean) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -44,34 +44,36 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                 tint = MoreColors.Primary
             )
         }
+
         TimeframeHours(
             startTime = scheduleModel.start.toDate(),
             endTime = scheduleModel.end.toDate(),
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        if (scheduleModel.observationType == "question-observation") {
-            SmallTextButton(
-                text = getStringResource(id = R.string.more_questionnaire_start),
-                enabled = scheduleModel.scheduleState.active()
-            ) {
-                navController.navigate(
-                    "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
-                )
-            }
-        } else {
-            SmallTextButton(
-                text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
-                    id = R.string.more_observation_start
-                ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
-            ) {
-                if (scheduleModel.scheduleState == ScheduleState.RUNNING){
-                    viewModel.pauseObservation(context, scheduleModel.scheduleId)}
-                else{
-                    viewModel.startObservation(context, scheduleModel.scheduleId,)
+        if (showButton) {
+            if (scheduleModel.observationType == "question-observation") {
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_questionnaire_start),
+                    enabled = scheduleModel.scheduleState.active()
+                ) {
+                    navController.navigate(
+                        "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
+                    )
                 }
+            } else {
+                SmallTextButton(
+                    text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
+                        id = R.string.more_observation_start
+                    ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
+                ) {
+                    if (scheduleModel.scheduleState == ScheduleState.RUNNING){
+                        viewModel.pauseObservation(context, scheduleModel.scheduleId)}
+                    else{
+                        viewModel.startObservation(context, scheduleModel.scheduleId,)
+                    }
 
+                }
             }
         }
-
     }
 }

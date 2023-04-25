@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.main
 
+import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,16 +15,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
+import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoView
+import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
+import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +84,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
-                InfoView(navController)
+                InfoView(navController, viewModel = InfoViewModel())
             }
             composable(NavigationScreen.SETTINGS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
@@ -106,10 +113,28 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     observationTitle = observationTitle ?: ""
                 )
             }
+
+            composable(
+                "${NavigationScreen.OBSERVATION_DETAILS.route}/observationId={observationId}",
+                arguments = listOf(
+                    navArgument("observationId") {
+                        type = NavType.StringType
+                    })
+            ) {
+                val arguments = requireNotNull(it.arguments)
+                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                val observationId = arguments.getString("observationId")
+                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                viewModel.showBackButton.value = true
+                ObservationDetailsView(
+                    viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                )
+            }
+
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel)
+                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController)
             }
             composable(NavigationScreen.OBSERVATION_FILTER.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
@@ -133,6 +158,22 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
+            }
+            composable(NavigationScreen.RUNNING_SCHEDULES.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
+                viewModel.showBackButton.value = true
+                RunningSchedulesView(viewModel = ScheduleViewModel(
+                    viewModel.dashboardFilterViewModel,
+                    viewModel.recorder,
+                    ScheduleListType.RUNNING), navController = navController)
+            }
+            composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
+                viewModel.showBackButton.value = true
+                CompletedSchedulesView(viewModel = ScheduleViewModel(
+                    viewModel.dashboardFilterViewModel,
+                    viewModel.recorder,
+                    ScheduleListType.COMPLETED), navController = navController)
             }
         }
     }

@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
@@ -14,13 +16,15 @@ import io.redlink.more.app.android.shared_composables.AccordionReadMore
 import io.redlink.more.app.android.shared_composables.ActivityProgressView
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.shared_composables.*
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.observations.Observation
+import org.mongodb.kbson.ObjectId
 
 
 @Composable
-fun StudyDetailsView(viewModel: StudyDetailsViewModel) {
+fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel) {
     viewModel.model.value?.let {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -57,9 +61,11 @@ fun StudyDetailsView(viewModel: StudyDetailsViewModel) {
                             .fillMaxWidth()
                     )
                     Spacer(Modifier.height(16.dp))
+
                     AccordionWithList(
                         title = getStringResource(R.string.observation_modules),
-                        observations = it.observations
+                        observations = it.observations,
+                        navController = navController
                     )
                 }
             }

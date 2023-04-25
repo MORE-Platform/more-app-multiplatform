@@ -13,16 +13,21 @@ import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel): ViewModel() {
+class DashboardViewModel(context: Context, coreFilterModel: CoreDashboardFilterViewModel,
+                         val scheduleViewModel: ScheduleViewModel
+): ViewModel() {
     private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
     private val coreFilterViewModel = coreFilterModel
+
     var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
     val studyTitle = mutableStateOf("Study Title")
     val studyActive = mutableStateOf(true)
@@ -33,8 +38,6 @@ class DashboardViewModel(context: Context, dataRecorder: AndroidDataRecorder, co
     val tabData = Views.values()
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-
-    val scheduleViewModel = ScheduleViewModel(dataRecorder, coreFilterViewModel)
 
     init {
         scheduleViewModel.updateTaskStates(context)

@@ -22,6 +22,8 @@ class ContentViewModel: ObservableObject {
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
     
+    let observationFactory = IOSObservationFactory()
+    
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
         viewModel.delegate = self
@@ -38,7 +40,7 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(dashboardFilterViewModel: dashboardFilterViewModel)
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, dashboardFilterViewModel: dashboardFilterViewModel, scheduleListType: .all))
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self
@@ -120,14 +122,15 @@ extension ContentViewModel: DashboardFilterObserver {
                 }
             }
             selectedValueList = dashboardFilterViewModel.observationTypeFilter
+            dashboardFilterViewModel.setObservationTypeFilters()
         } else {
             if !selectedValueList.isEmpty {
                 selectedValueList.removeAll()
             }
             selectedValueList.append(filter)
             dashboardFilterViewModel.dateFilterString = filter
+            dashboardFilterViewModel.setDateFilterValue()
         }
-        dashboardViewModel.scheduleViewModel.applyFilters()
         updateFilterText(stringTable: stringTable)
         return selectedValueList
     }

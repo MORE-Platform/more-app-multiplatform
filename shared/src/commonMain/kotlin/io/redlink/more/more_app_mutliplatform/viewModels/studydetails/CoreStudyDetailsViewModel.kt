@@ -7,6 +7,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
@@ -14,10 +15,9 @@ import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 
 class CoreStudyDetailsViewModel {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
@@ -27,6 +27,7 @@ class CoreStudyDetailsViewModel {
     private val observationRepository: ObservationRepository = ObservationRepository()
 
     val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
+
     init {
         scope.launch {
             studyRepository.getStudy()
@@ -41,7 +42,7 @@ class CoreStudyDetailsViewModel {
                 }.combine(observationRepository.observations()) { triple, observations ->
                     Pair(
                         triple,
-                        observations
+                        observations,
                     )
                 }.collect {
                     it.first.first?.let {studySchema ->
