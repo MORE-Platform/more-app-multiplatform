@@ -61,21 +61,11 @@ struct ExitStudyLevelTwoView: View {
                     Text(String.localizedString(forKey: "back_to_settings", inTable: stringTable, withComment: "button to continue taking part in the study")).foregroundColor(Color.more.white)
                 }.padding(.bottom)
                 
-                TriggerSlider(
-                    sliderView: {
-                        RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous).fill(Color.more.important)
-                            .overlay(Image(systemName: "arrow.right").font(.system(size: 30)).foregroundColor(.white))
-                    }, textView: {
-                        Text(String.localizedString(forKey: "withdraw_swipe", inTable: stringTable, withComment: "button to refresh study configuration")).foregroundColor(Color.more.important)
-                    }, backgroundView: {
-                        RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
-                            .fill(Color.more.importantLight)
-                    }, offsetX: self.$simpleRightDirectionSliderOffsetX,
-                    didSlideToEnd: {
-                        self.alertPresented = true
-                        viewModel.leaveStudy()
-                    }, settings: TriggerSliderSettings()).foregroundColor(Color.more.white)
-                
+                MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
+                    viewModel.leaveStudy()
+                } label: {
+                    Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
+                }
                 
             } // VStack
             
