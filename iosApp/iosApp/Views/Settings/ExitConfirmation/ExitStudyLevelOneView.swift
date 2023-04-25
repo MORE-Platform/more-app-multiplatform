@@ -23,6 +23,8 @@ struct ExitStudyLevelOneView: View {
                 Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
                     .padding(.top)
                     .padding(.bottom)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
                 
                 Spacer()
                 
@@ -35,10 +37,10 @@ struct ExitStudyLevelOneView: View {
                     Spacer()
                 }.padding(.top)
                 
-                Text(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message"))
+                SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message")))
                     .foregroundColor(Color.more.important)
-                    .fontWeight(.bold)
                     .padding(.bottom, 2)
+                    .multilineTextAlignment(.center)
                 
                 Spacer()
                 

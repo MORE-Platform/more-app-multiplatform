@@ -29,6 +29,8 @@ struct ExitStudyLevelTwoView: View {
                 Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
                     .padding(.top)
                     .padding(.bottom)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
                 
                 Spacer()
                 
@@ -46,11 +48,13 @@ struct ExitStudyLevelTwoView: View {
                 Text(String.localizedString(forKey: "second_message", inTable: stringTable, withComment: "second exit message"))
                     .foregroundColor(Color.more.secondary)
                     .padding(.bottom, 2)
+                    .multilineTextAlignment(.center)
                 
                 Text(String.localizedString(forKey: "sure_message", inTable: stringTable, withComment: "last exit message"))
                     .foregroundColor(Color.more.secondary)
                     .fontWeight(.bold)
                     .padding(.bottom, 2)
+                    .multilineTextAlignment(.center)
                 
                 Spacer()
                     .frame(height: 150)
@@ -59,13 +63,15 @@ struct ExitStudyLevelTwoView: View {
                     InfoView(viewModel: InfoViewModel())
                 } label: {
                     Text(String.localizedString(forKey: "back_to_settings", inTable: stringTable, withComment: "button to continue taking part in the study")).foregroundColor(Color.more.white)
-                }.padding(.bottom)
+                }.padding(.bottom, 2)
                 
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                     viewModel.leaveStudy()
                 } label: {
                     Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
                 }
+                
+                Spacer()
                 
             } // VStack
             
