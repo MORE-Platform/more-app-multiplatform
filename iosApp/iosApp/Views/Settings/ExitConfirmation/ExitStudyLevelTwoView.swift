@@ -62,7 +62,7 @@ struct ExitStudyLevelTwoView: View {
                 BasicNavLinkButton(backgroundColor: $continueButton) {
                     InfoView(viewModel: InfoViewModel())
                 } label: {
-                    Text(String.localizedString(forKey: "back_to_settings", inTable: stringTable, withComment: "button to continue taking part in the study")).foregroundColor(Color.more.white)
+                    Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                 }.padding(.bottom, 2)
                 
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
