@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ExitStudyLevelOneView: View {
+struct LeaveStudyView: View {
     @StateObject var viewModel: SettingsViewModel
     
     private let stringTable = "SettingsView"
@@ -52,17 +52,16 @@ struct ExitStudyLevelOneView: View {
                 }
                 
                 BasicNavLinkButton(backgroundColor: $accButton){
-                    SettingsView(viewModel: viewModel)
+                    InfoView(viewModel: InfoViewModel())
                 } label: {
                     Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                 }
                 
                 BasicNavLinkButton(backgroundColor: $decButton){
-                    ExitStudyLevelTwoView(viewModel: viewModel)
+                    LeaveStudyConfirmationView(viewModel: viewModel)
                 } label: {
                     Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study")).foregroundColor(Color.more.white)
                 }
-                
                 
                 Spacer()
             }

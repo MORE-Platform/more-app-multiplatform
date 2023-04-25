@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-struct ExitStudyLevelTwoView: View {
+struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
     var float = CGFloat(0)
     
