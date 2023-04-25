@@ -17,10 +17,8 @@ import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
-import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,12 +30,11 @@ class MainViewModel(context: Context): ViewModel() {
     val navigationBarTitle = mutableStateOf("")
 
     val dashboardFilterViewModel = CoreDashboardFilterViewModel()
-    val scheduleViewModel = ScheduleViewModel(dashboardFilterViewModel, recorder, ScheduleListType.ALL)
-    val dashboardViewModel = DashboardViewModel(context, dashboardFilterViewModel, scheduleViewModel)
+    val dashboardViewModel = DashboardViewModel(context, ScheduleViewModel(dashboardFilterViewModel, recorder, ScheduleListType.ALL))
     val settingsViewModel = SettingsViewModel(context)
     val studyDetailsViewModel = StudyDetailsViewModel()
 
-    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
+    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder, )
     init {
         viewModelScope.launch(Dispatchers.IO) {
             recorder.updateTaskStates()

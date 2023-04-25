@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
-                        private val scheduleListType: ScheduleListType) : ViewModel() {
+                        val scheduleListType: ScheduleListType) : ViewModel() {
 
     val coreViewModel = CoreScheduleViewModel(dataRecorder, coreFilterModel = coreFilterModel, scheduleListType = scheduleListType)
 
