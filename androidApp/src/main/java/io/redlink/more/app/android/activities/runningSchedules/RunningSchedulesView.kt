@@ -30,7 +30,7 @@ fun RunningSchedulesView(finishedTasks: Int, totalTasks: Int, viewModel: Schedul
             ScheduleListView(
                 navController = navController,
                 scheduleViewModel = viewModel,
-                showButton = false
+                showButton = true
             )
         }
     }
