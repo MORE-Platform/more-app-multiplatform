@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.extensions.Image
@@ -68,7 +69,7 @@ fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel)
 
             Spacer(Modifier.height(18.dp))
 
-            Title(
+            SmallTitle(
                 text = stringResource(id = R.string.more_settings_withdraw_statement),
                 color = MoreColors.Important,
                 textAlign = TextAlign.Center,
