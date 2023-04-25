@@ -29,7 +29,7 @@ struct InfoList: View {
                 SettingsView(viewModel: contentViewModel.settingsViewModel)
             })
             InfoListItem(title: String.localizedString(forKey: "Leave Study", inTable: stringTable, withComment: "Leave the study for good."), icon: "rectangle.portrait.and.arrow.right", destination: {
-                SettingsView(viewModel: contentViewModel.settingsViewModel)
+                LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
             })
         }
     }
