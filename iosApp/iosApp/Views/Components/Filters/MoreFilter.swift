@@ -9,19 +9,22 @@
 import SwiftUI
 
 struct MoreFilter<Destination: View>: View {
-    @EnvironmentObject var viewModel: DashboardViewModel
+    @EnvironmentObject var viewModel: DashboardFilterViewModel
     var destination: () -> Destination
     var image = Image(systemName: "slider.horizontal.3")
+    @State private var text = ""
     
     var body: some View {
         NavigationLink {
            destination()
         } label: {
             HStack {
-                BasicText(text: $viewModel.filterText)
+                BasicText(text: $text)
                 image
                     .foregroundColor(Color.more.secondary)
             }
+        }.onAppear {
+            text = viewModel.updateFilterText()
         }
     }
 }
