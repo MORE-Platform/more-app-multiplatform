@@ -177,6 +177,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
                 RunningSchedulesView(
+                    totalTasks = viewModel.dashboardViewModel.totalTasks.value,
+                    finishedTasks = viewModel.dashboardViewModel.finishedTasks.value,
                     viewModel = viewModel.runningSchedulesViewModel,
                     navController = navController)
             }
