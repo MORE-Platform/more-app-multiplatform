@@ -17,12 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun FilterView(navController: NavController, model: DashboardViewModel) {
+fun FilterView(navController: NavController, model: DashboardFilterViewModel) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

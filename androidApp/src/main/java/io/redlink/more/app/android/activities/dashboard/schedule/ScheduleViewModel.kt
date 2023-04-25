@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
@@ -30,6 +31,8 @@ class ScheduleViewModel(coreFilterModel: CoreDashboardFilterViewModel, dataRecor
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
+
+    val filterModel = DashboardFilterViewModel(coreFilterModel)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
