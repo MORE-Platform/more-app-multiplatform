@@ -16,10 +16,10 @@ struct InfoList: View {
             InfoListItem(title: String.localizedString(forKey: "Study Details", inTable: stringTable, withComment: "Shows detail description of the study and it's observation moduls."), icon: "info.circle.fill", destination: {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
-            InfoListItem(title: "Running Schedules", icon: "arrow.triangle.2.circlepath", destination: {
+            InfoListItem(title: "Running Observations", icon: "arrow.triangle.2.circlepath", destination: {
                 RunningSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .running))
             })
-            InfoListItem(title: "Completed Schedules", icon: "checkmark", destination: {
+            InfoListItem(title: "Completed Observations", icon: "checkmark", destination: {
                 CompletedSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .completed))
             })
             InfoListItem(title: String.localizedString(forKey: "Settings", inTable: stringTable, withComment: "Shows the settings for the study."), icon: "gearshape.fill", destination: {
