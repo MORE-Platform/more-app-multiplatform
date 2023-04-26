@@ -71,7 +71,7 @@ fun NotificationItem(
         }
 
         Divider()
-        
+
         body?.let {
             Text(
                 text = it,

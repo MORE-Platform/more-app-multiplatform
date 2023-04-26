@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
@@ -29,7 +28,7 @@ fun NotificationFilterViewButton(navController: NavController, viewModel: Notifi
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 19.dp)
-            .clickable(onClick = { navController.navigate(NavigationScreen.NOTIFICATION_FILTER.route) })
+            .clickable(onClick = {})
     ){
         Text(
             text = getStringResource(id = R.string.current_filter),
