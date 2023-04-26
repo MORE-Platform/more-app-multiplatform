@@ -13,6 +13,7 @@ struct TaskCompletionBarView: View {
     
     @StateObject var viewModel: TaskCompletionBarViewModel
     @Binding var progressViewTitle: String
+    @State var percentageOfCompletedTasks = "0.00%"
     
     var body: some View {
         VStack {
@@ -20,7 +21,7 @@ struct TaskCompletionBarView: View {
                 BasicText(text: $progressViewTitle, color: Color.more.secondary)
                 Spacer()
                 if viewModel.taskCompletion.totalTasks != 0 {
-                    BasicText(text: $viewModel.percentageOfCompletedTasks)
+                    BasicText(text: $percentageOfCompletedTasks)
                 }
             }.foregroundColor(Color.more.secondary)
             ProgressView(value: Double(viewModel.taskCompletion.finishedTasks), total: Double(viewModel.taskCompletion.totalTasks))
@@ -29,6 +30,8 @@ struct TaskCompletionBarView: View {
                 .accentColor(Color.more.primary)
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
+        }.onAppear {
+            percentageOfCompletedTasks = viewModel.getPercentageOfCompletedTasks()
         }
     }
 }

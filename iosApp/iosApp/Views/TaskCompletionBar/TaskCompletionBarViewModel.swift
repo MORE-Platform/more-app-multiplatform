@@ -10,15 +10,18 @@ import shared
 
 class TaskCompletionBarViewModel: ObservableObject {
     @Published var taskCompletion: TaskCompletion = TaskCompletion(finishedTasks: 0, totalTasks: 0)
-    @Published var percentageOfCompletedTasks: String = "0%"
     var coreViewModel = CoreTaskCompletionBarViewModel()
     
     init() {
         self.coreViewModel.onLoadTaskCompletion { taskCompletion in
             self.taskCompletion = taskCompletion
-            if self.taskCompletion.totalTasks != 0 {
-                self.percentageOfCompletedTasks = String(format: "%.2f%%", (Double(taskCompletion.finishedTasks)/Double(taskCompletion.totalTasks))*100)
-            }
         }
+    }
+    
+    func getPercentageOfCompletedTasks() -> String {
+        if self.taskCompletion.totalTasks != 0 {
+            return String(format: "%.2f%%", (Double(taskCompletion.finishedTasks)/Double(taskCompletion.totalTasks))*100)
+        }
+        return "0.00%"
     }
 }
