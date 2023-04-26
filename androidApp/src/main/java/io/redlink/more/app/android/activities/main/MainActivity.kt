@@ -4,7 +4,6 @@ import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -21,6 +20,8 @@ import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
+import io.redlink.more.app.android.activities.notification.NotificationView
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
@@ -80,7 +81,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 1
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATIONS.stringRes()
-                Text("NotificationView")
+                NotificationView(navController, viewModel = viewModel.notificationViewModel)
             }
             composable(NavigationScreen.INFO.route) {
                 viewModel.tabIndex.value = 2
