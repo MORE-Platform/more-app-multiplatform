@@ -13,9 +13,9 @@ import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.R
 
 @Composable
-fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationViewModel: NotificationViewModel) {
+fun NotificationFilterView() {
 
-    LazyColumn() {
+    LazyColumn {
         item {
             HeaderTitle(
                 title = getString(R.string.more_select_filter),
@@ -24,5 +24,4 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel, notificationV
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
     }
-
 }

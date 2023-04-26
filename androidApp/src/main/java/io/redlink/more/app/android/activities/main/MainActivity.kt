@@ -209,11 +209,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
             }
-            composable(NavigationScreen.NOTIFICATION_FILTER.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
-                viewModel.showBackButton.value = true
-                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel, notificationViewModel = viewModel.notificationViewModel)
-            }
         }
     }
 }
