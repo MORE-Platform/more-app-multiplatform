@@ -142,7 +142,6 @@
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */; };
 		ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */; };
-		ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */; };
 		ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */; };
 		ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED5EBB3029B1F44900BAF0A6 /* DashboardView.strings */; };
 		ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A7F3E29DC405B00E266EC /* FCMService.swift */; };
@@ -154,6 +153,8 @@
 		EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */ = {isa = PBXBuildFile; productRef = EDACF62629D2F31D0032327B /* PolarBleSdk */; };
 		EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */; };
 		EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */; };
+		EDB16E2B29F933EF00701C27 /* TaskCompletionBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB16E2A29F933EF00701C27 /* TaskCompletionBarViewModel.swift */; };
+		EDB16E3029F9357300701C27 /* TaskCompletionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB16E2F29F9357300701C27 /* TaskCompletionBarView.swift */; };
 		EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */; };
 		EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */; };
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
@@ -319,7 +320,6 @@
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
-		ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskProgressView.swift; sourceTree = "<group>"; };
 		ED16C5EF29B74FD900DA8AFE /* ObservationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetails.swift; sourceTree = "<group>"; };
 		ED16C5F329B75FF000DA8AFE /* ScheduleListView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ScheduleListView.strings; sourceTree = "<group>"; };
 		ED16C5F629B764DC00DA8AFE /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
@@ -334,6 +334,8 @@
 		EDAC149529DEF2010084CE1C /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarVerityHeartRateObservation.swift; sourceTree = "<group>"; };
 		EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedSchedules.swift; sourceTree = "<group>"; };
+		EDB16E2A29F933EF00701C27 /* TaskCompletionBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCompletionBarViewModel.swift; sourceTree = "<group>"; };
+		EDB16E2F29F9357300701C27 /* TaskCompletionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCompletionBarView.swift; sourceTree = "<group>"; };
 		EDBB2B4129B8ACD400CA973E /* ScheduleDateWithList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateWithList.swift; sourceTree = "<group>"; };
 		EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int64Extension.swift; sourceTree = "<group>"; };
 		EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EDB16E2C29F934CE00701C27 /* TaskCompletionBar */,
 				EDAF93ED29F17A210093F1DA /* CompletedSchedules */,
 				EDEF4C8129EFD4B200E830DA /* RunningSchedules */,
 				07BC54AA29CB2F1D00459267 /* StudyDetails */,
@@ -766,6 +769,15 @@
 			path = CompletedSchedules;
 			sourceTree = "<group>";
 		};
+		EDB16E2C29F934CE00701C27 /* TaskCompletionBar */ = {
+			isa = PBXGroup;
+			children = (
+				EDB16E2A29F933EF00701C27 /* TaskCompletionBarViewModel.swift */,
+				EDB16E2F29F9357300701C27 /* TaskCompletionBarView.swift */,
+			);
+			path = TaskCompletionBar;
+			sourceTree = "<group>";
+		};
 		EDB51FA029E594D200F49136 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
@@ -795,7 +807,6 @@
 				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
 				EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */,
 				ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */,
-				ED16C5EC29B73ADF00DA8AFE /* TaskProgressView.swift */,
 				ED16C5EE29B74C4A00DA8AFE /* Schedule */,
 			);
 			path = Dashboard;
@@ -1031,12 +1042,12 @@
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
-				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
 				B79DBA5329D3431B00A1F547 /* DashboardFilterViewModel.swift in Sources */,
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
+				EDB16E3029F9357300701C27 /* TaskCompletionBarView.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
@@ -1074,6 +1085,7 @@
 				1F27536129CC372500324417 /* AppState.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
+				EDB16E2B29F933EF00701C27 /* TaskCompletionBarViewModel.swift in Sources */,
 				07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
 				B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */,

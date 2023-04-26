@@ -41,6 +41,7 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
+    let coreTaskCompletionViewModel = CoreTaskCompletionBarViewModel()
     
     
 

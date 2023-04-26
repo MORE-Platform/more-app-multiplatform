@@ -24,6 +24,7 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar.CoreTaskCompletionBarViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -49,6 +50,7 @@ class MainViewModel(context: Context): ViewModel() {
             ScheduleListType.COMPLETED
         )
     }
+    val coreTaskCompletionModel = CoreTaskCompletionBarViewModel()
     val dashboardViewModel = DashboardViewModel(context, allSchedulesViewModel)
     val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel(context) }
     val studyDetailsViewModel: StudyDetailsViewModel by lazy { StudyDetailsViewModel() }

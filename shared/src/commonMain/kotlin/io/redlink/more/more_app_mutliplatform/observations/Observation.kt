@@ -123,7 +123,6 @@ abstract class Observation(val observationType: ObservationType) {
         scheduleIds.clear()
     }
 
-
     fun isRunning() = running
 
     companion object {
