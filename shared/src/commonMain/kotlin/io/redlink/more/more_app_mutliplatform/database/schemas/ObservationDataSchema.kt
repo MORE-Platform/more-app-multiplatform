@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
-import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.copyFromRealm
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
@@ -64,7 +63,6 @@ class ObservationDataSchema : RealmObject {
                         RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
                 }
                 this.dataValue = data.asString() ?: ""
-                Napier.i {this.dataValue}
             }
         }
 

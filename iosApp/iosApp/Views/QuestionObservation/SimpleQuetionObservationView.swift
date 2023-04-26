@@ -11,7 +11,7 @@ import shared
 
 struct SimpleQuetionObservationView: View {
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var viewModel: SimpleQuestionObservationViewModel
+    @StateObject var viewModel: SimpleQuestionObservationViewModel
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
     

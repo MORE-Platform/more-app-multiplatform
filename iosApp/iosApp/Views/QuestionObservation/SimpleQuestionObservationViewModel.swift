@@ -17,14 +17,6 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
     
-    /*
-    @Published var questionString: String = "Are you fine?"
-    @Published var answerOptions: [String] = [
-        "No",
-        "Yes",
-        "I don't know"
-    ]*/
-    
     init(scheduleId: String) {
         self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: observationFactory)
         

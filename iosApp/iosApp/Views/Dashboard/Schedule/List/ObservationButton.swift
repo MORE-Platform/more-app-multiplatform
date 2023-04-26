@@ -20,7 +20,7 @@ struct ObservationButton: View {
         VStack {
             if observationType == "question-observation" {
                 NavigationLinkButton(disabled: .constant(disabled)) {
-                    SimpleQuetionObservationView().environmentObject(SimpleQuestionObservationViewModel(scheduleId: scheduleId))
+                    SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: scheduleId))
                 } label: {
                     Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
                         .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
