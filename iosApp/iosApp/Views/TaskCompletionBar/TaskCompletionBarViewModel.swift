@@ -15,8 +15,6 @@ class TaskCompletionBarViewModel: ObservableObject {
     
     init() {
         loadTaskCompletion()
-        print("COMPLETION BAR: completed tasks: \(taskCompletion.finishedTasks)")
-        print("COMPLETION BAR: total tasks: \(taskCompletion.totalTasks)")
     }
     
     func loadTaskCompletion() {
