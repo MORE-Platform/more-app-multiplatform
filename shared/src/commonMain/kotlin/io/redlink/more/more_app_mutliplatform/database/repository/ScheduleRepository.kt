@@ -1,15 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.ktor.http.*
 import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.Sort
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
-import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -33,6 +30,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             query = "state = $0",
             queryArgs = arrayOf(scheduleState.name)
         )
+    fun allSchedules() = realmDatabase.query<ScheduleSchema>()
 
     fun collectRunningState(
         forState: ScheduleState,
