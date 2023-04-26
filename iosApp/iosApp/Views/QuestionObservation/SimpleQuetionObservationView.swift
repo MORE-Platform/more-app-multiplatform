@@ -1,5 +1,5 @@
 //
-//  QuestionObservationView.swift
+//  SimpleQuetionObservationView.swift
 //  iosApp
 //
 //  Created by Isabella Aigner on 27.03.23.
@@ -9,10 +9,11 @@
 import SwiftUI
 import shared
 
-struct QuestionObservationView: View {
+struct SimpleQuetionObservationView: View {
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var viewModel: QuestionObservationViewModel = QuestionObservationViewModel()
+    @StateObject var viewModel: SimpleQuestionObservationViewModel
     private let navigationStrings = "Navigation"
+    private let simpleQuestionStrings = "SimpleQuestinoObservation"
     
     @State private var selected = ""
     
@@ -21,31 +22,35 @@ struct QuestionObservationView: View {
         Navigation {
             MoreMainBackground {
                 VStack {
-                    Title2(titleText: .constant(viewModel.questionString))
+                    Title2(titleText: .constant(viewModel.simpleQuestoinModel?.question ?? "Question"))
                         .padding(.bottom, 20)
                         .padding(.top, 40)
                     
+
                     VStack(
                         alignment: .leading) {
-                            ForEach(viewModel.answerOptions, id: \.self) { answerOption in
+                            
+                            ForEach(viewModel.answers, id: \.self) { answerOption in
                                 RadioButtonField(id: answerOption, label: answerOption, isMarked: $selected.wrappedValue == answerOption ? true : false,
-                                                 callback: { selected in
+                                callback: { selected in
                                     self.selected = selected
-                                    print("Selected item is \(selected)")
+                                    viewModel.setAnswer(answer: selected)
                                 })
                             }
-                            
+                             
                             MoreActionButton(disabled: .constant(false)) {
                                 if(self.selected != "") {
+                                    viewModel.finish()
                                     self.presentationMode.wrappedValue.dismiss()
                                 }
                                 
                             } label: {
-                                Text("Answer")
+                                Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
                             }
                             .padding(.top, 30)
                         }
                         .padding(.horizontal, 10)
+                    
             
                     Spacer()
                 }

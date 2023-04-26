@@ -8,10 +8,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 
 @Composable
-fun RunningSchedulesView(finishedTasks: Int, totalTasks: Int, viewModel: ScheduleViewModel, navController: NavController) {
+fun RunningSchedulesView(viewModel: ScheduleViewModel, navController: NavController, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -20,10 +21,9 @@ fun RunningSchedulesView(finishedTasks: Int, totalTasks: Int, viewModel: Schedul
             .fillMaxHeight()
     ) {
         ScheduleListHeader(
-            finishedTasks = finishedTasks,
-            totalTasks = totalTasks,
             viewModel = viewModel,
-            navController = navController
+            navController = navController,
+            taskCompletionBarViewModel = taskCompletionBarViewModel
         )
         Spacer(modifier = Modifier.height(10.dp))
         Column {

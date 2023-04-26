@@ -21,6 +21,8 @@ import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
+import io.redlink.more.app.android.activities.notification.NotificationView
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
@@ -73,13 +75,14 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
-                DashboardView(navController, viewModel = viewModel.dashboardViewModel)
+                DashboardView(navController, viewModel = viewModel.dashboardViewModel,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
             composable(NavigationScreen.NOTIFICATIONS.route) {
                 viewModel.tabIndex.value = 1
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATIONS.stringRes()
-                Text("NotificationView")
+                NotificationView(navController, viewModel = viewModel.notificationViewModel)
             }
             composable(NavigationScreen.INFO.route) {
                 viewModel.tabIndex.value = 2
@@ -133,7 +136,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController)
+                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
             composable("${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType={scheduleListType}",
             arguments = listOf(
@@ -184,19 +188,17 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
                 RunningSchedulesView(
-                    totalTasks = viewModel.dashboardViewModel.totalTasks.value,
-                    finishedTasks = viewModel.dashboardViewModel.finishedTasks.value,
                     viewModel = viewModel.runningSchedulesViewModel,
-                    navController = navController)
+                    navController = navController,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
             composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
                 CompletedSchedulesView(
-                    totalTasks = viewModel.dashboardViewModel.totalTasks.value,
-                    finishedTasks = viewModel.dashboardViewModel.finishedTasks.value,
                     viewModel = viewModel.completedSchedulesViewModel,
-                    navController = navController)
+                    navController = navController,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
             composable(NavigationScreen.LEAVE_STUDY.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY.stringRes()
