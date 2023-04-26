@@ -19,19 +19,21 @@ import kotlinx.coroutines.launch
 
 class SimpleQuestionCoreViewModel(
     private val scheduleId: String,
-    private val observationFactory: ObservationFactory
+    observationFactory: ObservationFactory
 ) {
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
 
     val simpleQuestionModel = MutableStateFlow<SimpleQuestionModel?>(null)
-    private var observation: Observation = SimpleQuestionObservation()
+    private var observation: Observation? = null
 
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
 
     init {
-        observationFactory.observation("question-observation")?.let { observation = it }
+        observationFactory.observation("question-observation")?.let {
+            observation = it
+        }
         scope.launch {
             scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let{ scheduleSchema ->
                 observationRepository.observationById(scheduleSchema.observationId).firstOrNull()?.let { observationSchema ->
@@ -42,17 +44,19 @@ class SimpleQuestionCoreViewModel(
     }
 
     fun finishQuestion(data: String, setObservationToDone: Boolean){
-        simpleQuestionModel.value?.observationId?.let {
-            observation.start(it, scheduleId)
-            Napier.i("---------finishQuestion----------")
-            Napier.i("observation started")
-            observation.storeData(object { val answer = data })
-            Napier.i("---------finishQuestion----------")
-            Napier.i("observation stored data")
-            scheduleRepository.setCompletionStateFor(scheduleId, true)
-            Napier.i("stored data")
-            observation.stop(it)
-            Napier.i("observation stop observation")
+        simpleQuestionModel.value?.observationId?.let { observationId ->
+            observation?.let { observation ->
+                observation.start(observationId, scheduleId)
+                Napier.i("---------finishQuestion----------")
+                Napier.i("observation started")
+                observation.storeData(mapOf("answer" to data))
+                Napier.i("---------finishQuestion----------")
+                Napier.i("observation stored data")
+                scheduleRepository.setCompletionStateFor(scheduleId, true)
+                Napier.i("stored data")
+                observation.stop(observationId)
+                Napier.i("observation stop observation")
+            }
         }
     }
 
