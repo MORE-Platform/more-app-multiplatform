@@ -19,6 +19,8 @@ enum NavigationScreens: String {
     case questionObservation = "Question Observation"
     case dashboardFilter = "Dashboard Filter"
     case notificationFilter = "Notification Filter"
+    case completedObservations = "Completed Observations"
+    case runningObservations = "Running Observations"
 }
 
 extension NavigationScreens {

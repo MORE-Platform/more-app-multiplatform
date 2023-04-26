@@ -22,11 +22,11 @@ import kotlinx.coroutines.launch
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
     private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = MoreApplication.appContext!!)
-    private val registrationService: RegistrationService = RegistrationService(sharedPreferencesRepository)
+    private val registrationService: RegistrationService by lazy { RegistrationService(sharedPreferencesRepository) }
     private val credentialRepository: CredentialRepository = CredentialRepository(sharedPreferencesRepository)
 
-    val loginViewModel: LoginViewModel = LoginViewModel(registrationService, this)
-    val consentViewModel: ConsentViewModel = ConsentViewModel(registrationService, this, context = MoreApplication.appContext!!)
+    val loginViewModel: LoginViewModel by lazy { LoginViewModel(registrationService, this) }
+    val consentViewModel: ConsentViewModel by lazy { ConsentViewModel(registrationService, this, context = MoreApplication.appContext!!) }
 
     val hasCredentials = mutableStateOf(credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)

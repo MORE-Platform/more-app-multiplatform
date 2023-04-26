@@ -19,29 +19,42 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
+    var specificBluetoothConnectors: [String : BluetoothConnector] = [:]
+    
+    
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
     private var connectedDevices: BluetoothDeviceList = [:]
+    private var scanning = false
     
+    var observer: BluetoothConnectorObserver?
     var delegate: BLEConnectorDelegate?
-
+    
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
 
-    func connect(device: BluetoothDevice) {
+    func connect(device: BluetoothDevice) -> KotlinError? {
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.connect(cbPeripheral)
+            return nil
+        } else {
+            return KotlinError(message: "Could not find device")
         }
     }
-
+    
     func disconnect(device: BluetoothDevice) {
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.cancelPeripheralConnection(cbPeripheral)
         }
     }
-
+    
+    func isScanning() -> Bool {
+        scanning
+    }
+    
+    
     func scan() {
         switch centralManager.state {
         case .unknown:
@@ -61,21 +74,41 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
             print("Bluetooth state unknown default")
         }
     }
-
+    
     func stopScanning() {
         centralManager.stopScan()
+    }
+    
+    
+    
+    func close() {
+        stopScanning()
+    }
+    
+    deinit {
+        stopScanning()
+        observer = nil
+        delegate = nil
     }
 }
 
 extension IOSBluetoothConnector: CBCentralManagerDelegate {
     internal func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("connected to \(peripheral.description)")
-        self.connectedDevices[peripheral.toBluetoothDevice()] = peripheral
+        let device = peripheral.toBluetoothDevice()
+        self.connectedDevices[device] = peripheral
+        self.observer?.didConnectToDevice(bluetoothDevice: device)
     }
     
     private func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected from \(peripheral.identifier)")
-        self.connectedDevices.removeValue(forKey: peripheral.toBluetoothDevice())
+        let device = peripheral.toBluetoothDevice()
+        self.connectedDevices.removeValue(forKey: device)
+        self.observer?.didConnectToDevice(bluetoothDevice: device)
+    }
+    
+    private func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        self.observer?.didConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
     
     internal func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -98,7 +131,7 @@ extension IOSBluetoothConnector: CBPeripheralDelegate {
 
 extension CBPeripheral {
     func toBluetoothDevice() -> BluetoothDevice {
-        BluetoothDevice(
+        BluetoothDevice.Companion().create(
             deviceId: self.identifier.uuidString,
             deviceName: self.name ?? "Unknown",
             address: self.identifier.uuidString,

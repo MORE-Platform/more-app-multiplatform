@@ -10,6 +10,7 @@ import shared
 
 protocol DashboardFilterObserver {
     func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String]
+    func updateFilterText() -> String
 }
 
 class DashboardFilterViewModel: ObservableObject {
@@ -55,6 +56,10 @@ class DashboardFilterViewModel: ObservableObject {
     
     func updateFilters(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
         return self.delegate?.onFilterChanged(multiSelect: multiSelect, filter: filter, list: list, stringTable: stringTable) ?? []
+    }
+    
+    func updateFilterText() -> String  {
+        return self.delegate?.updateFilterText() ?? ""
     }
     
     func setCurrentFilters() {
