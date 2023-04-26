@@ -30,7 +30,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             query = "state = $0",
             queryArgs = arrayOf(scheduleState.name)
         )
-    fun allSchedules() = realmDatabase.query<ScheduleSchema>()
+    fun allSchedules() = realmDatabase.count<ScheduleSchema>()
 
     fun collectRunningState(
         forState: ScheduleState,

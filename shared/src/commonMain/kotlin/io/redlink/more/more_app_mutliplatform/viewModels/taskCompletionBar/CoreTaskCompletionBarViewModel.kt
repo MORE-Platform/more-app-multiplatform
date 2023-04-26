@@ -18,7 +18,7 @@ class CoreTaskCompletionBarViewModel {
     init {
         scope.launch {
             repository.allSchedules().collect {
-                taskCompletion.value.totalTasks = it.size
+                taskCompletion.value.totalTasks = it.toInt()
                 Napier.i { "Total tasks: ${taskCompletion.value.totalTasks}" }
             }
         }
