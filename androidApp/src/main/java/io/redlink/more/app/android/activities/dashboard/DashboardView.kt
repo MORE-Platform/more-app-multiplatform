@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 
@@ -26,8 +25,6 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
             .fillMaxHeight()
     ){
         ScheduleListHeader(
-            finishedTasks = viewModel.finishedTasks.value,
-            totalTasks = viewModel.totalTasks.value,
             viewModel = viewModel.scheduleViewModel,
             navController = navController
         )

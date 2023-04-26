@@ -11,7 +11,7 @@ import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleLi
 import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 
 @Composable
-fun CompletedSchedulesView(finishedTasks: Int, totalTasks: Int, viewModel: ScheduleViewModel, navController: NavController) {
+fun CompletedSchedulesView(viewModel: ScheduleViewModel, navController: NavController) {
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -20,8 +20,6 @@ fun CompletedSchedulesView(finishedTasks: Int, totalTasks: Int, viewModel: Sched
             .fillMaxHeight()
     ) {
         ScheduleListHeader(
-            finishedTasks = finishedTasks,
-            totalTasks = totalTasks,
             viewModel = viewModel,
             navController = navController
         )
