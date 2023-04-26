@@ -6,12 +6,11 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Autorenew
-import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -53,19 +52,19 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 }
             )
             InfoItem(
-                title = getStringResource(id = R.string.info_devices),
-                imageVector = Icons.Default.Watch,
-                contentDescription = getStringResource(id = R.string.info_devices_desc),
-                onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
-                }
-            )
-            InfoItem(
                 title = getStringResource(id = R.string.info_consent_settings),
                 imageVector = Icons.Default.Settings,
                 contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
+                }
+            )
+            InfoItem(
+                title = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
+                imageVector = Icons.Outlined.Devices,
+                contentDescription = getStringResource(id = R.string.more_ble_icon_description),
+                onClick = {
+                    navController.navigate(NavigationScreen.BLUETOOTH_CONNECTION.route)
                 }
             )
             InfoItem(

@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionView
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
@@ -55,7 +56,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
-        onBackButtonClick = { navController.popBackStack() },
+        onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
         tabSelectionIndex = viewModel.tabIndex.value,
         onTabChange = {
@@ -172,6 +173,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
+            }
+
+            composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
+                viewModel.showBackButton.value = true
+                BluetoothConnectionView(navController, viewModel.bluetoothConnectionViewModel)
             }
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()

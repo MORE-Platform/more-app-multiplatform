@@ -17,7 +17,7 @@ import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 
 @Composable
 fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
-    PolarHeartRateObservation.scanForDevices()
+//    PolarHeartRateObservation.scanForDevices()
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = CenterHorizontally,
