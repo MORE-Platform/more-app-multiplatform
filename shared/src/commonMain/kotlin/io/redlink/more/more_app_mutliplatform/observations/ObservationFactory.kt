@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
+
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
     val observations = mutableSetOf<Observation>()
 

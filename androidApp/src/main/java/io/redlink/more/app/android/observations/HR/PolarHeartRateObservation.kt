@@ -5,14 +5,19 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.polar.sdk.api.PolarBleApi
-import com.polar.sdk.api.PolarBleApiDefaultImpl
-import com.polar.sdk.api.model.*
+import com.polar.sdk.api.model.PolarDeviceInfo
+import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.app.android.services.bluetooth.PolarConnector
+import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 private const val TAG = "PolarHearRateObservation"
 private val permissions =
@@ -30,25 +35,49 @@ private val permissions =
     }
 
 class PolarHeartRateObservation(context: Context) :
-    Observation(observationType = PolarVerityHeartRateType(permissions)), HeartRateListener {
+    Observation(observationType = PolarVerityHeartRateType(permissions)) {
+    private val polarConnector = PolarConnector(context)
 
     private val hasPermission = this.hasPermissions(context)
-    private val callback = PolarObserverCallback()
+
+    private val bluetoothDeviceRepository = BluetoothDeviceRepository()
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+
+    private val connectedDevices = mutableSetOf<BluetoothDevice>()
+
+    private var heartRateDisposable: Disposable? = null
+
     init {
-        callback.addListener(this)
-        createPolarAPI(context, callback)
+        scope.launch {
+            bluetoothDeviceRepository.getConnectedDevices().collect { deviceList ->
+                connectedDevices.clear()
+                val filtered = deviceList.filter { it.deviceName?.lowercase()?.contains("polar") ?: false }
+                deviceList.forEach {
+                    Napier.i { "$this: Device in list: ${it.deviceName}" }
+                }
+                filtered.forEach {
+                    Napier.i { "$this: Filtered device in list: ${it.deviceName}" }
+                }
+                connectedDevices.addAll(filtered)
+            }
+        }
     }
 
     override fun start(): Boolean {
-        heartRateDisposable = api.startHrStreaming(deviceId).subscribe(
-            { polarData ->
-                Log.i(TAG, "$polarData")
-                storeData(mapOf("hr" to polarData.samples[0].hr))
-            },
-            {
-                Log.e(TAG, "$it")
-            })
-        return true
+        if (connectedDevices.isNotEmpty()) {
+            connectedDevices.first().deviceId?.let {
+                heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
+                        { polarData ->
+                            Napier.i{ "Polar Data: $polarData"}
+                            storeData(mapOf("hr" to polarData.samples[0].hr))
+                        },
+                { error ->
+                    Napier.e( error.stackTraceToString())
+                })
+                return true
+            }
+        }
+        return false
     }
 
     override fun stop(onCompletion: () -> Unit) {
@@ -76,70 +105,7 @@ class PolarHeartRateObservation(context: Context) :
         return true
     }
 
-    override fun onDeviceConnected() {
-        scanDisposable?.dispose()
-        Log.d(TAG, "Device connected. Listening to HR")
-    }
-
-    override fun onDeviceDisconnected() {
-        hrReady.value = false
-        stopAndSetState(ScheduleState.PAUSED)
-        scanForDevices()
-    }
-
-    override fun onHeartRateUpdate(hr: Int) {
-        Log.d(TAG, "HR Updated: $hr BPM")
-        if (hr > 0) {
-            storeData(hr)
-        }
-    }
-
-    override fun onHeartRateReady() {
-        hrReady.value = true
-    }
-
     companion object {
-        private lateinit var api: PolarBleApi
-        private var scanDisposable: Disposable? = null
-        private var heartRateDisposable: Disposable? = null
-        private var deviceId: String = ""
-        var hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
-        fun createPolarAPI(context: Context, callback: PolarObserverCallback) {
-            api = PolarBleApiDefaultImpl.defaultImplementation(
-                context,
-                setOf(
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_BATTERY_INFO,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-                    PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
-                )
-            )
-            api.setPolarFilter(false)
-            api.setApiCallback(callback)
-        }
-
-
-        fun scanForDevices() {
-            scanDisposable = api.searchForDevice()
-                .subscribe(
-                    { polarDeviceInfo: PolarDeviceInfo ->
-                        connectDevice(polarDeviceInfo.deviceId)
-                    },
-                    { error: Throwable ->
-                        Log.e(TAG, "Device scan failed. Reason $error")
-                    },
-                    {
-                        Log.d(TAG, "complete")
-                    }
-                )
-        }
-
-        private fun connectDevice(device: String) {
-            api.connectToDevice(device)
-            deviceId = device
-        }
+        val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
     }
 }

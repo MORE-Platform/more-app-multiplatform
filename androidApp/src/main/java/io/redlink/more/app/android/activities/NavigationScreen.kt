@@ -17,6 +17,13 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     SIMPLE_QUESTION("Simple Observation", R.string.nav_simple_question),
     QUESTIONNAIRE_RESPONSE("Questionnaire Response", R.string.nav_simple_question),
     NOTIFICATION_FILTER("Notification Filter", R.string.nav_notification_filter);
+    QUESTIONNAIRE_RESPONSE("Questionnaire Response", R.string.nav_simple_question),
+    BLUETOOTH_CONNECTION("Bluetooth Connection", R.string.more_ble_view_title),
+    RUNNING_SCHEDULES("Running Observation", R.string.nav_running_schedules),
+    COMPLETED_SCHEDULES("Completed Observations", R.string.nav_completed_schedules),
+    LEAVE_STUDY("Leave Study", R.string.nav_leave_study),
+    LEAVE_STUDY_CONFIRM("Confirm to leave the study", R.string.nav_leave_study_confirm);
+
     @Composable
     fun stringRes() = getStringResource(id = stringResource)
 }

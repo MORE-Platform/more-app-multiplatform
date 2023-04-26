@@ -6,10 +6,12 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
@@ -19,14 +21,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class ScheduleViewModel(androidDataRecorder: AndroidDataRecorder, coreFilterModel: CoreDashboardFilterViewModel) : ViewModel() {
-    private val coreViewModel = CoreScheduleViewModel(androidDataRecorder, coreFilterModel)
+class ScheduleViewModel(val coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
+                        val scheduleListType: ScheduleListType) : ViewModel() {
+
+    val coreViewModel = CoreScheduleViewModel(dataRecorder, coreFilterModel = coreFilterModel, scheduleListType = scheduleListType)
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
+
+    val filterModel = DashboardFilterViewModel(coreFilterModel)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
