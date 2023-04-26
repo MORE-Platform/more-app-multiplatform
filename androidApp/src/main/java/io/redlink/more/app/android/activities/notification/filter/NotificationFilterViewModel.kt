@@ -41,4 +41,21 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
     fun processFilter(filter: String?) {
         coreViewModel.processFilterChange(filter)
     }
+
+    fun getFilterString(): String {
+        var filterString = ""
+
+        if(currentFilter.value.isEmpty()) {
+            return getString(R.string.more_filter_notification_all)
+        }
+        notificationFilterList.forEach {
+            if(currentFilter.value.contains(it.second)) {
+                if(filterString.isNotEmpty()) {
+                    filterString += ", "
+                }
+                filterString += it.first
+            }
+        }
+        return filterString
+    }
 }

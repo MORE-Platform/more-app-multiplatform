@@ -32,7 +32,7 @@ fun NotificationFilterViewButton(navController: NavController, viewModel: Notifi
             .clickable(onClick = { navController.navigate(NavigationScreen.NOTIFICATION_FILTER.route) })
     ){
         Text(
-            text = viewModel.currentFilter,
+            text = viewModel.filterModel.getFilterString(),
             color = MoreColors.Primary,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier

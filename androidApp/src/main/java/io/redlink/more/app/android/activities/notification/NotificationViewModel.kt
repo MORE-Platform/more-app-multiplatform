@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.notification
 
+import NotificationFilterViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
@@ -12,10 +13,10 @@ data class Notification (
 )
 
 
-class NotificationViewModel: ViewModel() {
+class NotificationViewModel(filterViewModel: NotificationFilterViewModel): ViewModel() {
     //private val coreViewModel = CoreNotificationViewModel()
     val model = mutableStateOf<StudyDetailsModel?>(null)
-    var currentFilter = "All Notifications"
+    val filterModel = filterViewModel
 
     val notificationList: List<Notification> = listOf(
         Notification(

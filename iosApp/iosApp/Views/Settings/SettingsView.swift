@@ -11,6 +11,7 @@ import shared
 
 struct SettingsView: View {
     @StateObject var viewModel: SettingsViewModel
+    @State var exitButton = Color.more.important
     
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
@@ -31,12 +32,7 @@ struct SettingsView: View {
                         .padding(.top)
                 }
                 
-                MoreActionButton(backgroundColor: Color.more.important, disabled: .constant(false)) {
-                    viewModel.leaveStudy()
-                    //contentViewModel.showLoginView()
-                } label: {
-                    Text(String.localizedString(forKey: "leave_study", inTable: stringTable, withComment: "button to refresh study configuration"))
-                }
+                Spacer()
             }
         } topBarContent: {
             EmptyView()

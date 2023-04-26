@@ -14,15 +14,15 @@ import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.toDate
 import io.redlink.more.app.android.shared_composables.*
-import io.redlink.more.app.android.shared_composables.*
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
 @Composable
-fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, observationTitle: String) {
+fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,20 +91,21 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
             scheduleId?.let {
                 DatapointCollectionView(viewModel.dataPointCount.value, viewModel.taskDetailsModel.value.state)
                 Spacer(modifier = Modifier.height(20.dp))
-
-                SmallTextButton(
-                    text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
-                        id = R.string.more_observation_pause
-                    ) else getStringResource(
-                        id = R.string.more_observation_start
-                    ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
-                ) {
-                    if (viewModel.taskDetailsModel.value.observationType == "question-observation")
-                        navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
-                    else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
-                        viewModel.pauseObservation()
-                    } else {
-                        viewModel.startObservation()
+                if (scheduleListType != ScheduleListType.COMPLETED) {
+                    SmallTextButton(
+                        text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
+                            id = R.string.more_observation_pause
+                        ) else getStringResource(
+                            id = R.string.more_observation_start
+                        ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
+                    ) {
+                        if (viewModel.taskDetailsModel.value.observationType == "question-observation")
+                            navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
+                        else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                            viewModel.pauseObservation()
+                        } else {
+                            viewModel.startObservation()
+                        }
                     }
                 }
             }

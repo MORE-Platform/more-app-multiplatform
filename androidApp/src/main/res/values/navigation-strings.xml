@@ -12,4 +12,6 @@
     <string name="nav_running_schedules">Running Schedules</string>
     <string name="nav_completed_schedules">Completed Schedules</string>
     <string name="nav_notification_filter">Notification Filter</string>
+    <string name="nav_leave_study">Leave Study</string>
+    <string name="nav_leave_study_confirm">Confirm to leave the study</string>
 </resources>
