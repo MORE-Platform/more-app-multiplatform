@@ -1,8 +1,11 @@
 package io.redlink.more.app.android.activities.dashboard.filter
 
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formatDateFilterString
 import io.redlink.more.app.android.extensions.formatObservationTypeString
+import io.redlink.more.app.android.extensions.getQuantityString
+import io.redlink.more.app.android.extensions.getString
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
@@ -50,5 +53,25 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
 
     fun setDateFilter(dateFilter: DateFilterModel) {
         coreViewModel.setDateFilter(dateFilter)
+    }
+
+    fun getFilterString(): String {
+        var filterString = ""
+        val typesAmount = coreViewModel.currentFilter.value.typeFilter.size
+        val dateFilter = coreViewModel.currentFilter.value.dateFilter.toString().formatDateFilterString()
+
+        if(!coreViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME))
+            filterString += dateFilter
+
+        if(!coreViewModel.hasAllTypes()) {
+            if(filterString.isNotBlank())
+                filterString += ", "
+            filterString += getQuantityString(R.plurals.filter_text, typesAmount, typesAmount)
+        }
+
+        if(filterString.isBlank())
+            filterString += getString(R.string.more_filter_deactivated)
+
+        return filterString
     }
 }

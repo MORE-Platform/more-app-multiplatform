@@ -12,10 +12,11 @@ import SwiftUI
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
+    var scheduleListType: ScheduleListType
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-
+    
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -41,12 +42,12 @@ struct TaskDetailsView: View {
                             Spacer()
                         }
                     }
-
+                    
                     let date: String = viewModel.getDateRangeString()
                     let time: String = viewModel.getTimeRangeString()
-
+                    
                     ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
-
+                    
                     HStack {
                         AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
                     }
@@ -59,32 +60,34 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-
-                    if viewModel.taskDetailsModel?.observationType == "question-observation" {
-                        NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
-                            QuestionObservationView()
-                        } label: {
-                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
-                                .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)
-                        }
-                    } else {
-                        if let model = viewModel.taskDetailsModel {
-                            ObservationButton(observationType: model.observationType, state: model.state, disabled: model.state != .active
-                                && model.state != .running
-                                && model.state != .paused
-                                && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
-                                    || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())) {
-                                if model.state == .running {
-                                    viewModel.pause()
-                                } else {
-                                    viewModel.start()
+                    if scheduleListType != .completed {
+                        
+                        if viewModel.taskDetailsModel?.observationType == "question-observation" {
+                            NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
+                                QuestionObservationView()
+                            } label: {
+                                Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                    .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)
+                            }
+                        } else {
+                            if let model = viewModel.taskDetailsModel {
+                                ObservationButton(observationType: model.observationType, state: model.state, disabled: model.state != .active
+                                                  && model.state != .running
+                                                  && model.state != .paused
+                                                  && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
+                                                      || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())) {
+                                    if model.state == .running {
+                                        viewModel.pause()
+                                    } else {
+                                        viewModel.start()
+                                    }
                                 }
                             }
                         }
                     }
                     Spacer()
                 }
-
+                
             } topBarContent: {
                 EmptyView()
             }
