@@ -10,14 +10,13 @@ import SwiftUI
 
 struct MoreFilterOptionList: View {
     
-    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
-    
     @Binding var title: String
     @Binding var optionList: [String]
     @State var selectedValueList: [String]
     let multiSelect: Bool
-    
-    private let stringTable: String = "DashboardFilter"
+    let updateFilters: (Bool, String, [String], String) -> ([String])
+    let isItemSelected: ([String], String) -> (Bool)
+    let stringTable: String
     
     var body: some View {
         
@@ -28,12 +27,15 @@ struct MoreFilterOptionList: View {
             
             ForEach(optionList, id: \.self) { filter in
                 Button {
-                    selectedValueList = dashboardFilterViewModel.updateFilters(multiSelect: multiSelect, filter: filter, list: selectedValueList, stringTable: stringTable)
+                    selectedValueList = updateFilters(multiSelect, filter, selectedValueList, stringTable)
                 } label: {
                     HStack {
                         MoreFilterOption(
-                            multiSelect: multiSelect, option: filter, selectedValuesInList: $selectedValueList)
-                        .environmentObject(dashboardFilterViewModel)
+                            multiSelect: multiSelect,
+                            option: filter,
+                            selectedValuesInList: $selectedValueList,
+                            isItemSelected: isItemSelected,
+                            stringTable: stringTable)
                         Spacer()
                     }
                 }

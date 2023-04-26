@@ -23,7 +23,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
 
     val notificationFilterList = viewModel.notificationFilterList
 
-    val onChangeFilterState: (String?) -> Unit = {
+    val onChangeFilterState: (String) -> Unit = {
         viewModel.processFilter(it)
     }
 

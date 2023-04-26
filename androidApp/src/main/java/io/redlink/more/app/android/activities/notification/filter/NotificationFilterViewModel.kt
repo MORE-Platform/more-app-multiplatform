@@ -19,7 +19,7 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
     var notificationFilterList = listOf(
         Pair(
             getString(R.string.more_filter_notification_all),
-            null
+            NotificationFilterTypeModel.ALL.type
         ),
         Pair(
             getString(R.string.more_filter_notification_unread),
@@ -38,7 +38,7 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
         }
     }
 
-    fun processFilter(filter: String?) {
+    fun processFilter(filter: String) {
         coreViewModel.processFilterChange(filter)
     }
 }

@@ -2,9 +2,9 @@ package io.redlink.more.more_app_mutliplatform.models
 
 class NotificationFilterModel()
     : MutableList<NotificationFilterTypeModel> by mutableListOf() {
-    fun changeFilter(filter: String?): NotificationFilterModel{
+    fun changeFilter(filter: String): NotificationFilterModel{
         val model = NotificationFilterTypeModel.createModel(filter)
-        if(model ==  null) {
+        if(model ==  NotificationFilterTypeModel.ALL || model == null) {
             this.clear()
         } else if(this.contains(model)) {
             this.remove(model)
@@ -16,8 +16,8 @@ class NotificationFilterModel()
         return copy
     }
 
-    fun contains(element: String?): Boolean {
-        if(element == null) {
+    fun contains(element: String): Boolean {
+        if(element == NotificationFilterTypeModel.ALL.type) {
             return isEmpty()
         }
         return contains(NotificationFilterTypeModel.createModel(element))

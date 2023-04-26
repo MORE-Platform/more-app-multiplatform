@@ -28,7 +28,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     init() {
         var list: [String] = Array(observationFactory.observationTypes())
-        list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
+        list.insert("All Items", at: 0)
         self.observationTypes = list
         
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
@@ -68,13 +68,10 @@ class DashboardFilterViewModel: ObservableObject {
     }
     
     func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
-        var isSelected = false
-        let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
-        if option == allItemsString && selectedValuesInList.isEmpty {
-            isSelected = true
+        if option == "All Items" {
+            return selectedValuesInList.isEmpty
         } else {
-            isSelected = selectedValuesInList.contains(option)
+            return selectedValuesInList.contains(option)
         }
-        return isSelected
     }
 }

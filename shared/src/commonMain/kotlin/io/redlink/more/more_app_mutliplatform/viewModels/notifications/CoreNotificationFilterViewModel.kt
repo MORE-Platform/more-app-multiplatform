@@ -21,7 +21,7 @@ class CoreNotificationFilterViewModel {
      * Pass the String representing a filter
      * according to NotificationFilterTypeModel type field
      */
-    fun processFilterChange(filter: String?) {
+    fun processFilterChange(filter: String) {
         scope.launch {
             currentFilter.emit(
                 currentFilter.value.changeFilter(filter)
@@ -47,6 +47,10 @@ class CoreNotificationFilterViewModel {
                 } ?: false
             }
         return filteredList.toList()
+    }
+
+    fun getEnumAsList(): List<NotificationFilterTypeModel> {
+        return NotificationFilterTypeModel.values().toList()
     }
 
     fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {

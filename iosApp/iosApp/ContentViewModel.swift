@@ -46,6 +46,11 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
+    lazy var notificationFilterViewModel: NotificationFilterViewModel = {
+        let viewModel = NotificationFilterViewModel()
+        viewModel.delegate = self
+        return viewModel
+    }()
     
     
 
@@ -131,11 +136,11 @@ extension ContentViewModel: DashboardFilterObserver {
             dashboardFilterViewModel.dateFilterString = filter
             dashboardFilterViewModel.setDateFilterValue()
         }
-        updateFilterText(stringTable: stringTable)
+        updateDashboardFilterText(stringTable: stringTable)
         return selectedValueList
     }
     
-    func updateFilterText(stringTable: String) {
+    func updateDashboardFilterText(stringTable: String) {
         var typeFilterText = ""
         var dateFilterText = ""
         if noFilterSet() {
@@ -173,4 +178,16 @@ extension ContentViewModel: DashboardFilterObserver {
         return !dateFilterSet() && !typeFilterSet()
     }
     
+}
+
+extension ContentViewModel: NotificationFilterObserver {
+    func onFilterChanged(filter: String, list: [String], stringTable: String) -> [String] {
+        notificationFilterViewModel.processFilterChange(filter: filter)
+        updateNotificationFilterText(stringTable: stringTable)
+        return notificationFilterViewModel.currentFilters
+    }
+    
+    func updateNotificationFilterText(stringTable: String) {
+        //TODO
+    }
 }

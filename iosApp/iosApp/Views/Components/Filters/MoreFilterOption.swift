@@ -13,10 +13,10 @@ struct MoreFilterOption: View {
     let multiSelect: Bool
     var option: String
     @Binding var selectedValuesInList: [String]
-    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
+    let isItemSelected: ([String], String) -> (Bool)
     
     @State private var isSelected: Bool = false
-    private let stringTable = "DashboardFilter"
+    let stringTable: String
     
     var body: some View {
         VStack {
@@ -28,15 +28,15 @@ struct MoreFilterOption: View {
                     Spacer()
                         .frame(width: 5)
                 }
-                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
+                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of \(option) option")), isSelected: $isSelected)
             }
             .padding(5)
         }
         .onAppear {
-            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
+            isSelected = isItemSelected(selectedValuesInList, option)
         }
         .onChange(of: selectedValuesInList, perform: { _ in
-            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
+            isSelected = isItemSelected(selectedValuesInList, option)
         })
     }
 }
