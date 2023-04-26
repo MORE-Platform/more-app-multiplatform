@@ -36,7 +36,7 @@ class PolarConnector: BluetoothConnector {
         self.polarApi.deviceInfoObserver = self
         self.polarApi.deviceFeaturesObserver = self
         self.polarApi.powerStateObserver = self
-        self.polarApi.logger = self
+        //self.polarApi.logger = self
     }
     
 

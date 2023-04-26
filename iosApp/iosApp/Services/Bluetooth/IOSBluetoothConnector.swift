@@ -19,7 +19,7 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
-    internal let specificBluetoothConnectors: [String : BluetoothConnector] = ["polar": PolarConnector()]
+    internal let specificBluetoothConnectors: [String : BluetoothConnector] = ["polar": AppDelegate.polarConnector]
     
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
@@ -29,6 +29,8 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     var observer: BluetoothConnectorObserver?
     var delegate: BLEConnectorDelegate?
     
+    private var scanningWithUnknownBLEState = false
+    
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -37,14 +39,14 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
 
     func connect(device: BluetoothDevice) -> KotlinError? {
         print("Connecting to device: \(device)")
-//        let (hasConnected, error) = connectToSpecificDevice(device: device)
-//        if (hasConnected) {
-//            guard let error else {
-//                return nil
-//            }
-//            print(error)
-//            return error
-//        }
+        let (hasConnected, error) = connectToSpecificDevice(device: device)
+        if (hasConnected) {
+            guard let error else {
+                return nil
+            }
+            print(error)
+            return error
+        }
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.connect(cbPeripheral)
             return nil
@@ -69,6 +71,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
             switch centralManager.state {
             case .unknown:
                 print("Bluetooth state unknown")
+                scanningWithUnknownBLEState = true
             case .resetting:
                 print("Bluetooth state resetting")
             case .unsupported:
@@ -167,6 +170,12 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
         print("Manager state is powered on: \(central.state == .poweredOn)")
         if central.state == .poweredOn {
             delegate?.bleHasPower()
+            if scanningWithUnknownBLEState {
+                self.scan()
+            }
+        }
+        if central.state != .unknown {
+            scanningWithUnknownBLEState = false
         }
     }
     

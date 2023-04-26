@@ -1,0 +1,13 @@
+/* 
+  BluetoothConnection.strings
+  iosApp
+
+  Created by Jan Cortiel on 26.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Connected devices" = "Connected devices";
+"No devices connected" = "No devices connected";
+"Discovered devices" = "Discovered devices";
+"No devices found nearby" = "No devices found nearby";
+"Searching for devices" = "Searching for devices";

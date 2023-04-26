@@ -93,8 +93,6 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
 
     fun connectToDevice(device: BluetoothDevice): Boolean {
         Napier.i { "Connecting to device" }
-        stopScanning()
-        isConnecting.set(true)
         connectingDevices.append(device.address)
         return bluetoothConnector.connect(device)?.let {
             connectingDevices.remove(device.address)

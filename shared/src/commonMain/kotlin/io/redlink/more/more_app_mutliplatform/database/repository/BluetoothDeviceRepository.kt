@@ -1,8 +1,11 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.clear
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -11,13 +14,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnector? = null) : Repository<BluetoothDevice>(), BluetoothConnectorObserver {
+    val connectedDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
     private val pairedDeviceIds = mutableSetOf<String>()
     override fun count(): Flow<Long> = realmDatabase.count<BluetoothDevice>()
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
+
+    fun listenForConnectedDevices() {
+        scope.launch(Dispatchers.Default) {
+            getConnectedDevices().collect {
+                connectedDevices.set(it.toSet())
+            }
+        }
+    }
 
     fun setConnectionState(bluetoothDevice: BluetoothDevice, connected: Boolean) {
         scope.launch {
@@ -25,8 +39,10 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                 bluetoothDevice.address?.let {
                     val device = this.query<BluetoothDevice>("address = $0", it).first().find()
                     if (device != null) {
+                        Napier.i { "Setting state for device: $device to $connected" }
                         device.connected = connected
                     } else {
+                        Napier.i { "Adding device $bluetoothDevice and setting state to $connected" }
                         bluetoothDevice.connected = connected
                         this.copyToRealm(bluetoothDevice, updatePolicy = UpdatePolicy.ALL)
                     }
@@ -62,6 +78,8 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
 
     fun connectedDevicesChange(connected: Boolean, provideNewState: (List<BluetoothDevice>) -> Unit) = getConnectedDevices(connected).asClosure(provideNewState)
 
+    fun getConnectedDevices(provideNewState: (Set<BluetoothDevice>) -> Unit) = connectedDevices.asClosure(provideNewState)
+
     fun removeDevices(deviceIds: Set<BluetoothDevice>) {
         realmDatabase.deleteItems(deviceIds)
     }
@@ -71,11 +89,11 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
             val context = this
             CoroutineScope(Job() + Dispatchers.Default).launch {
                 realmDatabase.query<BluetoothDevice>().firstOrNull()?.let {
-                    pairedDeviceIds.addAll(it.mapNotNull { it.deviceId })
+                    pairedDeviceIds.addAll(it.mapNotNull { it.address })
                     if (pairedDeviceIds.isNotEmpty()) {
                         bluetoothConnector.observer = context
                         bluetoothConnector.scan()
-                        delay(2000)
+                        delay(5000)
                         bluetoothConnector.close()
                         setConnectionState(pairedDeviceIds, false)
                         pairedDeviceIds.clear()
@@ -90,7 +108,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
         setConnectionState(bluetoothDevice, true)
-        bluetoothDevice.deviceId?.let {
+        bluetoothDevice.address?.let {
             pairedDeviceIds.remove(it)
         }
     }
@@ -102,7 +120,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     }
 
     override fun discoveredDevice(device: BluetoothDevice) {
-        device.deviceId?.let {
+        device.address?.let {
             if (it in pairedDeviceIds) {
                 bluetoothConnector?.connect(device)
             }

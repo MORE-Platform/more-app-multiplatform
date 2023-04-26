@@ -10,13 +10,15 @@ import SwiftUI
 
 struct BluetoothConnectionView: View {
     @StateObject var viewModel: BluetoothConnectionViewModel
+    
+    private let bluetoothStrings = "BluetoothConnection"
     var body: some View {
         MoreMainBackground {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    Section(header: SectionHeading(sectionTitle: .constant("Connected devices"))) {
+                    Section(header: SectionHeading(sectionTitle: .constant("Connected devices".localize(useTable: bluetoothStrings, withComment: "Connected device section")))) {
                         if viewModel.connectedDevices.isEmpty {
-                            EmptyListView(text: "No devices connected!")
+                            EmptyListView(text: "\(String.localizedString(forKey: "No devices connected", inTable: bluetoothStrings, withComment: "No devices connected"))!")
                         } else {
                             ForEach(viewModel.connectedDevices, id: \.self.deviceId) { device in
                                 if let deviceName = device.deviceName {
@@ -33,7 +35,7 @@ struct BluetoothConnectionView: View {
                     }
                     Section(header: SectionHeading(sectionTitle: .constant("Discovered devices"))) {
                         if viewModel.discoveredDevices.isEmpty {
-                            EmptyListView(text: "No devices found nearby!")
+                            EmptyListView(text: "\(String.localizedString(forKey: "No devices found nearby", inTable: bluetoothStrings, withComment: "No devices found nearby"))!")
                         } else {
                             ForEach(viewModel.discoveredDevices, id: \.self.deviceId) { device in
                                 if let deviceName = device.deviceName {
@@ -59,7 +61,7 @@ struct BluetoothConnectionView: View {
                         if viewModel.bluetoothIsScanning {
                             HStack {
                                 ProgressView()
-                                BasicText(text: .constant("Searching for devices..."))
+                                BasicText(text: .constant("\(String.localizedString(forKey: "Searching for devices", inTable: bluetoothStrings, withComment: "Searching for new devices"))..."))
                             }
                         }
                     }

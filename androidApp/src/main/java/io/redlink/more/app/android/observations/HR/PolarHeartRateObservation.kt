@@ -49,7 +49,8 @@ class PolarHeartRateObservation(context: Context) :
 
     init {
         scope.launch {
-            bluetoothDeviceRepository.getConnectedDevices().collect { deviceList ->
+            bluetoothDeviceRepository.listenForConnectedDevices()
+            bluetoothDeviceRepository.connectedDevices.collect { deviceList ->
                 connectedDevices.clear()
                 val filtered = deviceList.filter { it.deviceName?.lowercase()?.contains("polar") ?: false }
                 connectedDevices.addAll(filtered)

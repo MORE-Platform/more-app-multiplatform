@@ -15,14 +15,15 @@ import RxSwift
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
     
-    private let polarConnector = PolarConnector()
+    private let polarConnector = AppDelegate.polarConnector
     private let bluetoothRepository = BluetoothDeviceRepository(bluetoothConnector: nil)
     private var connectedDevices: [BluetoothDevice] = []
     private var hrObservation: Disposable? = nil
 
     init(sensorPermissions: Set<String>) {
         super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
-        bluetoothRepository.connectedDevicesChange(connected: true) { [weak self] deviceList in
+        bluetoothRepository.listenForConnectedDevices()
+        bluetoothRepository.getConnectedDevices { [weak self] deviceList in
             if let self {
                 self.connectedDevices = deviceList.filter{$0.deviceName?.lowercased().contains("polar") ?? false}
             }
@@ -31,8 +32,8 @@ class PolarVerityHeartRateObservation: Observation_ {
     
     override func start() -> Bool {
         if !self.connectedDevices.isEmpty {
-            if let deviceId = connectedDevices.first?.deviceId {
-                hrObservation = polarConnector.polarApi.startHrStreaming(deviceId).subscribe(onNext: { [weak self] data in
+            if let address = connectedDevices.first?.address {
+                hrObservation = polarConnector.polarApi.startHrStreaming(address).subscribe(onNext: { [weak self] data in
                     if let self, let hrData = data.first {
                         print("New HR data: \(hrData.hr)")
                         self.storeData(data: ["hr": hrData.hr], timestamp: -1)
