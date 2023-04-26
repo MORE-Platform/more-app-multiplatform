@@ -10,6 +10,7 @@ import shared
 
 protocol DashboardFilterObserver {
     func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String]
+    func updateFilterText() -> String
 }
 
 class DashboardFilterViewModel: ObservableObject {
@@ -25,8 +26,6 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var dateFilter: DateFilterModel = DateFilterModel.entireTime
     @Published var dateFilterString: String = "ENTIRE_TIME"
     @Published var observationTypeFilter: [String] = []
-    
-    @Published var currentFilter: FilterModel? = nil
     
     init() {
         var list: [String] = Array(observationFactory.observationTypes())
@@ -48,6 +47,7 @@ class DashboardFilterViewModel: ObservableObject {
         else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
         
         coreModel.setDateFilter(dateFilter: filterModel)
+        dateFilter = filterModel
     }
     
     func setObservationTypeFilters() {
@@ -56,6 +56,10 @@ class DashboardFilterViewModel: ObservableObject {
     
     func updateFilters(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
         return self.delegate?.onFilterChanged(multiSelect: multiSelect, filter: filter, list: list, stringTable: stringTable) ?? []
+    }
+    
+    func updateFilterText() -> String  {
+        return self.delegate?.updateFilterText() ?? ""
     }
     
     func setCurrentFilters() {
@@ -79,4 +83,3 @@ class DashboardFilterViewModel: ObservableObject {
         return isSelected
     }
 }
-

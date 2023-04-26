@@ -17,19 +17,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 @Composable
-fun FilterView(navController: NavController, model: DashboardViewModel) {
+fun FilterView(navController: NavController, model: DashboardFilterViewModel, scheduleListType: ScheduleListType) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 19.dp)
-            .clickable(onClick = { navController.navigate(NavigationScreen.OBSERVATION_FILTER.route) })
+            .clickable(onClick = { navController.navigate("${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType=${scheduleListType}") })
     ){
         Text(
             text = model.getFilterString(),
