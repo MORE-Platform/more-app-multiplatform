@@ -63,24 +63,16 @@ class ObservationDataSchema : RealmObject {
                     this.timestamp =
                         RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
                 }
-                Napier.i { "fromData last-------------"}
-                println("data:")
-                println(data)
-                
                 this.dataValue = data.asString() ?: ""
                 Napier.i {this.dataValue}
             }
         }
 
         fun fromData(data: ObservationBulkModel): ObservationDataSchema {
-            Napier.i {"fromDat data-----------------------"}
-            println(data)
             return fromData(data.data, data.timestamp)
         }
 
         fun fromData(data: Collection<ObservationBulkModel>): List<ObservationDataSchema> {
-            Napier.i {"fromData collection --------------------"}
-            print(data)
             return data.map { fromData(it) }
         }
 
@@ -88,13 +80,8 @@ class ObservationDataSchema : RealmObject {
             observationIdSet: Set<String>,
             data: Collection<ObservationBulkModel>
         ): List<ObservationDataSchema> {
-            Napier.i { "fromData set---------------" }
-            println(data)
             val schemas = fromData(data)
-            println(schemas)
-            println("data----")
             return observationIdSet.flatMap { id ->
-                println(id)
                 schemas.map {
                     it.clone().apply { this.observationId = id }
                 }

@@ -82,15 +82,10 @@ abstract class Observation(val observationType: ObservationType) {
     open fun needsToRestartAfterAppClosure() = false
 
     fun storeData(data: Any, timestamp: Long = -1) {
-        Napier.i { "------------sortdata: sereliazation error occures here - observationIds.toSet()----------" }
-        println(setOf(ObservationBulkModel(data, timestamp)))
-        println(observationIds.toSet())
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
-        Napier.i { "before datamanager.add" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
-        Napier.i { "after datamanager.add" }
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {

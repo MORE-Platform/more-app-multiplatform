@@ -35,9 +35,6 @@ struct SimpleQuetionObservationView: View {
                                 callback: { selected in
                                     self.selected = selected
                                     viewModel.setAnswer(answer: selected)
-
-                                    print("------------------------")
-                                    print("Selected item is \(selected)")
                                 })
                             }
                              

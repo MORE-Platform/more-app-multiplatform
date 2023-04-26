@@ -47,15 +47,9 @@ class SimpleQuestionCoreViewModel(
         simpleQuestionModel.value?.observationId?.let { observationId ->
             observation?.let { observation ->
                 observation.start(observationId, scheduleId)
-                Napier.i("---------finishQuestion----------")
-                Napier.i("observation started")
                 observation.storeData(mapOf("answer" to data))
-                Napier.i("---------finishQuestion----------")
-                Napier.i("observation stored data")
                 scheduleRepository.setCompletionStateFor(scheduleId, true)
-                Napier.i("stored data")
                 observation.stop(observationId)
-                Napier.i("observation stop observation")
             }
         }
     }
