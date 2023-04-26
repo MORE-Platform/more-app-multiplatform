@@ -17,21 +17,20 @@ class NotificationFilterViewModel: ObservableObject {
     private let stringTable = "NotificationFilter"
     
     var delegate: NotificationFilterObserver? = nil
-    
+ 
+    @Published var filterText: String = "notificationFilterText"
     @Published var allFilters: [String] = []
     @Published var currentFilters: [String] = []
     
     init() {
-        allFilters = coreModel.getEnumAsList().map({ filter in
+        self.allFilters = coreModel.getEnumAsList().map({ filter in
             String(describing: filter)
         })
         loadCurrentFilters()
     }
     
-    func updateFilters(multiselect: Bool = true, filter: String, list: [String], stringTable: String) ->
-    [String] {
-        return self.delegate?.onFilterChanged(filter: filter, list: list, stringTable: stringTable)
-        ?? []
+    func processFilterChange(filter: String) {
+        coreModel.processFilterChange(filter: filter.lowercased())
     }
     
     func loadCurrentFilters() {
@@ -42,12 +41,14 @@ class NotificationFilterViewModel: ObservableObject {
         }
     }
     
-    func processFilterChange(filter: String) {
-        coreModel.processFilterChange(filter: filter)
+    func updateFilters(multiselect: Bool = true, filter: String, list: [String], stringTable: String) ->
+    [String] {
+        return self.delegate?.onFilterChanged(filter: filter, list: list, stringTable: stringTable)
+        ?? []
     }
     
     func isItemSelected(selectedValues: [String], option: String) -> Bool {
-        if option == NotificationFilterTypeModel.all.type {
+        if option == String(describing: NotificationFilterTypeModel.all) {
             return selectedValues.isEmpty
         }
         return selectedValues.contains(option)

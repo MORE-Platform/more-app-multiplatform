@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MoreFilter<Destination: View>: View {
-    @EnvironmentObject var viewModel: DashboardViewModel
+    @Binding var filterText: String
     var destination: () -> Destination
     var image = Image(systemName: "slider.horizontal.3")
     
@@ -18,7 +18,7 @@ struct MoreFilter<Destination: View>: View {
            destination()
         } label: {
             HStack {
-                BasicText(text: $viewModel.filterText)
+                BasicText(text: $filterText)
                 image
                     .foregroundColor(Color.more.secondary)
             }
@@ -28,7 +28,7 @@ struct MoreFilter<Destination: View>: View {
 
 struct MoreFilter_Previews: PreviewProvider {
     static var previews: some View {
-        MoreFilter() {
+        MoreFilter(filterText: .constant("test")) {
             EmptyView()
         }
     }

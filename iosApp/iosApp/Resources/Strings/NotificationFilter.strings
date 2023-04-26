@@ -8,9 +8,9 @@
 
 "Select Filter" = "Select Filter";
 
-"all" = "All Notifications";
-"unread" = "Show unread messages";
-"important" = "Show important messages";
+"ALL" = "All Notifications";
+"UNREAD" = "Show unread messages";
+"IMPORTANT" = "Show important messages";
 
 "no_filter_activated" = "No Filter activated";
 "filter" = "Filter";

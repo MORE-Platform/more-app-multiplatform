@@ -182,9 +182,17 @@ extension ContentViewModel: DashboardFilterObserver {
 
 extension ContentViewModel: NotificationFilterObserver {
     func onFilterChanged(filter: String, list: [String], stringTable: String) -> [String] {
+        var selectedValueList = list
+        if filter == String(describing: NotificationFilterTypeModel.all) {
+            selectedValueList.removeAll()
+        } else if selectedValueList.contains(filter) {
+            selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
+        } else {
+            selectedValueList.append(filter)
+        }
         notificationFilterViewModel.processFilterChange(filter: filter)
         updateNotificationFilterText(stringTable: stringTable)
-        return notificationFilterViewModel.currentFilters
+        return selectedValueList
     }
     
     func updateNotificationFilterText(stringTable: String) {

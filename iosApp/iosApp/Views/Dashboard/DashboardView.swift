@@ -24,10 +24,9 @@ struct DashboardView: View {
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
                                          withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
                     .padding(.bottom)
-                    MoreFilter() {
+                    MoreFilter(filterText: $dashboardViewModel.filterText) {
                             DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
                     }
-                    .environmentObject(dashboardViewModel)
                     .padding(.bottom)
                     if selection == 0 {
                         ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
