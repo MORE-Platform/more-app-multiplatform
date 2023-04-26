@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -9,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class CoreTaskCompletionBarViewModel {
@@ -17,16 +17,15 @@ class CoreTaskCompletionBarViewModel {
     private val repository = ScheduleRepository()
     init {
         scope.launch {
-            repository.allSchedules().collect {
-                taskCompletion.value.totalTasks = it.toInt()
-                Napier.i { "Total tasks: ${taskCompletion.value.totalTasks}" }
-            }
-        }
-        scope.launch {
-            repository.allSchedulesWithStatus(done = true).collect {
-                taskCompletion.value.finishedTasks = it.size
-                Napier.i { "Finished tasks: ${taskCompletion.value.finishedTasks}" }
-            }
+            repository.allSchedules()
+                .combine(repository.allSchedulesWithStatus(true)) { scheduleCount, doneSchedules ->
+                    TaskCompletion(
+                        doneSchedules.size,
+                        scheduleCount.toInt()
+                    )
+                }.collect {
+                    taskCompletion.emit(it)
+                }
         }
     }
 
