@@ -14,6 +14,7 @@ import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
@@ -24,7 +25,6 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar.CoreTaskCompletionBarViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -50,11 +50,12 @@ class MainViewModel(context: Context): ViewModel() {
             ScheduleListType.COMPLETED
         )
     }
-    val coreTaskCompletionModel = CoreTaskCompletionBarViewModel()
     val dashboardViewModel = DashboardViewModel(context, allSchedulesViewModel)
     val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel(context) }
     val studyDetailsViewModel: StudyDetailsViewModel by lazy { StudyDetailsViewModel() }
     val leaveStudyViewModel: LeaveStudyViewModel by lazy { LeaveStudyViewModel(context) }
+
+    val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
     val bluetoothConnectionViewModel: BluetoothConnectionViewModel by lazy {
         BluetoothConnectionViewModel(bluetoothConnector)
