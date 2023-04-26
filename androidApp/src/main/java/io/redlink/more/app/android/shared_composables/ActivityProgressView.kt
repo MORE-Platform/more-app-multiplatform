@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.R
@@ -17,6 +18,8 @@ import io.redlink.more.app.android.R
 @Composable
 fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, totalTasks: Int, headline: String = getStringResource(id = R.string.more_main_completed_tasks)){
     val percent = if(totalTasks > 0) finishedTasks.toFloat() / totalTasks.toFloat() else 0f
+    Napier.i { "COMPLETION BAR: total tasks in view: $totalTasks" }
+    Napier.i { "COMPLETION BAR: finished tasks in view: $finishedTasks" }
     Column(
         modifier = modifier
         .fillMaxWidth()

@@ -11,11 +11,12 @@ import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 
 
 @Composable
-fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
+fun DashboardView(navController: NavController, viewModel: DashboardViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
 //    PolarHeartRateObservation.scanForDevices()
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -26,7 +27,8 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel) {
     ){
         ScheduleListHeader(
             viewModel = viewModel.scheduleViewModel,
-            navController = navController
+            navController = navController,
+            taskCompletionBarViewModel = taskCompletionBarViewModel
         )
         Spacer(modifier = Modifier.height(10.dp))
         Column {

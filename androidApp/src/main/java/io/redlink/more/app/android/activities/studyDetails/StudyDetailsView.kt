@@ -22,7 +22,7 @@ import org.mongodb.kbson.ObjectId
 
 
 @Composable
-fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel) {
+fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     viewModel.model.value?.let {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -33,7 +33,7 @@ fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewMo
                 item {
                     HeaderTitle(title = it.study.studyTitle)
                     Spacer(Modifier.height(12.dp))
-                    TaskCompletionBarView(TaskCompletionBarViewModel())
+                    TaskCompletionBarView(taskCompletionBarViewModel)
                     Spacer(Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

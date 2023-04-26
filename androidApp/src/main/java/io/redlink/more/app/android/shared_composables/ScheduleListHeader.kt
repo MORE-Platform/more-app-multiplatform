@@ -12,9 +12,9 @@ import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarVi
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 
 @Composable
-fun ScheduleListHeader(viewModel: ScheduleViewModel, navController: NavController) {
+fun ScheduleListHeader(viewModel: ScheduleViewModel, navController: NavController, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     Column(modifier = Modifier.height(IntrinsicSize.Min)) {
-        TaskCompletionBarView(TaskCompletionBarViewModel())
+        TaskCompletionBarView(taskCompletionBarViewModel)
         FilterView(navController, model = viewModel.filterModel, scheduleListType = viewModel.scheduleListType)
     }
 }
