@@ -22,6 +22,7 @@ struct ScheduleList: View {
                     Divider()
                 }
             }
+
         }
     }
 }
