@@ -30,6 +30,10 @@ class CoreTaskCompletionBarViewModel {
         }
     }
 
+    fun loadInitialTaskCompletion(): TaskCompletion {
+        return taskCompletion.value
+    }
+
     fun onLoadTaskCompletion(provideNewState: ((taskCompletion: TaskCompletion) -> Unit)): Closeable {
         return taskCompletion.asClosure(provideNewState)
     }
