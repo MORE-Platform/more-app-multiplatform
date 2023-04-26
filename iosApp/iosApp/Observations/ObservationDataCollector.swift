@@ -18,7 +18,6 @@ class ObservationDataCollector {
     private var job: Ktor_ioCloseable?
     
     init() {
-        let realm = RealmDatabase()
         dataManager = iOSObservationDataManager()
         observationRepository = ObservationRepository()
     }
@@ -77,6 +76,5 @@ class ObservationDataCollector {
     func close() {
         print("Observation Collector closed!")
         job?.close()
-        dataManager.close()
     }
 }

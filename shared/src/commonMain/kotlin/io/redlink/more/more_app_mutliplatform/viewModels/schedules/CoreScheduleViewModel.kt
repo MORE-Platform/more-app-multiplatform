@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -33,11 +32,6 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder,
     val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
         MutableStateFlow( emptyMap() )
     private val originalScheduleList = mutableMapOf<Long, List<ScheduleModel>>()
-
-    val runningScheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
-        MutableStateFlow(mutableMapOf())
-    val completedScheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
-        MutableStateFlow(mutableMapOf())
 
     init {
         scope.launch {
@@ -61,7 +55,9 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder,
                                 observation.observationTitle to schedules
                                     .filter { it.observationId == observation.observationId } }
                         }.collect {
-                            scheduleModelList.emit(createRunningMap(it))
+                            originalScheduleList.clear()
+                            originalScheduleList.putAll(createRunningMap(it))
+                            scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
                         }
                 }
                 ScheduleListType.COMPLETED -> {
@@ -71,7 +67,9 @@ class CoreScheduleViewModel(private val dataRecorder: DataRecorder,
                                 observation.observationTitle to schedules
                                     .filter { it.observationId == observation.observationId } }
                         }.collect {
-                            scheduleModelList.emit(createCompletedMap(it))
+                            originalScheduleList.clear()
+                            originalScheduleList.putAll(createCompletedMap(it))
+                            scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
                         }
                 }
             }

@@ -31,10 +31,12 @@ class PolarConnector: BluetoothConnector {
     private var scanning = false
     
     init() {
+        self.polarApi.polarFilter(false)
         self.polarApi.observer = self
         self.polarApi.deviceInfoObserver = self
         self.polarApi.deviceFeaturesObserver = self
         self.polarApi.powerStateObserver = self
+        self.polarApi.logger = self
     }
     
 
@@ -91,6 +93,10 @@ class PolarConnector: BluetoothConnector {
         stopScanning()
     }
     
+    func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.isConnectingToDevice(bluetoothDevice: bluetoothDevice)
+    }
+    
     func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
         observer?.didConnectToDevice(bluetoothDevice: bluetoothDevice)
     }
@@ -115,14 +121,17 @@ class PolarConnector: BluetoothConnector {
 
 extension PolarConnector: PolarBleApiObserver {
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        
+        print("Polar connecting: \(identifier.name)")
+        observer?.isConnectingToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
     
     func deviceConnected(_ identifier: PolarDeviceInfo) {
+        print("Polar connected: \(identifier.name)")
         observer?.didConnectToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
     
     func deviceDisconnected(_ identifier: PolarDeviceInfo) {
+        print("Polar disconnected: \(identifier.name)")
         PolarVerityHeartRateObservation.hrReady = false
         observer?.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
@@ -174,4 +183,10 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
     }
     
     
+}
+
+extension PolarConnector: PolarBleApiLogger {
+    func message(_ str: String) {
+        print("Polar logger: \(str)")
+    }
 }

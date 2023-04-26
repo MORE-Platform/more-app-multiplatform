@@ -36,12 +36,13 @@ class PolarObserverCallback : PolarBleApiCallback() {
     override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnected(polarDeviceInfo)
         Napier.d("CONNECTED: ${polarDeviceInfo.deviceId}")
+        connectionListener?.onDeviceConnected(polarDeviceInfo)
     }
 
     override fun deviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnecting(polarDeviceInfo)
         Napier.d("CONNECTING: ${polarDeviceInfo.deviceId}")
-        connectionListener?.onDeviceConnected(polarDeviceInfo)
+        connectionListener?.onDeviceConnecting(polarDeviceInfo)
     }
 
     override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {

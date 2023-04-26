@@ -26,5 +26,8 @@ class DashboardViewModel: ObservableObject {
         }
         self.filterText = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
     }
-
+    
+    func updateBluetoothDevices() {
+        BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
+    }
 }

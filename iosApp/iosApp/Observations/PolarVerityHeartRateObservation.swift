@@ -37,6 +37,8 @@ class PolarVerityHeartRateObservation: Observation_ {
                         print("New HR data: \(hrData.hr)")
                         self.storeData(data: ["hr": hrData.hr], timestamp: -1)
                     }
+                }, onError: { error in
+                    print(error)
                 })
                 return true
             }

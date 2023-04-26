@@ -34,7 +34,7 @@ fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, sho
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/observationTitle=${item.observationTitle}&scheduleId=${item.scheduleId}")
+                                    navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId=${item.scheduleId}&scheduleListType=${viewModel.scheduleListType}")
                                 }
                         ) {
                             ScheduleListItem(

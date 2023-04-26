@@ -11,11 +11,20 @@ import shared
 
 struct CompletedSchedules: View {
     @StateObject var scheduleViewModel: ScheduleViewModel
+    private let navigationStrings = "Navigation"
+    @State var tasksCompleted: Double = 0
+    @State var totalTasks: Double = 0
     var body: some View {
         MoreMainBackground {
-            ScheduleView(viewModel: scheduleViewModel)
+            VStack {
+                ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(scheduleViewModel)
+                ScheduleView(viewModel: scheduleViewModel)
+            }
+            .padding(14)
         } topBarContent: {
             EmptyView()
         }
+        .customNavigationTitle(with: NavigationScreens.completedObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"))
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

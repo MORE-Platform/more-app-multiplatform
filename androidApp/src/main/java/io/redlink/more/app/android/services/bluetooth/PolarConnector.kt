@@ -107,9 +107,17 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
         observer?.didDisconnectFromDevice(polarDeviceInfo.toBluetoothDevice())
     }
 
+    override fun onDeviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
+        observer?.isConnectingToDevice(polarDeviceInfo.toBluetoothDevice())
+    }
+
     override fun close() {
         observer = null
         stopScanning()
+    }
+
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.isConnectingToDevice(bluetoothDevice)
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {

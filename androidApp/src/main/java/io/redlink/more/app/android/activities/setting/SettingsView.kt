@@ -22,7 +22,6 @@ import io.redlink.more.app.android.R
 fun SettingsView(
     model: SettingsViewModel,
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -72,20 +71,6 @@ fun SettingsView(
                     hasSmallTitle = true,
                     hasPreview = false
                 )
-            }
-
-            item {
-                Spacer(Modifier.height(24.dp))
-
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_settings_exit_dialog_title),
-                    buttonColors = ButtonDefaults.moreImportant(),
-                    borderStroke = MoreColors.borderImportant()
-                ) {
-                    model.openLeaveStudyLvlOne(context)
-                }
-
-                Spacer(Modifier.height(12.dp))
             }
         }
     }

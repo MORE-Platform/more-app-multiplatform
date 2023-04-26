@@ -20,21 +20,15 @@ struct DashboardView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    TaskProgressView(progressViewTitle: .constant(String
-                        .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                         withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
-                    .padding(.bottom)
-                    MoreFilter() {
-                            DashboardFilterView().environmentObject(dashboardViewModel.scheduleViewModel.filterViewModel)
-                    }
-                    .environmentObject(dashboardViewModel)
-                    .padding(.bottom)
+                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(dashboardViewModel.scheduleViewModel)
                     if selection == 0 {
                         ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
                     } else {
                         EmptyView()
                     }
-                    
+                }
+                .onAppear {
+                    dashboardViewModel.updateBluetoothDevices()
                 }
             } topBarContent: {
                 EmptyView()
@@ -48,7 +42,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), dashboardFilterViewModel: DashboardFilterViewModel(), scheduleListType: .all)))
+            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), scheduleListType: .all)))
         } topBarContent: {
             HStack {
                 Button {

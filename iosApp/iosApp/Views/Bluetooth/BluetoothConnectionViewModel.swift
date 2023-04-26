@@ -14,6 +14,7 @@ class BluetoothConnectionViewModel: ObservableObject {
     
     @Published var discoveredDevices: [BluetoothDevice] = []
     @Published var connectedDevices: [BluetoothDevice] = []
+    @Published var connectingDevices: [String] = []
     
     @Published var bluetoothIsScanning = false
     
@@ -22,25 +23,40 @@ class BluetoothConnectionViewModel: ObservableObject {
         
         self.coreViewModel.discoveredDevicesListChanges { [weak self] deviceSet in
             if let self {
-                self.discoveredDevices = Array(deviceSet).filter{ $0.deviceName != nil}
+                DispatchQueue.main.async {
+                    self.discoveredDevices = Array(deviceSet).filter{ $0.deviceName != nil}
+                }
             }
         }
         
         self.coreViewModel.connectedDevicesListChanges { [weak self] deviceSet in
             if let self {
-                self.connectedDevices = Array(deviceSet).filter{ $0.deviceName != nil}
+                DispatchQueue.main.async {
+                    self.connectedDevices = Array(deviceSet).filter{ $0.deviceName != nil}
+                }
             }
         }
         
-        self.coreViewModel.scanningIsChanging { [weak self] in self?.bluetoothIsScanning = $0.boolValue}
+        self.coreViewModel.scanningIsChanging { [weak self] scanning in
+            DispatchQueue.main.async {
+                self?.bluetoothIsScanning = scanning.boolValue
+            }
+        }
+        
+        self.coreViewModel.connectingDevicesListChanges { [weak self] connectingDevices in
+            DispatchQueue.main.async {
+                self?.connectingDevices = Array(connectingDevices)
+            }
+        }
     }
     
-    func viewDodAppear() {
+    func viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
     
     func viewDidDisappear() {
         coreViewModel.viewDidDisappear()
+        discoveredDevices.removeAll()
     }
     
     func scanningForDevices() {

@@ -36,14 +36,15 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
 
     func connect(device: BluetoothDevice) -> KotlinError? {
-        let (hasConnected, error) = connectToSpecificDevice(device: device)
-        if (hasConnected) {
-            guard let error else {
-                return nil
-            }
-            print(error)
-            return error
-        }
+        print("Connecting to device: \(device)")
+//        let (hasConnected, error) = connectToSpecificDevice(device: device)
+//        if (hasConnected) {
+//            guard let error else {
+//                return nil
+//            }
+//            print(error)
+//            return error
+//        }
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.connect(cbPeripheral)
             return nil
@@ -89,6 +90,10 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     func stopScanning() {
         scanning = false
         centralManager.stopScan()
+    }
+    
+    func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.isConnectingToDevice(bluetoothDevice: bluetoothDevice)
     }
     
     func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
@@ -139,25 +144,26 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
 }
 
 extension IOSBluetoothConnector: CBCentralManagerDelegate {
-    internal func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("connected to \(peripheral.description)")
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Connected to \(peripheral.description)")
         let device = peripheral.toBluetoothDevice()
         self.connectedDevices[device] = peripheral
         self.observer?.didConnectToDevice(bluetoothDevice: device)
     }
     
-    private func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral) {
         print("Disconnected from \(peripheral.identifier)")
         let device = peripheral.toBluetoothDevice()
         self.connectedDevices.removeValue(forKey: device)
         self.observer?.didConnectToDevice(bluetoothDevice: device)
     }
     
-    private func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral) {
+        print("Did fail to connect to device: \(peripheral.identifier)")
         self.observer?.didFailToConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
     
-    internal func centralManagerDidUpdateState(_ central: CBCentralManager) {
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
         print("Manager state is powered on: \(central.state == .poweredOn)")
         if central.state == .poweredOn {
             delegate?.bleHasPower()
@@ -167,12 +173,20 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
     internal func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if peripheral.name != nil {
             let device = peripheral.toBluetoothDevice()
-            discoveredDevices[device] = peripheral
+            if peripheral.state == .connected {
+                device.connected = true
+                observer?.didConnectToDevice(bluetoothDevice: device)
+                connectedDevices[device] = peripheral
+            } else {
+                observer?.discoveredDevice(device: device)
+                discoveredDevices[device] = peripheral
+            }
         }
     }
 }
 
 extension IOSBluetoothConnector: CBPeripheralDelegate {
+    
 }
 
 extension CBPeripheral {

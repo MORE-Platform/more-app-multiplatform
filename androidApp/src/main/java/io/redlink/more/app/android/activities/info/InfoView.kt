@@ -52,14 +52,6 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 }
             )
             InfoItem(
-                title = getStringResource(id = R.string.info_devices),
-                imageVector = Icons.Default.Watch,
-                contentDescription = getStringResource(id = R.string.info_devices_desc),
-                onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
-                }
-            )
-            InfoItem(
                 title = getStringResource(id = R.string.info_consent_settings),
                 imageVector = Icons.Default.Settings,
                 contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
@@ -80,7 +72,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.ExitToApp,
                 contentDescription = getStringResource(id = R.string.info_leave_study_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.LEAVE_STUDY.route)
                 }
             )
         }

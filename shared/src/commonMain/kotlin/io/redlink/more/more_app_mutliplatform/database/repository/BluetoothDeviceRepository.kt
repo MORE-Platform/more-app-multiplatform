@@ -85,6 +85,9 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
         }
     }
 
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    }
+
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
         setConnectionState(bluetoothDevice, true)
         bluetoothDevice.deviceId?.let {
