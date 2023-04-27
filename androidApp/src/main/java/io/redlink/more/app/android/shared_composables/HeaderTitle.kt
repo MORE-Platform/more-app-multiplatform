@@ -15,11 +15,12 @@ fun HeaderTitle (
     title: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,
-    color: Color = MoreColors.Primary
+    color: Color = MoreColors.Primary,
+    maxLines: Int = 3,
 ) {
     Text(
         text = title,
-        maxLines = 3,
+        maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,

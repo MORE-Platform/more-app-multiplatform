@@ -78,7 +78,6 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         }
 
         item {
-            Spacer(modifier = Modifier.padding(0.5.dp))
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,7 +95,8 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 25.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        maxLines = Int.MAX_VALUE
                     )
 
                     SmallTitle(
