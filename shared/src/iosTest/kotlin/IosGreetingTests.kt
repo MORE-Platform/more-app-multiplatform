@@ -7,7 +7,7 @@ class IosGreetingTests {
 
     @Test
     fun testGreet() {
-        assertTrue("Android" in Greeting().greet())
+        assertTrue("iOS" in Greeting().greet())
     }
 
 
