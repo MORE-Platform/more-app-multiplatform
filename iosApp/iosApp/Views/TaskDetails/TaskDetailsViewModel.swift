@@ -12,10 +12,7 @@ class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
-    @Published var dataCount: Int64 = 0
-
-    @Published var observationRepetitionInterval: String = "1x/week"
-     
+    @Published var dataCount: Int64 = 0     
     
     init(observationId: String, scheduleId: String, dataRecorder: IOSDataRecorder) {
         self.coreModel = CoreTaskDetailsViewModel(scheduleId: scheduleId, dataRecorder: dataRecorder)

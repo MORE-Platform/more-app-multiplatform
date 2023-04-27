@@ -47,12 +47,12 @@ struct TaskDetailsView: View {
                     let date: String = viewModel.getDateRangeString()
                     let time: String = viewModel.getTimeRangeString()
 
-                    ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
+                    ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
 
                     HStack {
                         AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
                     }
-                    if viewModel.taskDetailsModel?.observationType != "question-observation" {
+                    if viewModel.taskDetailsModel?.observationType != "question-observation" && scheduleListType != .completed {
                         Spacer()
                         HStack {
                             if let task = viewModel.taskDetailsModel {

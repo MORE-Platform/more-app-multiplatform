@@ -18,13 +18,12 @@ struct StudyDetailsView: View {
     private let navigationStrings = "Study Details"
     
     @State private var isObservationListOpen = false
-
+    
     
     var body: some View {
         MoreMainBackgroundView {
-            ScrollView{
+            ScrollView {
                 VStack(alignment: .leading) {
-                    
                     Title2(titleText: .constant(viewModel.studyDetailsModel?.study.studyTitle ?? ""))
                         .padding(.top)
                         .padding(.bottom)
@@ -41,7 +40,7 @@ struct StudyDetailsView: View {
                                              withComment: "string for study duration")))
                         
                         Spacer()
-                        BasicText(text: .constant((viewModel.studyDetailsModel?.study.start?.epochSeconds.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.studyDetailsModel?.study.end?.epochSeconds.toDateString(dateFormat: "dd.MM.yyyy") ?? "")),
+                        BasicText(text: .constant((viewModel.studyStart.toDateString(dateFormat: "dd.MM.yyyy")) + " - " + (viewModel.studyEnd.toDateString(dateFormat: "dd.MM.yyyy"))),
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)
@@ -51,15 +50,15 @@ struct StudyDetailsView: View {
                     
                     ExpandableContentWithLink(
                         content: {
-                            VStack {
-                                ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) {
-                                    obs in
-                                    
-                                    NavigationLink(isActive: $isObservationListOpen.not) {
+                            ScrollView {
+                                VStack {
+                                    ForEach(viewModel.studyDetailsModel?.observations ?? [ObservationSchema()], id:\.self) { obs in
+                                        NavigationLink {
                                             ObservationDetailsView(viewModel: ObservationDetailsViewModel(observationId: obs.observationId))
                                         } label: {
                                             ModuleListItem(observation: obs).padding(.bottom)
                                         }
+                                    }
                                 }
                             }
                         },
@@ -92,5 +91,5 @@ extension Binding where Value == Bool {
         )
     }
 }
-    
+
 
