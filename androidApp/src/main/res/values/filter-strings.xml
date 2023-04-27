@@ -9,4 +9,10 @@
     <string name="more_filter_selected">Filter Selected</string>
     <string name="more_filter_set_duration">Select Time</string>
     <string name="more_filter_set_type">Select Type</string>
+
+    <string name="more_select_filter"> Select Filter</string>
+
+    <string name="more_all_notification_filter">All Notifications</string>
+    <string name="more_unread_notifications">Show unread notifications</string>
+    <string name="more_important_notifications">Show important notifications</string>
 </resources>

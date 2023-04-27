@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.activities.ContentActivity
-import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyLevelOneActivity
-import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyLevelTwoActivity
 import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
@@ -55,16 +53,5 @@ class SettingsViewModel(context: Context): ViewModel() {
             }
         }
         coreSettingsViewModel.exitStudy()
-    }
-
-    fun openLeaveStudyLvlOne(context: Context) {
-        (context as? Activity)?.let {
-            showNewActivity(it, LeaveStudyLevelOneActivity::class.java)
-        }
-    }
-    fun openLeaveStudyLvlTwo(context: Context) {
-        (context as? Activity)?.let {
-            showNewActivity(it, LeaveStudyLevelTwoActivity::class.java)
-        }
     }
 }

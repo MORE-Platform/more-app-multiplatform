@@ -27,13 +27,20 @@ class AccelerometerBackgroundObservation: Observation_ {
             recorder.recordAccelerometer(forDuration: recordForDurationInSec)
             self.startRecording = Date()
             print("CMSensorRecorder started recording accelerometer data for the next \(recordForDurationInSec)s...")
-            timer = Timer.scheduledTimer(withTimeInterval: 60 * 3.1, repeats: true, block: { timer in
-                self.collectData(start: self.lastCollectedDataTimestamp, end: Date(), completion: {
-                    if self.startRecording + self.recordForDurationInSec >= Date() {
+            DispatchQueue.main.async { [weak self] in
+                self?.timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
+                    if let self {
+                        self.collectData(start: self.lastCollectedDataTimestamp, end: Date()) {
+                            if self.startRecording.timeIntervalSince1970 + self.recordForDurationInSec <= Date().timeIntervalSince1970 {
+                                timer.invalidate()
+                            }
+                        }
+                    } else {
                         timer.invalidate()
                     }
-                })
-            })
+                }
+            }
+            
             return true
         }
         return false

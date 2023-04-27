@@ -1,10 +1,10 @@
 package io.redlink.more.app.android.observations.HR
 
 
-import android.util.Log
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
+import io.github.aakira.napier.Napier
 import java.util.UUID
 
 private const val TAG = "PolarObserverCallback"
@@ -12,6 +12,8 @@ private const val TAG = "PolarObserverCallback"
 class PolarObserverCallback : PolarBleApiCallback() {
 
     private var listeners: MutableSet<HeartRateListener> = mutableSetOf()
+
+    var connectionListener: PolarConnectorListener? = null
 
     fun addListener(listener: HeartRateListener) {
         this.listeners.add(listener)
@@ -28,39 +30,39 @@ class PolarObserverCallback : PolarBleApiCallback() {
 
     override fun blePowerStateChanged(powered: Boolean) {
         super.blePowerStateChanged(powered)
-        Log.d(TAG, "BLE power: $powered")
+        Napier.d("BLE power: $powered")
     }
 
     override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnected(polarDeviceInfo)
-        Log.d(TAG, "CONNECTED: ${polarDeviceInfo.deviceId}")
+        Napier.d("CONNECTED: ${polarDeviceInfo.deviceId}")
     }
 
     override fun deviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnecting(polarDeviceInfo)
-        Log.d(TAG, "CONNECTING: ${polarDeviceInfo.deviceId}")
-        updateListeners { it.onDeviceConnected() }
+        Napier.d("CONNECTING: ${polarDeviceInfo.deviceId}")
+        connectionListener?.onDeviceConnected(polarDeviceInfo)
     }
 
     override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceDisconnected(polarDeviceInfo)
-        Log.i(TAG, "Device disconnecting: ${polarDeviceInfo.name}")
-        updateListeners { it.onDeviceDisconnected() }
+        Napier.i("Device disconnecting: ${polarDeviceInfo.name}")
+        connectionListener?.onDeviceDisconnected(polarDeviceInfo)
     }
 
     override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
         super.bleSdkFeatureReady(identifier, feature)
-        Log.i(TAG, "SDK Feature ready: ${feature.name}, identifier: $identifier")
-        updateListeners { it.onHeartRateReady() }
+        Napier.i("SDK Feature ready: ${feature.name}, identifier: $identifier")
+        connectionListener?.onPolarFeatureReady(feature)
     }
 
     override fun disInformationReceived(identifier: String, uuid: UUID, value: String) {
         super.disInformationReceived(identifier, uuid, value)
-        Log.i(TAG, "Disinformation: $identifier, UUID: $uuid, Value: $value")
+        Napier.i("Disinformation: $identifier, UUID: $uuid, Value: $value")
     }
 
     override fun batteryLevelReceived(identifier: String, level: Int) {
         super.batteryLevelReceived(identifier, level)
-        Log.i(TAG, "Battery Level Received: $level")
+        Napier.i( "Battery Level Received: $level")
     }
 }

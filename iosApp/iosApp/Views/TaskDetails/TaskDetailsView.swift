@@ -12,6 +12,8 @@ import SwiftUI
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
+    var scheduleId: String = ""
+    var scheduleListType: ScheduleListType
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
@@ -59,27 +61,38 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-
-                    if viewModel.taskDetailsModel?.observationType == "question-observation" {
-                        NavigationLinkButton(disabled: .constant(!(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0))))) {
-                            QuestionObservationView()
-                        } label: {
-                            Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
-                                .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.white : .more.secondaryMedium)
-                        }
-                    } else {
-                        if let model = viewModel.taskDetailsModel {
-                            ObservationButton(observationType: model.observationType, state: model.state, disabled: model.state != .active
-                                && model.state != .running
-                                && model.state != .paused
-                                && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
-                                    || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())) {
-                                if model.state == .running {
-                                    viewModel.pause()
-                                } else {
-                                    viewModel.start()
+                    if scheduleListType != .completed {
+                            if let model = viewModel.taskDetailsModel {
+                                if model.observationType == "question-observation" {
+                                    NavigationLinkButton(disabled: .constant(model.state != .active && model.state != .running && model.state != .paused && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date() || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date()))
+                                    ) {
+                                        VStack {
+                                            if scheduleId != "" {
+                                                SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: scheduleId))
+                                            } else {
+                                                EmptyView()
+                                            }
+                                        }
+                                        
+                                    } label: {
+                                        Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                            .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.secondaryMedium : .more.white)
+                                    }
                                 }
-                            }
+                                else {
+                                    ObservationButton(scheduleId: scheduleId,
+                                                    observationType: model.observationType, state: model.state, disabled: model.state != .active
+                                                      && model.state != .running
+                                                      && model.state != .paused
+                                                      && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
+                                                          || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())) {
+                                        if model.state == .running {
+                                            viewModel.pause()
+                                        } else {
+                                            viewModel.start()
+                                        }
+                                    }
+                                }
                         }
                     }
                     Spacer()

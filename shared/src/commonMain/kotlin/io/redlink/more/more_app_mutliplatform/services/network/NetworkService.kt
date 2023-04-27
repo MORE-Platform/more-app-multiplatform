@@ -195,6 +195,7 @@ class NetworkService(
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         initConfigApi()
         try {
+            Napier.i { "Data to be sent: $data" }
             val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "No credentials set!")

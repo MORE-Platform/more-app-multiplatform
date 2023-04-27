@@ -1,8 +1,8 @@
 package io.redlink.more.app.android.observations.HR
 
+import com.polar.sdk.api.model.PolarDeviceInfo
+
 interface HeartRateListener {
-    fun onDeviceConnected()
-    fun onDeviceDisconnected()
     fun onHeartRateUpdate(hr: Int)
     fun onHeartRateReady()
 }

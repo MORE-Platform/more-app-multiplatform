@@ -25,7 +25,7 @@ import java.time.ZoneOffset
 
 import java.util.*
 
-class PushNotificationService : Service(){
+class PushNotificationService : Service() {
     private var notificationRepository = NotificationRepository()
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
     private var notificationNumber = 0
@@ -37,11 +37,15 @@ class PushNotificationService : Service(){
             val message = intent.getStringExtra(NOTIFICATION_MESSAGE) ?: return@let
             val channelId = intent.getStringExtra(NOTIFICATION_CHANNEL_ID)
             val shouldSend = intent.getBooleanExtra(NOTIFICATION_SHOULD_BE_SENT, true)
+            val shouldStore = intent.getBooleanExtra(NOTIFICATION_SHOULD_BE_STORED, true)
+            val priority = intent.getLongExtra(NOTIFICATION_PRIORITY, 1)
             val uniqueKey = UUID.randomUUID().toString()
             if (shouldSend) {
                 sendNotification(uniqueKey, title, message, channelId)
             }
-            storeNotification(uniqueKey, title, message, channelId)
+            if (shouldStore) {
+                storeNotification(uniqueKey, title, message, channelId, priority)
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -82,14 +86,20 @@ class PushNotificationService : Service(){
         }
     }
 
-    private fun storeNotification(key: String, title: String, message: String, channelId: String?) {
+    private fun storeNotification(
+        key: String,
+        title: String,
+        message: String,
+        channelId: String?,
+        priority: Long?
+    ) {
         scope.launch {
             notificationRepository.storeNotification(
                 key = key,
                 title = title,
                 body = message,
                 channelId = channelId,
-                priority = 1,
+                priority = priority ?: 1,
                 timestamp = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
             )
             if (--notificationNumber == 0) {
@@ -109,19 +119,25 @@ class PushNotificationService : Service(){
         private const val NOTIFICATION_CHANNEL_ID = "notification_channel_id"
         private const val NOTIFICATION_SHOULD_BE_SENT = "notification_should_be_sent"
         const val NOTIFICATION_KEY = "notification_key"
+        const val NOTIFICATION_PRIORITY = "notification_priority"
+        const val NOTIFICATION_SHOULD_BE_STORED = "notification_should_be_stored"
 
         fun sendNotification(
             context: Context,
             title: String,
             message: String,
             channelId: String? = null,
-            shouldBeSent: Boolean = true
+            shouldBeSent: Boolean = true,
+            priority: Long? = 1,
+            shouldBeStored: Boolean
         ) {
             val serviceIntent = Intent(context, PushNotificationService::class.java)
             serviceIntent.putExtra(NOTIFICATION_TITLE, title)
             serviceIntent.putExtra(NOTIFICATION_MESSAGE, message)
             serviceIntent.putExtra(NOTIFICATION_CHANNEL_ID, channelId)
             serviceIntent.putExtra(NOTIFICATION_SHOULD_BE_SENT, shouldBeSent)
+            serviceIntent.putExtra(NOTIFICATION_PRIORITY, priority)
+            serviceIntent.putExtra(NOTIFICATION_SHOULD_BE_STORED, shouldBeStored)
             context.startService(serviceIntent)
         }
 

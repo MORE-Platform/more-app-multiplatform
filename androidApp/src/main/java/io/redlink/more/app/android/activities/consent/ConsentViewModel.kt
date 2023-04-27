@@ -43,12 +43,6 @@ class ConsentViewModel(
     val permissionsNotGranted = mutableStateOf(false)
     val permissions = mutableSetOf<String>()
 
-    private val sharedPreferencesRepository = SharedPreferencesRepository(context)
-
-    private val networkService = NetworkService(
-        EndpointRepository(sharedPreferencesRepository),
-        CredentialRepository(sharedPreferencesRepository)
-    )
     private val observationFactory = AndroidObservationFactory(context)
 
 

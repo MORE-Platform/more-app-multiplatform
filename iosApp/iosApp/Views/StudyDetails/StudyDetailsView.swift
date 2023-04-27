@@ -29,9 +29,9 @@ struct StudyDetailsView: View {
                         .padding(.top)
                         .padding(.bottom)
                     
-                    TaskProgressView(progressViewTitle: .constant(String
+                    TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant(String
                         .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                         withComment: "string for completed tasks")), totalTasks: Double(viewModel.studyDetailsModel?.totalTasks ?? 0), tasksCompleted: Double(viewModel.studyDetailsModel?.finishedTasks ?? 0))
+                                         withComment: "string for completed tasks")))
                     .padding(.bottom, 0.2)
                     
                     HStack(alignment: .center) {

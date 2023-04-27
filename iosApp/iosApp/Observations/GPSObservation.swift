@@ -63,15 +63,5 @@ extension GPSObservation: CLLocationManagerDelegate {
         }
         self.storeData(data: data) {}
     }
-    
-    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
-        finish()
-    }
-    
-    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
-        if isRunning() {
-            _ = start()
-        }
-    }
 }
  

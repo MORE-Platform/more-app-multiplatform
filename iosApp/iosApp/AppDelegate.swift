@@ -34,6 +34,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return UIBackgroundFetchResult.noData
     }
     
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
     
     private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
