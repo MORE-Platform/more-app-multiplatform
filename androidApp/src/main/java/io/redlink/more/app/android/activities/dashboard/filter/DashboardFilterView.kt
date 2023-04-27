@@ -62,7 +62,7 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                 ) {
                     HeaderDescription(
                         description = item.second,
-                        color = MoreColors.Secondary
+                        color = if(viewModel.currentFilter.collectAsState().value.dateFilter == item.first) MoreColors.Primary else MoreColors.Secondary
                     )
                 }
             }
@@ -99,7 +99,10 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                 ) {
                     HeaderDescription(
                         description = item.first,
-                        color = MoreColors.Secondary
+                        color = if(
+                            item.second?.let { viewModel.currentFilter.collectAsState().value.typeFilter.contains(it) }
+                                ?: viewModel.currentFilter.collectAsState().value.typeFilter.isEmpty()
+                        ) MoreColors.Primary else MoreColors.Secondary
                     )
                 }
             }

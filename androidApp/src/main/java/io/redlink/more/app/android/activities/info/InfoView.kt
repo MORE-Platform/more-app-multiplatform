@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,19 +53,19 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 }
             )
             InfoItem(
-                title = getStringResource(id = R.string.info_consent_settings),
+                title = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
+                imageVector = Icons.Default.Watch,
+                contentDescription = getStringResource(id = R.string.more_ble_icon_description),
+                onClick = {
+                    navController.navigate(NavigationScreen.BLUETOOTH_CONNECTION.route)
+                }
+            )
+            InfoItem(
+                title = getStringResource(id = R.string.info_settings),
                 imageVector = Icons.Default.Settings,
                 contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.SETTINGS.route)
-                }
-            )
-            InfoItem(
-                title = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
-                imageVector = Icons.Outlined.Devices,
-                contentDescription = getStringResource(id = R.string.more_ble_icon_description),
-                onClick = {
-                    navController.navigate(NavigationScreen.BLUETOOTH_CONNECTION.route)
                 }
             )
             InfoItem(
@@ -87,16 +88,16 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 Column(
                     modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    Spacer(modifier = Modifier.height(55.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
-                    HeaderTitle(
-                        title = viewModel.studyTitle.value,
+                    SmallTitle(
+                        text = viewModel.studyTitle.value,
                         color = MoreColors.PrimaryDark,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 25.dp),
                         textAlign = TextAlign.Center,
-                        maxLines = Int.MAX_VALUE
+                        fontSize = 18.sp
                     )
 
                     SmallTitle(
@@ -132,7 +133,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             textAlign = TextAlign.Center
                         )
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Divider()
 
                     BasicText(
@@ -142,7 +143,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         fontSize = 14.sp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
+                            .padding(top = 10.dp)
                     )
                 }
             }

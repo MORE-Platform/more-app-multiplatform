@@ -40,7 +40,7 @@ fun ConsentView(model: ConsentViewModel) {
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
@@ -68,6 +68,10 @@ fun ConsentView(model: ConsentViewModel) {
                 hasCheck = true, hasPreview = (consentInfo.title == "Study Consent")
             )
         }
+        item {
+            Spacer(modifier = Modifier.height(40.dp))
+        }
+
         item {
             Box(
                 contentAlignment = Alignment.BottomCenter,

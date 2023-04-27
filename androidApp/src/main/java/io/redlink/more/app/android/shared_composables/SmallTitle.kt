@@ -17,6 +17,7 @@ fun SmallTitle(
     color: Color = MoreColors.Primary,
     textAlign: TextAlign? = null,
     fontSize: TextUnit = 16.sp,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     Text(
         text = text,
@@ -24,6 +25,7 @@ fun SmallTitle(
         fontSize = fontSize,
         color = color,
         textAlign = textAlign,
+        maxLines = maxLines,
         modifier = modifier
     )
 }
