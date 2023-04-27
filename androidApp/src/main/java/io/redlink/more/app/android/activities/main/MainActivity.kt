@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController) {
     MoreBackground(
-        navigationTitle = navigationTitle,
+        navigationTitle = viewModel.navigationBarTitle.value,
         showBackButton = viewModel.showBackButton.value,
         onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
@@ -71,9 +71,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
         }) {
         NavHost(navController = navController, startDestination = NavigationScreen.DASHBOARD.route) {
             composable(NavigationScreen.DASHBOARD.route) {
+                println("dashboard------------------")
+                println(viewModel.navigationBarTitle.value)
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
+                println(viewModel.navigationBarTitle.value)
                 DashboardView(navController, viewModel = viewModel.dashboardViewModel,
                     taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
@@ -90,8 +93,11 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 InfoView(navController, viewModel = InfoViewModel())
             }
             composable(NavigationScreen.SETTINGS.route) {
+                println("settings-----------------")
+                println(viewModel.navigationBarTitle.value)
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
                 viewModel.showBackButton.value = true
+                println(viewModel.navigationBarTitle.value)
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(
