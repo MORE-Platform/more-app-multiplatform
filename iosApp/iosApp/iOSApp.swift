@@ -22,7 +22,7 @@ struct iOSApp: App {
                         break
                     case .active:
                         DispatchQueue.main.async {
-                            ScheduleRepository().updateTaskStates(observationFactory: IOSObservationFactory())
+                            
                         }
                         break
                     default:

@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
@@ -36,7 +37,6 @@ abstract class Observation(val observationType: ObservationType) {
             Napier.i { "Observation with type ${observationType.observationType} starting" }
             applyObservationConfig(config)
             running = start()
-
             return running
         } else true
     }
@@ -85,11 +85,13 @@ abstract class Observation(val observationType: ObservationType) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
+        Napier.d { "Observation recorded new data: $dataSchemas" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
+        Napier.d { "Observation recorded new data: $dataSchemas" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }

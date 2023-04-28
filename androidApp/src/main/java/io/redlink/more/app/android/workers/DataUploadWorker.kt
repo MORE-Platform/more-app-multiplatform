@@ -3,6 +3,7 @@ package io.redlink.more.app.android.workers
 import android.content.Context
 import android.util.Log
 import androidx.work.*
+import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
@@ -45,12 +46,6 @@ class DataUploadWorker (
             return@withContext observationDataRepository.allAsBulk()?.let {
                 val size = it.dataPoints.size
                 if (size > 0) {
-                    if (size > MAX_NUMBER_OF_DATA_POINTS) {
-                        enqueueNewWorker()
-                        return@let uploadDataBulk(DataBulk(it.bulkId, dataPoints = it.dataPoints.chunked(
-                            MAX_NUMBER_OF_DATA_POINTS
-                        ).first()))
-                    }
                     return@let uploadDataBulk(it)
                 }
                 Result.success()
@@ -68,12 +63,13 @@ class DataUploadWorker (
     private suspend fun uploadDataBulk(bulk: DataBulk): Result {
         val (ids, error) = networkService.sendData(bulk)
         return if (error != null) {
-            Log.e(TAG, error.message)
+            Napier.e { error.message }
             if (stopped || runAttemptCount > MAX_WORKER_RETRY) {
                 Result.failure()
             }
             Result.retry()
         } else {
+            Napier.d { "Deleting observation data..." }
             observationDataRepository.deleteAllWithId(ids)
             Result.success()
         }

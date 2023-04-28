@@ -387,20 +387,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ExitConfirmation;
-			sourceTree = "<group>";
-		};
-		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ExitConfirmation;
-			sourceTree = "<group>";
-		};
 		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
 			isa = PBXGroup;
 			children = (
@@ -833,7 +819,6 @@
 		EDBB2B4629B8CFAE00CA973E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				07190FE829E809A700A8CB1F /* ExitConfirmation */,
 				EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */,
 				EDBB2B4929B8CFF000CA973E /* SettingsView.swift */,
 			);
@@ -1088,7 +1073,6 @@
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
-				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,

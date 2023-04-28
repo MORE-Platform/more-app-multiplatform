@@ -19,7 +19,7 @@ class AndroidObservationDataManager(context: Context) : ObservationDataManager()
             .build()
         workManager.enqueueUniqueWork(
             DataUploadWorker.WORKER_TAG,
-            ExistingWorkPolicy.APPEND_OR_REPLACE,
+            ExistingWorkPolicy.KEEP,
             dataWorker)
         onCompletion(true)
     }

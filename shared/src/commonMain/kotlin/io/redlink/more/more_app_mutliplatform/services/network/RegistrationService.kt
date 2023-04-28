@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform

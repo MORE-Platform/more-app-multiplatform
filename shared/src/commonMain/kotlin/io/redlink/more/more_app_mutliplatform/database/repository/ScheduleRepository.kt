@@ -30,6 +30,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             query = "state = $0",
             queryArgs = arrayOf(scheduleState.name)
         )
+
     fun allSchedules() = realmDatabase.count<ScheduleSchema>()
 
     fun collectRunningState(
@@ -68,6 +69,17 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }
     }
 
+    fun getNextScheduleStart(): Flow<ScheduleSchema?> {
+        return allSchedulesWithStatus().transform { schemas ->
+                emit(schemas.filter { (it.start ?: RealmInstant.now()) > RealmInstant.now() }
+                    .sortedBy { it.start }.firstOrNull())
+        }
+    }
+
+    fun getNextScheduleEnd(scheduleId: String): Flow<Long?> {
+        return scheduleWithId(scheduleId).transform { emit(it?.end?.epochSeconds) }
+    }
+
     fun nextSchedule(): Flow<Long?> {
         return allSchedulesWithStatus().transform { schemas ->
             val startInstances =
@@ -94,7 +106,8 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }
     }
 
-    fun collectNextScheduleStart(provideNewState: (Long?) -> Unit) = nextScheduleStart().asClosure(provideNewState)
+    fun collectNextScheduleStart(provideNewState: (Long?) -> Unit) =
+        nextScheduleStart().asClosure(provideNewState)
 
     fun scheduleWithId(id: String) = realmDatabase.queryFirst<ScheduleSchema>(
         query = "scheduleId = $0",
@@ -106,6 +119,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             val restartableTypes =
                 observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
             val now = Clock.System.now()
+            Napier.d { "Updating Schedule states..." }
             realmDatabase.realm?.let {
                 it.writeBlocking {
                     query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->

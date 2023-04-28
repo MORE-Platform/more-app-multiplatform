@@ -21,6 +21,10 @@ class AndroidDataRecorder(private val context: Context): DataRecorder {
         ObservationRecordingService.stopAll(context)
     }
 
+    override fun restartAll() {
+        ObservationRecordingService.restartAll(context)
+    }
+
     override fun updateTaskStates() {
         ObservationRecordingService.updateTaskStates(context)
     }

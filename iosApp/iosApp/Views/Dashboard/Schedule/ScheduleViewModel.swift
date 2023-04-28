@@ -9,7 +9,7 @@
 import shared
 
 class ScheduleViewModel: ObservableObject {
-    let recorder = IOSDataRecorder()
+    let recorder = AppDelegate.recorder
     let scheduleListType: ScheduleListType
     private let coreModel: CoreScheduleViewModel
 

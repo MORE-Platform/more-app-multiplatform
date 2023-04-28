@@ -29,27 +29,16 @@ object RealmDatabase {
         this.realm = null
     }
 
-    fun isOpen() = realm != null && realm?.isClosed() == false
-
-    fun store(realmObject: RealmObject, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            copyToRealm(realmObject, updatePolicy)
-        }
-    }
-
-    fun store(realmObjects: List<RealmObject>, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-        }
-    }
-
-    fun storeAll(
+    fun store(
         realmObjects: Collection<RealmObject>,
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-            Napier.i { "Stored new data" }
+        if (realmObjects.isNotEmpty()) {
+            Napier.d { "Storing ${realmObjects.size} new objects..." }
+            realm?.writeBlocking {
+                realmObjects.map { copyToRealm(it, updatePolicy) }
+                Napier.d { "Stored ${realmObjects.size} objects!" }
+            }
         }
     }
 
@@ -109,6 +98,7 @@ object RealmDatabase {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }
+            Napier.d { "Deleted object with" }
         }
     }
 

@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import kotlinx.coroutines.flow.Flow
 
@@ -17,13 +16,25 @@ class NotificationRepository : Repository<NotificationSchema>() {
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
     ) {
-        val realmObjects = mutableListOf<RealmObject>()
-        realmObjects.add(NotificationSchema.toSchema(key, channelId, title, body, timestamp, priority, read, userFacing, additionalData))
-        realmDatabase.store(realmObjects)
+        realmDatabase.store(
+            setOf(
+                NotificationSchema.toSchema(
+                    key,
+                    channelId,
+                    title,
+                    body,
+                    timestamp,
+                    priority,
+                    read,
+                    userFacing,
+                    additionalData
+                )
+            )
+        )
     }
 
     fun storeNotification(remoteMessage: NotificationSchema) {
-        realmDatabase.store(remoteMessage)
+        realmDatabase.store(setOf(remoteMessage))
     }
 
     override fun count(): Flow<Long> = realmDatabase.count<NotificationSchema>()
@@ -32,26 +43,27 @@ class NotificationRepository : Repository<NotificationSchema>() {
 
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
         realmDatabase.realm?.writeBlocking {
-            this.query<NotificationSchema>("notificationId = $0", notificationId).first().find()?.let {
-                if (read != null) {
-                    it.read = read
+            this.query<NotificationSchema>("notificationId = $0", notificationId).first().find()
+                ?.let {
+                    if (read != null) {
+                        it.read = read
+                    }
+                    if (priority != null) {
+                        it.priority = priority
+                    }
                 }
-                if (priority != null) {
-                    it.priority = priority
-                }
-            }
         }
     }
 
-    fun allUserFacingNotifications(){
+    fun allUserFacingNotifications() {
         realmDatabase.query<NotificationSchema>("userFacing == true")
     }
 
-    fun countUserFacingNotifications(){
+    fun countUserFacingNotifications() {
         realmDatabase.realm?.query<NotificationSchema>("userFacing == true")?.count()
     }
 
-    fun setNotificationReadStatus(key: String, read: Boolean = true){
+    fun setNotificationReadStatus(key: String, read: Boolean = true) {
         realmDatabase.realm?.writeBlocking {
             this.query<NotificationSchema>("notificationId = $0", key).first().find()?.let {
                 it.read = read
@@ -59,7 +71,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
         }
     }
 
-    fun deleteAll(){
+    fun deleteAll() {
         realmDatabase.deleteAll()
     }
 }

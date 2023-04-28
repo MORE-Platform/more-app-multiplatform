@@ -17,9 +17,20 @@ class AccelerometerBackgroundObservation: Observation_ {
     private var lastCollectedDataTimestamp: Date = Date()
     private var timer: Timer?
     private let semaphore = Semaphore()
+    private let observationRepository: ObservationRepository = {
+        ObservationRepository()
+    }()
     
     init(sensorPermissions: Set<String>) {
         super.init(observationType: AccelerometerType(sensorPermissions: sensorPermissions))
+        observationRepository.collectTimestampOfType(type: observationType.observationType) { [weak self] instant in
+            if let seconds = instant?.epochSeconds {
+                self?.lastCollectedDataTimestamp = Date(timeIntervalSince1970: TimeInterval(seconds))
+                
+            } else {
+                self?.lastCollectedDataTimestamp = Date()
+            }
+        }
     }
     
     override func start() -> Bool {
@@ -28,7 +39,7 @@ class AccelerometerBackgroundObservation: Observation_ {
             self.startRecording = Date()
             print("CMSensorRecorder started recording accelerometer data for the next \(recordForDurationInSec)s...")
             DispatchQueue.main.async { [weak self] in
-                self?.timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
+                self?.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
                     if let self {
                         self.collectData(start: self.lastCollectedDataTimestamp, end: Date()) {
                             if self.startRecording.timeIntervalSince1970 + self.recordForDurationInSec <= Date().timeIntervalSince1970 {

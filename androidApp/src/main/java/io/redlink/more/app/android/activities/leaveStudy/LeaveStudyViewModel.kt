@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
@@ -43,6 +44,7 @@ class LeaveStudyViewModel(context: Context): ViewModel() {
 
     fun removeParticipation(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
+            AndroidDataRecorder(context).stopAll()
             coreSettingsViewModel.dataDeleted.collect {
                 if (it) {
                     (context as? Activity)?.let { activity ->

@@ -68,7 +68,7 @@ class MainViewModel(context: Context): ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             BluetoothDeviceRepository(bluetoothConnector).updateConnectedDevices()
-            recorder.updateTaskStates()
+            recorder.restartAll()
             val workManager = WorkManager.getInstance(context)
             val worker = OneTimeWorkRequestBuilder<ScheduleUpdateWorker>().build()
             workManager.enqueueUniqueWork(

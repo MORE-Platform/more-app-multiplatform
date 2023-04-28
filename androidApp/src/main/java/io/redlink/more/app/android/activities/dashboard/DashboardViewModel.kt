@@ -30,7 +30,6 @@ class DashboardViewModel(context: Context,
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
     init {
-        scheduleViewModel.updateTaskStates(context)
         scope.launch {
             coreDashboardViewModel.study.collect {
                 study.value = it

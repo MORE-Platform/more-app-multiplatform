@@ -17,6 +17,7 @@ import FirebaseAnalytics
 class AppDelegate: NSObject, UIApplicationDelegate {
     private var fcmService: FCMService? = FCMService()
     static let polarConnector = PolarConnector()
+    static let recorder = IOSDataRecorder()
     private var localNotifications: LocalPushNotifications? = LocalPushNotifications()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()

@@ -57,6 +57,11 @@ class ContentViewModel: ObservableObject {
 
         hasCredentials = credentialRepository.hasCredentials()
         
+        if hasCredentials {
+            DispatchQueue.main.async {
+                AppDelegate.recorder.restartAll()
+            }
+        }
     }
     
     func showLoginView() {
