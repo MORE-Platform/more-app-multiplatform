@@ -20,7 +20,7 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnec
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothDevice as AndroidBluetoothDevice
 
-class AndroidBluetoothConnector(private val context: Context): BluetoothConnector, BluetoothConnectorObserver {
+class AndroidBluetoothConnector(private val context: Context): BluetoothConnector {
     override val specificBluetoothConnectors: Map<String, BluetoothConnector> = mapOf("polar" to PolarConnector(context))
     private val bluetoothAdapter: BluetoothAdapter? = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     private var bluetoothLeScanner: BluetoothLeScanner? = null
@@ -78,7 +78,9 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
                         isConnecting = false
                         disconnect(device)
                         foundBluetoothDevices.remove(device.address)
-                    }
+                    } else if (bondState == AndroidBluetoothDevice.BOND_BONDING) {
+                        observer?.isConnectingToDevice(device)
+                    } else {}
                 }
             }
         }
@@ -137,6 +139,9 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
                             BluetoothProfile.STATE_CONNECTED -> {
                                 deviceConnected(device)
                             }
+                            BluetoothProfile.STATE_CONNECTING -> {
+                                observer?.isConnectingToDevice(device)
+                            }
                             BluetoothProfile.STATE_DISCONNECTED -> {
                                 if (status == BluetoothProfile.STATE_CONNECTED || status == BluetoothProfile.STATE_DISCONNECTING) {
                                     deviceConnected(device)
@@ -183,6 +188,10 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
     override fun close() {
         stopScanning()
         foundBluetoothDevices.clear()
+    }
+
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+        observer?.isConnectingToDevice(bluetoothDevice)
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {

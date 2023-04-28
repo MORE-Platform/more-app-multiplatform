@@ -26,7 +26,8 @@ struct DashboardView: View {
                     } else {
                         EmptyView()
                     }
-                    
+                }.onAppear {
+                    dashboardViewModel.updateBluetoothDevices()
                 }
             } topBarContent: {
                 EmptyView()

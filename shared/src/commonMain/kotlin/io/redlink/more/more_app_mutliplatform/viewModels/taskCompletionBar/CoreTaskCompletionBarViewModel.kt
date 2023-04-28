@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
