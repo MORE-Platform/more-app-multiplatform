@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.activities.main.MainTabView
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.MorePlatformTheme
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun MoreBackground(

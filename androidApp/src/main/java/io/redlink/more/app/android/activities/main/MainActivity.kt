@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController) {
     MoreBackground(
-        navigationTitle = viewModel.navigationBarTitle.value,
+        navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
         onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
