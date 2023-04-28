@@ -12,20 +12,27 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 
 private const val TAG = "ObservationRecordingService"
 class ObservationRecordingService: Service() {
     private var observationManager: ObservationManager? = null
     private val scheduleRepository = ScheduleRepository()
+    private var observationFactory: ObservationFactory? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (observationManager == null) {
-            observationManager = ObservationManager(AndroidObservationFactory(this))
+        if (observationFactory == null) {
+            observationFactory = AndroidObservationFactory(this)
+        }
+        observationFactory?.let {
+            if (observationManager == null) {
+                observationManager = ObservationManager(it)
+            }
         }
         return intent?.action?.let { action ->
             return@let when (action) {

@@ -37,9 +37,9 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
     }
 }
 
-fun <T> MutableStateFlow<Set<T>>.append(value: T) {
+fun <T> MutableStateFlow<Set<T>>.append(value: T?) {
     val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.add(value)) {
+    if (mutableCollection.add(value ?: return)) {
         val context = this
         CoroutineScope(Job() + Dispatchers.Default).launch {
             context.emit(mutableCollection)
@@ -69,9 +69,9 @@ fun <T> MutableStateFlow<Set<T>>.append(value: Collection<T>) {
     }
 }
 
-fun <T> MutableStateFlow<Set<T>>.remove(value: T) {
+fun <T> MutableStateFlow<Set<T>>.remove(value: T?) {
     val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.remove(value)) {
+    if (mutableCollection.remove(value ?: return)) {
         val context = this
         CoroutineScope(Job() + Dispatchers.Default).launch {
             context.emit(mutableCollection)
@@ -94,6 +94,14 @@ fun <T> MutableStateFlow<Set<T>>.clear() {
         val context = this
         CoroutineScope(Job() + Dispatchers.Default).launch {
             context.emit(emptySet())
+        }
+    }
+}
+
+fun <T> MutableStateFlow<T>.set(value: T?) {
+    value?.let {
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            emit(it)
         }
     }
 }

@@ -16,9 +16,9 @@ struct ScheduleListHeader: View {
     
     var body: some View {
         VStack {
-            TaskProgressView(progressViewTitle: .constant(String
+            TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant(String
                 .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                 withComment: "string for completed tasks")), totalTasks: totalTasks, tasksCompleted: tasksCompleted)
+                                 withComment: "string for completed tasks")))
             .padding(.bottom)
             MoreFilter(filterText: $scheduleViewModel.filterText) {
                     DashboardFilterView().environmentObject(scheduleViewModel.filterViewModel)

@@ -16,7 +16,7 @@ import io.redlink.more.app.android.R
 
 @Composable
 fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, totalTasks: Int, headline: String = getStringResource(id = R.string.more_main_completed_tasks)){
-    val percent = if(totalTasks > 0) finishedTasks.toFloat() / totalTasks.toFloat() else 0f
+    val percent: Double = if(totalTasks > 0) finishedTasks.toDouble() / totalTasks.toDouble() else 0.0
     Column(
         modifier = modifier
         .fillMaxWidth()
@@ -34,14 +34,14 @@ fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, tota
                 modifier = Modifier.weight(0.8f)
             )
             Text(
-                text = "${(percent * 100).toInt()}%",
+                text = String.format("%.2f%%", percent * 100),
                 color = MoreColors.Primary,
                 maxLines = 1,
             )
         }
 
         LinearProgressIndicator(
-            progress = percent,
+            progress = percent.toFloat(),
             color = MoreColors.Primary,
             modifier = Modifier
                 .fillMaxWidth()
