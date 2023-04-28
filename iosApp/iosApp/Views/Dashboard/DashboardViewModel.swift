@@ -11,6 +11,7 @@ import shared
 class DashboardViewModel: ObservableObject {
     private let coreModel: CoreDashboardViewModel = CoreDashboardViewModel()
     let scheduleViewModel: ScheduleViewModel
+    private var bluetoothUpdated = false
     
     @Published var studyTitle: String = ""
     @Published var study: StudySchema? = StudySchema()
@@ -26,5 +27,11 @@ class DashboardViewModel: ObservableObject {
         }
         self.filterText = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
     }
-
+    
+    func updateBluetoothDevices() {
+        if !bluetoothUpdated {
+            bluetoothUpdated = true
+            BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
+        }
+    }
 }
