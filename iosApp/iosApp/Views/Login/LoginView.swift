@@ -40,26 +40,6 @@ struct LoginView: View {
                         ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
                             .environmentObject(model)
                     }
-                        
-                    VStack{
-                        Text(String.localizedString(forKey: "or", inTable: stringTable, withComment: "Choose either or of the two options."))
-                            .fontWeight(.more.title)
-                            
-                    }
-                    .padding(25)
-                   
-                    NavigationLinkButton(disabled: .constant(false))  {
-                        LoginQRCodeView(model: model)
-                    } label: {
-                        HStack {
-                            Text(String.localizedString(forKey: "qr_code_entry", inTable: stringTable, withComment: "Click to Scan QR Code to log in."))
-                                .foregroundColor(.more.white)
-                            Spacer()
-                            Image(systemName: "chevron.forward")
-                                    .foregroundColor(.more.white)
-                        }
-                    }
-                    .padding(.vertical, 15)	
                     
                     Spacer()
                     
