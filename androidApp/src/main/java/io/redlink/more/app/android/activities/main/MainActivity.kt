@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
         val viewModel = MainViewModel(this)
         val destinationChangeListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            viewModel.navigationBarTitle
+            viewModel.navigationBarTitle.value = destination.navigatorName
         }
         setContent {
             val navController = rememberNavController()
@@ -71,12 +71,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
         }) {
         NavHost(navController = navController, startDestination = NavigationScreen.DASHBOARD.route) {
             composable(NavigationScreen.DASHBOARD.route) {
-                println("dashboard------------------")
-                println(viewModel.navigationBarTitle.value)
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
-                println(viewModel.navigationBarTitle.value)
                 DashboardView(navController, viewModel = viewModel.dashboardViewModel,
                     taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
             }
@@ -93,11 +90,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 InfoView(navController, viewModel = InfoViewModel())
             }
             composable(NavigationScreen.SETTINGS.route) {
-                println("settings-----------------")
-                println(viewModel.navigationBarTitle.value)
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
                 viewModel.showBackButton.value = true
-                println(viewModel.navigationBarTitle.value)
                 SettingsView(model = viewModel.settingsViewModel)
             }
             composable(

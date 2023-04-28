@@ -29,7 +29,6 @@ fun MoreBackground(
     MorePlatformTheme {
         Scaffold(topBar = {
             MoreTopAppBar(navigationTitle, showBackButton, onBackButtonClick, rightCornerContent)
-            Text(text = navigationTitle)
         },
             bottomBar = {
                 if (showTabRow) {
@@ -43,7 +42,6 @@ fun MoreBackground(
                     .fillMaxSize(),
                 color = MoreColors.PrimaryLight
             ) {
-                MoreTopAppBar(navigationTitle, showBackButton, onBackButtonClick, rightCornerContent)
                 Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
