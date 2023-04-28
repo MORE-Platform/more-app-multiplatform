@@ -21,41 +21,43 @@ struct LoginView: View {
   
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.more.mainBackground.ignoresSafeArea()
-            
-                VStack(alignment: .center) {
-                    
-                    Image("more_welcome")
-                        .padding(.vertical, 40)
+            NavigationView {
+                ZStack {
+                    Color.more.mainBackground.ignoresSafeArea()
+                
+                    VStack(alignment: .center) {
+                        
+                        Image("more_welcome")
+                            .padding(.vertical, 40)
 
-                    MoreTextFieldHL(isSmTextfield: .constant(false),
-                                    headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
-                                    inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
-                                    input: $model.token)
-                    .padding(.bottom, 12)
-                    
-                    if showTokenInput {
-                        ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
-                            .environmentObject(model)
+                        MoreTextFieldHL(isSmTextfield: .constant(false),
+                                        headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                        inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                        input: $model.token)
+                        .padding(.bottom, 12)
+                        
+                        if showTokenInput {
+                            ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
+                                .environmentObject(model)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack {
+                            ExpandableInput(
+                                expanded: $showEndpoint,
+                                isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
+                                inputPlaceholder: $model.endpoint,
+                                input: $model.endpoint
+                            )
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    VStack {
-                        ExpandableInput(
-                            expanded: $showEndpoint,
-                            isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
-                            inputPlaceholder: $model.endpoint,
-                            input: $model.endpoint
-                        )
-                    }
+                    .padding(.horizontal, 60)
                 }
-                .padding(.horizontal, 60)
+                .viewAdaptsToOpenKeyboard()
+                
             }
-            
-        }
+        
     }
 }
 
