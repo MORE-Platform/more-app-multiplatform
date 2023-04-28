@@ -1,3 +1,5 @@
+package io.redlink.more.app.android.activities.notification.filter
+
 import androidx.lifecycle.ViewModel
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getString
@@ -10,13 +12,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
+class NotificationFilterViewModel(coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
+    private val coreModel = coreViewModel
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
 
-    var notificationFilterList = listOf(
+    var notificationFilterList = mapOf(
         Pair(
             getString(R.string.more_filter_notification_all),
             null
@@ -39,7 +42,7 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
     }
 
     fun processFilter(filter: String?) {
-        coreViewModel.processFilterChange(filter)
+        coreModel.processFilterChange(filter)
     }
 
     fun getFilterString(): String {
@@ -48,12 +51,12 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
         if(currentFilter.value.isEmpty()) {
             return getString(R.string.more_filter_notification_all)
         }
-        notificationFilterList.forEach {
-            if(currentFilter.value.contains(it.second)) {
+        notificationFilterList.forEach {(key, value) ->
+            if(currentFilter.value.contains(value)) {
                 if(filterString.isNotEmpty()) {
                     filterString += ", "
                 }
-                filterString += it.first
+                filterString += key
             }
         }
         return filterString

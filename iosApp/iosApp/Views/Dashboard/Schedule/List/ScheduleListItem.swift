@@ -15,13 +15,13 @@ struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
     var scheduleModel: ScheduleModel
     var showButton: Bool
-    
+
     private let stringTable = "ScheduleListView"
-    
+
     var body: some View {
         VStack {
             NavigationLink {
-                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), scheduleListType: viewModel.scheduleListType)
+                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
             } label: {
                 VStack(alignment: .leading) {
                     ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
@@ -29,9 +29,10 @@ struct ScheduleListItem: View {
                     ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                 }
             }
-            
+
             if showButton {
-                ObservationButton(observationType: scheduleModel.observationType,
+                ObservationButton(scheduleId: scheduleModel.scheduleId,
+                                  observationType: scheduleModel.observationType,
                                   state: scheduleModel.scheduleState,
                                   disabled: !scheduleModel.scheduleState.active()){
                     if scheduleModel.scheduleState == ScheduleState.running {

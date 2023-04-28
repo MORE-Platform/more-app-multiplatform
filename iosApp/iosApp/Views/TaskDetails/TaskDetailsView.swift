@@ -12,11 +12,12 @@ import SwiftUI
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
+    var scheduleId: String = ""
     var scheduleListType: ScheduleListType
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-    
+
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -42,12 +43,12 @@ struct TaskDetailsView: View {
                             Spacer()
                         }
                     }
-                    
+
                     let date: String = viewModel.getDateRangeString()
                     let time: String = viewModel.getTimeRangeString()
-                    
+
                     ObservationDetailsData(dateRange: .constant(date), repetition: $viewModel.observationRepetitionInterval, timeframe: .constant(time))
-                    
+
                     HStack {
                         AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
                     }
@@ -65,14 +66,22 @@ struct TaskDetailsView: View {
                                 if model.observationType == "question-observation" {
                                     NavigationLinkButton(disabled: .constant(model.state != .active && model.state != .running && model.state != .paused && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date() || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date()))
                                     ) {
-                                        QuestionObservationView()
+                                        VStack {
+                                            if scheduleId != "" {
+                                                SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: scheduleId))
+                                            } else {
+                                                EmptyView()
+                                            }
+                                        }
+
                                     } label: {
                                         Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
-                                            .foregroundColor(model.state != .active && model.state != .running && model.state != .paused && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date() || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date()) ? .more.secondaryMedium : .more.white)
+                                            .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.secondaryMedium : .more.white)
                                     }
                                 }
                                 else {
-                                    ObservationButton(observationType: model.observationType, state: model.state, disabled: model.state != .active
+                                    ObservationButton(scheduleId: scheduleId,
+                                                    observationType: model.observationType, state: model.state, disabled: model.state != .active
                                                       && model.state != .running
                                                       && model.state != .paused
                                                       && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
@@ -88,7 +97,7 @@ struct TaskDetailsView: View {
                     }
                     Spacer()
                 }
-                
+
             } topBarContent: {
                 EmptyView()
             }

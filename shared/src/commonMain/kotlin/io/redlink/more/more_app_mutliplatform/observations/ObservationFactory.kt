@@ -1,7 +1,14 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
+import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
+
+
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
     val observations = mutableSetOf<Observation>()
+
+    init {
+        observations.add(SimpleQuestionObservation())
+    }
 
     fun observationTypes() = observations.map { it.observationType.observationType }.toSet()
 

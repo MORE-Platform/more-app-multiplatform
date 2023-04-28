@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import io.redlink.more.app.android.activities.dashboard.composables.DashboardProgress
 import io.redlink.more.app.android.activities.dashboard.composables.FilterView
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 
 @Composable
-fun ScheduleListHeader(finishedTasks: Int, totalTasks: Int, viewModel: ScheduleViewModel, navController: NavController) {
+fun ScheduleListHeader(viewModel: ScheduleViewModel, navController: NavController, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     Column(modifier = Modifier.height(IntrinsicSize.Min)) {
-        DashboardProgress(finishedTasks = finishedTasks, totalTasks = totalTasks)
+        TaskCompletionBarView(taskCompletionBarViewModel)
         FilterView(navController, model = viewModel.filterModel, scheduleListType = viewModel.scheduleListType)
     }
 }

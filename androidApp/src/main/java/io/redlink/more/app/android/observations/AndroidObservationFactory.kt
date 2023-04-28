@@ -16,7 +16,6 @@ class AndroidObservationFactory(context: Context) :
             setOf(
                 AccelerometerObservation(context),
                 GPSObservation(context, gpsService = GPSService(context)),
-                SimpleQuestionObservation(),
                 PolarHeartRateObservation(context)
             )
         )

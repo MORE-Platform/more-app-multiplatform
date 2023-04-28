@@ -16,6 +16,7 @@ import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     private var fcmService: FCMService? = FCMService()
+    static let polarConnector = PolarConnector()
     private var localNotifications: LocalPushNotifications? = LocalPushNotifications()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()
@@ -32,6 +33,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
         return UIBackgroundFetchResult.noData
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
     }
     
     

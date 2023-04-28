@@ -24,6 +24,8 @@ class ContentViewModel: ObservableObject {
     
     let observationFactory = IOSObservationFactory()
     
+    private let bluetoothConnector = IOSBluetoothConnector()
+
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
         viewModel.delegate = self
@@ -41,7 +43,12 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-    
+    let coreTaskCompletionViewModel = CoreTaskCompletionBarViewModel()
+
+    lazy var bluetoothViewModel: BluetoothConnectionViewModel = {
+        BluetoothConnectionViewModel(bluetoothConnector: bluetoothConnector)
+    }()
+
     
 
     init() {
