@@ -25,6 +25,8 @@
 		1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DA29CC8E730034EF65 /* AppDelegate.swift */; };
 		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
+		1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */; };
+		1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */; };
 		1F0FA80729ED7A1300B8D80E /* TaskScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */; };
 		1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
@@ -56,12 +58,16 @@
 		1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998829C0FF3E00687906 /* MainTabView.swift */; };
 		1F43998C29C1006800687906 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998B29C1006800687906 /* NotificationView.swift */; };
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
+		1F5364AE29F98D4A0052CB32 /* BluetoothConnection.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F5364AD29F98D4A0052CB32 /* BluetoothConnection.strings */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
 		1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */; };
 		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
 		1F69081329D44D900079C219 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F69081229D44D900079C219 /* DateExtension.swift */; };
+		1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */; };
+		1F6A4E3C29F6C95B00F0247F /* PolarConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */; };
+		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
 		1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */; };
 		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
@@ -200,6 +206,8 @@
 		1F0026DA29CC8E730034EF65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
+		1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionView.swift; sourceTree = "<group>"; };
+		1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionViewModel.swift; sourceTree = "<group>"; };
 		1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskScheduleService.swift; sourceTree = "<group>"; };
 		1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSBluetoothConnector.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
@@ -229,12 +237,16 @@
 		1F43998829C0FF3E00687906 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		1F43998B29C1006800687906 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		1F5364AD29F98D4A0052CB32 /* BluetoothConnection.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = BluetoothConnection.strings; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
 		1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
 		1F69081229D44D900079C219 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
+		1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyListView.swift; sourceTree = "<group>"; };
+		1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConnector.swift; sourceTree = "<group>"; };
+		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
 		1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModelExtension.swift; sourceTree = "<group>"; };
 		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
@@ -382,6 +394,13 @@
 			path = ExitConfirmation;
 			sourceTree = "<group>";
 		};
+		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ExitConfirmation;
+			sourceTree = "<group>";
+		};
 		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
 			isa = PBXGroup;
 			children = (
@@ -389,6 +408,15 @@
 				07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */,
 			);
 			path = StudyDetails;
+			sourceTree = "<group>";
+		};
+		1F09A02A29F69E190001177F /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */,
+				1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */,
+			);
+			path = Bluetooth;
 			sourceTree = "<group>";
 		};
 		1F0BFA2D29B8D399003B3AB9 /* Recovered References */ = {
@@ -410,13 +438,13 @@
 		1F27536229CC39CA00324417 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1F6A4E3A29F6C94B00F0247F /* Bluetooth */,
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
 				1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */,
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
 				1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */,
 				1F0FA80629ED7A1300B8D80E /* TaskScheduleService.swift */,
-				1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -465,6 +493,15 @@
 			path = Info;
 			sourceTree = "<group>";
 		};
+		1F6A4E3A29F6C94B00F0247F /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */,
+				1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */,
+			);
+			path = Bluetooth;
+			sourceTree = "<group>";
+		};
 		1F8847B829914BD50023EF10 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -507,6 +544,7 @@
 				071ABEF429ED8C440013C1CF /* TriggerSlider.swift */,
 				071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */,
 				07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */,
+				1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -547,6 +585,7 @@
 				B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */,
 				B78B4A7F29F0445E00A1BA58 /* ObservationDetails.strings */,
 				B79BECC229F1862B00966AD1 /* Info.strings */,
+				1F5364AD29F98D4A0052CB32 /* BluetoothConnection.strings */,
 				B79BECBC29F1471200966AD1 /* SimpleQuestionObservation.strings */,
 			);
 			path = Strings;
@@ -571,6 +610,7 @@
 				1F69081229D44D900079C219 /* DateExtension.swift */,
 				1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */,
 				ED74FF4529DEC73600BAA1EF /* KotlinLongExtension.swift */,
+				1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -590,6 +630,7 @@
 				EDB16E2C29F934CE00701C27 /* TaskCompletionBar */,
 				EDAF93ED29F17A210093F1DA /* CompletedSchedules */,
 				EDEF4C8129EFD4B200E830DA /* RunningSchedules */,
+				1F09A02A29F69E190001177F /* Bluetooth */,
 				07BC54AA29CB2F1D00459267 /* StudyDetails */,
 				B748DF4629D1C00D0026C348 /* QuestionObservation */,
 				ED7AE1E929C8A24000616B93 /* TaskDetails */,
@@ -902,6 +943,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				B748DF3429CAFBA90026C348 /* TaskDetail.strings in Resources */,
+				1F5364AE29F98D4A0052CB32 /* BluetoothConnection.strings in Resources */,
 				1F17C08C29952C29000E124A /* ConsentView.strings in Resources */,
 				EDBB2B4C29B8D1C500CA973E /* SettingsView.strings in Resources */,
 				B79DBA5529D3470D00A1F547 /* DashboardFilter.strings in Resources */,
@@ -953,7 +995,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\nexport JAVA_HOME=/Users/iaigner/.sdkman/candidates/java/11.0.18-amzn\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -975,6 +1017,7 @@
 				1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */,
 				B79BECBF29F17EE900966AD1 /* InfoViewModel.swift in Sources */,
 				1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */,
+				1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */,
 				1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */,
 				ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */,
 				B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */,
@@ -1010,10 +1053,12 @@
 				EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
+				1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
 				1F69081329D44D900079C219 /* DateExtension.swift in Sources */,
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
+				1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */,
 				B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
@@ -1036,12 +1081,14 @@
 				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
 				1F0FA80729ED7A1300B8D80E /* TaskScheduleService.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
+				1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */,
 				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
+				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
@@ -1097,6 +1144,7 @@
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 				B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */,
+				1F6A4E3C29F6C95B00F0247F /* PolarConnector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

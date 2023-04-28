@@ -96,9 +96,10 @@ fun Accordion(
                             tint = MoreColors.Primary,
                             modifier = Modifier.rotate(angle)
                         )
-
                 }
+            }
 
+            Column {
                 Divider(
                     color = MoreColors.Primary,
                     modifier = Modifier.padding(4.dp)

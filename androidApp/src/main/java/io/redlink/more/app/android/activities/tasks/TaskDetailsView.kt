@@ -88,26 +88,37 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            scheduleId?.let {
-                DatapointCollectionView(viewModel.dataPointCount.value, viewModel.taskDetailsModel.value.state)
-                Spacer(modifier = Modifier.height(20.dp))
-                if (scheduleListType != ScheduleListType.COMPLETED) {
-                    SmallTextButton(
-                        text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
-                            id = R.string.more_observation_pause
-                        ) else getStringResource(
-                            id = R.string.more_observation_start
-                        ), enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
-                    ) {
-                        if (viewModel.taskDetailsModel.value.observationType == "question-observation")
-                            navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
-                        else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
-                            viewModel.pauseObservation()
-                        } else {
-                            viewModel.startObservation()
+
+                scheduleId?.let {
+                    if (scheduleListType != ScheduleListType.COMPLETED) {
+                        DatapointCollectionView(
+                            viewModel.dataPointCount.value,
+                            viewModel.taskDetailsModel.value.state
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    if (scheduleListType != ScheduleListType.COMPLETED) {
+                        SmallTextButton(
+                            text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
+                                id = R.string.more_observation_pause
+                            )
+                            else if (viewModel.taskDetailsModel.value.observationType == "question-observation") getStringResource(
+                                id = R.string.more_questionnaire_start
+                            )
+                            else getStringResource(
+                                id = R.string.more_observation_start
+                            ),
+                            enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
+                        ) {
+                            if (viewModel.taskDetailsModel.value.observationType == "question-observation")
+                                navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
+                            else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                                viewModel.pauseObservation()
+                            } else {
+                                viewModel.startObservation()
+                            }
                         }
                     }
-                }
             }
         }
     }
