@@ -49,17 +49,22 @@ fun SettingsView(
 
                 }
 
+                Spacer(Modifier.height(24.dp))
+
+                /*
                 model.permissionModel.value?.let {
                     Spacer(Modifier.height(24.dp))
 
                     Accordion(
                         title = getStringResource(id = R.string.more_study_consent),
-                        description = it.studyParticipantInfo,
+                        description = it.studyConsentInfo,
                         hasCheck = true,
                         hasSmallTitle = true,
                         hasPreview = false
                     )
                 }
+                */
+
 
             }
 
