@@ -30,14 +30,16 @@ struct ScheduleListItem: View {
                 }
             }
 
-            ObservationButton(scheduleId: scheduleModel.scheduleId,
-                              observationType: scheduleModel.observationType,
-                              state: scheduleModel.scheduleState,
-                              disabled: !scheduleModel.scheduleState.active()){
-                if scheduleModel.scheduleState == ScheduleState.running {
-                    viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                } else {
-                    viewModel.start(scheduleId: scheduleModel.scheduleId)
+            if showButton {
+                ObservationButton(scheduleId: scheduleModel.scheduleId,
+                                  observationType: scheduleModel.observationType,
+                                  state: scheduleModel.scheduleState,
+                                  disabled: !scheduleModel.scheduleState.active()){
+                    if scheduleModel.scheduleState == ScheduleState.running {
+                        viewModel.pause(scheduleId: scheduleModel.scheduleId)
+                    } else {
+                        viewModel.start(scheduleId: scheduleModel.scheduleId)
+                    }
                 }
             }
         }

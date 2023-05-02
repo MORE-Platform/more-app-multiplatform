@@ -20,7 +20,7 @@ fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
         maxLines = 5,
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
         color = MoreColors.Primary
     )
 

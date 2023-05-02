@@ -6,7 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
 private const val ENCRYPT_SHARED_PREF_FILENAME = "credentials_file"
-class EncryptedSharedPreference {
+class EncryptedSharedPreferences {
     companion object {
         fun create(context: Context): SharedPreferences {
             val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC

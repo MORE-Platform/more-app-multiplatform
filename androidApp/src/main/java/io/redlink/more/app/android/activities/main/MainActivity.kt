@@ -4,6 +4,7 @@ import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         val viewModel = MainViewModel(this)
         val destinationChangeListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            viewModel.navigationBarTitle
+            viewModel.navigationBarTitle.value = destination.navigatorName
         }
         setContent {
             val navController = rememberNavController()

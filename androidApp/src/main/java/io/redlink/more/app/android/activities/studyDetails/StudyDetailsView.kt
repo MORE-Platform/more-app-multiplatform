@@ -18,7 +18,14 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
+import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.shared_composables.TimeframeDays
 import org.mongodb.kbson.ObjectId
+import java.sql.Date
+import java.sql.Timestamp
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 @Composable
@@ -40,13 +47,16 @@ fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewMo
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        BasicText(text = "${getStringResource(R.string.study_duration)}: ")
-                        BasicText(
-                            text = "${it.study.start?.epochSeconds?.jvmLocalDateTime()?.formattedString()} - ${
-                                it.study.end?.epochSeconds?.jvmLocalDateTime()?.formattedString()
-                            }",
-                            color = MoreColors.Secondary
-                        )
+                        if (it.study.start?.epochSeconds != null && it.study.end?.epochSeconds != null) {
+                            BasicText(text = "${getStringResource(R.string.study_duration)}: ")
+                            BasicText(
+                                text = "${LocalDateTime.ofInstant(Instant.ofEpochSecond(it.study.start!!.epochSeconds), ZoneOffset.MAX).formattedString()} - ${
+                                    LocalDateTime.ofInstant(Instant.ofEpochSecond(it.study.end!!.epochSeconds), ZoneOffset.MAX).formattedString()
+                                }",
+                                color = MoreColors.Secondary
+                            )
+                        }
+
                     }
                     Spacer(Modifier.height(40.dp))
                     AccordionReadMore(
