@@ -18,26 +18,25 @@ struct NotificationView: View {
             MoreMainBackgroundView {
                 VStack {
                     Text("Here should be a filter")
-//                    MoreFilter(text: .constant(String
-//                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
-                    .padding(.bottom)
+                        .padding(.bottom)
                     
-                    
-                    ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in
-                        
-                        VStack {
-                            NotificationItem(
-                                title: .constant(notification.title ?? "Notification"),
-                                message: .constant(notification.notificationBody ?? ""),
-                                read: .constant(notification.read),
-                                isImportant: .constant((notification.priority == 2))
-                            )
+                    ScrollView {
+                        ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in
+                            
+                            VStack {
+                                NotificationItem(
+                                    title: .constant(notification.title ?? "Notification"),
+                                    message: .constant(notification.notificationBody ?? ""),
+                                    read: .constant(notification.read),
+                                    isImportant: .constant((notification.priority == 2))
+                                )
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                notificationViewModel.setNotificationToRead(notification: notification)
+                            }
                         }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            notificationViewModel.setNotificationToRead(notification: notification)
-                        }
-                    }                    
+                    }
                 }
             } topBarContent: {
                 EmptyView()
