@@ -17,8 +17,9 @@ struct NotificationView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    MoreFilter(text: .constant(String
-                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
+                    Text("Here should be a filter")
+//                    MoreFilter(text: .constant(String
+//                        .localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "string if no filter is selected")))
                     .padding(.bottom)
                     
                     
