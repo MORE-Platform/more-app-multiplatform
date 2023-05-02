@@ -9,21 +9,43 @@
 import SwiftUI
 
 struct SimpleQuestionThankYouView: View {
-    @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var viewModel: SimpleQuestionObservationViewModel
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
+    private let navigationStrings = "Navigation"
+    private let simpleQuestionStrings = "SimpleQuestionObservation"
+    
     var body: some View {
-        VStack {
-            Title(titleText: .constant("Thank You!"))
-            BasicText(text: .constant("Your answer to the question has been successfully submitted!"))
-                .padding(.bottom, 8)
-            BasicText(text: .constant("Thank You for your participation"))
-            Spacer()
-            MoreActionButton(disabled: .constant(false)) {
-                viewModel.questionAnswered()
-                presentationMode.wrappedValue.dismiss()
-            } label: {
-                BasicText(text: .constant("Return to Dashboard"), color: .more.white)
+        Navigation {
+            MoreMainBackground {
+                VStack {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 10
+                    ) {
+                        Title2(titleText: .constant(String.localizedString(forKey: "thank_you", inTable: simpleQuestionStrings, withComment: "Thank You!")))
+                            .padding(.top, 30)
+                            .padding(.bottom, 10)
+                        BasicText(text: .constant(String.localizedString(forKey: "answer_submitted", inTable: simpleQuestionStrings, withComment: "Your answer was submitted!")), color: .more.secondary)
+                            .padding(.bottom, 8)
+                        BasicText(text: .constant(String.localizedString(forKey: "thank_you_participation", inTable: simpleQuestionStrings, withComment: "Thanks for your participation!")), color: .more.secondary)
+                        Spacer()
+                        
+                        MoreActionButton(disabled: .constant(false)) {
+                            simpleQuestionModalStateVM.isQuestionThankYouOpen = false
+                            simpleQuestionModalStateVM.isQuestionOpen = false
+                        } label: {
+                            BasicText(text: .constant(String.localizedString(forKey: "close", inTable: simpleQuestionStrings, withComment: "Close")), color: .more.white)
+                        }
+                        .padding(.bottom, 20)
+                    }
+                    .navigationBarBackButtonHidden(true)
+                }
+                .padding(.horizontal, 40)
+            } topBarContent: {
+                EmptyView()
             }
-        }.navigationBarBackButtonHidden(true)
+            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Thank you for answering the Question Observation"))
+            .navigationBarTitleDisplayMode(.inline)
+            }
+        }
     }
-}
+

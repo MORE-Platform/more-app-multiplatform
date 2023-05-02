@@ -43,6 +43,8 @@ class SimpleQuestionCoreViewModel(
         }
     }
 
+
+
     fun finishQuestion(data: String, setObservationToDone: Boolean){
         simpleQuestionModel.value?.observationId?.let { observationId ->
             observation?.let { observation ->

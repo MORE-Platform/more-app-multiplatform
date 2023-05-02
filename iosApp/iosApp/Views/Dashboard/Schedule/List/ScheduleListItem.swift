@@ -13,10 +13,8 @@ import SwiftUI
 
 struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
-    @StateObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel = SimpleQuestionObservationViewModel()
-
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
     @State var showTaskDetails = false
-    @State var showSimpleQuestion = false
     
     var scheduleModel: ScheduleModel
     var showButton: Bool
@@ -26,7 +24,7 @@ struct ScheduleListItem: View {
     var body: some View {
         VStack {
             NavigationLink(isActive: $showTaskDetails) {
-                TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
+                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType).environmentObject(simpleQuestionModalStateVM)
             } label: {
                 EmptyView()
             }.opacity(0)
@@ -42,19 +40,21 @@ struct ScheduleListItem: View {
             }
 
             if showButton {
-                ObservationButton(showSimpleQuestion: $showSimpleQuestion, scheduleId: scheduleModel.scheduleId,
+                ObservationButton(simpleQuestionViewModel: viewModel.getSimpleQuestionObservationVM(),
+                                  scheduleId: scheduleModel.scheduleId,
                                   observationType: scheduleModel.observationType,
                                   state: scheduleModel.scheduleState,
-                                  disabled: !scheduleModel.scheduleState.active()){
+                                  disabled: !scheduleModel.scheduleState.active()
+                ){
                     if scheduleModel.observationType == "question-observation" {
-                        showSimpleQuestion = true
+                        simpleQuestionModalStateVM.isQuestionOpen = true
                     }
                     if scheduleModel.scheduleState == ScheduleState.running {
                         viewModel.pause(scheduleId: scheduleModel.scheduleId)
                     } else {
                         viewModel.start(scheduleId: scheduleModel.scheduleId)
                     }
-                }.environmentObject(simpleQuestionViewModel)
+                }.environmentObject(simpleQuestionModalStateVM)
             }
         }.onAppear {
             showTaskDetails = false
@@ -64,10 +64,9 @@ struct ScheduleListItem: View {
 
 extension ScheduleListItem: SimpleQuestionObservationListener {
     func onQuestionAnswered() {
-        simpleQuestionViewModel.delegate = self
         DispatchQueue.main.async {
-            showTaskDetails = false
-            showSimpleQuestion = false
+            
+            
         }
     }
 }

@@ -120,6 +120,7 @@
 		B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */; };
 		B748DF4A29D1C08D0026C348 /* SimpleQuetionObservationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */; };
 		B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */; };
+		B77F20112A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
 		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
@@ -302,6 +303,7 @@
 		B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionObservationViewModel.swift; sourceTree = "<group>"; };
 		B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuetionObservationView.swift; sourceTree = "<group>"; };
 		B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonField.swift; sourceTree = "<group>"; };
+		B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionModalStateViewModel.swift; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
 		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
@@ -387,13 +389,6 @@
 				058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ExitConfirmation;
 			sourceTree = "<group>";
 		};
 		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
@@ -732,11 +727,20 @@
 		B748DF4629D1C00D0026C348 /* QuestionObservation */ = {
 			isa = PBXGroup;
 			children = (
+				B77F20122A014C9300C44118 /* SimpleQuestionModalState */,
 				B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */,
 				B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */,
 				ED474B4B29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift */,
 			);
 			path = QuestionObservation;
+			sourceTree = "<group>";
+		};
+		B77F20122A014C9300C44118 /* SimpleQuestionModalState */ = {
+			isa = PBXGroup;
+			children = (
+				B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */,
+			);
+			path = SimpleQuestionModalState;
 			sourceTree = "<group>";
 		};
 		B78B4A7929F0409400A1BA58 /* ObservationDetails */ = {
@@ -1089,9 +1093,9 @@
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
+				B77F20112A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
-				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,

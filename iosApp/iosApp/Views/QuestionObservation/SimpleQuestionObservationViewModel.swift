@@ -13,7 +13,6 @@ protocol SimpleQuestionObservationListener {
 }
 
 class SimpleQuestionObservationViewModel: ObservableObject {
-    
     private var coreModel: SimpleQuestionCoreViewModel?
     private let observationFactory = IOSObservationFactory()
     
@@ -23,7 +22,9 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
     
-    func loadCurrentQuestion(scheduleId: String) {
+    //@Published var showThankYouScreen = false
+    
+    func viewDidAppear(scheduleId: String) {
         self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: observationFactory)
         
         if let coreModel = self.coreModel {
@@ -38,10 +39,6 @@ class SimpleQuestionObservationViewModel: ObservableObject {
         }
     }
     
-    func questionAnswered() {
-        self.delegate?.onQuestionAnswered()
-    }
-    
     func setAnswer(answer: String) {
         self.answerSet = answer
     }
@@ -53,4 +50,5 @@ class SimpleQuestionObservationViewModel: ObservableObject {
             }
         }
     }
+
 }

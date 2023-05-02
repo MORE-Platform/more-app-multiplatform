@@ -10,13 +10,12 @@ import SwiftUI
 import shared
 
 struct SimpleQuetionObservationView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
     @StateObject var viewModel: SimpleQuestionObservationViewModel
-    @State var showFeedbackView = false
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
     var scheduleId: String
-    
+
     @State private var selected = ""
     
     var body: some View {
@@ -39,31 +38,41 @@ struct SimpleQuetionObservationView: View {
                                     viewModel.setAnswer(answer: selected)
                                 })
                             }
-                            NavigationLink(isActive: $showFeedbackView) {
-                                SimpleQuestionThankYouView().environmentObject(viewModel)
-                            } label: {
-                                EmptyView()
-                            }.opacity(0)
-                            MoreActionButton(disabled: .constant(false)) {
-                                if(self.selected != "") {
-                                    showFeedbackView = true
-                                    viewModel.finish()
+                            
+                            VStack {
+                                MoreActionButton(disabled: .constant(false)) {
+                                    if(self.selected != "") {
+                                        viewModel.finish()
+                                        simpleQuestionModalStateVM.isQuestionThankYouOpen = true
+                                        simpleQuestionModalStateVM.isQuestionOpen = true
+                                    }
+                                } label: {
+                                    Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
                                 }
-                            } label: {
-                                Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
+                                .padding(.top, 30)
+                                .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionThankYouOpen) {
+                                    SimpleQuestionThankYouView().environmentObject(simpleQuestionModalStateVM)
+                                }
+                                
+                                /*
+                                NavigationLink(isActive: $showFeedbackView) {
+                                    SimpleQuestionThankYouView().environmentObject(viewModel)
+                                } label: {
+                                    EmptyView()
+                                }.opacity(0)
+                                 */
                             }
-                            .padding(.top, 30)
+                           
                         }
                         .padding(.horizontal, 10)
+                        .onAppear {
+                            viewModel.viewDidAppear(scheduleId: scheduleId)
+                        }
                     Spacer()
                 }
             }
         topBarContent: {
             EmptyView()
-        }
-        .onAppear {
-            self.viewModel.delegate = self
-            viewModel.loadCurrentQuestion(scheduleId: scheduleId)
         }
         .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
         .navigationBarTitleDisplayMode(.inline)
@@ -72,11 +81,3 @@ struct SimpleQuetionObservationView: View {
     }
 }
 
-extension SimpleQuetionObservationView: SimpleQuestionObservationListener {
-    func onQuestionAnswered() {
-        // self.questionAnswered = false
-        DispatchQueue.main.async {
-            // self.presentationMode.wrappedValue.dismiss()
-        }
-    }
-}

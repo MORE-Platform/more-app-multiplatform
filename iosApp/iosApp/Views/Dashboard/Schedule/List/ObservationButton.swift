@@ -10,8 +10,8 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
-    @EnvironmentObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
-    @Binding var showSimpleQuestion: Bool
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
+    @ObservedObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
     var scheduleId: String
     var observationType: String
     var state: ScheduleState
@@ -19,20 +19,21 @@ struct ObservationButton: View {
     let action: () -> Void
     private let stringTable = "ScheduleListView"
     
+    
+    
     var body: some View {
         VStack {
             if observationType == "question-observation" {
-                MoreActionButton(disabled: .constant(disabled), action: action) {
-                    Text(
-                        String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire")
-                    )
-                }
-                NavigationLink(isActive: $showSimpleQuestion) {
-                    SimpleQuetionObservationView(viewModel: simpleQuestionViewModel, scheduleId: scheduleId)
-                } label: {
-                    EmptyView()
-                }.opacity(0)
                 
+                MoreActionButton(disabled: .constant(disabled), action: action) {
+                    VStack {
+                        Text(
+                            String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire")
+                        )
+                    }
+                } .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionOpen) {
+                    SimpleQuetionObservationView(viewModel: simpleQuestionViewModel, scheduleId: scheduleId).environmentObject(simpleQuestionModalStateVM)
+                }
             } else {
                 MoreActionButton(disabled: .constant(disabled), action: action) {
                     VStack {
