@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct SimpleQuestionThankYouView: View {
-    @EnvironmentObject var dashboardViewModel: DashboardViewModel
+    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var viewModel: SimpleQuestionObservationViewModel
     var body: some View {
         VStack {
             Title(titleText: .constant("Thank You!"))
@@ -17,11 +18,12 @@ struct SimpleQuestionThankYouView: View {
                 .padding(.bottom, 8)
             BasicText(text: .constant("Thank You for your participation"))
             Spacer()
-            NavigationLinkButton(disabled: .constant(true), destination: {
-                DashboardView(dashboardViewModel: dashboardViewModel)
-            }, label: {
-                BasicText(text: .constant("Return to dashboard"))
-            })
-        }
+            MoreActionButton(disabled: .constant(false)) {
+                viewModel.questionAnswered()
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                BasicText(text: .constant("Return to Dashboard"), color: .more.white)
+            }
+        }.navigationBarBackButtonHidden(true)
     }
 }

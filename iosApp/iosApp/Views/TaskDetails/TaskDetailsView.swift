@@ -10,6 +10,7 @@ import shared
 import SwiftUI
 
 struct TaskDetailsView: View {
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: TaskDetailsViewModel
     @State var count: Int64 = 0
     var scheduleId: String = ""
@@ -17,7 +18,8 @@ struct TaskDetailsView: View {
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-
+    private let simpleQuestionViewModel = SimpleQuestionObservationViewModel()
+    
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -68,7 +70,7 @@ struct TaskDetailsView: View {
                                     ) {
                                         VStack {
                                             if scheduleId != "" {
-                                                SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: scheduleId))
+                                                SimpleQuetionObservationView(viewModel: simpleQuestionViewModel, scheduleId: scheduleId)
                                             } else {
                                                 EmptyView()
                                             }
@@ -80,7 +82,7 @@ struct TaskDetailsView: View {
                                     }
                                 }
                                 else {
-                                    ObservationButton(scheduleId: scheduleId,
+                                    ObservationButton(showSimpleQuestion: .constant(false), scheduleId: scheduleId,
                                                     observationType: model.observationType, state: model.state, disabled: model.state != .active
                                                       && model.state != .running
                                                       && model.state != .paused
@@ -91,7 +93,7 @@ struct TaskDetailsView: View {
                                         } else {
                                             viewModel.start()
                                         }
-                                    }
+                                    }.environmentObject(simpleQuestionViewModel)
                                 }
                         }
                     }
@@ -101,8 +103,17 @@ struct TaskDetailsView: View {
             } topBarContent: {
                 EmptyView()
             }
+            .onAppear {
+                self.viewModel.simpleQuestionObservationViewModel.delegate = self
+            }
             .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+extension TaskDetailsView: SimpleQuestionObservationListener {
+    func onQuestionAnswered() {
+        // self.presentationMode.wrappedValue.dismiss()
     }
 }

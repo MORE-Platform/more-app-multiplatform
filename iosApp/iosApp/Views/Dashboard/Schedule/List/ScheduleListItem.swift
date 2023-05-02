@@ -13,6 +13,11 @@ import SwiftUI
 
 struct ScheduleListItem: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    @StateObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel = SimpleQuestionObservationViewModel()
+
+    @State var showTaskDetails = false
+    @State var showSimpleQuestion = false
+    
     var scheduleModel: ScheduleModel
     var showButton: Bool
 
@@ -20,8 +25,14 @@ struct ScheduleListItem: View {
 
     var body: some View {
         VStack {
-            NavigationLink {
+            NavigationLink(isActive: $showTaskDetails) {
                 TaskDetailsView(viewModel: TaskDetailsViewModel(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId, dataRecorder: viewModel.recorder), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
+            } label: {
+                EmptyView()
+            }.opacity(0)
+            
+            Button {
+                showTaskDetails = true
             } label: {
                 VStack(alignment: .leading) {
                     ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
@@ -31,17 +42,32 @@ struct ScheduleListItem: View {
             }
 
             if showButton {
-                ObservationButton(scheduleId: scheduleModel.scheduleId,
+                ObservationButton(showSimpleQuestion: $showSimpleQuestion, scheduleId: scheduleModel.scheduleId,
                                   observationType: scheduleModel.observationType,
                                   state: scheduleModel.scheduleState,
                                   disabled: !scheduleModel.scheduleState.active()){
+                    if scheduleModel.observationType == "question-observation" {
+                        showSimpleQuestion = true
+                    }
                     if scheduleModel.scheduleState == ScheduleState.running {
                         viewModel.pause(scheduleId: scheduleModel.scheduleId)
                     } else {
                         viewModel.start(scheduleId: scheduleModel.scheduleId)
                     }
-                }
+                }.environmentObject(simpleQuestionViewModel)
             }
+        }.onAppear {
+            showTaskDetails = false
+        }
+    }
+}
+
+extension ScheduleListItem: SimpleQuestionObservationListener {
+    func onQuestionAnswered() {
+        simpleQuestionViewModel.delegate = self
+        DispatchQueue.main.async {
+            showTaskDetails = false
+            showSimpleQuestion = false
         }
     }
 }

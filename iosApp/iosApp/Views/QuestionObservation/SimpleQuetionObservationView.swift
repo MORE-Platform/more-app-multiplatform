@@ -12,8 +12,10 @@ import shared
 struct SimpleQuetionObservationView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: SimpleQuestionObservationViewModel
+    @State var showFeedbackView = false
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
+    var scheduleId: String
     
     @State private var selected = ""
     
@@ -26,41 +28,55 @@ struct SimpleQuetionObservationView: View {
                         .padding(.bottom, 20)
                         .padding(.top, 40)
                     
-
+                    
                     VStack(
                         alignment: .leading) {
                             
                             ForEach(viewModel.answers, id: \.self) { answerOption in
                                 RadioButtonField(id: answerOption, label: answerOption, isMarked: $selected.wrappedValue == answerOption ? true : false,
-                                callback: { selected in
+                                                 callback: { selected in
                                     self.selected = selected
                                     viewModel.setAnswer(answer: selected)
                                 })
                             }
-                             
+                            NavigationLink(isActive: $showFeedbackView) {
+                                SimpleQuestionThankYouView().environmentObject(viewModel)
+                            } label: {
+                                EmptyView()
+                            }.opacity(0)
                             MoreActionButton(disabled: .constant(false)) {
                                 if(self.selected != "") {
+                                    showFeedbackView = true
                                     viewModel.finish()
-                                    self.presentationMode.wrappedValue.dismiss()
                                 }
-                                
                             } label: {
                                 Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
                             }
                             .padding(.top, 30)
                         }
                         .padding(.horizontal, 10)
-                    
-            
                     Spacer()
                 }
             }
-            topBarContent: {
-                EmptyView()
-            }
-            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
-            .navigationBarTitleDisplayMode(.inline)
+        topBarContent: {
+            EmptyView()
+        }
+        .onAppear {
+            self.viewModel.delegate = self
+            viewModel.loadCurrentQuestion(scheduleId: scheduleId)
+        }
+        .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
+        .navigationBarTitleDisplayMode(.inline)
         }
         
+    }
+}
+
+extension SimpleQuetionObservationView: SimpleQuestionObservationListener {
+    func onQuestionAnswered() {
+        // self.questionAnswered = false
+        DispatchQueue.main.async {
+            // self.presentationMode.wrappedValue.dismiss()
+        }
     }
 }
