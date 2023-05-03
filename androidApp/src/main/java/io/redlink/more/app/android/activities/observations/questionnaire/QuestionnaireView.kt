@@ -18,7 +18,6 @@ fun QuestionnaireView(navController: NavController, model: QuestionnaireViewMode
             .fillMaxHeight(0.8f)
             .fillMaxWidth(0.8f)
     ) {
-        QuestionnaireHeader(model)
         QuestionnaireQuestionAnswer(model = model)
     }
     QuestionnaireButtons(navController = navController, model = model)

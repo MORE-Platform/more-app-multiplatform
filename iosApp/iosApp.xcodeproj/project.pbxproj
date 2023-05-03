@@ -123,6 +123,9 @@
 		B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */; };
 		B748DF4A29D1C08D0026C348 /* SimpleQuetionObservationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */; };
 		B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */; };
+		B74DDB6629E69F44006FEA74 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74DDB6529E69F44006FEA74 /* NotificationViewModel.swift */; };
+		B74DDB6829E6A80E006FEA74 /* NotificationView.strings in Resources */ = {isa = PBXBuildFile; fileRef = B74DDB6729E6A80E006FEA74 /* NotificationView.strings */; };
+		B74DDB6A29E6AEDE006FEA74 /* NotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74DDB6929E6AEDE006FEA74 /* NotificationItem.swift */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
 		B784169629C9FB2C0035D830 /* AccordionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169529C9FB2C0035D830 /* AccordionItem.swift */; };
@@ -307,6 +310,9 @@
 		B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionObservationViewModel.swift; sourceTree = "<group>"; };
 		B748DF4929D1C08D0026C348 /* SimpleQuetionObservationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuetionObservationView.swift; sourceTree = "<group>"; };
 		B748DF4D29D1CAE50026C348 /* RadioButtonField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButtonField.swift; sourceTree = "<group>"; };
+		B74DDB6529E69F44006FEA74 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
+		B74DDB6729E6A80E006FEA74 /* NotificationView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = NotificationView.strings; sourceTree = "<group>"; };
+		B74DDB6929E6AEDE006FEA74 /* NotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationItem.swift; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
 		B784169529C9FB2C0035D830 /* AccordionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccordionItem.swift; sourceTree = "<group>"; };
@@ -400,13 +406,6 @@
 			path = ExitConfirmation;
 			sourceTree = "<group>";
 		};
-		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ExitConfirmation;
-			sourceTree = "<group>";
-		};
 		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
 			isa = PBXGroup;
 			children = (
@@ -484,6 +483,7 @@
 			children = (
 				A5A031C429F7B63000B7FEBD /* Filter */,
 				1F43998B29C1006800687906 /* NotificationView.swift */,
+				B74DDB6529E69F44006FEA74 /* NotificationViewModel.swift */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
@@ -544,6 +544,7 @@
 				B784169129C9E3F50035D830 /* Title2.swift */,
 				B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */,
 				1F8847D1299158880023EF10 /* UIToggleFoldViewButton.swift */,
+				B74DDB6929E6AEDE006FEA74 /* NotificationItem.swift */,
 				07FD293B29D57F0300853108 /* ModuleListItem.swift */,
 				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
 				B78B4A8329F04BEA00A1BA58 /* ExpandableContentWithLink.swift */,
@@ -589,6 +590,7 @@
 				07BC54AF29CB3CD600459267 /* StudyDetailsView.strings */,
 				B748DF3329CAFBA90026C348 /* TaskDetail.strings */,
 				B748DF3729CC4AD30026C348 /* ExpandableText.strings */,
+				B74DDB6729E6A80E006FEA74 /* NotificationView.strings */,
 				B79DBA5429D3470D00A1F547 /* DashboardFilter.strings */,
 				B78B4A7F29F0445E00A1BA58 /* ObservationDetails.strings */,
 				B79BECC229F1862B00966AD1 /* Info.strings */,
@@ -954,6 +956,7 @@
 				B79BECC329F1862B00966AD1 /* Info.strings in Resources */,
 				ED5EBB3129B1F44900BAF0A6 /* DashboardView.strings in Resources */,
 				1F8847C62991523D0023EF10 /* Default.strings in Resources */,
+				B74DDB6829E6A80E006FEA74 /* NotificationView.strings in Resources */,
 				1F80EC4129C25025004667B1 /* Navigation.strings in Resources */,
 				07BC54B029CB3CD600459267 /* StudyDetailsView.strings in Resources */,
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
@@ -1106,7 +1109,6 @@
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
-				ED16C5ED29B73ADF00DA8AFE /* TaskProgressView.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
 				B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */,
 				1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */,
@@ -1114,6 +1116,7 @@
 				07D9046829C85166003D2912 /* GPSObservation.swift in Sources */,
 				EDB16E3029F9357300701C27 /* TaskCompletionBarView.swift in Sources */,
 				1F13BA472993972E00938C1E /* ConsentListItem.swift in Sources */,
+				B74DDB6629E69F44006FEA74 /* NotificationViewModel.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				07190FEC29E834E800A8CB1F /* LeaveStudyConfirmationView.swift in Sources */,
@@ -1139,6 +1142,7 @@
 				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
+				B74DDB6A29E6AEDE006FEA74 /* NotificationItem.swift in Sources */,
 				1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,

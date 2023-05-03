@@ -9,11 +9,35 @@
 import SwiftUI
 
 struct NotificationView: View {
+    @StateObject var notificationViewModel: NotificationViewModel = NotificationViewModel()
     private let navigationStrings = "Navigation"
+    private let stringTable = "NotificationView"
+    
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
-                Text("Notification View")
+                VStack {
+                    Text("Here should be a filter")
+                        .padding(.bottom)
+                    
+                    ScrollView {
+                        ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in
+                            
+                            VStack {
+                                NotificationItem(
+                                    title: .constant(notification.title ?? "Notification"),
+                                    message: .constant(notification.notificationBody ?? ""),
+                                    read: .constant(notification.read),
+                                    isImportant: .constant((notification.priority == 2))
+                                )
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                notificationViewModel.setNotificationToRead(notification: notification)
+                            }
+                        }
+                    }
+                }
             } topBarContent: {
                 EmptyView()
             }
@@ -26,6 +50,6 @@ struct NotificationView: View {
 
 struct NotificationView_Previews: PreviewProvider {
     static var previews: some View {
-        NotificationView()
+        NotificationView(notificationViewModel: NotificationViewModel())
     }
 }
