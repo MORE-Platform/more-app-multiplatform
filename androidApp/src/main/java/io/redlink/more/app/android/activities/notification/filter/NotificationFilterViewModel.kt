@@ -12,10 +12,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class NotificationFilterViewModel: ViewModel() {
+class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
-
-    private val coreViewModel = CoreNotificationFilterViewModel()
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
 
@@ -34,6 +32,7 @@ class NotificationFilterViewModel: ViewModel() {
         )
     )
     init {
+        coreViewModel.setPlatformHighPriority(2)
         scope.launch {
             coreViewModel.currentFilter.collect {
                 currentFilter.emit(it)

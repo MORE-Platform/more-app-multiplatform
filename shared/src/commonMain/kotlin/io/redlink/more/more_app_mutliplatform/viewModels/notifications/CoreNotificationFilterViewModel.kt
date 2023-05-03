@@ -1,10 +1,10 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
 import io.ktor.utils.io.core.*
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
+import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -33,20 +33,21 @@ class CoreNotificationFilterViewModel {
         highPriority = priority
     }
 
-    fun applyFilter(notificationList: List<NotificationSchema?>): List<NotificationSchema?> {
-        val filteredList = notificationList.toMutableList()
-        if(currentFilter.value.isNotEmpty())
-            filteredList.filter {
-                it?.let { (
-                            if(currentFilter.value.contains(NotificationFilterTypeModel.IMPORTANT))
-                                it.priority == highPriority else true
-                            ) && (
-                            if(currentFilter.value.contains(NotificationFilterTypeModel.UNREAD))
-                                !it.read else true
-                            )
-                } ?: false
+    fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
+        var filteredList = notificationList
+        if (currentFilter.value.isNotEmpty())
+            filteredList = filteredList.filter { notification -> ((
+                    if (currentFilter.value.contains(NotificationFilterTypeModel.IMPORTANT)) {
+                        notification.priority == highPriority
+                    } else
+                        true
+                ) && (
+                    if (currentFilter.value.contains(NotificationFilterTypeModel.UNREAD)) {
+                        !notification.read
+                    } else true
+                    ))
             }
-        return filteredList.toList()
+        return filteredList
     }
 
     fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {
