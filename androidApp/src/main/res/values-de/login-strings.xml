@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_welcome_title">Willkommen bei More</string>
-    <string name="more_endpoint_label">Studien-Endpunkt</string>
-    <string name="more_endpoint_rotatable_arrow_description">Studien-Endpunkt verlassen</string>
-    <string name="more_registration_token_label">Registrierungstoken eingeben</string>
+    <string name="more_endpoint_label">Studienendpunkt</string>
+    <string name="more_endpoint_rotatable_arrow_description">Bearbeite den Studienendpunkt</string>
+    <string name="more_registration_token_label">Bitte geben Sie den Registrierungstoken ein</string>
     <string name="more_registration_token_placeholder">Token eingeben</string>
     <string name="more_login_button_label">Login</string>
     <string name="more_endpoint_input_placeholder">URL der Studie eingeben</string>
-    <string name="more_token_error">Token Fehler</string>
-    <string name="more_qr_code_button">QR Code scannen</string>
-    <string name="more_qr_code_button_description">Kamera öffnen um QR Code zu scannen</string>
+    <string name="more_token_error">Ein Fehler beim Token ist aufgetreten</string>
+    <string name="more_qr_code_button">Scannen Sie bitte Ihren QR Code</string>
+    <string name="more_qr_code_button_description">Öffnen Sie die Kamera um den QR code zu scannen</string>
     <string name="more_or_text">oder</string>
 
 

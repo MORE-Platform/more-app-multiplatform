@@ -2,7 +2,7 @@
     <string name="app_name">More</string>
     <string name="more_close">Close</string>
 
-    <string name="more_study_consent">Study Consent</string>
+    <string name="more_study_consent">Consent</string>
     <string name="more_approved">Approved</string>
     <string name="more_cancel">Cancel</string>
     <string name="more_abort">Abort</string>

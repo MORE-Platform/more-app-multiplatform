@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
@@ -59,6 +61,8 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
             }
         }
 
+        Spacer(modifier = Modifier.height(5.dp))
+
         Text(
             text = description,
             color = MoreColors.Secondary,
@@ -82,7 +86,7 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
                         open.value = !open.value
                     }) {
                 Text(
-                    text = if (open.value) "Read Less" else "Read More",
+                    text = if (open.value) getStringResource(id = R.string.more_read_less) else getStringResource(id = R.string.more_read_more),
                     color = MoreColors.Primary,
                     fontWeight = FontWeight.SemiBold,
                 )

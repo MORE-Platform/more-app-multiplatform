@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="more_observation_start">Start Observation</string>
-    <string name="more_observation_pause">Pause Observation</string>
-    <string name="more_observation_stop">Stop Observation</string>
-    <string name="more_observation_running">Observation Running</string>
+    <string name="more_observation_start">Start data capture</string>
+    <string name="more_observation_pause">Pause data capture</string>
+    <string name="more_observation_stop">Stop data capture</string>
+    <string name="more_observation_running">Data capture Running</string>
     <string name="more_questionnaire_start">Start Questionnaire</string>
     <string name="more_questionnaire_select">Please select an answer!</string>
     <string name="more_questionnaire_type">Simple Questionnaire</string>
 
-    <string name="more_observation_notification_explanation">An Observation of yours is currently running and recording data in the background!</string>
+    <string name="more_observation_notification_explanation">A data recording task is running</string>
 
-    <string name="more_observation_ready_title">Observation Ready</string>
-    <string name="more_observation_ready_message">Please open the app and start the observation</string>
+    <string name="more_observation_ready_title">Ready for data capture</string>
+    <string name="more_observation_ready_message">Please open the MORE app and start recording data</string>
 
-    <string name="more_observation_datapoints">Datapoints Collected</string>
+    <string name="more_observation_datapoints">Datapoints collected</string>
 </resources>

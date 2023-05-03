@@ -2,11 +2,11 @@
     <string name="app_name">More</string>
     <string name="more_close">Schließen</string>
 
-    <string name="more_study_consent">Studieneinwilligung</string>
+    <string name="more_study_consent">Einwilligung</string>
     <string name="more_approved">Genehmigt</string>
     <string name="more_cancel">Abbrechen</string>
     <string name="more_abort">Abbrechen</string>
     <string name="more_back">Zurück</string>
     <string name="more_danger">Gefahr</string>
-    <string name="more_close_overlay">Overlay schließen</string>
+    <string name="more_close_overlay">Fenster schließen</string>
 </resources>

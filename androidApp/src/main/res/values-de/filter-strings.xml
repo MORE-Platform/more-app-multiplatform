@@ -7,23 +7,23 @@
     </plurals>
 
     <string name="more_filter_all">Alle Typen</string>
-    <string name="more_filter_question">Frage</string>
-    <string name="more_filter_accelerometer">GPS Mobil</string>
+    <string name="more_filter_question">Fragebogen</string>
+    <string name="more_filter_accelerometer">GPS</string>
     <string name="more_filter_polar">Polar Verity</string>
-    <string name="more_filter_gps">Accelerometer</string>
+    <string name="more_filter_gps">Beschleuunigungsmesser</string>
 
     <string name="more_filter_entire_time">Gesamte Zeit</string>
     <string name="more_filter_today_tomorrow">Heute und morgen</string>
     <string name="more_filter_week">Eine Woche</string>
     <string name="more_filter_month">Ein Monat</string>
 
-    <string name="more_filter_selected">Filter ausgewählt</string>
+    <string name="more_filter_selected">Filter aktiviert</string>
     <string name="more_filter_set_duration">Zeit auswählen</string>
     <string name="more_filter_set_type">Typ auswählen</string>
 
     <string name="more_select_filter">Filter auswählen</string>
 
-    <string name="more_all_notification_filter">Alle Benachrichtigungen</string>
-    <string name="more_unread_notifications">Nicht gelesene Benachrichtigungen anzeigen</string>
-    <string name="more_important_notifications">Wichtige Benachrichtigungen anzeigen</string>
+    <string name="more_all_notification_filter">Alle Nachrichten</string>
+    <string name="more_unread_notifications">Nicht gelesene Nachrichten anzeigen</string>
+    <string name="more_important_notifications">Wichtige Nachrichten anzeigen</string>
 </resources>

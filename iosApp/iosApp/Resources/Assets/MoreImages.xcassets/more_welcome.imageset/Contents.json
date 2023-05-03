@@ -6,6 +6,11 @@
       "scale" : "1x"
     },
     {
+      "filename": "willkommen-zu-more.svg",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
       "idiom" : "universal",
       "scale" : "2x"
     },

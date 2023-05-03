@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="nav_dashboard">Dashboard</string>
-    <string name="nav_notifications">Benachrichigungen</string>
+    <string name="nav_dashboard">Übersicht</string>
+    <string name="nav_notifications">Nachrichten</string>
     <string name="nav_info">Information</string>
     <string name="nav_settings">Einstellungen</string>
     <string name="nav_task_detail">Aufgabendetails</string>
-    <string name="nav_observation_detail">Beobachtungsdetails</string>
+    <string name="nav_observation_detail">Observatdetails</string>
     <string name="nav_study_details">Studiendetails</string>
-    <string name="nav_observation_filter">Beobachtungsfilter</string>
-    <string name="nav_notification_filter">Benachrichtigungsfilter</string>
+    <string name="nav_observation_filter">Observatfilter</string>
+    <string name="nav_notification_filter">Nachrichtenfilter</string>
     <string name="nav_simple_question">Simple Frage</string>
     <string name="nav_running_schedules">Laufende Beobachtungen</string>
     <string name="nav_completed_schedules">Vergangene Beobachtungen</string>
     <string name="nav_leave_study">Studie verlassen</string>
-    <string name="nav_leave_study_confirm">Bestätigen, um die Studie zu verlassen</string>
+    <string name="nav_leave_study_confirm">Studie verlassen bestätigen</string>
 </resources>
