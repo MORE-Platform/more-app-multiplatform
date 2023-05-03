@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="more_settings_permission_information">All necessary permissions have been accepted.\rPermissions can be viewed here. If you want to withdraw permissions, you can only do so by withdrawing from the study.</string>
+    <string name="more_settings_permission_information">All necessary permissions have been accepted. Permissions can be viewed here. If you want to withdraw permissions, you can only do so by withdrawing from the study.</string>
     <string name="more_settings_refresh_study">Refresh Study Configurations</string>
     <string name="more_settings_refresh_study_failure_okay">OK</string>
     <string name="more_settings_refresh_study_failure_title">Error updating study!</string>

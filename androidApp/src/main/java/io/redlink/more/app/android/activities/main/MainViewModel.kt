@@ -25,7 +25,6 @@ import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,7 +62,7 @@ class MainViewModel(context: Context): ViewModel() {
         BluetoothConnectionViewModel(bluetoothConnector)
     }
 
-    val notificationViewModel = NotificationViewModel(CoreNotificationFilterViewModel())
+    val notificationViewModel = NotificationViewModel()
 
     fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
     init {

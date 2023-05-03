@@ -12,10 +12,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class NotificationFilterViewModel(coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
+class NotificationFilterViewModel: ViewModel() {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    private val coreModel = coreViewModel
+    private val coreViewModel = CoreNotificationFilterViewModel()
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
 
@@ -42,7 +42,7 @@ class NotificationFilterViewModel(coreViewModel: CoreNotificationFilterViewModel
     }
 
     fun processFilter(filter: String?) {
-        coreModel.processFilterChange(filter)
+        coreViewModel.processFilterChange(filter)
     }
 
     fun getFilterString(): String {
