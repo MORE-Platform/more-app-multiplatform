@@ -1,6 +1,7 @@
 package io.redlink.more.app.android.activities.tasks
 
 import androidx.compose.runtime.mutableStateOf
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
@@ -25,7 +26,7 @@ class TaskDetailsViewModel(
     private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     init {
-
+        Napier.d { "TaskDetails init" }
         scope.launch(Dispatchers.IO) {
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
@@ -51,6 +52,14 @@ class TaskDetailsViewModel(
                 }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 
     fun startObservation() {

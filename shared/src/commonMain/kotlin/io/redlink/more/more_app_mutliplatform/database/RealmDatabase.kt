@@ -19,37 +19,34 @@ object RealmDatabase {
     var realm: Realm? = null
         private set
 
+    private val repositoryCount = RealmDatabaseCounter()
+
     fun open(realmObjects: Set<KClass<out BaseRealmObject>>) {
-        val config = RealmConfiguration.create(realmObjects)
-        this.realm = Realm.open(config)
+        repositoryCount.increment()
+        if (realm == null) {
+            Napier.d { "Init Realm..." }
+            val config = RealmConfiguration.create(realmObjects)
+            this.realm = Realm.open(config)
+        }
     }
 
     fun close() {
-        this.realm?.close()
-        this.realm = null
-    }
-
-    fun isOpen() = realm != null && realm?.isClosed() == false
-
-    fun store(realmObject: RealmObject, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            copyToRealm(realmObject, updatePolicy)
+        repositoryCount.decrement()
+        if (repositoryCount.counter == 0) {
+            Napier.d { "Closing Realm..." }
+            this.realm?.close()
+            this.realm = null
         }
     }
 
-    fun store(realmObjects: List<RealmObject>, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-        }
-    }
-
-    fun storeAll(
+    fun store(
         realmObjects: Collection<RealmObject>,
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-            Napier.i { "Stored new data" }
+        if (realmObjects.isNotEmpty()) {
+            realm?.writeBlocking {
+                realmObjects.forEach { copyToRealm(it, updatePolicy) }
+            }
         }
     }
 
@@ -101,11 +98,11 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    suspend inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
-        realm?.write {
+        realm?.writeBlocking {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }

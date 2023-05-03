@@ -7,6 +7,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,17 +18,16 @@ import kotlinx.coroutines.launch
 class CoreTaskDetailsViewModel(
     private val scheduleId: String,
     private val dataRecorder: DataRecorder
-) {
+): CoreViewModel() {
 
     private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
     val dataCount = MutableStateFlow(0L)
 
     init {
-        scope.launch {
+        launchScope {
             scheduleRepository.scheduleWithId(scheduleId).collect { schedule ->
                 schedule?.let { schedule ->
                     observationRepository.observationById(schedule.observationId).firstOrNull()?.let {
@@ -36,11 +36,15 @@ class CoreTaskDetailsViewModel(
                 }
             }
         }
-        scope.launch {
+        launchScope {
             dataPointCountRepository.get(scheduleId).collect { countSchema ->
                 dataCount.value = countSchema?.count ?: 0
             }
         }
+    }
+
+    override fun viewDidAppear() {
+
     }
 
     fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {

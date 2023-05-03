@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
@@ -16,7 +17,6 @@ import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarVi
 import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
-import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
@@ -27,16 +27,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 
 class MainViewModel(context: Context): ViewModel() {
     private val bluetoothConnector = AndroidBluetoothConnector(context)
-    val recorder: AndroidDataRecorder by lazy { AndroidDataRecorder(context) }
+    private val recorder: AndroidDataRecorder by lazy { AndroidDataRecorder() }
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val dashboardFilterViewModel = CoreDashboardFilterViewModel()
     val notificationViewModel = NotificationViewModel()
     val allSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
@@ -53,10 +53,10 @@ class MainViewModel(context: Context): ViewModel() {
             ScheduleListType.COMPLETED
         )
     }
-    val dashboardViewModel = DashboardViewModel(context, allSchedulesViewModel)
-    val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel(context) }
+    val dashboardViewModel = DashboardViewModel(allSchedulesViewModel)
+    val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel() }
     val studyDetailsViewModel: StudyDetailsViewModel by lazy { StudyDetailsViewModel() }
-    val leaveStudyViewModel: LeaveStudyViewModel by lazy { LeaveStudyViewModel(context) }
+    val leaveStudyViewModel: LeaveStudyViewModel by lazy { LeaveStudyViewModel() }
 
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
@@ -68,19 +68,24 @@ class MainViewModel(context: Context): ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             BluetoothDeviceRepository(bluetoothConnector).updateConnectedDevices()
-            recorder.updateTaskStates()
-            val workManager = WorkManager.getInstance(context)
-            val worker = OneTimeWorkRequestBuilder<ScheduleUpdateWorker>().build()
-            workManager.enqueueUniqueWork(
-                ScheduleUpdateWorker.WORKER_TAG,
-                ExistingWorkPolicy.KEEP,
-                worker)
+            if (!ObservationRecordingService.running) {
+                val workManager = WorkManager.getInstance(context)
+                val worker = OneTimeWorkRequestBuilder<ScheduleUpdateWorker>().build()
+                workManager.enqueueUniqueWork(
+                    ScheduleUpdateWorker.WORKER_TAG,
+                    ExistingWorkPolicy.KEEP,
+                    worker)
+            }
         }
     }
 
-    fun creteNewSimpleQuestionViewModel(scheduleId: String, context: Context): QuestionnaireViewModel {
+    fun viewDidAppear() {
+        recorder.restartAll()
+    }
+
+    fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {
         return QuestionnaireViewModel(
-            SimpleQuestionCoreViewModel(scheduleId, AndroidObservationFactory(context))
+            SimpleQuestionCoreViewModel(scheduleId, MoreApplication.observationFactory!!)
         )
     }
 

@@ -3,39 +3,52 @@ package io.redlink.more.more_app_mutliplatform.observations
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
+import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-private const val TAG = "ObservationDataManager"
-
-abstract class ObservationDataManager() {
-    private val scope = CoroutineScope(Job() + Dispatchers.Main)
+abstract class ObservationDataManager {
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val observationDataRepository = ObservationDataRepository()
+    private val observationRepository = ObservationRepository()
     private val dataPointCountRepository = DataPointCountRepository()
-    private var isListeningToDataPointChanges = false
+
+    init {
+        listenToDatapointCountChanges()
+    }
 
     fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
-            listenToDatapointCountChanges()
-            observationDataRepository.addMultiple(dataList)
-            dataPointCountRepository.incrementCount(scheduleIdList, dataList.size.toLong())
+            observationDataRepository.addData(dataList)
+            scope.launch(Dispatchers.Default) {
+                dataPointCountRepository.incrementCount(scheduleIdList, dataList.size.toLong())
+                dataList.groupBy { it.observationType }
+                    .mapValues { it.value.maxBy { it.timestamp }.timestamp.epochSeconds }
+                    .forEach {
+                        observationRepository.lastCollection(it.key, it.value)
+                    }
+            }
         }
     }
 
     fun add(data: ObservationDataSchema, scheduleId: String) {
-        Napier.i(tag = TAG) { "New data recorded: $data" }
-        listenToDatapointCountChanges()
         observationDataRepository.addData(data)
-        dataPointCountRepository.incrementCount(setOf(scheduleId))
+        scope.launch(Dispatchers.Default) {
+            dataPointCountRepository.incrementCount(setOf(scheduleId))
+            observationRepository.lastCollection(data.observationType, data.timestamp.epochSeconds)
+        }
     }
 
     fun saveAndSend() {
         scope.launch {
-            observationDataRepository.storeAndQuery()?.let {
-                if (it.dataPoints.isNotEmpty()) {
+            observationDataRepository.store()
+            observationDataRepository.count().firstOrNull()?.let {
+                if (it in 1 until DATA_COUNT_THRESHOLD) {
                     sendData()
                 }
             }
@@ -43,7 +56,7 @@ abstract class ObservationDataManager() {
     }
 
     fun store() {
-        observationDataRepository.storeDataFromQueue()
+        observationDataRepository.store()
     }
 
     fun removeDataPointCount(scheduleId: String) {
@@ -53,25 +66,34 @@ abstract class ObservationDataManager() {
     abstract fun sendData(onCompletion: (Boolean) -> Unit = {})
 
     private fun listenToDatapointCountChanges() {
-        if (!isListeningToDataPointChanges) {
-            isListeningToDataPointChanges = true
-            scope.launch {
-                observationDataRepository.count().collect {
-                    try {
-                        Napier.i(tag = TAG) { "Current collected data count: $it" }
-                        if (it >= DATA_COUNT_THRESHOLD) {
-                            sendData()
-                        }
-                    } finally {
-                        store()
-                        sendData()
-                    }
+        Napier.d { "Creating listener for datapoints..." }
+        scope.repeatEveryFewSeconds(10000) {
+            Napier.d { "Looking for new data..." }
+            observationDataRepository.count().firstOrNull()?.let {
+                Napier.d { "Datapoint count: $it" }
+                if (it > 0) {
+                    Napier.d { "Observation data count: $it! Sending data..." }
+                    sendData()
                 }
             }
         }
+//        if (collectionJob != null && collectionJob?.isActive == false) {
+////            scope.launch {
+////                observationDataRepository.count().collect {
+////                    if (it >= DATA_COUNT_THRESHOLD) {
+////                        Napier.d { "Observation data count: $it! Sending data..." }
+////                        sendData()
+////                    }
+////                }
+////
+////            }
+//        }
     }
 
-    private suspend fun deleteAll(idSet: Set<String>) {
+    private fun deleteAll(idSet: Set<String>) {
         observationDataRepository.deleteAllWithId(idSet)
+    }
+
+    companion object {
     }
 }

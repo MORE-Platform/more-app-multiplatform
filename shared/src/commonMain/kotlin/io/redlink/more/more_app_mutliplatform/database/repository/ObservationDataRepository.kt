@@ -1,61 +1,64 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
+import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
-import io.redlink.more.more_app_mutliplatform.observations.QUEUE_COUNT_THRESHOLD
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
+    override val repositoryName: String
+        get() = "ObservationDataRepository"
+
     private val queue = mutableListOf<ObservationDataSchema>()
 
     fun addData(data: ObservationDataSchema) {
-        Napier.i { "Adding new data: $data" }
-        queue.add(data)
-        if (queue.size >= QUEUE_COUNT_THRESHOLD) {
-            storeDataFromQueue()
+//        queue.add(data)
+//        if (queue.size > QUEUE_THRESHOLD) {
+//            store()
+//        }
+        realmDatabase().store(setOf(data), UpdatePolicy.ERROR)
+    }
+
+    fun addData(dataList: List<ObservationDataSchema>) {
+//        queue.addAll(dataList)
+//        if (queue.size > QUEUE_THRESHOLD) {
+//            store()
+//        }
+        realmDatabase().store(dataList, UpdatePolicy.ERROR)
+    }
+
+    fun store() {
+        if (queue.isNotEmpty()) {
+            val queueCopy = queue.toSet()
+            queue.clear()
+            realmDatabase().store(queueCopy, UpdatePolicy.ERROR)
         }
     }
 
-    fun addMultiple(dataList: List<ObservationDataSchema>) {
-        Napier.i { "Adding ${dataList.size} points to queue" }
-        queue.addAll(dataList)
-        if (queue.size >= QUEUE_COUNT_THRESHOLD) {
-            storeDataFromQueue()
-        }
-    }
+    override fun count() = realmDatabase().count<ObservationDataSchema>()
 
-    override fun count() = realmDatabase.count<ObservationDataSchema>()
-
-    fun storeDataFromQueue() {
-        val queueCopy = queue.toList()
-        queue.clear()
-        realmDatabase.storeAll(queueCopy)
-    }
-
-    suspend fun storeAndQuery(): DataBulk? {
-        val queueCopy = queue.toList()
-        queue.clear()
-        realmDatabase.storeAll(queueCopy)
-        return allAsBulk()
-    }
 
     suspend fun allAsBulk(): DataBulk? {
-        return realmDatabase.query<ObservationDataSchema>().firstOrNull()?.mapAsBulkData()
+        return realmDatabase().query<ObservationDataSchema>(limit = 10000).firstOrNull()?.mapAsBulkData()
     }
 
-    suspend fun deleteAllWithId(idSet: Set<String>) {
-        realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", idSet.map { ObjectId(it) })
+
+    fun deleteAllWithId(idSet: Set<String>) {
+        Napier.d { "Deleting ${idSet.size} elements..." }
+        val objectIdSet = idSet.map { ObjectId(it) }.toSet()
+        realm()?.writeBlocking {
+            this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }.forEach {
+                delete(it)
+            }
+        }
+    }
+
+    companion object {
+        private const val QUEUE_THRESHOLD = 10
     }
 }

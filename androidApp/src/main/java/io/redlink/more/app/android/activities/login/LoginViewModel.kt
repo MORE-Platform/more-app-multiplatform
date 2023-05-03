@@ -8,9 +8,6 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
 import kotlinx.coroutines.*
 
-
-private const val TAG = "LoginViewModel"
-
 interface LoginViewModelListener {
     fun tokenIsValid(study: Study)
 }
@@ -39,6 +36,14 @@ class LoginViewModel(registrationService: RegistrationService, private val login
                 }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreLoginViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreLoginViewModel.viewDidDisappear()
     }
 
     fun validateKey() {

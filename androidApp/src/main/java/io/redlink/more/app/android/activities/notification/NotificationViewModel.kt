@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
 class NotificationViewModel: ViewModel() {
     private val coreViewModel: CoreNotificationViewModel = CoreNotificationViewModel()
     var notificationList: MutableState<List<NotificationSchema?>> = mutableStateOf(emptyList())
-    val notificationCount: MutableState<Long> = mutableStateOf(0)
+    val notificationCount: MutableState<Int> = mutableStateOf(0)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -32,6 +32,14 @@ class NotificationViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 
     fun setNotificationToRead(notification: NotificationSchema) {

@@ -42,7 +42,6 @@
 		1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */; };
 		1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536A29CC68FC00324417 /* ObservationExtension.swift */; };
 		1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */; };
-		1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */; };
 		1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */; };
 		1F43996C29B8D6D300687906 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A3F29B7A36300C724AB /* Realm */; };
 		1F43996D29B8D6D300687906 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED7B7A4129B7A36300C724AB /* RealmSwift */; };
@@ -231,7 +230,6 @@
 		1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalExtension.swift; sourceTree = "<group>"; };
 		1F27536A29CC68FC00324417 /* ObservationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationExtension.swift; sourceTree = "<group>"; };
 		1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSObservationFactory.swift; sourceTree = "<group>"; };
-		1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceExtension.swift; sourceTree = "<group>"; };
 		1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerObservation.swift; sourceTree = "<group>"; };
 		1F43996E29B8D6FB00687906 /* ScheduleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 		1F43996F29B8D6FB00687906 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
@@ -610,7 +608,6 @@
 			children = (
 				1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */,
 				1F8847C029914FD60023EF10 /* StringExtension.swift */,
-				1F34797229B8BC1B0030CA15 /* NetworkServiceExtension.swift */,
 				EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */,
 				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
 				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
@@ -866,7 +863,6 @@
 		EDBB2B4629B8CFAE00CA973E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				07190FE829E809A700A8CB1F /* ExitConfirmation */,
 				EDBB2B4729B8CFE400CA973E /* SettingsViewModel.swift */,
 				EDBB2B4929B8CFF000CA973E /* SettingsView.swift */,
 			);
@@ -906,7 +902,6 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
-				1F26F9B029E6DF3D00602DB9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -995,25 +990,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1F26F9B029E6DF3D00602DB9 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
-		};
 		7555FFB5242A651A00829871 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1168,7 +1144,6 @@
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
-				1F34797329B8BC1B0030CA15 /* NetworkServiceExtension.swift in Sources */,
 				1F27536129CC372500324417 /* AppState.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,

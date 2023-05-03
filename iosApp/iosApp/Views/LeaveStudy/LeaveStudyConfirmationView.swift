@@ -27,40 +27,40 @@ struct LeaveStudyConfirmationView: View {
         Navigation {
             MoreMainBackground {
                 VStack(alignment: .leading) {
-                    
+
                     Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
                         .padding(.top)
                         .padding(.bottom)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-                    
+
                     Spacer()
-                    
+
                     HStack(alignment: .center) {
                         Spacer()
-                        
+
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 60))
                             .foregroundColor(Color.more.important)
                             .padding()
                         Spacer()
-                        
+
                     }.padding(.top)
-                    
+
                     Text(String.localizedString(forKey: "second_message", inTable: stringTable, withComment: "second exit message"))
                         .foregroundColor(Color.more.secondary)
                         .padding(.bottom, 2)
                         .multilineTextAlignment(.center)
-                    
+
                     Text(String.localizedString(forKey: "sure_message", inTable: stringTable, withComment: "last exit message"))
                         .foregroundColor(Color.more.primary)
                         .fontWeight(.bold)
                         .padding(.bottom, 2)
                         .multilineTextAlignment(.center)
-                    
+
                     Spacer()
                         .frame(height: 150)
-                    
+
                     MoreActionButton(
                         backgroundColor: .more.approved,
                         disabled: .constant(false)
@@ -71,7 +71,7 @@ struct LeaveStudyConfirmationView: View {
                         Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                     }
                     .padding(.bottom, 2)
-                    
+
                     MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                         leaveStudyModalStateVM.isLeaveStudyOpen = false
                         leaveStudyModalStateVM.isLeaveStudyConfirmOpen = false
@@ -79,17 +79,24 @@ struct LeaveStudyConfirmationView: View {
                     } label: {
                         Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
                     }
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal, 40)
                 
-            }
-        topBarContent: {
-            EmptyView()
-        }
-        .customNavigationTitle(with: NavigationScreens.withdrawStudyConfirm.localize(useTable: navigationStrings, withComment: "Confirm to withdraw from study"))
-        .navigationBarTitleDisplayMode(.inline)
-        }
+            } // VStack
+            
+        } // MoreBackground
+    topBarContent: {
+        EmptyView()
     }
+    .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
+    .navigationBarTitleDisplayMode(.inline)
+    .onAppear {
+        viewModel.viewDidAppear()
+    }
+    .onDisappear{
+        viewModel.viewDidDisappear()
+    }
+    } // View
 }

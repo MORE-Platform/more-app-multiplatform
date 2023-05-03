@@ -10,26 +10,14 @@ import Foundation
 import shared
 
 class DataUploadManager {
-    private let networkService: NetworkService
     private let observationDataRepository = ObservationDataRepository()
     private let semaphore = Semaphore()
-    private var currentTask: Task<(), Never>? = nil
-    
-    private var currentJob: Ktor_ioCloseable? = nil
-    
-    private let lockQueue = DispatchQueue(label: "lock-queue")
-    
-    init() {
-        let userDefaults = UserDefaultsRepository()
-        networkService = NetworkService(endpointRepository: EndpointRepository(sharedStorageRepository: userDefaults),
-                                        credentialRepository: CredentialRepository(sharedStorageRepository: userDefaults))
-    }
     
     @MainActor
     func uploadData(completion: @escaping (Bool) -> Void) async {
         if await self.semaphore.tryLock() {
             do {
-                print("Fetching Bulk...")
+                print("Fetching Data Bulk...")
                 if let dataBulk = try await self.observationDataRepository.allAsBulk() {
                     if Task.isCancelled {
                         completion(false)
@@ -37,7 +25,7 @@ class DataUploadManager {
                     }
                     if !dataBulk.dataPoints.isEmpty {
                         print("Sending data to backend...")
-                        let result = try await self.networkService.sendData(data: dataBulk)
+                        let result = try await AppDelegate.shared.networkService.sendData(data: dataBulk)
                         if Task.isCancelled {
                             completion(false)
                             return
@@ -47,16 +35,17 @@ class DataUploadManager {
                             completion(false)
                         } else if let idSet = result.first as? Set<String> {
                             print("Sent data! Deleting data from device...")
-                            try await self.observationDataRepository.deleteAllWithId(idSet: idSet)
+                            self.observationDataRepository.deleteAllWithId(idSet: idSet)
                             print("Deleted data!")
                             completion(true)
                         }
                     } else {
-                        print("Data Bulk empty!")
+                        print("No data to send!")
                         completion(true)
                     }
                 } else {
-                    completion(false)
+                    print("No data to send!")
+                    completion(true)
                 }
                 await self.semaphore.unlock()
             } catch {
@@ -71,8 +60,6 @@ class DataUploadManager {
     }
     
     func close() {
-        self.currentJob?.close()
-        currentTask?.cancel()
         print("Closed!")
     }
 }

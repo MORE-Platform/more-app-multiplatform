@@ -19,7 +19,7 @@ class SettingsViewModel: ObservableObject {
     @Published var showSettings = false
     
     init() {
-        coreSettingsViewModel = CoreSettingsViewModel(credentialRepository: CredentialRepository(sharedStorageRepository: storageRepository), endpointRepository: EndpointRepository(sharedStorageRepository: storageRepository))
+        coreSettingsViewModel = CoreSettingsViewModel(shared: AppDelegate.shared)
         coreSettingsViewModel.onLoadStudy { study in
             self.study = study
         }
@@ -29,12 +29,17 @@ class SettingsViewModel: ObservableObject {
     }
     
     func leaveStudy() {
+        AppDelegate.recorder.stopAll()
         coreSettingsViewModel.exitStudy()
         self.delegate?.credentialsDeleted()
         FCMService().deleteNotificationToken()
     }
     
-    func reloadStudyConfig() {
-        coreSettingsViewModel.reloadStudyConfig()
+    func viewDidAppear() {
+        coreSettingsViewModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreSettingsViewModel.viewDidDisappear()
     }
 }

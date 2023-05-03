@@ -4,9 +4,7 @@ import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,7 +20,6 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
-import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
@@ -47,6 +44,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {
                 navController.addOnDestinationChangedListener(destinationChangeListener)
+                viewModel.viewDidAppear()
             }
             MainView(viewModel.navigationBarTitle.value, viewModel, navController)
         }
@@ -171,7 +169,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 val scheduleId = arguments.getString("scheduleId")
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(scheduleId ?: "", LocalContext.current))
+                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(
+                    scheduleId ?: ""
+                ))
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()

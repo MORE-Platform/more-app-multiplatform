@@ -2,6 +2,7 @@ package io.redlink.more.app.android.observations.GPS
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Looper
 import android.util.Log
 import com.google.android.gms.location.*
 
@@ -22,6 +23,7 @@ class GPSService(context: Context) {
         override fun onLocationAvailability(result: LocationAvailability) {
             super.onLocationAvailability(result)
             Log.d(TAG, "Location available: ${result.isLocationAvailable}")
+            gpsListener?.locationAvailable(result.isLocationAvailable)
         }
     }
 
@@ -80,7 +82,7 @@ class GPSService(context: Context) {
     fun registerForLocationUpdates(listener: GPSListener) {
         Log.d(TAG, "Registered new listener!")
         this.gpsListener = listener
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest.build(), locationCallback, null)
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest.build(), locationCallback, Looper.getMainLooper())
     }
 
     fun unregisterForLocationUpdates(listener: GPSListener) {
