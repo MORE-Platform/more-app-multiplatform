@@ -18,10 +18,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     private var fcmService: FCMService? = FCMService()
     static let polarConnector = PolarConnector()
     static let recorder = IOSDataRecorder()
+    static let dataUploadManager = DataUploadManager()
+    static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
+    static let dataManager = iOSObservationDataManager()
+    
     private var localNotifications: LocalPushNotifications? = LocalPushNotifications()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
+        #if DEBUG
+        NapierProxyKt.napierDebugBuild()
+        #endif
         
+        
+        FirebaseApp.configure()
         fcmService?.register()
         
         registerBackgroundTasks()

@@ -20,18 +20,19 @@ import org.mongodb.kbson.ObjectId
 
 class ScheduleRepository : Repository<ScheduleSchema>() {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
-    override fun count(): Flow<Long> = realmDatabase.count<ScheduleSchema>()
+
+    override val repositoryName: String
+        get() = "ScheduleRepository"
+    override fun count(): Flow<Long> = realmDatabase().count<ScheduleSchema>()
 
     fun allSchedulesWithStatus(done: Boolean = false) =
-        realmDatabase.realm?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
+        realm()?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
 
     fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING) =
-        realmDatabase.query<ScheduleSchema>(
+        realmDatabase().query<ScheduleSchema>(
             query = "state = $0",
             queryArgs = arrayOf(scheduleState.name)
         )
-
-    fun allSchedules() = realmDatabase.count<ScheduleSchema>()
 
     fun collectRunningState(
         forState: ScheduleState,
@@ -41,7 +42,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     }
 
     fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleSchema?, ScheduleSchema?>> {
-        return realmDatabase.query<ScheduleSchema>(
+        return realmDatabase().query<ScheduleSchema>(
             query = "observationId = $0",
             queryArgs = arrayOf(observationId)
         ).transform {
@@ -53,7 +54,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     }
 
     fun setRunningStateFor(id: String, scheduleState: ScheduleState) {
-        realmDatabase.realm?.writeBlocking {
+        realm()?.writeBlocking {
             this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()?.let {
                 it.state = scheduleState.name
             }
@@ -61,7 +62,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     }
 
     fun setCompletionStateFor(id: String, wasDone: Boolean) {
-        realmDatabase.realm?.writeBlocking {
+        realm()?.writeBlocking {
             this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()?.let {
                 it.done = true
                 it.updateState(if (wasDone) ScheduleState.DONE else ScheduleState.ENDED)
@@ -109,7 +110,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     fun collectNextScheduleStart(provideNewState: (Long?) -> Unit) =
         nextScheduleStart().asClosure(provideNewState)
 
-    fun scheduleWithId(id: String) = realmDatabase.queryFirst<ScheduleSchema>(
+    fun scheduleWithId(id: String) = realmDatabase().queryFirst<ScheduleSchema>(
         query = "scheduleId = $0",
         queryArgs = arrayOf(ObjectId(id))
     )
@@ -120,7 +121,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                 observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
             val now = Clock.System.now()
             Napier.d { "Updating Schedule states..." }
-            realmDatabase.realm?.let {
+            realm()?.let {
                 it.writeBlocking {
                     query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
                         if (restartableTypes.isNotEmpty()

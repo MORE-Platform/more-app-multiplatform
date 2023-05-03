@@ -10,11 +10,10 @@ import Foundation
 import shared
 
 class iOSObservationDataManager: ObservationDataManager {
-    private let dataUploadManager = DataUploadManager()
     
     override func sendData(onCompletion: @escaping (KotlinBoolean) -> Void) {
         Task { @MainActor in
-            await dataUploadManager.uploadData { onCompletion(KotlinBoolean(bool: $0)) }
+            await AppDelegate.dataUploadManager.uploadData { onCompletion(KotlinBoolean(bool: $0)) }
         }
     }
 }

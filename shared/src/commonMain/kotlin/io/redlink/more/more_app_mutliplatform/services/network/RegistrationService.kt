@@ -1,7 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
@@ -17,12 +17,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class RegistrationService (
-    sharedStorageRepository: SharedStorageRepository
+    private val shared: Shared
 ) {
-    private val endpointRepository = EndpointRepository(sharedStorageRepository)
-    private val credentialRepository = CredentialRepository(sharedStorageRepository)
     private val studyRepository = StudyRepository()
-    private val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
 
     var study: Study? = null
         private set
@@ -32,13 +29,13 @@ class RegistrationService (
 
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
-    fun getEndpointRepository(): EndpointRepository = endpointRepository
+    fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
     fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
             val upperCaseToken = token.uppercase()
             scope.launch {
-                val (result, networkError) = networkService.validateRegistrationToken(upperCaseToken, endpoint)
+                val (result, networkError) = shared.networkService.validateRegistrationToken(upperCaseToken, endpoint)
                 result?.let {
                     study = it
                     participationToken = token
@@ -70,16 +67,16 @@ class RegistrationService (
 
     private fun sendConsent(token: String, studyConsent: StudyConsent, study: Study, endpoint: String? = null, onSuccess: (Boolean) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         scope.launch {
-            val (config, networkError) = networkService.sendConsent(token, studyConsent, endpoint)
+            val (config, networkError) = shared.networkService.sendConsent(token, studyConsent, endpoint)
             if (config != null) {
                 config.endpoint?.let {
-                    endpointRepository.storeEndpoint(it)
+                    shared.endpointRepository.storeEndpoint(it)
                 }
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
-                if (credentialRepository.store(credentialModel) && credentialRepository.hasCredentials()) {
+                if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
                     studyRepository.storeStudy(study)
-                    onSuccess(credentialRepository.hasCredentials())
+                    onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
                     onError(NetworkServiceError(null, "Could not store credentials"))
                 }

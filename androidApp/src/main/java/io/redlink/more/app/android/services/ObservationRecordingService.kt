@@ -6,8 +6,8 @@ import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.AndroidObservationFactory
@@ -19,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import java.time.Clock
 
 class ObservationRecordingService: Service() {
     private var observationManager: ObservationManager? = null
@@ -33,7 +32,7 @@ class ObservationRecordingService: Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (observationFactory == null) {
-            observationFactory = AndroidObservationFactory(this)
+            observationFactory = MoreApplication.observationFactory ?: AndroidObservationFactory(this)
         }
         observationFactory?.let {
             if (observationManager == null) {
@@ -80,21 +79,17 @@ class ObservationRecordingService: Service() {
         } ?: START_NOT_STICKY
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        running = false
+    }
+
     private fun startObservation(scheduleId: String) {
+        Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
+        startForegroundService()
         scope.launch {
             if (observationManager?.start(scheduleId) == true) {
                 try {
-                    Handler(Looper.getMainLooper()).post {
-                        Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
-                        startForeground(
-                            1001,
-                            buildNotification(
-                                channelId = getString(R.string.default_channel_id),
-                                notificationTitle = getString(R.string.more_observation_running),
-                                notificationText = getString(R.string.more_observation_notification_explanation)
-                            )
-                        )
-                    }
                     scope.launch {
                         scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
                             val delayInSeconds = it - (System.currentTimeMillis() / 1000)
@@ -109,6 +104,8 @@ class ObservationRecordingService: Service() {
                 } catch (e: Exception) {
                     Napier.e { e.stackTraceToString() }
                 }
+            } else {
+                stopObservation(scheduleId)
             }
         }
     }
@@ -122,6 +119,7 @@ class ObservationRecordingService: Service() {
         scheduleRepository.setCompletionStateFor(scheduleId, true)
         if (observationManager?.hasRunningTasks() == false) {
             stopForeground(STOP_FOREGROUND_REMOVE)
+            running = false
             stopSelf()
         }
     }
@@ -130,26 +128,18 @@ class ObservationRecordingService: Service() {
         observationManager?.stopAll()
         if (observationManager?.hasRunningTasks() == false) {
             stopForeground(STOP_FOREGROUND_REMOVE)
+            running = false
             stopSelf()
         }
     }
 
     private fun restartAll() {
+        Napier.d { "Starting the foreground service..." }
+        startForegroundService()
         scope.launch {
             val startedObservations = observationManager?.restartStillRunning() ?: emptySet()
             if (startedObservations.isNotEmpty()) {
                 try {
-                    Handler(Looper.getMainLooper()).post {
-                        Napier.d { "Starting the foreground service for schedules: ${startedObservations}..." }
-                        startForeground(
-                            1001,
-                            buildNotification(
-                                channelId = getString(R.string.default_channel_id),
-                                notificationTitle = getString(R.string.more_observation_running),
-                                notificationText = getString(R.string.more_observation_notification_explanation)
-                            )
-                        )
-                    }
                     scope.launch {
                         startedObservations.forEach { scheduleId ->
                             scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
@@ -166,12 +156,28 @@ class ObservationRecordingService: Service() {
                 } catch (e: Exception) {
                     Napier.e { e.stackTraceToString() }
                 }
+            } else {
+                if (observationManager?.hasRunningTasks() == false) {
+                    stopAll()
+                }
             }
         }
     }
 
     private fun updateTaskStates() {
         observationManager?.updateTaskStates()
+    }
+
+    private fun startForegroundService() {
+        startForeground(
+            1001,
+            buildNotification(
+                channelId = getString(R.string.default_channel_id),
+                notificationTitle = getString(R.string.more_observation_running),
+                notificationText = getString(R.string.more_observation_notification_explanation)
+            )
+        )
+        running = true
     }
 
     private fun buildNotification(
@@ -210,58 +216,60 @@ class ObservationRecordingService: Service() {
         const val SERVICE_RECEIVER_UPDATE_STATES = "io.redlink.more.app.android.UPDATE_STATES"
         const val SERVICE_RECEIVER_RESTART_ALL_STATES = "io.redlink.more.app.android.RESTART_ALL"
 
+        var running = false
+            private set
+
         fun start(
-            context: Context,
             scheduleId: String,
         ) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_START_ACTION
             serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
             try {
                 Handler(Looper.getMainLooper()).post {
-                    context.startForegroundService(serviceIntent)
+                    MoreApplication.appContext?.startForegroundService(serviceIntent)
                 }
             } catch (e: Exception) {
                 Napier.e(e.stackTraceToString())
             }
         }
 
-        fun pause(context: Context, scheduleId: String) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+        fun pause(scheduleId: String) {
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
             serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-            context.startService(serviceIntent)
+            MoreApplication.appContext?.startService(serviceIntent)
         }
 
-        fun stop(context: Context, scheduleId: String) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+        fun stop(scheduleId: String) {
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
             serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-            context.startService(serviceIntent)
+            MoreApplication.appContext?.startService(serviceIntent)
         }
 
-        fun stopAll(context: Context) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+        fun stopAll() {
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
-            context.startService(serviceIntent)
+            MoreApplication.appContext?.startService(serviceIntent)
         }
 
-        fun restartAll(context: Context) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+        fun restartAll() {
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
             try {
                 Handler(Looper.getMainLooper()).post {
-                    context.startForegroundService(serviceIntent)
+                    MoreApplication.appContext?.startForegroundService(serviceIntent)
                 }
             } catch (e: Exception) {
                 Napier.e(e.stackTraceToString())
             }
         }
 
-        fun updateTaskStates(context: Context) {
-            val serviceIntent = Intent(context, ObservationRecordingService::class.java)
+        fun updateTaskStates() {
+            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
             serviceIntent.action = SERVICE_RECEIVER_UPDATE_STATES
-            context.startService(serviceIntent)
+            MoreApplication.appContext?.startService(serviceIntent)
         }
     }
 }

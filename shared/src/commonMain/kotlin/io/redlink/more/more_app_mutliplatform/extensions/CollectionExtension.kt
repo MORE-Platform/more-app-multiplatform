@@ -9,10 +9,10 @@ import io.redlink.more.more_app_mutliplatform.util.createUUID
 fun Collection<ObservationDataSchema>.mapAsBulkData(): DataBulk? {
     val dataPoints = this.map { it.asObservationData() }
     val bulkId = createUUID()
-    Napier.d { "Created new databulk with ID: $bulkId; Datapoints: $dataPoints" }
-    if (dataPoints.isEmpty()) {
+    if (dataPoints.isEmpty() || dataPoints.firstOrNull() == null) {
         return null
     }
+    Napier.d { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size} with first being: ${dataPoints.first()}" }
     return DataBulk(
         bulkId = bulkId,
         dataPoints = dataPoints

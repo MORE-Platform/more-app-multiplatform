@@ -1,9 +1,12 @@
 package io.redlink.more.app.android.observations
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import io.redlink.more.app.android.workers.DataUploadWorker
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 
 class AndroidObservationDataManager(context: Context) : ObservationDataManager() {

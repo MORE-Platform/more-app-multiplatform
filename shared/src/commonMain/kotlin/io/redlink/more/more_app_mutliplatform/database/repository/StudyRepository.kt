@@ -8,6 +8,9 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import kotlinx.coroutines.flow.*
 
 class StudyRepository : Repository<StudySchema>() {
+
+    override val repositoryName: String
+        get() = "StudyRepository"
     fun storeStudy(study: Study) {
         val realmObjects = mutableListOf<RealmObject>()
         realmObjects.add(StudySchema.toSchema(study))
@@ -21,12 +24,12 @@ class StudyRepository : Repository<StudySchema>() {
                 )
             }
         }.flatten())
-        realmDatabase.store(realmObjects)
+        realmDatabase().store(realmObjects)
     }
 
     fun getStudy(): Flow<StudySchema?> {
-        return realmDatabase.queryFirst()
+        return realmDatabase().queryFirst()
     }
 
-    override fun count(): Flow<Long> = realmDatabase.count<StudySchema>()
+    override fun count(): Flow<Long> = realmDatabase().count<StudySchema>()
 }

@@ -32,7 +32,7 @@ open class DataApi(
      */
     open suspend fun storeBulk(dataBulk: DataBulk? = null): HttpResponse<List<String>> {
 
-        val localVariableAuthNames = listOf<String>("apiKey")
+        val localVariableAuthNames = listOf("apiKey")
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()

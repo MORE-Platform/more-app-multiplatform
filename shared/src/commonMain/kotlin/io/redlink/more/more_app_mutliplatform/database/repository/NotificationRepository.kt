@@ -5,6 +5,8 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchem
 import kotlinx.coroutines.flow.Flow
 
 class NotificationRepository : Repository<NotificationSchema>() {
+    override val repositoryName: String
+        get() = "NotificationRepository"
     fun storeNotification(
         key: String,
         channelId: String?,
@@ -16,7 +18,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
     ) {
-        realmDatabase.store(
+        realmDatabase().store(
             setOf(
                 NotificationSchema.toSchema(
                     key,
@@ -34,15 +36,15 @@ class NotificationRepository : Repository<NotificationSchema>() {
     }
 
     fun storeNotification(remoteMessage: NotificationSchema) {
-        realmDatabase.store(setOf(remoteMessage))
+        realmDatabase().store(setOf(remoteMessage))
     }
 
-    override fun count(): Flow<Long> = realmDatabase.count<NotificationSchema>()
+    override fun count(): Flow<Long> = realmDatabase().count<NotificationSchema>()
 
-    fun getAllNotifications() = realmDatabase.query<NotificationSchema>()
+    fun getAllNotifications() = realmDatabase().query<NotificationSchema>()
 
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
-        realmDatabase.realm?.writeBlocking {
+        realm()?.writeBlocking {
             this.query<NotificationSchema>("notificationId = $0", notificationId).first().find()
                 ?.let {
                     if (read != null) {
@@ -56,15 +58,15 @@ class NotificationRepository : Repository<NotificationSchema>() {
     }
 
     fun allUserFacingNotifications() {
-        realmDatabase.query<NotificationSchema>("userFacing == true")
+        realmDatabase().query<NotificationSchema>("userFacing == true")
     }
 
     fun countUserFacingNotifications() {
-        realmDatabase.realm?.query<NotificationSchema>("userFacing == true")?.count()
+        realm()?.query<NotificationSchema>("userFacing == true")?.count()
     }
 
     fun setNotificationReadStatus(key: String, read: Boolean = true) {
-        realmDatabase.realm?.writeBlocking {
+        realm()?.writeBlocking {
             this.query<NotificationSchema>("notificationId = $0", key).first().find()?.let {
                 it.read = read
             }
@@ -72,6 +74,6 @@ class NotificationRepository : Repository<NotificationSchema>() {
     }
 
     fun deleteAll() {
-        realmDatabase.deleteAll()
+        realmDatabase().deleteAll()
     }
 }

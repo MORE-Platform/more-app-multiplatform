@@ -1,19 +1,24 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.ktor.utils.io.core.*
+import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.types.BaseRealmObject
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import kotlinx.coroutines.flow.Flow
 
-abstract class Repository<T: BaseRealmObject>(protected val realmDatabase: RealmDatabase = DatabaseManager.database): Closeable {
+abstract class Repository<T: BaseRealmObject> : Closeable {
+    private val database = DatabaseManager
     private var cache: T? = null
 
-    protected fun setCache(item: T?) {
-        cache = item
+    abstract val repositoryName: String
+
+    init {
+        database.open()
     }
+
+    fun realm() = database.database.realm
+
+    fun realmDatabase() = database.database
 
     fun readCache() = cache
 
@@ -24,6 +29,6 @@ abstract class Repository<T: BaseRealmObject>(protected val realmDatabase: Realm
     }
 
     override fun close() {
-        realmDatabase.close()
+        database.close()
     }
 }

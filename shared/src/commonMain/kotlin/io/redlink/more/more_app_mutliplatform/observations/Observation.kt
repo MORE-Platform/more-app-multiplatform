@@ -6,6 +6,8 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 abstract class Observation(val observationType: ObservationType) {
     private val scheduleRepository = ScheduleRepository()
@@ -15,6 +17,8 @@ abstract class Observation(val observationType: ObservationType) {
     private val scheduleIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
+
+    protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
     fun apply(observationId: String, scheduleId: String) {
         observationIds.add(observationId)
@@ -65,10 +69,17 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     fun observationConfig(settings: Map<String, Any>) {
+        this.lastCollectionTimestamp = (settings[CONFIG_LAST_COLLECTION_TIMESTAMP] as? Long)?.let {
+            Instant.fromEpochSeconds(it, 0)
+        } ?: Clock.System.now()
         if (settings.isNotEmpty()) {
             this.config += settings
             configChanged = true
         }
+    }
+
+    protected fun collectionTimestampToNow() {
+        this.lastCollectionTimestamp = Clock.System.now()
     }
 
     protected abstract fun start(): Boolean
@@ -85,13 +96,13 @@ abstract class Observation(val observationType: ObservationType) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
-        Napier.d { "Observation recorded new data: $dataSchemas" }
+        //Napier.d { "Observation ${observationType.observationType} recorded new data: $data" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
-        Napier.d { "Observation recorded new data: $dataSchemas" }
+        //Napier.d { "Observation ${observationType.observationType} recorded ${data.size} new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }
@@ -131,5 +142,6 @@ abstract class Observation(val observationType: ObservationType) {
         const val CONFIG_TASK_START = "observation_start_date_time"
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"
+        const val CONFIG_LAST_COLLECTION_TIMESTAMP = "observation_last_collection_timestamp"
     }
 }

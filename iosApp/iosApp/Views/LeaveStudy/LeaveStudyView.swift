@@ -74,5 +74,11 @@ struct LeaveStudyView: View {
         }
         .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear{
+            viewModel.viewDidDisappear()
+        }
     }
 }

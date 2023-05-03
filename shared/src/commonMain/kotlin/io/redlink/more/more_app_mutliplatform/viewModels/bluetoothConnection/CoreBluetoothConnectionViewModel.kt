@@ -4,7 +4,6 @@ import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
-import io.redlink.more.more_app_mutliplatform.extensions.appendIfNotContains
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.extensions.remove
@@ -13,14 +12,15 @@ import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import kotlinx.coroutines.CoroutineScope
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class CoreBluetoothConnectionViewModel(private val bluetoothConnector: BluetoothConnector): BluetoothConnectorObserver, Closeable {
+class CoreBluetoothConnectionViewModel(private val bluetoothConnector: BluetoothConnector): CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val bluetoothDeviceRepository = BluetoothDeviceRepository(bluetoothConnector)
     val discoveredDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
     val connectedDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
@@ -33,24 +33,23 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     private val scanDuration: Long = 10000
     private val scanInterval: Long = 5000
 
-    private val scope = CoroutineScope(Job() + Dispatchers.Main)
-
     init {
         bluetoothConnector.observer = this
-        scope.launch(Dispatchers.Default) {
+    }
+
+    override fun viewDidAppear() {
+        launchScope {
             bluetoothDeviceRepository.getConnectedDevices(true).collect { storedConnectedDevices ->
                 val addresses = connectedDevices.value.map { it.address }
                 val filtered = storedConnectedDevices.filter { it.address !in addresses}
                 connectedDevices.append(filtered)
             }
         }
-    }
-
-    fun viewDidAppear() {
         startPeriodicScan()
     }
 
-    fun viewDidDisappear() {
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
         discoveredDevices.clear()
         connectingDevices.clear()
         close()
@@ -58,7 +57,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
 
     private fun startPeriodicScan() {
         if (scanJob == null) {
-            scanJob = scope.launch(Dispatchers.Default) {
+            scanJob = viewModelScope.launch(Dispatchers.Default) {
                 while (true) {
                     scanForDevices()
                     delay(scanDuration)
@@ -78,7 +77,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     fun scanForDevices() {
         if (!isConnecting.value) {
             bluetoothConnector.scan()
-            scope.launch {
+            viewModelScope.launch {
                 isScanning.emit(bluetoothConnector.isScanning())
             }
         }
@@ -86,7 +85,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
 
     fun stopScanning() {
         bluetoothConnector.stopScanning()
-        scope.launch {
+        viewModelScope.launch {
             isScanning.emit(bluetoothConnector.isScanning())
         }
     }
@@ -158,7 +157,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
         scanJob = null
         bluetoothConnector.close()
         isConnecting.set(false)
-        scope.launch {
+        viewModelScope.launch {
             isScanning.emit(bluetoothConnector.isScanning())
         }
     }

@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.*
 class ObservationRepository : Repository<ObservationSchema>() {
     private val scheduleRepository = ScheduleRepository()
 
-    override fun count(): Flow<Long> = realmDatabase.count<ObservationSchema>()
+    override val repositoryName: String
+        get() = "ObservationRepository"
+    override fun count(): Flow<Long> = realmDatabase().count<ObservationSchema>()
 
-    fun observations() = realmDatabase.query<ObservationSchema>()
+    fun observations() = realmDatabase().query<ObservationSchema>()
 
     fun observationWithUndoneSchedules(): Flow<Map<ObservationSchema, List<ScheduleSchema>>> {
         return scheduleRepository.allSchedulesWithStatus().combine(observations()){ schedules, observations ->
@@ -25,7 +27,7 @@ class ObservationRepository : Repository<ObservationSchema>() {
     }
 
     fun lastCollection(type: String, timestamp: Long) {
-        realmDatabase.realm?.writeBlocking {
+        realm()?.writeBlocking {
             this.query<ObservationSchema>("observationType == $0", type)
                 .find()
                 .forEach {
@@ -35,9 +37,13 @@ class ObservationRepository : Repository<ObservationSchema>() {
     }
 
     fun collectionTimestamp(type: String) =
-        realmDatabase.query<ObservationSchema>("observationType == $0", queryArgs = arrayOf(type))
-            .map { it.map { observationSchema -> observationSchema.collectionTimestamp } }
-            .transform { emit(it.firstOrNull()) }
+        realmDatabase().query<ObservationSchema>("observationType == $0", queryArgs = arrayOf(type))
+            .transform {
+                emit(it
+                    .map { observationSchema -> observationSchema.collectionTimestamp }
+                    .firstOrNull()
+                )
+            }
 
     fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
        return collectionTimestamp(type).asClosure(newState)
@@ -47,13 +53,13 @@ class ObservationRepository : Repository<ObservationSchema>() {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 
-    fun observationById(observationId: String) = realmDatabase.queryFirst<ObservationSchema>(
+    fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(
         "observationId == $0",
         queryArgs = arrayOf(observationId)
     )
 
     suspend fun getObservationByObservationId(observationId: String): ObservationSchema? {
-        return realmDatabase.queryFirst<ObservationSchema>(
+        return realmDatabase().queryFirst<ObservationSchema>(
             "observationId == $0",
             queryArgs = arrayOf(observationId)
         ).firstOrNull()

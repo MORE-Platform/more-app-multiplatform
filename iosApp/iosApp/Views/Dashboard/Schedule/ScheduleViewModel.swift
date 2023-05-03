@@ -53,6 +53,14 @@ class ScheduleViewModel: ObservableObject {
             }
         }
     }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+    }
 }
 
 extension Dictionary<KotlinLong, [ScheduleModel]> {

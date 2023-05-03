@@ -25,7 +25,7 @@ class DataUploadBackgroundTask {
         }
     }
 
-    private let uploadDataManager = DataUploadManager()
+    private let uploadDataManager = AppDelegate.dataUploadManager
     private let dataCollector = ObservationDataCollector()
     
     private var currentUploadingTask: Task<(), Never>? = nil

@@ -19,14 +19,24 @@ object RealmDatabase {
     var realm: Realm? = null
         private set
 
+    private val repositoryCount = RealmDatabaseCounter()
+
     fun open(realmObjects: Set<KClass<out BaseRealmObject>>) {
-        val config = RealmConfiguration.create(realmObjects)
-        this.realm = Realm.open(config)
+        repositoryCount.increment()
+        if (realm == null) {
+            Napier.d { "Init Realm..." }
+            val config = RealmConfiguration.create(realmObjects)
+            this.realm = Realm.open(config)
+        }
     }
 
     fun close() {
-        this.realm?.close()
-        this.realm = null
+        repositoryCount.decrement()
+        if (repositoryCount.counter == 0) {
+            Napier.d { "Closing Realm..." }
+            this.realm?.close()
+            this.realm = null
+        }
     }
 
     fun store(
@@ -34,10 +44,8 @@ object RealmDatabase {
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
         if (realmObjects.isNotEmpty()) {
-            Napier.d { "Storing ${realmObjects.size} new objects..." }
             realm?.writeBlocking {
-                realmObjects.map { copyToRealm(it, updatePolicy) }
-                Napier.d { "Stored ${realmObjects.size} objects!" }
+                realmObjects.forEach { copyToRealm(it, updatePolicy) }
             }
         }
     }
@@ -90,15 +98,14 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    suspend inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
-        realm?.write {
+        realm?.writeBlocking {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }
-            Napier.d { "Deleted object with" }
         }
     }
 

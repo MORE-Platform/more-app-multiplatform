@@ -1,7 +1,9 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
+import io.ktor.client.HttpClient
 import io.ktor.client.statement.*
+import io.ktor.utils.io.core.Closeable
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
@@ -9,6 +11,12 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.Regis
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.*
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
+import kotlinx.coroutines.CompletionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -25,35 +33,45 @@ private const val TAG = "NetworkService"
 class NetworkService(
     private val endpointRepository: EndpointRepository,
     private val credentialRepository: CredentialRepository
-) {
-
+): Closeable {
+    private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
     private var dataApi: DataApi? = null
 
-    init {
-        initConfigApi()
-    }
+    private var engineUseCounter = 10
 
     private fun initConfigApi() {
-        if (configurationApi == null || dataApi == null) {
+        if (configurationApi == null) {
             Napier.d { "Initializing ConfigurationApi and DataApi..." }
             credentialRepository.credentials()?.let {
-                val httpClient = getHttpClient()
-                val url = endpointRepository.endpoint()
-                configurationApi = ConfigurationApi(
-                    baseUrl = url,
-                    httpClient.engine,
-                    httpClientConfig = { httpClient.engineConfig })
-                configurationApi?.setUsername(it.apiId)
-                configurationApi?.setPassword(it.apiKey)
+                httpClient = getHttpClient().apply {
+                    val url = endpointRepository.endpoint()
+                    configurationApi = ConfigurationApi(
+                        baseUrl = url,
+                        engine,
+                        httpClientConfig = { engineConfig })
+                    configurationApi?.setUsername(it.apiId)
+                    configurationApi?.setPassword(it.apiKey)
+                }
+            }
+        }
+    }
 
-                dataApi = DataApi(
-                    baseUrl = url,
-                    httpClient.engine,
-                    httpClientConfig = { httpClient.engineConfig}
-                )
-                dataApi?.setUsername(it.apiId)
-                dataApi?.setPassword(it.apiKey)
+    private fun initDataApi() {
+        if (--engineUseCounter <= 0) {
+            close()
+        }
+        if (dataApi == null) {
+            credentialRepository.credentials()?.let {
+                httpClient = getHttpClient().apply {
+                    dataApi = DataApi(
+                        baseUrl = endpointRepository.endpoint(),
+                        engine,
+                        httpClientConfig = { engineConfig}
+                    )
+                    dataApi?.setUsername(it.apiId)
+                    dataApi?.setPassword(it.apiKey)
+                }
             }
         }
     }
@@ -73,8 +91,7 @@ class NetworkService(
                 val registrationResponse =
                     registrationApi.unregisterFromStudy()
                 Napier.d(registrationResponse.response.toString(), tag = TAG)
-                configurationApi = null
-                dataApi = null
+                close()
                 if (registrationResponse.success) {
                     Napier.d { "Participation deleted!" }
                     return Pair(true, null)
@@ -206,9 +223,9 @@ class NetworkService(
     }
 
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
-        initConfigApi()
+        initDataApi()
         try {
-            Napier.i { "Sending data: $data" }
+            Napier.i { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints wwith first being ${data.dataPoints.first()}..." }
             val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "No credentials set!")
@@ -225,6 +242,12 @@ class NetworkService(
             )
         } catch (e: Exception) {
             return Pair(emptySet(), getException(e))
+        }
+    }
+
+    fun sendData(data: DataBulk, completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit) {
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            sendData(data).let(completionHandler)
         }
     }
 
@@ -252,23 +275,13 @@ class NetworkService(
         return NetworkServiceError(null, errorResponse)
     }
 
-    companion object {
-        private const val AUTH_NAME = "apiKey"
-
+    override fun close() {
+        Napier.d { "Clearing the Http engine..." }
+        engineUseCounter = 10
+        configurationApi = null
+        dataApi = null
+        httpClient?.close()
+        httpClient = null
     }
 }
 
-@ExperimentalSerializationApi
-@Serializer(forClass = kotlin.Any::class)
-object AnySerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("Any", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: Any) {
-        encoder.encodeString(value.toString())
-    }
-
-    override fun deserialize(decoder: Decoder): Any {
-        return decoder.decodeString()
-    }
-}

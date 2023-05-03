@@ -2,14 +2,15 @@ package io.redlink.more.app.android.workers
 
 import android.content.Context
 import android.util.Log
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
+import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
-import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,30 +24,21 @@ class DataUploadWorker (
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-    private val workerConstraints =
-        Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
     private val workManager = WorkManager.getInstance(applicationContext)
-    private val credentialRepository: CredentialRepository
-    private val networkService: NetworkService
+    private val shared: Shared = MoreApplication.shared ?: Shared(SharedPreferencesRepository(applicationContext))
     private var stopped = false
     private val observationDataRepository = ObservationDataRepository()
 
-    init {
-        val sharedPreferences = SharedPreferencesRepository(applicationContext)
-        credentialRepository = CredentialRepository(sharedPreferences)
-        networkService = NetworkService(EndpointRepository(sharedPreferences), credentialRepository)
-    }
-
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        if (!credentialRepository.hasCredentials()) return@withContext Result.failure()
+
+        if (!shared.credentialRepository.hasCredentials()) return@withContext Result.failure()
         try {
             Log.d(TAG, "Worker started!")
-            return@withContext observationDataRepository.allAsBulk()?.let {
-                val size = it.dataPoints.size
-                if (size > 0) {
-                    return@let uploadDataBulk(it)
+            return@withContext observationDataRepository.allAsBulk()?.let { bulk ->
+                if (bulk.dataPoints.isNotEmpty()) {
+                    return@withContext uploadDataBulk(bulk).apply {
+                        observationDataRepository.close()
+                    }
                 }
                 Result.success()
             } ?: Result.failure()
@@ -61,7 +53,7 @@ class DataUploadWorker (
     }
 
     private suspend fun uploadDataBulk(bulk: DataBulk): Result {
-        val (ids, error) = networkService.sendData(bulk)
+        val (ids, error) = shared.networkService.sendData(bulk)
         return if (error != null) {
             Napier.e { error.message }
             if (stopped || runAttemptCount > MAX_WORKER_RETRY) {
@@ -75,19 +67,8 @@ class DataUploadWorker (
         }
     }
 
-    private fun enqueueNewWorker() {
-        val dataWorker = OneTimeWorkRequestBuilder<DataUploadWorker>()
-            .setConstraints(workerConstraints)
-            .build()
-        workManager.enqueueUniqueWork(
-            WORKER_TAG,
-            ExistingWorkPolicy.APPEND_OR_REPLACE,
-            dataWorker)
-    }
-
     companion object {
         const val WORKER_TAG = "DATA_UPLOAD_WORKER"
-        const val MAX_NUMBER_OF_DATA_POINTS = 1000
         const val MAX_WORKER_RETRY = 5
     }
 

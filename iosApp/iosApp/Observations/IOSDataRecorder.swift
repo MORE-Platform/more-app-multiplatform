@@ -13,9 +13,9 @@ class IOSDataRecorder: DataRecorder {
     private let observationManager = ObservationManager(observationFactory: IOSObservationFactory())
     
     func start(scheduleId: String) {
-        Task {
+        Task { @MainActor in
             do {
-                try await observationManager.start(scheduleId: scheduleId, setCollectionTimestampToNow: false)
+                try await observationManager.start(scheduleId: scheduleId)
             } catch {
                 print(error)
             }
@@ -35,7 +35,7 @@ class IOSDataRecorder: DataRecorder {
     }
     
     func restartAll() {
-        Task {
+        Task { @MainActor in
             do {
                 try await observationManager.restartStillRunning()
             } catch {

@@ -1,14 +1,12 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -37,7 +35,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         val startedObservations = mutableSetOf<String>()
         scheduleRepository.allScheduleWithRunningState().firstOrNull()?.let { list ->
             list.filter { it !in runningObservations.keys }.forEach {
-                if (start(it.scheduleId.toHexString(), false)){
+                if (start(it.scheduleId.toHexString())){
                     startedObservations.add(it.scheduleId.toHexString())
                 }
             }
@@ -45,7 +43,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         return startedObservations
     }
 
-    suspend fun start(scheduleId: String, setCollectionTimestampToNow: Boolean = true): Boolean {
+    suspend fun start(scheduleId: String): Boolean {
         Napier.d { "Trying to start $scheduleId..." }
         return findOrCreateObservation(scheduleId)?.let { scheduleSchema ->
             observationRepository.getObservationByObservationId(scheduleSchema.observationId)
@@ -67,15 +65,17 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                     }
                     config[Observation.SCHEDULE_ID] =
                         scheduleSchema.scheduleId.toHexString()
-                    start(scheduleSchema, config, setCollectionTimestampToNow)
+                    if (scheduleSchema.getState() == ScheduleState.PAUSED) {
+                        config[Observation.CONFIG_LAST_COLLECTION_TIMESTAMP] = observation.collectionTimestamp.epochSeconds
+                    }
+                    start(scheduleSchema, config)
                 } ?: false
         } ?: false
     }
 
     private fun start(
         schedule: ScheduleSchema,
-        config: Map<String, Any>,
-        setCollectionTimestampToNow: Boolean
+        config: Map<String, Any>
     ): Boolean {
         runningObservations[schedule]?.observationConfig(config)
         return if (runningObservations[schedule]?.start(
@@ -83,12 +83,6 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                 schedule.scheduleId.toHexString()
             ) == true
         ) {
-            if (setCollectionTimestampToNow && schedule.getState() == ScheduleState.ACTIVE) {
-                observationRepository.lastCollection(
-                    schedule.observationType,
-                    RealmInstant.now().epochSeconds
-                )
-            }
             setObservationState(schedule, ScheduleState.RUNNING)
             Napier.d { "Recording started of $schedule" }
             true

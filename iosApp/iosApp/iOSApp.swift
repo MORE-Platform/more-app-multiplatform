@@ -12,7 +12,7 @@ struct iOSApp: App {
 		WindowGroup {
 			ContentView(viewModel: contentViewModel)
                 .onAppear{
-                    NapierProxyKt.napierDebugBuild()
+                    
                 }
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {

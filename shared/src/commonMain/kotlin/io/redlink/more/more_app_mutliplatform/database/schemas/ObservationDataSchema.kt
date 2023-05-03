@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
-import io.realm.kotlin.ext.copyFromRealm
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -9,11 +8,9 @@ import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.observations.ObservationBulkModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
-import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.mongodb.kbson.BsonTimestamp
 import org.mongodb.kbson.ObjectId
 
 class ObservationDataSchema : RealmObject {
@@ -32,15 +29,6 @@ class ObservationDataSchema : RealmObject {
             dataValue = Json.decodeFromString(dataValue),
             timestamp = this.timestamp.toInstant()
         )
-
-    fun clone(): ObservationDataSchema {
-        val local = this
-        return ObservationDataSchema().apply {
-            this.observationType = local.observationType
-            this.dataValue = local.dataValue
-            this.timestamp = local.timestamp
-        }
-    }
 
     override fun toString(): String {
         return "dataId: $dataId; observationId: $observationId; observationType: $observationType, timestamp: $timestamp, data: $dataValue;"
@@ -78,11 +66,8 @@ class ObservationDataSchema : RealmObject {
             observationIdSet: Set<String>,
             data: Collection<ObservationBulkModel>
         ): List<ObservationDataSchema> {
-            val schemas = fromData(data)
-            return observationIdSet.flatMap { id ->
-                schemas.map {
-                    it.clone().apply { this.observationId = id }
-                }
+            return observationIdSet.flatMap {  id ->
+                fromData(data).map { it.apply { observationId = id } }
             }
         }
     }

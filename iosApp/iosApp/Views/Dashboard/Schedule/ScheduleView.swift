@@ -34,6 +34,12 @@ struct ScheduleView: View {
                 }
             }.background(Color.more.secondaryLight)
         }
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.viewDidDisappear()
+        }
     }
 }
 
