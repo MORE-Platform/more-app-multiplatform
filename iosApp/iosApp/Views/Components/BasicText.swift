@@ -15,6 +15,7 @@ struct BasicText: View {
     var body: some View {
         Text(text)
             .foregroundColor(color)
+            .fixedSize(horizontal: false, vertical: true)
             .font(font)
     }
 }

@@ -8,23 +8,32 @@
 
 import shared
 
+protocol SimpleQuestionObservationListener {
+    func onQuestionAnswered()
+}
+
 class SimpleQuestionObservationViewModel: ObservableObject {
-    
-    private let coreModel: SimpleQuestionCoreViewModel
+    private var coreModel: SimpleQuestionCoreViewModel?
     private let observationFactory = IOSObservationFactory()
+    
+    var delegate: SimpleQuestionObservationListener? = nil
     
     @Published var simpleQuestoinModel: SimpleQuestionModel?
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
     
-    init(scheduleId: String) {
+    //@Published var showThankYouScreen = false
+    
+    func viewDidAppear(scheduleId: String) {
         self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: observationFactory)
         
-        coreModel.onLoadSimpleQuestionObservation { model in
-            if let model {
-                self.simpleQuestoinModel = model
-                self.answers = model.answers.map { value in
-                    String(describing: value)
+        if let coreModel = self.coreModel {
+            coreModel.onLoadSimpleQuestionObservation { model in
+                if let model {
+                    self.simpleQuestoinModel = model
+                    self.answers = model.answers.map { value in
+                        String(describing: value)
+                    }
                 }
             }
         }
@@ -36,7 +45,10 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     
     func finish() {
         if !self.answerSet.isEmpty {
-            coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
+            if let coreModel = self.coreModel {
+                coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
+            }
         }
     }
+
 }

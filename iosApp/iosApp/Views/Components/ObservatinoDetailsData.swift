@@ -11,7 +11,6 @@ import SwiftUI
 
 struct ObservationDetailsData: View {
     @Binding var dateRange: String
-    @Binding var repetition: String
     @Binding var timeframe: String
     
     private let stringTable = "TaskDetail"
@@ -24,14 +23,6 @@ struct ObservationDetailsData: View {
                 BasicText(text: .constant(dateRange), color: .more.secondary)
                     .padding(1)
                 Spacer()
-                
-                if repetition != "" {
-                    Image(systemName: "repeat")
-                        .padding(0.7)
-                
-                    BasicText(text: .constant(repetition), color: .more.secondary)
-                        .padding(1)
-                }
             }
             HStack {
                     Image(systemName: "clock.fill")
