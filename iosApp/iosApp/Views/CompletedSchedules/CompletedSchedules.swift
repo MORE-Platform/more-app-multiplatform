@@ -24,7 +24,7 @@ struct CompletedSchedules: View {
         } topBarContent: {
             EmptyView()
         }
-        .customNavigationTitle(with: NavigationScreens.completedObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"))
+        .customNavigationTitle(with: NavigationScreens.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"))
         .navigationBarTitleDisplayMode(.inline)
     }
 }

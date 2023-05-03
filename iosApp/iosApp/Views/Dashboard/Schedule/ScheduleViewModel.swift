@@ -53,13 +53,21 @@ class ScheduleViewModel: ObservableObject {
             }
         }
     }
-    
+
     func viewDidAppear() {
         coreModel.viewDidAppear()
     }
-    
+
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
+    }
+
+    func getSimpleQuestionObservationVM() -> SimpleQuestionObservationViewModel {
+        SimpleQuestionObservationViewModel()
+    }
+
+    func getTaskDetailsVM(observationId: String, scheduleId: String) -> TaskDetailsViewModel {
+        TaskDetailsViewModel(observationId: observationId, scheduleId: scheduleId, dataRecorder: recorder)
     }
 }
 

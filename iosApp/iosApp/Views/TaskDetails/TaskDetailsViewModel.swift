@@ -7,18 +7,19 @@
 //
 
 import shared
+import SwiftUI
 
 class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
     @Published var dataCount: Int64 = 0
-
-    @Published var observationRepetitionInterval: String = "1x/week"
-     
+    
+    var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
     init(observationId: String, scheduleId: String, dataRecorder: IOSDataRecorder) {
         self.coreModel = CoreTaskDetailsViewModel(scheduleId: scheduleId, dataRecorder: dataRecorder)
+        self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails

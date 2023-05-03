@@ -21,61 +21,43 @@ struct LoginView: View {
   
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.more.mainBackground.ignoresSafeArea()
-            
-                VStack(alignment: .center) {
-                    
-                    Image("more_welcome")
-                        .padding(.vertical, 40)
-
-                    MoreTextFieldHL(isSmTextfield: .constant(false),
-                                    headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
-                                    inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
-                                    input: $model.token)
-                    .padding(.bottom, 12)
-                    
-                    if showTokenInput {
-                        ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
-                            .environmentObject(model)
-                    }
+            NavigationView {
+                ZStack {
+                    Color.more.mainBackground.ignoresSafeArea()
+                
+                    VStack(alignment: .center) {
                         
-                    VStack{
-                        Text(String.localizedString(forKey: "or", inTable: stringTable, withComment: "Choose either or of the two options."))
-                            .fontWeight(.more.title)
-                            
-                    }
-                    .padding(25)
-                   
-                    NavigationLinkButton(disabled: .constant(false))  {
-                        LoginQRCodeView(model: model)
-                    } label: {
-                        HStack {
-                            Text(String.localizedString(forKey: "qr_code_entry", inTable: stringTable, withComment: "Click to Scan QR Code to log in."))
-                                .foregroundColor(.more.white)
-                            Spacer()
-                            Image(systemName: "chevron.forward")
-                                    .foregroundColor(.more.white)
+                        Image("more_welcome")
+                            .padding(.vertical, 40)
+
+                        MoreTextFieldHL(isSmTextfield: .constant(false),
+                                        headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                        inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
+                                        input: $model.token)
+                        .padding(.bottom, 12)
+                        
+                        if showTokenInput {
+                            ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
+                                .environmentObject(model)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack {
+                            ExpandableInput(
+                                expanded: $showEndpoint,
+                                isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
+                                inputPlaceholder: $model.endpoint,
+                                input: $model.endpoint
+                            )
                         }
                     }
-                    .padding(.vertical, 15)	
-                    
-                    Spacer()
-                    
-                    VStack {
-                        ExpandableInput(
-                            expanded: $showEndpoint,
-                            isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
-                            inputPlaceholder: $model.endpoint,
-                            input: $model.endpoint
-                        )
-                    }
+                    .padding(.horizontal, 60)
                 }
-                .padding(.horizontal, 60)
+                .viewAdaptsToOpenKeyboard()
+                
             }
-            
-        }
+        
     }
 }
 
