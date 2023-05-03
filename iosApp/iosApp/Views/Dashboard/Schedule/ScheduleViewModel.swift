@@ -53,6 +53,14 @@ class ScheduleViewModel: ObservableObject {
             }
         }
     }
+    
+    func getSimpleQuestionObservationVM() -> SimpleQuestionObservationViewModel {
+        SimpleQuestionObservationViewModel()
+    }
+    
+    func getTaskDetailsVM(observationId: String, scheduleId: String) -> TaskDetailsViewModel {
+        TaskDetailsViewModel(observationId: observationId, scheduleId: scheduleId, dataRecorder: recorder)
+    }
 }
 
 extension Dictionary<KotlinLong, [ScheduleModel]> {

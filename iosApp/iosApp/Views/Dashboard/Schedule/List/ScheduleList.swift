@@ -11,13 +11,14 @@ import SwiftUI
 
 struct ScheduleList: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
     var scheduleModels: [ScheduleModel] = []
     var scheduleListType: ScheduleListType
     
     var body: some View {
         ForEach(scheduleModels, id: \.scheduleId) { schedule in
             VStack {
-                ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: scheduleListType != .completed)
+                ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: scheduleListType != .completed).environmentObject(simpleQuestionModalStateVM)
                 if schedule != scheduleModels.last {
                     Divider()
                 }

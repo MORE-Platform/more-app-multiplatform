@@ -13,13 +13,14 @@ enum NavigationScreens: String {
     case notifications = "Notifications"
     case info = "Information"
     case settings = "Settings"
-    case taskDetails = "Task Detail"
+    case taskDetails = "Task Details"
     case studyDetails = "Study Details"
     case scanQRCode = "Scan QR Code"
     case questionObservation = "Question Observation"
     case dashboardFilter = "Dashboard Filter"
-    case completedObservations = "Completed Observations"
+    case pastObservations = "Past Observations"
     case runningObservations = "Running Observations"
+    case observationDetails = "Observation Details"
 }
 
 extension NavigationScreens {

@@ -19,7 +19,7 @@ struct InfoList: View {
             InfoListItem(title: "Running Observations", icon: "arrow.triangle.2.circlepath", destination: {
                 RunningSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .running))
             })
-            InfoListItem(title: "Completed Observations", icon: "checkmark", destination: {
+            InfoListItem(title: "Past Observations", icon: "checkmark", destination: {
                 CompletedSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .completed))
             })
             InfoListItem(title: String.localizedString(forKey: "Devices", inTable: stringTable, withComment: "Lists all connected or needed devices."), icon: "applewatch", destination: {

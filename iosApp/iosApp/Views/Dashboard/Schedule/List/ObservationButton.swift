@@ -10,20 +10,29 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
+    @ObservedObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
     var scheduleId: String
     var observationType: String
     var state: ScheduleState
     var disabled: Bool
     let action: () -> Void
     private let stringTable = "ScheduleListView"
+    
+    
+    
     var body: some View {
         VStack {
             if observationType == "question-observation" {
-                NavigationLinkButton(disabled: .constant(disabled)) {
-                    SimpleQuetionObservationView(viewModel: SimpleQuestionObservationViewModel(scheduleId: scheduleId))
-                } label: {
-                    Text(String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "button to start questionnaire"))
-                        .foregroundColor(!disabled ? .more.white : .more.secondaryMedium)
+                
+                MoreActionButton(disabled: .constant(disabled), action: action) {
+                    VStack {
+                        Text(
+                            String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire")
+                        )
+                    }
+                } .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionOpen) {
+                    SimpleQuetionObservationView(viewModel: simpleQuestionViewModel, scheduleId: scheduleId).environmentObject(simpleQuestionModalStateVM)
                 }
             } else {
                 MoreActionButton(disabled: .constant(disabled), action: action) {
