@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_duration">Studiendauer</string>
+    <string name="participant_information">Teilnehmerinformationen</string>
+    <string name="consent_information">Einwilligungsinformationen</string>
+    <string name="observation_modules">Beobachtungsmodule</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_study_details">Studiendetails</string>
+    <string name="info_study_details_desc">Studiendetails öffnen</string>
+    <string name="info_running_observations">Laufende Beobachtungen</string>
+    <string name="info_running_observations_desc">Laufende Beobachtungen öffnen</string>
+    <string name="info_completed_observations">Vergangene Beobachtungen</string>
+    <string name="info_completed_observations_desc">Vergangene Beobachtungen öffnen</string>
+    <string name="info_devices">Geräte</string>
+    <string name="info_devices_desc">Geräte öffnen</string>
+    <string name="info_settings">Einstellungen</string>
+    <string name="info_consent_settings">Einwilligungseinstellungen</string>
+    <string name="info_consent_settings_desc">Einwilligungseinstellungen öffnen</string>
+    <string name="info_leave_study">Studie verlassen</string>
+    <string name="info_leave_study_desc">Applikation verlassen</string>
+    <string name="info_disclaimer">Bei Problemen können Sie sich gerne an uns wenden.</string>
+</resources>

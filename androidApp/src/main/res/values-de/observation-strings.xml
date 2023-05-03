@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_observation_start">Beobachtung starten</string>
+    <string name="more_observation_pause">Benachrichtigung pausieren</string>
+    <string name="more_observation_stop">Beobachtung stoppen</string>
+    <string name="more_observation_running">Beobachtung läuft</string>
+    <string name="more_questionnaire_start">Fragebogen starten</string>
+    <string name="more_questionnaire_select">Bitte wählen Sie eine Antwort aus!</string>
+    <string name="more_questionnaire_type">Simpler Fragebogen</string>
+
+    <string name="more_observation_notification_explanation">Eine Ihrer Beobachtungen läuft und nimmt derzeit Daten im Hintergrund auf!</string>
+
+    <string name="more_observation_ready_title">Beobachtung bereit</string>
+    <string name="more_observation_ready_message">Bitte öffnen Sie die App und starten Sie die Beobachtung</string>
+
+    <string name="more_observation_datapoints">Datenpunkte gesammelt</string>
+</resources>

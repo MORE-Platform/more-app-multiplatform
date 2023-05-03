@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="background_location_permission_title">Anforderung für den ständigen Zugriff auf Ihren Standort</string>
+    <string name="background_location_permission_message">Bitte erlauben Sie der App dauerhaften Zugriff auf Ihren aktuellen Standort um an der Studie teilzunehmen!</string>
+
+    <string name="more_permission_button_decline">Ablehnen</string>
+    <string name="more_permission_button_accept">Akzeptieren</string>
+    <string name="more_permission_message_dialog_title">Fehler</string>
+    <string name="more_permission_message_dialog_message_retry">Möchten Sie es erneut versuchen?</string>
+    <string name="more_permission_message_dialog_message_retry_button">Wiederholen</string>
+    <string name="more_permission_message_dialog_message_cancel_button">Abbrechen</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_settings_permission_information">Alle erforderlichen Berechtigungen wurden akzeptiert. Berechtigungen können hier eingesehen werden. Wenn Sie diese widerrufen möchten, können Sie dies nur tun, indem Sie von der Studie zurücktreten.</string>
+    <string name="more_settings_refresh_study">Studieneinstellungen aktualisieren</string>
+    <string name="more_settings_refresh_study_failure_okay">OK</string>
+    <string name="more_settings_refresh_study_failure_title">Fehler bei der Studienaktualisierung!</string>
+
+    <string name="more_settings_exit_dialog_title">Studie verlassen</string>
+    <string name="more_settings_withdraw_statement">Falls Sie von der Studie zurücktreten, werden Sie nicht mehr in der Lage sein, dieser wieder beizutreten.</string>
+    <string name="more_settings_withdraw_statement_long">Falls Sie diese Studie verlassen, können Sie dieser nicht mehr wieder beitreten. Ihre Teilnahme wird widerrufen und Ihre Daten werden von Ihrem Mobiltelefon gelöscht!</string>
+    <string name="more_settings_withdraw_question">Wollen Sie wirklich zurücktreten?</string>
+    <string name="more_settings_withdraw_question_confirm">Möchten Sie Ihre Teilnahme wirklich zurückziehen?</string>
+    <string name="more_settings_resign_swipe">Wischen um zurückzutreten</string>
+    <string name="more_settings_continue">Teilnahme fortsetzen</string>
+    <string name="more_settings_withdraw_from_study">Von der Studie zurücktreten</string>
+</resources>

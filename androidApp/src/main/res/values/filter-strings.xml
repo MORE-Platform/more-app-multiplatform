@@ -6,6 +6,17 @@
         <item quantity="other">%d Types</item>
     </plurals>
 
+    <string name="more_filter_all">All Types</string>
+    <string name="more_filter_question">Question</string>
+    <string name="more_filter_accelerometer">GPS Mobile</string>
+    <string name="more_filter_polar">Polar Verity</string>
+    <string name="more_filter_gps">Accelerometer</string>
+
+    <string name="more_filter_entire_time">Entire Time</string>
+    <string name="more_filter_today_tomorrow">Today and Tomorrow</string>
+    <string name="more_filter_week">One Week</string>
+    <string name="more_filter_month">One Month</string>
+
     <string name="more_filter_selected">Filter Selected</string>
     <string name="more_filter_set_duration">Select Time</string>
     <string name="more_filter_set_type">Select Type</string>

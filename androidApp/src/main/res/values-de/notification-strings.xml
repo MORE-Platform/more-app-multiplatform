@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_channel_id">io.redlink.more.app.android.urgent</string>
+    <string name="notification_title">More Projekt</string>
+    <string name="notification_channel_name">More Projekt Benachrichtigung</string>
+    <string name="notification_channel_description">Der More Projekt Benachrichtigungskanal bietet neueste Informationen und Gesundheitsanfragen</string>
+
+</resources>
