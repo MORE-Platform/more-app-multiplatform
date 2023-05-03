@@ -108,7 +108,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     navController = navController,
-                    viewModel = viewModel.createNewTaskViewModel(scheduleId ?: ""),
+                    viewModel = viewModel.getTaskDetailsVM(scheduleId ?: ""),
                     scheduleId = scheduleId,
                     scheduleListType = scheduleListType
                 )

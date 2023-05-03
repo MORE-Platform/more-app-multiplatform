@@ -65,6 +65,8 @@ class CoreDashboardFilterViewModel {
 
     fun hasDateFilter(dateFilter: DateFilterModel) = currentFilter.value.dateFilter == dateFilter
 
+    fun filterActive() = currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME || currentFilter.value.typeFilter.isNotEmpty()
+
     fun applyFilter(scheduleModelList: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
         var schedules = scheduleModelList
 
@@ -78,10 +80,10 @@ class CoreDashboardFilterViewModel {
         return schedules.filterKeys { date ->
             currentFilter.value.dateFilter.duration?.let {
                 date <= Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(it).time()
-            } ?: true
-                    && schedules[date]?.isNotEmpty() ?: false
+            } ?: true && schedules[date]?.isNotEmpty() ?: false
         }
     }
+
     private fun update(newFilterModel: FilterModel) {
         scope.launch {
             currentFilter.emit(newFilterModel)

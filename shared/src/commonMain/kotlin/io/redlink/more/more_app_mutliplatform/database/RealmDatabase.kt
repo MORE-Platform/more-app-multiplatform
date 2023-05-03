@@ -10,19 +10,25 @@ import io.realm.kotlin.types.BaseRealmObject
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
 object RealmDatabase {
     var realm: Realm? = null
         private set
 
-    private val repositoryCount = RealmDatabaseCounter()
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    val mutex = Mutex()
 
     fun open(realmObjects: Set<KClass<out BaseRealmObject>>) {
-        repositoryCount.increment()
         if (realm == null) {
             Napier.d { "Init Realm..." }
             val config = RealmConfiguration.create(realmObjects)
@@ -31,12 +37,9 @@ object RealmDatabase {
     }
 
     fun close() {
-        repositoryCount.decrement()
-        if (repositoryCount.counter == 0) {
-            Napier.d { "Closing Realm..." }
-            this.realm?.close()
-            this.realm = null
-        }
+        Napier.d { "Closing Realm..." }
+        this.realm?.close()
+        this.realm = null
     }
 
     fun store(
@@ -44,8 +47,12 @@ object RealmDatabase {
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
         if (realmObjects.isNotEmpty()) {
-            realm?.writeBlocking {
-                realmObjects.forEach { copyToRealm(it, updatePolicy) }
+            scope.launch {
+                mutex.withLock {
+                    realm?.write {
+                        realmObjects.forEach { copyToRealm(it, updatePolicy) }
+                    }
+                }
             }
         }
     }

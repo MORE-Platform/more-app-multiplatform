@@ -64,7 +64,12 @@ class MainViewModel(context: Context): ViewModel() {
         BluetoothConnectionViewModel(bluetoothConnector)
     }
 
-    fun createNewTaskViewModel(scheduleId: String) = TaskDetailsViewModel(scheduleId, recorder)
+    private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
+        TaskDetailsViewModel(recorder)
+    }
+
+    fun getTaskDetailsVM(scheduleId: String) = taskDetailsViewModel.apply { setSchedule(scheduleId) }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             BluetoothDeviceRepository(bluetoothConnector).updateConnectedDevices()

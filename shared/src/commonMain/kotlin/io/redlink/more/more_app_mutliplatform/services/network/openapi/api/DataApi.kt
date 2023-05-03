@@ -10,6 +10,7 @@ package io.redlink.more.more_app_mutliplatform.services.network.openapi.api
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.*
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import kotlinx.serialization.json.Json
@@ -51,7 +52,7 @@ open class DataApi(
             localVariableConfig,
             dataBulk,
             localVariableAuthNames
-        ).wrap<StoreBulkResponse>().map { value }
+        ).wrap<StoreBulkResponse>().map { value.freeze() }.freeze()
     }
 
 
@@ -63,7 +64,7 @@ open class DataApi(
             private val serializer: KSerializer<List<kotlin.String>> = serializer<List<kotlin.String>>()
             override val descriptor = serializer.descriptor
             override fun serialize(encoder: Encoder, obj: StoreBulkResponse) = serializer.serialize(encoder, obj.value)
-            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder))
+            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder)).freeze()
         }
     }
 

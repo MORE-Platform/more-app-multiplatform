@@ -30,6 +30,7 @@ class SettingsViewModel: ObservableObject {
     
     func leaveStudy() {
         AppDelegate.recorder.stopAll()
+        AppDelegate.dataManager.stopListeningToCountChanges()
         coreSettingsViewModel.exitStudy()
         self.delegate?.credentialsDeleted()
         FCMService().deleteNotificationToken()

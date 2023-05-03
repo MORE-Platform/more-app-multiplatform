@@ -31,10 +31,9 @@ Service to handle push notifications and firebase connections
 
 class FCMService : FirebaseMessagingService() {
 
-    private val workManager : WorkManager = WorkManager.getInstance(applicationContext)
 
     private val notificationRepository = NotificationRepository()
-    private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = applicationContext)
+    private val sharedPreferencesRepository: SharedStorageRepository = SharedPreferencesRepository(context = MoreApplication.appContext!!)
 
 
     override fun onNewToken(token: String) {
@@ -54,6 +53,8 @@ class FCMService : FirebaseMessagingService() {
             if (message.data.isNotEmpty()) {
                 Log.d(TAG, "Message data payload: ${message.data}")
                 try {
+                    val workManager : WorkManager = WorkManager.getInstance(applicationContext)
+
                     val inputData = workDataOf(NOTIFICATION_DATA to Gson().toJson(message.data))
                     val workRequest = OneTimeWorkRequestBuilder<NotificationDataHandlerWorker>()
                         .setInputData(inputData)

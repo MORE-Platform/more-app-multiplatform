@@ -86,8 +86,8 @@ class AccelerometerBackgroundObservation: Observation_ {
 extension AccelerometerBackgroundObservation: ObservationCollector {
     func collectData(start: Date, end: Date, completion: @escaping () -> Void) {
         if start < end {
-            Task { [weak self] in
-                if let self, let sensorData = self.recorder.accelerometerData(from: start, to: end) {
+            DispatchQueue.global(qos: .background).async {
+                if let sensorData = self.recorder.accelerometerData(from: start, to: end) {
                     self.collectionTimestampToNow()
                     let data = sensorData.compactMap { data in
                         if let accDatum = data as? CMRecordedAccelerometerData {
@@ -98,10 +98,8 @@ extension AccelerometerBackgroundObservation: ObservationCollector {
                         }
                         return nil
                     }
-                    await MainActor.run {
-                        self.storeData(data: data) {
-                            completion()
-                        }
+                    self.storeData(data: data) {
+                        completion()
                     }
                 } else {
                     completion()

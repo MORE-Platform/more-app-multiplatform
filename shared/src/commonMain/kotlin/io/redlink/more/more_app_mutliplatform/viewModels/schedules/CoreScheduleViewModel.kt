@@ -14,9 +14,6 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -43,30 +40,37 @@ class CoreScheduleViewModel(
                             .filter { it.observationId == observation.observationId }
                     }
                 }.collect {
-                    originalScheduleList.clear()
-                    originalScheduleList.putAll(
-                        when (scheduleListType) {
-                            ScheduleListType.COMPLETED -> createCompletedMap(it)
-                            ScheduleListType.RUNNING -> createRunningMap(it)
-                            else -> createMap(it)
-                        }
-                    )
-                    scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+                    val newMap = when (scheduleListType) {
+                        ScheduleListType.COMPLETED -> createCompletedMap(it)
+                        ScheduleListType.RUNNING -> createRunningMap(it)
+                        else -> createMap(it)
+                    }
+                    if (coreFilterModel.filterActive()) {
+                        originalScheduleList.clear()
+                        originalScheduleList.putAll(newMap)
+                        scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+                    } else {
+                        scheduleModelList.emit(newMap)
+                    }
                 }
         }
         launchScope {
             coreFilterModel.currentFilter.collect {
-                scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+                if (coreFilterModel.filterActive()) {
+                    if (originalScheduleList.isEmpty()) {
+                        originalScheduleList.putAll(scheduleModelList.value.toMap())
+                    }
+                    scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+                } else {
+                    scheduleModelList.emit(originalScheduleList)
+                    originalScheduleList.clear()
+                }
             }
         }
     }
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
-        viewModelScope.launch {
-            scheduleModelList.emit(emptyMap())
-            originalScheduleList.clear()
-        }
     }
 
     fun start(scheduleId: String) {

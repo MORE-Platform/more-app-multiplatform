@@ -5,8 +5,6 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchem
 import kotlinx.coroutines.flow.Flow
 
 class NotificationRepository : Repository<NotificationSchema>() {
-    override val repositoryName: String
-        get() = "NotificationRepository"
     fun storeNotification(
         key: String,
         channelId: String?,

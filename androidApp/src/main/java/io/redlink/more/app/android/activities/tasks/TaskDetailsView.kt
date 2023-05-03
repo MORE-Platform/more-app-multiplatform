@@ -26,6 +26,16 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 @Composable
 fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    LaunchedEffect(route) {
+        viewModel.viewDidAppear()
+    }
+    DisposableEffect(route) {
+        onDispose {
+            viewModel.viewDidDisappear()
+        }
+    }
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

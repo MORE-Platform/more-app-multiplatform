@@ -32,20 +32,13 @@ class DataUploadBackgroundTask {
 
     private func uploadCollectedData(completion: @escaping (Bool) -> Void) {
         print("Uploading Data in background")
-        currentUploadingTask = Task { @MainActor [weak self] in
-            if let self {
-                await self.uploadDataManager.uploadData { success in
-                    if success {
-                        print("Upload success!")
-                    } else {
-                        print("Could not upload!")
-                    }
-                    completion(success)
-                }
+        self.uploadDataManager.uploadData { success in
+            if success {
+                print("Upload success!")
             } else {
-                print("Could not find self")
-                completion(false)
+                print("Could not upload!")
             }
+            completion(success)
         }
     }
     

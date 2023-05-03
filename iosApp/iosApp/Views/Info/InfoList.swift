@@ -10,7 +10,7 @@ import SwiftUI
 
 struct InfoList: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
-    @EnvironmentObject var leaveStudyModalStatVM: LeaveStudyModalStateViewModel
+    @StateObject var leaveStudyModalStatVM: LeaveStudyModalStateViewModel = LeaveStudyModalStateViewModel(isLeaveStudyOpen: false, isLeaveStudyConfirmOpen: false)
     private let stringTable = "Info"
     var body: some View {
         VStack(spacing: 14) {
@@ -31,7 +31,8 @@ struct InfoList: View {
             })
             InfoListItemModal(title: String.localizedString(forKey: "Leave Study", inTable: stringTable, withComment: "Leave the study for good."), icon: "rectangle.portrait.and.arrow.right", destination: {
                 LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
-            }, action: {leaveStudyModalStatVM.isLeaveStudyOpen = true}).environmentObject(leaveStudyModalStatVM)
+            }, action: {leaveStudyModalStatVM.isLeaveStudyOpen = true})
+            .environmentObject(leaveStudyModalStatVM)
         }
     }
 }

@@ -17,7 +17,6 @@ abstract class CoreViewModel: Closeable {
     abstract fun viewDidAppear()
 
     open fun viewDidDisappear() {
-        Napier.d { "View did disappear!" }
         cancelScope()
     }
 

@@ -19,7 +19,7 @@ struct TaskDetailsView: View {
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
-    
+
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -64,39 +64,36 @@ struct TaskDetailsView: View {
                         Spacer()
                     }
                     if scheduleListType != .completed {
-                            if let model = viewModel.taskDetailsModel {
-                                if model.observationType == "question-observation" {
-                                    MoreActionButton(disabled: .constant(model.state != .active && model.state != .running && model.state != .paused && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date() || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date()))
-                                    ) {
-                                            if scheduleId != "" {
-                                                simpleQuestionModalStateVM.isQuestionOpen = true
-                                                
-                                            }
-                                    } label: {
-                                        Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
-                                            .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.secondaryMedium : .more.white)
+                        if let model = viewModel.taskDetailsModel {
+                            if model.observationType == "question-observation" {
+                                MoreActionButton(disabled: .constant(model.state != .active && model.state != .running && model.state != .paused && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date() || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date()))
+                                ) {
+                                    if scheduleId != "" {
+                                        simpleQuestionModalStateVM.isQuestionOpen = true
                                     }
-                                    .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionOpen) {
-                                        SimpleQuetionObservationView(viewModel: viewModel.simpleQuestionObservationVM, scheduleId: scheduleId).environmentObject(simpleQuestionModalStateVM)
-                                    }
- 
+                                } label: {
+                                    Text(String.localizedString(forKey: "start_questionnaire", inTable: scheduleStringTable, withComment: "Button to start a questionnaire"))
+                                        .foregroundColor(Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) < Date() && Date() < Date(timeIntervalSince1970: TimeInterval(viewModel.taskDetailsModel?.start ?? 0)) ? .more.secondaryMedium : .more.white)
                                 }
-                                else {
-                                    ObservationButton(simpleQuestionViewModel: viewModel.simpleQuestionObservationVM,
-                                                      scheduleId: scheduleId,
-                                                    observationType: model.observationType, state: model.state, disabled: model.state != .active
+                                .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionOpen) {
+                                    SimpleQuetionObservationView(viewModel: viewModel.simpleQuestionObservationVM, scheduleId: scheduleId).environmentObject(simpleQuestionModalStateVM)
+                                }
+                            } else {
+                                ObservationButton(simpleQuestionViewModel: viewModel.simpleQuestionObservationVM,
+                                                  scheduleId: scheduleId,
+                                                  observationType: model.observationType, state: model.state, disabled: model.state != .active
                                                       && model.state != .running
                                                       && model.state != .paused
                                                       && (Date(timeIntervalSince1970: TimeInterval(model.start)) > Date()
                                                           || Date(timeIntervalSince1970: TimeInterval(model.end)) <= Date())
-                                    ) {
-                                        if model.state == .running {
-                                            viewModel.pause()
-                                        } else {
-                                            viewModel.start()
-                                        }
+                                ) {
+                                    if model.state == .running {
+                                        viewModel.pause()
+                                    } else {
+                                        viewModel.start()
                                     }
                                 }
+                            }
                         }
                     }
                     Spacer()
@@ -107,6 +104,12 @@ struct TaskDetailsView: View {
             }
             .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                viewModel.viewDidAppear()
+            }
+            .onDisappear {
+                viewModel.viewDidDisappear()
+            }
         }
     }
 }

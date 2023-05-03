@@ -68,15 +68,15 @@ class ScheduleViewModel(
     }
 
     fun startObservation(scheduleId: String) {
-        ObservationRecordingService.start(scheduleId)
+        coreViewModel.start(scheduleId)
     }
 
     fun pauseObservation(scheduleId: String) {
-        ObservationRecordingService.pause(scheduleId)
+        coreViewModel.pause(scheduleId)
     }
 
     fun stopObservation(scheduleId: String) {
-        ObservationRecordingService.stop(scheduleId)
+        coreViewModel.stop(scheduleId)
     }
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {

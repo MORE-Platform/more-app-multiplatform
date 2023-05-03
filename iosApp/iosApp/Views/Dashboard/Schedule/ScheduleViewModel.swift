@@ -22,6 +22,10 @@ class ScheduleViewModel: ObservableObject {
     }
 
     @Published var scheduleDates: [Int64] = []
+    
+    lazy var taskDetailsVM: TaskDetailsViewModel = {
+        TaskDetailsViewModel(dataRecorder: recorder)
+    }()
 
     init(observationFactory: IOSObservationFactory, scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
@@ -66,8 +70,9 @@ class ScheduleViewModel: ObservableObject {
         SimpleQuestionObservationViewModel()
     }
 
-    func getTaskDetailsVM(observationId: String, scheduleId: String) -> TaskDetailsViewModel {
-        TaskDetailsViewModel(observationId: observationId, scheduleId: scheduleId, dataRecorder: recorder)
+    func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
+        taskDetailsVM.setSchedule(scheduleId: scheduleId)
+        return taskDetailsVM
     }
 }
 

@@ -10,6 +10,7 @@ import SwiftUI
 import shared
 
 struct DashboardView: View {
+    @EnvironmentObject var contentViewModel: ContentViewModel
     @StateObject var dashboardViewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
@@ -42,6 +43,7 @@ struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
             DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), scheduleListType: .all)))
+                .environmentObject(ContentViewModel())
         } topBarContent: {
             HStack {
                 Button {

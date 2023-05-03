@@ -21,8 +21,6 @@ import org.mongodb.kbson.ObjectId
 class ScheduleRepository : Repository<ScheduleSchema>() {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
-    override val repositoryName: String
-        get() = "ScheduleRepository"
     override fun count(): Flow<Long> = realmDatabase().count<ScheduleSchema>()
 
     fun allSchedulesWithStatus(done: Boolean = false) =

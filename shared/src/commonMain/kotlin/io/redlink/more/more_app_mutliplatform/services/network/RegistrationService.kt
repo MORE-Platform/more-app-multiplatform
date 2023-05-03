@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
@@ -78,7 +79,7 @@ class RegistrationService (
                     studyRepository.storeStudy(study)
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
-                    onError(NetworkServiceError(null, "Could not store credentials"))
+                    onError(NetworkServiceError(null, "Could not store credentials").freeze())
                 }
             }
             networkError?.let {

@@ -25,8 +25,6 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     override fun count(): Flow<Long> = realmDatabase().count<BluetoothDevice>()
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
-    override val repositoryName: String
-        get() = "BluetoothDeviceRepository"
 
     fun listenForConnectedDevices() {
         scope.launch(Dispatchers.Default) {

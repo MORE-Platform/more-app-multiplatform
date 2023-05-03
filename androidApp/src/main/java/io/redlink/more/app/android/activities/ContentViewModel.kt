@@ -28,6 +28,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
+            MoreApplication.observationDataManager?.listenToDatapointCountChanges()
             showNewActivityAndClearStack(it, MainActivity::class.java)
         }
     }

@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.*
 
 class StudyRepository : Repository<StudySchema>() {
 
-    override val repositoryName: String
-        get() = "StudyRepository"
     fun storeStudy(study: Study) {
         val realmObjects = mutableListOf<RealmObject>()
         realmObjects.add(StudySchema.toSchema(study))

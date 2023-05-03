@@ -59,9 +59,7 @@ class ContentViewModel: ObservableObject {
             DispatchQueue.main.async {
                 AppDelegate.recorder.restartAll()
             }
-            Task {
-                await AppDelegate.dataUploadManager.uploadData(completion:{_ in })
-            }
+            AppDelegate.dataManager.listenToDatapointCountChanges()
         }
     }
     
@@ -101,6 +99,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
+                AppDelegate.dataManager.listenToDatapointCountChanges()
             }
         }
         FCMService.getNotificationToken()

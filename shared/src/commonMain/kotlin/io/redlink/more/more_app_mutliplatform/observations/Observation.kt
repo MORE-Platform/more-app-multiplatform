@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema

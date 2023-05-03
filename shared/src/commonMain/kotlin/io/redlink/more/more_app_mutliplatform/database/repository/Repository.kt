@@ -10,7 +10,6 @@ abstract class Repository<T: BaseRealmObject> : Closeable {
     private val database = DatabaseManager
     private var cache: T? = null
 
-    abstract val repositoryName: String
 
     init {
         database.open()
@@ -19,6 +18,8 @@ abstract class Repository<T: BaseRealmObject> : Closeable {
     fun realm() = database.database.realm
 
     fun realmDatabase() = database.database
+
+    fun mutex() = database.database.mutex
 
     fun readCache() = cache
 
@@ -29,6 +30,6 @@ abstract class Repository<T: BaseRealmObject> : Closeable {
     }
 
     override fun close() {
-        database.close()
+     //   database.close()
     }
 }

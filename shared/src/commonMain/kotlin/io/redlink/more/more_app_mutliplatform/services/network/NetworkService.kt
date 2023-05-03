@@ -4,6 +4,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.statement.*
 import io.ktor.utils.io.core.Closeable
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
@@ -129,8 +130,7 @@ class NetworkService(
             if (registrationResponse.success) {
                 registrationResponse.body().let {
                     Napier.d { "Registration token valid!" }
-                    println(it.studyTitle)
-                    return Pair(it, null)
+                    return Pair(it, null).freeze()
                 }
             }
             val error = createErrorBody(
@@ -164,7 +164,7 @@ class NetworkService(
             if (consentResponse.success) {
                 consentResponse.body().let {
                     Napier.d { "Credentials received!" }
-                    return Pair(it, null)
+                    return Pair(it, null).freeze()
                 }
             }
             return Pair(
@@ -231,9 +231,9 @@ class NetworkService(
                 NetworkServiceError(null, "No credentials set!")
             )
             if (dataApiResponse.success) {
-                dataApiResponse.body().let {
+                dataApiResponse.body().freeze().let {
                     Napier.d { "Sent data!" }
-                    return Pair(it.toSet(), null)
+                    return Pair(it.toSet().freeze(), null).freeze()
                 }
             }
             return Pair(
@@ -247,7 +247,7 @@ class NetworkService(
 
     fun sendData(data: DataBulk, completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit) {
         CoroutineScope(Job() + Dispatchers.Default).launch {
-            sendData(data).let(completionHandler)
+            completionHandler(sendData(data).apply { first.freeze() })
         }
     }
 

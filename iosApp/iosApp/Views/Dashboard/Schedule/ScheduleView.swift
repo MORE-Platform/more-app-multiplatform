@@ -20,7 +20,8 @@ struct ScheduleView: View {
                     if let schedules = viewModel.schedules[key] {
                         if !schedules.isEmpty {
                             Section {
-                                ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType).environmentObject(simpleQuestionModalStateVM)
+                                ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType)
+                                    .environmentObject(simpleQuestionModalStateVM)
                             } header: {
                                 VStack(alignment: .leading) {
                                     BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)

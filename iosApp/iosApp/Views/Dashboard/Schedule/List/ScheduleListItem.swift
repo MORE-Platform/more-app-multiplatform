@@ -24,7 +24,8 @@ struct ScheduleListItem: View {
     var body: some View {
         VStack {
             NavigationLink(isActive: $showTaskDetails) {
-                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(observationId: scheduleModel.observationId, scheduleId: scheduleModel.scheduleId), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType).environmentObject(simpleQuestionModalStateVM)
+                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(scheduleId: scheduleModel.scheduleId), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
+                    .environmentObject(simpleQuestionModalStateVM)
             } label: {
                 EmptyView()
             }.opacity(0)
