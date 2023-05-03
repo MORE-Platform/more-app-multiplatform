@@ -9,6 +9,7 @@
 import SwiftUI
 struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
+    @EnvironmentObject var leaveStudyModalStateVM: LeaveStudyModalStateViewModel
     var float = CGFloat(0)
     
     private let stringTable = "SettingsView"
@@ -23,63 +24,72 @@ struct LeaveStudyConfirmationView: View {
     
     
     var body: some View {
-        MoreMainBackgroundView {
-            VStack(alignment: .leading) {
-                
-                Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
-                    .padding(.top)
-                    .padding(.bottom)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                
-                Spacer()
-                
-                HStack(alignment: .center) {
+        Navigation {
+            MoreMainBackground {
+                VStack(alignment: .leading) {
+                    
+                    Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
+                        .padding(.top)
+                        .padding(.bottom)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                    
                     Spacer()
                     
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 48))
-                        .foregroundColor(Color.more.important)
-                        .padding()
-                    Spacer()
+                    HStack(alignment: .center) {
+                        Spacer()
+                        
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(Color.more.important)
+                            .padding()
+                        Spacer()
+                        
+                    }.padding(.top)
                     
-                }.padding(.top)
-                
-                Text(String.localizedString(forKey: "second_message", inTable: stringTable, withComment: "second exit message"))
-                    .foregroundColor(Color.more.secondary)
+                    Text(String.localizedString(forKey: "second_message", inTable: stringTable, withComment: "second exit message"))
+                        .foregroundColor(Color.more.secondary)
+                        .padding(.bottom, 2)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(String.localizedString(forKey: "sure_message", inTable: stringTable, withComment: "last exit message"))
+                        .foregroundColor(Color.more.primary)
+                        .fontWeight(.bold)
+                        .padding(.bottom, 2)
+                        .multilineTextAlignment(.center)
+                    
+                    Spacer()
+                        .frame(height: 150)
+                    
+                    MoreActionButton(
+                        backgroundColor: .more.approved,
+                        disabled: .constant(false)
+                    ) {
+                        leaveStudyModalStateVM.isLeaveStudyOpen = false
+                        leaveStudyModalStateVM.isLeaveStudyConfirmOpen = false
+                    } label: {
+                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
+                    }
                     .padding(.bottom, 2)
-                    .multilineTextAlignment(.center)
-                
-                Text(String.localizedString(forKey: "sure_message", inTable: stringTable, withComment: "last exit message"))
-                    .foregroundColor(Color.more.secondary)
-                    .fontWeight(.bold)
-                    .padding(.bottom, 2)
-                    .multilineTextAlignment(.center)
-                
-                Spacer()
-                    .frame(height: 150)
-                
-                BasicNavLinkButton(backgroundColor: $continueButton) {
-                    InfoView(viewModel: InfoViewModel())
-                } label: {
-                    Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
-                }.padding(.bottom, 2)
-                
-                MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
-                    viewModel.leaveStudy()
-                } label: {
-                    Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
+                    
+                    MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
+                        leaveStudyModalStateVM.isLeaveStudyOpen = false
+                        leaveStudyModalStateVM.isLeaveStudyConfirmOpen = false
+                        viewModel.leaveStudy()
+                    } label: {
+                        Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
+                    }
+                    
+                    Spacer()
                 }
+                .padding(.horizontal, 40)
                 
-                Spacer()
-                
-            } // VStack
-            
-        } // MoreBackground
-    topBarContent: {
-        EmptyView()
+            }
+        topBarContent: {
+            EmptyView()
+        }
+        .customNavigationTitle(with: NavigationScreens.withdrawStudyConfirm.localize(useTable: navigationStrings, withComment: "Confirm to withdraw from study"))
+        .navigationBarTitleDisplayMode(.inline)
+        }
     }
-    .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-    .navigationBarTitleDisplayMode(.inline)
-    } // View
 }

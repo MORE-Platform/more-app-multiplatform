@@ -21,6 +21,8 @@ enum NavigationScreens: String {
     case pastObservations = "Past Observations"
     case runningObservations = "Running Observations"
     case observationDetails = "Observation Details"
+    case withdrawStudy = "Leave Study"
+    case withdrawStudyConfirm = "Confirm to leave the study"
 }
 
 extension NavigationScreens {
