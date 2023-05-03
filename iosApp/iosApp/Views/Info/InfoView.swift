@@ -10,6 +10,7 @@ import SwiftUI
 
 struct InfoView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
+    @StateObject var leaveStudyModalStateVM: LeaveStudyModalStateViewModel = LeaveStudyModalStateViewModel(isLeaveStudyOpen: false, isLeaveStudyConfirmOpen: false)
     @StateObject var viewModel: InfoViewModel
     private let navigationStrings = "Navigation"
     private let infoStrings = "Info"
@@ -21,6 +22,7 @@ struct InfoView: View {
                     VStack {
                         InfoList()
                             .environmentObject(contentViewModel)
+                            .environmentObject(leaveStudyModalStateVM)
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.more.primaryLight)
