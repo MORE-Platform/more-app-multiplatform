@@ -14,9 +14,9 @@ class NotificationViewModel: ObservableObject {
     // private let coreModel
     
     let recorder = IOSDataRecorder()
-    private let coreModel: CoreNotificationViewModel = CoreNotificationViewModel()
+    private let coreModel: CoreNotificationViewModel = CoreNotificationViewModel(coreFilterModel: CoreNotificationFilterViewModel())
     
-    @Published var notificationList: [NotificationSchema] = []
+    @Published var notificationList: [NotificationModel] = []
     @Published var notificationCount: Int64 = 0
     
     init() {
@@ -24,7 +24,7 @@ class NotificationViewModel: ObservableObject {
         
         coreModel.onNotificationLoad { notifications in
             if !notifications.isEmpty {
-                self.notificationList = notifications as! [NotificationSchema]
+                self.notificationList = notifications
             }
         }
         
@@ -33,7 +33,7 @@ class NotificationViewModel: ObservableObject {
         }
     }
     
-    func setNotificationToRead(notification: NotificationSchema) {
+    func setNotificationToRead(notification: NotificationModel) {
         coreModel.setNotificationReadStatus(notification: notification)
     }
 }
