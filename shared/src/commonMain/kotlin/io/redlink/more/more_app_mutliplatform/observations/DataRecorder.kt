@@ -5,5 +5,7 @@ interface DataRecorder {
     fun pause(scheduleId: String)
     fun stop(scheduleId: String)
     fun stopAll()
+
+    fun restartAll()
     fun updateTaskStates()
 }

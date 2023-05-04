@@ -1,61 +1,81 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
+import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
-import io.redlink.more.more_app_mutliplatform.observations.QUEUE_COUNT_THRESHOLD
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
+import kotlinx.coroutines.CompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.mongodb.kbson.ObjectId
 
 class ObservationDataRepository: Repository<ObservationDataSchema>() {
+    private var queue = mutableSetOf<ObservationDataSchema>()
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    private val mutex = Mutex()
 
-    private val queue = mutableListOf<ObservationDataSchema>()
-
-    fun addData(data: ObservationDataSchema) {
-        Napier.i { "Adding new data: $data" }
-        queue.add(data)
-        if (queue.size >= QUEUE_COUNT_THRESHOLD) {
-            storeDataFromQueue()
+    fun addData(dataList: List<ObservationDataSchema>) {
+        scope.launch {
+            mutex.withLock {
+                queue.addAll(dataList)
+            }
+            if (queue.size > QUEUE_THRESHOLD) {
+                store()
+            }
         }
     }
 
-    fun addMultiple(dataList: List<ObservationDataSchema>) {
-        Napier.i { "Adding ${dataList.size} points to queue" }
-        queue.addAll(dataList)
-        if (queue.size >= QUEUE_COUNT_THRESHOLD) {
-            storeDataFromQueue()
+    fun store() {
+        if (queue.isNotEmpty()) {
+            scope.launch {
+                val queueCopy = mutex.withLock {
+                    val queueCopy = queue.toSet()
+                    queue = mutableSetOf()
+                    queueCopy
+                }
+                realmDatabase().store(queueCopy, UpdatePolicy.ERROR)
+            }
         }
     }
 
-    override fun count() = realmDatabase.count<ObservationDataSchema>()
+    override fun count() = realmDatabase().count<ObservationDataSchema>()
 
-    fun storeDataFromQueue() {
-        val queueCopy = queue.toList()
-        queue.clear()
-        realmDatabase.storeAll(queueCopy)
-    }
-
-    suspend fun storeAndQuery(): DataBulk? {
-        val queueCopy = queue.toList()
-        queue.clear()
-        realmDatabase.storeAll(queueCopy)
-        return allAsBulk()
-    }
 
     suspend fun allAsBulk(): DataBulk? {
-        return realmDatabase.query<ObservationDataSchema>().firstOrNull()?.mapAsBulkData()
+        return mutex().withLock {
+            realmDatabase().query<ObservationDataSchema>(limit = 5000).firstOrNull()?.mapAsBulkData()
+        }
     }
 
-    suspend fun deleteAllWithId(idSet: Set<String>) {
-        realmDatabase.deleteAllWhereFieldInList<ObservationDataSchema>("dataId", idSet.map { ObjectId(it) })
+    fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            allAsBulk()?.let { completionHandler(it.freeze()) }
+        }
+    }
+
+    fun deleteAllWithId(idSet: Set<String>) {
+        Napier.d { "Deleting ${idSet.size} elements..." }
+        val objectIdSet = idSet.map { ObjectId(it) }.toSet()
+        scope.launch {
+            mutex().withLock {
+                realm()?.write {
+                    this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }.forEach {
+                        delete(it)
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val QUEUE_THRESHOLD = 10
     }
 }

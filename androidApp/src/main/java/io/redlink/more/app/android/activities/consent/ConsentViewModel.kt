@@ -6,22 +6,16 @@ import android.os.Build
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.firebase.FCMService
-import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
-import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-private const val TAG = "ConsentViewModel"
 
 interface ConsentViewModelListener {
     fun credentialsStored()
@@ -30,8 +24,7 @@ interface ConsentViewModelListener {
 
 class ConsentViewModel(
     registrationService: RegistrationService,
-    private val consentViewModelListener: ConsentViewModelListener,
-    context: Context
+    private val consentViewModelListener: ConsentViewModelListener
 ) : ViewModel() {
     private val coreModel = CorePermissionViewModel(registrationService)
     private var consentInfo: String? = null
@@ -43,15 +36,12 @@ class ConsentViewModel(
     val permissionsNotGranted = mutableStateOf(false)
     val permissions = mutableSetOf<String>()
 
-    private val observationFactory = AndroidObservationFactory(context)
-
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             coreModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
-                    permissions.addAll(observationFactory.sensorPermissions())
+                    permissions.addAll(MoreApplication.observationFactory!!.sensorPermissions())
                 }
             }
         }

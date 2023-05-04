@@ -1,12 +1,12 @@
 package io.redlink.more.app.android.activities.main
 
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,7 +22,6 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
-import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
@@ -47,6 +46,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {
                 navController.addOnDestinationChangedListener(destinationChangeListener)
+                viewModel.viewDidAppear()
             }
             MainView(viewModel.navigationBarTitle.value, viewModel, navController)
         }
@@ -110,7 +110,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     navController = navController,
-                    viewModel = viewModel.createNewTaskViewModel(scheduleId ?: ""),
+                    viewModel = viewModel.getTaskDetailsVM(scheduleId ?: ""),
                     scheduleId = scheduleId,
                     scheduleListType = scheduleListType
                 )
@@ -171,12 +171,19 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 val scheduleId = arguments.getString("scheduleId")
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(scheduleId ?: "", LocalContext.current))
+                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(
+                    scheduleId ?: ""
+                ))
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
+            }
+            composable(NavigationScreen.NOTIFICATION_FILTER.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
+                viewModel.showBackButton.value = true
+                NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
             }
 
             composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {

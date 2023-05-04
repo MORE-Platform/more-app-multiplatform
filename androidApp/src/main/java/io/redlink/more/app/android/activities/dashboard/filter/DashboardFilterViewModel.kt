@@ -17,8 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterViewModel) {
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
-    private val observationFactory = AndroidObservationFactory(MoreApplication.appContext!!)
+    private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     val currentFilter =  MutableStateFlow(FilterModel())
 
@@ -28,7 +27,7 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
             it.toString().formatDateFilterString())
     }
 
-    val typeFilters = observationFactory.observationTypes().map {
+    val typeFilters = MoreApplication.observationFactory!!.observationTypes().map {
         Pair<String, String?>(it.formatObservationTypeString(), it)
     }.toMutableList().apply { this.add(0, Pair(getString(R.string.more_filter_all), null)) }.toList()
 

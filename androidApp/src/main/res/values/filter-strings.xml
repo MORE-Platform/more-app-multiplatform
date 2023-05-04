@@ -23,7 +23,7 @@
 
     <string name="more_select_filter">Select Filter</string>
 
-    <string name="more_all_notification_filter">All Notifications</string>
-    <string name="more_unread_notifications">Show unread notifications</string>
-    <string name="more_important_notifications">Show important notifications</string>
+    <string name="more_filter_notification_all">All Notifications</string>
+    <string name="more_filter_notification_unread">Unread</string>
+    <string name="more_filter_notification_important">Important</string>
 </resources>

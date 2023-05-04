@@ -8,6 +8,10 @@ import android.hardware.SensorManager
 import android.util.Log
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG = "AccelerometerObservation"
 
@@ -17,12 +21,14 @@ class AccelerometerObservation(
     private val sensorManager = context.getSystemService(SensorManager::class.java)
     private val sensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private var sampleFrequency: Int = SensorManager.SENSOR_DELAY_NORMAL
-
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     override fun onSensorChanged(event: SensorEvent?) {
         event?.values?.let {
             if (it.isNotEmpty()) {
-                storeData(mapOf("x" to it[0], "y" to it[1], "z" to it[2]))
+                scope.launch {
+                    storeData(mapOf("x" to it[0], "y" to it[1], "z" to it[2]))
+                }
             }
         }
     }

@@ -5,41 +5,63 @@ import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCount
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class CoreTaskDetailsViewModel(
-    private val scheduleId: String,
     private val dataRecorder: DataRecorder
-) {
+): CoreViewModel() {
+    private var scheduleId: String? = null
 
     private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
-    val dataCount = MutableStateFlow(0L)
+    val dataCount = MutableStateFlow<Long>(0)
 
-    init {
-        scope.launch {
-            scheduleRepository.scheduleWithId(scheduleId).collect { schedule ->
-                schedule?.let { schedule ->
-                    observationRepository.observationById(schedule.observationId).firstOrNull()?.let {
-                        taskDetailsModel.value = TaskDetailsModel.createModelFrom(it, schedule)
+    private var countJob: Job? = null
+
+    fun setSchedule(scheduleId: String) {
+        this.scheduleId = scheduleId
+    }
+
+    override fun viewDidAppear() {
+        scheduleId?.let { scheduleId ->
+            launchScope {
+                scheduleRepository.scheduleWithId(scheduleId).cancellable().collect { schedule ->
+                    schedule?.let { schedule ->
+                        observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
+                            taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
+                        }
                     }
                 }
             }
-        }
-        scope.launch {
-            dataPointCountRepository.get(scheduleId).collect { countSchema ->
-                dataCount.value = countSchema?.count ?: 0
+            launchScope {
+                dataPointCountRepository.get(scheduleId).cancellable().collect {
+                    it?.let { dataCount.emit(it.count) }
+                }
             }
+        }
+    }
+
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
+        this.scheduleId = null
+        this.countJob?.cancel()
+        launchScope {
+            taskDetailsModel.emit(null)
+            dataCount.emit(0)
         }
     }
 
@@ -50,14 +72,14 @@ class CoreTaskDetailsViewModel(
     fun onNewDataCount(provideNewState: (Long?) -> Unit) = dataCount.asClosure(provideNewState)
 
     fun startObservation() {
-        dataRecorder.start(scheduleId)
+        scheduleId?.let { dataRecorder.start(it) }
     }
 
     fun stopObservation() {
-        dataRecorder.stop(scheduleId)
+        scheduleId?.let { dataRecorder.stop(it) }
     }
 
     fun pauseObservation() {
-        dataRecorder.pause(scheduleId)
+        scheduleId?.let { dataRecorder.pause(it) }
     }
 }

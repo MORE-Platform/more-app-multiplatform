@@ -1,7 +1,12 @@
 package io.redlink.more.app.android.workers
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import kotlinx.coroutines.Dispatchers
@@ -11,17 +16,17 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
-    private val scheduleRepository = ScheduleRepository()
-    private val observationFactory = AndroidObservationFactory(applicationContext)
     private val workManager = WorkManager.getInstance(applicationContext)
     override suspend fun doWork() = withContext(Dispatchers.IO) {
-        scheduleRepository.updateTaskStates(observationFactory)
+        val scheduleRepository = ScheduleRepository()
+        scheduleRepository.updateTaskStates(MoreApplication.observationFactory ?: AndroidObservationFactory(applicationContext))
         scheduleRepository.nextSchedule().firstOrNull()?.let {
             val now = Instant.now().epochSecond
             if (now < it) {
                 enqueueNewWorker(it - now)
             }
         }
+        scheduleRepository.close()
         return@withContext Result.success()
     }
 

@@ -1,20 +1,23 @@
 package io.redlink.more.app.android.activities.tasks
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.tasks.CoreTaskDetailsViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.firstOrNull
 
 class TaskDetailsViewModel(
-    scheduleId: String,
     dataRecorder: DataRecorder
-) {
-
-    private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(scheduleId, dataRecorder)
-    val isEnabled= mutableStateOf(false)
+): ViewModel() {
+    private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(dataRecorder)
+    val isEnabled = mutableStateOf(false)
     val polarHrReady = mutableStateOf(false)
     val dataPointCount = mutableStateOf(0L)
     val taskDetailsModel = mutableStateOf(
@@ -22,19 +25,16 @@ class TaskDetailsViewModel(
             "", "", "", "", 0, 0, "", ScheduleState.DEACTIVATED,
         )
     )
-    private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     init {
-
-        scope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
                 }
             }
         }
-
-        scope.launch {
+        viewModelScope.launch {
             coreViewModel.taskDetailsModel.collect { details ->
                 details?.let {
                     withContext(Dispatchers.Main) {
@@ -44,13 +44,25 @@ class TaskDetailsViewModel(
                 }
             }
         }
-        scope.launch {
+        viewModelScope.launch {
             coreViewModel.dataCount.collect {
                 withContext(Dispatchers.Main) {
                     dataPointCount.value = it
                 }
             }
         }
+    }
+
+    fun setSchedule(scheduleId: String) {
+        coreViewModel.setSchedule(scheduleId)
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 
     fun startObservation() {

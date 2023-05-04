@@ -6,22 +6,24 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 
 object DatabaseManager: Closeable {
     val database = RealmDatabase
-    init {
-        database.open(
-            setOf(
-                StudySchema::class,
-                ObservationSchema::class,
-                ScheduleSchema::class,
-                ObservationDataSchema::class,
-                DataPointCountSchema::class,
-                NotificationSchema::class,
-                BluetoothDevice::class
-            )
-        )
+    private val schemas = setOf(
+        StudySchema::class,
+        ObservationSchema::class,
+        ScheduleSchema::class,
+        ObservationDataSchema::class,
+        DataPointCountSchema::class,
+        NotificationSchema::class,
+        BluetoothDevice::class
+    )
+
+    fun open() {
+        database.open(this.schemas)
     }
 
     fun deleteAll() {
+        open()
         database.deleteAll()
+        close()
     }
 
     override fun close() {

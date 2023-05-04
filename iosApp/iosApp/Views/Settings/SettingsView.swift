@@ -23,7 +23,7 @@ struct SettingsView: View {
                     .foregroundColor(.more.secondary)
                     .padding(.bottom)
                 MoreActionButton(disabled: .constant(false)) {
-                    viewModel.reloadStudyConfig()
+                    
                 } label: {
                     Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
                 }
@@ -39,6 +39,12 @@ struct SettingsView: View {
         }
         .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear{
+            viewModel.viewDidDisappear()
+        }
     }
 }
 

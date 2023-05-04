@@ -39,7 +39,7 @@ struct ObservationDetailsView: View {
                     
                     let time: String = (viewModel.observationDetailModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.observationDetailModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
                     
-                    ObservationDetailsData(dateRange: .constant(date), repetition: .constant(""), timeframe: .constant(time))
+                    ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
                     
                     HStack {
                         AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.observationDetailModel?.participantInformation ?? ""), isOpen: true)
@@ -52,7 +52,7 @@ struct ObservationDetailsView: View {
             } topBarContent: {
                 EmptyView()
             }
-            .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Observation Detail"))
+            .customNavigationTitle(with: NavigationScreens.observationDetails.localize(useTable: navigationStrings, withComment: "Observation Detail"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }

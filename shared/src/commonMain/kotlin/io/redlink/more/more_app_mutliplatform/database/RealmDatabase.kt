@@ -10,46 +10,50 @@ import io.realm.kotlin.types.BaseRealmObject
 import io.realm.kotlin.types.RealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
 object RealmDatabase {
     var realm: Realm? = null
         private set
 
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
+    val mutex = Mutex()
+
     fun open(realmObjects: Set<KClass<out BaseRealmObject>>) {
-        val config = RealmConfiguration.create(realmObjects)
-        this.realm = Realm.open(config)
+        if (realm == null) {
+            Napier.d { "Init Realm..." }
+            val config = RealmConfiguration.create(realmObjects)
+            this.realm = Realm.open(config)
+        }
     }
 
     fun close() {
+        Napier.d { "Closing Realm..." }
         this.realm?.close()
         this.realm = null
     }
 
-    fun isOpen() = realm != null && realm?.isClosed() == false
-
-    fun store(realmObject: RealmObject, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            copyToRealm(realmObject, updatePolicy)
-        }
-    }
-
-    fun store(realmObjects: List<RealmObject>, updatePolicy: UpdatePolicy = UpdatePolicy.ERROR) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-        }
-    }
-
-    fun storeAll(
+    fun store(
         realmObjects: Collection<RealmObject>,
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
-        realm?.writeBlocking {
-            realmObjects.map { copyToRealm(it, updatePolicy) }
-            Napier.i { "Stored new data" }
+        if (realmObjects.isNotEmpty()) {
+            scope.launch {
+                mutex.withLock {
+                    realm?.write {
+                        realmObjects.forEach { copyToRealm(it, updatePolicy) }
+                    }
+                }
+            }
         }
     }
 
@@ -101,11 +105,11 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    suspend inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
-        realm?.write {
+        realm?.writeBlocking {
             list.map { this.query<T>("${field.trim()} == $0", it).find() }.forEach {
                 delete(it)
             }

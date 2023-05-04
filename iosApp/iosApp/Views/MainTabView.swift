@@ -18,6 +18,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
                     }
+                    .environmentObject(contentViewModel)
                 NotificationView()
                     .tabItem {
                         Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")

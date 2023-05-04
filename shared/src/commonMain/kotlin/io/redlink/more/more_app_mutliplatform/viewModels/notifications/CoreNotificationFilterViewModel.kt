@@ -1,9 +1,10 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
 import io.ktor.utils.io.core.*
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
+import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
+import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,27 +17,15 @@ class CoreNotificationFilterViewModel {
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
 
-    fun hasFilters(): Boolean = (currentFilter.value.filterRead || currentFilter.value.filterUnimportant)
-
-    fun hasReadFilter(): Boolean = currentFilter.value.filterRead
-
-    fun hasUnimportantFilter(): Boolean = currentFilter.value.filterUnimportant
-
-    fun changeReadFilter() {
+    /**
+     * Pass the String representing a filter
+     * according to NotificationFilterTypeModel type field
+     */
+    fun processFilterChange(filter: String?) {
         scope.launch {
-            currentFilter.emit(NotificationFilterModel(
-                !currentFilter.value.filterRead,
-                currentFilter.value.filterUnimportant
-            ))
-        }
-    }
-
-    fun changeUnimportantFilter() {
-        scope.launch {
-            currentFilter.emit(NotificationFilterModel(
-                currentFilter.value.filterRead,
-                !currentFilter.value.filterUnimportant
-            ))
+            currentFilter.emit(
+                currentFilter.value.changeFilter(filter)
+            )
         }
     }
 
@@ -44,20 +33,21 @@ class CoreNotificationFilterViewModel {
         highPriority = priority
     }
 
-    fun applyFilter(notificationList: List<NotificationSchema?>): List<NotificationSchema?> {
-        val filteredList = notificationList.toMutableList()
-        if(hasFilters())
-            filteredList.filter {
-                it?.let { (
-                            if(currentFilter.value.filterUnimportant)
-                                it.priority == highPriority else true
-                            ) && (
-                            if(currentFilter.value.filterRead)
-                                !it.read else true
-                            )
-                } ?: false
+    fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
+        var filteredList = notificationList
+        if (currentFilter.value.isNotEmpty())
+            filteredList = filteredList.filter { notification -> ((
+                    if (currentFilter.value.contains(NotificationFilterTypeModel.IMPORTANT)) {
+                        notification.priority == highPriority
+                    } else
+                        true
+                ) && (
+                    if (currentFilter.value.contains(NotificationFilterTypeModel.UNREAD)) {
+                        !notification.read
+                    } else true
+                    ))
             }
-        return filteredList.toList()
+        return filteredList
     }
 
     fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {
