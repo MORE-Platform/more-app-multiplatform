@@ -30,7 +30,6 @@ class CoreSettingsViewModel(
 
     val permissionModel = MutableStateFlow<PermissionModel?>(null)
 
-
     override fun viewDidAppear() {
         launchScope {
             studyRepository.getStudy()

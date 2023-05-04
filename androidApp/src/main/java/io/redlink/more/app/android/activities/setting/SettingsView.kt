@@ -5,9 +5,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
@@ -15,13 +18,19 @@ import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreImportant
 import io.redlink.more.app.android.R
-
+import io.redlink.more.app.android.activities.NavigationScreen
 
 
 @Composable
 fun SettingsView(
     model: SettingsViewModel,
+    navController: NavController
 ) {
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.route)
+    LaunchedEffect(route) {
+        model.viewDidAppear()
+    }
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -39,15 +48,6 @@ fun SettingsView(
                     text = getStringResource(id = R.string.more_settings_permission_information),
                     color = MoreColors.TextDefault,
                 )
-
-                Spacer(Modifier.height(18.dp))
-
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_settings_refresh_study),
-                    enabled = true
-                ) {
-
-                }
 
                 Spacer(Modifier.height(24.dp))
 
