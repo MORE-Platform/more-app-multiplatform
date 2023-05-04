@@ -25,8 +25,8 @@ struct NotificationView: View {
                             
                             VStack {
                                 NotificationItem(
-                                    title: .constant(notification.title ?? "Notification"),
-                                    message: .constant(notification.notificationBody ?? ""),
+                                    title: .constant(notification.title),
+                                    message: .constant(notification.notificationBody),
                                     read: .constant(notification.read),
                                     isImportant: .constant((notification.priority == 2))
                                 )

@@ -60,19 +60,17 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         items(viewModel.notificationList.value) { notification ->
-            if (notification?.title != null) {
-                Column(
-                    modifier = Modifier.clickable {
-                        viewModel.setNotificationToRead(notification)
-                    }
-                ) {
-                    NotificationItem(
-                        title = notification.title,
-                        body = notification.notificationBody,
-                        read = notification.read,
-                        priority = notification.priority
-                    )
+            Column(
+                modifier = Modifier.clickable {
+                    viewModel.setNotificationToRead(notification)
                 }
+            ) {
+                NotificationItem(
+                    title = notification.title,
+                    body = notification.notificationBody,
+                    read = notification.read,
+                    priority = notification.priority
+                )
             }
         }
     }

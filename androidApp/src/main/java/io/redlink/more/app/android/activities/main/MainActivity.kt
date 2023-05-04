@@ -1,10 +1,12 @@
 package io.redlink.more.app.android.activities.main
 
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -177,6 +179,11 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
                 QuestionnaireResponseView(navController)
+            }
+            composable(NavigationScreen.NOTIFICATION_FILTER.route) {
+                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
+                viewModel.showBackButton.value = true
+                NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
             }
 
             composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {

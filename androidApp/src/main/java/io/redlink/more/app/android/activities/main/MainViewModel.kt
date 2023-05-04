@@ -9,7 +9,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
+import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
+import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
+import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -17,18 +20,15 @@ import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarVi
 import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.observations.AndroidDataRecorder
+import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
-import io.redlink.more.app.android.activities.notification.NotificationViewModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
-import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.services.ObservationRecordingService
-import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 
 class MainViewModel(context: Context): ViewModel() {
     private val bluetoothConnector = AndroidBluetoothConnector(context)
