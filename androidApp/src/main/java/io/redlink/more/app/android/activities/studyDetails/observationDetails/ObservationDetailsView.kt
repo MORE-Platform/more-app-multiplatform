@@ -24,6 +24,11 @@ fun ObservationDetailsView(
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
+    DisposableEffect(route) {
+        onDispose {
+            viewModel.viewDidDisappear()
+        }
+    }
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
