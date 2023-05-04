@@ -7,8 +7,8 @@
     <string name="nav_task_detail">Aufgabendetails</string>
     <string name="nav_observation_detail">Observatdetails</string>
     <string name="nav_study_details">Studiendetails</string>
-    <string name="nav_observation_filter">Observatfilter</string>
-    <string name="nav_notification_filter">Nachrichtenfilter</string>
+    <string name="nav_observation_filter">Filter</string>
+    <string name="nav_notification_filter">Filter</string>
     <string name="nav_simple_question">Simple Frage</string>
     <string name="nav_running_schedules">Laufende Beobachtungen</string>
     <string name="nav_completed_schedules">Vergangene Beobachtungen</string>
