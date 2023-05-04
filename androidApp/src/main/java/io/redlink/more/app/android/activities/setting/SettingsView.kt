@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,6 +31,11 @@ fun SettingsView(
     val route = backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.route)
     LaunchedEffect(route) {
         model.viewDidAppear()
+    }
+    DisposableEffect(route) {
+        onDispose {
+            model.viewDidDisappear()
+        }
     }
     Column(
         modifier = Modifier
