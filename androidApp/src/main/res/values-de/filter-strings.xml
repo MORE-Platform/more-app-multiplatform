@@ -10,7 +10,7 @@
     <string name="more_filter_question">Fragebogen</string>
     <string name="more_filter_accelerometer">GPS</string>
     <string name="more_filter_polar">Polar Verity</string>
-    <string name="more_filter_gps">Beschleuunigungsmesser</string>
+    <string name="more_filter_gps">Beschleunigungsmesser</string>
 
     <string name="more_filter_entire_time">Gesamte Zeit</string>
     <string name="more_filter_today_tomorrow">Heute und morgen</string>
