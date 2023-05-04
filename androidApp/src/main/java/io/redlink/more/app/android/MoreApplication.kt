@@ -2,7 +2,15 @@ package io.redlink.more.app.android
 
 import android.app.Application
 import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import io.redlink.more.app.android.observations.AndroidObservationDataManager
+import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
+import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 
 
 private const val TAG = "MoreApplication"
@@ -13,12 +21,38 @@ private const val TAG = "MoreApplication"
 class MoreApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        napierDebugBuild()
+        if (BuildConfig.DEBUG) {
+            napierDebugBuild()
+//            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+        } else {
+//            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        }
+
         appContext = this
+
+        shared = Shared(SharedPreferencesRepository(this))
+        observationDataManager = AndroidObservationDataManager(this)
+        observationFactory = AndroidObservationFactory(this)
     }
 
     companion object {
         var appContext: Context? = null
             private set
+
+        var firebaseAnalytics: FirebaseAnalytics? = null
+            private set
+
+        var shared: Shared? = null
+            private set
+
+        var observationDataManager: ObservationDataManager? = null
+            private set
+
+        var observationFactory: ObservationFactory? = null
+            private set
+
+//        fun logEvent() {
+//            firebaseAnalytics?.logEvent(FirebaseAnalytics.Event.)
+//        }
     }
 }

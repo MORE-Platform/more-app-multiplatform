@@ -14,7 +14,6 @@ class ContentViewModel: ObservableObject {
     private let userDefaults = UserDefaultsRepository()
     
     private let registrationService: RegistrationService
-    private let credentialRepository: CredentialRepository
     private lazy var scheduleRepository = ScheduleRepository()
     
     private lazy var taskSchedulingService = TaskScheduleService()
@@ -52,11 +51,16 @@ class ContentViewModel: ObservableObject {
     
 
     init() {
-        registrationService = RegistrationService(sharedStorageRepository: userDefaults)
-        credentialRepository = CredentialRepository(sharedStorageRepository: userDefaults)
+        registrationService = RegistrationService(shared: AppDelegate.shared)
 
-        hasCredentials = credentialRepository.hasCredentials()
+        hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
+        if hasCredentials {
+            DispatchQueue.main.async {
+                AppDelegate.recorder.restartAll()
+            }
+            AppDelegate.dataManager.listenToDatapointCountChanges()
+        }
     }
     
     func showLoginView() {
@@ -95,6 +99,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
+                AppDelegate.dataManager.listenToDatapointCountChanges()
             }
         }
         FCMService.getNotificationToken()

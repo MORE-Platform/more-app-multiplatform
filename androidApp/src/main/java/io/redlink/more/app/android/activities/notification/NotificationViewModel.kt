@@ -17,7 +17,7 @@ class NotificationViewModel: ViewModel() {
     private val coreFilterViewModel: CoreNotificationFilterViewModel = CoreNotificationFilterViewModel()
     private val coreViewModel: CoreNotificationViewModel = CoreNotificationViewModel(coreFilterViewModel)
     var notificationList: MutableState<List<NotificationModel>> = mutableStateOf(emptyList())
-    val notificationCount: MutableState<Long> = mutableStateOf(0)
+    val notificationCount: MutableState<Int> = mutableStateOf(0)
 
     val filterModel = NotificationFilterViewModel(coreFilterViewModel)
 
@@ -36,6 +36,14 @@ class NotificationViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 
     fun setNotificationToRead(notification: NotificationModel) {

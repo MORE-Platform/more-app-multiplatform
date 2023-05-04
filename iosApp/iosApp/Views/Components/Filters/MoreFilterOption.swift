@@ -28,7 +28,7 @@ struct MoreFilterOption: View {
                     Spacer()
                         .frame(width: 5)
                 }
-                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")), isSelected: $isSelected)
+                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of observation type")))
             }
             .padding(5)
         }

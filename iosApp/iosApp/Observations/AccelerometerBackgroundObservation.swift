@@ -14,9 +14,12 @@ class AccelerometerBackgroundObservation: Observation_ {
     private var recordForDurationInSec: Double = 60 * 10
     private let recorder = CMSensorRecorder()
     private var startRecording: Date = Date()
-    private var lastCollectedDataTimestamp: Date = Date()
+    
     private var timer: Timer?
     private let semaphore = Semaphore()
+    private let observationRepository: ObservationRepository = {
+        ObservationRepository()
+    }()
     
     init(sensorPermissions: Set<String>) {
         super.init(observationType: AccelerometerType(sensorPermissions: sensorPermissions))
@@ -28,9 +31,9 @@ class AccelerometerBackgroundObservation: Observation_ {
             self.startRecording = Date()
             print("CMSensorRecorder started recording accelerometer data for the next \(recordForDurationInSec)s...")
             DispatchQueue.main.async { [weak self] in
-                self?.timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
+                self?.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
                     if let self {
-                        self.collectData(start: self.lastCollectedDataTimestamp, end: Date()) {
+                        self.collectData(start: Date(timeIntervalSince1970: TimeInterval(self.lastCollectionTimestamp.epochSeconds)), end: Date()) {
                             if self.startRecording.timeIntervalSince1970 + self.recordForDurationInSec <= Date().timeIntervalSince1970 {
                                 timer.invalidate()
                             }
@@ -48,7 +51,7 @@ class AccelerometerBackgroundObservation: Observation_ {
     
     override func stop(onCompletion: @escaping () -> Void) {
         timer?.invalidate()
-        self.collectData(start: lastCollectedDataTimestamp, end: Date(), completion: onCompletion)
+        self.collectData(start: Date(timeIntervalSince1970: TimeInterval(self.lastCollectionTimestamp.epochSeconds)), end: Date(), completion: onCompletion)
     }
     
     override func store(start: Int64, end: Int64, onCompletion: @escaping () -> Void) {
@@ -83,9 +86,9 @@ class AccelerometerBackgroundObservation: Observation_ {
 extension AccelerometerBackgroundObservation: ObservationCollector {
     func collectData(start: Date, end: Date, completion: @escaping () -> Void) {
         if start < end {
-            Task { [weak self] in
-                if let self, let sensorData = self.recorder.accelerometerData(from: start, to: end) {
-                    lastCollectedDataTimestamp = Date()
+            DispatchQueue.global(qos: .background).async {
+                if let sensorData = self.recorder.accelerometerData(from: start, to: end) {
+                    self.collectionTimestampToNow()
                     let data = sensorData.compactMap { data in
                         if let accDatum = data as? CMRecordedAccelerometerData {
                             let accel = accDatum.acceleration
@@ -95,12 +98,8 @@ extension AccelerometerBackgroundObservation: ObservationCollector {
                         }
                         return nil
                     }
-                    await MainActor.run {
-                        self.storeData(data: data) {
-                            print("\(Date()): Data stored")
-                            print("\(Date()): Returning from store")
-                            completion()
-                        }
+                    self.storeData(data: data) {
+                        completion()
                     }
                 } else {
                     completion()

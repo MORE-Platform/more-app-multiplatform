@@ -12,15 +12,10 @@ import shared
 
 class ObservationDataCollector {
     private let observationFactory = IOSObservationFactory()
-    private let dataManager: iOSObservationDataManager
-    private let observationRepository: ObservationRepository
+    private let dataManager: iOSObservationDataManager = AppDelegate.dataManager
+    private let observationRepository: ObservationRepository = ObservationRepository()
     private let scheduleRepository = ScheduleRepository()
     private var job: Ktor_ioCloseable?
-    
-    init() {
-        dataManager = iOSObservationDataManager()
-        observationRepository = ObservationRepository()
-    }
 
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {
         print("Collect undone observations")

@@ -91,7 +91,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
 
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
-            CoroutineScope(Job() + Dispatchers.Main).launch {
+            CoroutineScope(Job() + Dispatchers.IO).launch {
                 PolarHeartRateObservation.hrReady.emit(true)
             }
         }
@@ -101,7 +101,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
         observer?.didConnectToDevice(polarDeviceInfo.toBluetoothDevice())
     }
     override fun onDeviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
-        CoroutineScope(Job() + Dispatchers.Main).launch {
+        CoroutineScope(Job() + Dispatchers.IO).launch {
             PolarHeartRateObservation.hrReady.emit(false)
         }
         observer?.didDisconnectFromDevice(polarDeviceInfo.toBluetoothDevice())

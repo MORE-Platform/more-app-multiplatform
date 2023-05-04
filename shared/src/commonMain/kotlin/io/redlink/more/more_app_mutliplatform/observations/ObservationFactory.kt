@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 
 
@@ -24,6 +25,6 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
             if (!this.observationDataManagerAdded()) {
                 setDataManager(dataManager)
             }
-        }
+        }?.freeze()
     }
 }

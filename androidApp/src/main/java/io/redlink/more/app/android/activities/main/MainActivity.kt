@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -47,6 +46,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {
                 navController.addOnDestinationChangedListener(destinationChangeListener)
+                viewModel.viewDidAppear()
             }
             MainView(viewModel.navigationBarTitle.value, viewModel, navController)
         }
@@ -110,7 +110,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 TaskDetailsView(
                     navController = navController,
-                    viewModel = viewModel.createNewTaskViewModel(scheduleId ?: ""),
+                    viewModel = viewModel.getTaskDetailsVM(scheduleId ?: ""),
                     scheduleId = scheduleId,
                     scheduleListType = scheduleListType
                 )
@@ -171,7 +171,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 val scheduleId = arguments.getString("scheduleId")
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(scheduleId ?: "", LocalContext.current))
+                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(
+                    scheduleId ?: ""
+                ))
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()

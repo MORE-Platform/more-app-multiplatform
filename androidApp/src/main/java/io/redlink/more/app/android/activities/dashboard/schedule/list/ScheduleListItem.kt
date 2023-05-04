@@ -25,7 +25,7 @@ import io.redlink.more.app.android.R
 
 @Composable
 fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, showButton: Boolean) {
-    val context = LocalContext.current
+    LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -67,9 +67,9 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                     ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
                 ) {
                     if (scheduleModel.scheduleState == ScheduleState.RUNNING){
-                        viewModel.pauseObservation(context, scheduleModel.scheduleId)}
+                        viewModel.pauseObservation(scheduleModel.scheduleId)}
                     else{
-                        viewModel.startObservation(context, scheduleModel.scheduleId,)
+                        viewModel.startObservation(scheduleModel.scheduleId,)
                     }
 
                 }

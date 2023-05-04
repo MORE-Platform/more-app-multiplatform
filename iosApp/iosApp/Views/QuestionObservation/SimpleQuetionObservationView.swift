@@ -10,11 +10,12 @@ import SwiftUI
 import shared
 
 struct SimpleQuetionObservationView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
     @StateObject var viewModel: SimpleQuestionObservationViewModel
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
-    
+    var scheduleId: String
+
     @State private var selected = ""
     
     var body: some View {
@@ -26,41 +27,57 @@ struct SimpleQuetionObservationView: View {
                         .padding(.bottom, 20)
                         .padding(.top, 40)
                     
-
+                    
                     VStack(
                         alignment: .leading) {
                             
                             ForEach(viewModel.answers, id: \.self) { answerOption in
                                 RadioButtonField(id: answerOption, label: answerOption, isMarked: $selected.wrappedValue == answerOption ? true : false,
-                                callback: { selected in
+                                                 callback: { selected in
                                     self.selected = selected
                                     viewModel.setAnswer(answer: selected)
                                 })
                             }
-                             
-                            MoreActionButton(disabled: .constant(false)) {
-                                if(self.selected != "") {
-                                    viewModel.finish()
-                                    self.presentationMode.wrappedValue.dismiss()
+                            
+                            VStack {
+                                MoreActionButton(disabled: .constant(false)) {
+                                    if(self.selected != "") {
+                                        viewModel.finish()
+                                        simpleQuestionModalStateVM.isQuestionThankYouOpen = true
+                                        simpleQuestionModalStateVM.isQuestionOpen = true
+                                    }
+                                } label: {
+                                    Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
+                                }
+                                .padding(.top, 30)
+                                .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionThankYouOpen) {
+                                    SimpleQuestionThankYouView().environmentObject(simpleQuestionModalStateVM)
                                 }
                                 
-                            } label: {
-                                Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
+                                /*
+                                NavigationLink(isActive: $showFeedbackView) {
+                                    SimpleQuestionThankYouView().environmentObject(viewModel)
+                                } label: {
+                                    EmptyView()
+                                }.opacity(0)
+                                 */
                             }
-                            .padding(.top, 30)
+                           
                         }
                         .padding(.horizontal, 10)
-                    
-            
+                        .onAppear {
+                            viewModel.viewDidAppear(scheduleId: scheduleId)
+                        }
                     Spacer()
                 }
             }
-            topBarContent: {
-                EmptyView()
-            }
-            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
-            .navigationBarTitleDisplayMode(.inline)
+        topBarContent: {
+            EmptyView()
+        }
+        .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
+        .navigationBarTitleDisplayMode(.inline)
         }
         
     }
 }
+

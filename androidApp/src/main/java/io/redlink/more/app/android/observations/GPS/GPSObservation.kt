@@ -7,6 +7,8 @@ import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
+import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +28,7 @@ class GPSObservation(
 ) : Observation(observationType = GPSType(permissions)), GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
     private val hasPermission = this.hasPermissions(context)
-    private val scope = CoroutineScope(Job() + Dispatchers.Main)
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     fun getPermission(): Set<String> = permissions
 
@@ -72,6 +74,10 @@ class GPSObservation(
                 )
             )
         }
+    }
+
+    override fun locationAvailable(available: Boolean) {
+        Napier.d { "Location available: $available" }
     }
 
     private fun activate(): Boolean {

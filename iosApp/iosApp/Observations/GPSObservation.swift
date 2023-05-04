@@ -14,6 +14,7 @@ class GPSObservation: Observation_ {
     
     private let manager: CLLocationManager = CLLocationManager()
     public var currentLocation = CLLocation()
+    private var running = false
     
     init(sensorPermissions: Set<String>) {
         super.init(observationType: GPSType(sensorPermissions: sensorPermissions))
@@ -30,6 +31,7 @@ class GPSObservation: Observation_ {
                 manager.startUpdatingLocation()
             } else {
                 manager.requestAlwaysAuthorization()
+                running = true
                 stopAndSetState(state: .active)
             }
         }
@@ -38,6 +40,7 @@ class GPSObservation: Observation_ {
     
     override func stop(onCompletion: @escaping () -> Void) {
         manager.stopUpdatingLocation()
+        running = false
         onCompletion()
     }
     
@@ -51,7 +54,7 @@ class GPSObservation: Observation_ {
     
     
     override func needsToRestartAfterAppClosure() -> Bool {
-        true
+        !running
     }
 }
 

@@ -1,6 +1,5 @@
 package io.redlink.more.app.android.activities.dashboard.schedule
 
-import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +12,6 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,16 +19,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class ScheduleViewModel(val coreFilterModel: CoreDashboardFilterViewModel, dataRecorder: AndroidDataRecorder,
-                        val scheduleListType: ScheduleListType) : ViewModel() {
+class ScheduleViewModel(
+    val coreFilterModel: CoreDashboardFilterViewModel,
+    dataRecorder: AndroidDataRecorder,
+    val scheduleListType: ScheduleListType
+) : ViewModel() {
 
-    val coreViewModel = CoreScheduleViewModel(dataRecorder, coreFilterModel = coreFilterModel, scheduleListType = scheduleListType)
+    private val coreViewModel = CoreScheduleViewModel(
+        dataRecorder,
+        coreFilterModel = coreFilterModel,
+        scheduleListType = scheduleListType
+    )
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
-
-    val activeScheduleState = mutableStateMapOf<String, ScheduleState>()
 
     val filterModel = DashboardFilterViewModel(coreFilterModel)
 
@@ -52,22 +55,28 @@ class ScheduleViewModel(val coreFilterModel: CoreDashboardFilterViewModel, dataR
         }
     }
 
-    fun updateTaskStates(context: Context) {
-        ObservationRecordingService.updateTaskStates(context)
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
     }
 
-    fun startObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.start(context, scheduleId)
-        activeScheduleState[scheduleId] = ScheduleState.RUNNING
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 
-    fun pauseObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.pause(context, scheduleId)
-        activeScheduleState[scheduleId] = ScheduleState.PAUSED
+    fun updateTaskStates() {
+        ObservationRecordingService.updateTaskStates()
     }
 
-    fun stopObservation(context: Context, scheduleId: String) {
-        ObservationRecordingService.stop(context, scheduleId)
+    fun startObservation(scheduleId: String) {
+        coreViewModel.start(scheduleId)
+    }
+
+    fun pauseObservation(scheduleId: String) {
+        coreViewModel.pause(scheduleId)
+    }
+
+    fun stopObservation(scheduleId: String) {
+        coreViewModel.stop(scheduleId)
     }
 
     private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {

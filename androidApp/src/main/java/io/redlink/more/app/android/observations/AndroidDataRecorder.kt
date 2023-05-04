@@ -1,27 +1,30 @@
 package io.redlink.more.app.android.observations
 
-import android.content.Context
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 
-class AndroidDataRecorder(private val context: Context): DataRecorder {
+class AndroidDataRecorder : DataRecorder {
     override fun start(scheduleId: String) {
-        ObservationRecordingService.start(context, scheduleId)
+        ObservationRecordingService.start(scheduleId)
     }
 
     override fun pause(scheduleId: String) {
-        ObservationRecordingService.pause(context, scheduleId)
+        ObservationRecordingService.pause(scheduleId)
     }
 
     override fun stop(scheduleId: String) {
-        ObservationRecordingService.stop(context, scheduleId)
+        ObservationRecordingService.stop(scheduleId)
     }
 
     override fun stopAll() {
-        ObservationRecordingService.stopAll(context)
+        ObservationRecordingService.stopAll()
+    }
+
+    override fun restartAll() {
+        ObservationRecordingService.restartAll()
     }
 
     override fun updateTaskStates() {
-        ObservationRecordingService.updateTaskStates(context)
+        ObservationRecordingService.updateTaskStates()
     }
 }

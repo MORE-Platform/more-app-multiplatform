@@ -75,18 +75,18 @@ open class ApiClient(
         auth.password = password
     }
 
-    protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: kotlin.collections.List<PartData>?, authNames: kotlin.collections.List<String>): HttpResponse {
+    protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: kotlin.collections.List<PartData>?, authNames: List<String>): HttpResponse {
         return request(requestConfig, MultiPartFormDataContent(body ?: listOf()), authNames)
     }
 
-    protected suspend fun <T: Any?> urlEncodedFormRequest(requestConfig: RequestConfig<T>, body: Parameters?, authNames: kotlin.collections.List<String>): HttpResponse {
+    protected suspend fun <T: Any?> urlEncodedFormRequest(requestConfig: RequestConfig<T>, body: Parameters?, authNames: List<String>): HttpResponse {
         return request(requestConfig, FormDataContent(body ?: Parameters.Empty), authNames)
     }
 
-    protected suspend fun <T: Any?> jsonRequest(requestConfig: RequestConfig<T>, body: Any? = null, authNames: kotlin.collections.List<String>): HttpResponse = request(requestConfig, body, authNames)
+    protected suspend fun <T: Any?> jsonRequest(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse = request(requestConfig, body, authNames)
 
-    protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: kotlin.collections.List<String>): HttpResponse {
-        requestConfig.updateForAuth<T>(authNames)
+    protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse {
+        requestConfig.updateForAuth(authNames)
         val headers = requestConfig.headers
 
         return client.request {
@@ -117,14 +117,14 @@ open class ApiClient(
         }
     }
 
-    private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: kotlin.collections.List<String>) {
+    private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: List<String>) {
         for (authName in authNames) {
             val auth = authentications?.get(authName) ?: throw Exception("Authentication undefined: $authName")
             auth.apply(query, headers)
         }
     }
 
-    private fun URLBuilder.appendPath(components: kotlin.collections.List<String>): URLBuilder = apply {
+    private fun URLBuilder.appendPath(components: List<String>): URLBuilder = apply {
         encodedPath = encodedPath.trimEnd('/') + components.joinToString("/", prefix = "/") { it.encodeURLQueryComponent() }
     }
 

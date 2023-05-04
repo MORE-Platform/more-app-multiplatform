@@ -9,7 +9,7 @@
 import shared
 
 class ScheduleViewModel: ObservableObject {
-    let recorder = IOSDataRecorder()
+    let recorder = AppDelegate.recorder
     let scheduleListType: ScheduleListType
     private let coreModel: CoreScheduleViewModel
 
@@ -22,6 +22,10 @@ class ScheduleViewModel: ObservableObject {
     }
 
     @Published var scheduleDates: [Int64] = []
+    
+    lazy var taskDetailsVM: TaskDetailsViewModel = {
+        TaskDetailsViewModel(dataRecorder: recorder)
+    }()
 
     init(observationFactory: IOSObservationFactory, scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
@@ -52,6 +56,23 @@ class ScheduleViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+    }
+
+    func getSimpleQuestionObservationVM() -> SimpleQuestionObservationViewModel {
+        SimpleQuestionObservationViewModel()
+    }
+
+    func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
+        taskDetailsVM.setSchedule(scheduleId: scheduleId)
+        return taskDetailsVM
     }
 }
 
