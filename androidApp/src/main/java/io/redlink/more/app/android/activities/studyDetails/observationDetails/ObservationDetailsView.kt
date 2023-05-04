@@ -1,13 +1,12 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.app.android.extensions.getStringResource
@@ -17,8 +16,14 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun ObservationDetailsView(
-    viewModel: ObservationDetailsViewModel
+    viewModel: ObservationDetailsViewModel,
+    navController: NavController
 ) {
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.OBSERVATION_DETAILS.route)
+    LaunchedEffect(route) {
+        viewModel.viewDidAppear()
+    }
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

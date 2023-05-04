@@ -33,6 +33,10 @@ class CoreObservationDetailsViewModel(
 
     val observationDetailsModel = MutableStateFlow<ObservationDetailsModel?>(null)
 
+    init {
+        viewDidAppear()
+    }
+
     override fun viewDidAppear() {
         launchScope {
             observationRepository.observationById(observationId)

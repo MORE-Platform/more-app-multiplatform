@@ -30,4 +30,8 @@ class ObservationDetailsViewModel(
             }
         }
     }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
 }
