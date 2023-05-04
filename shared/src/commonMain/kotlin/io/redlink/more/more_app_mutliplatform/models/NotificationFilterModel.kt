@@ -1,19 +1,20 @@
 package io.redlink.more.more_app_mutliplatform.models
 
-class NotificationFilterModel()
-    : MutableList<NotificationFilterTypeModel> by mutableListOf() {
+class NotificationFilterModel(list: List<NotificationFilterTypeModel> = listOf())
+    : List<NotificationFilterTypeModel> by list {
     fun changeFilter(filter: String): NotificationFilterModel{
+        val copy = mutableListOf<NotificationFilterTypeModel>()
+        copy.addAll(this)
+
         val model = NotificationFilterTypeModel.createModel(filter)
         if(model ==  NotificationFilterTypeModel.ALL || model == null) {
-            this.clear()
+            copy.clear()
         } else if(this.contains(model)) {
-            this.remove(model)
+            copy.remove(model)
         } else {
-            this.add(model)
+            copy.add(model)
         }
-        val copy = NotificationFilterModel()
-        copy.addAll(this)
-        return copy
+        return NotificationFilterModel(copy)
     }
 
     fun contains(element: String): Boolean {

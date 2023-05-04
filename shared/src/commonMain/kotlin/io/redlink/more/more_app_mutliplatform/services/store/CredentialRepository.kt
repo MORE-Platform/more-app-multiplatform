@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
 
 class CredentialRepository(private val sharedStorageRepository: SharedStorageRepository) {
@@ -34,7 +35,7 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
         cache = null
     }
 
-    fun credentials() = cache ?: load()
+    fun credentials() = cache?.freeze() ?: load()?.freeze()
 
     fun hasCredentials() = credentials() != null
 

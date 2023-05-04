@@ -33,6 +33,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            freeCompilerArgs = freeCompilerArgs + "-Xallocator=std"
         }
     }
 
@@ -73,7 +74,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha04")
+                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("com.google.code.gson:gson:$gsonVersion")

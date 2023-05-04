@@ -1,6 +1,7 @@
 package io.redlink.more.app.android.observations
 
 import android.content.Context
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
@@ -10,7 +11,7 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 
 class AndroidObservationFactory(context: Context) :
-    ObservationFactory(AndroidObservationDataManager(context)) {
+    ObservationFactory(MoreApplication.observationDataManager ?: AndroidObservationDataManager(context)) {
     init {
         observations.addAll(
             setOf(

@@ -44,8 +44,7 @@ class FCMService: NSObject {
         Task { @MainActor in
             do {
                 print("FCM registration token: \(fcmToken)")
-                let networkService = NetworkService.create()
-                try await networkService.sendNotificationToken(token: fcmToken)
+                try await AppDelegate.shared.networkService.sendNotificationToken(token: fcmToken)
             } catch {
                 print("Token could not be stored")
             }

@@ -7,8 +7,10 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.api
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.*
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import kotlinx.serialization.json.Json
@@ -29,12 +31,9 @@ open class DataApi(
      * @param dataBulk  (optional)
      * @return kotlin.collections.List<kotlin.String>
      */
-    @Suppress("UNCHECKED_CAST")
     open suspend fun storeBulk(dataBulk: DataBulk? = null): HttpResponse<List<String>> {
 
-        val localVariableAuthNames = listOf<String>("apiKey")
-
-        val localVariableBody = dataBulk
+        val localVariableAuthNames = listOf("apiKey")
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
@@ -47,22 +46,25 @@ open class DataApi(
             requiresAuthentication = true,
         )
 
+        Napier.d { "Sending data with config: $localVariableConfig" }
+
         return jsonRequest(
             localVariableConfig,
-            localVariableBody,
+            dataBulk,
             localVariableAuthNames
-        ).wrap<StoreBulkResponse>().map { value }
+        ).wrap<StoreBulkResponse>().map { value.freeze() }.freeze()
     }
 
 
     @Serializable
     private class StoreBulkResponse(val value: List<kotlin.String>) {
+        @OptIn(ExperimentalSerializationApi::class)
         @Serializer(StoreBulkResponse::class)
         companion object : KSerializer<StoreBulkResponse> {
             private val serializer: KSerializer<List<kotlin.String>> = serializer<List<kotlin.String>>()
             override val descriptor = serializer.descriptor
             override fun serialize(encoder: Encoder, obj: StoreBulkResponse) = serializer.serialize(encoder, obj.value)
-            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder))
+            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder)).freeze()
         }
     }
 

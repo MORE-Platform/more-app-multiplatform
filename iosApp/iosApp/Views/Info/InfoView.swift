@@ -31,14 +31,16 @@ struct InfoView: View {
                     .clearListBackground()
                     
                     Spacer()
-                    ContactInfo(
-                        studyTitle: .constant(viewModel.studyTitle  ?? ""),
-                        institute: .constant(viewModel.institute),
-                        contactPerson: .constant(viewModel.contactPerson),
-                        info: .constant(String.localizedString(forKey: "info_disclaimer", inTable: infoStrings, withComment: "Contact us.")),
-                        contactEmail: viewModel.contactEmail,
-                        contactTel: viewModel.contactTel
-                    )
+                    ScrollView {
+                        ContactInfo(
+                            studyTitle: .constant(viewModel.studyTitle  ?? ""),
+                            institute: .constant(viewModel.institute),
+                            contactPerson: .constant(viewModel.contactPerson),
+                            info: .constant(String.localizedString(forKey: "info_disclaimer", inTable: infoStrings, withComment: "Contact us.")),
+                            contactEmail: viewModel.contactEmail,
+                            contactTel: viewModel.contactTel
+                        )
+                    }
                     Spacer()
                 }
                 .padding(.horizontal, 24)

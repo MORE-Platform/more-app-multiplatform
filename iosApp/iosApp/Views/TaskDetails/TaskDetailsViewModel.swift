@@ -7,18 +7,20 @@
 //
 
 import shared
+import SwiftUI
 
 class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
     @Published var taskDetailsModel: TaskDetailsModel?
     @Published var dataCount: Int64 = 0
-
-    @Published var observationRepetitionInterval: String = "1x/week"
-     
     
-    init(observationId: String, scheduleId: String, dataRecorder: IOSDataRecorder) {
-        self.coreModel = CoreTaskDetailsViewModel(scheduleId: scheduleId, dataRecorder: dataRecorder)
+    var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
+    
+    init(dataRecorder: IOSDataRecorder) {
+        print("TaskDetails VM init...")
+        self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
+        self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { taskDetails in
             if let taskDetails {
                 self.taskDetailsModel = taskDetails
@@ -30,6 +32,20 @@ class TaskDetailsViewModel: ObservableObject {
                 self.dataCount = count?.int64Value ?? 0
             }
         }
+    }
+    
+    func setSchedule(scheduleId: String) {
+        coreModel.setSchedule(scheduleId: scheduleId)
+    }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+        taskDetailsModel = nil
+        dataCount = 0
     }
     
     func start() {

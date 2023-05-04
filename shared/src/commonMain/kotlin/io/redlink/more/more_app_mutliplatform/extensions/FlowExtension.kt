@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.extensions
 
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
+import io.realm.kotlin.internal.platform.freeze
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 fun <T: Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Job()
     this.onEach {
-        provideNewState(it)
+        provideNewState(it.freeze())
     }.launchIn(CoroutineScope(Dispatchers.Main + job))
     return object : Closeable {
         override fun close() {
@@ -27,7 +28,7 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
     val job = Job()
     this.onEach {
         it?.let {
-            provideNewState(it)
+            provideNewState(it.freeze())
         }
     }.launchIn(CoroutineScope(Dispatchers.Main + job))
     return object : Closeable {
@@ -105,3 +106,4 @@ fun <T> MutableStateFlow<T>.set(value: T?) {
         }
     }
 }
+

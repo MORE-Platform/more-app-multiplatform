@@ -12,7 +12,7 @@ import shared
 class IOSObservationFactory: ObservationFactory {
 
     init() {
-        super.init(dataManager: iOSObservationDataManager())
+        super.init(dataManager: AppDelegate.dataManager)
 //        observations.add(AccelerometerObservation(sensorPermission: []))
         observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
         observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))

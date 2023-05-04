@@ -4,6 +4,7 @@ import io.ktor.utils.io.core.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class CoreLoginViewModel(private val registrationService: RegistrationService) {
+class CoreLoginViewModel(private val registrationService: RegistrationService): CoreViewModel() {
 
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -34,5 +35,9 @@ class CoreLoginViewModel(private val registrationService: RegistrationService) {
                 job.cancel()
             }
         }
+    }
+
+    override fun viewDidAppear() {
+
     }
 }

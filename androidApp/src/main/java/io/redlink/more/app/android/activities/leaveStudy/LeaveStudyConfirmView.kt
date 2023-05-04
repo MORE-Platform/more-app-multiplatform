@@ -4,6 +4,9 @@ import android.app.Activity
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +29,17 @@ import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 @Composable
 fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyViewModel) {
     val context = LocalContext.current
+
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    LaunchedEffect(route) {
+        viewModel.viewDidAppear()
+    }
+    DisposableEffect(route) {
+        onDispose {
+            viewModel.viewDidDisappear()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),

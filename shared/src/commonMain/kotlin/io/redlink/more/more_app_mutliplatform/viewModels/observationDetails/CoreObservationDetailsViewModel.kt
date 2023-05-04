@@ -16,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,27 +26,31 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 class CoreObservationDetailsViewModel(
-    observationId: String
-) {
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
+    private val observationId: String
+) : CoreViewModel() {
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
     private val observationRepository: ObservationRepository = ObservationRepository()
 
     val observationDetailsModel = MutableStateFlow<ObservationDetailsModel?>(null)
 
-    init {
-        scope.launch {
-            observationRepository.observationById(observationId).combine(scheduleRepository.getFirstAndLastDate(observationId)) { observation, pair ->
-                Triple(
-                    observation,
-                    pair.first,
-                    pair.second
-                )
-            } .collect { triple ->
-                triple.first?.let { observation ->
-                    observationDetailsModel.value = ObservationDetailsModel.createModelFrom(observation, triple.second, triple.third)
+    override fun viewDidAppear() {
+        launchScope {
+            observationRepository.observationById(observationId)
+                .combine(scheduleRepository.getFirstAndLastDate(observationId)) { observation, pair ->
+                    Triple(
+                        observation,
+                        pair.first,
+                        pair.second
+                    )
+                }.collect { triple ->
+                    triple.first?.let { observation ->
+                        observationDetailsModel.value = ObservationDetailsModel.createModelFrom(
+                            observation,
+                            triple.second,
+                            triple.third
+                        )
+                    }
                 }
-            }
         }
     }
 

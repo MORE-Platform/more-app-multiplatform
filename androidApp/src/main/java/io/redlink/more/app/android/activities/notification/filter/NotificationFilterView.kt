@@ -1,3 +1,5 @@
+package io.redlink.more.app.android.activities.notification.filter
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +29,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
         viewModel.processFilter(it)
     }
 
-    LazyColumn() {
+    LazyColumn {
         item {
             HeaderTitle(
                 title = getString(R.string.more_select_filter),
@@ -36,7 +38,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
 
-        items(notificationFilterList) { filter ->
+        items(notificationFilterList.toList()) { filter ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {

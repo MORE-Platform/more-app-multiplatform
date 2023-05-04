@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.services.bluetooth
 
+import io.realm.kotlin.internal.platform.freeze
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
@@ -22,7 +23,7 @@ class BluetoothDevice: RealmObject {
                 this.deviceName = deviceName
                 this.address = address
                 this.isConnectable = isConnectable
-            }
+            }.freeze()
         }
     }
 }

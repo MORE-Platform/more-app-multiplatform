@@ -26,6 +26,6 @@ struct LoginButton: View {
 struct LoginButton_Previews: PreviewProvider {
     static var previews: some View {
         LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false))
-            .environmentObject(LoginViewModel(registrationService: RegistrationService(sharedStorageRepository: UserDefaultsRepository())))
+            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository()))))
     }
 }
