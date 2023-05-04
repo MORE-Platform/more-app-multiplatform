@@ -6,6 +6,6 @@
     <string name="more_main_tab_observations">Observations</string>
     <string name="more_main_tab_filters">Open Filter Settings</string>
 
-    <string name="more_main_completed_tasks">Completed Tasks</string>
+    <string name="more_main_completed_tasks">Past Tasks</string>
     <string name="more_main_overall_progress">Overall Progress</string>
 </resources>

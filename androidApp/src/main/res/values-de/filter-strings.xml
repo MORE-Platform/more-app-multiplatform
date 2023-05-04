@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_filter_deactivated">Keine Filter aktiviert</string>
+    <plurals name="filter_text">
+        <item quantity="one">%d Type</item>
+        <item quantity="other">%d Types</item>
+    </plurals>
+
+    <string name="more_filter_all">Alle Typen</string>
+    <string name="more_filter_question">Fragebogen</string>
+    <string name="more_filter_accelerometer">GPS</string>
+    <string name="more_filter_polar">Polar Verity</string>
+    <string name="more_filter_gps">Beschleunigungsmesser</string>
+
+    <string name="more_filter_entire_time">Gesamte Zeit</string>
+    <string name="more_filter_today_tomorrow">Heute und morgen</string>
+    <string name="more_filter_week">Eine Woche</string>
+    <string name="more_filter_month">Ein Monat</string>
+
+    <string name="more_filter_selected">Filter aktiviert</string>
+    <string name="more_filter_set_duration">Zeit auswählen</string>
+    <string name="more_filter_set_type">Typ auswählen</string>
+
+    <string name="more_select_filter">Filter auswählen</string>
+
+    <string name="more_filter_notification_all">Alle Nachrichten</string>
+    <string name="more_filter_notification_unread">Nicht gelesene Nachrichten anzeigen</string>
+    <string name="more_filter_notification_important">Wichtige Nachrichten anzeigen</string>
+</resources>
