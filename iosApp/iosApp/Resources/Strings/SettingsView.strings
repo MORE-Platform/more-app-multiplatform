@@ -19,3 +19,4 @@
 "sure_message" = "Are you sure you want to withdraw your participation?";
 "really_message" = "Do you really want to withdraw?";
 "withdraw" = "Withdraw from study";
+"study_consent" = "Consent";

@@ -15,7 +15,7 @@ struct ConsentList: View {
     var body: some View {
         ScrollView {
             ForEach(permissionModel.consentInfo, id: \.self) { consentModel in
-                ConsentListItem(consentInfo: consentModel, hasPreview: consentModel.title == "Study Consent")
+                ConsentListItem(consentInfo: consentModel, hasPreview: consentModel.title == "Consent")
                     .listRowInsets(.moreListStyleEdgeInsets.listItem)
                     .listRowBackground(Color.more.mainBackground)
             }

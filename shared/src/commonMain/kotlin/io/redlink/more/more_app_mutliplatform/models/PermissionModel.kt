@@ -14,7 +14,7 @@ data class PermissionModel(
     companion object {
         fun create(study: Study): PermissionModel {
             val observationConsent = mutableListOf<PermissionConsentModel>()
-            observationConsent.add(PermissionConsentModel("Study Consent", study.consentInfo))
+            observationConsent.add(PermissionConsentModel("Consent", study.consentInfo))
             observationConsent.addAll( study.observations.map { PermissionConsentModel(it.observationTitle, it.participantInfo) })
             return PermissionModel(study.studyTitle, study.participantInfo, study.consentInfo, observationConsent)
         }
