@@ -20,11 +20,11 @@ struct ObservationDetailsView: View {
                 VStack(
                     spacing: 20
                 ) {
-                    VStack {
+                    VStack(alignment: HorizontalAlignment.leading) {
                         HStack {
                             Title2(titleText: .constant(viewModel.observationDetailModel?.observationTitle ?? ""))
                                 .padding(0.5)
-                            // abort button
+                                
                         }
                         .frame(height: 40)
                         HStack(
@@ -33,7 +33,8 @@ struct ObservationDetailsView: View {
                             Spacer()
                         }
                     }
-
+                    
+                    
                     let date: String =
                         (viewModel.observationDetailModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") == (viewModel.observationDetailModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? "") ? (viewModel.observationDetailModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") : (viewModel.observationDetailModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? "") + " - " + (viewModel.observationDetailModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? "")
                     
@@ -54,6 +55,12 @@ struct ObservationDetailsView: View {
             }
             .customNavigationTitle(with: NavigationScreens.observationDetails.localize(useTable: navigationStrings, withComment: "Observation Detail"))
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                viewModel.viewDidAppear()
+            }
+            .onDisappear {
+                viewModel.viewDidDisappear()
+            }
         }
     }
 }

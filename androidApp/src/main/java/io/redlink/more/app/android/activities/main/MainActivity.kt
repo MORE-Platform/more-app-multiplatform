@@ -130,6 +130,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 ObservationDetailsView(
                     viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                    navController = navController
                 )
             }
 

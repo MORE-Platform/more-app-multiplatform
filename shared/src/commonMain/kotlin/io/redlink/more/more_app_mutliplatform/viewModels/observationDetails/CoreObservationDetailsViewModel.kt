@@ -54,6 +54,13 @@ class CoreObservationDetailsViewModel(
         }
     }
 
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
+        launchScope {
+            observationDetailsModel.emit(null)
+        }
+    }
+
     fun onLoadObservationDetails(provideNewState: ((ObservationDetailsModel?) -> Unit)): Closeable {
         return observationDetailsModel.asClosure(provideNewState)
     }

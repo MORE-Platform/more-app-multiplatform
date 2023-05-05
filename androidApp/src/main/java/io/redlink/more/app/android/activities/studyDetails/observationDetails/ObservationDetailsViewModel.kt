@@ -29,5 +29,18 @@ class ObservationDetailsViewModel(
                 }
             }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                coreViewModel.viewDidAppear()
+            }
+        }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
 }
