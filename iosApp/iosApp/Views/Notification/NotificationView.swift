@@ -37,6 +37,12 @@ struct NotificationView: View {
                             }
                         }
                     }
+                    .onAppear {
+                        notificationViewModel.viewDidAppear()
+                    }
+                    .onDisappear {
+                        notificationViewModel.viewDidDisappear()
+                    }
                 }
             } topBarContent: {
                 EmptyView()

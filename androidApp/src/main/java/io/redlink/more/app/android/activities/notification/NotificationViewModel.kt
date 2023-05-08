@@ -47,8 +47,6 @@ class NotificationViewModel: ViewModel() {
     }
 
     fun setNotificationToRead(notification: NotificationModel) {
-        viewModelScope.launch {
-            coreViewModel.setNotificationReadStatus(notification)
-        }
+        coreViewModel.setNotificationReadStatus(notification)
     }
 }

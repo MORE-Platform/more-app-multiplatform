@@ -36,4 +36,12 @@ class NotificationViewModel: ObservableObject {
     func setNotificationToRead(notification: NotificationModel) {
         coreModel.setNotificationReadStatus(notification: notification)
     }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+    }
 }

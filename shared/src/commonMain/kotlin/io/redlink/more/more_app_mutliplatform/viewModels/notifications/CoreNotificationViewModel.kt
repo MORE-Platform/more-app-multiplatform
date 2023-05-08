@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel): CoreViewModel() {
     private val notificationRepository: NotificationRepository = NotificationRepository()
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
     private val originalNotificationList = mutableListOf<NotificationModel>()
     val notificationList: MutableStateFlow<List<NotificationModel>> = MutableStateFlow(listOf())
     var count: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -34,6 +33,14 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
         }
     }
 
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
+        originalNotificationList.clear()
+        viewModelScope.launch {
+            notificationList.emit(emptyList())
+        }
+    }
+
     fun onNotificationLoad(provideNewState: ((List<NotificationModel>) -> Unit)): Closeable {
         return notificationList.asClosure(provideNewState)
     }
@@ -41,8 +48,6 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
     fun onCountLoad(provideNewState: (Int?) -> Unit) = count.asClosure(provideNewState)
 
     fun setNotificationReadStatus(notification: NotificationModel) {
-        scope.launch {
-            notificationRepository.setNotificationReadStatus(notification.notificationId)
-        }
+        notificationRepository.setNotificationReadStatus(notification.notificationId)
     }
 }

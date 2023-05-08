@@ -33,7 +33,7 @@ class CoreScheduleViewModel(
 
     override fun viewDidAppear() {
         launchScope {
-            scheduleRepository.allSchedulesWithStatus()
+            scheduleRepository.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
                 .combine(observationRepository.observations()) { schedules, observations ->
                     observations.associate { observation ->
                         observation.observationTitle to schedules
