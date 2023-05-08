@@ -56,7 +56,7 @@ fun ConsentView(model: ConsentViewModel) {
             )
             Spacer(Modifier.padding(8.dp))
             AccordionReadMore(
-                title = "Participant Information",
+                title = getStringResource(id = R.string.participant_information),
                 description = model.permissionModel.value.studyParticipantInfo,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_notification_view_empty">Es gibt keine Nachrichten</string>
+
+    <string name="more_notification_view_table_header">Nachrichten</string>
+    <string name="more_notification_view_read_notifications">Gelesene Nachrichten</string>
+    <string name="more_notification_view_unread_notification">Ungelesene Nachrichten</string>
+
+    <string name="more_notification_view_show_unread">Ungelesene Nachrichten anzeigen</string>
+    <string name="current_filter">Alle Nachrichten</string>
+    <string name="more_logo">More Logo</string>
+    <string name="notification">Nchrichten</string>
+    <string name="no_notifications_yet">Die Nachrichtenliste ist derzeit leer!</string>
+</resources>

@@ -28,7 +28,7 @@ fun SmallTextIconButton(
         colors = buttonColors,
         enabled = enabled,
         modifier = Modifier
-            .fillMaxWidth(0.35f)
+            .fillMaxWidth(0.4f)
     ) {
         Icon(
             imageVector = image,

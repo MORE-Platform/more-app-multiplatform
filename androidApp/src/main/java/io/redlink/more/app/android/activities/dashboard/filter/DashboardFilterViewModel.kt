@@ -29,7 +29,7 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
 
     val typeFilters = MoreApplication.observationFactory!!.observationTypes().map {
         Pair<String, String?>(it.formatObservationTypeString(), it)
-    }.toMutableList().apply { this.add(0, Pair("All Items", null)) }.toList()
+    }.toMutableList().apply { this.add(0, Pair(getString(R.string.more_filter_all), null)) }.toList()
 
     init {
         scope.launch {

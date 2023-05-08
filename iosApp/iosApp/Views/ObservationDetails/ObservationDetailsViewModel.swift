@@ -22,4 +22,11 @@ class ObservationDetailsViewModel: ObservableObject {
             }
         }
     }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+    }
 }

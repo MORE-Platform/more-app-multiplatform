@@ -93,7 +93,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.SETTINGS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
                 viewModel.showBackButton.value = true
-                SettingsView(model = viewModel.settingsViewModel)
+                SettingsView(model = viewModel.settingsViewModel, navController = navController)
             }
             composable(
                 "${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId={scheduleId}&scheduleListType={scheduleListType}",
@@ -130,6 +130,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
                 ObservationDetailsView(
                     viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                    navController = navController
                 )
             }
 

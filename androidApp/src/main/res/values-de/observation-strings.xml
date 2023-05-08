@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_observation_start">Aufzeichnung starten</string>
+    <string name="more_observation_pause">Aufzeichnung pausieren</string>
+    <string name="more_observation_stop">Aufzeichnung stoppen</string>
+    <string name="more_observation_running">Aufzeichnung läuft</string>
+    <string name="more_questionnaire_start">Starte den Fragebogen</string>
+    <string name="more_questionnaire_select">Bitte beantworten Sie die Frage</string>
+    <string name="more_questionnaire_type">Simpler Fragebogen</string>
+
+    <string name="more_observation_notification_explanation">Es werden aktuell  Daten  aufgezeichnet</string>
+
+    <string name="more_observation_ready_title">Datenaufzeichnung ist bereit</string>
+    <string name="more_observation_ready_message">Bitte öffnen sie die MORE app, um Daten aufzuzeichnen</string>
+
+    <string name="more_observation_datapoints">Datenpunkte aufgezeichnet</string>
+</resources>

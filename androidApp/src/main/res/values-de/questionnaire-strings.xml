@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_quest_thank_you">Vielen Dank!</string>
+    <string name="more_quest_thank_you_full">Vielen Dank für Ihre Teilnahme!</string>
+    <string name="more_quest_validation">Ihre Antwort zur Frage wurde erfolgreich übermittelt!</string>
+    <string name="more_quest_complete">Einreichen</string>
+    <string name="more_quest_return_button_title">Zurück zur Übersicht</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_dashboard_study_not_active">Die Studie ist derzeit nicht aktiv</string>
+
+    <string name="more_main_tab_schedule">Zeitplan</string>
+    <string name="more_main_tab_observations">Observat</string>
+    <string name="more_main_tab_filters">Öffnen Sie die Filter</string>
+
+    <string name="more_main_completed_tasks">Vergangene Aufgaben</string>
+    <string name="more_main_overall_progress">Gesamtfortschritt</string>
+</resources>

@@ -18,15 +18,13 @@ class NotificationViewModel: ObservableObject {
     @Published var notificationList: [NotificationModel] = []
     @Published var notificationCount: Int64 = 0
     @Published var filterText: String = "FilterText"
-    
+
     init() {
         self.coreModel = CoreNotificationViewModel(coreFilterModel: filterModel.coreModel)
         self.notificationList = []
         
         coreModel.onNotificationLoad { notifications in
-            if !notifications.isEmpty {
-                self.notificationList = notifications
-            }
+            self.notificationList = notifications
         }
         
         coreModel.onCountLoad { count in
@@ -37,7 +35,15 @@ class NotificationViewModel: ObservableObject {
     func setNotificationToRead(notification: NotificationModel) {
         coreModel.setNotificationReadStatus(notification: notification)
     }
-    
+
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+    }
+
     func updateFilterText() {
         self.filterText = filterModel.getFilterText()
     }

@@ -21,12 +21,7 @@ struct SettingsView: View {
             VStack(alignment: .leading) {
                 Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
                     .foregroundColor(.more.secondary)
-                    .padding(.bottom)
-                MoreActionButton(disabled: .constant(false)) {
-                    
-                } label: {
-                    Text(String.localizedString(forKey: "refresh_study_config", inTable: stringTable, withComment: "button to refresh study configuration"))
-                }
+                    .padding(.bottom, 15)
                 if let permissions = viewModel.permissionModel {
                     ConsentList(permissionModel: .constant(permissions))
                         .padding(.top)

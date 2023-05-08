@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_settings_permission_information">Sie haben alle notwendigen Zustimmungen erteilt. Sie können die Zustimmmungen zurückziehen, indem Sie die gesamte Studie verlassen.</string>
+    <string name="more_settings_refresh_study">Studieneinstellungen aktualisieren</string>
+    <string name="more_settings_refresh_study_failure_okay">OK</string>
+    <string name="more_settings_refresh_study_failure_title">Ein Fehler beim Update der Studie ist aufgetreten!</string>
+
+    <string name="more_settings_exit_dialog_title">Studie verlassen</string>
+    <string name="more_settings_withdraw_statement">Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen.</string>
+    <string name="more_settings_withdraw_statement_long">Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher aufgezeichneten  Daten werden von Ihrem Mobiltelefon gelöscht.</string>
+    <string name="more_settings_withdraw_question">Möchten Sie wirklich die Studie verlassen?</string>
+    <string name="more_settings_withdraw_question_confirm">Sind Sie sicher, dass sie Ihre Teilnahme an der Studie beenden wollen?</string>
+    <string name="more_settings_resign_swipe">Ziehen, um die Studie zu verlassen</string>
+    <string name="more_settings_continue">Weiterhin teilnehmen!</string>
+    <string name="more_settings_withdraw_from_study">Die Studie verlassen</string>
+    <string name="more_read_more">Mehr</string>
+    <string name="more_read_less">Weniger</string>
+</resources>

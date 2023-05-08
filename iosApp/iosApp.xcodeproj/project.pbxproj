@@ -407,13 +407,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		07190FE829E809A700A8CB1F /* ExitConfirmation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ExitConfirmation;
-			sourceTree = "<group>";
-		};
 		07BC54AA29CB2F1D00459267 /* StudyDetails */ = {
 			isa = PBXGroup;
 			children = (
