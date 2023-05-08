@@ -188,6 +188,9 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
     override fun close() {
         stopScanning()
         foundBluetoothDevices.clear()
+        specificBluetoothConnectors.values.forEach { it.close() }
+
+        context.unregisterReceiver(bondStateReceiver)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {

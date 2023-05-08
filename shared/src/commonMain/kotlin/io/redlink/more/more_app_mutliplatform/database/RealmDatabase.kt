@@ -131,6 +131,7 @@ object RealmDatabase {
     }
 
     fun deleteAll() {
+        Napier.d { "Deleting all data from database..." }
         realm?.writeBlocking {
             this.deleteAll()
         }
