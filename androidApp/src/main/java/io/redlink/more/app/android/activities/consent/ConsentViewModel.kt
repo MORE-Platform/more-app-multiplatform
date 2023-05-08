@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
+import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.firebase.FCMService
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
@@ -26,7 +29,7 @@ class ConsentViewModel(
     registrationService: RegistrationService,
     private val consentViewModelListener: ConsentViewModelListener
 ) : ViewModel() {
-    private val coreModel = CorePermissionViewModel(registrationService)
+    private val coreModel = CorePermissionViewModel(registrationService, getString(R.string.consent_information))
     private var consentInfo: String? = null
 
     val permissionModel =
