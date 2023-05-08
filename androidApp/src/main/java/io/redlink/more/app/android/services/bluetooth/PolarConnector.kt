@@ -34,6 +34,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
 
         api.setPolarFilter(false)
         api.setApiCallback(polarObserverCallback)
+        api.setAutomaticReconnection(true)
         api
     }
 
@@ -113,6 +114,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
 
     override fun close() {
         observer = null
+        polarApi.cleanup()
         stopScanning()
     }
 

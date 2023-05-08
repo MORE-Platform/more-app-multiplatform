@@ -33,9 +33,11 @@ class GPSObservation(
     fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
+        Napier.d { "Trying to start GPS..." }
         if (this.activate()) {
             val listener = this
             scope.launch {
+                Napier.d { "Registering GPS Service..." }
                 gpsService.registerForLocationUpdates(listener)
             }
             return true
@@ -91,9 +93,11 @@ class GPSObservation(
                     permission
                 ) == PackageManager.PERMISSION_DENIED
             ) {
+                Napier.d { "Has no GPS permissions!" }
                 return false
             }
         }
+        Napier.d { "Has GPS permissions!" }
         return true
     }
 

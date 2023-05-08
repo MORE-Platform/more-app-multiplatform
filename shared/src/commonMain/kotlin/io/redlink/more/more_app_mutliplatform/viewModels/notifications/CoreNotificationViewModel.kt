@@ -48,8 +48,6 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
     fun onCountLoad(provideNewState: (Int?) -> Unit) = count.asClosure(provideNewState)
 
     fun setNotificationReadStatus(notification: NotificationModel) {
-        viewModelScope.launch {
-            notificationRepository.setNotificationReadStatus(notification.notificationId)
-        }
+        notificationRepository.setNotificationReadStatus(notification.notificationId)
     }
 }

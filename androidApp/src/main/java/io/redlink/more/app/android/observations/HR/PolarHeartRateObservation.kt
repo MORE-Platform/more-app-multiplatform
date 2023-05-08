@@ -10,6 +10,7 @@ import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -60,19 +61,27 @@ class PolarHeartRateObservation(context: Context) :
     }
 
     override fun start(): Boolean {
+        Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
         if (connectedDevices.isNotEmpty()) {
-            connectedDevices.first().deviceId?.let {
-                heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
+            return connectedDevices.first().deviceId?.let {
+                try {
+                    heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
                         { polarData ->
-                            Napier.i{ "Polar Data: $polarData"}
+                            Napier.i { "Polar Data: $polarData" }
                             storeData(mapOf("hr" to polarData.samples[0].hr))
                         },
-                { error ->
-                    Napier.e( error.stackTraceToString())
-                })
-                return true
-            }
+                        { error ->
+                            Napier.e(error.stackTraceToString())
+                            stopAndSetState(ScheduleState.PAUSED)
+                        })
+                    true
+                } catch (exception: Exception) {
+                    Napier.e { exception.stackTraceToString() }
+                    false
+                }
+            } ?: false
         }
+        Napier.d { "No connected devices..." }
         return false
     }
 

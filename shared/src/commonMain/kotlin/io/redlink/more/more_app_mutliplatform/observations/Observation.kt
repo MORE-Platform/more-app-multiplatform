@@ -97,13 +97,13 @@ abstract class Observation(val observationType: ObservationType) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
-        //Napier.d { "Observation ${observationType.observationType} recorded new data: $data" }
+        Napier.d { "Observation ${observationType.observationType} recorded new data: $data" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
-        //Napier.d { "Observation ${observationType.observationType} recorded ${data.size} new datapoints!" }
+        Napier.d { "Observation ${observationType.observationType} recorded ${data.size} new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }
