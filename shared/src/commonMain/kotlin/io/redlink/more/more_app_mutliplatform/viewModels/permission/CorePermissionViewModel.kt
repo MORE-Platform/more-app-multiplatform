@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class CorePermissionViewModel(
-    private val registrationService: RegistrationService
+    private val registrationService: RegistrationService,
+    private val studyConsentTitle: String
 ): CoreViewModel() {
     val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(PermissionModel("Title", "info", "consent info", consentInfo = emptyList()))
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -22,7 +23,7 @@ class CorePermissionViewModel(
 
     fun buildConsentModel() {
         registrationService.study?.let {
-            permissionModel.value = PermissionModel.create(it)
+            permissionModel.value = PermissionModel.create(it, studyConsentTitle)
             observations.value = it.observations
         }
     }
