@@ -37,6 +37,9 @@ class ContentViewModel: ObservableObject {
     }()
     
     lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, scheduleListType: .all))
+    
+    lazy var notificationViewModel: NotificationViewModel = NotificationViewModel()
+    
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self
@@ -47,13 +50,6 @@ class ContentViewModel: ObservableObject {
     lazy var bluetoothViewModel: BluetoothConnectionViewModel = {
         BluetoothConnectionViewModel(bluetoothConnector: bluetoothConnector)
     }()
-
-    lazy var notificationFilterViewModel: NotificationFilterViewModel = {
-        let viewModel = NotificationFilterViewModel()
-        viewModel.delegate = self
-        return viewModel
-    }()
-
 
 
     init() {
@@ -118,25 +114,5 @@ extension ContentViewModel: ConsentViewModelListener {
             }
         }
         showLoginView()
-    }
-}
-
-extension ContentViewModel: NotificationFilterObserver {
-    func onFilterChanged(filter: String, list: [String], stringTable: String) -> [String] {
-        var selectedValueList = list
-        if filter == String(describing: NotificationFilterTypeModel.all) {
-            selectedValueList.removeAll()
-        } else if selectedValueList.contains(filter) {
-            selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
-        } else {
-            selectedValueList.append(filter)
-        }
-        notificationFilterViewModel.processFilterChange(filter: filter)
-        updateNotificationFilterText(stringTable: stringTable)
-        return selectedValueList
-    }
-
-    func updateNotificationFilterText(stringTable: String) {
-        //TODO
     }
 }

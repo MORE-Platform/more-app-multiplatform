@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct NotificationView: View {
-    @StateObject var notificationViewModel: NotificationViewModel = NotificationViewModel()
+    @EnvironmentObject var contentViewModel: ContentViewModel
+    @StateObject var notificationViewModel: NotificationViewModel
     private let navigationStrings = "Navigation"
     private let stringTable = "NotificationView"
     
@@ -17,8 +18,10 @@ struct NotificationView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    Text("Here should be a filter")
-                        .padding(.bottom)
+                    MoreFilter(filterText: $notificationViewModel.filterText) {
+                        NotificationFilterView().environmentObject(notificationViewModel.filterModel)
+                    }.onAppear{ notificationViewModel.updateFilterText() }
+                    .padding(.bottom)
                     
                     ScrollView {
                         ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in

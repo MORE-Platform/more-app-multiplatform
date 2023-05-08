@@ -8,17 +8,10 @@
 
 import shared
 
-protocol NotificationFilterObserver {
-    func onFilterChanged(filter: String, list: [String], stringTable: String) -> [String]
-}
-
 class NotificationFilterViewModel: ObservableObject {
-    let coreModel: CoreNotificationFilterViewModel = CoreNotificationFilterViewModel()
     private let stringTable = "NotificationFilter"
-    
-    var delegate: NotificationFilterObserver? = nil
+    let coreModel: CoreNotificationFilterViewModel = CoreNotificationFilterViewModel()
  
-    @Published var filterText: String = "notificationFilterText"
     @Published var allFilters: [String] = []
     @Published var currentFilters: [String] = []
     
@@ -43,14 +36,33 @@ class NotificationFilterViewModel: ObservableObject {
     
     func updateFilters(multiselect: Bool = true, filter: String, list: [String], stringTable: String) ->
     [String] {
-        return self.delegate?.onFilterChanged(filter: filter, list: list, stringTable: stringTable)
-        ?? []
+        var selectedValueList = list
+        if filter == String(describing: NotificationFilterTypeModel.all) {
+            selectedValueList.removeAll()
+        } else if selectedValueList.contains(filter) {
+            selectedValueList.remove(at: selectedValueList.firstIndex(of: filter)!)
+        } else {
+            selectedValueList.append(filter)
+        }
+        processFilterChange(filter: filter)
+        return selectedValueList
     }
+    
     
     func isItemSelected(selectedValues: [String], option: String) -> Bool {
         if option == String(describing: NotificationFilterTypeModel.all) {
             return selectedValues.isEmpty
         }
         return selectedValues.contains(option)
+    }
+    
+    func getFilterText() -> String {
+        if(currentFilters.isEmpty) {
+            return String.localizedString(forKey: "ALL", inTable: stringTable, withComment: "Get NotificationFilter String")
+        } else {
+            return currentFilters.map{
+                String.localizedString(forKey: String($0), inTable: stringTable, withComment: "Get NotificationFilter String")
+            }.joined(separator: ", ")
+        }
     }
 }

@@ -11,15 +11,16 @@ import shared
 
 
 class NotificationViewModel: ObservableObject {
-    // private let coreModel
-    
+    let filterModel: NotificationFilterViewModel = NotificationFilterViewModel()
     let recorder = IOSDataRecorder()
-    private let coreModel: CoreNotificationViewModel = CoreNotificationViewModel(coreFilterModel: CoreNotificationFilterViewModel())
+    private let coreModel: CoreNotificationViewModel
     
     @Published var notificationList: [NotificationModel] = []
     @Published var notificationCount: Int64 = 0
+    @Published var filterText: String = "FilterText"
     
     init() {
+        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterModel.coreModel)
         self.notificationList = []
         
         coreModel.onNotificationLoad { notifications in
@@ -35,5 +36,9 @@ class NotificationViewModel: ObservableObject {
     
     func setNotificationToRead(notification: NotificationModel) {
         coreModel.setNotificationReadStatus(notification: notification)
+    }
+    
+    func updateFilterText() {
+        self.filterText = filterModel.getFilterText()
     }
 }

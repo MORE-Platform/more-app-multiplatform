@@ -34,6 +34,10 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
         }
     }
 
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
+    }
+
     fun onNotificationLoad(provideNewState: ((List<NotificationModel>) -> Unit)): Closeable {
         return notificationList.asClosure(provideNewState)
     }
