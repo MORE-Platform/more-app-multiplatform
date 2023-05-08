@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.realm.kotlin.internal.platform.freeze
+import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 
 
@@ -9,6 +10,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
 
     init {
         observations.add(SimpleQuestionObservation())
+        observations.add(LimeSurveyObservation())
     }
 
     fun observationTypes() = observations.map { it.observationType.observationType }.toSet()

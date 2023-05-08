@@ -133,13 +133,3 @@ openApiGenerate {
 openApiValidate {
     inputSpec.set(mobileAppApiInput)
 }
-//
-//tasks {
-//    register<OpenApiGenerateTask>("generateOpenApiSpec") {
-//        specFile.set()
-//        specFormat.set("yaml")
-//        outputDirectory.set(file(mobileAppApiOutputDir))
-//        packageName.set(mobileAppApiPackage)
-//
-//    }
-//}

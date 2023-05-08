@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.login.CoreLoginViewModel
 import kotlinx.coroutines.*
 
 interface LoginViewModelListener {

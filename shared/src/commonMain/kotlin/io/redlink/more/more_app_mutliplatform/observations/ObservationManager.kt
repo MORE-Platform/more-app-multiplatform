@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.decodeFromString
@@ -125,6 +126,10 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     }
 
     fun hasRunningTasks() = runningObservations.isNotEmpty()
+
+    fun getObservationForScheduleId(scheduleId: String): Observation? {
+        return runningObservations.keys.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let { runningObservations[it] }
+    }
 
     private fun stopAllInList() {
         Napier.d { "Running Observations to be stopped: $runningObservations" }
