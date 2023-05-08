@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.viewModels
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart

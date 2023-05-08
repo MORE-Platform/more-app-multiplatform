@@ -11,8 +11,10 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -36,6 +38,7 @@ class MainViewModel(context: Context): ViewModel() {
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
+    val maxContentWidth = mutableStateOf(0.9f)
 
     val notificationViewModel = NotificationViewModel()
     val allSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
@@ -64,11 +67,21 @@ class MainViewModel(context: Context): ViewModel() {
         BluetoothConnectionViewModel(bluetoothConnector)
     }
 
+    val infoVM: InfoViewModel by lazy {
+        InfoViewModel()
+    }
+
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
         TaskDetailsViewModel(recorder)
     }
 
+    private val limeSurveyViewModel: LimeSurveyViewModel by lazy {
+        LimeSurveyViewModel()
+    }
+
     fun getTaskDetailsVM(scheduleId: String) = taskDetailsViewModel.apply { setSchedule(scheduleId) }
+
+    fun getLimeSurveyVM(scheduleId: String) = limeSurveyViewModel.apply { setScheduleId(scheduleId) }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -95,6 +108,10 @@ class MainViewModel(context: Context): ViewModel() {
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
-       return ObservationDetailsViewModel(observationId)
+        return ObservationDetailsViewModel(observationId)
+    }
+
+    fun setOrDefaultMaxContentWidth(maxWidth: Float = 0.9f) {
+        this.maxContentWidth.value = maxWidth
     }
 }

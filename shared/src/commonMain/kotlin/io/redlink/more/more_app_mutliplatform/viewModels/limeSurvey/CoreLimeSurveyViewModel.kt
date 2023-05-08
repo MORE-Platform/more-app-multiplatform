@@ -9,30 +9,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class CoreLimeSurveyViewModel(private val observationManager: ObservationManager): CoreViewModel() {
     private var observation: LimeSurveyObservation? = null
     private var scheduleId: String? = null
-
-    val link = MutableStateFlow<String?>(null)
-    val surveyId = MutableStateFlow<String?>(null)
-    val token = MutableStateFlow<String?>(null)
+    val limeSurveyLink = MutableStateFlow<String?>(null)
 
     fun setScheduleId(scheduleId: String) {
-        this.scheduleId = scheduleId
-        launchScope {
-            if (observationManager.start(scheduleId)) {
-                observation = observationManager.getObservationForScheduleId(scheduleId) as? LimeSurveyObservation
+        if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
+            this.scheduleId = scheduleId
+            launchScope(Dispatchers.Main) {
+                if (observationManager.start(scheduleId)) {
+                    observation =
+                        observationManager.getObservationForScheduleId(scheduleId) as? LimeSurveyObservation
+                    observation?.let { observation ->
+                        if (observation.observerAccessible()) {
+                            launchScope(Dispatchers.Main) {
+                                observation.limeURL.collect {
+                                    limeSurveyLink.emit(it)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
     override fun viewDidAppear() {
-        observation?.let { observation ->
-            if (observation.observerAccessible()) {
-                launchScope(Dispatchers.Main) {
-                    link.emit(observation.limeSurveyLink)
-                    surveyId.emit(observation.limeSurveyId)
-                    token.emit(observation.token)
-                }
-            }
-        }
+
     }
 
     override fun viewDidDisappear() {
@@ -44,17 +45,18 @@ class CoreLimeSurveyViewModel(private val observationManager: ObservationManager
         observation?.storeData("")
     }
 
-    fun clear() {
+    fun finish() {
         observation?.stopAndSetDone()
-        scheduleId?.let {
-            observationManager.stop(it)
-        }
+    }
+
+    fun clear() {
+//        scheduleId?.let {
+//            observationManager.stop(it)
+//        }
         scheduleId = null
         observation = null
         launchScope {
-            token.emit(null)
-            link.emit(null)
-            surveyId.emit(null)
+            limeSurveyLink.emit(null)
         }
     }
 

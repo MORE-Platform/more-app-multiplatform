@@ -118,14 +118,20 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
                             else if (viewModel.taskDetailsModel.value.observationType == "question-observation") getStringResource(
                                 id = R.string.more_questionnaire_start
                             )
+                            else if (viewModel.taskDetailsModel.value.observationType == "lime-survey-observation") getStringResource(
+                                id = R.string.more_limesurvey_start
+                            )
                             else getStringResource(
                                 id = R.string.more_observation_start
                             ),
                             enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
                         ) {
-                            if (viewModel.taskDetailsModel.value.observationType == "question-observation")
-                                navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}",)
-                            else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                            if (viewModel.taskDetailsModel.value.observationType == "question-observation") {
+                                navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}")
+                            }
+                            else if (viewModel.taskDetailsModel.value.observationType == "lime-survey-observation") {
+                                navController.navigate("${NavigationScreen.LIMESURVEY.route}/scheduleId=${scheduleId}")
+                            } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                                 viewModel.pauseObservation()
                             } else {
                                 viewModel.startObservation()

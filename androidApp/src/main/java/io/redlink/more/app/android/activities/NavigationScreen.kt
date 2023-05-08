@@ -21,7 +21,8 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     COMPLETED_SCHEDULES("Past Observations", R.string.nav_completed_schedules),
     NOTIFICATION_FILTER("Notification Filter", R.string.nav_notification_filter),
     LEAVE_STUDY("Leave Study", R.string.nav_leave_study),
-    LEAVE_STUDY_CONFIRM("Confirm to leave the study", R.string.nav_leave_study_confirm);
+    LEAVE_STUDY_CONFIRM("Confirm to leave the study", R.string.nav_leave_study_confirm),
+    LIMESURVEY("LimeSurvey", R.string.nav_limesurvey);
 
     @Composable
     fun stringRes() = getStringResource(id = stringResource)

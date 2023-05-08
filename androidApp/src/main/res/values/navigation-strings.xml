@@ -14,4 +14,5 @@
     <string name="nav_completed_schedules">Past Observations</string>
     <string name="nav_leave_study">Leave Study</string>
     <string name="nav_leave_study_confirm">Confirm to leave the study</string>
+    <string name="nav_limesurvey">Limesurvey</string>
 </resources>

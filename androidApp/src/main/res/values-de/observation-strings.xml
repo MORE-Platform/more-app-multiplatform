@@ -14,4 +14,5 @@
     <string name="more_observation_ready_message">Bitte öffnen sie die MORE app, um Daten aufzuzeichnen</string>
 
     <string name="more_observation_datapoints">Datenpunkte aufgezeichnet</string>
+    <string name="more_limesurvey_start">LimeSurvey starten</string>
 </resources>
