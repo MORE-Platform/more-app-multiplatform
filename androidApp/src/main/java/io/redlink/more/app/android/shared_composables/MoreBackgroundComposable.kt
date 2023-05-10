@@ -23,6 +23,7 @@ fun MoreBackground(
     showTabRow: Boolean = false,
     tabSelectionIndex: Int = 0,
     onTabChange: (Int) -> Unit = {},
+    maxWidth: Float = 0.9F,
     content: @Composable () -> Unit,
 ) {
     MorePlatformTheme {
@@ -44,7 +45,7 @@ fun MoreBackground(
                 Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
+                            .fillMaxWidth(maxWidth)
                             .fillMaxHeight()
                     ) {
                         content()

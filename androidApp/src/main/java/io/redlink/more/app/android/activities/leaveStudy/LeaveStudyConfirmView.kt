@@ -31,7 +31,7 @@ fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyVie
     val context = LocalContext.current
 
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY_CONFIRM.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }

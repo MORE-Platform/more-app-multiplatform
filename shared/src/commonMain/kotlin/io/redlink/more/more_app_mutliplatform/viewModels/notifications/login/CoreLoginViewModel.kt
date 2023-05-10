@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.viewModels.login
+package io.redlink.more.more_app_mutliplatform.viewModels.notifications.login
 
 import io.ktor.utils.io.core.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError

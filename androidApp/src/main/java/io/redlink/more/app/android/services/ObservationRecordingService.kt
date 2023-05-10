@@ -36,7 +36,7 @@ class ObservationRecordingService: Service() {
         }
         observationFactory?.let {
             if (observationManager == null) {
-                observationManager = ObservationManager(it)
+                observationManager = MoreApplication.observationManager ?: ObservationManager(it)
             }
         }
         return intent?.action?.let { action ->
@@ -127,7 +127,6 @@ class ObservationRecordingService: Service() {
     private fun stopAll() {
         observationManager?.stopAll()
         if (observationManager?.hasRunningTasks() == false) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
             running = false
             stopSelf()
         }

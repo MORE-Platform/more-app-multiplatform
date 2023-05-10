@@ -12,10 +12,11 @@ class SimpleQuestionModel(
     val answers: MutableSet<String> = mutableSetOf(""),
     var participantInfo: String = "",
     var observationId: String = "",
-    var observationTitle: String = ""
+    var observationTitle: String = "",
+    var scheduleId: String = ""
 ) {
     companion object {
-        fun createModelFrom(observationSchema: ObservationSchema): SimpleQuestionModel {
+        fun createModelFrom(observationSchema: ObservationSchema, scheduleId: String): SimpleQuestionModel {
             val config: Map<String, JsonElement> =
                 observationSchema.configuration?.let { config ->
                     Json.decodeFromString<JsonObject>(config).toMap()
@@ -27,7 +28,8 @@ class SimpleQuestionModel(
                 }?.toMutableSet() ?: mutableSetOf(),
                 observationSchema.participantInfo,
                 observationSchema.observationId,
-                observationSchema.observationTitle
+                observationSchema.observationTitle,
+                scheduleId
             )
 
         }

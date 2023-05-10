@@ -1,5 +1,7 @@
 package io.redlink.more.app.android.activities.dashboard.schedule.list
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -21,11 +23,12 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 
 
 @Composable
 fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, showButton: Boolean) {
-    LocalContext.current
+    val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -60,16 +63,30 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                         "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
                     )
                 }
+            } else if (scheduleModel.observationType == "lime-survey-observation") {
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_limesurvey_start),
+                    enabled = scheduleModel.scheduleState.active()
+                ) {
+                    (context as? Activity)?.let { activity ->
+                        val intent = Intent(context, LimeSurveyActivity::class.java)
+                        intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleModel.scheduleId)
+                        activity.startActivity(intent)
+                    }
+                }
             } else {
                 SmallTextButton(
-                    text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(id = R.string.more_observation_pause) else getStringResource(
+                    text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(
+                        id = R.string.more_observation_pause
+                    ) else getStringResource(
                         id = R.string.more_observation_start
-                    ), enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
+                    ),
+                    enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
                 ) {
-                    if (scheduleModel.scheduleState == ScheduleState.RUNNING){
-                        viewModel.pauseObservation(scheduleModel.scheduleId)}
-                    else{
-                        viewModel.startObservation(scheduleModel.scheduleId,)
+                    if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
+                        viewModel.pauseObservation(scheduleModel.scheduleId)
+                    } else {
+                        viewModel.startObservation(scheduleModel.scheduleId)
                     }
 
                 }

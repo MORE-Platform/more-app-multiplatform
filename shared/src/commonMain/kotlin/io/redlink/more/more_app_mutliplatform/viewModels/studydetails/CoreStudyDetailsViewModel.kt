@@ -7,6 +7,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,13 +16,15 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class CoreStudyDetailsViewModel {
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
-
+class CoreStudyDetailsViewModel: CoreViewModel() {
     val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
 
-    init {
-        scope.launch {
+    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
+        return studyModel.asClosure(provideNewState)
+    }
+
+    override fun viewDidAppear() {
+        launchScope {
             StudyRepository().use { studyRepository ->
                 ScheduleRepository().use { scheduleRepository ->
                     ObservationRepository().use { observationRepository ->
@@ -50,9 +53,5 @@ class CoreStudyDetailsViewModel {
                 }
             }
         }
-    }
-
-    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
-        return studyModel.asClosure(provideNewState)
     }
 }

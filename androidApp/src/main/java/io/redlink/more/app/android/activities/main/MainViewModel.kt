@@ -11,8 +11,10 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -64,6 +66,10 @@ class MainViewModel(context: Context): ViewModel() {
         BluetoothConnectionViewModel(bluetoothConnector)
     }
 
+    val infoVM: InfoViewModel by lazy {
+        InfoViewModel()
+    }
+
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
         TaskDetailsViewModel(recorder)
     }
@@ -95,6 +101,6 @@ class MainViewModel(context: Context): ViewModel() {
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
-       return ObservationDetailsViewModel(observationId)
+        return ObservationDetailsViewModel(observationId)
     }
 }
