@@ -81,14 +81,6 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
-//            InfoItem(
-//                title = "WebViewTest",
-//                imageVector = Icons.Default.Settings,
-//                contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
-//                onClick = {
-//                    navController.navigate(NavigationScreen.LIMESURVEY.route)
-//                }
-//            )
             InfoItem(
                 title = getStringResource(id = R.string.info_leave_study),
                 imageVector = Icons.Default.ExitToApp,
