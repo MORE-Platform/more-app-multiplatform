@@ -29,7 +29,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 @Composable
 fun InfoView(navController: NavController, viewModel: InfoViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }

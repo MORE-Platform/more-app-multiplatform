@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -49,15 +50,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         return findOrCreateObservation(scheduleId)?.let { scheduleSchema ->
             observationRepository.getObservationByObservationId(scheduleSchema.observationId)
                 ?.let { observation ->
-                    val config: MutableMap<String, Any> =
-                        (observation.configuration?.let { config ->
-                            try {
-                                Json.decodeFromString<JsonObject>(config).toMap()
-                            } catch (e: Exception) {
-                                Napier.e { e.stackTraceToString() }
-                                emptyMap()
-                            }
-                        } ?: emptyMap()).toMutableMap()
+                    val config = observation.configAsMap().toMutableMap()
                     scheduleSchema.start?.let {
                         config[Observation.CONFIG_TASK_START] = it.epochSeconds
                     }
@@ -111,6 +104,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                 runningObservations[it]?.stop(it.observationId)
                 setObservationState(it, ScheduleState.DONE)
                 runningObservations.remove(it)
+                log { "Observation removed: ${it.scheduleId}! Observations left: $runningObservations" }
                 Napier.d { "Recording stopped of ${it.scheduleId}" }
             }
         }

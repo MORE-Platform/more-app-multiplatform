@@ -1,5 +1,7 @@
 package io.redlink.more.app.android.activities.tasks
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ButtonDefaults
@@ -11,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -21,13 +24,15 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
 @Composable
 fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
+    val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -130,7 +135,11 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
                                 navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}")
                             }
                             else if (viewModel.taskDetailsModel.value.observationType == "lime-survey-observation") {
-                                navController.navigate("${NavigationScreen.LIMESURVEY.route}/scheduleId=${scheduleId}")
+                                (context as? Activity)?.let { activity ->
+                                    val intent = Intent(context, LimeSurveyActivity::class.java)
+                                    intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleId)
+                                    activity.startActivity(intent)
+                                }
                             } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                                 viewModel.pauseObservation()
                             } else {

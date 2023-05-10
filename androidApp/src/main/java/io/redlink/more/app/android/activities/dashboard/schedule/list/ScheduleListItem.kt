@@ -1,5 +1,7 @@
 package io.redlink.more.app.android.activities.dashboard.schedule.list
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -21,11 +23,12 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 
 
 @Composable
 fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, showButton: Boolean) {
-    LocalContext.current
+    val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -65,9 +68,11 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                     text = getStringResource(id = R.string.more_limesurvey_start),
                     enabled = scheduleModel.scheduleState.active()
                 ) {
-                    navController.navigate(
-                        "${NavigationScreen.LIMESURVEY.route}/scheduleId=${scheduleModel.scheduleId}"
-                    )
+                    (context as? Activity)?.let { activity ->
+                        val intent = Intent(context, LimeSurveyActivity::class.java)
+                        intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleModel.scheduleId)
+                        activity.startActivity(intent)
+                    }
                 }
             } else {
                 SmallTextButton(

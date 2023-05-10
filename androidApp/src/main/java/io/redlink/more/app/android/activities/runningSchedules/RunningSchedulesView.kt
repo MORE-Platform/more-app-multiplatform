@@ -18,7 +18,7 @@ import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 @Composable
 fun RunningSchedulesView(viewModel: ScheduleViewModel, navController: NavController, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.RUNNING_SCHEDULES.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -43,6 +43,7 @@ fun RunningSchedulesView(viewModel: ScheduleViewModel, navController: NavControl
         Column {
             ScheduleListView(
                 navController = navController,
+                routeString = NavigationScreen.RUNNING_SCHEDULES.route,
                 scheduleViewModel = viewModel,
                 showButton = true
             )

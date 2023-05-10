@@ -3,25 +3,20 @@ package io.redlink.more.more_app_mutliplatform.observations.limesurvey
 import io.github.aakira.napier.Napier
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
-import io.ktor.http.fullPath
 import io.ktor.http.parametersOf
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     val limeURL = MutableStateFlow<String?>(null)
 
     override fun start(): Boolean {
-        return true
+        return limeURL.value != null
     }
 
     override fun stop(onCompletion: () -> Unit) {
+        limeURL.value = null
         onCompletion()
     }
 
@@ -40,9 +35,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         if (token != null && limeSurveyId != null) {
             val url = configToLink(limeSurveyLink, limeSurveyId, token)
             Napier.d { "LimeSurvey link: $url" }
-            scope.launch(Dispatchers.Main) {
-                limeURL.emit(url)
-            }
+            limeURL.value = url
         }
     }
 
@@ -54,7 +47,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         return URLBuilder(
             URLProtocol.HTTPS,
             url,
-            pathSegments = listOf("index.php", surveyId),
+            pathSegments = listOf(surveyId),
             parameters = parametersOf("token", token)
         ).build().toString()
     }

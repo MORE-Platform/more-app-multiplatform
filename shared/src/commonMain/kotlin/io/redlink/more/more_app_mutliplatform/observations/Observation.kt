@@ -48,6 +48,8 @@ abstract class Observation(val observationType: ObservationType) {
         if (observationIds.size <= 1) {
             stop {
                 finish()
+                config.clear()
+                configChanged = false
                 observationIds.remove(observationId)
                 scheduleIds.filterValues { it == observationId }.keys.forEach { scheduleId ->
                     scheduleIds.remove(scheduleId)

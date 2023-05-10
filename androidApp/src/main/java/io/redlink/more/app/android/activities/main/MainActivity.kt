@@ -2,6 +2,8 @@ package io.redlink.more.app.android.activities.main
 
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import ObservationDetailsView
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,6 +28,7 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.info.InfoViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyView
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
@@ -35,6 +39,7 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConf
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
@@ -69,7 +74,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
         onTabChange = {
             viewModel.showBackButton.value = false
             viewModel.tabIndex.value = it
-            viewModel.setOrDefaultMaxContentWidth()
             when (it) {
                 0 -> navController.navigate(NavigationScreen.DASHBOARD.route)
                 1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.route)
@@ -121,7 +125,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))
                 viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 TaskDetailsView(
                     navController = navController,
@@ -145,7 +148,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.OBSERVATION_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 ObservationDetailsView(
                     viewModel = viewModel.createObservationDetailView(observationId ?: ""),
@@ -156,7 +158,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 StudyDetailsView(
                     viewModel = viewModel.studyDetailsViewModel, navController = navController,
@@ -172,7 +173,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             ) {
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 val arguments = requireNotNull(it.arguments)
                 when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
@@ -200,7 +200,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 val scheduleId = arguments.getString("scheduleId")
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 QuestionnaireView(
                     navController = navController,
@@ -213,7 +212,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
-                viewModel.setOrDefaultMaxContentWidth()
 
                 QuestionnaireResponseView(navController)
             }
@@ -221,7 +219,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.NOTIFICATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
             }
@@ -230,14 +227,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 BluetoothConnectionView(navController, viewModel.bluetoothConnectionViewModel)
             }
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
 
                 RunningSchedulesView(
                     viewModel = viewModel.runningSchedulesViewModel,
@@ -249,7 +244,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.COMPLETED_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
                 CompletedSchedulesView(
                     viewModel = viewModel.completedSchedulesViewModel,
                     navController = navController,
@@ -259,27 +253,13 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.LEAVE_STUDY.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
                 LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
             }
             composable(NavigationScreen.LEAVE_STUDY_CONFIRM.route) {
                 viewModel.navigationBarTitle.value =
                     NavigationScreen.LEAVE_STUDY_CONFIRM.stringRes()
                 viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth()
                 LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
-            }
-            composable(
-                "${NavigationScreen.LIMESURVEY.route}/scheduleId={scheduleId}",
-                arguments = listOf(navArgument("scheduleId") {
-                    type = NavType.StringType
-                })
-            ) {
-                val scheduleId = requireNotNull(it.arguments?.getString("scheduleId"))
-                viewModel.navigationBarTitle.value = NavigationScreen.LIMESURVEY.stringRes()
-                viewModel.showBackButton.value = true
-                viewModel.setOrDefaultMaxContentWidth(1f)
-                LimeSurveyView(navController, viewModel.getLimeSurveyVM(scheduleId))
             }
         }
     }

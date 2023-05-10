@@ -38,7 +38,6 @@ class MainViewModel(context: Context): ViewModel() {
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
-    val maxContentWidth = mutableStateOf(0.9f)
 
     val notificationViewModel = NotificationViewModel()
     val allSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
@@ -75,13 +74,7 @@ class MainViewModel(context: Context): ViewModel() {
         TaskDetailsViewModel(recorder)
     }
 
-    private val limeSurveyViewModel: LimeSurveyViewModel by lazy {
-        LimeSurveyViewModel()
-    }
-
     fun getTaskDetailsVM(scheduleId: String) = taskDetailsViewModel.apply { setSchedule(scheduleId) }
-
-    fun getLimeSurveyVM(scheduleId: String) = limeSurveyViewModel.apply { setScheduleId(scheduleId) }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -109,9 +102,5 @@ class MainViewModel(context: Context): ViewModel() {
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
         return ObservationDetailsViewModel(observationId)
-    }
-
-    fun setOrDefaultMaxContentWidth(maxWidth: Float = 0.9f) {
-        this.maxContentWidth.value = maxWidth
     }
 }

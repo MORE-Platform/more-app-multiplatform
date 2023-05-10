@@ -1,33 +1,53 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey
 
-import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
+import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
 
-class CoreLimeSurveyViewModel(private val observationManager: ObservationManager): CoreViewModel() {
-    private var observation: LimeSurveyObservation? = null
+class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewModel() {
+    private var observation: LimeSurveyObservation? = observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
     private var scheduleId: String? = null
-    val limeSurveyLink = MutableStateFlow<String?>(null)
+    private var observationId: String? = null
+    val limeSurveyLink: StateFlow<String?> = observation?.limeURL ?: MutableStateFlow(null)
+    val dataLoading = MutableStateFlow(false)
+
+    private val scheduleRepository = ScheduleRepository()
+    private val observationRepository = ObservationRepository()
 
     fun setScheduleId(scheduleId: String) {
-        if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
-            this.scheduleId = scheduleId
-            launchScope(Dispatchers.Main) {
-                if (observationManager.start(scheduleId)) {
-                    observation =
-                        observationManager.getObservationForScheduleId(scheduleId) as? LimeSurveyObservation
-                    observation?.let { observation ->
-                        if (observation.observerAccessible()) {
-                            launchScope(Dispatchers.Main) {
-                                observation.limeURL.collect {
-                                    limeSurveyLink.emit(it)
-                                }
+        if (scheduleId != this.scheduleId) {
+            Napier.d { "Setting scheduleId: $scheduleId for LimeSurvey" }
+            observation?.let { observation ->
+                if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
+                    this.scheduleId = scheduleId
+                    dataLoading.value = true
+                    launchScope(Dispatchers.Main) {
+                        scheduleRepository.scheduleWithId(scheduleId).transform { scheduleSchema ->
+                            Napier.d { "Loaded schedule schema!" }
+                            emit(scheduleSchema?.let {
+                                observationRepository.observationById(it.observationId).firstOrNull()
+                            })
+                        }.firstOrNull().let { observationSchema ->
+                            log { "Loaded observation schema!" }
+                            observationSchema?.let {
+                                observationId = it.observationId
+                                observation.observationConfig(it.configAsMap())
+                                observation.start(it.observationId, scheduleId)
                             }
+                            dataLoading.value = false
                         }
                     }
                 }
+
             }
         }
     }
@@ -41,23 +61,22 @@ class CoreLimeSurveyViewModel(private val observationManager: ObservationManager
         clear()
     }
 
-    fun addData() {
-        observation?.storeData("")
-    }
-
     fun finish() {
         observation?.stopAndSetDone()
+        clear()
+    }
+
+    fun cancel() {
+        observationId?.let {
+            observation?.stop(it)
+        }
+        clear()
     }
 
     fun clear() {
-//        scheduleId?.let {
-//            observationManager.stop(it)
-//        }
         scheduleId = null
-        observation = null
-        launchScope {
-            limeSurveyLink.emit(null)
-        }
+        observationId = null
+        dataLoading.value = false
     }
 
     override fun close() {
