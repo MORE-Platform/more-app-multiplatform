@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
@@ -116,9 +117,9 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                 modifier = Modifier.width(IntrinsicSize.Min)
             ) {
                 if (viewModel.wasAnswered.value) {
-                    IconInline(icon = Icons.Default.Done, contentDescription = "Finish survey")
+                    IconInline(icon = Icons.Default.Done, contentDescription = getStringResource(id = R.string.more_lime_finish))
                 } else {
-                    IconInline(icon = Icons.Default.Close, contentDescription = "Close survey")
+                    IconInline(icon = Icons.Default.Close, contentDescription = getStringResource(id = R.string.more_lime_cancel))
                 }
             }
         }
@@ -129,7 +130,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    BasicText(text = "Data loading...")
+                    BasicText(text = "${getStringResource(id = R.string.more_lime_data_loading)}...")
                     CircularProgressIndicator()
                 }
             } else {
@@ -144,10 +145,10 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                             it.loadUrl(limeSurveyLink)
                         }, modifier = Modifier.fillMaxSize())
                     } ?: run {
-                        Text(text = "System error! Could not load limesurvey data!")
+                        Text(text = getStringResource(id = R.string.more_lime_survey_loading_error))
                     }
                 } ?: run {
-                    Text(text = "System error! Could not load limesurvey data!")
+                    Text(text = getStringResource(id = R.string.more_lime_survey_loading_error))
                 }
             }
         }
