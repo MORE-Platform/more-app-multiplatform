@@ -74,6 +74,12 @@ struct StudyDetailsView: View {
         }
         .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"))
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.viewDidDisappear()
+        }
     }
 }
 

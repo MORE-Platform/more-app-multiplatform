@@ -3,6 +3,9 @@ package io.redlink.more.app.android.activities.studyDetails
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,6 +19,7 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.extensions.toDate
@@ -30,6 +34,17 @@ import java.time.ZoneOffset
 
 @Composable
 fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    LaunchedEffect(route) {
+        viewModel.viewDidAppear()
+    }
+    DisposableEffect(route) {
+        onDispose {
+            viewModel.viewDidDisappear()
+        }
+    }
+
     viewModel.model.value?.let {
         Column(
             verticalArrangement = Arrangement.Top,
