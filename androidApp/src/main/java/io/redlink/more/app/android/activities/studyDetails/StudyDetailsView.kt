@@ -35,7 +35,7 @@ import java.time.ZoneOffset
 @Composable
 fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.STUDY_DETAILS.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
