@@ -23,8 +23,9 @@ class WebViewViewModel: NSObject, ObservableObject {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == WebViewViewModel.webViewProgressObserverKey {
-            print(self.webView.estimatedProgress)
-            self.progress = Float(self.webView.estimatedProgress)
+            DispatchQueue.main.async {
+                self.progress = Float(self.webView.estimatedProgress)
+            }
         }
     }
 }
