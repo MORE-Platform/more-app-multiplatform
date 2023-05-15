@@ -20,6 +20,10 @@ struct InfoView: View {
                     Divider()
                     VStack {
                         InfoList()
+                            .fullScreenCover(isPresented: $contentViewModel.isLeaveStudyOpen) {
+                                LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
+                                    .environmentObject(contentViewModel)
+                            }
                             .environmentObject(contentViewModel)
                         .hideListRowSeparator()
                         .listRowInsets(EdgeInsets())
@@ -44,10 +48,8 @@ struct InfoView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 24)
-            } topBarContent: {
-                EmptyView()
-            }
-            .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"))
+            } 
+            .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"), displayMode: .inline)
             .navigationBarTitleDisplayMode(.inline)
         }
         

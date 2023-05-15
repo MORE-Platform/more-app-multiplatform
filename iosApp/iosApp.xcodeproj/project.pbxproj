@@ -67,11 +67,12 @@
 		1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */; };
 		1F6A4E3C29F6C95B00F0247F /* PolarConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */; };
 		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
+		1F6B1AA52A120EDC007BC90C /* LimeSurvey.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F6B1AA42A120EDC007BC90C /* LimeSurvey.strings */; };
+		1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C31502A121EA500EED533 /* WebViewViewModel.swift */; };
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
 		1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */; };
 		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
 		1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094F29D4185200081B88 /* ArrayExtension.swift */; };
-		1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */; };
 		1F80EC4129C25025004667B1 /* Navigation.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F80EC4029C25025004667B1 /* Navigation.strings */; };
 		1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4429C2524F004667B1 /* NavigationScreens.swift */; };
 		1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */; };
@@ -96,6 +97,11 @@
 		1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847EB2992C3240023EF10 /* MoreFrame.swift */; };
 		1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847EE29938C610023EF10 /* ConsentView.swift */; };
 		1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847F029938C6B0023EF10 /* ConsentViewModel.swift */; };
+		1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2CC2A0BDF9A00F32602 /* LimeSurveyViewModel.swift */; };
+		1F8EA2CF2A0CC22200F32602 /* LimeSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2CE2A0CC22200F32602 /* LimeSurveyView.swift */; };
+		1F8EA2D12A0CC2EA00F32602 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D02A0CC2EA00F32602 /* WebView.swift */; };
+		1F8EA2D32A0CC7D600F32602 /* ObservationActionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */; };
+		1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */; };
 		1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */; };
 		1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */; };
 		1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9DB19F298CF44000DBB7DB /* MoreColor.swift */; };
@@ -122,8 +128,7 @@
 		B74DDB6629E69F44006FEA74 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74DDB6529E69F44006FEA74 /* NotificationViewModel.swift */; };
 		B74DDB6829E6A80E006FEA74 /* NotificationView.strings in Resources */ = {isa = PBXBuildFile; fileRef = B74DDB6729E6A80E006FEA74 /* NotificationView.strings */; };
 		B74DDB6A29E6AEDE006FEA74 /* NotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74DDB6929E6AEDE006FEA74 /* NotificationItem.swift */; };
-		B77F20112A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */; };
-		B77F20152A024FDE00C44118 /* LeaveStudyModalStateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77F20142A024FDE00C44118 /* LeaveStudyModalStateViewModel.swift */; };
+		B77F20112A014C8400C44118 /* QuestionModalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77F20102A014C8400C44118 /* QuestionModalState.swift */; };
 		B77F20172A02541700C44118 /* InfoListItemModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77F20162A02541700C44118 /* InfoListItemModal.swift */; };
 		B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */; };
 		B784169229C9E3F50035D830 /* Title2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B784169129C9E3F50035D830 /* Title2.swift */; };
@@ -253,11 +258,12 @@
 		1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyListView.swift; sourceTree = "<group>"; };
 		1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConnector.swift; sourceTree = "<group>"; };
 		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
+		1F6B1AA42A120EDC007BC90C /* LimeSurvey.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = LimeSurvey.strings; sourceTree = "<group>"; };
+		1F6C31502A121EA500EED533 /* WebViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewModel.swift; sourceTree = "<group>"; };
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
 		1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModelExtension.swift; sourceTree = "<group>"; };
 		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
 		1F7F094F29D4185200081B88 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
-		1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreMainBackground.swift; sourceTree = "<group>"; };
 		1F80EC4029C25025004667B1 /* Navigation.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Navigation.strings; sourceTree = "<group>"; };
 		1F80EC4429C2524F004667B1 /* NavigationScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationScreens.swift; sourceTree = "<group>"; };
 		1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSObservationDataManager.swift; sourceTree = "<group>"; };
@@ -282,6 +288,11 @@
 		1F8847EB2992C3240023EF10 /* MoreFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFrame.swift; sourceTree = "<group>"; };
 		1F8847EE29938C610023EF10 /* ConsentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentView.swift; sourceTree = "<group>"; };
 		1F8847F029938C6B0023EF10 /* ConsentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentViewModel.swift; sourceTree = "<group>"; };
+		1F8EA2CC2A0BDF9A00F32602 /* LimeSurveyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimeSurveyViewModel.swift; sourceTree = "<group>"; };
+		1F8EA2CE2A0CC22200F32602 /* LimeSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimeSurveyView.swift; sourceTree = "<group>"; };
+		1F8EA2D02A0CC2EA00F32602 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationActionDelegate.swift; sourceTree = "<group>"; };
+		1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
 		1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMainBackgroundView.swift; sourceTree = "<group>"; };
 		1F9DB19F298CF44000DBB7DB /* MoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreColor.swift; sourceTree = "<group>"; };
@@ -310,8 +321,7 @@
 		B74DDB6529E69F44006FEA74 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		B74DDB6729E6A80E006FEA74 /* NotificationView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = NotificationView.strings; sourceTree = "<group>"; };
 		B74DDB6929E6AEDE006FEA74 /* NotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationItem.swift; sourceTree = "<group>"; };
-		B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionModalStateViewModel.swift; sourceTree = "<group>"; };
-		B77F20142A024FDE00C44118 /* LeaveStudyModalStateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveStudyModalStateViewModel.swift; sourceTree = "<group>"; };
+		B77F20102A014C8400C44118 /* QuestionModalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionModalState.swift; sourceTree = "<group>"; };
 		B77F20162A02541700C44118 /* InfoListItemModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoListItemModal.swift; sourceTree = "<group>"; };
 		B784168F29C8B1DA0035D830 /* InlineAbortButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineAbortButton.swift; sourceTree = "<group>"; };
 		B784169129C9E3F50035D830 /* Title2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title2.swift; sourceTree = "<group>"; };
@@ -469,6 +479,7 @@
 				EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */,
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
+				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -504,9 +515,19 @@
 			path = Bluetooth;
 			sourceTree = "<group>";
 		};
+		1F6C314F2A121E9000EED533 /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				1F8EA2D02A0CC2EA00F32602 /* WebView.swift */,
+				1F6C31502A121EA500EED533 /* WebViewViewModel.swift */,
+			);
+			path = WebView;
+			sourceTree = "<group>";
+		};
 		1F8847B829914BD50023EF10 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				1F6C314F2A121E9000EED533 /* WebView */,
 				EDB51FA029E594D200F49136 /* Filters */,
 				B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */,
 				1F8847E72992BEE30023EF10 /* BasicText.swift */,
@@ -520,7 +541,6 @@
 				1F13BA482993985800938C1E /* InactiveText.swift */,
 				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
 				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
-				1F80EC3E29C223BC004667B1 /* MoreMainBackground.swift */,
 				1F8847D729915C030023EF10 /* MoreTextField.swift */,
 				B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */,
 				B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */,
@@ -592,6 +612,7 @@
 				B79BECC229F1862B00966AD1 /* Info.strings */,
 				1F5364AD29F98D4A0052CB32 /* BluetoothConnection.strings */,
 				B79BECBC29F1471200966AD1 /* SimpleQuestionObservation.strings */,
+				1F6B1AA42A120EDC007BC90C /* LimeSurvey.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -628,9 +649,19 @@
 			path = Consent;
 			sourceTree = "<group>";
 		};
+		1F8EA2CB2A0BDF8D00F32602 /* LimeSurvey */ = {
+			isa = PBXGroup;
+			children = (
+				1F8EA2CC2A0BDF9A00F32602 /* LimeSurveyViewModel.swift */,
+				1F8EA2CE2A0CC22200F32602 /* LimeSurveyView.swift */,
+			);
+			path = LimeSurvey;
+			sourceTree = "<group>";
+		};
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F8EA2CB2A0BDF8D00F32602 /* LimeSurvey */,
 				EDB16E2C29F934CE00701C27 /* TaskCompletionBar */,
 				EDAF93ED29F17A210093F1DA /* CompletedSchedules */,
 				EDEF4C8129EFD4B200E830DA /* RunningSchedules */,
@@ -643,6 +674,7 @@
 				1F43998A29C1005200687906 /* Notification */,
 				B7ADDC6B29F808C7004770CE /* LeaveStudy */,
 				EDBB2B4629B8CFAE00CA973E /* Settings */,
+				ED16C5EE29B74C4A00DA8AFE /* Schedule */,
 				EDEBA13129B0D2CC00533F79 /* Dashboard */,
 				1F8847ED29938C500023EF10 /* Consent */,
 				1F8847B829914BD50023EF10 /* Components */,
@@ -650,6 +682,7 @@
 				1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */,
 				1F43998429C0FE2200687906 /* Navigation.swift */,
 				1F43998829C0FF3E00687906 /* MainTabView.swift */,
+				1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -745,17 +778,9 @@
 		B77F20122A014C9300C44118 /* SimpleQuestionModalState */ = {
 			isa = PBXGroup;
 			children = (
-				B77F20102A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift */,
+				B77F20102A014C8400C44118 /* QuestionModalState.swift */,
 			);
 			path = SimpleQuestionModalState;
-			sourceTree = "<group>";
-		};
-		B77F20132A024FCA00C44118 /* LeavStudyModalState */ = {
-			isa = PBXGroup;
-			children = (
-				B77F20142A024FDE00C44118 /* LeaveStudyModalStateViewModel.swift */,
-			);
-			path = LeavStudyModalState;
 			sourceTree = "<group>";
 		};
 		B78B4A7929F0409400A1BA58 /* ObservationDetails */ = {
@@ -787,7 +812,6 @@
 		B7ADDC6B29F808C7004770CE /* LeaveStudy */ = {
 			isa = PBXGroup;
 			children = (
-				B77F20132A024FCA00C44118 /* LeavStudyModalState */,
 				07190FE929E80A7C00A8CB1F /* LeaveStudyView.swift */,
 				07190FEB29E834E800A8CB1F /* LeaveStudyConfirmationView.swift */,
 			);
@@ -870,7 +894,6 @@
 				EDEBA13429B0D30200533F79 /* DashboardView.swift */,
 				EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */,
 				ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */,
-				ED16C5EE29B74C4A00DA8AFE /* Schedule */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -973,6 +996,7 @@
 				1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F8847BD29914E7F0023EF10 /* LoginView.strings in Resources */,
+				1F6B1AA52A120EDC007BC90C /* LimeSurvey.strings in Resources */,
 				B78B4A8029F0445E00A1BA58 /* ObservationDetails.strings in Resources */,
 				1F43997A29B8D70800687906 /* ScheduleViewModel.strings in Resources */,
 				ED16C5F429B75FF000DA8AFE /* ScheduleListView.strings in Resources */,
@@ -1022,6 +1046,7 @@
 				1F8847E229917F5D0023EF10 /* MoreActionButton.swift in Sources */,
 				1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */,
 				1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */,
+				1F8EA2D32A0CC7D600F32602 /* ObservationActionDelegate.swift in Sources */,
 				B7B4888229FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift in Sources */,
 				ED7AE1EB29C8A2B200616B93 /* TaskDetailsViewModel.swift in Sources */,
 				B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */,
@@ -1034,7 +1059,6 @@
 				B79DBA5B29D34AB400A1F547 /* MoreFilterOptionList.swift in Sources */,
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */,
-				1F80EC3F29C223BC004667B1 /* MoreMainBackground.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
 				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
 				EDEF4C8329EFD4CA00E830DA /* RunningSchedules.swift in Sources */,
@@ -1044,6 +1068,7 @@
 				1F13BA492993985800938C1E /* InactiveText.swift in Sources */,
 				1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */,
 				1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */,
+				1F8EA2D12A0CC2EA00F32602 /* WebView.swift in Sources */,
 				B79DBA4929D3144500A1F547 /* UIToggleButtonView.swift in Sources */,
 				B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */,
 				1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */,
@@ -1071,6 +1096,7 @@
 				07190FEA29E80A7C00A8CB1F /* LeaveStudyView.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
+				1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
 				1FDC264629C1C60F0011D8A4 /* ListViewExtension.swift in Sources */,
@@ -1090,7 +1116,7 @@
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
-				B77F20112A014C8400C44118 /* SimpleQuestionModalStateViewModel.swift in Sources */,
+				B77F20112A014C8400C44118 /* QuestionModalState.swift in Sources */,
 				B79DBA3729D312F200A1F547 /* ErrorLogin.swift in Sources */,
 				EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */,
 				07F67D8A29EECF1A006DCFB5 /* BasicNavLinkButton.swift in Sources */,
@@ -1105,12 +1131,13 @@
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				07190FEC29E834E800A8CB1F /* LeaveStudyConfirmationView.swift in Sources */,
+				1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,
 				1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */,
 				B77F20172A02541700C44118 /* InfoListItemModal.swift in Sources */,
 				ED16C5E929B7309F00DA8AFE /* StudyTitleForwardButton.swift in Sources */,
-				B77F20152A024FDE00C44118 /* LeaveStudyModalStateViewModel.swift in Sources */,
+				1F8EA2CF2A0CC22200F32602 /* LimeSurveyView.swift in Sources */,
 				1F13BA4F2993A2A600938C1E /* ContentViewModel.swift in Sources */,
 				ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */,
 				EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */,
@@ -1135,6 +1162,7 @@
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
 				B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
+				1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
 				1F27536129CC372500324417 /* AppState.swift in Sources */,

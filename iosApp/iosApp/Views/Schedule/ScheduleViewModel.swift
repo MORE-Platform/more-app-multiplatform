@@ -27,23 +27,11 @@ class ScheduleViewModel: ObservableObject {
         TaskDetailsViewModel(dataRecorder: recorder)
     }()
 
-    init(observationFactory: IOSObservationFactory, scheduleListType: ScheduleListType) {
+    init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
         self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreModel)
         self.loadSchedules()
         self.filterViewModel.delegate = self
-    }
-
-    func start(scheduleId: String) {
-        coreModel.start(scheduleId: scheduleId)
-    }
-
-    func pause(scheduleId: String) {
-        coreModel.pause(scheduleId: scheduleId)
-    }
-
-    func stop(scheduleId: String) {
-        coreModel.stop(scheduleId: scheduleId)
     }
 
     func loadSchedules() {
@@ -93,6 +81,20 @@ extension Dictionary<Int64, [ScheduleModel]> {
             result[KotlinLong(value: pair.key)] = pair.value
             return result
         }
+    }
+}
+
+extension ScheduleViewModel: ObservationActionDelegate {
+    func start(scheduleId: String) {
+        coreModel.start(scheduleId: scheduleId)
+    }
+
+    func pause(scheduleId: String) {
+        coreModel.pause(scheduleId: scheduleId)
+    }
+
+    func stop(scheduleId: String) {
+        coreModel.stop(scheduleId: scheduleId)
     }
 }
 

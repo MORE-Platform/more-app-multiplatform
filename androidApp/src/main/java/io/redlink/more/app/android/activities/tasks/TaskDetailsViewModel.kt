@@ -3,15 +3,14 @@ package io.redlink.more.app.android.activities.tasks
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
-import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.tasks.CoreTaskDetailsViewModel
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder

@@ -6,7 +6,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCount
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,9 +24,9 @@ abstract class ObservationDataManager {
     private val observationDataRepository = ObservationDataRepository()
     private val observationRepository = ObservationRepository()
     private val dataPointCountRepository = DataPointCountRepository()
-    private var countJob: Job? = null
-    private var scheduleCountJob: Job? = null
-    private var observationTimestampJob: Job? = null
+    private var countJob: String? = null
+    private var scheduleCountJob: String? = null
+    private var observationTimestampJob: String? = null
 
     private var scheduleCount = mutableMapOf<String, Long>()
     private var observationCollectionTimestamp = mutableMapOf<String, Long>()
@@ -109,8 +109,8 @@ abstract class ObservationDataManager {
 
     fun listenToDatapointCountChanges() {
         Napier.d { "Creating listener for datapoints..." }
-        if (countJob == null || countJob?.isActive == false) {
-            countJob = scope.repeatEveryFewSeconds(10000) {
+        if (countJob == null || Scope.isActive(countJob!!)) {
+            countJob = Scope.repeatedLaunch(10000) {
                 Napier.d { "Looking for new data..." }
                 observationDataRepository.count().cancellable().firstOrNull()?.let {
                     Napier.d { "Datapoint count: $it" }
@@ -119,26 +119,25 @@ abstract class ObservationDataManager {
                         sendData()
                     }
                 }
-            }
+            }.first
         }
-        if (scheduleCountJob == null || scheduleCountJob?.isActive == false) {
-            scheduleCountJob = scope.repeatEveryFewSeconds(5000) {
+        if (scheduleCountJob == null || Scope.isActive(scheduleCountJob!!)) {
+            scheduleCountJob = Scope.repeatedLaunch(5000) {
                 storeCount()
-            }
+            }.first
         }
-        if (observationTimestampJob == null || observationTimestampJob?.isActive == false) {
-            observationTimestampJob = scope.repeatEveryFewSeconds(15000) {
+        if (observationTimestampJob == null || Scope.isActive(observationTimestampJob!!)) {
+            observationTimestampJob = Scope.repeatedLaunch(15000) {
                 storeTimestamps()
-            }
+            }.first
         }
     }
 
     fun stopListeningToCountChanges() {
-        countJob?.cancel()
+        Scope.cancel(setOf(countJob, scheduleCountJob, observationTimestampJob).filterNotNull())
         countJob = null
-
-        scheduleCountJob?.cancel()
-        countJob = null
+        scheduleCountJob = null
+        observationTimestampJob = null
     }
 
     private fun deleteAll(idSet: Set<String>) {

@@ -30,15 +30,15 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                 ScheduleRepository().use { scheduleRepository ->
                     ObservationRepository().use { observationRepository ->
                         studyRepository.getStudy()
-                            .combine(scheduleRepository.allSchedulesWithStatus(true)) { study, doneTasks ->
+                            .combine(scheduleRepository.allSchedulesWithStatus(true).cancellable()) { study, doneTasks ->
                                 Pair(study, doneTasks.size)
-                            }.combine(scheduleRepository.count()) { firstPair, taskCount ->
+                            }.combine(scheduleRepository.count().cancellable()) { firstPair, taskCount ->
                                 Triple(
                                     firstPair.first,
                                     firstPair.second,
                                     taskCount
                                 )
-                            }.combine(observationRepository.observations()) { triple, observations ->
+                            }.combine(observationRepository.observations().cancellable()) { triple, observations ->
                                 Pair(
                                     triple,
                                     observations,

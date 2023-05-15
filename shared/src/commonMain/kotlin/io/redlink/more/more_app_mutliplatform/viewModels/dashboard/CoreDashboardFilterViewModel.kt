@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,7 +18,6 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 
 class CoreDashboardFilterViewModel {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     val currentFilter = MutableStateFlow(FilterModel())
 
     fun hasAllTypes() = currentFilter.value.typeFilter.isEmpty()
@@ -85,7 +85,7 @@ class CoreDashboardFilterViewModel {
     }
 
     private fun update(newFilterModel: FilterModel) {
-        scope.launch {
+        Scope.launch {
             currentFilter.emit(newFilterModel)
         }
     }

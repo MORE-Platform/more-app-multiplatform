@@ -69,8 +69,6 @@ struct StudyDetailsView: View {
                 }
                 
             }
-        } topBarContent: {
-            EmptyView()
         }
         .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"))
         .navigationBarTitleDisplayMode(.inline)

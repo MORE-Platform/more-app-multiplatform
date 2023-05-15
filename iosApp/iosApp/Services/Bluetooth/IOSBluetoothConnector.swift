@@ -26,7 +26,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     private var connectedDevices: BluetoothDeviceList = [:]
     private var scanning = false
     
-    var observer: BluetoothConnectorObserver?
+    weak var observer: BluetoothConnectorObserver?
     var delegate: BLEConnectorDelegate?
     
     private var scanningWithUnknownBLEState = false
@@ -140,9 +140,6 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     
     deinit {
         stopScanning()
-        observer = nil
-        delegate = nil
-        self.specificBluetoothConnectors.values.forEach{ $0.observer = nil }
     }
 }
 

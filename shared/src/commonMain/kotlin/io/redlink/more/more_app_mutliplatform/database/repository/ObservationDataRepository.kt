@@ -7,6 +7,7 @@ import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
+import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import kotlinx.coroutines.CompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,11 +20,10 @@ import org.mongodb.kbson.ObjectId
 
 class ObservationDataRepository: Repository<ObservationDataSchema>() {
     private var queue = mutableSetOf<ObservationDataSchema>()
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val mutex = Mutex()
 
     fun addData(dataList: List<ObservationDataSchema>) {
-        scope.launch {
+        launch {
             mutex.withLock {
                 queue.addAll(dataList)
             }
@@ -35,7 +35,7 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     fun store() {
         if (queue.isNotEmpty()) {
-            scope.launch {
+            launch {
                 val queueCopy = mutex.withLock {
                     val queueCopy = queue.toSet()
                     queue = mutableSetOf()
@@ -64,7 +64,7 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
     fun deleteAllWithId(idSet: Set<String>) {
         Napier.d { "Deleting ${idSet.size} elements..." }
         val objectIdSet = idSet.map { ObjectId(it) }.toSet()
-        scope.launch {
+        launch {
             mutex().withLock {
                 realm()?.write {
                     this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }.forEach {

@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 struct InfoListItemModal<Destination: View>: View {
-    @EnvironmentObject var leaveStudyModalStateVM: LeaveStudyModalStateViewModel
     var title: String
     var icon: String
     var destination: () -> Destination
@@ -29,9 +28,6 @@ struct InfoListItemModal<Destination: View>: View {
                     }
                 }
             )
-            .sheet(isPresented: $leaveStudyModalStateVM.isLeaveStudyOpen) {
-                destination().environmentObject(leaveStudyModalStateVM)
-            }
             
             Divider()
         }
