@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.ktor.utils.io.core.use
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
@@ -44,6 +45,7 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                                 )
                             }.cancellable().collect {
                                 it.first.first?.let {studySchema ->
+                                    println(it)
                                     studyModel.value = StudyDetailsModel.createModelFrom(studySchema, it.second, it.first.third,
                                         it.first.second.toLong()
                                     )

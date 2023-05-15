@@ -28,4 +28,13 @@ class StudyDetailsViewModel: ObservableObject {
             }
         }
     }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
+        studyDetailsModel = nil
+    }
 }
