@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -19,12 +20,12 @@ class CoreTaskCompletionBarViewModel: CoreViewModel() {
     init {
         launchScope {
             repository.count()
-                .combine(repository.allSchedulesWithStatus(true)) { scheduleCount, doneSchedules ->
+                .combine(repository.allSchedulesWithStatus(true).cancellable()) { scheduleCount, doneSchedules ->
                     TaskCompletion(
                         doneSchedules.size,
                         scheduleCount.toInt()
                     )
-                }.collect {
+                }.cancellable().collect {
                     taskCompletion.emit(it)
                 }
         }

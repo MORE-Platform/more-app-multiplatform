@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
+struct MoreMainBackgroundView<Content: View>: View {
+    var contentPadding: CGFloat = 10
     var content: () -> Content
-    var topBarContent: () -> TopBarContent
     var body: some View {
         ZStack(alignment: .top) {
             Color.more.mainBackground.ignoresSafeArea()
@@ -18,7 +18,7 @@ struct MoreMainBackgroundView<TopBarContent: View, Content: View>: View {
                 content()
             }
             .foregroundColor(.more.primary)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, contentPadding)
         }
         
     }
@@ -28,8 +28,6 @@ struct MoreMainBackgroundView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
             Text("Hello World")
-        } topBarContent: {
-            Text("Hello World")
-        }        
+        }
     }
 }

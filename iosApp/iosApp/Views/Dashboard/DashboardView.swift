@@ -30,10 +30,8 @@ struct DashboardView: View {
                 }.onAppear {
                     dashboardViewModel.updateBluetoothDevices()
                 }
-            } topBarContent: {
-                EmptyView()
             }
-            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"))
+            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -42,21 +40,8 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), scheduleListType: .all)))
+            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all)))
                 .environmentObject(ContentViewModel())
-        } topBarContent: {
-            HStack {
-                Button {
-                } label: {
-                    Image(systemName: "bell.fill")
-                }
-                .padding(.horizontal)
-                Button {
-                    
-                } label: {
-                    Image(systemName: "gearshape.fill")
-                }
-            }.foregroundColor(Color.more.secondary)
         }
     }
 }

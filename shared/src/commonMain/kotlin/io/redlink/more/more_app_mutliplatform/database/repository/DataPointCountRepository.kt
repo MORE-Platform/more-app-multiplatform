@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
+import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -11,7 +12,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class DataPointCountRepository : Repository<DataPointCountSchema>() {
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
     private val mutex = Mutex()
     override fun count(): Flow<Long> {
         return realmDatabase().count<DataPointCountSchema>()
@@ -19,7 +19,7 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
 
     fun incrementCount(scheduleIdSet: Set<String>, addCount: Long = 1) {
         if (scheduleIdSet.isNotEmpty()) {
-            scope.launch {
+            launch {
                 mutex.withLock {
                     realm()?.write {
                         val dataPointCounts = this.query<DataPointCountSchema>()

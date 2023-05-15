@@ -10,7 +10,7 @@ import Foundation
 import shared
 
 class IOSDataRecorder: DataRecorder {
-    private let observationManager = ObservationManager(observationFactory: IOSObservationFactory())
+    private let observationManager = ObservationManager(observationFactory: AppDelegate.observationFactory)
     
     func start(scheduleId: String) {
         Task { @MainActor in

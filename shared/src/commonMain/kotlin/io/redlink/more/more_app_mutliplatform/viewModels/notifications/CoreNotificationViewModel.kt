@@ -4,11 +4,13 @@ import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.launch
 
 class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel): CoreViewModel() {
@@ -19,7 +21,7 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
 
     override fun viewDidAppear() {
         launchScope {
-            notificationRepository.getAllNotifications().collect {
+            notificationRepository.getAllNotifications().cancellable().collect {
                 originalNotificationList.clear()
                 originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
                 notificationList.emit(coreFilterModel.applyFilter(originalNotificationList))
@@ -36,7 +38,7 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
     override fun viewDidDisappear() {
         super.viewDidDisappear()
         originalNotificationList.clear()
-        viewModelScope.launch {
+        Scope.launch {
             notificationList.emit(emptyList())
         }
     }

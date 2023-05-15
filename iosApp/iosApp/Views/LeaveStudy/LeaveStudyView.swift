@@ -10,7 +10,7 @@ import SwiftUI
 
 struct LeaveStudyView: View {
     @StateObject var viewModel: SettingsViewModel
-    @EnvironmentObject var leaveStudyModalStateVM: LeaveStudyModalStateViewModel
+    @EnvironmentObject var contentViewModel: ContentViewModel
 
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
@@ -19,7 +19,7 @@ struct LeaveStudyView: View {
     
     var body: some View {
         Navigation {
-            MoreMainBackground {
+            MoreMainBackgroundView {
                 VStack(alignment: .leading) {
 
                     Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
@@ -57,7 +57,7 @@ struct LeaveStudyView: View {
                         backgroundColor: .more.approved,
                         disabled: .constant(false)
                     ) {
-                        leaveStudyModalStateVM.isLeaveStudyOpen = false
+                        contentViewModel.isLeaveStudyOpen = false
                     } label: {
                         Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                     }
@@ -67,21 +67,20 @@ struct LeaveStudyView: View {
                         backgroundColor: .more.important,
                         disabled: .constant(false)
                     ) {
-                        leaveStudyModalStateVM.isLeaveStudyConfirmOpen = true
+                        contentViewModel.isLeaveStudyConfirmOpen = true
                     } label: {
                         Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study")).foregroundColor(Color.more.white)
                     }
-                    .sheet(isPresented: $leaveStudyModalStateVM.isLeaveStudyConfirmOpen) {
-                        LeaveStudyConfirmationView(viewModel: viewModel).environmentObject(leaveStudyModalStateVM)
+                    .fullScreenCover(isPresented: $contentViewModel.isLeaveStudyConfirmOpen) {
+                        LeaveStudyConfirmationView(viewModel: viewModel)
+                            .environmentObject(contentViewModel)
                     }
 
                     Spacer()
                 }
                 .padding(.horizontal, 40)
 
-            } topBarContent: {
-                EmptyView()
-            }
+            } 
             .customNavigationTitle(with: NavigationScreens.withdrawStudy.localize(useTable: navigationStrings, withComment: "Withdraw from Study"))
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {

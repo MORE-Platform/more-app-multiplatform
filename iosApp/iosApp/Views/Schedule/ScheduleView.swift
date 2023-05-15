@@ -11,7 +11,6 @@ import shared
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
-    @StateObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel = SimpleQuestionModalStateViewModel(isQuestionOpen: false, isQuestionThankYouOpen: false)
     
     var body: some View {
         ScrollView(.vertical) {
@@ -21,7 +20,6 @@ struct ScheduleView: View {
                         if !schedules.isEmpty {
                             Section {
                                 ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType)
-                                    .environmentObject(simpleQuestionModalStateVM)
                             } header: {
                                 VStack(alignment: .leading) {
                                     BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
@@ -49,9 +47,7 @@ struct ScheduleView: View {
 struct ScheduleView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            ScheduleView(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), scheduleListType: .all))
-        } topBarContent: {
-            EmptyView()
-        }
+            ScheduleView(viewModel: ScheduleViewModel(scheduleListType: .all))
+        } 
     }
 }

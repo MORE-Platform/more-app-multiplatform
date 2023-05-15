@@ -14,7 +14,6 @@ protocol SimpleQuestionObservationListener {
 
 class SimpleQuestionObservationViewModel: ObservableObject {
     private var coreModel: SimpleQuestionCoreViewModel?
-    private let observationFactory = IOSObservationFactory()
     
     var delegate: SimpleQuestionObservationListener? = nil
     
@@ -25,7 +24,7 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     //@Published var showThankYouScreen = false
     
     func viewDidAppear(scheduleId: String) {
-        self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: observationFactory)
+        self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: AppDelegate.observationFactory)
         
         if let coreModel = self.coreModel {
             coreModel.onLoadSimpleQuestionObservation { model in

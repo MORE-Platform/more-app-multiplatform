@@ -92,7 +92,7 @@ class PermissionManager: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        setPermisssionValues(observationPermissions: IOSObservationFactory().sensorPermissions())
+        setPermisssionValues(observationPermissions: AppDelegate.observationFactory.sensorPermissions())
     }
 
     private func requestGpsAuthorization(always: Bool = true) {

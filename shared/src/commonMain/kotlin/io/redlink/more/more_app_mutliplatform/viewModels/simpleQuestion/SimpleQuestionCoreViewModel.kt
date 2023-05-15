@@ -9,6 +9,7 @@ import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
 class SimpleQuestionCoreViewModel(
@@ -26,8 +27,8 @@ class SimpleQuestionCoreViewModel(
             observation = it
         }
         launchScope {
-            scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let{ scheduleSchema ->
-                observationRepository.observationById(scheduleSchema.observationId).firstOrNull()?.let { observationSchema ->
+            scheduleRepository.scheduleWithId(scheduleId).cancellable().firstOrNull()?.let{ scheduleSchema ->
+                observationRepository.observationById(scheduleSchema.observationId).cancellable().firstOrNull()?.let { observationSchema ->
                     simpleQuestionModel.emit(SimpleQuestionModel.createModelFrom(observationSchema, scheduleId))
                 }
             }

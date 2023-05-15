@@ -13,7 +13,7 @@ struct BluetoothConnectionView: View {
     
     private let bluetoothStrings = "BluetoothConnection"
     var body: some View {
-        MoreMainBackground {
+        MoreMainBackgroundView {
             ScrollView {
                 LazyVStack(alignment: .leading) {
                     Section(header: SectionHeading(sectionTitle: .constant("Connected devices".localize(useTable: bluetoothStrings, withComment: "Connected device section")))) {
@@ -74,9 +74,7 @@ struct BluetoothConnectionView: View {
                 }
                 .padding(.horizontal, 8)
             }
-        } topBarContent: {
-            EmptyView()
-        }
+        } 
     }
 }
 

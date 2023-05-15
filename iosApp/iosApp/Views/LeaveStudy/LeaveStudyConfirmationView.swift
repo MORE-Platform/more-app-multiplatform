@@ -9,7 +9,7 @@
 import SwiftUI
 struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
-    @EnvironmentObject var leaveStudyModalStateVM: LeaveStudyModalStateViewModel
+    @EnvironmentObject var contentViewModel: ContentViewModel
     var float = CGFloat(0)
     
     private let stringTable = "SettingsView"
@@ -25,7 +25,7 @@ struct LeaveStudyConfirmationView: View {
     
     var body: some View {
         Navigation {
-            MoreMainBackground {
+            MoreMainBackgroundView {
                 VStack(alignment: .leading) {
 
                     Title2(titleText: .constant(viewModel.study?.studyTitle ?? ""))
@@ -65,17 +65,17 @@ struct LeaveStudyConfirmationView: View {
                         backgroundColor: .more.approved,
                         disabled: .constant(false)
                     ) {
-                        leaveStudyModalStateVM.isLeaveStudyOpen = false
-                        leaveStudyModalStateVM.isLeaveStudyConfirmOpen = false
+                        contentViewModel.isLeaveStudyConfirmOpen = false
+                        contentViewModel.isLeaveStudyOpen = false
                     } label: {
                         Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
                     }
                     .padding(.bottom, 2)
 
                     MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
-                        leaveStudyModalStateVM.isLeaveStudyOpen = false
-                        leaveStudyModalStateVM.isLeaveStudyConfirmOpen = false
                         viewModel.leaveStudy()
+                        contentViewModel.isLeaveStudyConfirmOpen = false
+                        contentViewModel.isLeaveStudyConfirmOpen = false
                     } label: {
                         Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
                     }
@@ -84,8 +84,6 @@ struct LeaveStudyConfirmationView: View {
                 }
                 .padding(.horizontal, 40)
                 
-            } topBarContent: {
-                EmptyView()
             }
             .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
             .navigationBarTitleDisplayMode(.inline)
@@ -96,7 +94,7 @@ struct LeaveStudyConfirmationView: View {
                 viewModel.viewDidDisappear()
             }
             
-        } // MoreBackground
+        }
     
-    } // View
+    }
 }

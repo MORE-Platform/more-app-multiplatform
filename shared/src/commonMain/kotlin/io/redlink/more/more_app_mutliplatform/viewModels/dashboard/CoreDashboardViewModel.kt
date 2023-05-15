@@ -7,6 +7,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.launch
 
 class CoreDashboardViewModel: CoreViewModel() {
@@ -15,13 +16,11 @@ class CoreDashboardViewModel: CoreViewModel() {
 
     override fun viewDidAppear() {
         launchScope {
-            studyRepository.getStudy().collect {
+            studyRepository.getStudy().cancellable().collect {
                 study.value = it
             }
         }
     }
 
-    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)): Closeable {
-        return study.asClosure(provideNewState)
-    }
+    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)) = study.asClosure(provideNewState)
 }

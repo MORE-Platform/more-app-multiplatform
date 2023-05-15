@@ -5,6 +5,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class CoreNotificationFilterViewModel {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private var highPriority: Long = 1
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
@@ -22,7 +22,7 @@ class CoreNotificationFilterViewModel {
      * according to NotificationFilterTypeModel type field
      */
     fun processFilterChange(filter: String?) {
-        scope.launch {
+        Scope.launch {
             currentFilter.emit(
                 currentFilter.value.changeFilter(filter)
             )

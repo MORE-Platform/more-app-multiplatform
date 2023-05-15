@@ -1,0 +1,11 @@
+/* 
+  LimeSurvey.strings
+  iosApp
+
+  Created by Jan Cortiel on 15.05.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"LimeSurvey" = "LimeSurvey";
+"Cancel" = "Cancel";
+"Done" = "Done";

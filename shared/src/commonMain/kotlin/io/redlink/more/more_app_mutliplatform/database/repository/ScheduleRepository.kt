@@ -10,6 +10,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,7 +20,6 @@ import kotlinx.datetime.Clock
 import org.mongodb.kbson.ObjectId
 
 class ScheduleRepository : Repository<ScheduleSchema>() {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     override fun count(): Flow<Long> = realmDatabase().count<ScheduleSchema>()
 
@@ -114,7 +114,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     )
 
     fun updateTaskStates(observationFactory: ObservationFactory? = null) {
-        scope.launch {
+        launch {
             val restartableTypes =
                 observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
             val now = Clock.System.now()

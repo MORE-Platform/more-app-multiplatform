@@ -34,9 +34,8 @@ class RegistrationService (
 
     fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
-            val upperCaseToken = token.uppercase()
             scope.launch {
-                val (result, networkError) = shared.networkService.validateRegistrationToken(upperCaseToken, endpoint)
+                val (result, networkError) = shared.networkService.validateRegistrationToken( token.uppercase(), endpoint)
                 result?.let {
                     study = it
                     participationToken = token

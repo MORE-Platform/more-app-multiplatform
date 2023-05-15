@@ -10,11 +10,11 @@ import Foundation
 import shared
 
 class SettingsViewModel: ObservableObject {
-    private var coreSettingsViewModel: CoreSettingsViewModel
-    private var storageRepository: UserDefaultsRepository = UserDefaultsRepository()
+    private let coreSettingsViewModel: CoreSettingsViewModel
+    var delegate: ConsentViewModelListener? = nil
+    
     @Published var study: StudySchema?
     @Published private(set) var permissionModel: PermissionModel?
-    var delegate: ConsentViewModelListener? = nil
     @Published var dataDeleted = false
     @Published var showSettings = false
     
@@ -32,8 +32,8 @@ class SettingsViewModel: ObservableObject {
         AppDelegate.recorder.stopAll()
         AppDelegate.dataManager.stopListeningToCountChanges()
         coreSettingsViewModel.exitStudy()
-        self.delegate?.credentialsDeleted()
         FCMService().deleteNotificationToken()
+        self.delegate?.credentialsDeleted()
     }
     
     func viewDidAppear() {

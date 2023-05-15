@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-fun CoroutineScope.repeatEveryFewSeconds(intervalMillis: Long, action: suspend () -> Unit): Job {
+fun CoroutineScope.repeatEveryFewSeconds(intervalMillis: Long, action: suspend CoroutineScope.() -> Unit): Job {
     return launch {
         while (isActive) {
             action()

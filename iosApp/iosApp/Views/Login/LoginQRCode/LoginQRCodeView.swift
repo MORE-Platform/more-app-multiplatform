@@ -61,8 +61,6 @@ struct LoginQRCodeView: View {
                 
                 Spacer()
             }
-        } topBarContent: {
-            EmptyView()
         }
         .customNavigationTitle(with: NavigationScreens.scanQRCode.localize(useTable: navigationStrings, withComment: "Scan QR Code to Login"))
         .navigationBarTitleDisplayMode(.inline)

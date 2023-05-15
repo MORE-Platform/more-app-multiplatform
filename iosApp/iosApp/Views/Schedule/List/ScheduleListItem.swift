@@ -12,8 +12,8 @@ import shared
 import SwiftUI
 
 struct ScheduleListItem: View {
+    @EnvironmentObject var questionModalState: QuestionModalState
     @ObservedObject var viewModel: ScheduleViewModel
-    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
     @State var showTaskDetails = false
     
     var scheduleModel: ScheduleModel
@@ -25,7 +25,7 @@ struct ScheduleListItem: View {
         VStack {
             NavigationLink(isActive: $showTaskDetails) {
                 TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(scheduleId: scheduleModel.scheduleId), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
-                    .environmentObject(simpleQuestionModalStateVM)
+                    .environmentObject(questionModalState)
             } label: {
                 EmptyView()
             }.opacity(0)
@@ -41,21 +41,13 @@ struct ScheduleListItem: View {
             }
 
             if showButton {
-                ObservationButton(simpleQuestionViewModel: viewModel.getSimpleQuestionObservationVM(),
-                                  scheduleId: scheduleModel.scheduleId,
-                                  observationType: scheduleModel.observationType,
-                                  state: scheduleModel.scheduleState,
-                                  disabled: !scheduleModel.scheduleState.active()
-                ){
-                    if scheduleModel.observationType == "question-observation" {
-                        simpleQuestionModalStateVM.isQuestionOpen = true
-                    }
-                    if scheduleModel.scheduleState == ScheduleState.running {
-                        viewModel.pause(scheduleId: scheduleModel.scheduleId)
-                    } else {
-                        viewModel.start(scheduleId: scheduleModel.scheduleId)
-                    }
-                }.environmentObject(simpleQuestionModalStateVM)
+                ObservationButton(
+                    observationActionDelegate: viewModel,
+                    scheduleId: scheduleModel.scheduleId,
+                    observationType: scheduleModel.observationType,
+                    state: scheduleModel.scheduleState,
+                    disabled: !scheduleModel.scheduleState.active())
+                .environmentObject(questionModalState)
             }
         }.onAppear {
             showTaskDetails = false
@@ -74,6 +66,6 @@ extension ScheduleListItem: SimpleQuestionObservationListener {
 
 struct ScheduleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleListItem(viewModel: ScheduleViewModel(observationFactory: IOSObservationFactory(), scheduleListType: .all), scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active), showButton: true)
+        ScheduleListItem(viewModel: ScheduleViewModel(scheduleListType: .all), scheduleModel: ScheduleModel(scheduleId: "schedule-id", observationId: "observation-id", observationType: "question-observation", observationTitle: "Test", done: false, start: 43200000, end: 43500000, scheduleState: .active), showButton: true)
     }
 }
