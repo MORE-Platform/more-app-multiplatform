@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
-    @EnvironmentObject var questionModalState: QuestionModalState
+    @EnvironmentObject var navigationModalState: NavigationModalState
     let observationActionDelegate: ObservationActionDelegate
     var scheduleId: String
     var observationType: String
@@ -22,8 +22,8 @@ struct ObservationButton: View {
         VStack {
             if observationType == "question-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
-                    questionModalState.scheduleId = scheduleId
-                    questionModalState.simpleQuestionOpen = true
+                    navigationModalState.scheduleId = scheduleId
+                    navigationModalState.simpleQuestionOpen = true
                 }) {
                     VStack {
                         Text(
@@ -33,8 +33,8 @@ struct ObservationButton: View {
                 }
             } else if observationType == "lime-survey-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
-                    questionModalState.scheduleId = scheduleId
-                    questionModalState.limeSurveyOpen = true
+                    navigationModalState.scheduleId = scheduleId
+                    navigationModalState.limeSurveyOpen = true
                 }) {
                     VStack {
                         Text(

@@ -2,16 +2,14 @@ package io.redlink.more.app.android.activities.main
 
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import ObservationDetailsView
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -27,10 +25,6 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
-import io.redlink.more.app.android.activities.info.InfoViewModel
-import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
-import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyView
-import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -39,7 +33,6 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConf
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
-import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
@@ -119,16 +112,20 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     })
             ) {
                 val arguments = requireNotNull(it.arguments)
-                val scheduleId = arguments.getString("scheduleId")
-                viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
-                val scheduleListType: ScheduleListType =
-                    ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull( arguments.getString("scheduleId")))
+                }
+                val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
+                val scheduleListType by remember {
+                    mutableStateOf(ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL")))
+                }
+
                 viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
 
                 TaskDetailsView(
                     navController = navController,
-                    viewModel = viewModel.getTaskDetailsVM(scheduleId ?: ""),
+                    viewModel = taskVM,
                     scheduleId = scheduleId,
                     scheduleListType = scheduleListType
                 )
@@ -149,8 +146,12 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     NavigationScreen.OBSERVATION_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
 
+                val obsDetailsVM by remember {
+                    mutableStateOf(viewModel.createObservationDetailView(observationId ?: ""))
+                }
+
                 ObservationDetailsView(
-                    viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                    viewModel = obsDetailsVM,
                     navController = navController
                 )
             }
@@ -174,20 +175,15 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
 
-                val arguments = requireNotNull(it.arguments)
-                when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
-                    ScheduleListType.ALL -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel))
-                    }
-
-                    ScheduleListType.RUNNING -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel))
-                    }
-
-                    ScheduleListType.COMPLETED -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel))
-                    }
+                val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
+                val vm by remember {
+                    mutableStateOf(when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
+                        ScheduleListType.ALL -> DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel)
+                        ScheduleListType.RUNNING -> DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel)
+                        ScheduleListType.COMPLETED -> DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel)
+                    })
                 }
+                DashboardFilterView(viewModel = vm)
             }
             composable(
                 "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
@@ -196,16 +192,19 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         type = NavType.StringType
                     })
             ) {
-                val arguments = requireNotNull(it.arguments)
-                val scheduleId = arguments.getString("scheduleId")
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
+                }
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-
+                val vm by remember {
+                    mutableStateOf(viewModel.creteNewSimpleQuestionViewModel(
+                        scheduleId
+                    ))
+                }
                 QuestionnaireView(
                     navController = navController,
-                    model = viewModel.creteNewSimpleQuestionViewModel(
-                        scheduleId ?: ""
-                    )
+                    viewModel = vm
                 )
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {

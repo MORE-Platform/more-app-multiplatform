@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.permission
 
 import io.ktor.utils.io.core.*
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
@@ -35,29 +36,9 @@ class CorePermissionViewModel(
         }
     }
 
-    fun onConsentModelChange(provideNewState: ((PermissionModel) -> Unit)): Closeable {
-        val job = Job()
-        permissionModel.onEach {
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
-    }
+    fun onConsentModelChange(provideNewState: ((PermissionModel) -> Unit)) = permissionModel.asClosure(provideNewState)
 
-    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)): Closeable {
-        val job = Job()
-        loadingFlow.onEach {
-            provideNewState(it)
-        }.launchIn(CoroutineScope(Dispatchers.Main + job))
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
-            }
-        }
-    }
+    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)) = loadingFlow.asClosure(provideNewState)
 
     override fun viewDidAppear() {
 

@@ -14,9 +14,7 @@ struct TaskDetailsView: View {
     var scheduleId: String
     var scheduleListType: ScheduleListType
     
-    
-    @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var questionModalState: QuestionModalState
+    @EnvironmentObject var navigationModalState: NavigationModalState
     
     
     private let stringTable = "TaskDetail"
@@ -33,7 +31,6 @@ struct TaskDetailsView: View {
                         HStack {
                             Title2(titleText: .constant(viewModel.taskDetailsModel?.observationTitle ?? ""))
                                 .padding(0.5)
-                            // abort button
                             Spacer()
                             if viewModel.taskDetailsModel?.state == ScheduleState.running {
                                 InlineAbortButton {
@@ -74,7 +71,7 @@ struct TaskDetailsView: View {
                                 observationType: model.observationType,
                                 state: model.state,
                                 disabled: !model.state.active())
-                            .environmentObject(questionModalState)
+                            .environmentObject(navigationModalState)
                         }
                     }
                     Spacer()
@@ -82,12 +79,10 @@ struct TaskDetailsView: View {
 
             }
             .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
-            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.viewDidAppear()
             }
             .onDisappear {
-                print("TaskDetails disappears")
                 viewModel.viewDidDisappear()
             }
         }

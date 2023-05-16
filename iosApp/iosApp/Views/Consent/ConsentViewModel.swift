@@ -46,10 +46,12 @@ class ConsentViewModel: NSObject, ObservableObject {
     }
     
     func onAppear() {
+        coreModel.viewDidAppear()
         permissionManager.observer = self
     }
 
     func onDisappear() {
+        coreModel.viewDidDisappear()
         permissionManager.observer = nil
     }
 

@@ -1,6 +1,7 @@
 package io.redlink.more.app.android.activities.dashboard.schedule
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -33,17 +35,33 @@ class ScheduleViewModel(
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
-    val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
+    //val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
+    val schedules = mutableStateListOf<ScheduleModel>()
+    val scheduleDates = mutableStateListOf<LocalDate>()
 
     val filterModel = DashboardFilterViewModel(coreFilterModel)
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.scheduleModelList.collect { map ->
-                val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
-                withContext(Dispatchers.Main) {
-                    updateData(javaConvertedMap)
-                }
+        viewModelScope.launch {
+            coreViewModel.scheduleDates.collect { dateSet ->
+                scheduleDates.clear()
+                scheduleDates.addAll(dateSet.map { it.jvmLocalDate() })
+            }
+
+//            coreViewModel.scheduleList.collect { list ->
+//                schedules
+//            }
+//            coreViewModel.scheduleModelList.collect { map ->
+//                val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
+//                withContext(Dispatchers.Main) {
+//                    updateData(javaConvertedMap)
+//                }
+//            }
+        }
+        viewModelScope.launch {
+            coreViewModel.scheduleList.collect { scheduleList ->
+                schedules.clear()
+                schedules.addAll(scheduleList)
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -77,10 +95,5 @@ class ScheduleViewModel(
 
     fun stopObservation(scheduleId: String) {
         coreViewModel.stop(scheduleId)
-    }
-
-    private fun updateData(data: Map<LocalDate, List<ScheduleModel>>) {
-        schedules.clear()
-        schedules.putAll(data.toSortedMap())
     }
 }

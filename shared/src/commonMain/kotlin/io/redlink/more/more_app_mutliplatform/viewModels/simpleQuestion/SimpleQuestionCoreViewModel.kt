@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
 class SimpleQuestionCoreViewModel(
-    private val scheduleId: String,
     observationFactory: ObservationFactory
 ): CoreViewModel() {
     private val scheduleRepository: ScheduleRepository = ScheduleRepository()
@@ -26,6 +25,9 @@ class SimpleQuestionCoreViewModel(
         observationFactory.observation("question-observation")?.let {
             observation = it
         }
+    }
+
+    fun setScheduleId(scheduleId: String) {
         launchScope {
             scheduleRepository.scheduleWithId(scheduleId).cancellable().firstOrNull()?.let{ scheduleSchema ->
                 observationRepository.observationById(scheduleSchema.observationId).cancellable().firstOrNull()?.let { observationSchema ->
@@ -34,8 +36,6 @@ class SimpleQuestionCoreViewModel(
             }
         }
     }
-
-
 
     fun finishQuestion(data: String, setObservationToDone: Boolean){
         simpleQuestionModel.value?.let {

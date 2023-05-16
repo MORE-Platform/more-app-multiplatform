@@ -49,8 +49,13 @@ struct InfoView: View {
                 }
                 .padding(.horizontal, 24)
             } 
-            .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"), displayMode: .inline)
-            .navigationBarTitleDisplayMode(.inline)
+            .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"))
+            .onAppear {
+                viewModel.viewDidAppear()
+            }
+            .onDisappear {
+                viewModel.viewDidDisappear()
+            }
         }
         
     }

@@ -11,6 +11,8 @@ enum class ScheduleState {
 
     fun active() = this == ACTIVE || this == RUNNING || this == PAUSED
 
+    fun running() = this == RUNNING || this == PAUSED
+
     fun completed() = this == ENDED || this == DONE
 
     companion object {

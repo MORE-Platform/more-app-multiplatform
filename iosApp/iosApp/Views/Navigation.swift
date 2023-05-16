@@ -52,7 +52,7 @@ struct NavigationBarTitleViewModifier: ViewModifier {
 
 extension View {
     @ViewBuilder
-    func customNavigationTitle(with text: String, displayMode: NavigationBarItem.TitleDisplayMode = .automatic) -> some View {
+    func customNavigationTitle(with text: String, displayMode: NavigationBarItem.TitleDisplayMode = .inline) -> some View {
         if #available(iOS 16, *) {
             self.modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
         }

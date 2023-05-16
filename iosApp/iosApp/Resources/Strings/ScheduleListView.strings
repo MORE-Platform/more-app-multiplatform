@@ -13,3 +13,7 @@
 "pause_observation" = "Pause Observation";
 "stop_observation" = "Stop Observation";
 "Start LimeSurvey" = "Start LimeSurvey";
+
+"No tasks to show" = "No tasks to show";
+"No tasks completed by now" = "No tasks completed by now";
+"No running tasks currently" = "No running tasks currently";

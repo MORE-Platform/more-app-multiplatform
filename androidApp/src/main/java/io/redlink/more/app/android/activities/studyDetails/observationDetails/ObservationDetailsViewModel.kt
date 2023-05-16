@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.activities.tasks
+package io.redlink.more.app.android.activities.studyDetails.observationDetails
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,7 +17,6 @@ class ObservationDetailsViewModel(
             "", "", "", 0, 0, ""
         )
     )
-    private val scope = CoroutineScope(Dispatchers.IO + Job())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

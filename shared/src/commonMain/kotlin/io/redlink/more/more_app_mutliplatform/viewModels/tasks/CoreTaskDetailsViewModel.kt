@@ -24,26 +24,26 @@ class CoreTaskDetailsViewModel(
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
     val dataCount = MutableStateFlow<Long>(0)
 
-    private var countJob: Job? = null
-
     fun setSchedule(scheduleId: String) {
         this.scheduleId = scheduleId
+        taskDetailsModel.value = null
+        dataCount.value = 0
     }
 
     override fun viewDidAppear() {
-        scheduleId?.let { scheduleId ->
+        scheduleId?.let {
             launchScope {
-                scheduleRepository.scheduleWithId(scheduleId).cancellable().collect { schedule ->
-                    schedule?.let { schedule ->
-                        observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
-                            taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
-                        }
+                scheduleRepository.scheduleWithId(it).cancellable().firstOrNull()?.let { schedule ->
+                    observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
+                        taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
                     }
                 }
             }
             launchScope {
-                dataPointCountRepository.get(scheduleId).cancellable().collect {
-                    it?.let { dataCount.emit(it.count) }
+                dataPointCountRepository.get(it).cancellable().collect {
+                    it?.let {
+                        dataCount.emit(it.count)
+                    }
                 }
             }
         }
@@ -51,17 +51,10 @@ class CoreTaskDetailsViewModel(
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
-        this.scheduleId = null
-        this.countJob?.cancel()
-        launchScope {
-            taskDetailsModel.emit(null)
-            dataCount.emit(0)
-        }
     }
 
-    fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
-        return taskDetailsModel.asClosure(provideNewState)
-    }
+    fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable =
+        taskDetailsModel.asClosure(provideNewState)
 
     fun onNewDataCount(provideNewState: (Long?) -> Unit) = dataCount.asClosure(provideNewState)
 

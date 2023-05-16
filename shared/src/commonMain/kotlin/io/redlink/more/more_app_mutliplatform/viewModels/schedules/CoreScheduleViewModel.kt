@@ -5,7 +5,6 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
@@ -16,7 +15,6 @@ import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(
@@ -27,11 +25,25 @@ class CoreScheduleViewModel(
     private val observationRepository = ObservationRepository()
     private val scheduleRepository = ScheduleRepository()
 
-    val scheduleModelList: MutableStateFlow<Map<Long, List<ScheduleModel>>> =
-        MutableStateFlow(emptyMap())
-    private val originalScheduleList = mutableMapOf<Long, List<ScheduleModel>>()
+    val scheduleList: MutableStateFlow<List<ScheduleModel>> = MutableStateFlow(emptyList())
+    val scheduleDates: MutableStateFlow<Set<Long>> = MutableStateFlow(emptySet())
+
+    private var originalScheduleList = emptyList<ScheduleModel>()
 
     override fun viewDidAppear() {
+        launchScope {
+            coreFilterModel.currentFilter.collect {
+                if (coreFilterModel.filterActive()) {
+                    if (originalScheduleList.isEmpty()) {
+                        originalScheduleList = scheduleList.value
+                    }
+                    updateList(coreFilterModel.applyFilter(originalScheduleList))
+                } else {
+                    updateList(originalScheduleList)
+                    originalScheduleList = emptyList()
+                }
+            }
+        }
         launchScope {
             scheduleRepository.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
                 .combine(observationRepository.observations()) { schedules, observations ->
@@ -40,32 +52,19 @@ class CoreScheduleViewModel(
                             .filter { it.observationId == observation.observationId }
                     }
                 }.collect {
-                    val newMap = when (scheduleListType) {
+                    val newList = when (scheduleListType) {
                         ScheduleListType.COMPLETED -> createCompletedMap(it)
                         ScheduleListType.RUNNING -> createRunningMap(it)
                         else -> createMap(it)
                     }
+
                     if (coreFilterModel.filterActive()) {
-                        originalScheduleList.clear()
-                        originalScheduleList.putAll(newMap)
-                        scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
+                        originalScheduleList = newList
+                        updateList(coreFilterModel.applyFilter(newList))
                     } else {
-                        scheduleModelList.emit(newMap)
+                        updateList(newList)
                     }
                 }
-        }
-        launchScope {
-            coreFilterModel.currentFilter.collect {
-                if (coreFilterModel.filterActive()) {
-                    if (originalScheduleList.isEmpty()) {
-                        originalScheduleList.putAll(scheduleModelList.value.toMap())
-                    }
-                    scheduleModelList.emit(coreFilterModel.applyFilter(originalScheduleList))
-                } else {
-                    scheduleModelList.emit(originalScheduleList)
-                    originalScheduleList.clear()
-                }
-            }
         }
     }
 
@@ -85,51 +84,35 @@ class CoreScheduleViewModel(
         dataRecorder.stop(scheduleId)
     }
 
-    private fun createMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
+    private suspend fun updateList(list: List<ScheduleModel>) {
+        scheduleList.emit(list)
+        scheduleDates.emit(list.map { it.start.toLocalDate().time() }.toSet())
+    }
+
+    private fun createMap(observationList: Map<String, List<ScheduleSchema>>): List<ScheduleModel> {
         return observationList
-            .asSequence()
-            .map { ScheduleModel.createModelsFrom(it.key, it.value) }
-            .flatten()
+            .flatMap { ScheduleModel.createModelsFrom(it.key, it.value) }
             .filter {
                 it.end > Clock.System.now().toEpochMilliseconds()
-                        && !it.done
                         && it.scheduleState.active()
                         || it.scheduleState == ScheduleState.DEACTIVATED
             }
-            .sortedBy { it.start }
-            .groupBy {
-                if (it.start <= Clock.System.now().toEpochMilliseconds()) {
-                    Clock.System.now().localDateTime().date.time()
-                } else {
-                    it.start.toLocalDate().time()
-                }
-            }
-            .filterKeys { it >= Clock.System.now().localDateTime().date.time() }
-            .filterValues { it.isNotEmpty() }
     }
 
-    private fun createCompletedMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
+    private fun createCompletedMap(observationList: Map<String, List<ScheduleSchema>>): List<ScheduleModel> {
         return observationList
             .flatMap { ScheduleModel.createModelsFrom(it.key, it.value) }
             .filter { scheduleModel -> scheduleModel.scheduleState.completed() }
-            .sortedBy { it.start }
-            .groupBy {
-                it.start.toLocalDate().time()
-            }.filterValues { it.isNotEmpty() }
     }
 
-    private fun createRunningMap(observationList: Map<String, List<ScheduleSchema>>): Map<Long, List<ScheduleModel>> {
-        return createMap(observationList).mapValues {
-            it.value.filter { scheduleModel ->
-                scheduleModel.scheduleState == ScheduleState.RUNNING || scheduleModel.scheduleState == ScheduleState.PAUSED
-            }
-        }.filterValues { it.isNotEmpty() }
+    private fun createRunningMap(observationList: Map<String, List<ScheduleSchema>>): List<ScheduleModel> {
+        return createMap(observationList).filter { scheduleModel -> scheduleModel.scheduleState.running() }
     }
 
-    fun onScheduleModelListChange(provideNewState: (Map<Long, List<ScheduleModel>>) -> Unit): Closeable {
-        return scheduleModelList.asClosure(provideNewState)
+    fun onScheduleModelListChange(provideNewState: (List<ScheduleModel>) -> Unit): Closeable {
+        return scheduleList.asClosure(provideNewState)
     }
 
-
+    fun scheduleDateListChange(provideNewState: (Set<Long>) -> Unit) = scheduleDates.asClosure(provideNewState)
 }
 
