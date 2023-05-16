@@ -8,23 +8,24 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
 class ObservationManager(private val observationFactory: ObservationFactory) {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val scheduleRepository = ScheduleRepository()
     private val dataPointCountRepository = DataPointCountRepository()
     private val observationRepository = ObservationRepository()
 
     private val runningObservations = mutableMapOf<ScheduleSchema, Observation>()
     init {
-        scope.launch {
+        Scope.launch {
             updateTaskStates()
-            scheduleRepository.allSchedulesWithStatus(true).collect { list ->
+            scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
                 list.filter { it in runningObservations.keys }.forEach {
                     stop(it.observationId)
                     dataPointCountRepository.delete(it.scheduleId.toHexString())
@@ -35,7 +36,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
 
     suspend fun restartStillRunning(): Set<String> {
         val startedObservations = mutableSetOf<String>()
-        scheduleRepository.allScheduleWithRunningState().firstOrNull()?.let { list ->
+        scheduleRepository.allScheduleWithRunningState().cancellable().firstOrNull()?.let { list ->
             list.filter { it !in runningObservations.keys }.forEach {
                 if (start(it.scheduleId.toHexString())){
                     startedObservations.add(it.scheduleId.toHexString())
@@ -87,7 +88,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     }
 
     fun pause(scheduleId: String) {
-        scope.launch {
+        Scope.launch {
             findOrCreateObservation(scheduleId)?.let {
                 Napier.d { "Pausing schedule: $it" }
                 runningObservations[it]?.stop(it.observationId)
@@ -98,7 +99,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     }
 
     fun stop(scheduleId: String) {
-        scope.launch {
+        Scope.launch {
             findOrCreateObservation(scheduleId)?.let {
                 Napier.d { "Stopping schedule: $it" }
                 runningObservations[it]?.stop(it.observationId)

@@ -47,11 +47,10 @@ class ScheduleViewModel(
                 schedulesByDate.forEach { (date, schedules) ->
                     schedulesByDate[date] = schedules.filterNot { it.scheduleId in idsToRemove }
                 }
-                val schemasToAdd = added + updated
+                val schemasToAdd = mergeSchedules(added, updated)
                 schemasToAdd.groupBy { it.start.jvmLocalDate() }.forEach { (date, schedules) ->
-                    schedulesByDate[date] = schedulesByDate.getOrDefault(date, emptyList()) + schedules
+                    schedulesByDate[date] = mergeSchedules(schedules.toSet(), schedulesByDate.getOrDefault(date, emptyList()).toSet()).sortedBy { it.start }
                 }
-                schedulesByDate.entries.removeIf { it.value.isEmpty() }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -85,5 +84,11 @@ class ScheduleViewModel(
 
     fun stopObservation(scheduleId: String) {
         coreViewModel.stop(scheduleId)
+    }
+
+    private fun mergeSchedules(first: Set<ScheduleModel>, second: Set<ScheduleModel>): Set<ScheduleModel> {
+        val firstIds = first.map { it.scheduleId }.toSet()
+        val secondFiltered = second.filter { it.scheduleId !in firstIds }
+        return first + secondFiltered
     }
 }
