@@ -1,19 +1,19 @@
 package io.redlink.more.app.android.activities.observations.limeSurvey
 
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import com.acsbendi.requestinspectorwebview.RequestInspectorWebViewClient
-import com.acsbendi.requestinspectorwebview.WebViewRequest
+import android.webkit.WebViewClient
 import io.github.aakira.napier.log
 
 
 interface WebClientListener {
-    fun onNewRequest(webView: WebView, webViewRequest: WebViewRequest)
+    fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest)
+
+    fun isLoading(loading: Boolean)
 }
 
 
-class LimeSurveyWebClient(webView: WebView) : RequestInspectorWebViewClient(webView){
+class LimeSurveyWebClient : WebViewClient(){
     private var clientListener: WebClientListener? = null
 
     fun setListener(webClientListener: WebClientListener) {
@@ -27,25 +27,20 @@ class LimeSurveyWebClient(webView: WebView) : RequestInspectorWebViewClient(webV
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)
         log { "WebViewClient\$onPageFinished: $url" }
+        clientListener?.isLoading(false)
     }
 
     override fun onPageCommitVisible(view: WebView?, url: String?) {
         super.onPageCommitVisible(view, url)
         log { "WebViewClient\$onPageCommitVisible: $url" }
-    }
-
-    override fun shouldInterceptRequest(
-        view: WebView,
-        webViewRequest: WebViewRequest
-    ): WebResourceResponse? {
-        clientListener?.onNewRequest(view, webViewRequest)
-        return null
+        clientListener?.isLoading(true)
     }
 
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         request?.let {
             log { "WebViewClient\$shouldOverrideUrlLoading: url: ${it.url}; headers: ${it.url}; isForMainFrame: ${it.isForMainFrame}; method: ${it.method}; isRedirect: ${it.isRedirect}" }
+            clientListener?.shouldOverrideUrlLoading(view, it)
         }
         return super.shouldOverrideUrlLoading(view, request)
     }

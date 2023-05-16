@@ -13,9 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
@@ -33,6 +37,7 @@ import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.app.android.ui.theme.MoreColors
 
 class LimeSurveyActivity : ComponentActivity() {
     val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
@@ -47,7 +52,7 @@ class LimeSurveyActivity : ComponentActivity() {
         }
         webView = WebView(this)
         webView?.let { webView ->
-            webClientListener = LimeSurveyWebClient(webView)
+            webClientListener = LimeSurveyWebClient()
             webClientListener?.let {
                 webClientListener?.setListener(viewModel)
                 webView.apply {
@@ -136,6 +141,12 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
             } else {
                 webView?.let { webView ->
                     viewModel.limeSurveyLink.value?.let { limeSurveyLink ->
+                        if (viewModel.networkLoading.value) {
+                            LinearProgressIndicator(
+                                color = MoreColors.Primary,
+                                modifier = Modifier.fillMaxWidth().height(2.dp)
+                            )
+                        }
                         AndroidView(factory = {
                             webView.apply {
                                 loadUrl(limeSurveyLink)
