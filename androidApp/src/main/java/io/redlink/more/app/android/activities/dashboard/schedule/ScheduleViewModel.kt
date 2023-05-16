@@ -43,10 +43,6 @@ class ScheduleViewModel(
 
     init {
         viewModelScope.launch {
-            coreViewModel.scheduleDates.collect { dateSet ->
-                scheduleDates.clear()
-                scheduleDates.addAll(dateSet.map { it.jvmLocalDate() })
-            }
 
 //            coreViewModel.scheduleList.collect { list ->
 //                schedules

@@ -26,7 +26,6 @@ class CoreScheduleViewModel(
     private val scheduleRepository = ScheduleRepository()
 
     val scheduleList: MutableStateFlow<List<ScheduleModel>> = MutableStateFlow(emptyList())
-    val scheduleDates: MutableStateFlow<Set<Long>> = MutableStateFlow(emptySet())
 
     private var originalScheduleList = emptyList<ScheduleModel>()
 
@@ -86,7 +85,6 @@ class CoreScheduleViewModel(
 
     private suspend fun updateList(list: List<ScheduleModel>) {
         scheduleList.emit(list)
-        scheduleDates.emit(list.map { it.start.toLocalDate().time() }.toSet())
     }
 
     private fun createMap(observationList: Map<String, List<ScheduleSchema>>): List<ScheduleModel> {
@@ -109,10 +107,7 @@ class CoreScheduleViewModel(
         return createMap(observationList).filter { scheduleModel -> scheduleModel.scheduleState.running() }
     }
 
-    fun onScheduleModelListChange(provideNewState: (List<ScheduleModel>) -> Unit): Closeable {
-        return scheduleList.asClosure(provideNewState)
-    }
-
-    fun scheduleDateListChange(provideNewState: (Set<Long>) -> Unit) = scheduleDates.asClosure(provideNewState)
+    fun onScheduleModelListChange(provideNewState: (List<ScheduleModel>) -> Unit) =
+        scheduleList.asClosure(provideNewState)
 }
 
