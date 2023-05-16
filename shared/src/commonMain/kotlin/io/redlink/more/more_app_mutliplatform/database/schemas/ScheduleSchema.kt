@@ -27,15 +27,16 @@ class ScheduleSchema : RealmObject {
             state = specificState.name
             return it
         }
-        start?.let { start ->
-            end?.let { end ->
-                state = if (end.toInstant() <= Clock.System.now()) {
+        val now = Clock.System.now().epochSeconds
+        start?.epochSeconds?.let { start ->
+            end?.epochSeconds?.let { end ->
+                state = if (end <= now) {
                     if (getState() == ScheduleState.RUNNING) {
                         ScheduleState.DONE.name
                     } else {
                         ScheduleState.ENDED.name
                     }
-                } else if (start.toInstant() <= Clock.System.now() && getState() != ScheduleState.RUNNING) {
+                } else if (start <= now && getState() != ScheduleState.RUNNING) {
                     ScheduleState.ACTIVE.name
                 } else if (getState() != ScheduleState.RUNNING) {
                     ScheduleState.DEACTIVATED.name
@@ -54,9 +55,10 @@ class ScheduleSchema : RealmObject {
     companion object {
         fun toSchema(schedule: ObservationSchedule, observationId: String, observationType: String): ScheduleSchema? {
             return if (schedule.start != null && schedule.end != null){
-                val scheduleState = if(schedule.start < Clock.System.now() && schedule.end > Clock.System.now()) {
+                val now = Clock.System.now().epochSeconds
+                val scheduleState = if(schedule.start.epochSeconds < now && schedule.end.epochSeconds > now) {
                     ScheduleState.ACTIVE
-                } else if (schedule.start > Clock.System.now()) {
+                } else if (schedule.start.epochSeconds > now) {
                     ScheduleState.DEACTIVATED
                 } else {
                     ScheduleState.ENDED

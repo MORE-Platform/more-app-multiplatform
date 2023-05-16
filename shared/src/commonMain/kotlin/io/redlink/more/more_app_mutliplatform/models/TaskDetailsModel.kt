@@ -22,8 +22,8 @@ data class TaskDetailsModel(
                 observationType = observation.observationType,
                 observationId = observation.observationId,
                 scheduleId = schedule.scheduleId.toHexString(),
-                start = schedule.start?.toInstant()?.toEpochMilliseconds()?: 0,
-                end = schedule.end?.toInstant()?.toEpochMilliseconds()?: 0,
+                start = schedule.start?.epochSeconds ?: 0,
+                end = schedule.end?.epochSeconds ?: 0,
                 participantInformation = observation.participantInfo,
                 state = schedule.getState()
             )

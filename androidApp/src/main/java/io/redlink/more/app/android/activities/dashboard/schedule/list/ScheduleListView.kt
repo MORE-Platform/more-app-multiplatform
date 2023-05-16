@@ -34,7 +34,7 @@ fun ScheduleListView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        if (scheduleViewModel.schedules.isNotEmpty()) {
+        if (scheduleViewModel.schedulesByDate.isNotEmpty()) {
             ScheduleList(
                 navController = navController,
                 viewModel = scheduleViewModel,

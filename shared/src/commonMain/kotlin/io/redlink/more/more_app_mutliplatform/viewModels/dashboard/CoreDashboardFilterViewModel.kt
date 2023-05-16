@@ -68,7 +68,7 @@ class CoreDashboardFilterViewModel {
 
     fun filterActive() = currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME || currentFilter.value.typeFilter.isNotEmpty()
 
-    fun applyFilter(scheduleModelList: List<ScheduleModel>): List<ScheduleModel> {
+    fun applyFilter(scheduleModelList: Collection<ScheduleModel>): Collection<ScheduleModel> {
         var schedules = scheduleModelList
         if (filterActive()) {
             if (currentFilter.value.typeFilter.isNotEmpty()) {
