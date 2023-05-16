@@ -35,7 +35,7 @@ class CoreSettingsViewModel(
 
     override fun viewDidAppear() {
         launchScope {
-            studyRepository.getStudy()
+            studyRepository.getStudy().cancellable()
                 .combine(observationRepository.observations()) { study, observations ->
                     Pair(study, observations)
                 }.cancellable().collect {

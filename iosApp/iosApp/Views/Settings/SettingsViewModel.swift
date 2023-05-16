@@ -13,24 +13,25 @@ class SettingsViewModel: ObservableObject {
     private let coreSettingsViewModel: CoreSettingsViewModel
     var delegate: ConsentViewModelListener? = nil
     
-    @Published var study: StudySchema?
+    @Published var studyTitle: String?
     @Published private(set) var permissionModel: PermissionModel?
     @Published var dataDeleted = false
     @Published var showSettings = false
     
     init() {
         coreSettingsViewModel = CoreSettingsViewModel(shared: AppDelegate.shared)
-        coreSettingsViewModel.onLoadStudy { study in
-            self.study = study
+        coreSettingsViewModel.onLoadStudy { [weak self] study in
+            self?.studyTitle = study?.studyTitle
         }
-        coreSettingsViewModel.onPermissionChange { permissions in
-            self.permissionModel = permissions
+        coreSettingsViewModel.onPermissionChange { [weak self] permissions in
+            self?.permissionModel = permissions
         }
     }
     
     func leaveStudy() {
         AppDelegate.recorder.stopAll()
         AppDelegate.dataManager.stopListeningToCountChanges()
+        dataDeleted = true
         coreSettingsViewModel.exitStudy()
         FCMService().deleteNotificationToken()
         self.delegate?.credentialsDeleted()

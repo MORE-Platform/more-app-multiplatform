@@ -36,19 +36,25 @@ class ScheduleViewModel: ObservableObject {
                 let removed = triple.second as? Set<String>,
                 let updated = triple.third as? Set<ScheduleModel> {
                 
-                let idsToRemove = removed.union(updated.map{$0.scheduleId})
-                for (date, schedules) in self.schedulesByDate {
-                    self.schedulesByDate[date] = schedules.filter { !idsToRemove.contains($0.scheduleId)}
+                if !removed.isEmpty || !updated.isEmpty {
+                    let idsToRemove = removed.union(updated.map{$0.scheduleId})
+                    let filtered = self.schedulesByDate.filter { (date, list) in
+                        list.contains(where: {idsToRemove.contains($0.scheduleId)})
+                    }
+                    for (date, schedules) in filtered {
+                        self.schedulesByDate[date] = schedules.filter { !removed.contains($0.scheduleId)}
+                    }
                 }
                 
-                let schedulestoAdd = added.union(updated)
-                
-                let groupedSchedulesToAdd = Dictionary(grouping: schedulestoAdd, by: { $0.start.startOfDate() })
-                
-                for (date, schedules) in groupedSchedulesToAdd {
-                    self.schedulesByDate[date] = (self.schedulesByDate[date, default: []] + schedules).sorted(by: { $0.start < $1.start})
+                if !added.isEmpty || !updated.isEmpty {
+                    let itemsToBeAdded = mergeSchedules(Array(added), Array(updated))
+                    
+                    let groupedSchedulesToAdd = Dictionary(grouping: itemsToBeAdded, by: { $0.start.startOfDate() })
+                    
+                    for (date, schedules) in groupedSchedulesToAdd {
+                        self.schedulesByDate[date] = mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: { $0.start < $1.start})
+                    }
                 }
-                self.schedulesByDate = self.schedulesByDate.filter { !$1.isEmpty }
             }
         }
     }
@@ -69,6 +75,12 @@ class ScheduleViewModel: ObservableObject {
     func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
         taskDetailsVM.setSchedule(scheduleId: scheduleId)
         return taskDetailsVM
+    }
+    
+    func mergeSchedules(_ lhs: [ScheduleModel], _ rhs: [ScheduleModel]) -> [ScheduleModel] {
+        let lhsIds = Set(lhs.map{$0.scheduleId})
+        let filteredRhs = rhs.filter{ !lhsIds.contains($0.scheduleId) }
+        return lhs + filteredRhs
     }
 }
 

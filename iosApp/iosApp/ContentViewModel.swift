@@ -76,6 +76,8 @@ class ContentViewModel: ObservableObject {
     }
     
     private func reinitAllViewModels() {
+        isLeaveStudyOpen = false
+        isLeaveStudyConfirmOpen = false
         dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)

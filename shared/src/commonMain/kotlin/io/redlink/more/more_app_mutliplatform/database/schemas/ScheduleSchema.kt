@@ -15,6 +15,7 @@ class ScheduleSchema : RealmObject {
     var scheduleId: ObjectId = ObjectId.invoke()
     var observationId: String = ""
     var observationType: String = ""
+    var observationTitle: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
     var done: Boolean = false
@@ -53,7 +54,7 @@ class ScheduleSchema : RealmObject {
     }
 
     companion object {
-        fun toSchema(schedule: ObservationSchedule, observationId: String, observationType: String): ScheduleSchema? {
+        fun toSchema(schedule: ObservationSchedule, observationId: String, observationType: String, observationTitle: String): ScheduleSchema? {
             return if (schedule.start != null && schedule.end != null){
                 val now = Clock.System.now().epochSeconds
                 val scheduleState = if(schedule.start.epochSeconds < now && schedule.end.epochSeconds > now) {
@@ -66,6 +67,7 @@ class ScheduleSchema : RealmObject {
                 ScheduleSchema().apply {
                     this.observationId = observationId
                     this.observationType = observationType
+                    this.observationTitle = observationTitle
                     start = schedule.start.toRealmInstant()
                     end = schedule.end.toRealmInstant()
                     state = scheduleState.name
