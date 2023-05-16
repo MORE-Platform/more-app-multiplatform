@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -930,8 +930,9 @@
 		7555FF73242A565900829871 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = "Redlink GmbH";
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -1141,7 +1142,6 @@
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
 				EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */,
 				B78B4A8429F04BEA00A1BA58 /* ExpandableContentWithLink.swift in Sources */,
-				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
 				B74DDB6A29E6AEDE006FEA74 /* NotificationItem.swift in Sources */,

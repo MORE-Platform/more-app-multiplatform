@@ -23,7 +23,7 @@ struct LimeSurveyView: View {
                         }
                     } else {
                         if let url = viewModel.limeSurveyLink {
-                            WebView(url: url)
+                            WebView(url: url, viewModel: viewModel.webViewModel)
                                 .ignoresSafeArea(.all, edges: .bottom)
                             
                         } else {
@@ -35,14 +35,20 @@ struct LimeSurveyView: View {
             .customNavigationTitle(with: NavigationScreens.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
             .toolbar {
                 if viewModel.wasAnswered {
-                    Button("Done".localize(useTable: stringsTable, withComment: "LimeSurvey done")) {
+                    Button {
                         viewModel.onFinish()
                         navigationModalState.limeSurveyOpen = false
+                    } label: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.more.secondary)
                     }
                 } else {
-                    Button("Cancel".localize(useTable: stringsTable, withComment: "Cancel LimeSurvey")) {
+                    Button {
                         viewModel.onFinish()
                         navigationModalState.limeSurveyOpen = false
+                    } label: {
+                        Image(systemName: "trash.circle.fill")
+                            .foregroundColor(.more.important)
                     }
                 }
             }

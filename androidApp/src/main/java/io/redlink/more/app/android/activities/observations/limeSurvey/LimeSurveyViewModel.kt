@@ -64,19 +64,6 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
         coreViewModel.close()
     }
 
-//    override fun onNewRequest(webView: WebView, webViewRequest: WebViewRequest) {
-//        log { "WebViewClient\$shouldInterceptRequest:\nisForMain: ${webViewRequest.isForMainFrame};\nURL: ${webViewRequest.url};\nMethod: ${webViewRequest.method};\nbody: ${webViewRequest.body};\ncookies: ${webViewRequest.headers}" }
-//        val bodyElements = webViewRequest.body.extractKeyValuePairs()
-//        if (bodyElements.isNotEmpty()) {
-//            log { "Body:" }
-//            bodyElements.forEach { log { "Key: ${it.key}: ${it.value}" } }
-//        }
-//        if (webViewRequest.headers.isNotEmpty()) {
-//            log { "Headers:" }
-//            webViewRequest.headers.forEach { log { "Key: ${it.key}: ${it.value}" } }
-//        }
-//    }
-
     override fun isLoading(loading: Boolean) {
         this.networkLoading.value = loading
     }

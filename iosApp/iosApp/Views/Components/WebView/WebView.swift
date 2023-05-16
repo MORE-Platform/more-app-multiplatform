@@ -11,7 +11,7 @@ import WebKit
 
 struct WebView: View {
     @State var url: URL?
-    @StateObject private var viewModel = WebViewViewModel()
+    @StateObject var viewModel: WebViewViewModel
     
     var body: some View {
         VStack {
@@ -48,6 +48,6 @@ struct SwiftUIWebView: UIViewRepresentable {
 
 struct SwiftUIWebView_Previews: PreviewProvider {
     static var previews: some View {
-        WebView(url: URL(string: "https://www.devtechie.com")!)
+        WebView(url: URL(string: "https://www.devtechie.com")!, viewModel: WebViewViewModel())
     }
 }
