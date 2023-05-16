@@ -20,8 +20,6 @@ import kotlinx.coroutines.launch
 class RegistrationService (
     private val shared: Shared
 ) {
-    private val studyRepository = StudyRepository()
-
     var study: Study? = null
         private set
 
@@ -75,7 +73,7 @@ class RegistrationService (
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
-                    studyRepository.storeStudy(study)
+                    StudyRepository().storeStudy(study)
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
                     onError(NetworkServiceError(null, "Could not store credentials").freeze())

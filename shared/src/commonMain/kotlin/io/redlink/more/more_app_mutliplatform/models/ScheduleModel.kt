@@ -26,14 +26,14 @@ data class ScheduleModel(
 
     companion object {
 
-        fun createModel(observationTitle: String, schedule: ScheduleSchema): ScheduleModel? {
+        fun createModel(schedule: ScheduleSchema): ScheduleModel? {
             val start = schedule.start ?: return null
             val end = schedule.end ?: return null
             return ScheduleModel(
                 scheduleId = schedule.scheduleId.toHexString(),
                 observationId = schedule.observationId,
                 observationType = schedule.observationType,
-                observationTitle = observationTitle,
+                observationTitle = schedule.observationTitle,
                 done = schedule.done,
                 start = start.epochSeconds,
                 end = end.epochSeconds,

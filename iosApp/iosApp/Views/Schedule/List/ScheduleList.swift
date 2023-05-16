@@ -15,17 +15,12 @@ struct ScheduleList: View {
     var scheduleModels: [ScheduleModel] = []
     var scheduleListType: ScheduleListType
     
-    @State var limeSurveyIsPresented = false
-    @State var simpleQuestionIsPresented = false
-    
     var body: some View {
         ForEach(scheduleModels, id: \.scheduleId) { schedule in
             VStack {
                 ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: scheduleListType != .completed)
                     .environmentObject(navigationModalState)
-                if schedule != scheduleModels.last {
-                    Divider()
-                }
+                Divider()
             }
         }
         

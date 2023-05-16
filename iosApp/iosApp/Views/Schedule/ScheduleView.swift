@@ -38,8 +38,13 @@ struct ScheduleView: View {
                             let schedules = viewModel.schedulesByDate[key, default: []]
                             if !schedules.isEmpty {
                                 Section {
-                                    ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType)
-                                        .environmentObject(navigationModalState)
+                                    ForEach(schedules, id: \.scheduleId) { schedule in
+                                        VStack {
+                                            ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: viewModel.scheduleListType != .completed)
+                                                .environmentObject(navigationModalState)
+                                            Divider()
+                                        }
+                                    }
                                 } header: {
                                     VStack(alignment: .leading) {
                                         BasicText(text: .constant(key.formattedString()), color: Color.more.primaryDark)
