@@ -26,7 +26,7 @@ fun Instant.toRealmInstant(): RealmInstant {
 fun Instant.localDateTime(): LocalDateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())
 
 fun LocalDate.time(): Long =
-    this.atTime(0, 0).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+    this.atTime(0, 0).toInstant(TimeZone.currentSystemDefault()).epochSeconds
 
 fun Long.toLocalDateTime(): LocalDateTime = Instant.fromEpochMilliseconds(this).localDateTime()
 

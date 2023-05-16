@@ -117,7 +117,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         launch {
             val restartableTypes =
                 observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
-            val now = Clock.System.now()
+            val now = Clock.System.now().epochSeconds
             Napier.d { "Updating Schedule states..." }
             realm()?.let {
                 it.writeBlocking {
@@ -125,7 +125,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                         if (restartableTypes.isNotEmpty()
                             && scheduleSchema.getState() == ScheduleState.RUNNING
                             && scheduleSchema.observationType in restartableTypes
-                            && scheduleSchema.end?.let { it.toInstant() > now } == true
+                            && scheduleSchema.end?.let { it.epochSeconds > now } == true
                         ) {
                             Napier.i { "Resetting ${scheduleSchema.scheduleId}" }
                             scheduleSchema.updateState(ScheduleState.ACTIVE)

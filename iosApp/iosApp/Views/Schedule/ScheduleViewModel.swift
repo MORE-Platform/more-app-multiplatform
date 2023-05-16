@@ -15,9 +15,7 @@ class ScheduleViewModel: ObservableObject {
 
     let filterViewModel: DashboardFilterViewModel = DashboardFilterViewModel()
     
-    private var schedules: [ScheduleModel] = []
-
-    @Published var scheduleDates: [Int64] = []
+    @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
     
     lazy var taskDetailsVM: TaskDetailsViewModel = {
         TaskDetailsViewModel(dataRecorder: recorder)
@@ -32,13 +30,25 @@ class ScheduleViewModel: ObservableObject {
     }
 
     func loadSchedules() {
-        coreModel.scheduleDateListChange { [weak self] dateSet in
-            self?.scheduleDates = dateSet.map{$0.int64Value}.sorted()
-        }
-        coreModel.onScheduleModelListChange { [weak self] schedules in
-            if let self {
-                self.schedules = schedules.sorted(by: {$0.start < $1.start })
-                self.scheduleDates = Set(self.schedules.map { $0.start }).sorted()
+        coreModel.onScheduleStateUpdated { [weak self] triple in
+            if let self,
+                let added = triple.first as? Set<ScheduleModel>,
+                let removed = triple.second as? Set<String>,
+                let updated = triple.third as? Set<ScheduleModel> {
+                
+                let idsToRemove = removed.union(updated.map{$0.scheduleId})
+                for (date, schedules) in self.schedulesByDate {
+                    self.schedulesByDate[date] = schedules.filter { !idsToRemove.contains($0.scheduleId)}
+                }
+                
+                let schedulestoAdd = added.union(updated)
+                
+                let groupedSchedulesToAdd = Dictionary(grouping: schedulestoAdd, by: { $0.start.startOfDate() })
+                
+                for (date, schedules) in groupedSchedulesToAdd {
+                    self.schedulesByDate[date] = (self.schedulesByDate[date, default: []] + schedules).sorted(by: { $0.start < $1.start})
+                }
+                self.schedulesByDate = self.schedulesByDate.filter { !$1.isEmpty }
             }
         }
     }
@@ -49,11 +59,6 @@ class ScheduleViewModel: ObservableObject {
 
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
-    }
-    
-    func filterScheduleByDate(scheduleDate: Int64) -> [ScheduleModel] {
-        let date = scheduleDate.dateWithoutTime()
-        return schedules.filter{ $0.start.dateWithoutTime() == date}
     }
 
     func getSimpleQuestionObservationVM(scheduleId: String) -> SimpleQuestionObservationViewModel {

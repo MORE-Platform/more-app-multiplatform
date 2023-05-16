@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
@@ -35,29 +36,22 @@ class ScheduleViewModel(
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
-    //val schedules = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
-    val schedules = mutableStateListOf<ScheduleModel>()
-    val scheduleDates = mutableStateListOf<LocalDate>()
+    val schedulesByDate = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
 
     val filterModel = DashboardFilterViewModel(coreFilterModel)
 
     init {
         viewModelScope.launch {
-
-//            coreViewModel.scheduleList.collect { list ->
-//                schedules
-//            }
-//            coreViewModel.scheduleModelList.collect { map ->
-//                val javaConvertedMap = map.mapKeys { it.key.jvmLocalDate() }
-//                withContext(Dispatchers.Main) {
-//                    updateData(javaConvertedMap)
-//                }
-//            }
-        }
-        viewModelScope.launch {
-            coreViewModel.scheduleList.collect { scheduleList ->
-                schedules.clear()
-                schedules.addAll(scheduleList)
+            coreViewModel.scheduleListState.collect { (added, removed, updated) ->
+                val idsToRemove = removed + updated.map { it.scheduleId }.toSet()
+                schedulesByDate.forEach { (date, schedules) ->
+                    schedulesByDate[date] = schedules.filterNot { it.scheduleId in idsToRemove }
+                }
+                val schemasToAdd = added + updated
+                schemasToAdd.groupBy { it.start.jvmLocalDate() }.forEach { (date, schedules) ->
+                    schedulesByDate[date] = schedulesByDate.getOrDefault(date, emptyList()) + schedules
+                }
+                schedulesByDate.entries.removeIf { it.value.isEmpty() }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {

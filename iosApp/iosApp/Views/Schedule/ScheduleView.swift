@@ -24,7 +24,7 @@ struct ScheduleView: View {
                 EmptyView()
             }.opacity(0)
             ScrollView(.vertical) {
-                if (viewModel.scheduleDates.isEmpty) {
+                if (viewModel.schedulesByDate.isEmpty) {
                     if viewModel.scheduleListType == ScheduleListType.running {
                         EmptyListView(text: "No running tasks currently".localize(useTable: stringsTable, withComment: "No running tasks in list"))
                     } else if viewModel.scheduleListType == ScheduleListType.completed {
@@ -34,15 +34,15 @@ struct ScheduleView: View {
                     }
                 } else {
                     LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
-                        ForEach(viewModel.scheduleDates, id: \.self) { key in
-                            let schedules = viewModel.filterScheduleByDate(scheduleDate: key)
+                        ForEach(viewModel.schedulesByDate.keys.sorted(), id: \.self) { key in
+                            let schedules = viewModel.schedulesByDate[key, default: []]
                             if !schedules.isEmpty {
                                 Section {
                                     ScheduleList(viewModel: viewModel, scheduleModels: schedules, scheduleListType: viewModel.scheduleListType)
                                         .environmentObject(navigationModalState)
                                 } header: {
                                     VStack(alignment: .leading) {
-                                        BasicText(text: .constant(Int64(key).toDateString(dateFormat: "dd.MM.yyyy")), color: Color.more.primaryDark)
+                                        BasicText(text: .constant(key.formattedString()), color: Color.more.primaryDark)
                                             .font(Font.more.headline)
                                         Divider()
                                     }.background(Color.more.secondaryLight)
