@@ -4,4 +4,10 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 
-data class PermissionViewModelModel(val study: Study, val token: String, val endpoint: String? = null, val endpointRepository: EndpointRepository, val credentialRepository: CredentialRepository)
+data class PermissionViewModelModel(
+    val study: Study,
+    val token: String,
+    val endpoint: String? = null,
+    val endpointRepository: EndpointRepository,
+    val credentialRepository: CredentialRepository
+)

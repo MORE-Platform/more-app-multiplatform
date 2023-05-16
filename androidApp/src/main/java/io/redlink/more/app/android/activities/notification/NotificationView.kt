@@ -24,7 +24,7 @@ import io.redlink.more.app.android.extensions.getStringResource
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
 
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.NOTIFICATIONS.route)
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -54,7 +54,7 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         item {
-            if (viewModel.notificationCount.value.toInt() == 0) {
+            if (viewModel.notificationCount.value == 0) {
                 Text(text = getStringResource(id = R.string.no_notifications_yet))
             }
         }

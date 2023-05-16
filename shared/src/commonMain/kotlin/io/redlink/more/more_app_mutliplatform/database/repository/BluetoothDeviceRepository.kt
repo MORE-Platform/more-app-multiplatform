@@ -9,12 +9,15 @@ import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -23,19 +26,17 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     val connectedDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
     private val pairedDeviceIds = mutableSetOf<String>()
     override fun count(): Flow<Long> = realmDatabase().count<BluetoothDevice>()
-    private val scope = CoroutineScope(Job() + Dispatchers.Main)
-
 
     fun listenForConnectedDevices() {
-        scope.launch(Dispatchers.Default) {
-            getConnectedDevices().collect {
+        launch {
+            getConnectedDevices().cancellable().collect {
                 connectedDevices.set(it.toSet())
             }
         }
     }
 
     fun setConnectionState(bluetoothDevice: BluetoothDevice, connected: Boolean) {
-        scope.launch {
+        launch {
             realm()?.write {
                 bluetoothDevice.address?.let {
                     val device = this.query<BluetoothDevice>("address = $0", it).first().find()

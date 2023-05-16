@@ -77,6 +77,12 @@ struct ConsentView: View {
             }
         }
         .padding(24)
+        .onAppear {
+            viewModel.onAppear()
+        }
+        .onDisappear {
+            viewModel.onDisappear()
+        }
     }
 }
 

@@ -10,10 +10,8 @@ import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
-
-
-private const val TAG = "MoreApplication"
 
 /**
  * Main Application class of the project.
@@ -33,6 +31,9 @@ class MoreApplication : Application() {
         shared = Shared(SharedPreferencesRepository(this))
         observationDataManager = AndroidObservationDataManager(this)
         observationFactory = AndroidObservationFactory(this)
+        observationFactory?.let {
+            observationManager = ObservationManager(it)
+        }
     }
 
     companion object {
@@ -49,6 +50,9 @@ class MoreApplication : Application() {
             private set
 
         var observationFactory: ObservationFactory? = null
+            private set
+
+        var observationManager: ObservationManager? = null
             private set
 
 //        fun logEvent() {

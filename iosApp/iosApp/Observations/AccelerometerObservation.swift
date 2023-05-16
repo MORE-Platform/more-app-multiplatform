@@ -52,7 +52,7 @@ class AccelerometerObservation: Observation_ {
         Timer(fire: Date(), interval: accelerometerFrequency, repeats: true, block: { timer in
             if let data = self.motion.accelerometerData {
                 let dict = ["x": data.acceleration.x, "y": data.acceleration.y, "z": data.acceleration.z]
-                self.storeData(data: dict, timestamp: -1)
+                self.storeData(data: dict, timestamp: -1){}
             }
         })
     }

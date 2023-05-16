@@ -7,6 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,7 +25,6 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
-import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -39,9 +41,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel = MainViewModel(this)
-        val destinationChangeListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            viewModel.navigationBarTitle.value = destination.navigatorName
-        }
+        val destinationChangeListener =
+            NavController.OnDestinationChangedListener { controller, destination, arguments ->
+                viewModel.navigationBarTitle.value = destination.navigatorName
+            }
         setContent {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {
@@ -69,14 +72,20 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.route)
                 2 -> navController.navigate(NavigationScreen.INFO.route)
             }
-        }) {
-        NavHost(navController = navController, startDestination = NavigationScreen.DASHBOARD.route) {
+        }
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = NavigationScreen.DASHBOARD.route
+        ) {
             composable(NavigationScreen.DASHBOARD.route) {
                 viewModel.tabIndex.value = 0
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
-                DashboardView(navController, viewModel = viewModel.dashboardViewModel,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
+                DashboardView(
+                    navController, viewModel = viewModel.dashboardViewModel,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                )
             }
             composable(NavigationScreen.NOTIFICATIONS.route) {
                 viewModel.tabIndex.value = 1
@@ -88,7 +97,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.tabIndex.value = 2
                 viewModel.showBackButton.value = false
                 viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
-                InfoView(navController, viewModel = InfoViewModel())
+                InfoView(navController, viewModel = viewModel.infoVM)
             }
             composable(NavigationScreen.SETTINGS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
@@ -99,18 +108,24 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 "${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId={scheduleId}&scheduleListType={scheduleListType}",
                 arguments = listOf(
                     navArgument("scheduleId") {
-                    type = NavType.StringType
-                })
+                        type = NavType.StringType
+                    })
             ) {
                 val arguments = requireNotNull(it.arguments)
-                val scheduleId = arguments.getString("scheduleId")
-                viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
-                val scheduleListType: ScheduleListType = ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull( arguments.getString("scheduleId")))
+                }
+                val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
+                val scheduleListType by remember {
+                    mutableStateOf(ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL")))
+                }
+
                 viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
+
                 TaskDetailsView(
                     navController = navController,
-                    viewModel = viewModel.getTaskDetailsVM(scheduleId ?: ""),
+                    viewModel = taskVM,
                     scheduleId = scheduleId,
                     scheduleListType = scheduleListType
                 )
@@ -124,12 +139,19 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     })
             ) {
                 val arguments = requireNotNull(it.arguments)
-                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.OBSERVATION_DETAILS.stringRes()
                 val observationId = arguments.getString("observationId")
-                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.OBSERVATION_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
+
+                val obsDetailsVM by remember {
+                    mutableStateOf(viewModel.createObservationDetailView(observationId ?: ""))
+                }
+
                 ObservationDetailsView(
-                    viewModel = viewModel.createObservationDetailView(observationId ?: ""),
+                    viewModel = obsDetailsVM,
                     navController = navController
                 )
             }
@@ -137,29 +159,31 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             composable(NavigationScreen.STUDY_DETAILS.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
                 viewModel.showBackButton.value = true
-                StudyDetailsView(viewModel = viewModel.studyDetailsViewModel, navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
+
+                StudyDetailsView(
+                    viewModel = viewModel.studyDetailsViewModel, navController = navController,
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                )
             }
-            composable("${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType={scheduleListType}",
-            arguments = listOf(
-                navArgument("scheduleListType") {
-                    type = NavType.StringType
-                })
+            composable(
+                "${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType={scheduleListType}",
+                arguments = listOf(
+                    navArgument("scheduleListType") {
+                        type = NavType.StringType
+                    })
             ) {
                 viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
-                val arguments = requireNotNull(it.arguments)
-                when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
-                    ScheduleListType.ALL -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel))
-                    }
-                    ScheduleListType.RUNNING -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel))
-                    }
-                    ScheduleListType.COMPLETED -> {
-                        DashboardFilterView(viewModel = DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel))
-                    }
+
+                val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
+                val vm by remember {
+                    mutableStateOf(when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
+                        ScheduleListType.ALL -> DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel)
+                        ScheduleListType.RUNNING -> DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel)
+                        ScheduleListType.COMPLETED -> DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel)
+                    })
                 }
+                DashboardFilterView(viewModel = vm)
             }
             composable(
                 "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
@@ -168,45 +192,62 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         type = NavType.StringType
                     })
             ) {
-                val arguments = requireNotNull(it.arguments)
-                val scheduleId = arguments.getString("scheduleId")
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
+                }
                 viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
                 viewModel.showBackButton.value = true
-                QuestionnaireView(navController = navController, model = viewModel.creteNewSimpleQuestionViewModel(
-                    scheduleId ?: ""
-                ))
+                val vm by remember {
+                    mutableStateOf(viewModel.creteNewSimpleQuestionViewModel(
+                        scheduleId
+                    ))
+                }
+                QuestionnaireView(
+                    navController = navController,
+                    viewModel = vm
+                )
             }
             composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
                 viewModel.showBackButton.value = false
+
                 QuestionnaireResponseView(navController)
             }
             composable(NavigationScreen.NOTIFICATION_FILTER.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATION_FILTER.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.NOTIFICATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
+
                 NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
             }
 
             composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
                 viewModel.showBackButton.value = true
+
                 BluetoothConnectionView(navController, viewModel.bluetoothConnectionViewModel)
             }
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
+
                 RunningSchedulesView(
                     viewModel = viewModel.runningSchedulesViewModel,
                     navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                )
             }
             composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.COMPLETED_SCHEDULES.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.COMPLETED_SCHEDULES.stringRes()
                 viewModel.showBackButton.value = true
                 CompletedSchedulesView(
                     viewModel = viewModel.completedSchedulesViewModel,
                     navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel)
+                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                )
             }
             composable(NavigationScreen.LEAVE_STUDY.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY.stringRes()
@@ -214,7 +255,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
             }
             composable(NavigationScreen.LEAVE_STUDY_CONFIRM.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY_CONFIRM.stringRes()
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.LEAVE_STUDY_CONFIRM.stringRes()
                 viewModel.showBackButton.value = true
                 LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
             }

@@ -16,11 +16,12 @@ import io.redlink.more.app.android.shared_composables.ScheduleList
 @Composable
 fun ScheduleListView(
     navController: NavController,
+    routeString: String,
     scheduleViewModel: ScheduleViewModel,
     showButton: Boolean
 ) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.BLUETOOTH_CONNECTION.route)
+    val route = backStackEntry?.arguments?.getString(routeString)
     LaunchedEffect(route) {
         scheduleViewModel.viewDidAppear()
     }
@@ -33,7 +34,7 @@ fun ScheduleListView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        if (scheduleViewModel.schedules.isNotEmpty()) {
+        if (scheduleViewModel.schedulesByDate.isNotEmpty()) {
             ScheduleList(
                 navController = navController,
                 viewModel = scheduleViewModel,

@@ -29,11 +29,8 @@ struct SettingsView: View {
                 
                 Spacer()
             }
-        } topBarContent: {
-            EmptyView()
         }
         .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.viewDidAppear()
         }

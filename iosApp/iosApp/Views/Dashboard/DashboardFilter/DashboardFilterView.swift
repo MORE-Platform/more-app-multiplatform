@@ -43,11 +43,8 @@ struct DashboardFilterView: View {
                     }
                     Spacer()
                 }
-            } topBarContent: {
-                EmptyView()
             }
             .customNavigationTitle(with: NavigationScreens.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

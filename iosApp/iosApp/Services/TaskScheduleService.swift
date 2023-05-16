@@ -10,7 +10,6 @@ import Foundation
 import shared
 
 class TaskScheduleService {
-    private let observationFactory = IOSObservationFactory()
     private let scheduleRepository = ScheduleRepository()
     private var timer: Timer?
     
@@ -41,7 +40,7 @@ class TaskScheduleService {
     }
     
     private func update() {
-        self.scheduleRepository.updateTaskStates(observationFactory: self.observationFactory)
+        self.scheduleRepository.updateTaskStates(observationFactory: AppDelegate.observationFactory)
         self.scheduleNextUpdate()
     }
     

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -18,13 +19,20 @@ class InfoViewModel: ViewModel() {
     val contactEmail: String? = "markus.mustermann@bolzmann.at"
     val contactTel: String? = null
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
+    private var job: Job? = null
+
+    fun viewDidAppear() {
+       job = viewModelScope.launch {
             studyCoreViewModel.studyModel.collect{
                 withContext(Dispatchers.Main) {
                     studyTitle.value = it?.study?.studyTitle ?: ""
                 }
             }
         }
+    }
+
+    fun viewDidDisappear() {
+        job?.cancel()
+        studyCoreViewModel.viewDidDisappear()
     }
 }

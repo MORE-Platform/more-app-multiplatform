@@ -10,7 +10,6 @@ import SwiftUI
 
 struct InfoList: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
-    @StateObject var leaveStudyModalStatVM: LeaveStudyModalStateViewModel = LeaveStudyModalStateViewModel(isLeaveStudyOpen: false, isLeaveStudyConfirmOpen: false)
     private let stringTable = "Info"
     var body: some View {
         VStack(spacing: 14) {
@@ -18,10 +17,10 @@ struct InfoList: View {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "arrow.triangle.2.circlepath", destination: {
-                RunningSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .running))
+                RunningSchedules(scheduleViewModel: contentViewModel.runningViewModel)
             })
             InfoListItem(title: "Past Observations", icon: "checkmark", destination: {
-                CompletedSchedules(scheduleViewModel: ScheduleViewModel(observationFactory: contentViewModel.observationFactory, scheduleListType: .completed))
+                CompletedSchedules(scheduleViewModel: contentViewModel.completedViewModel)
             })
             InfoListItem(title: String.localizedString(forKey: "Devices", inTable: stringTable, withComment: "Lists all connected or needed devices."), icon: "applewatch", destination: {
                 BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel)
@@ -31,8 +30,9 @@ struct InfoList: View {
             })
             InfoListItemModal(title: String.localizedString(forKey: "Leave Study", inTable: stringTable, withComment: "Leave the study for good."), icon: "rectangle.portrait.and.arrow.right", destination: {
                 LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
-            }, action: {leaveStudyModalStatVM.isLeaveStudyOpen = true})
-            .environmentObject(leaveStudyModalStatVM)
+            }, action: {
+                contentViewModel.isLeaveStudyOpen = true
+            })
         }
     }
 }

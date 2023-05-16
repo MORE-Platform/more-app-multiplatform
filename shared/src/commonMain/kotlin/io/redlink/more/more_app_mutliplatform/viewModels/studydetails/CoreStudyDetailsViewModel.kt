@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.ktor.utils.io.core.use
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
@@ -7,6 +8,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,32 +17,35 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class CoreStudyDetailsViewModel {
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
-
+class CoreStudyDetailsViewModel: CoreViewModel() {
     val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
 
-    init {
-        scope.launch {
+    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
+        return studyModel.asClosure(provideNewState)
+    }
+
+    override fun viewDidAppear() {
+        launchScope {
             StudyRepository().use { studyRepository ->
                 ScheduleRepository().use { scheduleRepository ->
                     ObservationRepository().use { observationRepository ->
                         studyRepository.getStudy()
-                            .combine(scheduleRepository.allSchedulesWithStatus(true)) { study, doneTasks ->
+                            .combine(scheduleRepository.allSchedulesWithStatus(true).cancellable()) { study, doneTasks ->
                                 Pair(study, doneTasks.size)
-                            }.combine(scheduleRepository.count()) { firstPair, taskCount ->
+                            }.combine(scheduleRepository.count().cancellable()) { firstPair, taskCount ->
                                 Triple(
                                     firstPair.first,
                                     firstPair.second,
                                     taskCount
                                 )
-                            }.combine(observationRepository.observations()) { triple, observations ->
+                            }.combine(observationRepository.observations().cancellable()) { triple, observations ->
                                 Pair(
                                     triple,
                                     observations,
                                 )
                             }.cancellable().collect {
                                 it.first.first?.let {studySchema ->
+                                    println(it)
                                     studyModel.value = StudyDetailsModel.createModelFrom(studySchema, it.second, it.first.third,
                                         it.first.second.toLong()
                                     )
@@ -50,9 +55,5 @@ class CoreStudyDetailsViewModel {
                 }
             }
         }
-    }
-
-    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
-        return studyModel.asClosure(provideNewState)
     }
 }

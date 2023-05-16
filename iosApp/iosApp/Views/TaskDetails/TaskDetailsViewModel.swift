@@ -18,7 +18,6 @@ class TaskDetailsViewModel: ObservableObject {
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
     init(dataRecorder: IOSDataRecorder) {
-        print("TaskDetails VM init...")
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { taskDetails in
@@ -44,21 +43,8 @@ class TaskDetailsViewModel: ObservableObject {
     
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
-        taskDetailsModel = nil
-        dataCount = 0
     }
-    
-    func start() {
-        coreModel.startObservation()
-    }
-    
-    func pause() {
-        coreModel.pauseObservation()
-    }
-    
-    func stop() {
-        coreModel.stopObservation()
-    }
+
     
     func getDateRangeString() -> String {
         let startDate = taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
@@ -71,5 +57,19 @@ class TaskDetailsViewModel: ObservableObject {
     
     func getTimeRangeString() -> String {
         return (taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
+    }
+}
+
+extension TaskDetailsViewModel: ObservationActionDelegate {
+    func start(scheduleId: String) {
+        coreModel.startObservation()
+    }
+    
+    func pause(scheduleId: String) {
+        coreModel.pauseObservation()
+    }
+    
+    func stop(scheduleId: String) {
+        coreModel.stopObservation()
     }
 }

@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.settings
 
 import io.ktor.utils.io.core.Closeable
+import io.realm.kotlin.ext.isValid
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
@@ -9,12 +10,14 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -32,19 +35,21 @@ class CoreSettingsViewModel(
 
     override fun viewDidAppear() {
         launchScope {
-            studyRepository.getStudy()
+            studyRepository.getStudy().cancellable()
                 .combine(observationRepository.observations()) { study, observations ->
                     Pair(study, observations)
-                }.collect {
-                    study.value = it.first
-                    it.first?.let { study ->
-                        permissionModel.value = PermissionModel.createFromSchema(study, it.second)
+                }.cancellable().collect {
+                    if (it.first?.isValid() == true) {
+                        study.value = it.first
+                        it.first?.let { study ->
+                            permissionModel.value = PermissionModel.createFromSchema(study, it.second)
+                        }
                     }
                 }
         }
         launchScope {
-            observationRepository.observations().collect {
-                observations.value = it
+            observationRepository.observations().cancellable().collect {
+                observations.value = it.filter { observationSchema ->  observationSchema.isValid() }
             }
         }
     }
@@ -58,7 +63,8 @@ class CoreSettingsViewModel(
     }
 
     fun exitStudy() {
-        viewModelScope.launch {
+        Scope.cancel()
+        Scope.launch {
             shared.networkService.deleteParticipation()
             shared.credentialRepository.remove()
             shared.endpointRepository.removeEndpoint()

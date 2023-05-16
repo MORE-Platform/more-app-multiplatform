@@ -9,7 +9,7 @@ struct ContentView: View {
                 MainTabView()
                     .environmentObject(viewModel)
             } else {
-                MoreMainBackground {
+                MoreMainBackgroundView {
                     VStack {
                         if viewModel.loginViewScreenNr == 0 {
                             LoginView(model: viewModel.loginViewModel)
@@ -17,8 +17,6 @@ struct ContentView: View {
                             ConsentView(viewModel: viewModel.consentViewModel)
                         }
                     }
-                } topBarContent: {
-                    EmptyView()
                 }
             }
         }

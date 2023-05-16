@@ -1,23 +1,18 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
-import io.ktor.utils.io.core.*
+import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 
 class CoreTaskDetailsViewModel(
     private val dataRecorder: DataRecorder
@@ -30,16 +25,16 @@ class CoreTaskDetailsViewModel(
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
     val dataCount = MutableStateFlow<Long>(0)
 
-    private var countJob: Job? = null
-
     fun setSchedule(scheduleId: String) {
         this.scheduleId = scheduleId
+        taskDetailsModel.value = null
+        dataCount.value = 0
     }
 
     override fun viewDidAppear() {
-        scheduleId?.let { scheduleId ->
+        scheduleId?.let {
             launchScope {
-                scheduleRepository.scheduleWithId(scheduleId).cancellable().collect { schedule ->
+                scheduleRepository.scheduleWithId(it).cancellable().collect { schedule ->
                     schedule?.let { schedule ->
                         observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
                             taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
@@ -48,8 +43,10 @@ class CoreTaskDetailsViewModel(
                 }
             }
             launchScope {
-                dataPointCountRepository.get(scheduleId).cancellable().collect {
-                    it?.let { dataCount.emit(it.count) }
+                dataPointCountRepository.get(it).cancellable().collect {
+                    it?.let {
+                        dataCount.emit(it.count)
+                    }
                 }
             }
         }
@@ -57,17 +54,10 @@ class CoreTaskDetailsViewModel(
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
-        this.scheduleId = null
-        this.countJob?.cancel()
-        launchScope {
-            taskDetailsModel.emit(null)
-            dataCount.emit(0)
-        }
     }
 
-    fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable {
-        return taskDetailsModel.asClosure(provideNewState)
-    }
+    fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable =
+        taskDetailsModel.asClosure(provideNewState)
 
     fun onNewDataCount(provideNewState: (Long?) -> Unit) = dataCount.asClosure(provideNewState)
 

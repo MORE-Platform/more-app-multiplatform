@@ -15,8 +15,8 @@ class InfoViewModel: ObservableObject {
     
     // TODO: inforopository with infodata (not yet in bakcend) - exchange mock data to backend data after it exists
     var institute: String = "Ludwig Boltzmann Institute "
-    var contactPerson: String = "Dr. Markus Mustermann"
-    var contactEmail: String? = "markus.mustermann@bolzmann.at"
+    var contactPerson: String = "Dr. Max Mustermann"
+    var contactEmail: String? = "max.mustermann@bolzmann.at"
     var contactTel: String? = nil
     
     init() {
@@ -26,5 +26,13 @@ class InfoViewModel: ObservableObject {
                 self.studyTitle = studyDetails.study.studyTitle
             }
         }
+    }
+    
+    func viewDidAppear() {
+        studyCoreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        studyCoreModel.viewDidDisappear()
     }
 }

@@ -9,13 +9,13 @@
 import SwiftUI
 
 struct SimpleQuestionThankYouView: View {
-    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
+    @EnvironmentObject var questionModelState: NavigationModalState
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestionObservation"
     
     var body: some View {
         Navigation {
-            MoreMainBackground {
+            MoreMainBackgroundView {
                 VStack {
                     VStack(
                         alignment: .leading,
@@ -30,8 +30,7 @@ struct SimpleQuestionThankYouView: View {
                         Spacer()
                         
                         MoreActionButton(disabled: .constant(false)) {
-                            simpleQuestionModalStateVM.isQuestionThankYouOpen = false
-                            simpleQuestionModalStateVM.isQuestionOpen = false
+                            questionModelState.simpleQuestionThankYouOpen = false
                         } label: {
                             BasicText(text: .constant(String.localizedString(forKey: "close", inTable: simpleQuestionStrings, withComment: "Close")), color: .more.white)
                         }
@@ -40,11 +39,8 @@ struct SimpleQuestionThankYouView: View {
                     .navigationBarBackButtonHidden(true)
                 }
                 .padding(.horizontal, 40)
-            } topBarContent: {
-                EmptyView()
             }
-            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Thank you for answering the Question Observation"))
-            .navigationBarTitleDisplayMode(.inline)
+            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Thank you for answering the Question Observation"), displayMode: .inline)
             }
         }
     }

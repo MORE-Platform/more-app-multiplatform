@@ -26,7 +26,7 @@ class PolarConnector: BluetoothConnector {
                                  .feature_polar_sdk_mode,
                                  .feature_polar_device_time_setup,
                              ])
-    var observer: BluetoothConnectorObserver?
+    weak var observer: BluetoothConnectorObserver?
     
     private var scanning = false
     

@@ -11,8 +11,8 @@ import shared
 
 class IOSObservationFactory: ObservationFactory {
 
-    init() {
-        super.init(dataManager: AppDelegate.dataManager)
+    override init(dataManager: ObservationDataManager) {
+        super.init(dataManager: dataManager)
 //        observations.add(AccelerometerObservation(sensorPermission: []))
         observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
         observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))

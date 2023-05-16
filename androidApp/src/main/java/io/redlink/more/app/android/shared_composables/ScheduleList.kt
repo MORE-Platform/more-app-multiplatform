@@ -19,35 +19,33 @@ import io.redlink.more.app.android.extensions.formattedString
 @Composable
 fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, showButton: Boolean) {
     LazyColumn {
-        if (viewModel.schedules.isNotEmpty()) {
-            viewModel.schedules.toSortedMap().let { schedules ->
-                schedules.keys.forEach { date ->
-                    item {
-                        Heading(
-                            text = date.formattedString(),
-                            modifier = Modifier.fillMaxWidth()
+        if (viewModel.schedulesByDate.isNotEmpty()) {
+            viewModel.schedulesByDate.keys.sorted().forEach { date ->
+                item {
+                    Heading(
+                        text = date.formattedString(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                itemsIndexed(viewModel.schedulesByDate[date]?.sortedBy { it.start } ?: emptyList()) { _, item ->
+                    MoreDivider(Modifier.fillMaxWidth())
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId=${item.scheduleId}&scheduleListType=${viewModel.scheduleListType}")
+                            }
+                    ) {
+                        ScheduleListItem(
+                            navController = navController,
+                            scheduleModel = item,
+                            viewModel,
+                            showButton = showButton
                         )
                     }
-                    itemsIndexed(schedules[date] ?: emptyList()) { _, item ->
-                        MoreDivider(Modifier.fillMaxWidth())
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId=${item.scheduleId}&scheduleListType=${viewModel.scheduleListType}")
-                                }
-                        ) {
-                            ScheduleListItem(
-                                navController = navController,
-                                scheduleModel = item,
-                                viewModel,
-                                showButton = showButton
-                            )
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(30.dp))
                 }
             }
         }

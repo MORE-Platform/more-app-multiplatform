@@ -14,16 +14,16 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             Group {
-                DashboardView(dashboardViewModel: contentViewModel.dashboardViewModel)
+                DashboardView(viewModel: contentViewModel.dashboardViewModel)
                     .tabItem {
                         Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
                     }
                     .environmentObject(contentViewModel)
-                NotificationView(notificationViewModel: contentViewModel.notificationViewModel)
+                NotificationView()
                     .tabItem {
                         Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                    }.environmentObject(contentViewModel)
-                InfoView(viewModel: InfoViewModel())
+                    }
+                InfoView(viewModel: contentViewModel.infoViewModel)
                     .tabItem {
                         Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
                     }

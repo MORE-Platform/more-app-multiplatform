@@ -47,11 +47,8 @@ struct NotificationView: View {
                         notificationViewModel.viewDidDisappear()
                     }
                 }
-            } topBarContent: {
-                EmptyView()
             }
             .customNavigationTitle(with: NavigationScreens.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
-            .navigationBarTitleDisplayMode(.inline)
         }
 
     }

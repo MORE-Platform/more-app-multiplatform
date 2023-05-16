@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct Navigation<Content: View>: View {
-    
     var content: () -> Content
     var body: some View {
         ZStack {
@@ -32,30 +31,47 @@ struct Navigation<Content: View>: View {
 @available(iOS 16, *)
 struct NavigationTitleViewModifier: ViewModifier {
     var text: String
+    var displayMode: NavigationBarItem.TitleDisplayMode = .automatic
     
     func body(content: Content) -> some View {
         content
             .navigationTitle(text)
+            .navigationBarTitleDisplayMode(displayMode)
     }
 }
 
 struct NavigationBarTitleViewModifier: ViewModifier {
     var text: String
+    var displayMode: NavigationBarItem.TitleDisplayMode = .automatic
     
     func body(content: Content) -> some View {
         content
-            .navigationBarTitle(text)
+            .navigationBarTitle(text, displayMode: displayMode)
     }
 }
 
 extension View {
     @ViewBuilder
-    func customNavigationTitle(with text: String) -> some View {
+    func customNavigationTitle(with text: String, displayMode: NavigationBarItem.TitleDisplayMode = .inline) -> some View {
         if #available(iOS 16, *) {
-            self.modifier(NavigationTitleViewModifier(text: text))
+            self.modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
         }
         else {
-            self.modifier(NavigationBarTitleViewModifier(text: text))
+            self.modifier(NavigationBarTitleViewModifier(text: text, displayMode: displayMode))
         }
+    }
+}
+
+@available(iOS 15, *)
+struct PresentationViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .interactiveDismissDisabled()
+    }
+}
+
+struct PresentationCoverViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
     }
 }

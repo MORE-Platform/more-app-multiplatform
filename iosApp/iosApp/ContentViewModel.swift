@@ -11,19 +11,12 @@ import shared
 import BackgroundTasks
 
 class ContentViewModel: ObservableObject {
-    private let userDefaults = UserDefaultsRepository()
-    
-    private let registrationService: RegistrationService
-    private lazy var scheduleRepository = ScheduleRepository()
-    
-    private lazy var taskSchedulingService = TaskScheduleService()
+    private let registrationService = RegistrationService(shared: AppDelegate.shared)
     
     @Published var hasCredentials = false
     @Published var loginViewScreenNr = 0
-    
-    let observationFactory = IOSObservationFactory()
-    
-    private let bluetoothConnector = IOSBluetoothConnector()
+    @Published var isLeaveStudyOpen: Bool = false
+    @Published var isLeaveStudyConfirmOpen: Bool = false
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -36,29 +29,29 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(observationFactory: observationFactory, scheduleListType: .all))
-    
-    lazy var notificationViewModel: NotificationViewModel = NotificationViewModel()
-    
+    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+    lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
+    lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
     lazy var settingsViewModel: SettingsViewModel = {
         let viewModel = SettingsViewModel()
         viewModel.delegate = self
         return viewModel
     }()
-    let coreTaskCompletionViewModel = CoreTaskCompletionBarViewModel()
+
+    lazy var infoViewModel = InfoViewModel()
 
     lazy var bluetoothViewModel: BluetoothConnectionViewModel = {
-        BluetoothConnectionViewModel(bluetoothConnector: bluetoothConnector)
+        BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
     }()
 
+    
 
     init() {
-        registrationService = RegistrationService(shared: AppDelegate.shared)
-
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
         if hasCredentials {
             DispatchQueue.main.async {
+                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
                 AppDelegate.recorder.restartAll()
             }
             AppDelegate.dataManager.listenToDatapointCountChanges()
@@ -80,7 +73,21 @@ class ContentViewModel: ObservableObject {
     }
     
     func updateSchedules() {
-        taskSchedulingService.startUpdateTimer()
+        TaskScheduleService().startUpdateTimer()
+    }
+
+    private func reinitAllViewModels() {
+        isLeaveStudyOpen = false
+        isLeaveStudyConfirmOpen = false
+        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+        runningViewModel = ScheduleViewModel(scheduleListType: .running)
+        completedViewModel = ScheduleViewModel(scheduleListType: .completed)
+
+        settingsViewModel = SettingsViewModel()
+        settingsViewModel.delegate = self
+
+        bluetoothViewModel = BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
+        infoViewModel = InfoViewModel()
     }
 }
 
@@ -101,6 +108,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
+                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
                 AppDelegate.dataManager.listenToDatapointCountChanges()
             }
         }
@@ -114,5 +122,6 @@ extension ContentViewModel: ConsentViewModelListener {
             }
         }
         showLoginView()
+        reinitAllViewModels()
     }
 }

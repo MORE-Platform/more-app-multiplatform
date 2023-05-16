@@ -9,6 +9,9 @@ import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +28,16 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun InfoView(navController: NavController, viewModel: InfoViewModel) {
+    val backStackEntry = remember { navController.currentBackStackEntry }
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.route)
+    LaunchedEffect(route) {
+        viewModel.viewDidAppear()
+    }
+    DisposableEffect(route) {
+        onDispose {
+            viewModel.viewDidDisappear()
+        }
+    }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         item {
             Divider()
@@ -68,6 +81,14 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
+//            InfoItem(
+//                title = "WebViewTest",
+//                imageVector = Icons.Default.Settings,
+//                contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
+//                onClick = {
+//                    navController.navigate(NavigationScreen.LIMESURVEY.route)
+//                }
+//            )
             InfoItem(
                 title = getStringResource(id = R.string.info_leave_study),
                 imageVector = Icons.Default.ExitToApp,

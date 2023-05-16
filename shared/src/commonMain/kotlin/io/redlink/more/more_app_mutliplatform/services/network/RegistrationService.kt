@@ -20,8 +20,6 @@ import kotlinx.coroutines.launch
 class RegistrationService (
     private val shared: Shared
 ) {
-    private val studyRepository = StudyRepository()
-
     var study: Study? = null
         private set
 
@@ -34,9 +32,8 @@ class RegistrationService (
 
     fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
-            val upperCaseToken = token.uppercase()
             scope.launch {
-                val (result, networkError) = shared.networkService.validateRegistrationToken(upperCaseToken, endpoint)
+                val (result, networkError) = shared.networkService.validateRegistrationToken( token.uppercase(), endpoint)
                 result?.let {
                     study = it
                     participationToken = token
@@ -76,7 +73,7 @@ class RegistrationService (
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
-                    studyRepository.storeStudy(study)
+                    StudyRepository().storeStudy(study)
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
                     onError(NetworkServiceError(null, "Could not store credentials").freeze())

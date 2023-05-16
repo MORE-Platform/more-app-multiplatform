@@ -2,6 +2,6 @@
 <resources>
     <string name="study_duration">Study duration</string>
     <string name="participant_information">Participant Information</string>
-    <string name="consent_information">Consent Information</string>
+    <string name="consent_information">Consent</string>
     <string name="observation_modules">Modules</string>
 </resources>

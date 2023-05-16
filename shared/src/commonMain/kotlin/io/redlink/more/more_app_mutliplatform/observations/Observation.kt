@@ -1,8 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.internal.platform.freeze
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
@@ -50,6 +48,8 @@ abstract class Observation(val observationType: ObservationType) {
         if (observationIds.size <= 1) {
             stop {
                 finish()
+                config.clear()
+                configChanged = false
                 observationIds.remove(observationId)
                 scheduleIds.filterValues { it == observationId }.keys.forEach { scheduleId ->
                     scheduleIds.remove(scheduleId)
@@ -93,12 +93,13 @@ abstract class Observation(val observationType: ObservationType) {
 
     open fun needsToRestartAfterAppClosure() = false
 
-    fun storeData(data: Any, timestamp: Long = -1) {
+    fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
         Napier.d { "Observation ${observationType.observationType} recorded new data: $data" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
+        onCompletion()
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
@@ -108,16 +109,23 @@ abstract class Observation(val observationType: ObservationType) {
         onCompletion()
     }
 
-    protected fun stopAndFinish() {
+    fun stopAndFinish() {
         stop {
             finish()
         }
     }
 
-    protected fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE) {
+    fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE) {
         stop {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
+        }
+    }
+
+    fun stopAndSetDone() {
+        stop {
+            finish()
+            scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
         }
     }
 

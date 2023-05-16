@@ -5,10 +5,9 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 
 class StudyRepository : Repository<StudySchema>() {
-
     fun storeStudy(study: Study) {
         val realmObjects = mutableListOf<RealmObject>()
         realmObjects.add(StudySchema.toSchema(study))
@@ -18,7 +17,8 @@ class StudyRepository : Repository<StudySchema>() {
                 ScheduleSchema.toSchema(
                     it,
                     observation.observationId,
-                    observation.observationType
+                    observation.observationType,
+                    observation.observationTitle
                 )
             }
         }.flatten())

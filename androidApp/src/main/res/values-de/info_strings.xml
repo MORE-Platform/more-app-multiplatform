@@ -9,7 +9,7 @@
     <string name="info_devices">Geräte</string>
     <string name="info_devices_desc">Geräte öffnen</string>
     <string name="info_settings">Einstellungen</string>
-    <string name="info_consent_settings">Einwilligungseinstellungen</string>
+    <string name="info_consent_settings">Zustimmung</string>
     <string name="info_consent_settings_desc">Einstellungen öffnen</string>
     <string name="info_leave_study">Studie verlassen</string>
     <string name="info_leave_study_desc">Applikation verlassen</string>

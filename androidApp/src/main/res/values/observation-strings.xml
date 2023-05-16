@@ -8,6 +8,8 @@
     <string name="more_questionnaire_select">Please select an answer!</string>
     <string name="more_questionnaire_type">Simple Questionnaire</string>
 
+    <string name="more_limesurvey_start">Start LimeSurvey</string>
+
     <string name="more_observation_notification_explanation">A data recording task is running</string>
 
     <string name="more_observation_ready_title">Ready for data capture</string>

@@ -1,7 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -10,9 +10,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-abstract class CoreViewModel: Closeable {
-    protected val viewModelScope = CoroutineScope(Job() + Dispatchers.Default)
-    private var viewJobs = mutableSetOf<Job>()
+abstract class CoreViewModel : Closeable {
+    private var viewJobs = mutableSetOf<String>()
 
     abstract fun viewDidAppear()
 
@@ -20,16 +19,20 @@ abstract class CoreViewModel: Closeable {
         cancelScope()
     }
 
-    fun launchScope(coroutineContext: CoroutineContext = Dispatchers.Default, start: CoroutineStart = CoroutineStart.DEFAULT, block: suspend CoroutineScope.() -> Unit) {
-        viewJobs.add(viewModelScope.launch(coroutineContext, start, block))
+    fun launchScope(
+        coroutineContext: CoroutineContext = Dispatchers.Default,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewJobs.add(Scope.launch(coroutineContext, start, block).first)
     }
 
-    fun cancelScope() {
-        viewJobs.forEach { it.cancel() }
+    private fun cancelScope() {
+        Scope.cancel(viewJobs)
         viewJobs.clear()
     }
 
     override fun close() {
-        viewModelScope.cancel()
+        cancelScope()
     }
 }

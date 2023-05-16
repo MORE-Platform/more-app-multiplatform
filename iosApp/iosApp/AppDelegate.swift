@@ -21,8 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let dataUploadManager = DataUploadManager()
     static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
     static let dataManager = iOSObservationDataManager()
-    
-    private var localNotifications: LocalPushNotifications? = LocalPushNotifications()
+    static let observationFactory = IOSObservationFactory(dataManager: dataManager)
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         #if DEBUG
@@ -68,8 +67,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }
     }
     deinit {
-        fcmService = nil
-        localNotifications = nil
     }
 }
 

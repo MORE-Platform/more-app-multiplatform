@@ -15,7 +15,6 @@ protocol DashboardFilterObserver {
 
 class DashboardFilterViewModel: ObservableObject {
     let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
-    private let observationFactory: IOSObservationFactory = IOSObservationFactory()
     private let stringTable = "DashboardFilter"
     
     var delegate: DashboardFilterObserver? = nil
@@ -28,8 +27,8 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var observationTypeFilter: [String] = []
     
     init() {
-        var list: [String] = Array(observationFactory.observationTypes())
-        list.insert("All Items", at: 0)
+        var list: [String] = Array(AppDelegate.observationFactory.observationTypes())
+        list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
         self.observationTypes = list
         
         self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in

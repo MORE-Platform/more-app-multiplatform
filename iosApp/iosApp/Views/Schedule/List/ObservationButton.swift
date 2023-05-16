@@ -10,32 +10,47 @@ import SwiftUI
 import shared
 
 struct ObservationButton: View {
-    @EnvironmentObject var simpleQuestionModalStateVM: SimpleQuestionModalStateViewModel
-    @ObservedObject var simpleQuestionViewModel: SimpleQuestionObservationViewModel
+    @EnvironmentObject var navigationModalState: NavigationModalState
+    let observationActionDelegate: ObservationActionDelegate
     var scheduleId: String
     var observationType: String
     var state: ScheduleState
     var disabled: Bool
-    let action: () -> Void
     private let stringTable = "ScheduleListView"
-    
-    
     
     var body: some View {
         VStack {
             if observationType == "question-observation" {
-                
-                MoreActionButton(disabled: .constant(disabled), action: action) {
+                MoreActionButton(disabled: .constant(disabled), action: {
+                    navigationModalState.scheduleId = scheduleId
+                    navigationModalState.simpleQuestionOpen = true
+                }) {
                     VStack {
                         Text(
                             String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire")
                         )
                     }
-                } .sheet(isPresented: $simpleQuestionModalStateVM.isQuestionOpen) {
-                    SimpleQuetionObservationView(viewModel: simpleQuestionViewModel, scheduleId: scheduleId).environmentObject(simpleQuestionModalStateVM)
+                }
+            } else if observationType == "lime-survey-observation" {
+                MoreActionButton(disabled: .constant(disabled), action: {
+                    navigationModalState.scheduleId = scheduleId
+                    navigationModalState.limeSurveyOpen = true
+                }) {
+                    VStack {
+                        Text(
+                            "Start LimeSurvey"
+                                .localize(useTable: stringTable, withComment: "Button to start a limesurvey")
+                        )
+                    }
                 }
             } else {
-                MoreActionButton(disabled: .constant(disabled), action: action) {
+                MoreActionButton(disabled: .constant(disabled), action: {
+                    if state == .running {
+                        observationActionDelegate.pause(scheduleId: scheduleId)
+                    } else {
+                        observationActionDelegate.start(scheduleId: scheduleId)
+                    }
+                }) {
                     VStack {
                         if state == ScheduleState.running {
                             Text(

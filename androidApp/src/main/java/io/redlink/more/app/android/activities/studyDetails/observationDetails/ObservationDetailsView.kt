@@ -7,8 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.tasks.ObservationDetailsViewModel
-import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
+import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.toDate
 import io.redlink.more.app.android.shared_composables.*

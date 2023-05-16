@@ -11,7 +11,6 @@ import shared
 
 
 class ObservationDataCollector {
-    private let observationFactory = IOSObservationFactory()
     private let dataManager: iOSObservationDataManager = AppDelegate.dataManager
     private let observationRepository: ObservationRepository = ObservationRepository()
     private let scheduleRepository = ScheduleRepository()
@@ -36,7 +35,7 @@ class ObservationDataCollector {
                         let obsMerger = observationMergerSet.flatMap{ $0.value}.filter{ $0.observationType == type }
                         
                         if !obsMerger.isEmpty,
-                           let obs = self.observationFactory.observation(type: type),
+                           let obs = AppDelegate.observationFactory.observation(type: type),
                            let start = observations.keys.filter({$0.observationType == type}).map({Int64($0.collectionTimestamp.epochSeconds)}).max(),
                            let end = obsMerger.map({Int64($0.end?.epochSeconds ?? 0)}).max() {
                             
@@ -65,7 +64,7 @@ class ObservationDataCollector {
                 completion(false)
             }
         }
-        scheduleRepository.updateTaskStates(observationFactory: observationFactory)
+        scheduleRepository.updateTaskStates(observationFactory: AppDelegate.observationFactory)
     }
 
     func close() {
