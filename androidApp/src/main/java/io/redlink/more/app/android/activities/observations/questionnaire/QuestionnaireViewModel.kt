@@ -3,11 +3,12 @@ package io.redlink.more.app.android.activities.observations.questionnaire
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
 import kotlinx.coroutines.*
 
-class QuestionnaireViewModel(coreModel: SimpleQuestionCoreViewModel): ViewModel() {
-    private val coreViewModel: SimpleQuestionCoreViewModel = coreModel
+class QuestionnaireViewModel : ViewModel() {
+    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(MoreApplication.observationFactory!!)
 
     val observationTitle = mutableStateOf("")
     val question = mutableStateOf("")
@@ -31,6 +32,18 @@ class QuestionnaireViewModel(coreModel: SimpleQuestionCoreViewModel): ViewModel(
                 }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+
+    fun viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
+    }
+
+    fun setScheduleId(scheduleId: String) {
+        coreViewModel.setScheduleId(scheduleId)
     }
 
     fun finish(setObservationToDone: Boolean = true) {

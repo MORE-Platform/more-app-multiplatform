@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 import io.ktor.utils.io.core.*
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.time
+import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
@@ -67,21 +68,22 @@ class CoreDashboardFilterViewModel {
 
     fun filterActive() = currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME || currentFilter.value.typeFilter.isNotEmpty()
 
-    fun applyFilter(scheduleModelList: Map<Long, List<ScheduleModel>>): Map<Long, List<ScheduleModel>> {
+    fun applyFilter(scheduleModelList: List<ScheduleModel>): List<ScheduleModel> {
         var schedules = scheduleModelList
-
-        if (currentFilter.value.typeFilter.isNotEmpty()) {
-            schedules = schedules.mapValues {
-                it.value.filter { schedule ->
+        if (filterActive()) {
+            if (currentFilter.value.typeFilter.isNotEmpty()) {
+                schedules = schedules.filter { schedule ->
                     currentFilter.value.typeFilter.contains(schedule.observationType)
                 }
             }
+            if (currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME) {
+                currentFilter.value.dateFilter.duration?.let { dateTimeFilter ->
+                    val until = Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(dateTimeFilter).time()
+                    schedules.filter { it.start <= until }
+                }
+            }
         }
-        return schedules.filterKeys { date ->
-            currentFilter.value.dateFilter.duration?.let {
-                date <= Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(it).time()
-            } ?: true && schedules[date]?.isNotEmpty() ?: false
-        }
+        return schedules
     }
 
     private fun update(newFilterModel: FilterModel) {

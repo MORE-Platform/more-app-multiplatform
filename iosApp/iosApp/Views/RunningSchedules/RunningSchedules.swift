@@ -21,7 +21,6 @@ struct RunningSchedules: View {
                 ScheduleView(viewModel: scheduleViewModel)
             }.padding(14)
         } 
-        .customNavigationTitle(with: NavigationScreens.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .customNavigationTitle(with: NavigationScreens.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"), displayMode: .inline)
     }    
 }

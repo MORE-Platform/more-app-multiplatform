@@ -47,6 +47,10 @@ class ScheduleSchema : RealmObject {
         return getState()
     }
 
+    fun equalsSchedule(other: ScheduleSchema): Boolean {
+        return scheduleId == other.scheduleId
+    }
+
     companion object {
         fun toSchema(schedule: ObservationSchedule, observationId: String, observationType: String): ScheduleSchema? {
             return if (schedule.start != null && schedule.end != null){

@@ -18,7 +18,6 @@ class TaskDetailsViewModel: ObservableObject {
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
     init(dataRecorder: IOSDataRecorder) {
-        print("TaskDetails VM init...")
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { taskDetails in
@@ -44,8 +43,6 @@ class TaskDetailsViewModel: ObservableObject {
     
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
-        taskDetailsModel = nil
-        dataCount = 0
     }
 
     

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SimpleQuestionThankYouView: View {
-    @EnvironmentObject var questionModelState: QuestionModalState
+    @EnvironmentObject var questionModelState: NavigationModalState
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestionObservation"
     
@@ -40,8 +40,7 @@ struct SimpleQuestionThankYouView: View {
                 }
                 .padding(.horizontal, 40)
             }
-            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Thank you for answering the Question Observation"))
-            .navigationBarTitleDisplayMode(.inline)
+            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Thank you for answering the Question Observation"), displayMode: .inline)
             }
         }
     }

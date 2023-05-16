@@ -13,29 +13,33 @@ protocol SimpleQuestionObservationListener {
 }
 
 class SimpleQuestionObservationViewModel: ObservableObject {
-    private var coreModel: SimpleQuestionCoreViewModel?
-    
-    var delegate: SimpleQuestionObservationListener? = nil
+    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(observationFactory: AppDelegate.observationFactory)
     
     @Published var simpleQuestoinModel: SimpleQuestionModel?
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
     
-    //@Published var showThankYouScreen = false
-    
-    func viewDidAppear(scheduleId: String) {
-        self.coreModel = SimpleQuestionCoreViewModel(scheduleId: scheduleId, observationFactory: AppDelegate.observationFactory)
-        
-        if let coreModel = self.coreModel {
-            coreModel.onLoadSimpleQuestionObservation { model in
-                if let model {
-                    self.simpleQuestoinModel = model
-                    self.answers = model.answers.map { value in
-                        String(describing: value)
-                    }
+    init() {
+        coreModel.onLoadSimpleQuestionObservation { model in
+            if let model {
+                self.simpleQuestoinModel = model
+                self.answers = model.answers.map { value in
+                    String(describing: value)
                 }
             }
         }
+    }
+    
+    func setScheduleId(scheduleId: String) {
+        coreModel.setScheduleId(scheduleId: scheduleId)
+    }
+    
+    func viewDidAppear() {
+        coreModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreModel.viewDidDisappear()
     }
     
     func setAnswer(answer: String) {
@@ -44,9 +48,7 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     
     func finish() {
         if !self.answerSet.isEmpty {
-            if let coreModel = self.coreModel {
-                coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
-            }
+            coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
         }
     }
 

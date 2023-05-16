@@ -12,9 +12,8 @@ import shared
 import SwiftUI
 
 struct ScheduleListItem: View {
-    @EnvironmentObject var questionModalState: QuestionModalState
+    @EnvironmentObject var navigationModalState: NavigationModalState
     @ObservedObject var viewModel: ScheduleViewModel
-    @State var showTaskDetails = false
     
     var scheduleModel: ScheduleModel
     var showButton: Bool
@@ -23,15 +22,9 @@ struct ScheduleListItem: View {
 
     var body: some View {
         VStack {
-            NavigationLink(isActive: $showTaskDetails) {
-                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(scheduleId: scheduleModel.scheduleId), scheduleId: scheduleModel.scheduleId, scheduleListType: viewModel.scheduleListType)
-                    .environmentObject(questionModalState)
-            } label: {
-                EmptyView()
-            }.opacity(0)
-            
             Button {
-                showTaskDetails = true
+                navigationModalState.scheduleId = scheduleModel.scheduleId
+                navigationModalState.taskDetailsOpen = true
             } label: {
                 VStack(alignment: .leading) {
                     ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
@@ -47,19 +40,8 @@ struct ScheduleListItem: View {
                     observationType: scheduleModel.observationType,
                     state: scheduleModel.scheduleState,
                     disabled: !scheduleModel.scheduleState.active())
-                .environmentObject(questionModalState)
+                .environmentObject(navigationModalState)
             }
-        }.onAppear {
-            showTaskDetails = false
-        }
-    }
-}
-
-extension ScheduleListItem: SimpleQuestionObservationListener {
-    func onQuestionAnswered() {
-        DispatchQueue.main.async {
-            
-            
         }
     }
 }

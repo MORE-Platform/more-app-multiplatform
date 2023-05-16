@@ -45,8 +45,7 @@ struct NotificationView: View {
                     }
                 }
             }
-            .customNavigationTitle(with: NavigationScreens.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"), displayMode: .inline)
-            .navigationBarTitleDisplayMode(.inline)
+            .customNavigationTitle(with: NavigationScreens.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
         }
 
     }

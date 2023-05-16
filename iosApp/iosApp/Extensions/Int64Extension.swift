@@ -21,4 +21,8 @@ extension Int64 {
     func toKotlinLong() -> KotlinLong {
         return KotlinLong(value: self)
     }
+    
+    func dateWithoutTime() -> String {
+        toDateString(dateFormat: "dd.MM.yyyy")
+    }
 }

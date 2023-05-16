@@ -10,9 +10,7 @@ import SwiftUI
 
 struct LimeSurveyView: View {
     @StateObject var viewModel: LimeSurveyViewModel
-    @EnvironmentObject var questionModalState: QuestionModalState
-    
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var navigationModalState: NavigationModalState
     
     private let stringsTable = "LimeSurvey"
     var body: some View {
@@ -39,15 +37,21 @@ struct LimeSurveyView: View {
                 if viewModel.wasAnswered {
                     Button("Done".localize(useTable: stringsTable, withComment: "LimeSurvey done")) {
                         viewModel.onFinish()
-                        presentationMode.wrappedValue.dismiss()
+                        navigationModalState.limeSurveyOpen = false
                     }
                 } else {
                     Button("Cancel".localize(useTable: stringsTable, withComment: "Cancel LimeSurvey")) {
                         viewModel.onFinish()
-                        presentationMode.wrappedValue.dismiss()
+                        navigationModalState.limeSurveyOpen = false
                     }
                 }
             }
+        }
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.viewDidDisappear()
         }
     }
 }
@@ -55,6 +59,6 @@ struct LimeSurveyView: View {
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
         LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: ""))
-            .environmentObject(QuestionModalState())
+            .environmentObject(NavigationModalState())
     }
 }

@@ -29,7 +29,8 @@ struct TaskCompletionBarView: View {
                 .accentColor(Color.more.primary)
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
-        }.onAppear {
+        }
+        .onAppear {
             viewModel.loadTaskCompletion()
         }
     }

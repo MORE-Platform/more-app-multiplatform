@@ -14,34 +14,31 @@ class ScheduleViewModel: ObservableObject {
     private let coreModel: CoreScheduleViewModel
 
     let filterViewModel: DashboardFilterViewModel = DashboardFilterViewModel()
-    @Published var filterText: String = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
-    @Published var schedules: [Int64: [ScheduleModel]] = [:] {
-        didSet {
-            scheduleDates = Array(schedules.keys.sorted())
-        }
-    }
+    
+    private var schedules: [ScheduleModel] = []
 
     @Published var scheduleDates: [Int64] = []
     
     lazy var taskDetailsVM: TaskDetailsViewModel = {
         TaskDetailsViewModel(dataRecorder: recorder)
     }()
+    
+    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
         self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreModel)
         self.loadSchedules()
-        self.filterViewModel.delegate = self
     }
 
     func loadSchedules() {
-        coreModel.onScheduleModelListChange { [weak self] scheduleMap in
+        coreModel.scheduleDateListChange { [weak self] dateSet in
+            self?.scheduleDates = dateSet.map{$0.int64Value}.sorted()
+        }
+        coreModel.onScheduleModelListChange { [weak self] schedules in
             if let self {
-                self.schedules = scheduleMap.reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
-                    var result = partialResult
-                    result[Int64(truncating: pair.key)] = pair.value
-                    return result
-                }
+                self.schedules = schedules.sorted(by: {$0.start < $1.start })
+                self.scheduleDates = Set(self.schedules.map { $0.start }).sorted()
             }
         }
     }
@@ -53,34 +50,20 @@ class ScheduleViewModel: ObservableObject {
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
     }
+    
+    func filterScheduleByDate(scheduleDate: Int64) -> [ScheduleModel] {
+        let date = scheduleDate.dateWithoutTime()
+        return schedules.filter{ $0.start.dateWithoutTime() == date}
+    }
 
-    func getSimpleQuestionObservationVM() -> SimpleQuestionObservationViewModel {
-        SimpleQuestionObservationViewModel()
+    func getSimpleQuestionObservationVM(scheduleId: String) -> SimpleQuestionObservationViewModel {
+        simpleQuestionVM.setScheduleId(scheduleId: scheduleId)
+        return simpleQuestionVM
     }
 
     func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
         taskDetailsVM.setSchedule(scheduleId: scheduleId)
         return taskDetailsVM
-    }
-}
-
-extension Dictionary<KotlinLong, [ScheduleModel]> {
-    func convertToInt64() -> [Int64: [ScheduleModel]] {
-        reduce([:]) { partialResult, pair -> [Int64: [ScheduleModel]] in
-            var result = partialResult
-            result[Int64(truncating: pair.key)] = pair.value
-            return result
-        }
-    }
-}
-
-extension Dictionary<Int64, [ScheduleModel]> {
-    func convertToKotlinLong() -> [KotlinLong: [ScheduleModel]] {
-        reduce([:]) { partialResult, pair -> [KotlinLong: [ScheduleModel]] in
-            var result = partialResult
-            result[KotlinLong(value: pair.key)] = pair.value
-            return result
-        }
     }
 }
 
@@ -95,72 +78,5 @@ extension ScheduleViewModel: ObservationActionDelegate {
 
     func stop(scheduleId: String) {
         coreModel.stop(scheduleId: scheduleId)
-    }
-}
-
-extension ScheduleViewModel: DashboardFilterObserver {
-    
-    func onFilterChanged(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
-        var selectedValueList = list
-        if multiSelect {
-            if filter == String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items") {
-                filterViewModel.observationTypeFilter.removeAll()
-            } else {
-                if filterViewModel.observationTypeFilter.contains(filter) {
-                    filterViewModel.observationTypeFilter.remove(at: filterViewModel.observationTypeFilter.firstIndex(of: filter)!)
-                } else {
-                    filterViewModel.observationTypeFilter.append(filter)
-                }
-            }
-            selectedValueList = filterViewModel.observationTypeFilter
-            filterViewModel.setObservationTypeFilters()
-        } else {
-            if !selectedValueList.isEmpty {
-                selectedValueList.removeAll()
-            }
-            selectedValueList.append(filter)
-            filterViewModel.dateFilterString = filter
-            filterViewModel.setDateFilterValue()
-        }
-        return selectedValueList
-    }
-    
-    func updateFilterText() -> String {
-        var stringTable = "DashboardFilter"
-        var typeFilterText = ""
-        var dateFilterText = ""
-        if noFilterSet() {
-            return String.localizedString(forKey: "no_filter_activated", inTable: stringTable, withComment: "No filter set")
-        } else {
-            if typeFilterSet() {
-                if filterViewModel.observationTypeFilter.count == 1 {
-                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type", inTable: stringTable, withComment: "Observation type"))"
-                } else {
-                    typeFilterText = "\(filterViewModel.observationTypeFilter.count) \(String.localizedString(forKey: "type_plural", inTable: stringTable, withComment: "Observation types"))"
-                }
-            }
-            if dateFilterSet() {
-                dateFilterText = String.localizedString(forKey: filterViewModel.dateFilterString, inTable: stringTable, withComment: "Time filter")
-            }
-            if dateFilterSet() && typeFilterSet() {
-                return "\(typeFilterText), \(dateFilterText)"
-            } else if dateFilterSet(){
-                return dateFilterText
-            } else {
-                return typeFilterText
-            }
-        }
-    }
-    
-    func dateFilterSet() -> Bool {
-        return filterViewModel.dateFilterString != "ENTIRE_TIME"
-    }
-    
-    func typeFilterSet() -> Bool {
-        return !filterViewModel.observationTypeFilter.isEmpty
-    }
-    
-    func noFilterSet() -> Bool {
-        return !dateFilterSet() && !typeFilterSet()
     }
 }

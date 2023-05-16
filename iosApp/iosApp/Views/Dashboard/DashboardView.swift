@@ -11,7 +11,7 @@ import shared
 
 struct DashboardView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
-    @StateObject var dashboardViewModel: DashboardViewModel
+    @StateObject var viewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
@@ -21,18 +21,21 @@ struct DashboardView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(dashboardViewModel.scheduleViewModel)
+                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(viewModel.scheduleViewModel)
                     if selection == 0 {
-                        ScheduleView(viewModel: dashboardViewModel.scheduleViewModel)
+                        ScheduleView(viewModel: viewModel.scheduleViewModel)
                     } else {
                         EmptyView()
                     }
-                }.onAppear {
-                    dashboardViewModel.updateBluetoothDevices()
                 }
             }
             .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
-            .navigationBarTitleDisplayMode(.inline)
+        }
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.viewDidDisappear()
         }
     }
 }
@@ -40,7 +43,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(dashboardViewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all)))
+            DashboardView(viewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all)))
                 .environmentObject(ContentViewModel())
         }
     }

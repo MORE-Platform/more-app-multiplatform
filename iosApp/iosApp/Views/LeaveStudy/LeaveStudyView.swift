@@ -82,7 +82,6 @@ struct LeaveStudyView: View {
 
             } 
             .customNavigationTitle(with: NavigationScreens.withdrawStudy.localize(useTable: navigationStrings, withComment: "Withdraw from Study"))
-            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.viewDidAppear()
             }

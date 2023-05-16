@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ScheduleList: View {
     @ObservedObject var viewModel: ScheduleViewModel
-    @StateObject var questionModalState = QuestionModalState()
+    @EnvironmentObject var navigationModalState: NavigationModalState
     var scheduleModels: [ScheduleModel] = []
     var scheduleListType: ScheduleListType
     
@@ -22,20 +22,13 @@ struct ScheduleList: View {
         ForEach(scheduleModels, id: \.scheduleId) { schedule in
             VStack {
                 ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: scheduleListType != .completed)
-                    .environmentObject(questionModalState)
+                    .environmentObject(navigationModalState)
                 if schedule != scheduleModels.last {
                     Divider()
                 }
             }
         }
-        .fullScreenCover(isPresented: $questionModalState.simpleQuestionOpen) {
-            SimpleQuetionObservationView(scheduleId: questionModalState.scheduleId)
-                .environmentObject(questionModalState)
-        }
-        .fullScreenCover(isPresented: $questionModalState.limeSurveyOpen) {
-            LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: questionModalState.scheduleId))
-                .environmentObject(questionModalState)
-        }
+        
     }
 }
 

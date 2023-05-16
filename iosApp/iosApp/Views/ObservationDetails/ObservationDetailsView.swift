@@ -52,7 +52,6 @@ struct ObservationDetailsView: View {
 
             }
             .customNavigationTitle(with: NavigationScreens.observationDetails.localize(useTable: navigationStrings, withComment: "Observation Detail"))
-            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 viewModel.viewDidAppear()
             }

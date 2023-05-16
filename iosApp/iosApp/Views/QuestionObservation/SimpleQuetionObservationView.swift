@@ -10,10 +10,10 @@ import shared
 import SwiftUI
 
 struct SimpleQuetionObservationView: View {
-    var scheduleId: String
-
-    @EnvironmentObject var questionModalState: QuestionModalState
-    @StateObject var viewModel: SimpleQuestionObservationViewModel = SimpleQuestionObservationViewModel()
+    @StateObject var viewModel: SimpleQuestionObservationViewModel
+    
+    @EnvironmentObject var navigationModalState: NavigationModalState
+    
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
 
@@ -40,27 +40,25 @@ struct SimpleQuetionObservationView: View {
                             MoreActionButton(disabled: .constant(false)) {
                                 if self.selected != "" {
                                     viewModel.finish()
-                                    questionModalState.simpleQuestionThankYouOpen = true
-                                    questionModalState.simpleQuestionOpen = false
+                                    navigationModalState.simpleQuestionThankYouOpen = true
+                                    navigationModalState.simpleQuestionOpen = false
                                 }
                             } label: {
                                 Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
                             }
                             .padding(.top, 30)
-                            .fullScreenCover(isPresented: $questionModalState.simpleQuestionThankYouOpen) {
-                                SimpleQuestionThankYouView()
-                                    .environmentObject(questionModalState)
-                            }
                         }
                     }
                     .padding(.horizontal, 10)
                     .onAppear {
-                        viewModel.viewDidAppear(scheduleId: scheduleId)
+                        viewModel.viewDidAppear()
+                    }
+                    .onDisappear {
+                        viewModel.viewDidDisappear()
                     }
                 Spacer()
             }
         }
-        .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"))
-        .navigationBarTitleDisplayMode(.inline)
+        .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"), displayMode: .inline)
     }
 }

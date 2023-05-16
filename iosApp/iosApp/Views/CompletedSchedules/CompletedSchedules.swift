@@ -22,7 +22,6 @@ struct CompletedSchedules: View {
             }
             .padding(14)
         }
-        .customNavigationTitle(with: NavigationScreens.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"))
-        .navigationBarTitleDisplayMode(.inline)
+        .customNavigationTitle(with: NavigationScreens.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"),displayMode: .inline)
     }
 }
