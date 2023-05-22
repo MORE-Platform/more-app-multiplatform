@@ -8,10 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
 
 abstract class CoreViewModel : Closeable {
+    private val mutex = Mutex()
     private var viewJobs = mutableSetOf<String>()
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     abstract fun viewDidAppear()
 
@@ -24,12 +28,20 @@ abstract class CoreViewModel : Closeable {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
     ) {
-        viewJobs.add(Scope.launch(coroutineContext, start, block).first)
+         scope.launch{
+            mutex.withLock {
+                viewJobs.add(Scope.launch(coroutineContext, start, block).first)
+            }
+        }
     }
 
     private fun cancelScope() {
-        Scope.cancel(viewJobs)
-        viewJobs.clear()
+        scope.launch {
+            mutex.withLock {
+                Scope.cancel(viewJobs)
+                viewJobs.clear()
+            }
+        }
     }
 
     override fun close() {

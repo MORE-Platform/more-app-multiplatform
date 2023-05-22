@@ -24,13 +24,19 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     private val observationRepository = ObservationRepository()
 
     private val runningObservations = mutableMapOf<ScheduleSchema, Observation>()
+
     init {
         Scope.launch {
             updateTaskStates()
             scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
-                list.filter { it in runningObservations.keys }.forEach {
-                    stop(it.observationId)
-                    dataPointCountRepository.delete(it.scheduleId.toHexString())
+                if (runningObservations.isNotEmpty()) {
+                    val runningObservationKeyIds =
+                        runningObservations.keys.map { it.scheduleId.toHexString() }
+                    list.filter { it.scheduleId.toHexString() in runningObservationKeyIds }
+                        .map { Pair(it.scheduleId.toHexString(), it.observationId) }.forEach {
+                            stop(it.second)
+                            dataPointCountRepository.delete(it.first)
+                        }
                 }
             }
         }
@@ -40,7 +46,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         val startedObservations = mutableSetOf<String>()
         scheduleRepository.allScheduleWithRunningState().cancellable().firstOrNull()?.let { list ->
             list.filter { it !in runningObservations.keys }.forEach {
-                if (start(it.scheduleId.toHexString())){
+                if (start(it.scheduleId.toHexString())) {
                     startedObservations.add(it.scheduleId.toHexString())
                 }
             }
@@ -63,9 +69,10 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                     config[Observation.SCHEDULE_ID] =
                         scheduleSchema.scheduleId.toHexString()
                     if (scheduleSchema.getState() == ScheduleState.PAUSED) {
-                        config[Observation.CONFIG_LAST_COLLECTION_TIMESTAMP] = observation.collectionTimestamp.epochSeconds
+                        config[Observation.CONFIG_LAST_COLLECTION_TIMESTAMP] =
+                            observation.collectionTimestamp.epochSeconds
                     }
-                    start(scheduleSchema.copyFromRealm(), config)
+                    start(scheduleSchema, config)
                 } ?: false
         } ?: false
     }
@@ -125,7 +132,8 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     fun hasRunningTasks() = runningObservations.isNotEmpty()
 
     fun getObservationForScheduleId(scheduleId: String): Observation? {
-        return runningObservations.keys.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let { runningObservations[it] }
+        return runningObservations.keys.firstOrNull { it.scheduleId.toHexString() == scheduleId }
+            ?.let { runningObservations[it] }
     }
 
     private fun stopAllInList() {
@@ -137,12 +145,14 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
 
     private suspend fun findOrCreateObservation(scheduleId: String): ScheduleSchema? {
         return scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
-            if (findOrCreateObservation(it)) it else null
+            val fixedScheduleSchema = it.copyFromRealm()
+            if (findOrCreateObservation(fixedScheduleSchema)) fixedScheduleSchema else null
         }
     }
 
     private fun findOrCreateObservation(schedule: ScheduleSchema): Boolean {
-        return (runningObservations[schedule] ?: observationFactory.observation(schedule.observationType)
+        return (runningObservations[schedule]
+            ?: observationFactory.observation(schedule.observationType)
                 ?.let { observation ->
                     runningObservations[schedule] = observation
                     schedule
