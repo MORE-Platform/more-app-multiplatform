@@ -2,6 +2,8 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.realm.kotlin.ext.copyFromRealm
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -63,7 +65,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                     if (scheduleSchema.getState() == ScheduleState.PAUSED) {
                         config[Observation.CONFIG_LAST_COLLECTION_TIMESTAMP] = observation.collectionTimestamp.epochSeconds
                     }
-                    start(scheduleSchema, config)
+                    start(scheduleSchema.copyFromRealm(), config)
                 } ?: false
         } ?: false
     }

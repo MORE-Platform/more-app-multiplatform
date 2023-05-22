@@ -1,12 +1,12 @@
 package io.redlink.more.app.android.services
 
 import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
@@ -92,13 +92,13 @@ class ObservationRecordingService: Service() {
                 try {
                     scope.launch {
                         scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
-                            val delayInSeconds = it - (System.currentTimeMillis() / 1000)
-                            Napier.d { "Stopping observation with scheduleId $scheduleId in $delayInSeconds seconds (${delayInSeconds * 1000}ms)..." }
+                            val delayInMillis = (it * 1000) - System.currentTimeMillis()
+                            log { "Stopping observation with scheduleId $scheduleId in $delayInMillis milliseconds (${delayInMillis / 1000}s)..." }
                             Handler(Looper.getMainLooper())
                                 .postDelayed({
                                     Napier.d { "Stopping observation with scheduleId: $scheduleId" }
                                     stopObservation(scheduleId)
-                                }, delayInSeconds * 1000)
+                                }, delayInMillis)
                         }
                     }
                 } catch (e: Exception) {
@@ -142,13 +142,13 @@ class ObservationRecordingService: Service() {
                     scope.launch {
                         startedObservations.forEach { scheduleId ->
                             scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
-                                val delayInSeconds = it - (System.currentTimeMillis() / 1000)
-                                Napier.d { "Stopping observation with scheduleId $scheduleId in $delayInSeconds seconds (${delayInSeconds * 1000}ms)..." }
+                                val delayInMillis = (it * 1000) - System.currentTimeMillis()
+                                log { "Stopping observation with scheduleId $scheduleId in $delayInMillis milliseconds (${delayInMillis / 1000}s)..." }
                                 Handler(Looper.getMainLooper())
                                     .postDelayed({
                                         Napier.d { "Stopping observation with scheduleId: $scheduleId" }
                                         stopObservation(scheduleId)
-                                    }, delayInSeconds * 1000)
+                                    }, delayInMillis)
                             }
                         }
                     }
