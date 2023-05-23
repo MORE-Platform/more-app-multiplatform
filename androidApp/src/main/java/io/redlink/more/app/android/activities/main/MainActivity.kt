@@ -178,9 +178,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
                 val vm by remember {
                     mutableStateOf(when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
-                        ScheduleListType.ALL -> DashboardFilterViewModel(viewModel.allSchedulesViewModel.coreFilterModel)
-                        ScheduleListType.RUNNING -> DashboardFilterViewModel(viewModel.runningSchedulesViewModel.coreFilterModel)
-                        ScheduleListType.COMPLETED -> DashboardFilterViewModel(viewModel.completedSchedulesViewModel.coreFilterModel)
+                        ScheduleListType.ALL -> viewModel.allSchedulesViewModel.filterModel
+                        ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
+                        ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
                     })
                 }
                 DashboardFilterView(viewModel = vm)

@@ -9,13 +9,10 @@
 import SwiftUI
 
 struct MoreFilterOption: View {
-    
-    let multiSelect: Bool
     var option: String
-    @Binding var selectedValuesInList: [String]
+    @Binding var isSelected: Bool
     @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     
-    @State private var isSelected: Bool = false
     private let stringTable = "DashboardFilter"
     
     var body: some View {
@@ -32,11 +29,5 @@ struct MoreFilterOption: View {
             }
             .padding(5)
         }
-        .onAppear {
-            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
-        }
-        .onChange(of: selectedValuesInList, perform: { _ in
-            isSelected = dashboardFilterViewModel.isItemSelected(selectedValuesInList: selectedValuesInList, option: option)
-        })
     }
 }

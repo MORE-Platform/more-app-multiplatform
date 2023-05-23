@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
@@ -11,6 +12,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(
@@ -21,13 +23,23 @@ class CoreScheduleViewModel(
     private val scheduleRepository = ScheduleRepository()
     private var originalScheduleList = emptySet<ScheduleModel>()
 
-    val scheduleListState = MutableStateFlow(Triple(emptySet<ScheduleModel>(), emptySet<String>(), emptySet<ScheduleModel>()))
+    val scheduleListState = MutableStateFlow(
+        Triple(
+            emptySet<ScheduleModel>(),
+            emptySet<String>(),
+            emptySet<ScheduleModel>()
+        )
+    )
 
     init {
         launchScope {
-            coreFilterModel.currentFilter.collect {
-                if (originalScheduleList.isNotEmpty()) {
-                    if (coreFilterModel.filterActive()) {
+            coreFilterModel.currentTypeFilter
+                .combine(coreFilterModel.currentDateFilter) { typeFilter, dateFilter ->
+                    typeFilter.values.any()
+                            && dateFilter[DateFilterModel.ENTIRE_TIME] == false && dateFilter.any { it.value }
+                }
+                .cancellable().collect {
+                    if (it) {
                         updateList(coreFilterModel.applyFilter(originalScheduleList).toSet())
                     } else {
                         val copy = originalScheduleList.toSet()
@@ -35,7 +47,6 @@ class CoreScheduleViewModel(
                         updateList(copy)
                     }
                 }
-            }
         }
     }
 
@@ -49,7 +60,7 @@ class CoreScheduleViewModel(
                         ScheduleListType.RUNNING -> createRunningModels(it)
                         else -> createModels(it)
                     }
-                    val modified = if(coreFilterModel.filterActive()){
+                    val modified = if (coreFilterModel.filterActive()) {
                         coreFilterModel.applyFilter(newList)
                     } else {
                         newList
@@ -91,9 +102,11 @@ class CoreScheduleViewModel(
                         && it.scheduleState.active()
                         || it.scheduleState == ScheduleState.DEACTIVATED
             }.toSet()
-            val (update, remove) = updated.partition { it.end > Clock.System.now().epochSeconds
-                    && it.scheduleState.active()
-                    || it.scheduleState == ScheduleState.DEACTIVATED}
+            val (update, remove) = updated.partition {
+                it.end > Clock.System.now().epochSeconds
+                        && it.scheduleState.active()
+                        || it.scheduleState == ScheduleState.DEACTIVATED
+            }
             removedIds.addAll(remove.map { it.scheduleId }.toSet())
             updated = update.toSet()
         }
@@ -119,6 +132,7 @@ class CoreScheduleViewModel(
         return createModels(scheduleList).filter { scheduleModel -> scheduleModel.scheduleState.running() }
     }
 
-    fun onScheduleStateUpdated(providedState: (Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>) -> Unit) = scheduleListState.asClosure(providedState)
+    fun onScheduleStateUpdated(providedState: (Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>) -> Unit) =
+        scheduleListState.asClosure(providedState)
 }
 

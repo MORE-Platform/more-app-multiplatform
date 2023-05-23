@@ -25,7 +25,7 @@ class ScheduleViewModel: ObservableObject {
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreModel)
+        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
         self.loadSchedules()
     }
 
