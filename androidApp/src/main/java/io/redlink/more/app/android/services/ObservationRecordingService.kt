@@ -88,23 +88,7 @@ class ObservationRecordingService: Service() {
         Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
-            if (observationManager?.start(scheduleId) == true) {
-                try {
-                    scope.launch {
-                        scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
-                            val delayInMillis = (it * 1000) - System.currentTimeMillis()
-                            log { "Stopping observation with scheduleId $scheduleId in $delayInMillis milliseconds (${delayInMillis / 1000}s)..." }
-                            Handler(Looper.getMainLooper())
-                                .postDelayed({
-                                    Napier.d { "Stopping observation with scheduleId: $scheduleId" }
-                                    stopObservation(scheduleId)
-                                }, delayInMillis)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Napier.e { e.stackTraceToString() }
-                }
-            } else {
+            if (observationManager?.start(scheduleId) == false) {
                 stopObservation(scheduleId)
             }
         }
@@ -137,25 +121,7 @@ class ObservationRecordingService: Service() {
         startForegroundService()
         scope.launch {
             val startedObservations = observationManager?.restartStillRunning() ?: emptySet()
-            if (startedObservations.isNotEmpty()) {
-                try {
-                    scope.launch {
-                        startedObservations.forEach { scheduleId ->
-                            scheduleRepository.getNextScheduleEnd(scheduleId).firstOrNull()?.let {
-                                val delayInMillis = (it * 1000) - System.currentTimeMillis()
-                                log { "Stopping observation with scheduleId $scheduleId in $delayInMillis milliseconds (${delayInMillis / 1000}s)..." }
-                                Handler(Looper.getMainLooper())
-                                    .postDelayed({
-                                        Napier.d { "Stopping observation with scheduleId: $scheduleId" }
-                                        stopObservation(scheduleId)
-                                    }, delayInMillis)
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    Napier.e { e.stackTraceToString() }
-                }
-            } else {
+            if (startedObservations.isEmpty()) {
                 if (observationManager?.hasRunningTasks() == false) {
                     stopAll()
                 }

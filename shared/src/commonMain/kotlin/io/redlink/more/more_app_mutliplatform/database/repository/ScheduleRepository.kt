@@ -23,8 +23,9 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
 
     override fun count(): Flow<Long> = realmDatabase().count<ScheduleSchema>()
 
-    fun allSchedulesWithStatus(done: Boolean = false) =
-        realm()?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
+    fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleSchema>> {
+        return realm()?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
+    }
 
     fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING) =
         realmDatabase().query<ScheduleSchema>(
@@ -61,17 +62,15 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
 
     fun setCompletionStateFor(id: String, wasDone: Boolean) {
         realm()?.writeBlocking {
-            this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()?.let {
-                it.done = true
-                it.updateState(if (wasDone) ScheduleState.DONE else ScheduleState.ENDED)
-            }
+            this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()
+                ?.updateState(if (wasDone) ScheduleState.DONE else ScheduleState.ENDED)
         }
     }
 
     fun getNextScheduleStart(): Flow<ScheduleSchema?> {
         return allSchedulesWithStatus().transform { schemas ->
-                emit(schemas.filter { (it.start ?: RealmInstant.now()) > RealmInstant.now() }
-                    .sortedBy { it.start }.firstOrNull())
+            emit(schemas.filter { (it.start ?: RealmInstant.now()) > RealmInstant.now() }
+                .sortedBy { it.start }.firstOrNull())
         }
     }
 
@@ -115,23 +114,27 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
 
     fun updateTaskStates(observationFactory: ObservationFactory? = null) {
         launch {
-            val restartableTypes =
-                observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
-            val now = Clock.System.now().epochSeconds
-            Napier.d { "Updating Schedule states..." }
-            realm()?.let {
-                it.writeBlocking {
-                    query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
-                        if (restartableTypes.isNotEmpty()
-                            && scheduleSchema.getState() == ScheduleState.RUNNING
-                            && scheduleSchema.observationType in restartableTypes
-                            && scheduleSchema.end?.let { it.epochSeconds > now } == true
-                        ) {
-                            Napier.i { "Resetting ${scheduleSchema.scheduleId}" }
-                            scheduleSchema.updateState(ScheduleState.ACTIVE)
-                        } else {
-                            scheduleSchema.updateState()
-                        }
+            updateTaskStatesSync(observationFactory)
+        }
+    }
+
+    suspend fun updateTaskStatesSync(observationFactory: ObservationFactory? = null) {
+        val restartableTypes =
+            observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
+        val now = Clock.System.now().epochSeconds
+        Napier.d { "Updating Schedule states..." }
+        realm()?.let {
+            it.writeBlocking {
+                query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
+                    if (restartableTypes.isNotEmpty()
+                        && scheduleSchema.getState() == ScheduleState.RUNNING
+                        && scheduleSchema.observationType in restartableTypes
+                        && scheduleSchema.end?.let { it.epochSeconds > now } == true
+                    ) {
+                        Napier.i { "Resetting ${scheduleSchema.scheduleId}" }
+                        scheduleSchema.updateState(ScheduleState.ACTIVE)
+                    } else {
+                        scheduleSchema.updateState()
                     }
                 }
             }
