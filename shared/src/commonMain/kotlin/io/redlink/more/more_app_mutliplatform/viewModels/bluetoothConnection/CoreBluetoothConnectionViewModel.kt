@@ -162,7 +162,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     override fun close() {
         scanJob?.cancel()
         scanJob = null
-        bluetoothConnector.close()
+        bluetoothConnector.stopScanning()
         isConnecting.set(false)
         launch {
             isScanning.emit(bluetoothConnector.isScanning())

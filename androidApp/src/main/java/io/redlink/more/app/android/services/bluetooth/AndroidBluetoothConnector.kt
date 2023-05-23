@@ -15,12 +15,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothDevice as AndroidBluetoothDevice
 
-class AndroidBluetoothConnector(private val context: Context): BluetoothConnector {
+class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     override val specificBluetoothConnectors: Map<String, BluetoothConnector> = mapOf("polar" to PolarConnector(context))
     private val bluetoothAdapter: BluetoothAdapter? = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     private var bluetoothLeScanner: BluetoothLeScanner? = null
@@ -94,7 +95,11 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
                 specificBluetoothConnectors.values.forEach { it.observer = this }
                 bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
                 val bondStateChangedFilter = IntentFilter(AndroidBluetoothDevice.ACTION_BOND_STATE_CHANGED)
-                context.registerReceiver(bondStateReceiver, bondStateChangedFilter)
+                try {
+                    MoreApplication.appContext?.registerReceiver(bondStateReceiver, bondStateChangedFilter)
+                } catch (exception: Exception) {
+                    Napier.w { exception.stackTraceToString() }
+                }
             } else {
                 Napier.i { "Bluetooth Adapter not enabled!" }
             }
@@ -155,7 +160,9 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
                         }
                     }
                 }
-                androidBluetoothDevice.connectGatt(context, false, gattCallback)
+                MoreApplication.appContext?.let {
+                    androidBluetoothDevice.connectGatt(it, false, gattCallback)
+                }
             }
             return null
         } else {
@@ -190,7 +197,11 @@ class AndroidBluetoothConnector(private val context: Context): BluetoothConnecto
         foundBluetoothDevices.clear()
         specificBluetoothConnectors.values.forEach { it.close() }
 
-        context.unregisterReceiver(bondStateReceiver)
+        try {
+            MoreApplication.appContext?.unregisterReceiver(bondStateReceiver)
+        } catch (exception: Exception) {
+            Napier.w { exception.stackTraceToString() }
+        }
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {

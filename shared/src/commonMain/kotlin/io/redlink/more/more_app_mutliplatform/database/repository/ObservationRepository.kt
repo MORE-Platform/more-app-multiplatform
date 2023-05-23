@@ -52,6 +52,10 @@ class ObservationRepository : Repository<ObservationSchema>() {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 
+    fun observationTypes(): Flow<Set<String>> {
+        return observations().transform { observationList -> emit(observationList.map { it.observationType }.toSet()) }
+    }
+
     fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(
         "observationId == $0",
         queryArgs = arrayOf(observationId)

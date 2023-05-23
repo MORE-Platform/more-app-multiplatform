@@ -9,6 +9,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
@@ -33,7 +34,6 @@ import io.redlink.more.app.android.services.ObservationRecordingService
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(context: Context) : ViewModel() {
-    private val bluetoothConnector = AndroidBluetoothConnector(context)
     private val recorder: AndroidDataRecorder by lazy { AndroidDataRecorder() }
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
@@ -64,7 +64,7 @@ class MainViewModel(context: Context) : ViewModel() {
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
     val bluetoothConnectionViewModel: BluetoothConnectionViewModel by lazy {
-        BluetoothConnectionViewModel(bluetoothConnector)
+        BluetoothConnectionViewModel(MoreApplication.androidBluetoothConnector!!)
     }
 
     val infoVM: InfoViewModel by lazy {
@@ -84,10 +84,7 @@ class MainViewModel(context: Context) : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceRepository(bluetoothConnector).updateConnectedDevices()
-            if (!ObservationRecordingService.running) {
-
-            }
+            BluetoothDeviceRepository(MoreApplication.androidBluetoothConnector).updateConnectedDevices()
         }
     }
 

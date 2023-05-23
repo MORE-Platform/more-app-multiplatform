@@ -6,6 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
@@ -31,6 +32,7 @@ class MoreApplication : Application() {
         observationFactory?.let {
             observationManager = ObservationManager(it)
         }
+        androidBluetoothConnector = AndroidBluetoothConnector(this)
     }
 
     companion object {
@@ -52,8 +54,8 @@ class MoreApplication : Application() {
         var observationManager: ObservationManager? = null
             private set
 
-//        fun logEvent() {
-//            firebaseAnalytics?.logEvent(FirebaseAnalytics.Event.)
-//        }
+        var androidBluetoothConnector: AndroidBluetoothConnector? = null
+            private set
+
     }
 }

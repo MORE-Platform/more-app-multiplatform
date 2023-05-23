@@ -1,27 +1,38 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.DateFilter
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 
-class CoreDashboardFilterViewModel {
+class CoreDashboardFilterViewModel: CoreViewModel() {
     val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
     val currentDateFilter = MutableStateFlow(
         DateFilterModel.values().associateWith { it == DateFilterModel.ENTIRE_TIME })
 
-    fun hasAnyTypes() = currentTypeFilter.value.values.any()
-
-    fun addTypes(observationFactory: ObservationFactory) {
-        currentTypeFilter.set(observationFactory.observationTypes().associateWith { false })
+    init {
+        Scope.launch {
+            ObservationRepository().observationTypes().firstOrNull()?.let {
+                currentTypeFilter.set(it.associateWith { false })
+            }
+        }
     }
+    override fun viewDidAppear() {
+
+    }
+
+    fun hasAnyTypes() = currentTypeFilter.value.values.any()
 
     fun toggleTypeFilter(type: String) {
         val typeFilter = currentTypeFilter.value.toMutableMap()
@@ -89,4 +100,5 @@ class CoreDashboardFilterViewModel {
     fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) = currentTypeFilter.asClosure(provideNewState)
 
     fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) = currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }.asClosure(provideNewState)
+
 }
