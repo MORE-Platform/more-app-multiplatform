@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
+import io.github.aakira.napier.Napier
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -9,6 +10,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Obs
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import kotlinx.datetime.Clock
 import org.mongodb.kbson.ObjectId
+import kotlin.math.log
 
 class ScheduleSchema : RealmObject {
     @PrimaryKey
@@ -28,9 +30,9 @@ class ScheduleSchema : RealmObject {
             state = specificState.name
             return it
         }
-        val now = Clock.System.now().epochSeconds
-        start?.epochSeconds?.let { start ->
-            end?.epochSeconds?.let { end ->
+        val now = Clock.System.now().toEpochMilliseconds()
+        (start?.epochSeconds?.times(1000))?.let { start ->
+            (end?.epochSeconds?.times(1000))?.let { end ->
                 state = if (end <= now) {
                     if (getState() == ScheduleState.RUNNING) {
                         ScheduleState.DONE.name

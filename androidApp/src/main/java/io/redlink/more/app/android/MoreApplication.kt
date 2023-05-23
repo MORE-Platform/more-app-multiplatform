@@ -21,9 +21,6 @@ class MoreApplication : Application() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             napierDebugBuild()
-//            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
-        } else {
-//            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
         }
 
         appContext = this
