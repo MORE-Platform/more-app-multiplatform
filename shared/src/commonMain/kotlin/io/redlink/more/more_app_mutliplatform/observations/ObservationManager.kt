@@ -14,9 +14,11 @@ import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlin.math.ceil
 
 class ObservationManager(private val observationFactory: ObservationFactory) {
     private val scheduleRepository = ScheduleRepository()
@@ -25,9 +27,8 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
 
     private val runningObservations = mutableMapOf<ScheduleSchema, Observation>()
 
-    init {
+    fun activateScheduleUpdate() {
         Scope.launch {
-            updateTaskStates()
             scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
                 if (runningObservations.isNotEmpty()) {
                     val runningObservationKeyIds =
@@ -38,6 +39,14 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                             dataPointCountRepository.delete(it.first)
                         }
                 }
+            }
+        }
+        val firstCall = ceil(Clock.System.now().toEpochMilliseconds() / 60_000.0).toLong() * 60_000
+        Scope.launch {
+            updateTaskStates()
+            delay(firstCall - Clock.System.now().toEpochMilliseconds())
+            Scope.repeatedLaunch(30000L) {
+                updateTaskStates()
             }
         }
     }
@@ -126,7 +135,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     }
 
     fun updateTaskStates() {
-        scheduleRepository.updateTaskStates(observationFactory)
+        scheduleRepository.updateTaskStates()
     }
 
     fun hasRunningTasks() = runningObservations.isNotEmpty()

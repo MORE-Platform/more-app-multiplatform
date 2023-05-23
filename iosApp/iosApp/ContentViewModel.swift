@@ -54,6 +54,7 @@ class ContentViewModel: ObservableObject {
                 AppDelegate.recorder.restartAll()
             }
             AppDelegate.dataManager.listenToDatapointCountChanges()
+            AppDelegate.recorder.activateScheduleUpdate()
         }
     }
     
@@ -69,10 +70,6 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
             self.consentViewModel.onAppear()
         }
-    }
-    
-    func updateSchedules() {
-        TaskScheduleService().startUpdateTimer()
     }
     
     private func reinitAllViewModels() {
@@ -109,6 +106,7 @@ extension ContentViewModel: ConsentViewModelListener {
                 self.hasCredentials = true
                 BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
                 AppDelegate.dataManager.listenToDatapointCountChanges()
+                AppDelegate.recorder.activateScheduleUpdate()
             }
         }
         FCMService.getNotificationToken()

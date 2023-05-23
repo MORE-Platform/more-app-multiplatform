@@ -48,4 +48,7 @@ class IOSDataRecorder: DataRecorder {
         observationManager.updateTaskStates()
     }
     
+    func activateScheduleUpdate() {
+        observationManager.activateScheduleUpdate()
+    }
 }
