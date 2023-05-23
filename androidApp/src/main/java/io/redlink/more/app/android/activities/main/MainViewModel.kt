@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
@@ -28,8 +30,9 @@ import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import io.redlink.more.app.android.services.ObservationRecordingService
+import java.util.concurrent.TimeUnit
 
-class MainViewModel(context: Context): ViewModel() {
+class MainViewModel(context: Context) : ViewModel() {
     private val bluetoothConnector = AndroidBluetoothConnector(context)
     private val recorder: AndroidDataRecorder by lazy { AndroidDataRecorder() }
     val tabIndex = mutableStateOf(0)
@@ -37,7 +40,8 @@ class MainViewModel(context: Context): ViewModel() {
     val navigationBarTitle = mutableStateOf("")
 
     val notificationViewModel = NotificationViewModel()
-    val allSchedulesViewModel = ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
+    val allSchedulesViewModel =
+        ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
             CoreDashboardFilterViewModel(),
@@ -75,18 +79,14 @@ class MainViewModel(context: Context): ViewModel() {
         TaskDetailsViewModel(recorder)
     }
 
-    fun getTaskDetailsVM(scheduleId: String) = taskDetailsViewModel.apply { setSchedule(scheduleId) }
+    fun getTaskDetailsVM(scheduleId: String) =
+        taskDetailsViewModel.apply { setSchedule(scheduleId) }
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             BluetoothDeviceRepository(bluetoothConnector).updateConnectedDevices()
             if (!ObservationRecordingService.running) {
-                val workManager = WorkManager.getInstance(context)
-                val worker = OneTimeWorkRequestBuilder<ScheduleUpdateWorker>().build()
-                workManager.enqueueUniqueWork(
-                    ScheduleUpdateWorker.WORKER_TAG,
-                    ExistingWorkPolicy.KEEP,
-                    worker)
+
             }
         }
     }
