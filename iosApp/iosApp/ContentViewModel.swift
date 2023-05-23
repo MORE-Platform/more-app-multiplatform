@@ -50,7 +50,7 @@ class ContentViewModel: ObservableObject {
         
         if hasCredentials {
             DispatchQueue.main.async {
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
+                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices(listenForTimeInMillis: 5000)
                 AppDelegate.recorder.restartAll()
             }
             AppDelegate.dataManager.listenToDatapointCountChanges()
@@ -104,7 +104,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
+                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices(listenForTimeInMillis: 5000)
                 AppDelegate.dataManager.listenToDatapointCountChanges()
                 AppDelegate.recorder.activateScheduleUpdate()
             }

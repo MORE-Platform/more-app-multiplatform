@@ -86,7 +86,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
         realmDatabase().deleteItems(deviceIds)
     }
 
-    fun updateConnectedDevices() {
+    fun updateConnectedDevices(listenForTimeInMillis: Long = 5000) {
         bluetoothConnector?.let { bluetoothConnector ->
             val context = this
             CoroutineScope(Job() + Dispatchers.Default).launch {
@@ -95,8 +95,8 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                     if (pairedDeviceIds.isNotEmpty()) {
                         bluetoothConnector.observer = context
                         bluetoothConnector.scan()
-                        delay(5000)
-                        bluetoothConnector.close()
+                        delay(listenForTimeInMillis)
+                        bluetoothConnector.stopScanning()
                         setConnectionState(pairedDeviceIds, false)
                         pairedDeviceIds.clear()
                     }

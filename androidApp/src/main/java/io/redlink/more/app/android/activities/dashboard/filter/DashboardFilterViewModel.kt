@@ -21,11 +21,9 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
 
     val dateFilters = DateFilterModel.values().associateWith { it.toString().formatDateFilterString() }
 
-    val typeFilterActive: MutableState<Boolean>
+    val typeFilterActive: MutableState<Boolean> = mutableStateOf(coreViewModel.activeTypeFilter())
 
     init {
-        coreViewModel.addTypes(MoreApplication.observationFactory!!)
-        typeFilterActive = mutableStateOf(coreViewModel.activeTypeFilter())
         launch {
             coreViewModel.currentTypeFilter.collect {
                 withContext(Dispatchers.Main) {

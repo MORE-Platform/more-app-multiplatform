@@ -5,6 +5,7 @@ import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.observations.HR.HeartRateListener
 import io.redlink.more.app.android.observations.HR.PolarConnectorListener
@@ -113,9 +114,10 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
     }
 
     override fun close() {
+        log { "Closing PolarConnector..." }
         observer = null
-        polarApi.cleanup()
         stopScanning()
+        polarApi.cleanup()
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {

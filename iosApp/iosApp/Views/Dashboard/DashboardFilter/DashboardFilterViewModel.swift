@@ -25,7 +25,6 @@ class DashboardFilterViewModel: ObservableObject {
     @Published var currentDateFilter: [DateFilter: KotlinBoolean] = [:]
     
     init() {
-        coreViewModel.addTypes(observationFactory: AppDelegate.observationFactory)
         coreViewModel.onNewDateFilter { [weak self] dateFilter in
             self?.currentDateFilter = dateFilter
         }

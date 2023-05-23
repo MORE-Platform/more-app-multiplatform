@@ -93,6 +93,8 @@ abstract class Observation(val observationType: ObservationType) {
 
     open fun needsToRestartAfterAppClosure() = false
 
+    open fun atTaskActivation() {}
+
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)

@@ -1,6 +1,5 @@
 package io.redlink.more.app.android.activities.main
 
-import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,14 +16,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionView
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
-import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -33,6 +33,7 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConf
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
@@ -52,6 +53,13 @@ class MainActivity : ComponentActivity() {
                 viewModel.viewDidAppear()
             }
             MainView(viewModel.navigationBarTitle.value, viewModel, navController)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!ObservationRecordingService.running) {
+            MoreApplication.androidBluetoothConnector?.close()
         }
     }
 }

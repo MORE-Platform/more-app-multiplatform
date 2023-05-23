@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.launch
 
-private const val TAG = "PolarHearRateObservation"
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         setOf(
@@ -80,6 +79,8 @@ class PolarHeartRateObservation(context: Context) :
                     false
                 }
             } ?: false
+        } else {
+            bluetoothDeviceRepository.updateConnectedDevices(10000)
         }
         Napier.d { "No connected devices..." }
         return false
@@ -92,6 +93,10 @@ class PolarHeartRateObservation(context: Context) :
 
     override fun observerAccessible(): Boolean {
         return hasPermission
+    }
+
+    override fun atTaskActivation() {
+        bluetoothDeviceRepository.updateConnectedDevices(10000)
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
