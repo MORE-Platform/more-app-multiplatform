@@ -11,6 +11,7 @@
     <string name="more_settings_withdraw_question">Möchten Sie wirklich die Studie verlassen?</string>
     <string name="more_settings_withdraw_question_confirm">Sind Sie sicher, dass sie Ihre Teilnahme an der Studie beenden wollen?</string>
     <string name="more_settings_resign_swipe">Ziehen, um die Studie zu verlassen</string>
+    <string name="more_settings_resign_confirm">Klicken, um auszutreten</string>
     <string name="more_settings_continue">Weiterhin teilnehmen!</string>
     <string name="more_settings_withdraw_from_study">Die Studie verlassen</string>
     <string name="more_read_more">Mehr</string>
