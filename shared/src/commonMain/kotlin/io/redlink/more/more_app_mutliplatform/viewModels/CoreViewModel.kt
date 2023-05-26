@@ -28,17 +28,18 @@ abstract class CoreViewModel : Closeable {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
     ) {
-         scope.launch{
+        scope.launch{
+            val uuid = Scope.launch(coroutineContext, start, block).first
             mutex.withLock {
-                viewJobs.add(Scope.launch(coroutineContext, start, block).first)
+                viewJobs.add(uuid)
             }
         }
     }
 
     private fun cancelScope() {
+        Scope.cancel(viewJobs)
         scope.launch {
             mutex.withLock {
-                Scope.cancel(viewJobs)
                 viewJobs.clear()
             }
         }
