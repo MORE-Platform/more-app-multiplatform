@@ -25,6 +25,8 @@ import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
+import io.redlink.more.app.android.extensions.jvmLocalDate
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 
@@ -82,15 +84,15 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
             )
 
             TimeframeDays(
-                viewModel.taskDetailsModel.value.start.toDate(),
-                viewModel.taskDetailsModel.value.end.toDate(),
+                viewModel.taskDetailsModel.value.start.jvmLocalDate(),
+                viewModel.taskDetailsModel.value.end.jvmLocalDate(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
             )
             TimeframeHours(
-                viewModel.taskDetailsModel.value.start.toDate(),
-                viewModel.taskDetailsModel.value.end.toDate(),
+                viewModel.taskDetailsModel.value.start.jvmLocalDateTime(),
+                viewModel.taskDetailsModel.value.end.jvmLocalDateTime(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)

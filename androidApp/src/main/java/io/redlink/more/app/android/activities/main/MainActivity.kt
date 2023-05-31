@@ -1,6 +1,5 @@
 package io.redlink.more.app.android.activities.main
 
-import ObservationDetailsView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +31,7 @@ import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConfirmView
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
+import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.app.android.shared_composables.MoreBackground

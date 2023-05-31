@@ -24,6 +24,7 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
 
 
 @Composable
@@ -49,8 +50,8 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
         }
 
         TimeframeHours(
-            startTime = scheduleModel.start.toDate(),
-            endTime = scheduleModel.end.toDate(),
+            startTime = scheduleModel.start.jvmLocalDateTime(),
+            endTime = scheduleModel.end.jvmLocalDateTime(),
             modifier = Modifier.padding(vertical = 8.dp)
         )
         if (showButton) {

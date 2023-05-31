@@ -19,8 +19,8 @@ data class ObservationDetailsModel(
                 observationTitle = observation.observationTitle,
                 observationType = observation.observationType,
                 observationId = observation.observationId,
-                start = start?.start?.toInstant()?.toEpochMilliseconds()?: 0,
-                end = stop?.end?.toInstant()?.toEpochMilliseconds()?: 0,
+                start = start?.start?.toInstant()?.epochSeconds?: 0,
+                end = stop?.end?.toInstant()?.epochSeconds?: 0,
                 participantInformation = observation.participantInfo,
             )
         }
