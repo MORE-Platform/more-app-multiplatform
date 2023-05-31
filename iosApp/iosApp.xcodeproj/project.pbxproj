@@ -70,7 +70,6 @@
 		1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C31502A121EA500EED533 /* WebViewViewModel.swift */; };
 		1F6C31532A13EB7F00EED533 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */; };
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
-		1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */; };
 		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
 		1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094F29D4185200081B88 /* ArrayExtension.swift */; };
 		1F80EC4129C25025004667B1 /* Navigation.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F80EC4029C25025004667B1 /* Navigation.strings */; };
@@ -261,7 +260,6 @@
 		1F6C31502A121EA500EED533 /* WebViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewModel.swift; sourceTree = "<group>"; };
 		1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
-		1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModelExtension.swift; sourceTree = "<group>"; };
 		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
 		1F7F094F29D4185200081B88 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		1F80EC4029C25025004667B1 /* Navigation.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Navigation.strings; sourceTree = "<group>"; };
@@ -625,7 +623,6 @@
 				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
 				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
 				1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */,
-				1F6D338429C1DD6D0036532B /* ScheduleModelExtension.swift */,
 				1F80EC4429C2524F004667B1 /* NavigationScreens.swift */,
 				1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */,
 				1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */,
@@ -1101,7 +1098,6 @@
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
 				1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */,
-				1F6D338529C1DD6D0036532B /* ScheduleModelExtension.swift in Sources */,
 				1F0FA80729ED7A1300B8D80E /* TaskScheduleService.swift in Sources */,
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */,

@@ -28,7 +28,7 @@ fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, sho
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    itemsIndexed(entry.value.sortedBy { it.start }) { _, item ->
+                    itemsIndexed(entry.value.sortedWith(compareBy({it.start}, {it.end}, {it.observationTitle}, {it.scheduleId}))) { _, item ->
                         MoreDivider(Modifier.fillMaxWidth())
                         Column(
                             modifier = Modifier
