@@ -55,7 +55,7 @@ abstract class ObservationDataManager {
     }
 
     fun saveAndSend() {
-        scope.launch {
+        Scope.launch {
             observationDataRepository.store()
             observationDataRepository.count().firstOrNull()?.let {
                 if (it in 1 until DATA_COUNT_THRESHOLD) {

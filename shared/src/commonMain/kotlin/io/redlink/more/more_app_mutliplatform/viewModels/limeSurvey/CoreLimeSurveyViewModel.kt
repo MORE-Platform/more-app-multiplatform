@@ -5,6 +5,7 @@ import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
@@ -12,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 
@@ -19,7 +21,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
     private var observation: LimeSurveyObservation? = observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
     private var scheduleId: String? = null
     private var observationId: String? = null
-    val limeSurveyLink: StateFlow<String?> = observation?.limeURL ?: MutableStateFlow(null)
+    val limeSurveyLink: MutableStateFlow<String?> = MutableStateFlow(null)
     val dataLoading = MutableStateFlow(false)
 
     private val scheduleRepository = ScheduleRepository()
@@ -31,7 +33,12 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
             observation?.let { observation ->
                 if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
                     this.scheduleId = scheduleId
-                    dataLoading.value = true
+                    dataLoading.set(true)
+                    launchScope {
+                        observation.limeURL.collect {
+                            limeSurveyLink.set(it)
+                        }
+                    }
                     launchScope(Dispatchers.Main) {
                         scheduleRepository.scheduleWithId(scheduleId).cancellable().transform { scheduleSchema ->
                             Napier.d { "Loaded schedule schema!" }
@@ -45,7 +52,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                                 observation.observationConfig(it.configAsMap())
                                 observation.start(it.observationId, scheduleId)
                             }
-                            dataLoading.value = false
+                            dataLoading.set(false)
                         }
                     }
                 }
@@ -68,12 +75,15 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
     }
 
     fun finish() {
-        observation?.stopAndSetDone()
+        scheduleId?.let {
+            observation?.storeData()
+            observation?.stopAndSetDone(it)
+        }
         clear()
     }
 
     fun cancel() {
-        observationId?.let {
+        scheduleId?.let {
             observation?.stop(it)
         }
         clear()
@@ -83,6 +93,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
         scheduleId = null
         observationId = null
         dataLoading.value = false
+        limeSurveyLink.set(null)
     }
 
     override fun close() {

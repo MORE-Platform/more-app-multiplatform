@@ -68,7 +68,7 @@ class PolarHeartRateObservation(context: Context) :
                         },
                         { error ->
                             Napier.e(error.stackTraceToString())
-                            stopAndSetState(ScheduleState.PAUSED)
+                            stopAndSetState(ScheduleState.PAUSED, null)
                         })
                     true
                 } catch (exception: Exception) {

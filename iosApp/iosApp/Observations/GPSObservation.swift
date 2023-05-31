@@ -32,7 +32,7 @@ class GPSObservation: Observation_ {
             } else {
                 manager.requestAlwaysAuthorization()
                 running = true
-                stopAndSetState(state: .active)
+                stopAndSetState(state: .active, scheduleId: nil)
             }
         }
         return true

@@ -4,8 +4,10 @@ import io.github.aakira.napier.Napier
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.parametersOf
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
@@ -16,7 +18,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
     }
 
     override fun stop(onCompletion: () -> Unit) {
-        limeURL.value = null
+        limeURL.set(null)
         onCompletion()
     }
 
@@ -35,8 +37,12 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         if (token != null && limeSurveyId != null) {
             val url = configToLink(limeSurveyLink, limeSurveyId, token)
             Napier.d { "LimeSurvey link: $url" }
-            limeURL.value = url
+            limeURL.set(url)
         }
+    }
+
+    fun storeData() {
+        storeData(emptyMap<String, String>())
     }
 
     override fun needsToRestartAfterAppClosure(): Boolean {

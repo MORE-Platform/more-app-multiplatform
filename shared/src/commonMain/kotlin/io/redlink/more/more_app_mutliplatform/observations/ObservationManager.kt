@@ -116,7 +116,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
             runningObservations[scheduleId]?.let { observation ->
                 scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
                     Napier.d { "Pausing schedule: $it" }
-                    observation.stop(it.observationId)
+                    observation.stop(scheduleId)
                     setObservationState(it, ScheduleState.PAUSED)
                     Napier.d { "Recording paused of ${it.scheduleId}" }
                 }
@@ -129,7 +129,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
             runningObservations[scheduleId]?.let { observation ->
                 scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
                     Napier.d { "Stopping schedule: $it" }
-                    observation.stop(it.observationId)
+                    observation.stop(scheduleId)
                     setObservationState(it, ScheduleState.DONE)
                     runningObservations.remove(scheduleId)
                     scheduleSchemaList.remove(it)
@@ -158,7 +158,7 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
     private fun stopAllInList() {
         Napier.d { "Running Observations to be stopped: $runningObservations" }
         runningObservations.forEach { (scheduleId, observation) ->
-            observation.stopAndFinish()
+            observation.stopAndFinish(scheduleId)
             scheduleRepository.setCompletionStateFor(scheduleId, true)
             dataPointCountRepository.delete(scheduleId)
             runningObservations.remove(scheduleId)
