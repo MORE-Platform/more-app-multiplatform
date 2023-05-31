@@ -58,17 +58,19 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
         val typesAmount = coreViewModel.currentTypeFilter.value.filter { it.value }.size
         val dateFilter = coreViewModel.currentDateFilter.value.filterValues { it }.keys.firstOrNull() ?: ""
 
-        if(!coreViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME)) {mnkpegbrkmpänmpfvlM;l
-            filterString += dateFilter
+        if (coreViewModel.filterActive()) {
+            if(coreViewModel.activeDateFilter()) {
+                filterString += dateFilter
+            }
 
-        if(coreViewModel.hasAnyTypes()) {
-            if(filterString.isNotBlank())
-                filterString += ", "
-            filterString += getQuantityString(R.plurals.filter_text, typesAmount, typesAmount)
-        }
-
-        if(filterString.isBlank())
+            if(coreViewModel.activeTypeFilter()) {
+                if(filterString.isNotBlank())
+                    filterString += ", "
+                filterString += getQuantityString(R.plurals.filter_text, typesAmount, typesAmount)
+            }
+        } else {
             filterString += getString(R.string.more_filter_deactivated)
+        }
 
         return filterString
     }

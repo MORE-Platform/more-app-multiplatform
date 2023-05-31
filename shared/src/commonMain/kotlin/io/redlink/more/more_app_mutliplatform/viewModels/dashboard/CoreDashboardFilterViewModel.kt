@@ -67,7 +67,7 @@ class CoreDashboardFilterViewModel: CoreViewModel() {
     fun hasDateFilter(dateFilter: DateFilterModel) =
         currentDateFilter.value.getOrElse(dateFilter) { false }
 
-    private fun activeDateFilter() =
+    fun activeDateFilter() =
         currentDateFilter.value[DateFilterModel.ENTIRE_TIME] == false && currentDateFilter.value.any { it.value }
 
     fun filterActive() = activeDateFilter() || activeTypeFilter()
