@@ -2,31 +2,27 @@ package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
-import io.ktor.client.statement.*
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.discardRemaining
 import io.ktor.utils.io.core.Closeable
+import io.realm.kotlin.internal.platform.WeakReference
 import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.*
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationServiceType
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import kotlinx.coroutines.CompletionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.cancel
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
@@ -34,10 +30,10 @@ private const val TAG = "NetworkService"
 class NetworkService(
     private val endpointRepository: EndpointRepository,
     private val credentialRepository: CredentialRepository
-): Closeable {
+) : Closeable {
     private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
-    private var dataApi: DataApi? = null
+    private var dataApi: WeakReference<DataApi>? = null
 
     private var engineUseCounter = 10
 
@@ -59,19 +55,17 @@ class NetworkService(
     }
 
     private fun initDataApi() {
-        if (--engineUseCounter <= 0) {
-            close()
-        }
-        if (dataApi == null) {
+        if (dataApi == null || dataApi?.get() == null) {
             credentialRepository.credentials()?.let {
                 httpClient = getHttpClient().apply {
-                    dataApi = DataApi(
+                    val api = DataApi(
                         baseUrl = endpointRepository.endpoint(),
                         engine,
-                        httpClientConfig = { engineConfig}
+                        httpClientConfig = { engineConfig }
                     )
-                    dataApi?.setUsername(it.apiId)
-                    dataApi?.setPassword(it.apiKey)
+                    api.setUsername(it.apiId)
+                    api.setPassword(it.apiKey)
+                    dataApi = WeakReference(api)
                 }
             }
         }
@@ -82,7 +76,7 @@ class NetworkService(
             credentialRepository.credentials()?.let {
                 Napier.d { "Deleting Participation..." }
                 val httpClient = getHttpClient()
-                val url =  endpointRepository.endpoint()
+                val url = endpointRepository.endpoint()
                 val registrationApi =
                     RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
 
@@ -90,7 +84,7 @@ class NetworkService(
                 registrationApi.setPassword(it.apiKey)
 
                 val registrationResponse =
-                    registrationApi.unregisterFromStudy()
+                    registrationApi.unregisterFromStudy() ?: return Pair(false, NetworkServiceError(0, "Response null"))
                 Napier.d(registrationResponse.response.toString(), tag = TAG)
                 close()
                 if (registrationResponse.success) {
@@ -125,12 +119,12 @@ class NetworkService(
             val registrationApi =
                 RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
             val registrationResponse =
-                registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken)
+                registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             Napier.d(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {
                 registrationResponse.body().let {
                     Napier.d { "Registration token valid!" }
-                    return Pair(it, null).freeze()
+                    return Pair(it.get(), null).freeze()
                 }
             }
             val error = createErrorBody(
@@ -160,11 +154,11 @@ class NetworkService(
                 baseUrl = url,
                 httpClient.engine,
                 httpClientConfig = { httpClient.engineConfig })
-            val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent)
+            val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             if (consentResponse.success) {
                 consentResponse.body().let {
                     Napier.d { "Credentials received!" }
-                    return Pair(it, null).freeze()
+                    return Pair(it.get(), null).freeze()
                 }
             }
             return Pair(
@@ -181,11 +175,14 @@ class NetworkService(
         try {
             Napier.d { "Downloading study data..." }
             val configResponse =
-                configurationApi?.getStudyConfiguration() ?: return Pair(null, NetworkServiceError(null, "No credentials set!"))
+                configurationApi?.getStudyConfiguration() ?: return Pair(
+                    null,
+                    NetworkServiceError(null, "No credentials set!")
+                )
             if (configResponse.success) {
                 configResponse.body().let {
                     Napier.d { "Loading study data success!" }
-                    return Pair(it, null)
+                    return Pair(it.get(), null)
                 }
             }
 
@@ -206,7 +203,7 @@ class NetworkService(
                 val tokenResponse = it.setPushNotificationToken(
                     serviceType = PushNotificationServiceType.FCM,
                     pushNotificationToken = PushNotificationToken(token = token)
-                )
+                ) ?: return Pair(false, NetworkServiceError(0, "Response null"))
                 if (tokenResponse.success) {
                     Napier.d { "Uploading notification token success!" }
                     return Pair(true, null)
@@ -226,28 +223,38 @@ class NetworkService(
         initDataApi()
         try {
             Napier.i { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints wwith first being ${data.dataPoints.first()}..." }
-            val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
+            val dataApiResponse = WeakReference(dataApi?.get()?.storeBulk(data).freeze() ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "No credentials set!")
-            )
-            if (dataApiResponse.success) {
-                dataApiResponse.body().freeze().let {
-                    Napier.d { "Sent data!" }
-                    return Pair(it.toSet().freeze(), null).freeze()
+            )).freeze()
+            dataApiResponse.get()?.let { dataApiResponse ->
+                if (dataApiResponse.success) {
+                    dataApiResponse.body().let {
+                        Napier.d { "Sent data!" }
+                        dataApiResponse.response.cancel()
+                        return Pair(it.get()?.toSet() ?: emptySet(), null).freeze()
+                    }
                 }
             }
+            dataApiResponse.get()?.response?.cancel()
+
             return Pair(
                 emptySet(),
-                createErrorBody(dataApiResponse.response.status.value, dataApiResponse.response)
+                createErrorBody(dataApiResponse.get()?.response?.status?.value ?: 500, dataApiResponse.get()?.response)
             )
         } catch (e: Exception) {
             return Pair(emptySet(), getException(e))
         }
     }
 
-    fun sendData(data: DataBulk, completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit) {
-        CoroutineScope(Job() + Dispatchers.Default).launch {
-            completionHandler(sendData(data).apply { first.freeze() })
+    fun iosSendData(
+        data: DataBulk,
+        completionHandler: (WeakReference<Pair<Set<String>, NetworkServiceError?>>) -> Unit
+    ) {
+        Scope.launch {
+            completionHandler(
+                WeakReference(sendData(data))
+            ).freeze()
         }
     }
 

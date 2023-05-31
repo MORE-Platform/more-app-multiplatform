@@ -101,6 +101,7 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
+        reinitAllViewModels()
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
@@ -119,6 +120,5 @@ extension ContentViewModel: ConsentViewModelListener {
             }
         }
         showLoginView()
-        reinitAllViewModels()
     }
 }

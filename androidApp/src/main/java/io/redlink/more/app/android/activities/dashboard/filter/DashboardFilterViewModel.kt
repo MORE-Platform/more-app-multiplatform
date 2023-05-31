@@ -58,7 +58,7 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
         val typesAmount = coreViewModel.currentTypeFilter.value.filter { it.value }.size
         val dateFilter = coreViewModel.currentDateFilter.value.filterValues { it }.keys.firstOrNull() ?: ""
 
-        if(!coreViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME))
+        if(!coreViewModel.hasDateFilter(DateFilterModel.ENTIRE_TIME)) {mnkpegbrkmpänmpfvlM;l
             filterString += dateFilter
 
         if(coreViewModel.hasAnyTypes()) {

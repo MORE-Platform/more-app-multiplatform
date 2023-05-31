@@ -73,6 +73,7 @@ class RegistrationService (
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
+                    shared.resetFirstStartUp()
                     StudyRepository().storeStudy(study)
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {

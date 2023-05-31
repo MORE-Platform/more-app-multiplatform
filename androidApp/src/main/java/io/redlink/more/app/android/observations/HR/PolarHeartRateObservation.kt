@@ -3,9 +3,7 @@ package io.redlink.more.app.android.observations.HR
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
@@ -18,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.launch
 
 private val permissions =
@@ -95,8 +92,12 @@ class PolarHeartRateObservation(context: Context) :
         return hasPermission
     }
 
-    override fun atTaskActivation() {
-        bluetoothDeviceRepository.updateConnectedDevices(10000)
+    override fun ableToStart(): String? {
+        return super.ableToStart()
+    }
+
+    override fun bleDevicesNeeded(): Set<String> {
+        return setOf("Polar")
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

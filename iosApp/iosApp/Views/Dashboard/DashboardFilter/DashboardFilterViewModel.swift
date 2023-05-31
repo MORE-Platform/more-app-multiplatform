@@ -37,6 +37,14 @@ class DashboardFilterViewModel: ObservableObject {
         }
     }
     
+    func viewDidAppear() {
+        coreViewModel.viewDidAppear()
+    }
+    
+    func viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
+    }
+    
     func toggleTypeFilter(type: String) {
         coreViewModel.toggleTypeFilter(type: type)
     }

@@ -14,15 +14,16 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnec
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
+import io.redlink.more.more_app_mutliplatform.util.Scope.repeatedLaunch
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.cancellable
 
-class CoreBluetoothConnectionViewModel(private val bluetoothConnector: BluetoothConnector) :
-    CoreViewModel(), BluetoothConnectorObserver, Closeable {
+class CoreBluetoothConnectionViewModel(
+    private val bluetoothConnector: BluetoothConnector,
+    private val scanDuration: Long = 10000,
+    private val scanInterval: Long = 5000
+): CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val bluetoothDeviceRepository = BluetoothDeviceRepository(bluetoothConnector)
     val discoveredDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
     val connectedDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
@@ -31,22 +32,22 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     val isScanning = MutableStateFlow(false)
     private val isConnecting = MutableStateFlow(false)
 
-    private var scanJob: Job? = null
-    private val scanDuration: Long = 10000
-    private val scanInterval: Long = 5000
+    private var scanJob: String? = null
 
-    init {
-        bluetoothConnector.observer = this
-    }
 
     override fun viewDidAppear() {
-        launchScope {
-            bluetoothDeviceRepository.getConnectedDevices(true).cancellable().collect { storedConnectedDevices ->
-                val addresses = connectedDevices.value.map { it.address }
-                val filtered = storedConnectedDevices.filter { it.address !in addresses }
-                connectedDevices.append(filtered)
-            }
-        }
+        bluetoothConnector.observer = this
+        connectedDevices.append(bluetoothConnector.connected)
+        discoveredDevices.append(bluetoothConnector.discovered)
+//        launchScope {
+//            bluetoothDeviceRepository.getConnectedDevices(true).cancellable()
+//                .collect { storedConnectedDevices ->
+//                    val addresses = connectedDevices.value.map { it.address }
+//                    val filtered = storedConnectedDevices.filter { it.address !in addresses }
+//                    connectedDevices.append(filtered)
+//                }
+//        }
+
         startPeriodicScan()
     }
 
@@ -59,19 +60,16 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
 
     private fun startPeriodicScan() {
         if (scanJob == null) {
-            scanJob = launch(Dispatchers.Default) {
-                while (true) {
-                    scanForDevices()
-                    delay(scanDuration)
-                    stopScanning()
-                    delay(scanInterval)
-                }
-            }.second
+            scanJob = repeatedLaunch(scanInterval) {
+                scanForDevices()
+                delay(scanDuration)
+                stopScanning()
+            }.first
         }
     }
 
     fun stopPeriodicScan() {
-        scanJob?.cancel()
+        scanJob?.let { Scope.cancel(it) }
         scanJob = null
         close()
     }
@@ -104,7 +102,10 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
 
     fun disconnectFromDevice(device: BluetoothDevice) {
         bluetoothConnector.disconnect(device)
-        discoveredDevices.append(device)
+        connectedDevices.removeWhere { it.address == device.address }
+        bluetoothDeviceRepository.setConnectionState(device, false)
+
+        //discoveredDevices.append(device)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -131,6 +132,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
     override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
         connectedDevices.remove(bluetoothDevice)
         connectingDevices.remove(bluetoothDevice.address)
+        bluetoothDeviceRepository.setConnectionState(bluetoothDevice, false)
         isConnecting.set(false)
         Napier.e { "Failed to connect to $bluetoothDevice" }
     }
@@ -160,7 +162,7 @@ class CoreBluetoothConnectionViewModel(private val bluetoothConnector: Bluetooth
         connectingDevices.asClosure(providedState)
 
     override fun close() {
-        scanJob?.cancel()
+        scanJob?.let { Scope.cancel(it) }
         scanJob = null
         bluetoothConnector.stopScanning()
         isConnecting.set(false)

@@ -90,7 +90,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
         bluetoothConnector?.let { bluetoothConnector ->
             val context = this
             CoroutineScope(Job() + Dispatchers.Default).launch {
-                realmDatabase().query<BluetoothDevice>().firstOrNull()?.let {
+                realmDatabase().query<BluetoothDevice>("connected == true").firstOrNull()?.let {
                     pairedDeviceIds.addAll(it.mapNotNull { it.address })
                     if (pairedDeviceIds.isNotEmpty()) {
                         bluetoothConnector.observer = context

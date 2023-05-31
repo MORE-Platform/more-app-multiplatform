@@ -67,9 +67,15 @@ fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothCo
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 10.dp)
+                    .clickable {
+                        viewModel.disconnectFromDevice(device)
+                    }
             ) {
                 MoreDivider()
-                SmallTitle(text = device.deviceName ?: getStringResource(id = R.string.more_ble_unknown_device))
+                SmallTitle(
+                    text = device.deviceName
+                        ?: getStringResource(id = R.string.more_ble_unknown_device)
+                )
             }
         }
         item {
@@ -89,7 +95,7 @@ fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothCo
                 EmptyListView(text = getStringResource(id = R.string.more_ble_no_discovered))
             }
         }
-        itemsIndexed(viewModel.discoveredDevices){ _, device ->
+        itemsIndexed(viewModel.discoveredDevices) { _, device ->
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center,
@@ -101,7 +107,10 @@ fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothCo
                     }
             ) {
                 MoreDivider()
-                SmallTitle(text = device.deviceName ?: getStringResource(id = R.string.more_ble_unknown_device))
+                SmallTitle(
+                    text = device.deviceName
+                        ?: getStringResource(id = R.string.more_ble_unknown_device)
+                )
             }
         }
         item {

@@ -5,6 +5,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -18,6 +19,8 @@ abstract class Observation(val observationType: ObservationType) {
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
+
+    val ableToStart = MutableStateFlow(true)
 
     fun apply(observationId: String, scheduleId: String) {
         observationIds.add(observationId)
@@ -93,7 +96,9 @@ abstract class Observation(val observationType: ObservationType) {
 
     open fun needsToRestartAfterAppClosure() = false
 
-    open fun atTaskActivation() {}
+    open fun ableToStart(): String? = null
+
+    open fun bleDevicesNeeded(): Set<String> = emptySet()
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(

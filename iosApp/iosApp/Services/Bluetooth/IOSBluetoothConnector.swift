@@ -19,6 +19,9 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
+    var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    
     internal let specificBluetoothConnectors: [String : BluetoothConnector] = ["polar": AppDelegate.polarConnector]
     
     private var centralManager: CBCentralManager!

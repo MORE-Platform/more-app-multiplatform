@@ -15,22 +15,24 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private var fcmService: FCMService? = FCMService()
+    static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
+    static let observationFactory = IOSObservationFactory(dataManager: dataManager)
     static let polarConnector = PolarConnector()
     static let recorder = IOSDataRecorder()
     static let dataUploadManager = DataUploadManager()
-    static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
     static let dataManager = iOSObservationDataManager()
-    static let observationFactory = IOSObservationFactory(dataManager: dataManager)
+    
+    private let fcmService: FCMService = FCMService()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         #if DEBUG
         NapierProxyKt.napierDebugBuild()
         #endif
         
+        AppDelegate.shared.onApplicationStart()
         
         FirebaseApp.configure()
-        fcmService?.register()
+        fcmService.register()
         
         registerBackgroundTasks()
         return true

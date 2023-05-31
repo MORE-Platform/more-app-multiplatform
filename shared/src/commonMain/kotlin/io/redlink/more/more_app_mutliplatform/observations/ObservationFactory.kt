@@ -22,6 +22,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         observations.filter { it.needsToRestartAfterAppClosure() }
             .map { it.observationType.observationType }.toSet()
 
+    fun bleDevicesNeeded(types: Set<String>) =
+        observations.filter { it.observationType.observationType in types }
+            .flatMap { it.bleDevicesNeeded() }.toSet()
+
     fun observation(type: String): Observation? {
         return observations.firstOrNull { it.observationType.observationType == type }?.apply {
             if (!this.observationDataManagerAdded()) {

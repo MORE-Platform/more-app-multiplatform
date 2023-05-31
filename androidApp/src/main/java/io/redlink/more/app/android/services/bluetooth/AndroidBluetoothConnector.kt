@@ -59,6 +59,38 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         }
     }
 
+    private val gattCallback = object : BluetoothGattCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+            super.onConnectionStateChange(gatt, status, newState)
+            gatt?.device?.toBluetoothDevice()?.let { device ->
+                when (newState) {
+                    BluetoothProfile.STATE_CONNECTED -> {
+                        deviceConnected(device)
+                    }
+                    BluetoothProfile.STATE_CONNECTING -> {
+                        observer?.isConnectingToDevice(device)
+                    }
+                    BluetoothProfile.STATE_DISCONNECTED -> {
+                        if (status == BluetoothProfile.STATE_CONNECTING) {
+                            Napier.i { "Problem connecting to device: $device" }
+                            observer?.didFailToConnectToDevice(device)
+                            isConnecting = false
+                        }
+                        else {
+                            Napier.d { "Disconnected from BLE device: ${device}!" }
+                            observer?.didDisconnectFromDevice(device)
+                        }
+                        gatt.close()
+                    }
+                    else -> {
+
+                    }
+                }
+            }
+        }
+    }
+
     private val bondStateReceiver = object : BroadcastReceiver() {
         @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent) {
@@ -137,29 +169,6 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 Napier.i { "Device already has bond state! Bonding..." }
                 androidBluetoothDevice.createBond()
             } else {
-                val gattCallback = object : BluetoothGattCallback() {
-                    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-                        Napier.i { "Connection to $device: $newState" }
-                        when (newState) {
-                            BluetoothProfile.STATE_CONNECTED -> {
-                                deviceConnected(device)
-                            }
-                            BluetoothProfile.STATE_CONNECTING -> {
-                                observer?.isConnectingToDevice(device)
-                            }
-                            BluetoothProfile.STATE_DISCONNECTED -> {
-                                if (status == BluetoothProfile.STATE_CONNECTED || status == BluetoothProfile.STATE_DISCONNECTING) {
-                                    deviceConnected(device)
-                                } else if (status == BluetoothProfile.STATE_CONNECTING || status == BluetoothProfile.STATE_DISCONNECTED) {
-                                    Napier.i { "Problem connecting" }
-                                    observer?.didFailToConnectToDevice(device)
-                                    isConnecting = false
-                                }
-                                gatt.close()
-                            }
-                        }
-                    }
-                }
                 MoreApplication.appContext?.let {
                     androidBluetoothDevice.connectGatt(it, false, gattCallback)
                 }
@@ -171,12 +180,16 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         return Error("Could not find device")
     }
 
+    @SuppressLint("MissingPermission")
     override fun disconnect(device: BluetoothDevice) {
         if (!disconnectFromSpecificConnectors(device)) {
             val androidBluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
             if (androidBluetoothDevice != null) {
-                observer?.didDisconnectFromDevice(device)
+                val gatt = androidBluetoothDevice.connectGatt(MoreApplication.appContext!!, false, gattCallback)
+                gatt.disconnect()
             }
+        } else {
+            observer?.didDisconnectFromDevice(device)
         }
     }
 
@@ -209,10 +222,13 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        connected.add(bluetoothDevice)
+        discovered.removeAll { it.address == bluetoothDevice.address }
         observer?.didConnectToDevice(bluetoothDevice)
     }
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+        connected.removeAll { it.address == bluetoothDevice.address }
         foundBluetoothDevices.remove(bluetoothDevice.address)
         observer?.didDisconnectFromDevice(bluetoothDevice)
     }
@@ -223,10 +239,12 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     override fun discoveredDevice(device: BluetoothDevice) {
+        discovered.add(device)
         observer?.discoveredDevice(device)
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
+        discovered.removeAll { it.address == device.address }
         observer?.removeDiscoveredDevice(device)
     }
 
@@ -249,7 +267,9 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     private fun disconnectFromSpecificConnectors(device: BluetoothDevice): Boolean {
-        return specificBluetoothConnectors.keys.firstOrNull{device.deviceName?.lowercase()?.contains(it) ?: false}?.let {
+        return specificBluetoothConnectors.keys.firstOrNull {
+            device.deviceName?.lowercase()?.contains(it) ?: false
+        }?.let {
             specificBluetoothConnectors[it]?.disconnect(device)
             true
         } ?: false

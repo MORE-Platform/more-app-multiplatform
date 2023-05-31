@@ -14,6 +14,9 @@ import shared
 
 class PolarConnector: BluetoothConnector {
     
+    var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    
     private var devicesSubscription: Disposable? = nil
     var polarApi = PolarBleApiDefaultImpl
         .polarImplementation(DispatchQueue.main,

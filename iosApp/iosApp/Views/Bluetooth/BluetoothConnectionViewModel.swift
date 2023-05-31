@@ -19,7 +19,7 @@ class BluetoothConnectionViewModel: ObservableObject {
     @Published var bluetoothIsScanning = false
     
     init(bluetoothConnector: BluetoothConnector) {
-        self.coreViewModel = CoreBluetoothConnectionViewModel(bluetoothConnector: bluetoothConnector)
+        self.coreViewModel = CoreBluetoothConnectionViewModel(bluetoothConnector: bluetoothConnector, scanDuration: 10000, scanInterval: 5000)
         
         self.coreViewModel.discoveredDevicesListChanges { [weak self] deviceSet in
             if let self {

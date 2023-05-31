@@ -40,7 +40,7 @@ struct StudyDetailsView: View {
                                              withComment: "string for study duration")))
                         
                         Spacer()
-                        BasicText(text: .constant((viewModel.studyStart.toDateString(dateFormat: "dd.MM.yyyy")) + " - " + (viewModel.studyEnd.toDateString(dateFormat: "dd.MM.yyyy"))),
+                        BasicText(text: .constant((viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString())),
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)

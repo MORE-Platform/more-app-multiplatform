@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
             NavController.OnDestinationChangedListener { controller, destination, arguments ->
                 viewModel.navigationBarTitle.value = destination.navigatorName
             }
+        val context = this
         setContent {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {

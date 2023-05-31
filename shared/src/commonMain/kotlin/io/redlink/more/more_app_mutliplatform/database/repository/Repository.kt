@@ -11,9 +11,9 @@ abstract class Repository<T: BaseRealmObject> : Closeable {
     private var cache: T? = null
 
 
-    init {
-        database.open()
-    }
+//    init {
+//        database.open()
+//    }
 
     fun realm() = database.database.realm
 

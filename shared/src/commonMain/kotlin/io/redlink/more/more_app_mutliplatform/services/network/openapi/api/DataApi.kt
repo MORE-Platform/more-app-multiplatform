@@ -26,12 +26,12 @@ open class DataApi(
 ) : ApiClient(baseUrl, httpClientEngine, httpClientConfig, jsonSerializer) {
 
     /**
-     * 
+     *
      * add data to elastic shard
      * @param dataBulk  (optional)
      * @return kotlin.collections.List<kotlin.String>
      */
-    open suspend fun storeBulk(dataBulk: DataBulk? = null): HttpResponse<List<String>> {
+    open suspend fun storeBulk(dataBulk: DataBulk? = null): HttpResponse<List<String>>? {
 
         val localVariableAuthNames = listOf("apiKey")
 
@@ -52,7 +52,7 @@ open class DataApi(
             localVariableConfig,
             dataBulk,
             localVariableAuthNames
-        ).wrap<StoreBulkResponse>().map { value.freeze() }.freeze()
+        )?.wrap<StoreBulkResponse>()?.map { value.freeze() }?.freeze()
     }
 
 
