@@ -39,15 +39,6 @@ class CoreBluetoothConnectionViewModel(
         bluetoothConnector.observer = this
         connectedDevices.append(bluetoothConnector.connected)
         discoveredDevices.append(bluetoothConnector.discovered)
-//        launchScope {
-//            bluetoothDeviceRepository.getConnectedDevices(true).cancellable()
-//                .collect { storedConnectedDevices ->
-//                    val addresses = connectedDevices.value.map { it.address }
-//                    val filtered = storedConnectedDevices.filter { it.address !in addresses }
-//                    connectedDevices.append(filtered)
-//                }
-//        }
-
         startPeriodicScan()
     }
 
@@ -77,17 +68,13 @@ class CoreBluetoothConnectionViewModel(
     fun scanForDevices() {
         if (!isConnecting.value) {
             bluetoothConnector.scan()
-            launchScope {
-                isScanning.emit(bluetoothConnector.isScanning())
-            }
+            isScanning.set(bluetoothConnector.isScanning())
         }
     }
 
     fun stopScanning() {
         bluetoothConnector.stopScanning()
-        launch {
-            isScanning.emit(bluetoothConnector.isScanning())
-        }
+        isScanning.set(bluetoothConnector.isScanning())
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {
@@ -138,9 +125,8 @@ class CoreBluetoothConnectionViewModel(
     }
 
     override fun discoveredDevice(device: BluetoothDevice) {
-        if (!connectedDevices.value.mapNotNull { it.address }
-                .contains(device.address) && !discoveredDevices.value.mapNotNull { it.address }
-                .contains(device.address)) {
+        if (!connectedDevices.value.mapNotNull { it.address }.contains(device.address)
+            && !discoveredDevices.value.mapNotNull { it.address }.contains(device.address)) {
             discoveredDevices.append(device)
         }
     }

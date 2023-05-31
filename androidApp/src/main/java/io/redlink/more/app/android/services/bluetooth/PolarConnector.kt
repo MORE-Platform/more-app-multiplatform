@@ -45,6 +45,10 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
 
     override var observer: BluetoothConnectorObserver? = null
 
+
+    override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
+    override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
+
     init {
         polarObserverCallback.connectionListener = this
     }
@@ -143,6 +147,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         observer?.removeDiscoveredDevice(device)
     }
+
 
 }
 

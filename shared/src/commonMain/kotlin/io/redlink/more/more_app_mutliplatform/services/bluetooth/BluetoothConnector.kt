@@ -5,10 +5,8 @@ import io.ktor.utils.io.core.*
 interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 
     val connected: MutableSet<BluetoothDevice>
-        get() = mutableSetOf()
 
     val discovered: MutableSet<BluetoothDevice>
-        get() = mutableSetOf()
 
     val specificBluetoothConnectors: Map<String, BluetoothConnector>
         get() = emptyMap()

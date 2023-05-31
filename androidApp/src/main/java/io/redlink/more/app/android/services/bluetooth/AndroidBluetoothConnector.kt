@@ -32,6 +32,9 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
     override var observer: BluetoothConnectorObserver? = null
 
+    override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
+    override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
+
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
@@ -46,7 +49,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                             if (device.bondState == AndroidBluetoothDevice.BOND_BONDED) {
                                 deviceConnected(bluetoothDevice)
                             } else {
-                                observer?.discoveredDevice(bluetoothDevice)
+                                discoveredDevice(bluetoothDevice)
                             }
                         }
                     }
@@ -69,17 +72,17 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                         deviceConnected(device)
                     }
                     BluetoothProfile.STATE_CONNECTING -> {
-                        observer?.isConnectingToDevice(device)
+                        isConnectingToDevice(device)
                     }
                     BluetoothProfile.STATE_DISCONNECTED -> {
                         if (status == BluetoothProfile.STATE_CONNECTING) {
                             Napier.i { "Problem connecting to device: $device" }
-                            observer?.didFailToConnectToDevice(device)
+                            didFailToConnectToDevice(device)
                             isConnecting = false
                         }
                         else {
                             Napier.d { "Disconnected from BLE device: ${device}!" }
-                            observer?.didDisconnectFromDevice(device)
+                            didDisconnectFromDevice(device)
                         }
                         gatt.close()
                     }
@@ -112,7 +115,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                         disconnect(device)
                         foundBluetoothDevices.remove(device.address)
                     } else if (bondState == AndroidBluetoothDevice.BOND_BONDING) {
-                        observer?.isConnectingToDevice(device)
+                        isConnectingToDevice(device)
                     } else {}
                 }
             }
@@ -255,7 +258,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 Napier.e { error.stackTraceToString() }
             }
         } else {
-            observer?.didConnectToDevice(bluetoothDevice)
+            didConnectToDevice(bluetoothDevice)
         }
         isConnecting = false
     }
@@ -274,6 +277,8 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
             true
         } ?: false
     }
+
+
 }
 
 @SuppressLint("MissingPermission")

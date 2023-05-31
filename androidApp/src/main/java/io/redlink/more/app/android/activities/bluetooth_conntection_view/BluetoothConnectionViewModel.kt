@@ -20,7 +20,8 @@ class BluetoothConnectionViewModel(bluetoothConnector: BluetoothConnector): View
 
     val bluetoothIsScanning = mutableStateOf(false)
 
-    init {
+
+    fun viewDidAppear() {
         viewModelScope.launch(Dispatchers.IO) {
             coreViewModel.discoveredDevices.collect {
                 withContext(Dispatchers.Main) {
@@ -44,9 +45,6 @@ class BluetoothConnectionViewModel(bluetoothConnector: BluetoothConnector): View
                 bluetoothIsScanning.value = it
             }
         }
-    }
-
-    fun viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
 

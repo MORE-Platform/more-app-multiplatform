@@ -19,7 +19,7 @@ class LoginBLESetupViewModel(observationFactory: ObservationFactory, bluetoothCo
 
     val neededDevices = mutableStateListOf<String>()
 
-    init {
+    fun viewDidAppear() {
         viewModelScope.launch(Dispatchers.Default) {
             coreLoginBLESetupViewModel.coreBluetooth.discoveredDevices.collect {
                 discoveredDevices.clear()
@@ -46,9 +46,6 @@ class LoginBLESetupViewModel(observationFactory: ObservationFactory, bluetoothCo
                 neededDevices.addAll(it)
             }
         }
-    }
-
-    fun viewDidAppear() {
         coreLoginBLESetupViewModel.viewDidAppear()
     }
 
