@@ -18,10 +18,13 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var limeSurveyLink: URL?
     @Published var dataLoading = false
     @Published var wasAnswered = false
+    
+    private let navigationModalState: NavigationModalState
 
-    init(scheduleId: String) {
+    init(navigationModalState: NavigationModalState) {
+        self.navigationModalState = navigationModalState
         webViewModel.delegate = self
-        coreViewModel.setScheduleId(scheduleId: scheduleId)
+        coreViewModel.setScheduleId(scheduleId: navigationModalState.scheduleId)
         coreViewModel.onLimeSurveyLinkChange { [weak self] link in
             print("Link: \(String(describing: link))")
             DispatchQueue.main.async {
@@ -53,6 +56,7 @@ class LimeSurveyViewModel: ObservableObject {
         } else {
             coreViewModel.cancel()
         }
+        self.navigationModalState.limeSurveyOpen = false
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {
@@ -75,6 +79,7 @@ extension LimeSurveyViewModel: WebViewListener {
             if endPath.lowercased().contains("end.htm"), parameters.keys.contains("savedid") {
                 DispatchQueue.main.async {
                     self.wasAnswered = true
+                    self.onFinish()
                 }
             }
         }

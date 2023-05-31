@@ -111,6 +111,10 @@ class LimeSurveyActivity : ComponentActivity() {
 @Composable
 fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
     val context = LocalContext.current
+    if (viewModel.wasAnswered.value) {
+        viewModel.onFinish()
+        (context as? Activity)?.finish()
+    }
     MoreBackground(
         navigationTitle = NavigationScreen.LIMESURVEY.stringRes(),
         maxWidth = 1f,
@@ -144,7 +148,9 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                         if (viewModel.networkLoading.value) {
                             LinearProgressIndicator(
                                 color = MoreColors.Primary,
-                                modifier = Modifier.fillMaxWidth().height(2.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(4.dp)
                             )
                         }
                         AndroidView(factory = {

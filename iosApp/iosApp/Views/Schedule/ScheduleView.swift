@@ -78,8 +78,7 @@ struct ScheduleView: View {
                 .environmentObject(navigationModalState)
         }
         .fullScreenCover(isPresented: $navigationModalState.limeSurveyOpen) {
-            LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: navigationModalState.scheduleId))
-                .environmentObject(navigationModalState)
+            LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: navigationModalState))
         }
     }
 }

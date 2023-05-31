@@ -10,7 +10,6 @@ import SwiftUI
 
 struct LimeSurveyView: View {
     @StateObject var viewModel: LimeSurveyViewModel
-    @EnvironmentObject var navigationModalState: NavigationModalState
     
     private let stringsTable = "LimeSurvey"
     var body: some View {
@@ -25,7 +24,6 @@ struct LimeSurveyView: View {
                         if let url = viewModel.limeSurveyLink {
                             WebView(url: url, viewModel: viewModel.webViewModel)
                                 .ignoresSafeArea(.all, edges: .bottom)
-                            
                         } else {
                             Text("URL is nil")
                         }
@@ -37,7 +35,6 @@ struct LimeSurveyView: View {
                 if viewModel.wasAnswered {
                     Button {
                         viewModel.onFinish()
-                        navigationModalState.limeSurveyOpen = false
                     } label: {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.more.secondary)
@@ -45,7 +42,6 @@ struct LimeSurveyView: View {
                 } else {
                     Button {
                         viewModel.onFinish()
-                        navigationModalState.limeSurveyOpen = false
                     } label: {
                         Image(systemName: "trash.circle.fill")
                             .foregroundColor(.more.important)
@@ -64,7 +60,6 @@ struct LimeSurveyView: View {
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: ""))
-            .environmentObject(NavigationModalState())
+        LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: NavigationModalState()))
     }
 }
