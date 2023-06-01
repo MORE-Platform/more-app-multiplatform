@@ -32,7 +32,15 @@ object Scope {
                 jobs[uuid] = job
                 job.invokeOnCompletion {
                     Napier.d { "Job completed. Removing from list..." }
-                    jobs.remove(uuid)
+                    scope.launch {
+                        mutex.withLock {
+                            try {
+                                jobs.remove(uuid)
+                            } catch (e: Exception) {
+                                Napier.e { e.stackTraceToString() }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -60,7 +68,15 @@ object Scope {
                 jobs[uuid] = job
                 job.invokeOnCompletion {
                     Napier.d { "Job completed. Removing from list..." }
-                    jobs.remove(uuid)
+                    scope.launch {
+                        mutex.withLock {
+                            try {
+                                jobs.remove(uuid)
+                            } catch (e: Exception) {
+                                Napier.e { e.stackTraceToString() }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -80,7 +96,11 @@ object Scope {
         val jobsToCancel = jobs.filter { it.key in set }.toList()
         scope.launch {
             mutex.withLock {
-                jobsToCancel.forEach { it.second.cancel() }
+                try {
+                    jobsToCancel.forEach { it.second.cancel() }
+                } catch (exception: Exception) {
+                    Napier.e { exception.stackTraceToString() }
+                }
             }
         }
     }

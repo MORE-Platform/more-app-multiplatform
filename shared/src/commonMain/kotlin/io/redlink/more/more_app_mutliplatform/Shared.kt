@@ -34,9 +34,9 @@ class Shared(
         } else false
     }
 
-    fun showBleSetup(observationFactory: ObservationFactory, onCompletion: (Boolean) -> Unit) {
+    fun showBleSetup(observationFactory: ObservationFactory, onCompletion: (Pair<Boolean, Boolean>) -> Unit) {
         Scope.launch {
-            onCompletion(firstStartUp() && devicesNeededForObservations(observationFactory).isNotEmpty())
+            onCompletion(Pair(firstStartUp(), devicesNeededForObservations(observationFactory).isNotEmpty()))
         }
     }
 

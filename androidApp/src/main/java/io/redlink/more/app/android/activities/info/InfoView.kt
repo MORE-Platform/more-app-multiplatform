@@ -1,33 +1,35 @@
 package io.redlink.more.app.android.activities.info
 
+import android.app.Activity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Autorenew
-import androidx.compose.material.icons.outlined.Devices
-import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun InfoView(navController: NavController, viewModel: InfoViewModel) {
+    val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
     val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.route)
     LaunchedEffect(route) {
@@ -70,7 +72,9 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.Watch,
                 contentDescription = getStringResource(id = R.string.more_ble_icon_description),
                 onClick = {
-                    navController.navigate(NavigationScreen.BLUETOOTH_CONNECTION.route)
+                    (context as? Activity)?.let {
+                        showNewActivity(it, BLEConnectionActivity::class.java)
+                    }
                 }
             )
             InfoItem(
@@ -81,14 +85,6 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     navController.navigate(NavigationScreen.SETTINGS.route)
                 }
             )
-//            InfoItem(
-//                title = "WebViewTest",
-//                imageVector = Icons.Default.Settings,
-//                contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
-//                onClick = {
-//                    navController.navigate(NavigationScreen.LIMESURVEY.route)
-//                }
-//            )
             InfoItem(
                 title = getStringResource(id = R.string.info_leave_study),
                 imageVector = Icons.Default.ExitToApp,

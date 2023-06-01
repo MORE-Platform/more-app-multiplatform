@@ -10,7 +10,11 @@ interface BluetoothConnectorObserver {
 
     fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice)
 
-    fun discoveredDevice(device: BluetoothDevice)
+    fun didDiscoverDevice(device: BluetoothDevice)
 
     fun removeDiscoveredDevice(device: BluetoothDevice)
+
+    fun isScanning(boolean: Boolean)
+
+    fun onBluetoothStateChange(bluetoothState: BluetoothState)
 }

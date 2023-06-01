@@ -13,9 +13,7 @@ import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.activities.login.LoginViewModelListener
-import io.redlink.more.app.android.activities.loginBLESetup.LoginBLESetupActivity
 import io.redlink.more.app.android.activities.main.MainActivity
-import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService

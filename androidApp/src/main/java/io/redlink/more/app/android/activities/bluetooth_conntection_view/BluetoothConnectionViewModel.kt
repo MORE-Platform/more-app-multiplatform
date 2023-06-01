@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,8 @@ class BluetoothConnectionViewModel(bluetoothConnector: BluetoothConnector): View
     val connectedDevices = mutableStateListOf<BluetoothDevice>()
 
     val bluetoothIsScanning = mutableStateOf(false)
+
+    val bluetoothPower = mutableStateOf(false)
 
 
     fun viewDidAppear() {
@@ -43,6 +46,11 @@ class BluetoothConnectionViewModel(bluetoothConnector: BluetoothConnector): View
         viewModelScope.launch {
             coreViewModel.isScanning.collect {
                 bluetoothIsScanning.value = it
+            }
+        }
+        viewModelScope.launch {
+            coreViewModel.bluetoothPower.collect {
+                bluetoothPower.value = it == BluetoothState.ON
             }
         }
         coreViewModel.viewDidAppear()

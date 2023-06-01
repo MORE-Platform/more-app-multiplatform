@@ -70,10 +70,6 @@ class ScheduleViewModel(
         coreViewModel.viewDidDisappear()
     }
 
-    fun updateTaskStates() {
-        ObservationRecordingService.updateTaskStates()
-    }
-
     fun startObservation(scheduleId: String) {
         coreViewModel.start(scheduleId)
     }

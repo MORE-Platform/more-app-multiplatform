@@ -124,7 +124,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         val now = Clock.System.now().epochSeconds
         Napier.d { "Updating Schedule states..." }
         realm()?.let {
-            it.writeBlocking {
+            it.write {
                 query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
                     if (restartableTypes.isNotEmpty()
                         && scheduleSchema.getState() == ScheduleState.RUNNING

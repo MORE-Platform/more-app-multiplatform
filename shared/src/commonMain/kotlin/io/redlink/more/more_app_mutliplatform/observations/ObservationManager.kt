@@ -120,6 +120,10 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
                     setObservationState(it, ScheduleState.PAUSED)
                     Napier.d { "Recording paused of ${it.scheduleId}" }
                 }
+            } ?: kotlin.run {
+                scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
+                    setObservationState(it, ScheduleState.PAUSED)
+                }
             }
         }
     }
@@ -128,13 +132,17 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         Scope.launch {
             runningObservations[scheduleId]?.let { observation ->
                 scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
-                    Napier.d { "Stopping schedule: $it" }
+                    log { "Stopping schedule: $it" }
                     observation.stop(scheduleId)
                     setObservationState(it, ScheduleState.DONE)
                     runningObservations.remove(scheduleId)
                     scheduleSchemaList.remove(it)
                     log { "Observation removed: ${it.scheduleId}! Observations left: $runningObservations" }
-                    Napier.d { "Recording stopped of ${it.scheduleId}" }
+                    log { "Recording stopped of ${it.scheduleId}" }
+                }
+            } ?: kotlin.run {
+                scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
+                    setObservationState(it, ScheduleState.DONE)
                 }
             }
         }
@@ -145,19 +153,16 @@ class ObservationManager(private val observationFactory: ObservationFactory) {
         stopAllInList()
     }
 
-    fun updateTaskStates() {
+    private fun updateTaskStates() {
         scheduleRepository.updateTaskStates()
     }
 
     fun hasRunningTasks() = runningObservations.isNotEmpty()
 
-    fun getObservationForScheduleId(scheduleId: String): Observation? {
-        return runningObservations[scheduleId]
-    }
-
     private fun stopAllInList() {
         Napier.d { "Running Observations to be stopped: $runningObservations" }
-        runningObservations.forEach { (scheduleId, observation) ->
+        val runningObs = runningObservations.toList()
+        runningObs.forEach { (scheduleId, observation) ->
             observation.stopAndFinish(scheduleId)
             scheduleRepository.setCompletionStateFor(scheduleId, true)
             dataPointCountRepository.delete(scheduleId)

@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
@@ -70,10 +71,6 @@ class ObservationRecordingService: Service() {
                     restartAll()
                     return super.onStartCommand(intent, flags, startId)
                 }
-                SERVICE_RECEIVER_UPDATE_STATES -> {
-                    updateTaskStates()
-                    START_NOT_STICKY
-                }
                 else -> {
                     START_NOT_STICKY
                 }
@@ -81,17 +78,22 @@ class ObservationRecordingService: Service() {
         } ?: START_NOT_STICKY
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
+        log { "ObservationRecordingService is destroyed!" }
         running = false
+        super.onDestroy()
     }
 
     private fun startObservation(scheduleId: String) {
         Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
-            if (observationManager?.start(scheduleId) == false) {
-                stopObservation(scheduleId)
+            if (observationManager?.start(scheduleId) == false && observationManager?.hasRunningTasks() == false) {
+                stopService()
             }
         }
     }
@@ -99,9 +101,7 @@ class ObservationRecordingService: Service() {
     private fun pauseObservation(scheduleId: String) {
         observationManager?.pause(scheduleId)
         if (observationManager?.hasRunningTasks() == false) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            running = false
-            stopSelf()
+            stopService()
         }
     }
 
@@ -109,18 +109,23 @@ class ObservationRecordingService: Service() {
         observationManager?.stop(scheduleId)
         scheduleRepository.setCompletionStateFor(scheduleId, true)
         if (observationManager?.hasRunningTasks() == false) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            running = false
-            stopSelf()
+            stopService()
         }
     }
 
     private fun stopAll() {
         observationManager?.stopAll()
         if (observationManager?.hasRunningTasks() == false) {
-            running = false
-            stopSelf()
+            stopService()
         }
+    }
+
+    private fun stopService() {
+        log { "Stopping ObservationRecordingService..." }
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        running = false
+        stopSelf()
+        log { "Stopped ObservationRecordingService!" }
     }
 
     private fun restartAll() {
@@ -134,10 +139,6 @@ class ObservationRecordingService: Service() {
                 }
             }
         }
-    }
-
-    private fun updateTaskStates() {
-        observationManager?.updateTaskStates()
     }
 
     private fun startForegroundService() {
@@ -185,7 +186,6 @@ class ObservationRecordingService: Service() {
         private const val SERVICE_RECEIVER_PAUSE_ACTION = "io.redlink.more.app.android.PAUSE_SERVICE"
         private const val SERVICE_RECEIVER_STOP_ACTION = "io.redlink.more.app.android.STOP_SERVICE"
         private const val SERVICE_RECEIVER_STOP_ALL_ACTION = "io.redlink.more.app.android.STOP_ALL_SERVICE"
-        private const val SERVICE_RECEIVER_UPDATE_STATES = "io.redlink.more.app.android.UPDATE_STATES"
         private const val SERVICE_RECEIVER_RESTART_ALL_STATES = "io.redlink.more.app.android.RESTART_ALL"
 
         var running = false
@@ -236,12 +236,6 @@ class ObservationRecordingService: Service() {
             } catch (e: Exception) {
                 Napier.e(e.stackTraceToString())
             }
-        }
-
-        fun updateTaskStates() {
-            val serviceIntent = Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-            serviceIntent.action = SERVICE_RECEIVER_UPDATE_STATES
-            MoreApplication.appContext?.startService(serviceIntent)
         }
     }
 }

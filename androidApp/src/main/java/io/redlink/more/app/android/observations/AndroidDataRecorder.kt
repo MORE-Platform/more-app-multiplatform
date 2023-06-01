@@ -23,8 +23,4 @@ class AndroidDataRecorder : DataRecorder {
     override fun restartAll() {
         ObservationRecordingService.restartAll()
     }
-
-    override fun updateTaskStates() {
-        ObservationRecordingService.updateTaskStates()
-    }
 }

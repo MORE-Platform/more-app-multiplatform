@@ -1,5 +1,10 @@
 package io.redlink.more.app.android.activities.bluetooth_conntection_view
 
+import android.Manifest
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,8 +16,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
@@ -22,6 +30,7 @@ import io.redlink.more.app.android.shared_composables.Heading
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 
 @Composable
 fun BluetoothConnectionView(navController: NavController, viewModel: BluetoothConnectionViewModel) {

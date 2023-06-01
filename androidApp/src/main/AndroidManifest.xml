@@ -55,7 +55,7 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".activities.loginBLESetup.LoginBLESetupActivity"
+            android:name=".activities.BLESetup.BLEConnectionActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
 

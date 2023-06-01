@@ -7,5 +7,4 @@ interface DataRecorder {
     fun stopAll()
 
     fun restartAll()
-    fun updateTaskStates()
 }

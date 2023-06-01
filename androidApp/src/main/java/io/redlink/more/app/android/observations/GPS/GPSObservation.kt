@@ -58,8 +58,8 @@ class GPSObservation(
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
         try {
-            (settings[LOCATION_INTERVAL_MILLIS_KEY] as? Double)?.toLong()?.let {
-                gpsService.setIntervalMillis(it)
+            settings[LOCATION_INTERVAL_MILLIS_KEY]?.toString()?.trim('\"')?.toLong()?.let {
+                //gpsService.setIntervalMillis(it)
             }
         } catch (e: java.lang.Exception) {
             Log.e(TAG, e.stackTraceToString())

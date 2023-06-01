@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
-class CoreLoginBLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnector: BluetoothConnector): CoreViewModel() {
+class CoreBLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnector: BluetoothConnector): CoreViewModel() {
     val coreBluetooth = CoreBluetoothConnectionViewModel(bluetoothConnector, scanInterval = 2000)
 
     val devicesNeededToConnectTo: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())

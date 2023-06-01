@@ -2,28 +2,26 @@ package io.redlink.more.app.android.activities.main
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
-import io.redlink.more.app.android.activities.loginBLESetup.LoginBLESetupActivity
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
-import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
-import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.observations.AndroidDataRecorder
-import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.Dispatchers
@@ -77,12 +75,14 @@ class MainViewModel(context: Context) : ViewModel() {
 
     init {
         recorder.restartAll()
-        MoreApplication.shared!!.showBleSetup(MoreApplication.observationFactory!!) {
-            if (it) {
-                openBLESetupActivity(context)
-            } else {
-                viewModelScope.launch(Dispatchers.IO) {
-                    BluetoothDeviceRepository(MoreApplication.androidBluetoothConnector).updateConnectedDevices()
+        MoreApplication.shared!!.showBleSetup(MoreApplication.observationFactory!!) { (firstTime, hasBLEObservations) ->
+            if (hasBLEObservations) {
+                if (firstTime) {
+                    openBLESetupActivity(context)
+                } else {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        BluetoothDeviceRepository(MoreApplication.androidBluetoothConnector).updateConnectedDevices()
+                    }
                 }
             }
         }
@@ -105,7 +105,9 @@ class MainViewModel(context: Context) : ViewModel() {
 
     private fun openBLESetupActivity(context: Context) {
         (context as? Activity)?.let {
-            showNewActivity(it, LoginBLESetupActivity::class.java)
+            val intent = Intent(context, BLEConnectionActivity::class.java)
+            intent.putExtra(BLEConnectionActivity.SHOW_DESCR_PART2, true)
+            it.startActivity(intent)
         }
     }
 }

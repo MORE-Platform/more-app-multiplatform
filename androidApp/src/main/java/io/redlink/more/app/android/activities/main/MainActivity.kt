@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
             NavController.OnDestinationChangedListener { controller, destination, arguments ->
                 viewModel.navigationBarTitle.value = destination.navigatorName
             }
-        val context = this
         setContent {
             val navController = rememberNavController()
             LaunchedEffect(Unit) {
@@ -54,13 +53,6 @@ class MainActivity : ComponentActivity() {
                 viewModel.viewDidAppear()
             }
             MainView(viewModel.navigationBarTitle.value, viewModel, navController)
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!ObservationRecordingService.running) {
-            MoreApplication.androidBluetoothConnector?.close()
         }
     }
 }

@@ -6,11 +6,13 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,32 +36,18 @@ private val permissions =
 
 class PolarHeartRateObservation(context: Context) :
     Observation(observationType = PolarVerityHeartRateType(permissions)) {
-    private val polarConnector = PolarConnector(context)
+    private val deviceIdentifier = setOf("Polar")
+    private val polarConnector = MoreApplication.polarConnector!!
 
     private val hasPermission = this.hasPermissions(context)
 
-    private val bluetoothDeviceRepository = BluetoothDeviceRepository()
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
-
-    private val connectedDevices = mutableSetOf<BluetoothDevice>()
-
     private var heartRateDisposable: Disposable? = null
-
-    init {
-        scope.launch {
-            bluetoothDeviceRepository.listenForConnectedDevices()
-            bluetoothDeviceRepository.connectedDevices.collect { deviceList ->
-                connectedDevices.clear()
-                val filtered = deviceList.filter { it.deviceName?.lowercase()?.contains("polar") ?: false }
-                connectedDevices.addAll(filtered)
-            }
-        }
-    }
 
     override fun start(): Boolean {
         Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
-        if (connectedDevices.isNotEmpty()) {
-            return connectedDevices.first().deviceId?.let {
+        val polarDevices = MoreApplication.androidBluetoothConnector!!.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}
+        if (polarDevices.isNotEmpty()) {
+            return polarDevices.first().deviceId?.let {
                 try {
                     heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
                         { polarData ->
@@ -75,9 +63,10 @@ class PolarHeartRateObservation(context: Context) :
                     Napier.e { exception.stackTraceToString() }
                     false
                 }
-            } ?: false
-        } else {
-            bluetoothDeviceRepository.updateConnectedDevices(10000)
+            } ?: run {
+                Napier.d { "No connected devices..." }
+                false
+            }
         }
         Napier.d { "No connected devices..." }
         return false
@@ -92,12 +81,8 @@ class PolarHeartRateObservation(context: Context) :
         return hasPermission
     }
 
-    override fun ableToStart(): String? {
-        return super.ableToStart()
-    }
-
     override fun bleDevicesNeeded(): Set<String> {
-        return setOf("Polar")
+        return deviceIdentifier
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

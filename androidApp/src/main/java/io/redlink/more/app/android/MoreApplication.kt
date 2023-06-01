@@ -7,6 +7,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
+import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
@@ -28,11 +29,17 @@ class MoreApplication : Application() {
 
         shared = Shared(SharedPreferencesRepository(this))
         observationDataManager = AndroidObservationDataManager(this)
+        polarConnector = PolarConnector(this)
+        androidBluetoothConnector = AndroidBluetoothConnector(this)
         observationFactory = AndroidObservationFactory(this)
         observationFactory?.let {
             observationManager = ObservationManager(it)
         }
-        androidBluetoothConnector = AndroidBluetoothConnector(this)
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        androidBluetoothConnector?.close()
     }
 
     companion object {
@@ -52,6 +59,9 @@ class MoreApplication : Application() {
             private set
 
         var observationManager: ObservationManager? = null
+            private set
+
+        var polarConnector: PolarConnector? = null
             private set
 
         var androidBluetoothConnector: AndroidBluetoothConnector? = null

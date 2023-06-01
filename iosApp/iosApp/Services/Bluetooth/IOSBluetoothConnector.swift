@@ -27,7 +27,8 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
     private var connectedDevices: BluetoothDeviceList = [:]
-    private var scanning = false
+    var scanning = false
+    var bluetoothState: BluetoothState = .off
     
     weak var observer: BluetoothConnectorObserver?
     var delegate: BLEConnectorDelegate?
@@ -64,8 +65,16 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         }
     }
     
-    func isScanning() -> Bool {
-        scanning
+    func applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
+        observer = bluetoothConnectorObserver
+        replayStates()
+    }
+    
+    func replayStates() {
+        (connected as? Set<BluetoothDevice>)?.forEach{ didConnectToDevice(bluetoothDevice: $0) }
+        (discovered as? Set<BluetoothDevice>)?.forEach { didDiscoverDevice(device: $0)}
+        isScanning(boolean: scanning)
+        
     }
     
     
@@ -114,12 +123,17 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         observer?.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
     }
     
-    func discoveredDevice(device: BluetoothDevice) {
-        observer?.discoveredDevice(device: device)
+    func didDiscoverDevice(device: BluetoothDevice) {
+        observer?.didDiscoverDevice(device: device)
     }
     
     func removeDiscoveredDevice(device: BluetoothDevice) {
         observer?.removeDiscoveredDevice(device: device)
+    }
+    
+    func onBluetoothStateChange(bluetoothState: BluetoothState) {
+        bluetoothState = bluetoothState
+        observer?.onBluetoothStateChange(bluetoothState: bluetoothState)
     }
     
     private func connectToSpecificDevice(device: BluetoothDevice) -> (Bool, KotlinError?) {
@@ -135,6 +149,11 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
             return true
         }
         return false
+    }
+    
+    func isScanning(boolean: Bool) {
+        scanning = boolean
+        observer?.isScanning(boolean: boolean)
     }
     
     func close() {
@@ -163,6 +182,7 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral) {
         print("Did fail to connect to device: \(peripheral.identifier)")
+        self.connectedDevices.removeValue(forKey: <#T##BluetoothDevice#>)
         self.observer?.didFailToConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
     
@@ -184,11 +204,11 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
             let device = peripheral.toBluetoothDevice()
             if peripheral.state == .connected {
                 device.connected = true
-                observer?.didConnectToDevice(bluetoothDevice: device)
                 connectedDevices[device] = peripheral
+                observer?.didConnectToDevice(bluetoothDevice: device)
             } else {
-                observer?.discoveredDevice(device: device)
                 discoveredDevices[device] = peripheral
+                observer?.didDiscoverDevice(device: device)
             }
         }
     }

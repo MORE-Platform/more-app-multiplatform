@@ -12,8 +12,8 @@ import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import io.redlink.more.more_app_mutliplatform.util.Scope.repeatedLaunch
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.delay
@@ -30,20 +30,28 @@ class CoreBluetoothConnectionViewModel(
     val connectingDevices = MutableStateFlow<Set<String>>(emptySet())
 
     val isScanning = MutableStateFlow(false)
-    private val isConnecting = MutableStateFlow(false)
 
     private var scanJob: String? = null
 
+    val bluetoothPower = MutableStateFlow(BluetoothState.ON)
 
     override fun viewDidAppear() {
-        bluetoothConnector.observer = this
-        connectedDevices.append(bluetoothConnector.connected)
-        discoveredDevices.append(bluetoothConnector.discovered)
-        startPeriodicScan()
+        bluetoothConnector.applyObserver(this)
+        launchScope {
+            bluetoothPower.collect {
+                if (it == BluetoothState.ON) {
+                    startPeriodicScan()
+                } else {
+                    stopPeriodicScan()
+                }
+            }
+        }
     }
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
+        scanJob?.let { Scope.cancel(it) }
+        scanJob = null
         discoveredDevices.clear()
         connectingDevices.clear()
         close()
@@ -60,25 +68,19 @@ class CoreBluetoothConnectionViewModel(
     }
 
     fun stopPeriodicScan() {
-        scanJob?.let { Scope.cancel(it) }
-        scanJob = null
         close()
     }
 
     fun scanForDevices() {
-        if (!isConnecting.value) {
-            bluetoothConnector.scan()
-            isScanning.set(bluetoothConnector.isScanning())
-        }
+        bluetoothConnector.scan()
     }
 
     fun stopScanning() {
         bluetoothConnector.stopScanning()
-        isScanning.set(bluetoothConnector.isScanning())
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {
-        Napier.i { "Connecting to device" }
+        Napier.i { "Connecting to $device" }
         connectingDevices.append(device.address)
         return bluetoothConnector.connect(device)?.let {
             connectingDevices.remove(device.address)
@@ -88,11 +90,10 @@ class CoreBluetoothConnectionViewModel(
     }
 
     fun disconnectFromDevice(device: BluetoothDevice) {
+        Napier.i { "Disconnecting from $device" }
         bluetoothConnector.disconnect(device)
         connectedDevices.removeWhere { it.address == device.address }
         bluetoothDeviceRepository.setConnectionState(device, false)
-
-        //discoveredDevices.append(device)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -105,9 +106,7 @@ class CoreBluetoothConnectionViewModel(
         if (!connectedDevices.value.mapNotNull { it.address }.contains(bluetoothDevice.address)) {
             connectedDevices.append(bluetoothDevice)
             connectingDevices.remove(bluetoothDevice.address)
-            discoveredDevices.removeWhere { it.address == bluetoothDevice.address }
             bluetoothDeviceRepository.setConnectionState(bluetoothDevice, true)
-            isConnecting.set(false)
         }
     }
 
@@ -120,11 +119,14 @@ class CoreBluetoothConnectionViewModel(
         connectedDevices.remove(bluetoothDevice)
         connectingDevices.remove(bluetoothDevice.address)
         bluetoothDeviceRepository.setConnectionState(bluetoothDevice, false)
-        isConnecting.set(false)
         Napier.e { "Failed to connect to $bluetoothDevice" }
     }
 
-    override fun discoveredDevice(device: BluetoothDevice) {
+    override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
+        bluetoothPower.set(bluetoothState)
+    }
+
+    override fun didDiscoverDevice(device: BluetoothDevice) {
         if (!connectedDevices.value.mapNotNull { it.address }.contains(device.address)
             && !discoveredDevices.value.mapNotNull { it.address }.contains(device.address)) {
             discoveredDevices.append(device)
@@ -134,6 +136,10 @@ class CoreBluetoothConnectionViewModel(
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         discoveredDevices.removeWhere { it.address == device.address }
         connectingDevices.remove(device.address)
+    }
+
+    override fun isScanning(boolean: Boolean) {
+        this.isScanning.set(boolean)
     }
 
     fun discoveredDevicesListChanges(providedState: (Set<BluetoothDevice>) -> Unit) =
@@ -147,13 +153,12 @@ class CoreBluetoothConnectionViewModel(
     fun connectingDevicesListChanges(providedState: (Set<String>) -> Unit) =
         connectingDevices.asClosure(providedState)
 
+    fun bluetoothStateChanged(providedState: (BluetoothState) -> Unit) = bluetoothPower.asClosure(providedState)
+
     override fun close() {
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         bluetoothConnector.stopScanning()
-        isConnecting.set(false)
-        launch {
-            isScanning.emit(bluetoothConnector.isScanning())
-        }
+        bluetoothConnector.applyObserver(null)
     }
 }
