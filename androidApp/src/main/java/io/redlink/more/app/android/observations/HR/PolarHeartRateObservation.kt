@@ -5,20 +5,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.services.bluetooth.PolarConnector
-import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -34,13 +27,10 @@ private val permissions =
         )
     }
 
-class PolarHeartRateObservation(context: Context) :
+class PolarHeartRateObservation :
     Observation(observationType = PolarVerityHeartRateType(permissions)) {
     private val deviceIdentifier = setOf("Polar")
     private val polarConnector = MoreApplication.polarConnector!!
-
-    private val hasPermission = this.hasPermissions(context)
-
     private var heartRateDisposable: Disposable? = null
 
     override fun start(): Boolean {
@@ -78,7 +68,7 @@ class PolarHeartRateObservation(context: Context) :
     }
 
     override fun observerAccessible(): Boolean {
-        return hasPermission
+        return hasPermissions(MoreApplication.appContext!!)
     }
 
     override fun bleDevicesNeeded(): Set<String> {
@@ -95,9 +85,11 @@ class PolarHeartRateObservation(context: Context) :
                     permission
                 ) == PackageManager.PERMISSION_DENIED
             ) {
+                Napier.e { "Polar has no bluetooth permissions!" }
                 return false
             }
         }
+        log { "Polar has Bluetooth Permission!" }
         return true
     }
 

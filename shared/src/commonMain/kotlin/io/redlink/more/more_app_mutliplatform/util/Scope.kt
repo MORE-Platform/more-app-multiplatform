@@ -93,9 +93,9 @@ object Scope {
 
     fun cancel(uuids: Collection<String>) {
         val set = uuids.toSet()
-        val jobsToCancel = jobs.filter { it.key in set }.toList()
         scope.launch {
             mutex.withLock {
+                val jobsToCancel = jobs.filter { it.key in set }.toList()
                 try {
                     jobsToCancel.forEach { it.second.cancel() }
                 } catch (exception: Exception) {
