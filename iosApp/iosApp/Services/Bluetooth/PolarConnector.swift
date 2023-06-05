@@ -13,6 +13,8 @@ import RxSwift
 import shared
 
 class PolarConnector: BluetoothConnector {
+    var specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary()
+    
     
     var bluetoothState: BluetoothState = .off
     
@@ -44,8 +46,9 @@ class PolarConnector: BluetoothConnector {
         //self.polarApi.logger = self
     }
     
-
-    var specificBluetoothConnectors: [String: BluetoothConnector] = [:]
+    func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
+        specificBluetoothConnectors[key] = connector
+    }
 
     func connect(device: BluetoothDevice) -> KotlinError? {
         if let deviceId = device.deviceId {

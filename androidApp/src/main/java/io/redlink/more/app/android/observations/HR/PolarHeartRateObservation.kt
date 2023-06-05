@@ -35,7 +35,7 @@ class PolarHeartRateObservation :
 
     override fun start(): Boolean {
         Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
-        val polarDevices = MoreApplication.androidBluetoothConnector!!.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}
+        val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}
         if (polarDevices.isNotEmpty()) {
             return polarDevices.first().deviceId?.let {
                 try {
@@ -73,6 +73,10 @@ class PolarHeartRateObservation :
 
     override fun bleDevicesNeeded(): Set<String> {
         return deviceIdentifier
+    }
+
+    override fun ableToAutomaticallyStart(): Boolean {
+        return observerAccessible() && MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}.isNotEmpty()
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

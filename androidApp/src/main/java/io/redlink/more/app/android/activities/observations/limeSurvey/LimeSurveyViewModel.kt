@@ -15,7 +15,7 @@ import java.net.URI
 import java.net.URL
 
 class LimeSurveyViewModel : ViewModel(), WebClientListener {
-    private val coreViewModel = CoreLimeSurveyViewModel(MoreApplication.observationFactory!!)
+    private val coreViewModel = CoreLimeSurveyViewModel(MoreApplication.shared!!.observationFactory)
     val limeSurveyLink = mutableStateOf<String?>(null)
     val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)

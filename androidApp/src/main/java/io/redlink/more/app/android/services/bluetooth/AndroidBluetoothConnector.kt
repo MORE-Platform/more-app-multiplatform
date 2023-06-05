@@ -30,7 +30,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     private var isConnecting = false
     private val foundBluetoothDevices = mutableSetOf<String>()
 
-    override val specificBluetoothConnectors: Map<String, BluetoothConnector> = mapOf("polar" to MoreApplication.polarConnector!!)
+    override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> = mutableMapOf()
     override var observer: BluetoothConnectorObserver? = null
     override var scanning = false
     override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
@@ -156,6 +156,10 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         } else {
             Napier.e { "Bluetooth permissions not given!" }
         }
+    }
+
+    override fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
+        specificBluetoothConnectors[key] = connector
     }
 
     override fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {

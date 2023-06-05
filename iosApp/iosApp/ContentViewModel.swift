@@ -29,7 +29,7 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+    var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
     lazy var settingsViewModel: SettingsViewModel = {
@@ -51,10 +51,8 @@ class ContentViewModel: ObservableObject {
         if hasCredentials {
             DispatchQueue.main.async {
                 BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices(listenForTimeInMillis: 5000)
-                AppDelegate.recorder.restartAll()
             }
-            AppDelegate.dataManager.listenToDatapointCountChanges()
-            AppDelegate.recorder.activateScheduleUpdate()
+            AppDelegate.shared.activateObservationWatcher()
         }
     }
     
@@ -105,9 +103,9 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices(listenForTimeInMillis: 5000)
-                AppDelegate.dataManager.listenToDatapointCountChanges()
-                AppDelegate.recorder.activateScheduleUpdate()
+                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector())
+                    .updateConnectedDevices(listenForTimeInMillis: 5000)
+                AppDelegate.shared.activateObservationWatcher()
             }
         }
         FCMService.getNotificationToken()

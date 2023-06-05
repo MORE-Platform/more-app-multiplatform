@@ -15,12 +15,14 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
-    static let observationFactory = IOSObservationFactory(dataManager: dataManager)
     static let polarConnector = PolarConnector()
-    static let recorder = IOSDataRecorder()
     static let dataUploadManager = DataUploadManager()
-    static let dataManager = iOSObservationDataManager()
+    static let shared: Shared = {
+        let dataManager = iOSObservationDataManager()
+        let bluetoothConnector = IOSBluetoothConnector()
+        bluetoothConnector.addSpecificBluetoothConnector(key: "polar", connector: polarConnector)
+        return Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: dataManager, mainBluetoothConnector: bluetoothConnector, observationFactory: IOSObservationFactory(dataManager: dataManager), dataRecorder: IOSDataRecorder())
+    }()
     
     private let fcmService: FCMService = FCMService()
     

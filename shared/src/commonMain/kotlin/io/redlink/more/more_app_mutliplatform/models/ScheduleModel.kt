@@ -11,6 +11,7 @@ data class ScheduleModel(
     val done: Boolean,
     val start: Long,
     val end: Long,
+    val hidden: Boolean,
     var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
 
@@ -37,6 +38,7 @@ data class ScheduleModel(
                 done = schedule.done,
                 start = start.epochSeconds,
                 end = end.epochSeconds,
+                hidden = schedule.hidden,
                 scheduleState = schedule.getState()
             )
         }

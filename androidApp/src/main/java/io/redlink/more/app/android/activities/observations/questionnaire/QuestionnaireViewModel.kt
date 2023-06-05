@@ -8,7 +8,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQu
 import kotlinx.coroutines.*
 
 class QuestionnaireViewModel : ViewModel() {
-    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(MoreApplication.observationFactory!!)
+    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(MoreApplication.shared!!.observationFactory)
 
     val observationTitle = mutableStateOf("")
     val question = mutableStateOf("")

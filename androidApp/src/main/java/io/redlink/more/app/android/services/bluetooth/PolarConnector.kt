@@ -40,6 +40,7 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
 
     private var scanDisposable: Disposable? = null
 
+    override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> = mutableMapOf()
     override var scanning: Boolean = false
     override var observer: BluetoothConnectorObserver? = null
 
@@ -167,6 +168,12 @@ class PolarConnector(context: Context): BluetoothConnector, PolarConnectorListen
     override fun isScanning(boolean: Boolean) {
         this.scanning = boolean
         observer?.isScanning(boolean)
+    }
+
+
+
+    override fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
+        specificBluetoothConnectors[key] = connector
     }
 
 

@@ -8,6 +8,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.AndroidDataRecorder
+import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,10 @@ import java.util.concurrent.TimeUnit
 class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
     override suspend fun doWork() = withContext(Dispatchers.IO) {
         Napier.d { "Running $WORKER_TAG! Updating Schedule..." }
-        ScheduleRepository().updateTaskStatesSync(MoreApplication.observationFactory ?: AndroidObservationFactory(applicationContext))
+        val observationDataManager = MoreApplication.shared?.observationDataManager ?: AndroidObservationDataManager(applicationContext)
+        val observationFactory = MoreApplication.shared?.observationFactory ?: AndroidObservationFactory(applicationContext, observationDataManager)
+        val dataRecorder = MoreApplication.shared?.dataRecorder ?: AndroidDataRecorder()
+        ScheduleRepository().updateTaskStatesSync(observationFactory, dataRecorder)
         return@withContext Result.success()
     }
 

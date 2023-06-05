@@ -8,8 +8,6 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import java.util.UUID
 
-private const val TAG = "PolarObserverCallback"
-
 class PolarObserverCallback : PolarBleApiCallback() {
 
     private var listeners: MutableSet<HeartRateListener> = mutableSetOf()

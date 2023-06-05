@@ -19,10 +19,10 @@ protocol BLEConnectorDelegate {
 typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
-    var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
-    var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    let specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary<NSString, BluetoothConnector>()
     
-    internal let specificBluetoothConnectors: [String : BluetoothConnector] = ["polar": AppDelegate.polarConnector]
+    let connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    let discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     
     private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
@@ -38,7 +38,11 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        specificBluetoothConnectors.values.forEach{ $0.observer = self }
+        specificBluetoothConnectors.allValues.forEach{ ($0 as? BluetoothConnector)?.observer = self }
+    }
+    
+    func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
+        specificBluetoothConnectors[key] = connector
     }
 
     func connect(device: BluetoothDevice) -> KotlinError? {
@@ -71,10 +75,9 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
     
     func replayStates() {
-        (connected as? Set<BluetoothDevice>)?.forEach{ didConnectToDevice(bluetoothDevice: $0) }
-        (discovered as? Set<BluetoothDevice>)?.forEach { didDiscoverDevice(device: $0)}
+        self.connectedDevices.keys.forEach{didConnectToDevice(bluetoothDevice: $0)}
+        self.discoveredDevices.keys.forEach{ didDiscoverDevice(device: $0)}
         isScanning(boolean: scanning)
-        
     }
     
     
@@ -132,20 +135,22 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
     
     func onBluetoothStateChange(bluetoothState: BluetoothState) {
-        bluetoothState = bluetoothState
+        self.bluetoothState = bluetoothState
         observer?.onBluetoothStateChange(bluetoothState: bluetoothState)
     }
     
     private func connectToSpecificDevice(device: BluetoothDevice) -> (Bool, KotlinError?) {
-        if let connector = specificBluetoothConnectors.first(where: {device.deviceName?.lowercased().contains($0.key.lowercased()) ?? false}) {
-            return (true, connector.value.connect(device: device))
+        if let connector = specificBluetoothConnectors
+            .first(where: {device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false})?.value as? BluetoothConnector {
+            return (true, connector.connect(device: device))
         }
         return (false, nil)
     }
     
     private func disconnectFromSpecificDevice(device: BluetoothDevice) -> Bool {
-        if let connector = specificBluetoothConnectors.first(where: {device.deviceName?.lowercased().contains($0.key.lowercased()) ?? false}) {
-            connector.value.disconnect(device: device)
+        if let connector = specificBluetoothConnectors
+            .first(where: {device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false})?.value as? BluetoothConnector {
+            connector.disconnect(device: device)
             return true
         }
         return false
@@ -182,7 +187,7 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral) {
         print("Did fail to connect to device: \(peripheral.identifier)")
-        self.connectedDevices.removeValue(forKey: <#T##BluetoothDevice#>)
+        self.connectedDevices.removeValue(forKey: peripheral.toBluetoothDevice())
         self.observer?.didFailToConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
     

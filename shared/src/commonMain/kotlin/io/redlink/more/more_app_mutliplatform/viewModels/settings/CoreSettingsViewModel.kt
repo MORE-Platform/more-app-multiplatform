@@ -65,7 +65,9 @@ class CoreSettingsViewModel(
 
     fun exitStudy() {
         Scope.cancel()
-        Scope.launch {
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            shared.dataRecorder.stopAll()
+            shared.observationDataManager.stopListeningToCountChanges()
             shared.networkService.deleteParticipation()
             shared.credentialRepository.remove()
             shared.endpointRepository.removeEndpoint()

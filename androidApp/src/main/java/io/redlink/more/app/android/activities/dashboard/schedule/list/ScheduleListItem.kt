@@ -3,10 +3,12 @@ package io.redlink.more.app.android.activities.dashboard.schedule.list
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,12 @@ import io.redlink.more.app.android.extensions.jvmLocalDateTime
 
 
 @Composable
-fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel, viewModel: ScheduleViewModel, showButton: Boolean) {
+fun ScheduleListItem(
+    navController: NavController,
+    scheduleModel: ScheduleModel,
+    viewModel: ScheduleViewModel,
+    showButton: Boolean
+) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -36,7 +43,23 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     ) {
-        SmallTitle(text = scheduleModel.observationTitle, color = MoreColors.Primary)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            SmallTitle(text = scheduleModel.observationTitle, color = MoreColors.Primary)
+            if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
+                CircularProgressIndicator(
+                    color = MoreColors.Approved,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .height(15.dp)
+                        .width(15.dp)
+                )
+            }
+        }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
@@ -71,11 +94,14 @@ fun ScheduleListItem(navController: NavController, scheduleModel: ScheduleModel,
                 ) {
                     (context as? Activity)?.let { activity ->
                         val intent = Intent(context, LimeSurveyActivity::class.java)
-                        intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleModel.scheduleId)
+                        intent.putExtra(
+                            LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
+                            scheduleModel.scheduleId
+                        )
                         activity.startActivity(intent)
                     }
                 }
-            } else {
+            } else if (!scheduleModel.hidden) {
                 SmallTextButton(
                     text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(
                         id = R.string.more_observation_pause

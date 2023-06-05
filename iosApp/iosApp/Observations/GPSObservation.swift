@@ -52,10 +52,6 @@ class GPSObservation: Observation_ {
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){}
     
-    
-    override func needsToRestartAfterAppClosure() -> Bool {
-        !running
-    }
 }
 
 extension GPSObservation: CLLocationManagerDelegate {

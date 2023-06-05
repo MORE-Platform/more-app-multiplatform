@@ -49,8 +49,6 @@ class LeaveStudyViewModel : ViewModel() {
     }
 
     fun removeParticipation(context: Context) {
-        AndroidDataRecorder().stopAll()
-        MoreApplication.observationDataManager?.stopListeningToCountChanges()
         WorkManager.getInstance(context).cancelAllWork()
         viewModelScope.launch {
             coreSettingsViewModel.dataDeleted.collect {

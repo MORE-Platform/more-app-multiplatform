@@ -1,24 +1,21 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 
 abstract class ObservationDataManager {
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     private val mutex = Mutex()
     private val timeStampMutex = Mutex()
     private val observationDataRepository = ObservationDataRepository()
@@ -31,18 +28,22 @@ abstract class ObservationDataManager {
     private var scheduleCount = mutableMapOf<String, Long>()
     private var observationCollectionTimestamp = mutableMapOf<String, Long>()
 
+    init {
+        log { "ObservationDataManager init!" }
+    }
+
     fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
             dataList.forEach { it.freeze() }
             observationDataRepository.addData(dataList)
-            scope.launch(Dispatchers.Default) {
+            Scope.launch(Dispatchers.Default) {
                 mutex.withLock {
                     scheduleIdList.forEach {
                         scheduleCount[it] = scheduleCount.getOrElse(it) {0} + dataList.size
                     }
                 }
             }
-            scope.launch {
+            Scope.launch {
                 val now = Clock.System.now().epochSeconds
                 val ids = dataList.map { it.observationId }.toSet()
                 timeStampMutex.withLock {
@@ -73,7 +74,7 @@ abstract class ObservationDataManager {
 
     private fun storeCount() {
         if (scheduleCount.isNotEmpty()) {
-            scope.launch {
+            Scope.launch {
                 val copiedScheduleCount = mutex.withLock {
                     val copiedScheduleCount = scheduleCount.toMap()
                     scheduleCount = mutableMapOf()
@@ -88,7 +89,7 @@ abstract class ObservationDataManager {
 
     private fun storeTimestamps() {
         if (observationCollectionTimestamp.isNotEmpty()) {
-            scope.launch {
+            Scope.launch {
                 val copiedMap = timeStampMutex.withLock {
                     val copiedMap = observationCollectionTimestamp.toMap()
                     observationCollectionTimestamp = mutableMapOf()
@@ -102,7 +103,8 @@ abstract class ObservationDataManager {
     }
 
     fun removeDataPointCount(scheduleId: String) {
-        dataPointCountRepository.delete(scheduleId)
+        scheduleCount.remove(scheduleId)
+        observationCollectionTimestamp.remove(scheduleId)
     }
 
     abstract fun sendData(onCompletion: (Boolean) -> Unit = {})

@@ -10,7 +10,10 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
+import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
+import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
+import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,13 +28,15 @@ class DataUploadWorker (
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
     private val workManager = WorkManager.getInstance(applicationContext)
-    private val shared: Shared = MoreApplication.shared ?: Shared(SharedPreferencesRepository(applicationContext))
+    private val sharedPreferences = SharedPreferencesRepository(applicationContext)
+    private val credentialRepository: CredentialRepository = MoreApplication.shared?.credentialRepository ?: CredentialRepository(sharedPreferences)
+    private val networkService = MoreApplication.shared?.networkService ?: NetworkService(EndpointRepository(sharedPreferences), credentialRepository)
     private var stopped = false
     private val observationDataRepository = ObservationDataRepository()
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
 
-        if (!shared.credentialRepository.hasCredentials()) return@withContext Result.failure()
+        if (!credentialRepository.hasCredentials()) return@withContext Result.failure()
         try {
             Log.d(TAG, "Worker started!")
             return@withContext observationDataRepository.allAsBulk()?.let { bulk ->
@@ -53,7 +58,7 @@ class DataUploadWorker (
     }
 
     private suspend fun uploadDataBulk(bulk: DataBulk): Result {
-        val (ids, error) = shared.networkService.sendData(bulk)
+        val (ids, error) = networkService.sendData(bulk)
         return if (error != null) {
             Napier.e { error.message }
             if (stopped || runAttemptCount > MAX_WORKER_RETRY) {

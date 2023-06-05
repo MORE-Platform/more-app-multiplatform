@@ -31,7 +31,6 @@ object Scope {
             mutex.withLock {
                 jobs[uuid] = job
                 job.invokeOnCompletion {
-                    Napier.d { "Job completed. Removing from list..." }
                     scope.launch {
                         mutex.withLock {
                             try {
@@ -67,7 +66,6 @@ object Scope {
             mutex.withLock {
                 jobs[uuid] = job
                 job.invokeOnCompletion {
-                    Napier.d { "Job completed. Removing from list..." }
                     scope.launch {
                         mutex.withLock {
                             try {

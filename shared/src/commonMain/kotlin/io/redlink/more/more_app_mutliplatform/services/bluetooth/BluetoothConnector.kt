@@ -14,8 +14,9 @@ interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 
     var scanning: Boolean
 
-    val specificBluetoothConnectors: Map<String, BluetoothConnector>
-        get() = emptyMap()
+    val specificBluetoothConnectors: MutableMap<String, BluetoothConnector>
+
+    fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector)
 
     fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?)
 

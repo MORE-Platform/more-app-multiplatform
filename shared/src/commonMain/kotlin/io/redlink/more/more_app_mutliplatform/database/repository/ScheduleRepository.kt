@@ -4,18 +4,15 @@ import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.mongodb.kbson.ObjectId
 
@@ -112,32 +109,33 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         queryArgs = arrayOf(ObjectId(id))
     )
 
-    fun updateTaskStates(observationFactory: ObservationFactory? = null) {
+    fun updateTaskStates(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
         launch {
-            updateTaskStatesSync(observationFactory)
+            updateTaskStatesSync(observationFactory, dataRecorder)
         }
     }
 
-    suspend fun updateTaskStatesSync(observationFactory: ObservationFactory? = null) {
-        val restartableTypes =
-            observationFactory?.observationTypesNeedingRestartingAfterAppClosure() ?: emptySet()
-        val now = Clock.System.now().epochSeconds
+    suspend fun updateTaskStatesSync(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
+        val autoStartingObservations = observationFactory.autoStartableObservations()
         Napier.d { "Updating Schedule states..." }
-        realm()?.let {
+        val activeIds = realm()?.let {
             it.write {
-                query<ScheduleSchema>("done = $0", false).find().forEach { scheduleSchema ->
-                    if (restartableTypes.isNotEmpty()
-                        && scheduleSchema.getState() == ScheduleState.RUNNING
-                        && scheduleSchema.observationType in restartableTypes
-                        && scheduleSchema.end?.let { it.epochSeconds > now } == true
+                query<ScheduleSchema>("done = $0", false).find().mapNotNull { scheduleSchema ->
+                    val newState = scheduleSchema.updateState()
+                    if (autoStartingObservations.isNotEmpty()
+
+                        && newState.active()
+                        && scheduleSchema.observationType in autoStartingObservations
                     ) {
-                        Napier.i { "Resetting ${scheduleSchema.scheduleId}" }
-                        scheduleSchema.updateState(ScheduleState.ACTIVE)
+                        scheduleSchema.scheduleId.toHexString()
                     } else {
-                        scheduleSchema.updateState()
+                        null
                     }
                 }
             }
+        }?.toSet() ?: emptySet()
+        if (activeIds.isNotEmpty()) {
+            dataRecorder.startMultiple(activeIds)
         }
     }
 

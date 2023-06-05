@@ -18,6 +18,7 @@ class ScheduleSchema : RealmObject {
     var start: RealmInstant? = null
     var end: RealmInstant? = null
     var done: Boolean = false
+    var hidden: Boolean = false
     var state: String = ScheduleState.DEACTIVATED.name
 
     fun getState() = ScheduleState.getState(state)
@@ -60,7 +61,8 @@ class ScheduleSchema : RealmObject {
             schedule: ObservationSchedule,
             observationId: String,
             observationType: String,
-            observationTitle: String
+            observationTitle: String,
+            hidden: Boolean
         ): ScheduleSchema? {
             return if (schedule.start != null && schedule.end != null) {
                 val now = Clock.System.now().epochSeconds
@@ -78,6 +80,7 @@ class ScheduleSchema : RealmObject {
                     this.observationTitle = observationTitle
                     start = schedule.start.toRealmInstant()
                     end = schedule.end.toRealmInstant()
+                    this.hidden = hidden
                     state = scheduleState.name
                 }
             } else null

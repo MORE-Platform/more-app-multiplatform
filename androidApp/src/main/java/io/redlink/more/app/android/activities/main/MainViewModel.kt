@@ -28,25 +28,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context) : ViewModel() {
-    private val recorder: AndroidDataRecorder by lazy { AndroidDataRecorder() }
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
     val notificationViewModel = NotificationViewModel()
     val allSchedulesViewModel =
-        ScheduleViewModel(CoreDashboardFilterViewModel(), recorder, ScheduleListType.ALL)
+        ScheduleViewModel(CoreDashboardFilterViewModel(), MoreApplication.shared!!.dataRecorder, ScheduleListType.ALL)
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
             CoreDashboardFilterViewModel(),
-            recorder,
+            MoreApplication.shared!!.dataRecorder,
             ScheduleListType.RUNNING
         )
     }
     val completedSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
             CoreDashboardFilterViewModel(),
-            recorder,
+            MoreApplication.shared!!.dataRecorder,
             ScheduleListType.COMPLETED
         )
     }
@@ -58,7 +57,7 @@ class MainViewModel(context: Context) : ViewModel() {
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
     val bluetoothConnectionViewModel: BluetoothConnectionViewModel by lazy {
-        BluetoothConnectionViewModel(MoreApplication.androidBluetoothConnector!!)
+        BluetoothConnectionViewModel(MoreApplication.shared!!.mainBluetoothConnector)
     }
 
     val infoVM: InfoViewModel by lazy {
@@ -70,18 +69,18 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
-        TaskDetailsViewModel(recorder)
+        TaskDetailsViewModel(MoreApplication.shared!!.dataRecorder)
     }
 
     init {
-        recorder.restartAll()
-        MoreApplication.shared!!.showBleSetup(MoreApplication.observationFactory!!) { (firstTime, hasBLEObservations) ->
+        //MoreApplication.shared!!.dataRecorder.restartAll()
+        MoreApplication.shared!!.showBleSetup(MoreApplication.shared!!.observationFactory) { (firstTime, hasBLEObservations) ->
             if (hasBLEObservations) {
                 if (firstTime) {
                     openBLESetupActivity(context)
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
-                        BluetoothDeviceRepository(MoreApplication.androidBluetoothConnector).updateConnectedDevices()
+                        BluetoothDeviceRepository(MoreApplication.shared!!.mainBluetoothConnector).updateConnectedDevices()
                     }
                 }
             }

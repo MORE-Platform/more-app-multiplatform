@@ -73,4 +73,5 @@ dependencies {
     implementation("com.google.firebase:firebase-inappmessaging-display-ktx")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
+    implementation("androidx.lifecycle:lifecycle-process:2.4.1")
 }

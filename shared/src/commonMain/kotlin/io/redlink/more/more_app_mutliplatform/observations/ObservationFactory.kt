@@ -18,13 +18,12 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     fun sensorPermissions() =
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 
-    fun observationTypesNeedingRestartingAfterAppClosure() =
-        observations.filter { it.needsToRestartAfterAppClosure() }
-            .map { it.observationType.observationType }.toSet()
-
     fun bleDevicesNeeded(types: Set<String>) =
         observations.filter { it.observationType.observationType in types }
             .flatMap { it.bleDevicesNeeded() }.toSet()
+
+    fun autoStartableObservations() = observations.filter { it.ableToAutomaticallyStart() }
+        .map { it.observationType.observationType }.toSet()
 
     fun observation(type: String): Observation? {
         return observations.firstOrNull { it.observationType.observationType == type }?.apply {

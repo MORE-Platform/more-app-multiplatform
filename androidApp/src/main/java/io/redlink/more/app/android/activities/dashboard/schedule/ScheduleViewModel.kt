@@ -14,6 +14,7 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ import java.time.LocalDate
 
 class ScheduleViewModel(
     coreFilterModel: CoreDashboardFilterViewModel,
-    dataRecorder: AndroidDataRecorder,
+    dataRecorder: DataRecorder,
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
 

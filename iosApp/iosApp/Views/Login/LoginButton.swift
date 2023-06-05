@@ -26,6 +26,6 @@ struct LoginButton: View {
 struct LoginButton_Previews: PreviewProvider {
     static var previews: some View {
         LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false))
-            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository()))))
+            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

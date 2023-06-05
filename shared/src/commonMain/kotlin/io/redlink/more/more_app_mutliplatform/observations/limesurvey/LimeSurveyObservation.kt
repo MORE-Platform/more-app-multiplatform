@@ -45,8 +45,8 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         storeData(emptyMap<String, String>())
     }
 
-    override fun needsToRestartAfterAppClosure(): Boolean {
-        return true
+    override fun ableToAutomaticallyStart(): Boolean {
+        return false
     }
 
     private fun configToLink(url: String, surveyId: String, token: String): String {

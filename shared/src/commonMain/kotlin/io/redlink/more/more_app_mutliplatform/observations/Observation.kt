@@ -68,8 +68,11 @@ abstract class Observation(val observationType: ObservationType) {
             Instant.fromEpochSeconds(it, 0)
         } ?: Clock.System.now()
         if (settings.isNotEmpty()) {
-            this.config += settings
-            configChanged = true
+            val newConfig = this.config + settings
+            if (newConfig != this.config) {
+                configChanged = true
+                this.config += newConfig
+            }
         }
     }
 
@@ -85,11 +88,9 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
-    open fun needsToRestartAfterAppClosure() = false
-
-    open fun ableToStart(): String? = null
-
     open fun bleDevicesNeeded(): Set<String> = emptySet()
+
+    open fun ableToAutomaticallyStart() = true
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
@@ -129,6 +130,7 @@ abstract class Observation(val observationType: ObservationType) {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
             observationShutdown(scheduleId)
+            removeDataCount()
         }
     }
 

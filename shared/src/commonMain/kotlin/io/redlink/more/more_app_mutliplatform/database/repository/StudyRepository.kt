@@ -18,7 +18,8 @@ class StudyRepository : Repository<StudySchema>() {
                     it,
                     observation.observationId,
                     observation.observationType,
-                    observation.observationTitle
+                    observation.observationTitle,
+                    observation.hidden ?: false
                 )
             }
         }.flatten())

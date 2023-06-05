@@ -33,8 +33,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
-            MoreApplication.observationManager?.activateScheduleUpdate()
-            MoreApplication.observationDataManager?.listenToDatapointCountChanges()
+            MoreApplication.shared!!.activateObservationWatcher()
             val workManager = WorkManager.getInstance(context)
             val worker =
                 PeriodicWorkRequestBuilder<ScheduleUpdateWorker>(15L, TimeUnit.MINUTES).build()

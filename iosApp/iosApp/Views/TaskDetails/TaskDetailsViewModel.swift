@@ -17,7 +17,7 @@ class TaskDetailsViewModel: ObservableObject {
     
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
-    init(dataRecorder: IOSDataRecorder) {
+    init(dataRecorder: DataRecorder) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { taskDetails in
