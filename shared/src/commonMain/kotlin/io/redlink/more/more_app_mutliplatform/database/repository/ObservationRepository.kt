@@ -56,7 +56,7 @@ class ObservationRepository : Repository<ObservationSchema>() {
     }
 
     fun extractExternalDevices(observationFactory: ObservationFactory): Flow<Set<String>> {
-        return observationTypes().cancellable().transform { emit(observationFactory.bleDevicesNeeded(it)) }
+        return flow { observationFactory.bleDevicesNeeded() }
     }
 
     fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(

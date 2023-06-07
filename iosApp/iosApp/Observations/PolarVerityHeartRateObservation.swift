@@ -14,7 +14,7 @@ import RxSwift
 
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
-    
+    private let deviceIdentificer = "Polar"
     private let polarConnector = AppDelegate.polarConnector
     private let bluetoothRepository = BluetoothDeviceRepository(bluetoothConnector: nil)
     private var connectedDevices: [BluetoothDevice] = []
@@ -25,7 +25,7 @@ class PolarVerityHeartRateObservation: Observation_ {
         bluetoothRepository.listenForConnectedDevices()
         bluetoothRepository.getConnectedDevices { [weak self] deviceList in
             if let self {
-                self.connectedDevices = deviceList.filter{$0.deviceName?.lowercased().contains("polar") ?? false}
+                self.connectedDevices = deviceList.filter{$0.deviceName?.lowercased().contains(self.deviceIdentificer.lowercased()) ?? false}
             }
         }
     }
@@ -60,6 +60,11 @@ class PolarVerityHeartRateObservation: Observation_ {
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){
         
+    }
+    
+    override func bleDevicesNeeded() -> Set<String> {
+        print("Polar device needed \(Set([deviceIdentificer]))")
+        return Set([deviceIdentificer])
     }
     
     override func ableToAutomaticallyStart() -> Bool {

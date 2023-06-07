@@ -34,7 +34,9 @@ struct LoginView: View {
                                         headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
                                         inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
                                         input: $model.token,
-                                        uppercase: true
+                                        uppercase: true,
+                                        autoCorrectDisabled: true,
+                                        textType: .oneTimeCode
                         )
                         .padding(.bottom, 12)
                         
@@ -51,7 +53,7 @@ struct LoginView: View {
                                 isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
                                 inputPlaceholder: $model.endpoint,
                                 input: $model.endpoint,
-                                uppercase: false
+                                textType: .URL
                             )
                         }
                     }

@@ -11,10 +11,14 @@ import SwiftUI
 struct MoreTextField: View {
     @Binding var titleKey: String
     @Binding var inputText: String
-    let uppercase: Bool
+    var uppercase: Bool = false
+    var autoCorrectDisabled: Bool = false
+    var textType: UITextContentType? = nil
     var body: some View {
         TextField(titleKey, text: $inputText)
             .textFieldAutoCapitalizataion(uppercase: uppercase)
+            .autocorrectionDisabled(autoCorrectDisabled)
+            .textContentType(textType)
             .padding(.moreTextFieldPadding.textFieldInnerPadding)
             .overlay(
                 RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)

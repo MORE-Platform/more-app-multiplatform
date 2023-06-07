@@ -21,7 +21,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let dataManager = iOSObservationDataManager()
         let bluetoothConnector = IOSBluetoothConnector()
         bluetoothConnector.addSpecificBluetoothConnector(key: "polar", connector: polarConnector)
-        return Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: dataManager, mainBluetoothConnector: bluetoothConnector, observationFactory: IOSObservationFactory(dataManager: dataManager), dataRecorder: IOSDataRecorder())
+        
+        return Shared(
+            sharedStorageRepository: UserDefaultsRepository(),
+            observationDataManager: dataManager,
+            mainBluetoothConnector: bluetoothConnector,
+            observationFactory: IOSObservationFactory(dataManager: dataManager),
+            dataRecorder: IOSDataRecorder()
+        )
     }()
     
     private let fcmService: FCMService = FCMService()

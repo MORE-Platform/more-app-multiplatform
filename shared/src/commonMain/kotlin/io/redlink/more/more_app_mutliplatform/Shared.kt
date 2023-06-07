@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform
 
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
@@ -31,6 +32,7 @@ class Shared(
     init {
         onApplicationStart()
     }
+
     fun onApplicationStart() {
 
     }
@@ -54,24 +56,31 @@ class Shared(
     }
 
     fun resetFirstStartUp() {
+        log { "Resetting first login to true..." }
         sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, true)
+        log {
+            "Reset! First login is ${
+                sharedStorageRepository.load(
+                    FIRST_OPEN_AFTER_LOGIN_KEY,
+                    true
+                )
+            }"
+        }
     }
 
     fun firstStartUp(): Boolean {
         return if (sharedStorageRepository.load(FIRST_OPEN_AFTER_LOGIN_KEY, true)) {
+            log { "Setting first startup to false..." }
             sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, false)
             true
         } else false
     }
 
-    fun showBleSetup(observationFactory: ObservationFactory, onCompletion: (Pair<Boolean, Boolean>) -> Unit) {
-        Scope.launch {
-            onCompletion(Pair(firstStartUp(), devicesNeededForObservations(observationFactory).isNotEmpty()))
-        }
-    }
-
-    suspend fun devicesNeededForObservations(observationFactory: ObservationFactory): Set<String> {
-        return ObservationRepository().extractExternalDevices(observationFactory).firstOrNull() ?: emptySet()
+    fun showBleSetup(): Pair<Boolean, Boolean> {
+        return Pair(
+            firstStartUp(),
+            observationFactory.bleDevicesNeeded().isNotEmpty()
+        )
     }
 
     companion object {

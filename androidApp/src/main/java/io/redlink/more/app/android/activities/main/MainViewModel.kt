@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
-import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionViewModel
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoViewModel
@@ -55,10 +54,6 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
-    val bluetoothConnectionViewModel: BluetoothConnectionViewModel by lazy {
-        BluetoothConnectionViewModel(MoreApplication.shared!!.mainBluetoothConnector)
-    }
-
     val infoVM: InfoViewModel by lazy {
         InfoViewModel()
     }
@@ -72,8 +67,7 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     init {
-        //MoreApplication.shared!!.dataRecorder.restartAll()
-        MoreApplication.shared!!.showBleSetup(MoreApplication.shared!!.observationFactory) { (firstTime, hasBLEObservations) ->
+        MoreApplication.shared!!.showBleSetup().let { (firstTime, hasBLEObservations) ->
             if (hasBLEObservations) {
                 if (firstTime) {
                     openBLESetupActivity(context)

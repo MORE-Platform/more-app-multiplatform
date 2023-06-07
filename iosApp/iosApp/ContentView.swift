@@ -6,6 +6,11 @@ struct ContentView: View {
     var body: some View {
         VStack {
             if viewModel.hasCredentials {
+                NavigationLink(isActive: $viewModel.showBleView) {
+                    BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel)
+                } label: {
+                    EmptyView()
+                }.opacity(0)
                 MainTabView()
                     .environmentObject(viewModel)
             } else {

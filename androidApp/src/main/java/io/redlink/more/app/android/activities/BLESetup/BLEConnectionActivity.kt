@@ -88,10 +88,10 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
             if (showDescrPart2) {
                 item {
                     BasicText(text = getStringResource(id = R.string.more_ble_context_description_part2), modifier = Modifier.padding(vertical = 4.dp))
-                    Divider()
                 }
             }
             item {
+                Divider()
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,

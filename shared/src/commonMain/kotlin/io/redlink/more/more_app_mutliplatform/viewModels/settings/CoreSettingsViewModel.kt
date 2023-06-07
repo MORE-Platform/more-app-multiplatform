@@ -68,6 +68,7 @@ class CoreSettingsViewModel(
         CoroutineScope(Job() + Dispatchers.Default).launch {
             shared.dataRecorder.stopAll()
             shared.observationDataManager.stopListeningToCountChanges()
+            shared.observationFactory.clearNeededObservationTypes()
             shared.networkService.deleteParticipation()
             shared.credentialRepository.remove()
             shared.endpointRepository.removeEndpoint()

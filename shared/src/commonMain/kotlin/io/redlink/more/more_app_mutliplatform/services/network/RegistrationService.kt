@@ -80,8 +80,9 @@ class RegistrationService (
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
-                    shared.resetFirstStartUp()
                     StudyRepository().storeStudy(study)
+                    shared.observationFactory.addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
+                    shared.resetFirstStartUp()
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
                     onError(NetworkServiceError(null, "Could not store credentials").freeze())

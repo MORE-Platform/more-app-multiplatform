@@ -14,8 +14,9 @@ struct MoreTextFieldHL: View {
     
     @Binding var input: String
     
-    let uppercase: Bool
-    
+    var uppercase: Bool = false
+    var autoCorrectDisabled = false
+    var textType: UITextContentType? = nil
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -27,9 +28,9 @@ struct MoreTextFieldHL: View {
             .padding(3)
             
             if isSmTextfield {
-                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase)
+                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             } else {
-                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase)
+                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             }
             
         }

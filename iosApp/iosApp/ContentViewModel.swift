@@ -17,6 +17,7 @@ class ContentViewModel: ObservableObject {
     @Published var loginViewScreenNr = 0
     @Published var isLeaveStudyOpen: Bool = false
     @Published var isLeaveStudyConfirmOpen: Bool = false
+    @Published var showBleView = false
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -40,19 +41,31 @@ class ContentViewModel: ObservableObject {
     
     lazy var infoViewModel = InfoViewModel()
 
-    lazy var bluetoothViewModel: BluetoothConnectionViewModel = {
-        BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
-    }()
-
+    lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
     
     init() {
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
         if hasCredentials {
-            DispatchQueue.main.async {
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices(listenForTimeInMillis: 5000)
-            }
+            scanBluetooth()
             AppDelegate.shared.activateObservationWatcher()
+        }
+    }
+    
+    func scanBluetooth() {
+        AppDelegate.shared.showBleSetup { [weak self] show in
+            if let hasBleObservations = show.second, hasBleObservations.boolValue {
+                if let firstStartup = show.first, firstStartup.boolValue {
+                    DispatchQueue.main.async {
+                        self?.showBleView = true
+                    }
+                } else if show.first != nil {
+                    DispatchQueue.main.async {
+                        BluetoothDeviceRepository(bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
+                            .updateConnectedDevices(listenForTimeInMillis: 5000)
+                    }
+                }
+            }
         }
     }
     
@@ -80,7 +93,7 @@ class ContentViewModel: ObservableObject {
         settingsViewModel = SettingsViewModel()
         settingsViewModel.delegate = self
         
-        bluetoothViewModel = BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
+        bluetoothViewModel = BluetoothConnectionViewModel()
         infoViewModel = InfoViewModel()
     }
 }
@@ -103,8 +116,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector())
-                    .updateConnectedDevices(listenForTimeInMillis: 5000)
+                scanBluetooth()
                 AppDelegate.shared.activateObservationWatcher()
             }
         }

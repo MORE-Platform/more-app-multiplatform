@@ -15,15 +15,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.bluetooth_conntection_view.BluetoothConnectionView
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
-import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
-import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
@@ -36,7 +32,6 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
-import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
@@ -186,7 +181,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         ScheduleListType.MANUALS -> viewModel.manualTasks.filterModel
                         ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
                         ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
-                        ScheduleListType.ALL -> DashboardFilterViewModel(CoreDashboardFilterViewModel())
+                        ScheduleListType.ALL -> DashboardFilterViewModel(
+                            CoreDashboardFilterViewModel()
+                        )
                     })
                 }
                 DashboardFilterView(viewModel = vm)
@@ -226,14 +223,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 viewModel.showBackButton.value = true
 
                 NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
-            }
-
-            composable(NavigationScreen.BLUETOOTH_CONNECTION.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.BLUETOOTH_CONNECTION.stringRes()
-                viewModel.showBackButton.value = true
-
-                BluetoothConnectionView(navController, viewModel.bluetoothConnectionViewModel)
             }
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
