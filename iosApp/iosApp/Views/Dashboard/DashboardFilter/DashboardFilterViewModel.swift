@@ -63,7 +63,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
         var isSelected = false
-        let allItemsString = String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items")
+        let allItemsString = String.localize(forKey: "All Items", withComment: "String for All Items", inTable: stringTable)
         if option == allItemsString && selectedValuesInList.isEmpty {
             isSelected = true
         } else {

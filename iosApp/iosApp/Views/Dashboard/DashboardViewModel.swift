@@ -24,7 +24,7 @@ class DashboardViewModel: ObservableObject {
                 self.studyTitle = study.studyTitle
             }
         }
-        self.filterText = String.localizedString(forKey: "no_filter_activated", inTable: "DashboardFilter", withComment: "String for no filter set")
+        self.filterText = String.localize(forKey: "no_filter_activated", withComment: "String for no filter set", inTable: "DashboardFilter")
     }
     
     func viewDidAppear() {

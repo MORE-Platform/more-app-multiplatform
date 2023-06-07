@@ -46,12 +46,12 @@ struct LeaveStudyConfirmationView: View {
 
                     }.padding(.top)
 
-                    Text(String.localizedString(forKey: "second_message", inTable: stringTable, withComment: "second exit message"))
+                    Text(String.localize(forKey: "second_message", withComment: "second exit message", inTable: stringTable))
                         .foregroundColor(Color.more.secondary)
                         .padding(.bottom, 2)
                         .multilineTextAlignment(.center)
 
-                    Text(String.localizedString(forKey: "sure_message", inTable: stringTable, withComment: "last exit message"))
+                    Text(String.localize(forKey: "sure_message", withComment: "last exit message", inTable: stringTable))
                         .foregroundColor(Color.more.primary)
                         .fontWeight(.bold)
                         .padding(.bottom, 2)
@@ -67,7 +67,7 @@ struct LeaveStudyConfirmationView: View {
                         contentViewModel.isLeaveStudyConfirmOpen = false
                         contentViewModel.isLeaveStudyOpen = false
                     } label: {
-                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
+                        Text(String.localize(forKey: "continue_study", withComment: "button to continue study", inTable: stringTable)).foregroundColor(Color.more.white)
                     }
                     .padding(.bottom, 2)
 
@@ -76,7 +76,7 @@ struct LeaveStudyConfirmationView: View {
                         contentViewModel.isLeaveStudyConfirmOpen = false
                         contentViewModel.isLeaveStudyConfirmOpen = false
                     } label: {
-                        Text(String.localizedString(forKey: "withdraw", inTable: stringTable, withComment: "button to exit study"))
+                        Text(String.localize(forKey: "withdraw", withComment: "button to exit study", inTable: stringTable))
                     }
 
                     Spacer()

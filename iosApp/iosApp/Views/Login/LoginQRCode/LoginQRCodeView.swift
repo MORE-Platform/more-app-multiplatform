@@ -26,7 +26,7 @@ struct LoginQRCodeView: View {
                     .padding(.top, 15)
                     .padding(.bottom, 40)
                 
-                BasicText(text: .constant(String.localizedString(forKey: "scan_qr_code", inTable: stringTable, withComment: "Login with QR Code.")))
+                BasicText(text: .constant(String.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable)))
                     .padding(.bottom, 5)
                 
                 RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)

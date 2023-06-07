@@ -34,8 +34,8 @@ struct BluetoothConnectionView: View {
                 }
                 ScrollView {
                     LazyVStack(alignment: .leading) {
-                        Title(titleText: .constant("External Device Setup".localize(useTable: bluetoothStrings, withComment: "External Device Setup Screen")))
-                        BasicText(text: .constant("\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(useTable: bluetoothStrings, withComment: "Bluetooth necessity description")):"))
+                        Title(titleText: .constant("External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings)))
+                        BasicText(text: .constant("\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):"))
                             .padding(.vertical, 8)
                         
                         ForEach(viewModel.neededDevices, id: \.self) { device in
@@ -43,15 +43,15 @@ struct BluetoothConnectionView: View {
                         }
                         
                         if showAsSeparateView {
-                            BasicText(text: .constant("You can connect to and disconnect from devices at any time: Info > Devices".localize(useTable: bluetoothStrings, withComment: "Connection tutorial")))
+                            BasicText(text: .constant("You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings)))
                                 .padding(.top, 8)
                         }
                         
                         Divider()
                         
-                        Section(header: SectionHeading(sectionTitle: .constant("Connected devices".localize(useTable: bluetoothStrings, withComment: "Connected device section")))) {
+                        Section(header: SectionHeading(sectionTitle: .constant("Connected devices".localize(withComment: "Connected device section", useTable: bluetoothStrings)))) {
                             if viewModel.connectedDevices.isEmpty {
-                                EmptyListView(text: "\(String.localizedString(forKey: "No devices connected", inTable: bluetoothStrings, withComment: "No devices connected"))!")
+                                EmptyListView(text: "\(String.localize(forKey: "No devices connected", withComment: "No devices connected", inTable: bluetoothStrings))!")
                             } else {
                                 ForEach(viewModel.connectedDevices, id: \.self.deviceId) { device in
                                     if let deviceName = device.deviceName {
@@ -68,7 +68,7 @@ struct BluetoothConnectionView: View {
                         }
                         Section(header: SectionHeading(sectionTitle: .constant("Discovered devices"))) {
                             if viewModel.discoveredDevices.isEmpty {
-                                EmptyListView(text: "\(String.localizedString(forKey: "No devices found nearby", inTable: bluetoothStrings, withComment: "No devices found nearby"))!")
+                                EmptyListView(text: "\(String.localize(forKey: "No devices found nearby", withComment: "No devices found nearby", inTable: bluetoothStrings))!")
                             } else {
                                 ForEach(viewModel.discoveredDevices, id: \.self.deviceId) { device in
                                     if let deviceName = device.deviceName {
@@ -94,7 +94,7 @@ struct BluetoothConnectionView: View {
                             if viewModel.bluetoothIsScanning {
                                 HStack {
                                     ProgressView()
-                                    BasicText(text: .constant("\(String.localizedString(forKey: "Searching for devices", inTable: bluetoothStrings, withComment: "Searching for new devices"))..."))
+                                    BasicText(text: .constant("\(String.localize(forKey: "Searching for devices", withComment: "Searching for new devices", inTable: bluetoothStrings))..."))
                                 }
                             }
                         }

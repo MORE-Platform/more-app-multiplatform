@@ -27,7 +27,7 @@ struct ObservationButton: View {
                 }) {
                     VStack {
                         Text(
-                            String.localizedString(forKey: "start_questionnaire", inTable: stringTable, withComment: "Button to start a questionnaire")
+                            String.localize(forKey: "start_questionnaire", withComment: "Button to start a questionnaire", inTable: stringTable)
                         )
                     }
                 }
@@ -39,7 +39,7 @@ struct ObservationButton: View {
                     VStack {
                         Text(
                             "Start LimeSurvey"
-                                .localize(useTable: stringTable, withComment: "Button to start a limesurvey")
+                                .localize(withComment: "Button to start a limesurvey", useTable: stringTable)
                         )
                     }
                 }
@@ -54,11 +54,11 @@ struct ObservationButton: View {
                     VStack {
                         if state == ScheduleState.running {
                             Text(
-                                String.localizedString(forKey: "pause_observation", inTable: stringTable, withComment: "Button to pause an observation")
+                                String.localize(forKey: "pause_observation", withComment: "Button to pause an observation", inTable: stringTable)
                             )
                         } else {
                             Text(
-                                String.localizedString(forKey: "start_observation", inTable: stringTable, withComment: "Button to start an observation")
+                                String.localize(forKey: "start_observation", withComment: "Button to start an observation", inTable: stringTable)
                             )
                         }
                     }

@@ -21,7 +21,7 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "Select Time", inTable: stringTable, withComment: "Set time filter")))
+                            SectionHeading(sectionTitle: .constant(String.localize(forKey: "Select Time", withComment: "Set time filter", inTable: stringTable)))
                                 .padding(15)
                             Divider()
                             
@@ -43,7 +43,7 @@ struct DashboardFilterView: View {
                         }.padding(.vertical, 20)
                         
                         VStack {
-                            SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "Select Type", inTable: stringTable, withComment: "Set titypeme filter")))
+                            SectionHeading(sectionTitle: .constant(String.localize(forKey: "Select Type", withComment: "Set titypeme filter", inTable: stringTable)))
                                 .padding(15)
                             Divider()
                             
@@ -51,7 +51,7 @@ struct DashboardFilterView: View {
                                 viewModel.clearTypeFilter()
                             } label: {
                                 HStack {
-                                    MoreFilterOption(option: String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for All Items"), isSelected: $viewModel.typeFilterActive)
+                                    MoreFilterOption(option: String.localize(forKey: "All Items", withComment: "String for All Items", inTable: stringTable), isSelected: $viewModel.typeFilterActive)
                                     Spacer()
                                 }
                             }

@@ -20,7 +20,7 @@ struct InlineAbortButton: View {
                     .padding(0.5)
                     
                     .foregroundColor(.more.important)
-                Text(String.localizedString(forKey: "Abort", inTable: stringTable, withComment: "Abort running task."))
+                Text(String.localize(forKey: "Abort", withComment: "Abort running task.", inTable: stringTable))
                     .foregroundColor(.more.secondary)
             }
             .padding(5)

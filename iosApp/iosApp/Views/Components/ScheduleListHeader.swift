@@ -18,8 +18,7 @@ struct ScheduleListHeader: View {
     var body: some View {
         VStack {
             TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant(String
-                .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                 withComment: "string for completed tasks")))
+                .localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: stringTable)))
             .padding(.bottom)
             MoreFilter() {
                     DashboardFilterView().environmentObject(scheduleViewModel.filterViewModel)

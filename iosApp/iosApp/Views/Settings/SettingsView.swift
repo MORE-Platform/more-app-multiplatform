@@ -19,7 +19,7 @@ struct SettingsView: View {
     var body: some View {
         MoreMainBackgroundView {
             VStack(alignment: .leading) {
-                Text(String.localizedString(forKey: "settings_text", inTable: stringTable, withComment: "information about accepted permissions"))
+                Text(String.localize(forKey: "settings_text", withComment: "information about accepted permissions", inTable: stringTable))
                     .foregroundColor(.more.secondary)
                     .padding(.bottom, 15)
                 if let permissions = viewModel.permissionModel {

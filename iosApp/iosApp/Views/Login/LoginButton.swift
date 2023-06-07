@@ -18,7 +18,7 @@ struct LoginButton: View {
         MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabled) {
             model.validate()
         } label: {
-            Text(verbatim:.localizedString(forKey: "login_button", inTable: stringTable, withComment: "button to log into a more study"))
+            Text(verbatim:.localize(forKey: "login_button", withComment: "button to log into a more study", inTable: stringTable))
         }
     }
 }

@@ -29,15 +29,13 @@ struct StudyDetailsView: View {
                         .padding(.bottom)
                     
                     TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant(String
-                        .localizedString(forKey: "tasks_completed", inTable: stringTable,
-                                         withComment: "string for completed tasks")))
+                        .localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: stringTable)))
                     .padding(.bottom, 0.2)
                     
                     HStack(alignment: .center) {
                         
                         BasicText(text: .constant(String
-                            .localizedString(forKey: "study_duration", inTable: stringTable,
-                                             withComment: "string for study duration")))
+                            .localize(forKey: "study_duration", withComment: "string for study duration", inTable: stringTable)))
                         
                         Spacer()
                         BasicText(text: .constant((viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString())),
@@ -45,7 +43,7 @@ struct StudyDetailsView: View {
                         )
                     }.padding(.bottom)
                     
-                    ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localizedString(forKey: "participant_info", inTable: stringTable, withComment: "Participant Information of study."), lineLimit: 4)
+                    ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localize(forKey: "participant_info", withComment: "Participant Information of study.", inTable: stringTable), lineLimit: 4)
                         .padding(.bottom, 35)
                     
                     ExpandableContentWithLink(
@@ -62,7 +60,7 @@ struct StudyDetailsView: View {
                                 }
                             }
                         },
-                        title: {String.localizedString(forKey: "obs_modules", inTable: stringTable, withComment: "Observation modules of study.")}, expanded: $isObservationListOpen
+                        title: {String.localize(forKey: "obs_modules", withComment: "Observation modules of study.", inTable: stringTable)}, expanded: $isObservationListOpen
                     ).padding(.top, (0.5))
                     
                     Spacer()
