@@ -16,9 +16,9 @@ class ObservationDataCollector {
 
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {
         print("Collect undone observations")
+        AppDelegate.shared.updateTaskStates()
         job = observationRepository.collectObservationsWithUndoneSchedules { [weak self] observations in
             if let self {
-                AppDelegate.shared.updateTaskStates()
                 let observationMergerSet = observations
                     .mapValues{$0.filter{$0.getState() == .running}}
                     .filter{!$0.value.isEmpty}
@@ -62,7 +62,6 @@ class ObservationDataCollector {
                 completion(false)
             }
         }
-        AppDelegate.shared.updateTaskStates()
     }
 
     func close() {

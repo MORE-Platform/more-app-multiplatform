@@ -15,15 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 class CoreBLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnector: BluetoothConnector): CoreViewModel() {
     val coreBluetooth = CoreBluetoothConnectionViewModel(bluetoothConnector, scanInterval = 2000)
 
-    val devicesNeededToConnectTo: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
-
-    init {
-        Scope.launch {
-            ObservationRepository().extractExternalDevices(observationFactory).cancellable().firstOrNull()?.let {
-                devicesNeededToConnectTo.emit(it)
-            }
-        }
-    }
+    val devicesNeededToConnectTo = observationFactory.studyObservationTypes
 
     override fun viewDidAppear() {
         coreBluetooth.viewDidAppear()

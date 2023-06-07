@@ -53,17 +53,17 @@ class ContentViewModel: ObservableObject {
     }
     
     func scanBluetooth() {
-        AppDelegate.shared.showBleSetup { [weak self] show in
-            if let hasBleObservations = show.second, hasBleObservations.boolValue {
-                if let firstStartup = show.first, firstStartup.boolValue {
-                    DispatchQueue.main.async {
-                        self?.showBleView = true
-                    }
-                } else if show.first != nil {
-                    DispatchQueue.main.async {
-                        BluetoothDeviceRepository(bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
-                            .updateConnectedDevices(listenForTimeInMillis: 5000)
-                    }
+        let pair = AppDelegate.shared.showBleSetup()
+
+        if let hasBleObservations = pair.second, hasBleObservations.boolValue {
+            if let firstStartup = pair.first, firstStartup.boolValue {
+                DispatchQueue.main.async {
+                    self.showBleView = true
+                }
+            } else if pair.first != nil {
+                DispatchQueue.main.async {
+                    BluetoothDeviceRepository(bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
+                        .updateConnectedDevices(listenForTimeInMillis: 5000)
                 }
             }
         }

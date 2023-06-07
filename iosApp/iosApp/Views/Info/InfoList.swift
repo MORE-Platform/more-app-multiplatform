@@ -23,7 +23,7 @@ struct InfoList: View {
                 CompletedSchedules(scheduleViewModel: contentViewModel.completedViewModel)
             })
             InfoListItem(title: String.localizedString(forKey: "Devices", inTable: stringTable, withComment: "Lists all connected or needed devices."), icon: "applewatch", destination: {
-                BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel)
+                BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel, viewOpen: .constant(false))
             })
             InfoListItem(title: String.localizedString(forKey: "Settings", inTable: stringTable, withComment: "Shows the settings for the study."), icon: "gearshape.fill", destination: {
                 SettingsView(viewModel: contentViewModel.settingsViewModel)

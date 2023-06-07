@@ -79,7 +79,7 @@ class Shared(
     fun showBleSetup(): Pair<Boolean, Boolean> {
         return Pair(
             firstStartUp(),
-            observationFactory.bleDevicesNeeded().isNotEmpty()
+            observationFactory.bleDevicesNeeded(observationFactory.studyObservationTypes.value).isNotEmpty()
         )
     }
 

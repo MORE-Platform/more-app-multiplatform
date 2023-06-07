@@ -45,7 +45,7 @@ class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnect
         viewModelScope.launch {
             coreBLESetupViewModel.devicesNeededToConnectTo.collect {
                 neededDevices.clear()
-                neededDevices.addAll(it)
+                neededDevices.addAll(observationFactory.bleDevicesNeeded(it))
             }
         }
         viewModelScope.launch {

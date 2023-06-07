@@ -51,7 +51,7 @@ class BluetoothConnectionViewModel: ObservableObject {
         
         self.coreViewModel.devicesNeededChange { [weak self] deviceList in
             DispatchQueue.main.async {
-                self?.neededDevices = Array(deviceList)
+                self?.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded(types: deviceList))
             }
         }
     }

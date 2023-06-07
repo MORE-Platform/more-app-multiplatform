@@ -21,10 +21,8 @@ class DataUploadManager {
                 print("Fetching Data Bulk...")
                 self.observationDataRepository.allAsBulk { [weak self] dataBulk in
                     if let dataBulk, !dataBulk.dataPoints.isEmpty {
-                        let userDefaults = UserDefaultsRepository()
-                        let networkService = NetworkService(endpointRepository: EndpointRepository(sharedStorageRepository: userDefaults), credentialRepository: CredentialRepository(sharedStorageRepository: userDefaults))
                         print("Sending data to backend...")
-                        networkService.iosSendData(data: dataBulk) { weakReference in
+                        AppDelegate.shared.networkService.iosSendData(data: dataBulk) { weakReference in
                             if let pair = weakReference.value {
                                 if let error = pair.second {
                                     print("Error: \(error)")

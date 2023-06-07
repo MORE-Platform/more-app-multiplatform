@@ -3,29 +3,33 @@ package io.redlink.more.more_app_mutliplatform.observations
 import io.github.aakira.napier.log
 import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.extensions.append
+import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
 
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
     val observations = mutableSetOf<Observation>()
 
-    private val studyObservationTypes = mutableSetOf<String>()
+    val studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
 
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
-                studyObservationTypes += it
+                studyObservationTypes.append(it)
             }
         }
     }
 
     fun addNeededObservationTypes(observationTypes: Set<String>) {
-        studyObservationTypes += observationTypes
+        log { "Adding observation types to studyObservationTypes: $observationTypes" }
+        studyObservationTypes.append(observationTypes)
     }
 
     fun clearNeededObservationTypes() {
@@ -37,10 +41,12 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     fun sensorPermissions() =
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 
-    fun bleDevicesNeeded(): Set<String> {
-        log { "Getting BLE devices for types: $studyObservationTypes" }
-        return observations.filter { it.observationType.observationType in studyObservationTypes }
+    fun bleDevicesNeeded(types: Set<String>): Set<String> {
+        log { "Filtering types for BLE: ${studyObservationTypes.value}" }
+        val bleTypes = observations.filter { it.observationType.observationType in types }
             .flatMap { it.bleDevicesNeeded() }.toSet()
+        log { "BLE observation types: $bleTypes" }
+        return bleTypes
     }
 
     fun autoStartableObservations() = observations.filter { it.ableToAutomaticallyStart() }
