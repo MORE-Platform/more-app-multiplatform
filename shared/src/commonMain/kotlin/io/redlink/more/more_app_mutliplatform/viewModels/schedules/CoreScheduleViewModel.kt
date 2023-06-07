@@ -58,6 +58,7 @@ class CoreScheduleViewModel(
                     val newList = when (scheduleListType) {
                         ScheduleListType.COMPLETED -> createCompletedModels(it)
                         ScheduleListType.RUNNING -> createRunningModels(it)
+                        ScheduleListType.MANUALS -> createManualTasks(it)
                         else -> createModels(it)
                     }
                     val modified = if (coreFilterModel.filterActive()) {
@@ -123,13 +124,15 @@ class CoreScheduleViewModel(
     }
 
     private fun createCompletedModels(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
-        return scheduleList
-            .mapNotNull { ScheduleModel.createModel(it) }
-            .filter { scheduleModel -> scheduleModel.scheduleState.completed() }
+        return createModels(scheduleList.filter { it.getState().completed() })
     }
 
     private fun createRunningModels(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
-        return createModels(scheduleList).filter { scheduleModel -> scheduleModel.scheduleState.running() }
+        return createModels(scheduleList.filter { it.getState().running() })
+    }
+
+    private fun createManualTasks(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
+        return createModels(scheduleList.filter { !it.hidden })
     }
 
     fun onScheduleStateUpdated(providedState: (Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>) -> Unit) =

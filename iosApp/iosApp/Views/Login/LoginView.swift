@@ -33,7 +33,9 @@ struct LoginView: View {
                         MoreTextFieldHL(isSmTextfield: .constant(false),
                                         headerText: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
                                         inputPlaceholder: .constant(String.localizedString(forKey: "participation_key_entry", inTable: stringTable, withComment: "headline for participation token entry field")),
-                                        input: $model.token)
+                                        input: $model.token,
+                                        uppercase: true
+                        )
                         .padding(.bottom, 12)
                         
                         if showTokenInput {
@@ -48,7 +50,8 @@ struct LoginView: View {
                                 expanded: $showEndpoint,
                                 isSmTextfield: .constant(true), headerText: .constant(String.localizedString(forKey: "study_endpoint_headling", inTable: stringTable, withComment: "headling for endpoint entryfield")),
                                 inputPlaceholder: $model.endpoint,
-                                input: $model.endpoint
+                                input: $model.endpoint,
+                                uppercase: false
                             )
                         }
                     }

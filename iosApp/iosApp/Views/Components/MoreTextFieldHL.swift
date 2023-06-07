@@ -14,6 +14,8 @@ struct MoreTextFieldHL: View {
     
     @Binding var input: String
     
+    let uppercase: Bool
+    
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -25,9 +27,9 @@ struct MoreTextFieldHL: View {
             .padding(3)
             
             if isSmTextfield {
-                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input)
+                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase)
             } else {
-                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input)
+                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase)
             }
             
         }
@@ -38,6 +40,6 @@ struct MoreTextFieldHL: View {
 struct MoreTextFieldHL_Previews: PreviewProvider {
     
     static var previews: some View {
-        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: .constant("Hello World Key"), inputPlaceholder: .constant(""), input: .constant("me"))
+        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: .constant("Hello World Key"), inputPlaceholder: .constant(""), input: .constant("me"), uppercase: false)
     }
 }

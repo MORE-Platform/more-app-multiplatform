@@ -13,6 +13,7 @@ data class TaskDetailsModel(
     val start: Long,
     val end: Long,
     val participantInformation: String,
+    val hidden: Boolean,
     val state: ScheduleState,
 ) {
     companion object {
@@ -25,6 +26,7 @@ data class TaskDetailsModel(
                 start = schedule.start?.epochSeconds ?: 0,
                 end = schedule.end?.epochSeconds ?: 0,
                 participantInformation = observation.participantInfo,
+                hidden = schedule.hidden,
                 state = schedule.getState()
             )
         }

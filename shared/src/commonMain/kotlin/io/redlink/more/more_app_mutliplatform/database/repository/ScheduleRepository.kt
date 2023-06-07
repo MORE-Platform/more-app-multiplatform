@@ -123,7 +123,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                 query<ScheduleSchema>("done = $0", false).find().mapNotNull { scheduleSchema ->
                     val newState = scheduleSchema.updateState()
                     if (autoStartingObservations.isNotEmpty()
-
+                        && scheduleSchema.hidden
                         && newState.active()
                         && scheduleSchema.observationType in autoStartingObservations
                     ) {

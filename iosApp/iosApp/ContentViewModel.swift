@@ -29,7 +29,7 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
-    var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+    var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
     lazy var settingsViewModel: SettingsViewModel = {
@@ -73,7 +73,7 @@ class ContentViewModel: ObservableObject {
     private func reinitAllViewModels() {
         isLeaveStudyOpen = false
         isLeaveStudyConfirmOpen = false
-        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
         

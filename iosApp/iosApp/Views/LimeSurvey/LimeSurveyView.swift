@@ -43,7 +43,7 @@ struct LimeSurveyView: View {
                     Button {
                         viewModel.onFinish()
                     } label: {
-                        Image(systemName: "trash.circle.fill")
+                        Image(systemName: "chevron.down")
                             .foregroundColor(.more.important)
                     }
                 }

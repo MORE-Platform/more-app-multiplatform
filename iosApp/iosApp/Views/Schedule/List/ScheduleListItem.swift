@@ -33,7 +33,7 @@ struct ScheduleListItem: View {
                 }
             }
 
-            if showButton {
+            if showButton && !scheduleModel.hidden {
                 ObservationButton(
                     observationActionDelegate: viewModel,
                     scheduleId: scheduleModel.scheduleId,

@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +45,7 @@ class LimeSurveyActivity : ComponentActivity() {
     val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
     var webView: WebView? = null
     var webClientListener: LimeSurveyWebClient? = null
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,16 +122,23 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
         navigationTitle = NavigationScreen.LIMESURVEY.stringRes(),
         maxWidth = 1f,
         rightCornerContent = {
-            IconButton(onClick = {
-                viewModel.onFinish()
-                (context as? Activity)?.finish()
-            },
+            IconButton(
+                onClick = {
+                    viewModel.onFinish()
+                    (context as? Activity)?.finish()
+                },
                 modifier = Modifier.width(IntrinsicSize.Min)
             ) {
                 if (viewModel.wasAnswered.value) {
-                    IconInline(icon = Icons.Default.Done, contentDescription = getStringResource(id = R.string.more_lime_finish))
+                    IconInline(
+                        icon = Icons.Default.Done,
+                        contentDescription = getStringResource(id = R.string.more_lime_finish)
+                    )
                 } else {
-                    IconInline(icon = Icons.Default.Close, contentDescription = getStringResource(id = R.string.more_lime_cancel))
+                    IconInline(
+                        icon = Icons.Default.Close,
+                        contentDescription = getStringResource(id = R.string.more_lime_cancel)
+                    )
                 }
             }
         }
@@ -145,22 +155,28 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
             } else {
                 webView?.let { webView ->
                     viewModel.limeSurveyLink.value?.let { limeSurveyLink ->
-                        if (viewModel.networkLoading.value) {
-                            LinearProgressIndicator(
-                                color = MoreColors.Primary,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(4.dp)
-                            )
-                        }
-                        AndroidView(factory = {
-                            webView.apply {
-                                loadUrl(limeSurveyLink)
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (viewModel.networkLoading.value) {
+                                LinearProgressIndicator(
+                                    color = MoreColors.Primary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp)
+                                )
                             }
-                        }, update = {
-                            Napier.d { "Webview update" }
-                            it.loadUrl(limeSurveyLink)
-                        }, modifier = Modifier.fillMaxSize())
+                            AndroidView(factory = {
+                                webView.apply {
+                                    loadUrl(limeSurveyLink)
+                                }
+                            }, update = {
+                                Napier.d { "Webview update" }
+                                it.loadUrl(limeSurveyLink)
+                            }, modifier = Modifier.fillMaxSize())
+                        }
                     } ?: run {
                         Text(text = getStringResource(id = R.string.more_lime_survey_loading_error))
                     }

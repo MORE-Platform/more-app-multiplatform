@@ -60,6 +60,15 @@ extension View {
             self.modifier(NavigationBarTitleViewModifier(text: text, displayMode: displayMode))
         }
     }
+    
+    @ViewBuilder
+    func textFieldAutoCapitalizataion(uppercase: Bool) -> some View {
+        if #available(iOS 15, *) {
+            self.modifier(TextFieldViewModifier(uppercase: uppercase))
+        } else {
+            self.modifier(TextFieldOldViewModifier(uppercase: uppercase))
+        }
+    }
 }
 
 @available(iOS 15, *)
@@ -73,5 +82,20 @@ struct PresentationViewModifier: ViewModifier {
 struct PresentationCoverViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+    }
+}
+
+@available(iOS 15, *)
+struct TextFieldViewModifier: ViewModifier {
+    let uppercase: Bool
+    func body(content: Content) -> some View {
+        content.textInputAutocapitalization(uppercase ? .characters : .none)
+    }
+}
+
+struct TextFieldOldViewModifier: ViewModifier {
+    let uppercase: Bool
+    func body(content: Content) -> some View {
+        content.autocapitalization(uppercase ? .allCharacters : .none)
     }
 }

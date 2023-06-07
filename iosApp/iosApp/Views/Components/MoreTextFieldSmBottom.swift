@@ -13,8 +13,10 @@ import SwiftUI
 struct MoreTextFieldSmBottom: View {
     @Binding var titleKey: String
     @Binding var inputText: String
+    let uppercase: Bool
     var body: some View {
         TextField(titleKey, text: $inputText)
+            .textFieldAutoCapitalizataion(uppercase: uppercase)
             .padding(.moreTextFieldPadding.textFieldInnerPadding)
             .background(Color.more.primaryLight)
             .font(.system(size: 14))
@@ -33,6 +35,6 @@ struct MoreTextFieldSmBottom: View {
 struct MoreTextFieldSmBottom_Previews: PreviewProvider {
     
     static var previews: some View {
-        MoreTextFieldSmBottom(titleKey: .constant("Hello World Key"), inputText: .constant(""))
+        MoreTextFieldSmBottom(titleKey: .constant("Hello World Key"), inputText: .constant(""), uppercase: false)
     }
 }

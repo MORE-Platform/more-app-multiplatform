@@ -77,45 +77,49 @@ fun ScheduleListItem(
             endTime = scheduleModel.end.jvmLocalDateTime(),
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        if (showButton) {
-            if (scheduleModel.observationType == "question-observation") {
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_questionnaire_start),
-                    enabled = scheduleModel.scheduleState.active()
-                ) {
-                    navController.navigate(
-                        "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
-                    )
-                }
-            } else if (scheduleModel.observationType == "lime-survey-observation") {
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_limesurvey_start),
-                    enabled = scheduleModel.scheduleState.active()
-                ) {
-                    (context as? Activity)?.let { activity ->
-                        val intent = Intent(context, LimeSurveyActivity::class.java)
-                        intent.putExtra(
-                            LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
-                            scheduleModel.scheduleId
+        if (showButton && !scheduleModel.hidden) {
+            when (scheduleModel.observationType) {
+                "question-observation" -> {
+                    SmallTextButton(
+                        text = getStringResource(id = R.string.more_questionnaire_start),
+                        enabled = scheduleModel.scheduleState.active()
+                    ) {
+                        navController.navigate(
+                            "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
                         )
-                        activity.startActivity(intent)
                     }
                 }
-            } else if (!scheduleModel.hidden) {
-                SmallTextButton(
-                    text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(
-                        id = R.string.more_observation_pause
-                    ) else getStringResource(
-                        id = R.string.more_observation_start
-                    ),
-                    enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
-                ) {
-                    if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
-                        viewModel.pauseObservation(scheduleModel.scheduleId)
-                    } else {
-                        viewModel.startObservation(scheduleModel.scheduleId)
+                "lime-survey-observation" -> {
+                    SmallTextButton(
+                        text = getStringResource(id = R.string.more_limesurvey_start),
+                        enabled = scheduleModel.scheduleState.active()
+                    ) {
+                        (context as? Activity)?.let { activity ->
+                            val intent = Intent(context, LimeSurveyActivity::class.java)
+                            intent.putExtra(
+                                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
+                                scheduleModel.scheduleId
+                            )
+                            activity.startActivity(intent)
+                        }
                     }
+                }
+                else -> {
+                    SmallTextButton(
+                        text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(
+                            id = R.string.more_observation_pause
+                        ) else getStringResource(
+                            id = R.string.more_observation_start
+                        ),
+                        enabled = scheduleModel.scheduleState.active() && (if (scheduleModel.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true)
+                    ) {
+                        if (scheduleModel.scheduleState == ScheduleState.RUNNING) {
+                            viewModel.pauseObservation(scheduleModel.scheduleId)
+                        } else {
+                            viewModel.startObservation(scheduleModel.scheduleId)
+                        }
 
+                    }
                 }
             }
         }

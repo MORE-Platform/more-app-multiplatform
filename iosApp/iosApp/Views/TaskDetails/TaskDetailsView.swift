@@ -63,7 +63,7 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-                    if scheduleListType != .completed {
+                    if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
                         if let model = viewModel.taskDetailsModel {
                             ObservationButton(
                                 observationActionDelegate: viewModel,
