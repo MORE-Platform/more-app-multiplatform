@@ -18,6 +18,8 @@ class StudyDetailsViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             coreViewModel.studyModel.collect{
                 withContext(Dispatchers.Main) {
+                    println("studyDetailsviewModel-----")
+                    println(it)
                     model.value = it
                 }
             }

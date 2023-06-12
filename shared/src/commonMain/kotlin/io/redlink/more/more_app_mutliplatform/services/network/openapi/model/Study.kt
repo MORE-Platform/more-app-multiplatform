@@ -10,8 +10,6 @@ package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
 
 /**
  * The study object containing all information and observation information to configure and initialize the APP
@@ -28,27 +26,27 @@ import kotlinx.serialization.encoding.*
  */
 @Serializable
 
-data class Study (
+data class Study(
 
-    @SerialName(value = "studyTitle") @Required val studyTitle: kotlin.String,
+    @SerialName(value = "studyTitle") @Required val studyTitle: String,
 
-    @SerialName(value = "participantInfo") @Required val participantInfo: kotlin.String,
+    @SerialName(value = "participantInfo") @Required val participantInfo: String,
 
-    @SerialName(value = "consentInfo") @Required val consentInfo: kotlin.String,
+    @SerialName(value = "consentInfo") @Required val consentInfo: String,
 
     @SerialName(value = "start") @Required val start: LocalDate,
 
     @SerialName(value = "end") @Required val end: LocalDate,
 
-    @SerialName(value = "observations") @Required val observations: kotlin.collections.List<Observation>,
+    @SerialName(value = "observations") @Required val observations: List<Observation>,
 
-    @SerialName(value = "contact") @Required val contact: StudyContact,
+    @SerialName(value = "contact") val contact: StudyContact? = null,
 
     /* A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed. */
-    @SerialName(value = "version") @Required val version: kotlin.Long,
+    @SerialName(value = "version") @Required val version: Long,
 
     /* The current study-state. Mainly used during the registration process. */
-    @SerialName(value = "active") val active: kotlin.Boolean? = true
+    @SerialName(value = "active") val active: Boolean? = true
 
 )
 

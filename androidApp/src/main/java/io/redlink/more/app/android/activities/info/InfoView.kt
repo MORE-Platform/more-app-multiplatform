@@ -107,9 +107,21 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 ) {
                     Spacer(modifier = Modifier.height(28.dp))
 
-                    if(viewModel.institute !== null) {
+
+                    SmallTitle(
+                        text = viewModel.studyTitle.value,
+                        color = MoreColors.PrimaryDark,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 25.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp
+                    )
+
+
+                    if(viewModel.institute.value.isNotEmpty()) {
                         SmallTitle(
-                            text = viewModel.institute,
+                            text = viewModel.institute.value,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 10.dp),
@@ -117,9 +129,9 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         )
                     }
 
-                    if(viewModel.contactPerson !== null) {
+                    if(viewModel.contactPerson.value.isNotEmpty()) {
                         SmallTitle(
-                            text = viewModel.contactPerson,
+                            text = viewModel.contactPerson.value,
                             modifier = Modifier.fillMaxWidth(),
                             color = MoreColors.Secondary,
                             textAlign = TextAlign.Center
@@ -127,25 +139,26 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     }
 
 
-                    if (viewModel.contactEmail !== null)
+                    if (viewModel.contactEmail.value.isNotEmpty()) {
                         BasicText(
-                            text = viewModel.contactEmail,
+                            text = viewModel.contactEmail.value,
+                            fontSize = 14.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MoreColors.Secondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    if (viewModel.contactPhoneNumber.value.isNotEmpty())
+                        BasicText(
+                            text = viewModel.contactPhoneNumber.value,
                             fontSize = 14.sp,
                             modifier = Modifier.fillMaxWidth(),
                             color = MoreColors.Secondary,
                             textAlign = TextAlign.Center
                         )
 
-                    if (viewModel.contactPhoneNumber != null)
-                        BasicText(
-                            text = viewModel.contactPhoneNumber,
-                            fontSize = 14.sp,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
-
-                    if(viewModel.contactPhoneNumber !== null || viewModel.contactEmail !== null || viewModel.contactPerson !== null) {
+                    if(viewModel.contactPhoneNumber.value.isNotEmpty() || viewModel.contactEmail.value.isNotEmpty() || viewModel.contactPerson.value.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Divider()
 

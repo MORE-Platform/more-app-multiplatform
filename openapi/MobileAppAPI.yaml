@@ -202,6 +202,8 @@ components:
           items:
             $ref: '#/components/schemas/Observation'
           minItems: 1
+        contact:
+          $ref: '#/components/schemas/Contact'
         version:
           $ref: '#/components/schemas/VersionTag'
       required:
@@ -212,6 +214,21 @@ components:
         - end
         - observations
         - version
+
+    Contact:
+      type: object
+      properties:
+        institute:
+          type: string
+        person:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+      required:
+        - contactPerson
+        - contactEmail
 
     Observation:
       description: The configuration of an observation for the study.
