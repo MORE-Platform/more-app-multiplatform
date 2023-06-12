@@ -107,32 +107,27 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 ) {
                     Spacer(modifier = Modifier.height(28.dp))
 
-                    SmallTitle(
-                        text = viewModel.studyTitle.value,
-                        color = MoreColors.PrimaryDark,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 25.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp
-                    )
+                    if(viewModel.institute !== null) {
+                        SmallTitle(
+                            text = viewModel.institute,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 10.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-                    SmallTitle(
-                        text = viewModel.institute,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    if(viewModel.contactPerson !== null) {
+                        SmallTitle(
+                            text = viewModel.contactPerson,
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MoreColors.Secondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-                    SmallTitle(
-                        text = viewModel.contactPerson,
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MoreColors.Secondary,
-                        textAlign = TextAlign.Center
-                    )
 
-                    if (viewModel.contactEmail != null)
+                    if (viewModel.contactEmail !== null)
                         BasicText(
                             text = viewModel.contactEmail,
                             fontSize = 14.sp,
@@ -141,27 +136,30 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             textAlign = TextAlign.Center
                         )
 
-                    if (viewModel.contactTel != null)
+                    if (viewModel.contactPhoneNumber != null)
                         BasicText(
-                            text = viewModel.contactTel,
+                            text = viewModel.contactPhoneNumber,
                             fontSize = 14.sp,
                             modifier = Modifier.fillMaxWidth(),
                             color = MoreColors.Secondary,
                             textAlign = TextAlign.Center
                         )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Divider()
+                    if(viewModel.contactPhoneNumber !== null || viewModel.contactEmail !== null || viewModel.contactPerson !== null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Divider()
 
-                    BasicText(
-                        text = getStringResource(id = R.string.info_disclaimer),
-                        color = MoreColors.Secondary,
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
+                        BasicText(
+                            text = getStringResource(id = R.string.info_disclaimer),
+                            color = MoreColors.Secondary,
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 10.dp)
+                        )
+                    }
+
                 }
             }
 

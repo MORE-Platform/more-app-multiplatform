@@ -12,12 +12,11 @@ import kotlinx.coroutines.withContext
 class InfoViewModel: ViewModel() {
     private val studyCoreViewModel = CoreStudyDetailsViewModel()
     val studyTitle = mutableStateOf("")
+    val institute = studyCoreViewModel.studyModel.value?.study?.studyContact?.institute
+    val contactPerson = studyCoreViewModel.studyModel.value?.study?.studyContact?.person
+    val contactEmail = studyCoreViewModel.studyModel.value?.study?.studyContact?.email
+    val contactPhoneNumber = studyCoreViewModel.studyModel.value?.study?.studyContact?.phoneNumber
 
-    // TODO: inforopository with infodata (not yet in bakcend) - exchange mock data to backend data after it exists
-    val institute: String = "Ludwig Boltzmann Institute "
-    val contactPerson: String = "Dr. Markus Mustermann"
-    val contactEmail: String? = "markus.mustermann@bolzmann.at"
-    val contactTel: String? = null
 
     private var job: Job? = null
 

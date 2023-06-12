@@ -21,7 +21,8 @@ import kotlinx.serialization.encoding.*
  * @param consentInfo 
  * @param start 
  * @param end 
- * @param observations 
+ * @param observations
+ * @param contact
  * @param version A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed.
  * @param active The current study-state. Mainly used during the registration process.
  */
@@ -40,6 +41,8 @@ data class Study (
     @SerialName(value = "end") @Required val end: LocalDate,
 
     @SerialName(value = "observations") @Required val observations: kotlin.collections.List<Observation>,
+
+    @SerialName(value = "contact") @Required val contact: StudyContact,
 
     /* A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed. */
     @SerialName(value = "version") @Required val version: kotlin.Long,
