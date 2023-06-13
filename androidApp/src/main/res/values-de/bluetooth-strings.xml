@@ -9,8 +9,10 @@
     <string name="more_ble_icon_description">Verbindungsansicht für Bluetooth-Geräte öffnen</string>
     <string name="more_ble_unknown_device">Unbekannt</string>
     <string name="more_ble_setup_title">Setup von externen Geräten</string>
-    <string name="more_ble_context_description">Manche Aufgaben benötigen Bluetooth Geräte um abgeschlossen zu werden. Bitte verbinden Sie sich mit folgenden Geräten</string>
+    <string name="more_ble_context_description">Manche Aufgaben benötigen Bluetooth Geräte um abgeschlossen zu werden. Stelle sicher, dass folgende Geräte verbunden sind</string>
     <string name="more_ble_context_description_part2">Sie können sich jederzeit mit Geräten verbinden in: Info > Geräte</string>
     <string name="more_ble_skip">Setup überspringen</string>
     <string name="more_ble_disabled">Bluetooth ist deaktiviert. Bitte aktivieren zum verbinden!</string>
+    <string name="more_connect_device_info">Verbinde ein Gerät, indem du es aus der Liste auswählst, nachdem du dieses mit deinem Smartphone gekoppelt hast.</string>
+    <string name="more_connect_no_device_found_info">Bitte verbinde das geforderte Gerät mit deinem Smartphone, um es mit der App zu verbinden.</string>
 </resources>

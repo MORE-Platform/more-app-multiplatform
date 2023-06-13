@@ -64,8 +64,8 @@ fun ConsentView(model: ConsentViewModel) {
         }
         items(model.permissionModel.value.consentInfo) { consentInfo ->
             Accordion(
-                title = consentInfo.title, description = consentInfo.info,
-                hasCheck = true, hasPreview = (consentInfo.title == "Study Consent")
+                title = if (model.permissionModel.value.consentInfo.indexOf(consentInfo) === 0) model.permissionModel.value.studyTitle else consentInfo.title, description = consentInfo.info,
+                hasCheck = true, hasPreview = (model.permissionModel.value.consentInfo.indexOf(consentInfo) === 0)
             )
         }
         item {

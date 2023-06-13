@@ -21,12 +21,16 @@ class StudySchema : RealmObject {
     var consentInfo: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
-    var contact: StudyContact? = null
+    var contact: StudyContact? = StudyContact()
     var version: Long = 0
     var active: Boolean = false
 
     companion object {
         fun toSchema(study: Study): StudySchema {
+            println("toSchema-----------------")
+            println(study)
+            println(study.contact)
+            println("------------------------")
             return StudySchema().apply {
                 studyTitle = study.studyTitle
                 consentInfo = study.consentInfo

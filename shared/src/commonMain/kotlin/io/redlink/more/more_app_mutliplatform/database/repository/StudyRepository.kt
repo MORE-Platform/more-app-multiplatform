@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 class StudyRepository : Repository<StudySchema>() {
     fun storeStudy(study: Study) {
+        println("storeStudy-----------")
+        println(study)
+        println(StudySchema.toSchema(study))
+        println(StudySchema)
+        println("--------------------")
         val realmObjects = mutableListOf<RealmObject>()
         realmObjects.add(StudySchema.toSchema(study))
         realmObjects.addAll(study.observations.map { ObservationSchema.toSchema(it) })
@@ -27,6 +32,9 @@ class StudyRepository : Repository<StudySchema>() {
     }
 
     fun getStudy(): Flow<StudySchema?> {
+        println("studyrepository-----------")
+        println(realmDatabase().count<StudySchema>())
+        println("----------------")
         return realmDatabase().queryFirst()
     }
 

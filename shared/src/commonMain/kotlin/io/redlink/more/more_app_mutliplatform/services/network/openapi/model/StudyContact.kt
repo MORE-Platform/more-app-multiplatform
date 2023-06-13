@@ -24,13 +24,13 @@ import kotlinx.serialization.encoding.*
 
 data class StudyContact (
 
-    @SerialName(value = "institute") val institute: kotlin.String,
+    @SerialName(value = "institute") val institute: kotlin.String? = null,
 
-    @SerialName(value = "person") @Required val person: kotlin.String,
+    @SerialName(value = "person") val person: kotlin.String? = null,
 
-    @SerialName(value = "email") @Required val email: kotlin.String,
+    @SerialName(value = "email") val email: kotlin.String? = null,
 
-    @SerialName(value = "phoneNumber") val phoneNumber: kotlin.String,
+    @SerialName(value = "phoneNumber") val phoneNumber: kotlin.String? = null,
 
 )
 

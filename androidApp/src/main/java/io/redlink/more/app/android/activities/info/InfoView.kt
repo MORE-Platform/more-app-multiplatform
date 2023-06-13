@@ -96,85 +96,88 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         }
 
         item {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
+            viewModel.model.value?.let {
                 Column(
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Spacer(modifier = Modifier.height(28.dp))
 
 
-                    SmallTitle(
-                        text = viewModel.studyTitle.value,
-                        color = MoreColors.PrimaryDark,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 25.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp
-                    )
-
-
-                    if(viewModel.institute.value.isNotEmpty()) {
                         SmallTitle(
-                            text = viewModel.institute.value,
+                            text = it.study.studyTitle,
+                            color = MoreColors.PrimaryDark,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    if(viewModel.contactPerson.value.isNotEmpty()) {
-                        SmallTitle(
-                            text = viewModel.contactPerson.value,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-
-                    if (viewModel.contactEmail.value.isNotEmpty()) {
-                        BasicText(
-                            text = viewModel.contactEmail.value,
-                            fontSize = 14.sp,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    if (viewModel.contactPhoneNumber.value.isNotEmpty())
-                        BasicText(
-                            text = viewModel.contactPhoneNumber.value,
-                            fontSize = 14.sp,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
-
-                    if(viewModel.contactPhoneNumber.value.isNotEmpty() || viewModel.contactEmail.value.isNotEmpty() || viewModel.contactPerson.value.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Divider()
-
-                        BasicText(
-                            text = getStringResource(id = R.string.info_disclaimer),
-                            color = MoreColors.Secondary,
+                                .padding(bottom = 25.dp),
                             textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp)
+                            fontSize = 18.sp
                         )
-                    }
 
+
+                        if(it.study.contact?.institute !== null) {
+                            SmallTitle(
+                                text = it.study.contact?.institute as String,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 10.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        if(it.study.contact?.person !== null) {
+                            SmallTitle(
+                                text = it.study.contact?.person as String,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+
+                        if (it.study.contact?.email !== null) {
+                            BasicText(
+                                text = it.study.contact?.email as String,
+                                fontSize = 14.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        if (it.study.contact?.phoneNumber !== null)
+                            BasicText(
+                                text = it.study.contact?.phoneNumber as String,
+                                fontSize = 14.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+
+                        if(it.study.contact?.person !== null || it.study.contact?.email !== null || it.study.contact?.phoneNumber !== null) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Divider()
+
+                            BasicText(
+                                text = getStringResource(id = R.string.info_disclaimer),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                            )
+                        }
+
+                    }
                 }
             }
+
 
         }
     }

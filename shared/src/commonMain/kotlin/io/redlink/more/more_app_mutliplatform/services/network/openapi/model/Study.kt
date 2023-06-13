@@ -40,7 +40,7 @@ data class Study(
 
     @SerialName(value = "observations") @Required val observations: List<Observation>,
 
-    @SerialName(value = "contact") val contact: StudyContact? = null,
+    @SerialName(value = "contact") val contact: StudyContact? = StudyContact(),
 
     /* A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed. */
     @SerialName(value = "version") @Required val version: Long,
