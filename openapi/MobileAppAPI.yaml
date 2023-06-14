@@ -202,8 +202,14 @@ components:
           items:
             $ref: '#/components/schemas/Observation'
           minItems: 1
-        contact:
-          $ref: '#/components/schemas/Contact'
+        contactInstitute:
+          type: string
+        contactPerson:
+          type: string
+        contactEmail:
+          type: string
+        contactPhoneNumber:
+          type: string
         version:
           $ref: '#/components/schemas/VersionTag'
       required:

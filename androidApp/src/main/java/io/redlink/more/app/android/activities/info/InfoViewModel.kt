@@ -15,27 +15,13 @@ import kotlinx.coroutines.withContext
 
 class InfoViewModel: ViewModel() {
     private val coreViewModel = CoreStudyDetailsViewModel()
-    private val studyRepository = StudyRepository()
     val model = mutableStateOf<StudyDetailsModel?>(null)
-    val studyModel = mutableStateOf<StudySchema?>(null)
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            studyRepository.getStudy().cancellable().collect {
-                withContext(Dispatchers.Main) {
-                    studyModel.value = it
-                }
-            }
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
             coreViewModel.studyModel.collect{
                 withContext(Dispatchers.Main) {
                     model.value = it
-                    println(it?.study)
-                    println(it?.study?.studyTitle)
-                    println(it?.study?.contact)
-                    println("-----------------------")
                 }
             }
         }

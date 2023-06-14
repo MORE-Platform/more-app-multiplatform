@@ -108,21 +108,22 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     ) {
                         Spacer(modifier = Modifier.height(28.dp))
 
-
-                        SmallTitle(
-                            text = it.study.studyTitle,
-                            color = MoreColors.PrimaryDark,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 25.dp),
-                            textAlign = TextAlign.Center,
-                            fontSize = 18.sp
-                        )
-
-
-                        if(it.study.contact?.institute !== null) {
+                        if(it.study.contactPerson !== null || it.study.contactEmail !== null || it.study.contactPhoneNumber !== null) {
                             SmallTitle(
-                                text = it.study.contact?.institute as String,
+                                text = "Kontaktdaten",
+                                color = MoreColors.PrimaryDark,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 25.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp
+                            )
+                        }
+
+
+                        if(it.study.contactInstitute !== null) {
+                            SmallTitle(
+                                text = it.study.contactInstitute as String,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 10.dp),
@@ -130,9 +131,9 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             )
                         }
 
-                        if(it.study.contact?.person !== null) {
+                        if(it.study.contactPerson !== null) {
                             SmallTitle(
-                                text = it.study.contact?.person as String,
+                                text = it.study.contactPerson as String,
                                 modifier = Modifier.fillMaxWidth(),
                                 color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center
@@ -140,9 +141,9 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         }
 
 
-                        if (it.study.contact?.email !== null) {
+                        if (it.study.contactEmail !== null) {
                             BasicText(
-                                text = it.study.contact?.email as String,
+                                text = it.study.contactEmail as String,
                                 fontSize = 14.sp,
                                 modifier = Modifier.fillMaxWidth(),
                                 color = MoreColors.Secondary,
@@ -150,16 +151,16 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             )
                         }
 
-                        if (it.study.contact?.phoneNumber !== null)
+                        if (it.study.contactPhoneNumber !== null)
                             BasicText(
-                                text = it.study.contact?.phoneNumber as String,
+                                text = it.study.contactPhoneNumber as String,
                                 fontSize = 14.sp,
                                 modifier = Modifier.fillMaxWidth(),
                                 color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center
                             )
 
-                        if(it.study.contact?.person !== null || it.study.contact?.email !== null || it.study.contact?.phoneNumber !== null) {
+                        if(it.study.contactPerson !== null || it.study.contactEmail !== null || it.study.contactPhoneNumber !== null) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Divider()
 

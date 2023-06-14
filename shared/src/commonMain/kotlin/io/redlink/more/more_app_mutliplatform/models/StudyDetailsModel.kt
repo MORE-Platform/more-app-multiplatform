@@ -14,11 +14,6 @@ data class StudyDetailsModel(
 ) {
     companion object {
         fun createModelFrom(study: StudySchema, observations: List<ObservationSchema>, totalTasks: Long, finishedTasks: Long): StudyDetailsModel {
-            println("study details model-------------")
-            println(study)
-            println(study.studyTitle)
-            println(study.contact)
-            println("-----------------")
             return StudyDetailsModel(
                 study = study.copyFromRealm(),
                 observations = observations,

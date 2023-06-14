@@ -45,13 +45,6 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                                 )
                             }.cancellable().collect { (triple, observations) ->
                                 triple.first?.let {studySchema ->
-                                    println("corestudy details view model-----------")
-                                    println(studySchema)
-                                    println(triple.first?.studyTitle)
-                                    println(triple.first?.contact)
-                                    println(studySchema.studyTitle)
-                                    println(studySchema.contact)
-                                    println("----------------------")
                                     studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations, triple.third,
                                         triple.second.toLong()
                                     )
