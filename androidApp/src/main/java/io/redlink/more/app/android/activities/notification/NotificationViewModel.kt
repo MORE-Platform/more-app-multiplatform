@@ -25,7 +25,7 @@ class NotificationViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             coreViewModel.notificationList.collect {
                 withContext(Dispatchers.Main) {
-                    notificationList.value = it
+                    notificationList.value = it.sortedByDescending { it.timestamp }
                 }
             }
         }
