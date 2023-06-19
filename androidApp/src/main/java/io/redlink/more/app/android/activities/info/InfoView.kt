@@ -96,74 +96,89 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         }
 
         item {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
+            viewModel.model.value?.let {
                 Column(
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Spacer(modifier = Modifier.height(28.dp))
 
-                    SmallTitle(
-                        text = viewModel.studyTitle.value,
-                        color = MoreColors.PrimaryDark,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 25.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp
-                    )
+                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
+                            SmallTitle(
+                                text = "Kontaktdaten",
+                                color = MoreColors.PrimaryDark,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 25.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp
+                            )
+                        }
 
-                    SmallTitle(
-                        text = viewModel.institute,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp),
-                        textAlign = TextAlign.Center
-                    )
 
-                    SmallTitle(
-                        text = viewModel.contactPerson,
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MoreColors.Secondary,
-                        textAlign = TextAlign.Center
-                    )
+                        if(it.study.contactInstitute != null) {
+                            SmallTitle(
+                                text = it.study.contactInstitute as String,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 10.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                    if (viewModel.contactEmail != null)
-                        BasicText(
-                            text = viewModel.contactEmail,
-                            fontSize = 14.sp,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
+                        if(it.study.contactPerson != null) {
+                            SmallTitle(
+                                text = it.study.contactPerson as String,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                    if (viewModel.contactTel != null)
-                        BasicText(
-                            text = viewModel.contactTel,
-                            fontSize = 14.sp,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MoreColors.Secondary,
-                            textAlign = TextAlign.Center
-                        )
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Divider()
+                        if (it.study.contactEmail != null) {
+                            BasicText(
+                                text = it.study.contactEmail as String,
+                                fontSize = 14.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                    BasicText(
-                        text = getStringResource(id = R.string.info_disclaimer),
-                        color = MoreColors.Secondary,
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                    )
+                        if (it.study.contactPhoneNumber != null)
+                            BasicText(
+                                text = it.study.contactPhoneNumber as String,
+                                fontSize = 14.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center
+                            )
+
+                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Divider()
+
+                            BasicText(
+                                text = getStringResource(id = R.string.info_disclaimer),
+                                color = MoreColors.Secondary,
+                                textAlign = TextAlign.Center,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                            )
+                        }
+
+                    }
                 }
             }
+
 
         }
     }

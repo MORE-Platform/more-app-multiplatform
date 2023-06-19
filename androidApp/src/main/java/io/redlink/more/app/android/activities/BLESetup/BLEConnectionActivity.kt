@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
@@ -81,17 +82,21 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
             item {
                 Title(text = getStringResource(id = R.string.more_ble_setup_title))
                 BasicText(text = "${getStringResource(id = R.string.more_ble_context_description)}:", modifier = Modifier.padding(vertical = 4.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
             itemsIndexed(viewModel.neededDevices) {_, item ->
-                BasicText(text = "- $item")
+                SmallTitle(text = "- $item", fontSize = 16.sp, color = MoreColors.PrimaryDark)
             }
             if (showDescrPart2) {
                 item {
+                    Spacer(modifier = Modifier.height(12.dp))
                     BasicText(text = getStringResource(id = R.string.more_ble_context_description_part2), modifier = Modifier.padding(vertical = 4.dp))
                 }
             }
             item {
-                Divider()
+                Spacer(modifier = Modifier.height(16.dp))
+                MoreDivider()
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -101,7 +106,6 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                         text = getStringResource(id = R.string.more_ble_connected_devices)
                     )
                     Box(modifier = Modifier)
-
                 }
             }
             if (viewModel.bluetoothPowerState.value) {
@@ -133,10 +137,17 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(20.dp))
+                        MoreDivider()
+                        Spacer(modifier = Modifier.height(12.dp))
                         Heading(
                             text = getStringResource(id = R.string.more_ble_discovered_devices)
                         )
+                        if (viewModel.connectedDevices.isEmpty()) {
+                            BasicText(
+                                text = "${getStringResource(id = R.string.more_connect_device_info)}",
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
                     }
                 }
                 if (viewModel.discoveredDevices.isEmpty()) {
