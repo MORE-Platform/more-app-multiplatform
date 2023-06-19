@@ -108,7 +108,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     ) {
                         Spacer(modifier = Modifier.height(28.dp))
 
-                        if(it.study.contactPerson !== null || it.study.contactEmail !== null || it.study.contactPhoneNumber !== null) {
+                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             SmallTitle(
                                 text = "Kontaktdaten",
                                 color = MoreColors.PrimaryDark,
@@ -121,7 +121,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         }
 
 
-                        if(it.study.contactInstitute !== null) {
+                        if(it.study.contactInstitute != null) {
                             SmallTitle(
                                 text = it.study.contactInstitute as String,
                                 modifier = Modifier
@@ -131,7 +131,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             )
                         }
 
-                        if(it.study.contactPerson !== null) {
+                        if(it.study.contactPerson != null) {
                             SmallTitle(
                                 text = it.study.contactPerson as String,
                                 modifier = Modifier.fillMaxWidth(),
@@ -141,7 +141,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         }
 
 
-                        if (it.study.contactEmail !== null) {
+                        if (it.study.contactEmail != null) {
                             BasicText(
                                 text = it.study.contactEmail as String,
                                 fontSize = 14.sp,
@@ -151,7 +151,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             )
                         }
 
-                        if (it.study.contactPhoneNumber !== null)
+                        if (it.study.contactPhoneNumber != null)
                             BasicText(
                                 text = it.study.contactPhoneNumber as String,
                                 fontSize = 14.sp,
@@ -160,7 +160,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                                 textAlign = TextAlign.Center
                             )
 
-                        if(it.study.contactPerson !== null || it.study.contactEmail !== null || it.study.contactPhoneNumber !== null) {
+                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Divider()
 
