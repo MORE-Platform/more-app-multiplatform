@@ -5,6 +5,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -18,6 +19,7 @@ abstract class Observation(val observationType: ObservationType) {
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
+
 
     fun apply(observationId: String, scheduleId: String) {
         observationIds.add(observationId)
@@ -33,7 +35,7 @@ abstract class Observation(val observationType: ObservationType) {
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId
         if (running && configChanged) {
-            stopAndFinish()
+            stopAndFinish(scheduleId)
         }
         configChanged = false
         return if (!running) {
@@ -44,19 +46,11 @@ abstract class Observation(val observationType: ObservationType) {
         } else true
     }
 
-    fun stop(observationId: String) {
+    fun stop(scheduleId: String) {
         if (observationIds.size <= 1) {
             stop {
                 finish()
-                config.clear()
-                configChanged = false
-                observationIds.remove(observationId)
-                scheduleIds.filterValues { it == observationId }.keys.forEach { scheduleId ->
-                    scheduleIds.remove(scheduleId)
-                }
-                if (observationIds.isEmpty()) {
-                    running = false
-                }
+                observationShutdown(scheduleId)
             }
         } else {
             finish()
@@ -74,8 +68,11 @@ abstract class Observation(val observationType: ObservationType) {
             Instant.fromEpochSeconds(it, 0)
         } ?: Clock.System.now()
         if (settings.isNotEmpty()) {
-            this.config += settings
-            configChanged = true
+            val newConfig = this.config + settings
+            if (newConfig != this.config) {
+                configChanged = true
+                this.config += newConfig
+            }
         }
     }
 
@@ -91,7 +88,9 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
-    open fun needsToRestartAfterAppClosure() = false
+    open fun bleDevicesNeeded(): Set<String> = emptySet()
+
+    open fun ableToAutomaticallyStart() = true
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
@@ -109,29 +108,45 @@ abstract class Observation(val observationType: ObservationType) {
         onCompletion()
     }
 
-    fun stopAndFinish() {
+    fun stopAndFinish(scheduleId: String) {
         stop {
             finish()
+            observationShutdown(scheduleId)
         }
     }
 
-    fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE) {
+    fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
         stop {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
+            scheduleId?.let {
+                observationShutdown(it)
+            }
         }
     }
 
-    fun stopAndSetDone() {
+    fun stopAndSetDone(scheduleId: String) {
         stop {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
+            observationShutdown(scheduleId)
+            removeDataCount()
         }
     }
 
     open fun store(start: Long = -1, end: Long = -1, onCompletion: () -> Unit) {
         dataManager?.store()
         onCompletion()
+    }
+
+    private fun observationShutdown(scheduleId: String) {
+        val observationId = scheduleIds.remove(scheduleId)
+        observationId?.let { observationIds.remove(it) }
+        if (observationIds.isEmpty()) {
+            config.clear()
+            configChanged = false
+            running = false
+        }
     }
 
     protected fun finish() {

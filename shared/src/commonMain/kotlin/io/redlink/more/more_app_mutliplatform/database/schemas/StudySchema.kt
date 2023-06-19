@@ -20,7 +20,7 @@ class StudySchema : RealmObject {
     var start: RealmInstant? = null
     var end: RealmInstant? = null
     var version: Long = 0
-    var active: Boolean? = null
+    var active: Boolean = false
 
     companion object {
         fun toSchema(study: Study): StudySchema {
@@ -37,6 +37,7 @@ class StudySchema : RealmObject {
                         .toEpochMilliseconds()
                 ).toRealmInstant()
                 version = study.version
+                active = study.active ?: false
             }
         }
     }

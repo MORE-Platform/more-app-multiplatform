@@ -40,7 +40,7 @@ struct InfoView: View {
                             studyTitle: .constant(viewModel.studyTitle  ?? ""),
                             institute: .constant(viewModel.institute),
                             contactPerson: .constant(viewModel.contactPerson),
-                            info: .constant(String.localizedString(forKey: "info_disclaimer", inTable: infoStrings, withComment: "Contact us.")),
+                            info: .constant(String.localize(forKey: "info_disclaimer", withComment: "Contact us.", inTable: infoStrings)),
                             contactEmail: viewModel.contactEmail,
                             contactTel: viewModel.contactTel
                         )

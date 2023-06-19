@@ -22,7 +22,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     var delegate: ConsentViewModelListener? = nil
     var stringTable = "SettingsView"
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localizedString(forKey: "study_consent", inTable: "SettingView", withComment: "Consent of the study"), consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingView"), consentInfo: [])
     @Published var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
@@ -33,7 +33,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     
     init(registrationService: RegistrationService) {
         print("ConsentViewModel allocated!")
-        coreModel = CorePermissionViewModel(registrationService: registrationService, studyConsentTitle: String.localizedString(forKey: "study_consent", inTable: stringTable, withComment: "Consent of the study"))
+        coreModel = CorePermissionViewModel(registrationService: registrationService, studyConsentTitle: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: stringTable))
         super.init()
         coreModel.onConsentModelChange { model in
             self.permissionModel = model

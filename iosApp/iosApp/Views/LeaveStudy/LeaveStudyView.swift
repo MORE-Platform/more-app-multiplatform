@@ -38,7 +38,7 @@ struct LeaveStudyView: View {
                         Spacer()
                     }.padding(.top)
 
-                    SectionHeading(sectionTitle: .constant(String.localizedString(forKey: "first_message", inTable: stringTable, withComment: "exit message")))
+                    SectionHeading(sectionTitle: .constant(String.localize(forKey: "first_message", withComment: "exit message", inTable: stringTable)))
                         .foregroundColor(Color.more.important)
                         .padding(.bottom, 2)
                         .multilineTextAlignment(.center)
@@ -47,7 +47,7 @@ struct LeaveStudyView: View {
 
                     HStack{
                         Spacer()
-                        Text(String.localizedString(forKey: "really_message", inTable: stringTable, withComment: "second question message"))
+                        Text(String.localize(forKey: "really_message", withComment: "second question message", inTable: stringTable))
                             .padding(.bottom)
                         Spacer()
                     }
@@ -58,7 +58,7 @@ struct LeaveStudyView: View {
                     ) {
                         contentViewModel.isLeaveStudyOpen = false
                     } label: {
-                        Text(String.localizedString(forKey: "continue_study", inTable: stringTable, withComment: "button to continue study")).foregroundColor(Color.more.white)
+                        Text(String.localize(forKey: "continue_study", withComment: "button to continue study", inTable: stringTable)).foregroundColor(Color.more.white)
                     }
                     .padding(.bottom, 2)
 
@@ -68,7 +68,7 @@ struct LeaveStudyView: View {
                     ) {
                         contentViewModel.isLeaveStudyConfirmOpen = true
                     } label: {
-                        Text(String.localizedString(forKey: "withdraw_study", inTable: stringTable, withComment: "button to withdraw study")).foregroundColor(Color.more.white)
+                        Text(String.localize(forKey: "withdraw_study", withComment: "button to withdraw study", inTable: stringTable)).foregroundColor(Color.more.white)
                     }
                     .fullScreenCover(isPresented: $contentViewModel.isLeaveStudyConfirmOpen) {
                         LeaveStudyConfirmationView(viewModel: viewModel)

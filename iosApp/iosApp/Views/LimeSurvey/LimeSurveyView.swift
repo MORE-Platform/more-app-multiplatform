@@ -10,7 +10,6 @@ import SwiftUI
 
 struct LimeSurveyView: View {
     @StateObject var viewModel: LimeSurveyViewModel
-    @EnvironmentObject var navigationModalState: NavigationModalState
     
     private let stringsTable = "LimeSurvey"
     var body: some View {
@@ -23,9 +22,8 @@ struct LimeSurveyView: View {
                         }
                     } else {
                         if let url = viewModel.limeSurveyLink {
-                            WebView(url: url)
+                            WebView(url: url, viewModel: viewModel.webViewModel)
                                 .ignoresSafeArea(.all, edges: .bottom)
-                            
                         } else {
                             Text("URL is nil")
                         }
@@ -35,14 +33,18 @@ struct LimeSurveyView: View {
             .customNavigationTitle(with: NavigationScreens.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
             .toolbar {
                 if viewModel.wasAnswered {
-                    Button("Done".localize(useTable: stringsTable, withComment: "LimeSurvey done")) {
+                    Button {
                         viewModel.onFinish()
-                        navigationModalState.limeSurveyOpen = false
+                    } label: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.more.secondary)
                     }
                 } else {
-                    Button("Cancel".localize(useTable: stringsTable, withComment: "Cancel LimeSurvey")) {
+                    Button {
                         viewModel.onFinish()
-                        navigationModalState.limeSurveyOpen = false
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.more.important)
                     }
                 }
             }
@@ -58,7 +60,6 @@ struct LimeSurveyView: View {
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: ""))
-            .environmentObject(NavigationModalState())
+        LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: NavigationModalState()))
     }
 }

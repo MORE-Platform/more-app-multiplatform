@@ -13,6 +13,13 @@ import RxSwift
 import shared
 
 class PolarConnector: BluetoothConnector {
+    var specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary()
+    
+    
+    var bluetoothState: BluetoothState = .off
+    
+    var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
+    var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     
     private var devicesSubscription: Disposable? = nil
     var polarApi = PolarBleApiDefaultImpl
@@ -28,7 +35,7 @@ class PolarConnector: BluetoothConnector {
                              ])
     weak var observer: BluetoothConnectorObserver?
     
-    private var scanning = false
+    var scanning = false
     
     init() {
         self.polarApi.polarFilter(false)
@@ -39,8 +46,9 @@ class PolarConnector: BluetoothConnector {
         //self.polarApi.logger = self
     }
     
-
-    var specificBluetoothConnectors: [String: BluetoothConnector] = [:]
+    func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
+        specificBluetoothConnectors[key] = connector
+    }
 
     func connect(device: BluetoothDevice) -> KotlinError? {
         if let deviceId = device.deviceId {
@@ -64,17 +72,13 @@ class PolarConnector: BluetoothConnector {
             }
         }
     }
-
-    func isScanning() -> Bool {
-        scanning
-    }
-
+    
     func scan() {
         if !scanning {
             scanning = true
             self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
                 if let self {
-                    self.discoveredDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
+                    self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
                 }
             }, onError: { error in
                 print(error)
@@ -109,12 +113,33 @@ class PolarConnector: BluetoothConnector {
         observer?.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
     }
     
-    func discoveredDevice(device: BluetoothDevice) {
-        observer?.discoveredDevice(device: device)
-    }
-    
     func removeDiscoveredDevice(device: BluetoothDevice) {
         observer?.removeDiscoveredDevice(device: device)
+    }
+    
+    func didDiscoverDevice(device: BluetoothDevice) {
+        observer?.didDiscoverDevice(device: device)
+    }
+    
+    func isScanning(boolean: Bool) {
+        scanning = boolean
+        observer?.isScanning(boolean: boolean)
+    }
+    
+    func onBluetoothStateChange(bluetoothState: BluetoothState) {
+        self.bluetoothState = bluetoothState
+        observer?.onBluetoothStateChange(bluetoothState: bluetoothState)
+    }
+    
+    func applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
+        observer = bluetoothConnectorObserver
+        if bluetoothConnectorObserver != nil {
+            replayStates()
+        }
+    }
+    
+    func replayStates() {
+        
     }
     
 }

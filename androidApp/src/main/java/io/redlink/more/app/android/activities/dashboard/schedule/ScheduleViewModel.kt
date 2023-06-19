@@ -14,6 +14,7 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +24,8 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class ScheduleViewModel(
-    val coreFilterModel: CoreDashboardFilterViewModel,
-    dataRecorder: AndroidDataRecorder,
+    coreFilterModel: CoreDashboardFilterViewModel,
+    dataRecorder: DataRecorder,
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
 
@@ -47,11 +48,10 @@ class ScheduleViewModel(
                 schedulesByDate.forEach { (date, schedules) ->
                     schedulesByDate[date] = schedules.filterNot { it.scheduleId in idsToRemove }
                 }
-                val schemasToAdd = added + updated
+                val schemasToAdd = mergeSchedules(added, updated)
                 schemasToAdd.groupBy { it.start.jvmLocalDate() }.forEach { (date, schedules) ->
-                    schedulesByDate[date] = schedulesByDate.getOrDefault(date, emptyList()) + schedules
+                    schedulesByDate[date] = mergeSchedules(schedules.toSet(), schedulesByDate.getOrDefault(date, emptyList()).toSet()).sortedBy { it.start }
                 }
-                schedulesByDate.entries.removeIf { it.value.isEmpty() }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -71,10 +71,6 @@ class ScheduleViewModel(
         coreViewModel.viewDidDisappear()
     }
 
-    fun updateTaskStates() {
-        ObservationRecordingService.updateTaskStates()
-    }
-
     fun startObservation(scheduleId: String) {
         coreViewModel.start(scheduleId)
     }
@@ -85,5 +81,11 @@ class ScheduleViewModel(
 
     fun stopObservation(scheduleId: String) {
         coreViewModel.stop(scheduleId)
+    }
+
+    private fun mergeSchedules(first: Set<ScheduleModel>, second: Set<ScheduleModel>): Set<ScheduleModel> {
+        val firstIds = first.map { it.scheduleId }.toSet()
+        val secondFiltered = second.filter { it.scheduleId !in firstIds }
+        return first + secondFiltered
     }
 }

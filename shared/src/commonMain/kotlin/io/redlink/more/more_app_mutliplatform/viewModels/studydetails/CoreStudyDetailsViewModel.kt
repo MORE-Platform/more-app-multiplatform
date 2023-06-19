@@ -32,10 +32,10 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                         studyRepository.getStudy()
                             .combine(scheduleRepository.allSchedulesWithStatus(true).cancellable()) { study, doneTasks ->
                                 Pair(study, doneTasks.size)
-                            }.combine(scheduleRepository.count().cancellable()) { firstPair, taskCount ->
+                            }.combine(scheduleRepository.count().cancellable()) { (studySchema, doneTaskCount), taskCount ->
                                 Triple(
-                                    firstPair.first,
-                                    firstPair.second,
+                                    studySchema,
+                                    doneTaskCount,
                                     taskCount
                                 )
                             }.combine(observationRepository.observations().cancellable()) { triple, observations ->
@@ -43,11 +43,11 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                                     triple,
                                     observations,
                                 )
-                            }.cancellable().collect {
-                                it.first.first?.let {studySchema ->
-                                    println(it)
-                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, it.second, it.first.third,
-                                        it.first.second.toLong()
+                            }.cancellable().collect { (triple, observations) ->
+                                triple.first?.let {studySchema ->
+                                    println(studySchema)
+                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations, triple.third,
+                                        triple.second.toLong()
                                     )
                                 }
                             }

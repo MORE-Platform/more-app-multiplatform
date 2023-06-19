@@ -25,6 +25,7 @@ import io.redlink.more.app.android.ui.theme.moreApproved
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
+import io.redlink.more.app.android.ui.theme.moreImportant
 
 @Composable
 fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyViewModel) {
@@ -107,9 +108,10 @@ fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyVie
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                SwipeButton(
-                    text = getStringResource(id = R.string.more_settings_resign_swipe),
-                    isComplete = false
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_settings_resign_confirm),
+                    buttonColors = ButtonDefaults.moreImportant(),
+                    borderStroke = MoreColors.borderImportant()
                 ) {
                     viewModel.removeParticipation(context)
                 }

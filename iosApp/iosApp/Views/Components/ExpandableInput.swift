@@ -17,6 +17,10 @@ struct ExpandableInput: View {
     
     @Binding var input: String
     
+    var uppercase: Bool = false
+    var autoCorrectDisabled: Bool = false
+    var textType: UITextContentType? = nil
+    
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -30,9 +34,9 @@ struct ExpandableInput: View {
             
             if expanded {
                 if isSmTextfield {
-                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input)
+                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase, textType: textType)
                 } else {
-                    MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input)
+                    MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, textType: textType)
                 }
             }
             
@@ -42,6 +46,6 @@ struct ExpandableInput: View {
 
 struct ExpandableInput_Preview: PreviewProvider {
     static var previews: some View {
-        ExpandableInput(expanded: .constant(true), isSmTextfield: .constant(false), headerText: .constant("Text for header"), inputPlaceholder: .constant("Placeholdertext for input"), input: .constant("me"))
+        ExpandableInput(expanded: .constant(true), isSmTextfield: .constant(false), headerText: .constant("Text for header"), inputPlaceholder: .constant("Placeholdertext for input"), input: .constant("me"), uppercase: false)
     }
 }

@@ -21,7 +21,7 @@ class TaskDetailsViewModel(
     val dataPointCount = mutableStateOf(0L)
     val taskDetailsModel = mutableStateOf(
         TaskDetailsModel(
-            "", "", "", "", 0, 0, "", ScheduleState.DEACTIVATED,
+            "", "", "", "", 0, 0, "", false, ScheduleState.DEACTIVATED
         )
     )
 

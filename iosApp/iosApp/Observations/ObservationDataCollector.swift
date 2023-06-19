@@ -11,16 +11,14 @@ import shared
 
 
 class ObservationDataCollector {
-    private let dataManager: iOSObservationDataManager = AppDelegate.dataManager
     private let observationRepository: ObservationRepository = ObservationRepository()
-    private let scheduleRepository = ScheduleRepository()
     private var job: Ktor_ioCloseable?
 
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {
         print("Collect undone observations")
+        AppDelegate.shared.updateTaskStates()
         job = observationRepository.collectObservationsWithUndoneSchedules { [weak self] observations in
             if let self {
-                self.scheduleRepository.updateTaskStates(observationFactory: nil)
                 let observationMergerSet = observations
                     .mapValues{$0.filter{$0.getState() == .running}}
                     .filter{!$0.value.isEmpty}
@@ -35,7 +33,7 @@ class ObservationDataCollector {
                         let obsMerger = observationMergerSet.flatMap{ $0.value}.filter{ $0.observationType == type }
                         
                         if !obsMerger.isEmpty,
-                           let obs = AppDelegate.observationFactory.observation(type: type),
+                           let obs = AppDelegate.shared.observationFactory.observation(type: type),
                            let start = observations.keys.filter({$0.observationType == type}).map({Int64($0.collectionTimestamp.epochSeconds)}).max(),
                            let end = obsMerger.map({Int64($0.end?.epochSeconds ?? 0)}).max() {
                             
@@ -64,7 +62,6 @@ class ObservationDataCollector {
                 completion(false)
             }
         }
-        scheduleRepository.updateTaskStates(observationFactory: AppDelegate.observationFactory)
     }
 
     func close() {

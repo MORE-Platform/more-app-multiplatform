@@ -17,6 +17,7 @@ class ContentViewModel: ObservableObject {
     @Published var loginViewScreenNr = 0
     @Published var isLeaveStudyOpen: Bool = false
     @Published var isLeaveStudyConfirmOpen: Bool = false
+    @Published var showBleView = false
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -29,7 +30,7 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
-    lazy var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+    var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
     lazy var settingsViewModel: SettingsViewModel = {
@@ -37,24 +38,34 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-
+    
     lazy var infoViewModel = InfoViewModel()
 
-    lazy var bluetoothViewModel: BluetoothConnectionViewModel = {
-        BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
-    }()
-
+    lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
     
-
     init() {
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
         if hasCredentials {
-            DispatchQueue.main.async {
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
-                AppDelegate.recorder.restartAll()
+            scanBluetooth()
+            AppDelegate.shared.activateObservationWatcher()
+        }
+    }
+    
+    func scanBluetooth() {
+        let pair = AppDelegate.shared.showBleSetup()
+
+        if let hasBleObservations = pair.second, hasBleObservations.boolValue {
+            if let firstStartup = pair.first, firstStartup.boolValue {
+                DispatchQueue.main.async {
+                    self.showBleView = true
+                }
+            } else if pair.first != nil {
+                DispatchQueue.main.async {
+                    BluetoothDeviceRepository(bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
+                        .updateConnectedDevices(listenForTimeInMillis: 5000)
+                }
             }
-            AppDelegate.dataManager.listenToDatapointCountChanges()
         }
     }
     
@@ -72,21 +83,17 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-    func updateSchedules() {
-        TaskScheduleService().startUpdateTimer()
-    }
-
     private func reinitAllViewModels() {
         isLeaveStudyOpen = false
         isLeaveStudyConfirmOpen = false
-        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all))
+        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
-
+        
         settingsViewModel = SettingsViewModel()
         settingsViewModel.delegate = self
-
-        bluetoothViewModel = BluetoothConnectionViewModel(bluetoothConnector: IOSBluetoothConnector())
+        
+        bluetoothViewModel = BluetoothConnectionViewModel()
         infoViewModel = InfoViewModel()
     }
 }
@@ -105,11 +112,12 @@ extension ContentViewModel: ConsentViewModelListener {
     }
     
     func credentialsStored() {
+        reinitAllViewModels()
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
-                BluetoothDeviceRepository(bluetoothConnector: IOSBluetoothConnector()).updateConnectedDevices()
-                AppDelegate.dataManager.listenToDatapointCountChanges()
+                scanBluetooth()
+                AppDelegate.shared.activateObservationWatcher()
             }
         }
         FCMService.getNotificationToken()
@@ -122,6 +130,5 @@ extension ContentViewModel: ConsentViewModelListener {
             }
         }
         showLoginView()
-        reinitAllViewModels()
     }
 }

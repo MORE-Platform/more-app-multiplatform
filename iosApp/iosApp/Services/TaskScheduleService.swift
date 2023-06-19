@@ -40,7 +40,7 @@ class TaskScheduleService {
     }
     
     private func update() {
-        self.scheduleRepository.updateTaskStates(observationFactory: AppDelegate.observationFactory)
+        AppDelegate.shared.updateTaskStates()
         self.scheduleNextUpdate()
     }
     

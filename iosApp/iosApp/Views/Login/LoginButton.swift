@@ -18,7 +18,7 @@ struct LoginButton: View {
         MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabled) {
             model.validate()
         } label: {
-            Text(verbatim:.localizedString(forKey: "login_button", inTable: stringTable, withComment: "button to log into a more study"))
+            Text(verbatim:.localize(forKey: "login_button", withComment: "button to log into a more study", inTable: stringTable))
         }
     }
 }
@@ -26,6 +26,6 @@ struct LoginButton: View {
 struct LoginButton_Previews: PreviewProvider {
     static var previews: some View {
         LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false))
-            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository()))))
+            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

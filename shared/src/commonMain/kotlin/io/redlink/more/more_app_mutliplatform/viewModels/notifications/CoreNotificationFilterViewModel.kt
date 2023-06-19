@@ -19,9 +19,9 @@ class CoreNotificationFilterViewModel {
      */
     fun processFilterChange(filter: String?) {
         Scope.launch {
-            currentFilter.emit(
-                currentFilter.value.changeFilter(filter)
-            )
+//            currentFilter.emit(
+////                currentFilter.value.changeFilter(filter)
+//            )
         }
     }
 

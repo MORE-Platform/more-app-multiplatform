@@ -1,5 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.util
 
+import io.github.aakira.napier.Napier
+import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -8,9 +10,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
 
 object Scope {
+    private val mutex = Mutex()
     private val rootJob = SupervisorJob()
     private val scope = CoroutineScope(rootJob + Dispatchers.Default)
     private val jobs = mutableMapOf<String, Job>()
@@ -21,18 +26,34 @@ object Scope {
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.launch(coroutineContext, start, block)
-        job.invokeOnCompletion {
-            jobs.remove(uuid)
+        val job = scope.launch(coroutineContext, start, block).freeze()
+        scope.launch {
+            mutex.withLock {
+                jobs[uuid] = job
+                job.invokeOnCompletion {
+                    scope.launch {
+                        mutex.withLock {
+                            try {
+                                jobs.remove(uuid)
+                            } catch (e: Exception) {
+                                Napier.e { e.stackTraceToString() }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        jobs[uuid] = job
         return Pair(uuid, job)
     }
 
     fun create(): Pair<String, Job> {
         val job = Job(rootJob)
         val uuid = createUUID()
-        jobs[uuid] = job
+        scope.launch {
+            mutex.withLock {
+                jobs[uuid] = job
+            }
+        }
         return Pair(uuid, job)
     }
 
@@ -40,24 +61,53 @@ object Scope {
 
     fun repeatedLaunch(intervalMillis: Long, block: suspend CoroutineScope.() -> Unit): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.repeatEveryFewSeconds(intervalMillis, block)
-        job.invokeOnCompletion {
-            jobs.remove(uuid)
+        val job = scope.repeatEveryFewSeconds(intervalMillis, block).freeze()
+        scope.launch {
+            mutex.withLock {
+                jobs[uuid] = job
+                job.invokeOnCompletion {
+                    scope.launch {
+                        mutex.withLock {
+                            try {
+                                jobs.remove(uuid)
+                            } catch (e: Exception) {
+                                Napier.e { e.stackTraceToString() }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        jobs[uuid] = job
         return Pair(uuid, job)
     }
 
     fun cancel(uuid: String) {
-        jobs[uuid]?.cancel()
+        scope.launch {
+            mutex.withLock {
+                jobs[uuid]?.cancel()
+            }
+        }
     }
 
     fun cancel(uuids: Collection<String>) {
         val set = uuids.toSet()
-        jobs.filter { it.key in set }.forEach { it.value.cancel() }
+        scope.launch {
+            mutex.withLock {
+                val jobsToCancel = jobs.filter { it.key in set }.toList()
+                try {
+                    jobsToCancel.forEach { it.second.cancel() }
+                } catch (exception: Exception) {
+                    Napier.e { exception.stackTraceToString() }
+                }
+            }
+        }
     }
 
     fun cancel() {
-        rootJob.cancelChildren()
+        scope.launch {
+            mutex.withLock {
+                rootJob.cancelChildren()
+            }
+        }
     }
 }

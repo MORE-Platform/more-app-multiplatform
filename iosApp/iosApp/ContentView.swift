@@ -8,6 +8,9 @@ struct ContentView: View {
             if viewModel.hasCredentials {
                 MainTabView()
                     .environmentObject(viewModel)
+                    .sheet(isPresented: $viewModel.showBleView) {
+                        BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                    }
             } else {
                 MoreMainBackgroundView {
                     VStack {

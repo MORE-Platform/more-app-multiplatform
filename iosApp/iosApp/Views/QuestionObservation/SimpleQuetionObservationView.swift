@@ -44,7 +44,7 @@ struct SimpleQuetionObservationView: View {
                                     navigationModalState.simpleQuestionOpen = false
                                 }
                             } label: {
-                                Text(String.localizedString(forKey: "Answer", inTable: simpleQuestionStrings, withComment: "Click answer button to send your answer."))
+                                Text(String.localize(forKey: "Answer", withComment: "Click answer button to send your answer.", inTable: simpleQuestionStrings))
                             }
                             .padding(.top, 30)
                         }

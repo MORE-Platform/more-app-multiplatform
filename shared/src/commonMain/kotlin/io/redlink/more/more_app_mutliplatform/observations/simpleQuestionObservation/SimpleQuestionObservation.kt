@@ -16,6 +16,10 @@ class SimpleQuestionObservation : Observation(observationType = SimpleQuestionTy
         return true
     }
 
+    override fun ableToAutomaticallyStart(): Boolean {
+        return false
+    }
+
     override fun applyObservationConfig(settings: Map<String, Any>) {
     }
 }

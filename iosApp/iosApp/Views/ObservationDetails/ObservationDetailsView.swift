@@ -43,7 +43,7 @@ struct ObservationDetailsView: View {
                     ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
                     
                     HStack {
-                        AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.observationDetailModel?.participantInformation ?? ""), isOpen: true)
+                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: .constant(viewModel.observationDetailModel?.participantInformation ?? ""), isOpen: true)
                     }
                     .padding(.top, 10)
                     

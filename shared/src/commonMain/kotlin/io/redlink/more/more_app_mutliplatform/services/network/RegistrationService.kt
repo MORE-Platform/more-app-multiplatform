@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform.services.network
 import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.Shared
+import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
@@ -12,6 +13,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,7 +34,7 @@ class RegistrationService (
 
     fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
-            scope.launch {
+            Scope.launch {
                 val (result, networkError) = shared.networkService.validateRegistrationToken( token.uppercase(), endpoint)
                 result?.let {
                     study = it
@@ -48,6 +50,11 @@ class RegistrationService (
     }
 
     fun acceptConsent(consentInfoMd5: String, uniqueDeviceId: String, onSuccess: (Boolean) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
+        Scope.launch {
+            shared.credentialRepository.remove()
+            shared.endpointRepository.removeEndpoint()
+            DatabaseManager.deleteAll()
+        }
         study?.let { study ->
             participationToken?.let {token ->
                 val studyConsent = StudyConsent(
@@ -74,6 +81,8 @@ class RegistrationService (
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
                 if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials()) {
                     StudyRepository().storeStudy(study)
+                    shared.observationFactory.addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
+                    shared.resetFirstStartUp()
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
                     onError(NetworkServiceError(null, "Could not store credentials").freeze())

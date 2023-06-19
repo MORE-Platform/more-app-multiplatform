@@ -11,19 +11,18 @@ import shared
 class StudyDetailsViewModel: ObservableObject {
     private let coreModel = CoreStudyDetailsViewModel()
     @Published var studyDetailsModel: StudyDetailsModel?
-    var studyStart: Int64 = 0
-    var studyEnd: Int64 = 0
+    var studyStart: Date = Date()
+    var studyEnd: Date = Date()
     
     init() {
-        coreModel.onLoadStudyDetails() {
-            studyDetails in
-            if let studyDetails {
+        coreModel.onLoadStudyDetails() {[weak self] studyDetails in
+            if let self, let studyDetails {
                 self.studyDetailsModel = studyDetails
                 if let start = studyDetails.study.start {
-                    self.studyStart = start.epochSeconds * 1000
+                    self.studyStart = start.epochSeconds.toDate()
                 }
                 if let end = studyDetails.study.end {
-                    self.studyEnd = end.epochSeconds * 1000
+                    self.studyEnd = end.epochSeconds.toDate()
                 }
             }
         }

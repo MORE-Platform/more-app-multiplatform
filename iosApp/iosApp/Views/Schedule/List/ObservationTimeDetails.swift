@@ -17,7 +17,7 @@ struct ObservationTimeDetails: View {
     var body: some View {
         HStack {
             Image(systemName: "clock.fill")
-            BasicText(text: .constant(String(format: "%@:", String.localizedString(forKey: "timeframe", inTable: stringTable, withComment: "when the observation was started"))))
+            BasicText(text: .constant(String(format: "%@:", String.localize(forKey: "timeframe", withComment: "when the observation was started", inTable: stringTable))))
             Text(String(format: "%@ - %@", start.toDateString(dateFormat: "HH:mm"), end.toDateString(dateFormat: "HH:mm")))
                 .foregroundColor(Color.more.secondary)
         }

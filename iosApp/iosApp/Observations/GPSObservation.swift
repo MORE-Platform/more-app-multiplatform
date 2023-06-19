@@ -32,7 +32,7 @@ class GPSObservation: Observation_ {
             } else {
                 manager.requestAlwaysAuthorization()
                 running = true
-                stopAndSetState(state: .active)
+                stopAndSetState(state: .active, scheduleId: nil)
             }
         }
         return true
@@ -52,10 +52,6 @@ class GPSObservation: Observation_ {
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){}
     
-    
-    override func needsToRestartAfterAppClosure() -> Bool {
-        !running
-    }
 }
 
 extension GPSObservation: CLLocationManagerDelegate {

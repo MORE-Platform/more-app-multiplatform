@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
@@ -13,6 +14,7 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -47,14 +49,15 @@ class LeaveStudyViewModel : ViewModel() {
     }
 
     fun removeParticipation(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            AndroidDataRecorder().stopAll()
-            MoreApplication.observationDataManager?.stopListeningToCountChanges()
+        WorkManager.getInstance(context).cancelAllWork()
+        viewModelScope.launch {
             coreSettingsViewModel.dataDeleted.collect {
                 if (it) {
                     (context as? Activity)?.let { activity ->
-                        activity.finish()
-                        showNewActivityAndClearStack(activity, ContentActivity::class.java)
+                        withContext(Dispatchers.Main) {
+                            activity.finish()
+                            showNewActivityAndClearStack(activity, ContentActivity::class.java)
+                        }
                     }
                 }
             }

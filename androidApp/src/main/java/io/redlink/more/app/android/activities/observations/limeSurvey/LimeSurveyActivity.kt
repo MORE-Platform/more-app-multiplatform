@@ -4,18 +4,23 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
@@ -33,11 +39,13 @@ import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.app.android.ui.theme.MoreColors
 
 class LimeSurveyActivity : ComponentActivity() {
     val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
     var webView: WebView? = null
     var webClientListener: LimeSurveyWebClient? = null
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +55,7 @@ class LimeSurveyActivity : ComponentActivity() {
         }
         webView = WebView(this)
         webView?.let { webView ->
-            webClientListener = LimeSurveyWebClient(webView)
+            webClientListener = LimeSurveyWebClient()
             webClientListener?.let {
                 webClientListener?.setListener(viewModel)
                 webView.apply {
@@ -106,20 +114,31 @@ class LimeSurveyActivity : ComponentActivity() {
 @Composable
 fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
     val context = LocalContext.current
+    if (viewModel.wasAnswered.value) {
+        viewModel.onFinish()
+        (context as? Activity)?.finish()
+    }
     MoreBackground(
         navigationTitle = NavigationScreen.LIMESURVEY.stringRes(),
         maxWidth = 1f,
         rightCornerContent = {
-            IconButton(onClick = {
-                viewModel.onFinish()
-                (context as? Activity)?.finish()
-            },
+            IconButton(
+                onClick = {
+                    viewModel.onFinish()
+                    (context as? Activity)?.finish()
+                },
                 modifier = Modifier.width(IntrinsicSize.Min)
             ) {
                 if (viewModel.wasAnswered.value) {
-                    IconInline(icon = Icons.Default.Done, contentDescription = getStringResource(id = R.string.more_lime_finish))
+                    IconInline(
+                        icon = Icons.Default.Done,
+                        contentDescription = getStringResource(id = R.string.more_lime_finish)
+                    )
                 } else {
-                    IconInline(icon = Icons.Default.Close, contentDescription = getStringResource(id = R.string.more_lime_cancel))
+                    IconInline(
+                        icon = Icons.Default.Close,
+                        contentDescription = getStringResource(id = R.string.more_lime_cancel)
+                    )
                 }
             }
         }
@@ -136,14 +155,28 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
             } else {
                 webView?.let { webView ->
                     viewModel.limeSurveyLink.value?.let { limeSurveyLink ->
-                        AndroidView(factory = {
-                            webView.apply {
-                                loadUrl(limeSurveyLink)
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (viewModel.networkLoading.value) {
+                                LinearProgressIndicator(
+                                    color = MoreColors.Primary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp)
+                                )
                             }
-                        }, update = {
-                            Napier.d { "Webview update" }
-                            it.loadUrl(limeSurveyLink)
-                        }, modifier = Modifier.fillMaxSize())
+                            AndroidView(factory = {
+                                webView.apply {
+                                    loadUrl(limeSurveyLink)
+                                }
+                            }, update = {
+                                Napier.d { "Webview update" }
+                                it.loadUrl(limeSurveyLink)
+                            }, modifier = Modifier.fillMaxSize())
+                        }
                     } ?: run {
                         Text(text = getStringResource(id = R.string.more_lime_survey_loading_error))
                     }

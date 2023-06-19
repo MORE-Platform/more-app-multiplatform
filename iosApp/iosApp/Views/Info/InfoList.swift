@@ -13,7 +13,7 @@ struct InfoList: View {
     private let stringTable = "Info"
     var body: some View {
         VStack(spacing: 14) {
-            InfoListItem(title: String.localizedString(forKey: "Study Details", inTable: stringTable, withComment: "Shows detail description of the study and it's observation moduls."), icon: "info.circle.fill", destination: {
+            InfoListItem(title: String.localize(forKey: "Study Details", withComment: "Shows detail description of the study and it's observation moduls.", inTable: stringTable), icon: "info.circle.fill", destination: {
                 StudyDetailsView(viewModel: StudyDetailsViewModel())
             })
             InfoListItem(title: "Running Observations", icon: "arrow.triangle.2.circlepath", destination: {
@@ -22,13 +22,13 @@ struct InfoList: View {
             InfoListItem(title: "Past Observations", icon: "checkmark", destination: {
                 CompletedSchedules(scheduleViewModel: contentViewModel.completedViewModel)
             })
-            InfoListItem(title: String.localizedString(forKey: "Devices", inTable: stringTable, withComment: "Lists all connected or needed devices."), icon: "applewatch", destination: {
-                BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel)
+            InfoListItem(title: String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: stringTable), icon: "applewatch", destination: {
+                BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel, viewOpen: .constant(false))
             })
-            InfoListItem(title: String.localizedString(forKey: "Settings", inTable: stringTable, withComment: "Shows the settings for the study."), icon: "gearshape.fill", destination: {
+            InfoListItem(title: String.localize(forKey: "Settings", withComment: "Shows the settings for the study.", inTable: stringTable), icon: "gearshape.fill", destination: {
                 SettingsView(viewModel: contentViewModel.settingsViewModel)
             })
-            InfoListItemModal(title: String.localizedString(forKey: "Leave Study", inTable: stringTable, withComment: "Leave the study for good."), icon: "rectangle.portrait.and.arrow.right", destination: {
+            InfoListItemModal(title: String.localize(forKey: "Leave Study", withComment: "Leave the study for good.", inTable: stringTable), icon: "rectangle.portrait.and.arrow.right", destination: {
                 LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
             }, action: {
                 contentViewModel.isLeaveStudyOpen = true

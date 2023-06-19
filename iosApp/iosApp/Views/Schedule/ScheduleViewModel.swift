@@ -9,7 +9,7 @@
 import shared
 
 class ScheduleViewModel: ObservableObject {
-    let recorder = AppDelegate.recorder
+    let recorder = AppDelegate.shared.dataRecorder
     let scheduleListType: ScheduleListType
     private let coreModel: CoreScheduleViewModel
 
@@ -25,7 +25,7 @@ class ScheduleViewModel: ObservableObject {
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreModel)
+        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
         self.loadSchedules()
     }
 
@@ -52,7 +52,18 @@ class ScheduleViewModel: ObservableObject {
                     let groupedSchedulesToAdd = Dictionary(grouping: itemsToBeAdded, by: { $0.start.startOfDate() })
                     
                     for (date, schedules) in groupedSchedulesToAdd {
-                        self.schedulesByDate[date] = mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: { $0.start < $1.start})
+                        self.schedulesByDate[date] = mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: {
+                            if $0.start == $1.start {
+                                if $0.end == $1.end {
+                                    if $0.observationTitle == $1.observationTitle {
+                                        return $0.scheduleId < $1.scheduleId
+                                    }
+                                    return $0.observationTitle < $1.observationTitle
+                                }
+                                return $0.end < $1.end
+                            }
+                            return $0.start < $1.start
+                        })
                     }
                 }
             }

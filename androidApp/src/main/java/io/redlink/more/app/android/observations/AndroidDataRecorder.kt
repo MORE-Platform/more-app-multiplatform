@@ -5,7 +5,11 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 
 class AndroidDataRecorder : DataRecorder {
     override fun start(scheduleId: String) {
-        ObservationRecordingService.start(scheduleId)
+        ObservationRecordingService.start(setOf(scheduleId))
+    }
+
+    override fun startMultiple(scheduleIds: Set<String>) {
+        ObservationRecordingService.start(scheduleIds)
     }
 
     override fun pause(scheduleId: String) {
@@ -22,9 +26,5 @@ class AndroidDataRecorder : DataRecorder {
 
     override fun restartAll() {
         ObservationRecordingService.restartAll()
-    }
-
-    override fun updateTaskStates() {
-        ObservationRecordingService.updateTaskStates()
     }
 }

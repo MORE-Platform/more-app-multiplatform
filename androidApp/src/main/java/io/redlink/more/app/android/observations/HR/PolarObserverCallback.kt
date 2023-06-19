@@ -5,9 +5,8 @@ import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import java.util.UUID
-
-private const val TAG = "PolarObserverCallback"
 
 class PolarObserverCallback : PolarBleApiCallback() {
 
@@ -31,6 +30,7 @@ class PolarObserverCallback : PolarBleApiCallback() {
     override fun blePowerStateChanged(powered: Boolean) {
         super.blePowerStateChanged(powered)
         Napier.d("BLE power: $powered")
+        connectionListener?.onPowerChange(if (powered) BluetoothState.ON else BluetoothState.OFF)
     }
 
     override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {

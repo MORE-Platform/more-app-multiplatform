@@ -29,6 +29,6 @@ enum NavigationScreens: String {
 
 extension NavigationScreens {
     func localize(useTable table: String, withComment comment: String) -> String {
-        return self.rawValue.localize(useTable: table, withComment: comment)
+        return self.rawValue.localize(withComment: comment, useTable: table)
     }
 }

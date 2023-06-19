@@ -1,3 +1,5 @@
+package io.redlink.more.app.android.activities.studyDetails.observationDetails
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
@@ -7,8 +9,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.jvmLocalDate
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.extensions.toDate
 import io.redlink.more.app.android.shared_composables.*
 import io.redlink.more.app.android.ui.theme.MoreColors
@@ -58,15 +61,15 @@ fun ObservationDetailsView(
             )
 
             TimeframeDays(
-                viewModel.observationDetailsModel.value.start.toDate(),
-                viewModel.observationDetailsModel.value.end.toDate(),
+                viewModel.observationDetailsModel.value.start.jvmLocalDate(),
+                viewModel.observationDetailsModel.value.end.jvmLocalDate(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
             )
             TimeframeHours(
-                viewModel.observationDetailsModel.value.start.toDate(),
-                viewModel.observationDetailsModel.value.end.toDate(),
+                viewModel.observationDetailsModel.value.start.jvmLocalDateTime(),
+                viewModel.observationDetailsModel.value.end.jvmLocalDateTime(),
                 Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)

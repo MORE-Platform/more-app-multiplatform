@@ -10,9 +10,11 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.HttpStatement
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.http.*
 import io.ktor.http.content.PartData
+import io.realm.kotlin.internal.platform.WeakReference
 import kotlin.Unit
 import kotlinx.serialization.json.Json
 
@@ -75,21 +77,20 @@ open class ApiClient(
         auth.password = password
     }
 
-    protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: kotlin.collections.List<PartData>?, authNames: List<String>): HttpResponse {
+    protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: List<PartData>?, authNames: List<String>): HttpResponse? {
         return request(requestConfig, MultiPartFormDataContent(body ?: listOf()), authNames)
     }
 
-    protected suspend fun <T: Any?> urlEncodedFormRequest(requestConfig: RequestConfig<T>, body: Parameters?, authNames: List<String>): HttpResponse {
+    protected suspend fun <T: Any?> urlEncodedFormRequest(requestConfig: RequestConfig<T>, body: Parameters?, authNames: List<String>): HttpResponse? {
         return request(requestConfig, FormDataContent(body ?: Parameters.Empty), authNames)
     }
 
-    protected suspend fun <T: Any?> jsonRequest(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse = request(requestConfig, body, authNames)
+    protected suspend fun <T: Any?> jsonRequest(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse? = request(requestConfig, body, authNames)
 
-    protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse {
+    protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse? {
         requestConfig.updateForAuth(authNames)
         val headers = requestConfig.headers
-
-        return client.request {
+        val response = WeakReference(client.request {
             this.url {
                 this.takeFrom(URLBuilder(baseUrl))
                 appendPath(requestConfig.path.trimStart('/').split('/'))
@@ -114,7 +115,8 @@ open class ApiClient(
                 )) {
                 this.setBody(body)
             }
-        }
+        })
+        return response.get()
     }
 
     private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: List<String>) {

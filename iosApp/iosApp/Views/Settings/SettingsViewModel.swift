@@ -29,8 +29,6 @@ class SettingsViewModel: ObservableObject {
     }
     
     func leaveStudy() {
-        AppDelegate.recorder.stopAll()
-        AppDelegate.dataManager.stopListeningToCountChanges()
         dataDeleted = true
         coreSettingsViewModel.exitStudy()
         FCMService().deleteNotificationToken()

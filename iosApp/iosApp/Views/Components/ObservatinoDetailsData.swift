@@ -27,7 +27,7 @@ struct ObservationDetailsData: View {
             HStack {
                     Image(systemName: "clock.fill")
                         .padding(0.7)
-                    Text(String.localizedString(forKey: "Timeframe", inTable: stringTable, withComment: "Timeframe of observation"))
+                Text(String.localize(forKey: "Timeframe", withComment: "Timeframe of observation", inTable: stringTable))
                         .foregroundColor(.more.primary)
                     
                     BasicText(text: .constant(timeframe), color: .more.secondary)

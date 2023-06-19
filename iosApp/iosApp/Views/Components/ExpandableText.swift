@@ -77,7 +77,7 @@ struct ExpandableText: View {
                 Button(action: { self.expanded.toggle()
                     rotateFold.toggle()
                 }) {
-                    Text(self.expanded ? String.localizedString(forKey: "Read Less", inTable: stringTable, withComment: "Read less information") : String.localizedString(forKey: "Read More", inTable: stringTable, withComment: "Read more information"))
+                    Text(self.expanded ? String.localize(forKey: "Read Less", withComment: "Read less information", inTable: stringTable) : String.localize(forKey: "Read More", withComment: "Read more information", inTable: stringTable))
                         .font(.system(size: 16))
                 }
             }

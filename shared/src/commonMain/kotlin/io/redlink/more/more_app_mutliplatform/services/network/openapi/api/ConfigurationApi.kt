@@ -34,7 +34,7 @@ open class ConfigurationApi(
      * @return PushNotificationConfig
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun getPushNotificationServiceClientConfig(serviceType: PushNotificationServiceType): HttpResponse<PushNotificationConfig> {
+    open suspend fun getPushNotificationServiceClientConfig(serviceType: PushNotificationServiceType): HttpResponse<PushNotificationConfig>? {
 
         val localVariableAuthNames = listOf<String>("apiKey")
 
@@ -56,7 +56,7 @@ open class ConfigurationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )?.wrap()
     }
 
 
@@ -66,7 +66,7 @@ open class ConfigurationApi(
      * @return Study
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun getStudyConfiguration(): HttpResponse<Study> {
+    open suspend fun getStudyConfiguration(): HttpResponse<Study>? {
 
         val localVariableAuthNames = listOf<String>("apiKey")
 
@@ -88,7 +88,7 @@ open class ConfigurationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )?.wrap()
     }
 
 
@@ -98,7 +98,7 @@ open class ConfigurationApi(
      * @return kotlin.collections.List<PushNotificationServiceType>
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun listPushNotificationServices(): HttpResponse<kotlin.collections.List<PushNotificationServiceType>> {
+    open suspend fun listPushNotificationServices(): HttpResponse<List<PushNotificationServiceType>>? {
 
         val localVariableAuthNames = listOf<String>("apiKey")
 
@@ -120,7 +120,7 @@ open class ConfigurationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap<ListPushNotificationServicesResponse>().map { value }
+        )?.wrap<ListPushNotificationServicesResponse>()?.map { value }
     }
 
     @Serializable
@@ -142,7 +142,7 @@ open class ConfigurationApi(
      * @param pushNotificationToken  (optional)
      * @return void
      */
-    open suspend fun setPushNotificationToken(serviceType: PushNotificationServiceType, pushNotificationToken: PushNotificationToken? = null): HttpResponse<Unit> {
+    open suspend fun setPushNotificationToken(serviceType: PushNotificationServiceType, pushNotificationToken: PushNotificationToken? = null): HttpResponse<Unit>? {
 
         val localVariableAuthNames = listOf<String>("apiKey")
 
@@ -167,7 +167,7 @@ open class ConfigurationApi(
             localVariableAuthNames
         )
         Napier.i { "$jsonRequest" }
-        return jsonRequest.wrap()
+        return jsonRequest?.wrap()
     }
 
 

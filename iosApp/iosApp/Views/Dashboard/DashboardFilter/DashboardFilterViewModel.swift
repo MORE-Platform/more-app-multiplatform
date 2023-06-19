@@ -14,68 +14,61 @@ protocol DashboardFilterObserver {
 }
 
 class DashboardFilterViewModel: ObservableObject {
-    let coreModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
+    let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
     private let stringTable = "DashboardFilter"
     
     var delegate: DashboardFilterObserver? = nil
     
-    @Published var dateFilterStringList: [String]
-    @Published var observationTypes: [String]
+    @Published var currentTypeFilter: [String: KotlinBoolean] = [:]
+    @Published var typeFilterActive = false
     
-    @Published var dateFilter: DateFilterModel = DateFilterModel.entireTime
-    @Published var dateFilterString: String = "ENTIRE_TIME"
-    @Published var observationTypeFilter: [String] = []
+    @Published var currentDateFilter: [DateFilter: KotlinBoolean] = [:]
     
     init() {
-        var list: [String] = Array(AppDelegate.observationFactory.observationTypes())
-        list.insert(String.localizedString(forKey: "All Items", inTable: stringTable, withComment: "String for all items"), at: 0)
-        self.observationTypes = list
+        coreViewModel.onNewDateFilter { [weak self] dateFilter in
+            self?.currentDateFilter = dateFilter
+        }
         
-        self.dateFilterStringList = coreModel.getEnumAsList().map({ filter in
-            String(describing: filter)
-        })
-        setCurrentFilters()
+        coreViewModel.onNewTypeFilter { [weak self] typeFilter in
+            if let self {
+                self.currentTypeFilter = typeFilter
+                self.typeFilterActive = !self.coreViewModel.activeTypeFilter()
+            }
+        }
     }
     
-    func setDateFilterValue() {
-        var filterModel : DateFilterModel = DateFilterModel.todayAndTomorrow
-        
-        if dateFilterString == "ENTIRE_TIME" { filterModel = DateFilterModel.entireTime }
-        else if dateFilterString == "TODAY_AND_TOMORROW" { filterModel = DateFilterModel.todayAndTomorrow }
-        else if dateFilterString == "ONE_WEEK" { filterModel = DateFilterModel.oneWeek }
-        else if dateFilterString == "ONE_MONTH" { filterModel = DateFilterModel.oneMonth }
-        
-        coreModel.setDateFilter(dateFilter: filterModel)
-        dateFilter = filterModel
+    func viewDidAppear() {
+        coreViewModel.viewDidAppear()
     }
     
-    func setObservationTypeFilters() {
-        coreModel.setTypeFilters(filters: observationTypeFilter)
+    func viewDidDisappear() {
+        coreViewModel.viewDidDisappear()
     }
     
-    func updateFilters(multiSelect: Bool, filter: String, list: [String], stringTable: String) -> [String] {
-        return self.delegate?.onFilterChanged(multiSelect: multiSelect, filter: filter, list: list, stringTable: stringTable) ?? []
+    func toggleTypeFilter(type: String) {
+        coreViewModel.toggleTypeFilter(type: type)
+    }
+    
+    func clearTypeFilter() {
+        coreViewModel.clearTypeFilters()
+    }
+    
+    func toggleDateFilter(dateFilter: DateFilter) {
+        coreViewModel.toggleDateFilter(date: dateFilter)
     }
     
     func updateFilterText() -> String  {
         return self.delegate?.updateFilterText() ?? ""
     }
     
-    func setCurrentFilters() {
-        coreModel.onLoadCurrentFilters { filters in
-            self.dateFilter = filters.dateFilter
-            self.dateFilterString = String(describing: self.dateFilter)
-            self.observationTypeFilter = filters.typeFilter.map { value in
-                String(describing: value)
-            }
-        }
-    }
-    
     func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
-        if option == "All Items" {
-            return selectedValuesInList.isEmpty
+        var isSelected = false
+        let allItemsString = String.localize(forKey: "All Items", withComment: "String for All Items", inTable: stringTable)
+        if option == allItemsString && selectedValuesInList.isEmpty {
+            isSelected = true
         } else {
-            return selectedValuesInList.contains(option)
+            isSelected = selectedValuesInList.contains(option)
         }
+        return isSelected
     }
 }

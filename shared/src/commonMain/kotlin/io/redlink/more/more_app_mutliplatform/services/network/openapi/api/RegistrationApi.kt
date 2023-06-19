@@ -29,7 +29,7 @@ open class RegistrationApi(
      * @return Study
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun getStudyRegistrationInfo(moreRegistrationToken: kotlin.String): HttpResponse<Study> {
+    open suspend fun getStudyRegistrationInfo(moreRegistrationToken: kotlin.String): HttpResponse<Study>? {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -38,7 +38,7 @@ open class RegistrationApi(
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
-        moreRegistrationToken?.apply { localVariableHeaders["More-Registration-Token"] = this.toString() }
+        moreRegistrationToken?.apply { localVariableHeaders["More-Registration-Token"] = this }
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
@@ -52,7 +52,7 @@ open class RegistrationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )?.wrap()
     }
 
 
@@ -64,7 +64,7 @@ open class RegistrationApi(
      * @return AppConfiguration
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun registerForStudy(moreRegistrationToken: kotlin.String, studyConsent: StudyConsent): HttpResponse<AppConfiguration> {
+    open suspend fun registerForStudy(moreRegistrationToken: kotlin.String, studyConsent: StudyConsent): HttpResponse<AppConfiguration>? {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -86,7 +86,7 @@ open class RegistrationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )?.wrap()
     }
 
 
@@ -96,7 +96,7 @@ open class RegistrationApi(
      * Leave study / Withdraw Consent
      * @return void
      */
-    open suspend fun unregisterFromStudy(): HttpResponse<Unit> {
+    open suspend fun unregisterFromStudy(): HttpResponse<Unit>? {
 
         val localVariableAuthNames = listOf<String>("apiKey")
 
@@ -118,6 +118,6 @@ open class RegistrationApi(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
+        )?.wrap()
     }
 }

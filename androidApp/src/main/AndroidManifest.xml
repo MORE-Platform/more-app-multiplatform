@@ -54,6 +54,11 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
+        <activity
+            android:name=".activities.BLESetup.BLEConnectionActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+
         <service android:name=".services.ObservationRecordingService" />
         <service
             android:name=".firebase.FCMService"

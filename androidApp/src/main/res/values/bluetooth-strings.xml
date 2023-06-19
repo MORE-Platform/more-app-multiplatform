@@ -8,4 +8,10 @@
     <string name="more_ble_view_title">Devices</string>
     <string name="more_ble_icon_description">Open Bluetooth device connection view</string>
     <string name="more_ble_unknown_device">Unknown</string>
+
+    <string name="more_ble_setup_title">External Device Setup</string>
+    <string name="more_ble_context_description">Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices</string>
+    <string name="more_ble_context_description_part2">You can connect to and disconnect from devices at any time: Info > Devices</string>
+    <string name="more_ble_skip">Skip setup</string>
+    <string name="more_ble_disabled">Bluetooth disabled! Please enable to use!</string>
 </resources>

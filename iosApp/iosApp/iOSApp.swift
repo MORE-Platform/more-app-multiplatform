@@ -17,13 +17,12 @@ struct iOSApp: App {
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .background:
+                        AppDelegate.shared.appInForeground(boolean: false)
                         appDelegate.scheduleTasks()
                     case .inactive:
                         break
                     case .active:
-                        DispatchQueue.main.async {
-                            
-                        }
+                        AppDelegate.shared.appInForeground(boolean: true)
                         break
                     default:
                         break

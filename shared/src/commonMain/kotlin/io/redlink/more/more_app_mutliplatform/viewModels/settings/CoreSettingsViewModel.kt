@@ -1,6 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.settings
 
 import io.ktor.utils.io.core.Closeable
+import io.realm.kotlin.ext.copyFromRealm
 import io.realm.kotlin.ext.isValid
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
@@ -37,7 +38,7 @@ class CoreSettingsViewModel(
         launchScope {
             studyRepository.getStudy().cancellable()
                 .combine(observationRepository.observations()) { study, observations ->
-                    Pair(study, observations)
+                    Pair(study?.copyFromRealm(), observations)
                 }.cancellable().collect {
                     if (it.first?.isValid() == true) {
                         study.value = it.first
@@ -49,7 +50,7 @@ class CoreSettingsViewModel(
         }
         launchScope {
             observationRepository.observations().cancellable().collect {
-                observations.value = it.filter { observationSchema ->  observationSchema.isValid() }
+                observations.value = it.map { it.copyFromRealm() }
             }
         }
     }
@@ -64,7 +65,10 @@ class CoreSettingsViewModel(
 
     fun exitStudy() {
         Scope.cancel()
-        Scope.launch {
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            shared.dataRecorder.stopAll()
+            shared.observationDataManager.stopListeningToCountChanges()
+            shared.observationFactory.clearNeededObservationTypes()
             shared.networkService.deleteParticipation()
             shared.credentialRepository.remove()
             shared.endpointRepository.removeEndpoint()

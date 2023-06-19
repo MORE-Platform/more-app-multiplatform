@@ -5,6 +5,9 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
@@ -12,10 +15,12 @@ import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
     private val registrationService: RegistrationService by lazy { RegistrationService(MoreApplication.shared!!) }
@@ -28,7 +33,15 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
-            MoreApplication.observationDataManager?.listenToDatapointCountChanges()
+            MoreApplication.shared!!.activateObservationWatcher()
+            val workManager = WorkManager.getInstance(context)
+            val worker =
+                PeriodicWorkRequestBuilder<ScheduleUpdateWorker>(15L, TimeUnit.MINUTES).build()
+            workManager.enqueueUniquePeriodicWork(
+                ScheduleUpdateWorker.WORKER_TAG,
+                ExistingPeriodicWorkPolicy.KEEP,
+                worker
+            )
             showNewActivityAndClearStack(it, MainActivity::class.java)
         }
     }

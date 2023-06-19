@@ -65,8 +65,8 @@ fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewMo
                         if (it.study.start?.epochSeconds != null && it.study.end?.epochSeconds != null) {
                             BasicText(text = "${getStringResource(R.string.study_duration)}: ")
                             BasicText(
-                                text = "${LocalDateTime.ofInstant(Instant.ofEpochSecond(it.study.start!!.epochSeconds), ZoneOffset.MAX).formattedString()} - ${
-                                    LocalDateTime.ofInstant(Instant.ofEpochSecond(it.study.end!!.epochSeconds), ZoneOffset.MAX).formattedString()
+                                text = "${it.study.start!!.epochSeconds.jvmLocalDateTime().formattedString()} - ${
+                                    it.study.end!!.epochSeconds.jvmLocalDateTime().formattedString()
                                 }",
                                 color = MoreColors.Secondary
                             )

@@ -52,7 +52,7 @@ struct TaskDetailsView: View {
                     ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
 
                     HStack {
-                        AccordionItem(title: String.localizedString(forKey: "Participant Information", inTable: stringTable, withComment: "Participant Information of specific task."), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
+                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
                     }
                     if scheduleListType != .completed {
                         Spacer()
@@ -63,7 +63,7 @@ struct TaskDetailsView: View {
                         }
                         Spacer()
                     }
-                    if scheduleListType != .completed {
+                    if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
                         if let model = viewModel.taskDetailsModel {
                             ObservationButton(
                                 observationActionDelegate: viewModel,

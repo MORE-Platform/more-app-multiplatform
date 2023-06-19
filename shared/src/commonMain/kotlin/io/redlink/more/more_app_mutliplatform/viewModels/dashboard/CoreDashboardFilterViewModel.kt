@@ -1,98 +1,104 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
-import io.ktor.utils.io.core.*
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.time
-import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
+import io.redlink.more.more_app_mutliplatform.extensions.set
+import io.redlink.more.more_app_mutliplatform.models.DateFilter
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
-import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import kotlinx.datetime.todayIn
 
-class CoreDashboardFilterViewModel {
-    val currentFilter = MutableStateFlow(FilterModel())
+class CoreDashboardFilterViewModel: CoreViewModel() {
+    val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
+    val currentDateFilter = MutableStateFlow(
+        DateFilterModel.values().associateWith { it == DateFilterModel.ENTIRE_TIME })
 
-    fun hasAllTypes() = currentFilter.value.typeFilter.isEmpty()
+    init {
+        Scope.launch {
+            ObservationRepository().observationTypes().firstOrNull()?.let {
+                currentTypeFilter.set(it.associateWith { false })
+            }
+        }
+    }
+    override fun viewDidAppear() {
 
-    fun containsType(type: String) = currentFilter.value.typeFilter.contains(type)
-
-    fun addTypeFilter(type: String) {
-        update(currentFilter.value.copy(
-            typeFilter = currentFilter.value.typeFilter
-                .toMutableSet().apply { add(type) }
-        ))
     }
 
-    fun getEnumAsList(): List<DateFilterModel> {
-        return DateFilterModel.values().toList()
-    }
+    fun hasAnyTypes() = currentTypeFilter.value.values.any()
 
-    fun removeTypeFilter(type: String) {
-        update(currentFilter.value.copy(
-            typeFilter = currentFilter.value.typeFilter
-                .toMutableSet().apply { remove(type) }
-        ))
+    fun toggleTypeFilter(type: String) {
+        val typeFilter = currentTypeFilter.value.toMutableMap()
+        typeFilter[type] = !typeFilter.getOrElse(type) { false }
+        currentTypeFilter.set(typeFilter)
     }
 
     fun clearTypeFilters() {
-        update(currentFilter.value.copy(
-            typeFilter = currentFilter.value.typeFilter
-                .toMutableSet().apply { clear() }
-        ))
+        currentTypeFilter.set(currentTypeFilter.value.keys.associateWith { false })
     }
 
-    fun setDateFilter(dateFilter: DateFilterModel) {
-        update(currentFilter.value.copy(dateFilter = dateFilter))
+    fun activeTypeFilter() = currentTypeFilter.value.any { it.value }
+
+    fun toggleDateFilter(date: DateFilter) {
+        date.toEnum()?.let { toggleDateFilter(it) }
     }
 
-    fun setTypeFilters(filters: List<String>) {
-        update(currentFilter.value.copy(
-            typeFilter = currentFilter.value.typeFilter
-                .toMutableSet().apply {
-                    clear()
-                    addAll(filters)
-                }
-        ))
+    fun toggleDateFilter(date: DateFilterModel) {
+        val dateFilter = currentDateFilter.value.toMutableMap()
+        dateFilter[date]?.let { set ->
+            if (!set) {
+                dateFilter.keys.forEach { dateFilter[it] = false }
+            }
+            dateFilter[date] = !set
+            if (dateFilter.all { !it.value }) {
+                dateFilter[DateFilterModel.ENTIRE_TIME] = true
+            }
+        }
+        currentDateFilter.set(dateFilter)
     }
 
-    fun hasDateFilter(dateFilter: DateFilterModel) = currentFilter.value.dateFilter == dateFilter
+    fun hasDateFilter(dateFilter: DateFilterModel) =
+        currentDateFilter.value.getOrElse(dateFilter) { false }
 
-    fun filterActive() = currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME || currentFilter.value.typeFilter.isNotEmpty()
+    fun activeDateFilter() =
+        currentDateFilter.value[DateFilterModel.ENTIRE_TIME] == false && currentDateFilter.value.any { it.value }
+
+    fun filterActive() = activeDateFilter() || activeTypeFilter()
 
     fun applyFilter(scheduleModelList: Collection<ScheduleModel>): Collection<ScheduleModel> {
         var schedules = scheduleModelList
         if (filterActive()) {
-            if (currentFilter.value.typeFilter.isNotEmpty()) {
+            if (activeTypeFilter()) {
+                val activeTypes = currentTypeFilter.value.filterValues { it }.keys
                 schedules = schedules.filter { schedule ->
-                    currentFilter.value.typeFilter.contains(schedule.observationType)
+                    schedule.observationType in activeTypes
                 }
             }
-            if (currentFilter.value.dateFilter != DateFilterModel.ENTIRE_TIME) {
-                currentFilter.value.dateFilter.duration?.let { dateTimeFilter ->
-                    val until = Clock.System.todayIn(TimeZone.currentSystemDefault()).plus(dateTimeFilter).time()
-                    schedules.filter { it.start <= until }
-                }
+            if (activeDateFilter()) {
+                currentDateFilter.value.filterValues { it }.keys.firstOrNull()
+                    ?.let { dateFilter ->
+                        val now = Clock.System.now()
+                        val until = now.plus(
+                            dateFilter.number,
+                            dateFilter.dateBased!!,
+                            TimeZone.currentSystemDefault()
+                        ).epochSeconds
+                        schedules = schedules.filter { it.start <= until }
+                    }
             }
         }
         return schedules
     }
 
-    private fun update(newFilterModel: FilterModel) {
-        Scope.launch {
-            currentFilter.emit(newFilterModel)
-        }
-    }
+    fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) = currentTypeFilter.asClosure(provideNewState)
 
-    fun onLoadCurrentFilters(provideNewState: ((FilterModel) -> Unit)): Closeable {
-        return currentFilter.asClosure(provideNewState)
-    }
+    fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) = currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }.asClosure(provideNewState)
+
 }

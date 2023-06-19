@@ -10,34 +10,55 @@ import Foundation
 import shared
 
 class IOSDataRecorder: DataRecorder {
-    private let observationManager = ObservationManager(observationFactory: AppDelegate.observationFactory)
+    private var runningSchedules: Set<String> = Set()
     
     func start(scheduleId: String) {
-        Task { @MainActor in
-            do {
-                try await observationManager.start(scheduleId: scheduleId)
-            } catch {
-                print(error)
+        if !runningSchedules.contains(scheduleId) {
+            Task { @MainActor in
+                do {
+                    if (try await AppDelegate.shared.observationManager.start(scheduleId: scheduleId)).boolValue {
+                        runningSchedules.insert(scheduleId)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    func startMultiple(scheduleIds: Set<String>) {
+        scheduleIds.filter{!runningSchedules.contains($0)}.forEach { id in
+            Task { @MainActor in
+                do {
+                    if (try await AppDelegate.shared.observationManager.start(scheduleId: id)).boolValue {
+                        runningSchedules.insert(id)
+                    }
+                } catch {
+                    print(error)
+                }
             }
         }
     }
     
     func pause(scheduleId: String) {
-        observationManager.pause(scheduleId: scheduleId)
+        AppDelegate.shared.observationManager.pause(scheduleId: scheduleId)
+        runningSchedules.remove(scheduleId)
     }
     
     func stop(scheduleId: String) {
-        observationManager.stop(scheduleId: scheduleId)
+        AppDelegate.shared.observationManager.stop(scheduleId: scheduleId)
+        runningSchedules.remove(scheduleId)
     }
     
     func stopAll() {
-        observationManager.stopAll()
+        AppDelegate.shared.observationManager.stopAll()
+        runningSchedules.removeAll()
     }
     
     func restartAll() {
         Task { @MainActor in
             do {
-                try await observationManager.restartStillRunning()
+                try await AppDelegate.shared.observationManager.restartStillRunning()
             } catch {
                 print(error)
             }
@@ -45,7 +66,10 @@ class IOSDataRecorder: DataRecorder {
     }
     
     func updateTaskStates() {
-        observationManager.updateTaskStates()
+        AppDelegate.shared.observationManager.updateTaskStates()
     }
     
+    func activateScheduleUpdate() {
+        AppDelegate.shared.observationManager.activateScheduleUpdate()
+    }
 }

@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
@@ -27,7 +28,6 @@ class GPSObservation(
     private val gpsService: GPSService
 ) : Observation(observationType = GPSType(permissions)), GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
-    private val hasPermission = this.hasPermissions(context)
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     fun getPermission(): Set<String> = permissions
@@ -58,8 +58,8 @@ class GPSObservation(
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
         try {
-            (settings[LOCATION_INTERVAL_MILLIS_KEY] as? Double)?.toLong()?.let {
-                gpsService.setIntervalMillis(it)
+            settings[LOCATION_INTERVAL_MILLIS_KEY]?.toString()?.trim('\"')?.toLong()?.let {
+                //gpsService.setIntervalMillis(it)
             }
         } catch (e: java.lang.Exception) {
             Log.e(TAG, e.stackTraceToString())
@@ -83,7 +83,7 @@ class GPSObservation(
     }
 
     private fun activate(): Boolean {
-        return this.hasPermission
+        return this.hasPermissions(MoreApplication.appContext!!)
     }
 
     private fun hasPermissions(context: Context): Boolean  {

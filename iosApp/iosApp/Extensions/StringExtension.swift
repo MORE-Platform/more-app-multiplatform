@@ -10,19 +10,15 @@ import Foundation
 import CryptoKit
 
 extension String {
-    func localize(useTable table: String?, withComment comment: String) -> String {
+    func localize(withComment comment: String, useTable table: String? = nil) -> String {
         var result = NSLocalizedString(self, tableName: table, comment: comment)
         if result == self {
             result = NSLocalizedString(self, tableName: table, comment: comment)
         }
         return result
     }
-    static func localizedString(forKey key: String, inTable table: String?, withComment comment: String) -> String {
-        var result = NSLocalizedString(key, tableName: table, comment: comment)
-        if result == key {
-            result = NSLocalizedString(key, tableName: table, comment: comment)
-        }
-        return result
+    static func localize(forKey key: String, withComment comment: String, inTable table: String? = nil) -> String {
+        return key.localize(withComment: comment, useTable: table)
     }
     
     func toMD5() -> String {

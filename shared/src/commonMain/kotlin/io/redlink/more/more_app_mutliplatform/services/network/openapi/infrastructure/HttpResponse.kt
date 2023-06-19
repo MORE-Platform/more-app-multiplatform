@@ -4,13 +4,14 @@ import io.ktor.http.Headers
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
 import io.ktor.util.reflect.typeInfo
+import io.realm.kotlin.internal.platform.WeakReference
 import io.realm.kotlin.internal.platform.freeze
 
 open class HttpResponse<T : Any>(val response: io.ktor.client.statement.HttpResponse, val provider: BodyProvider<T>) {
     val status: Int = response.status.value
     val success: Boolean = response.status.isSuccess()
     val headers: Map<String, List<String>> = response.headers.mapEntries().freeze()
-    suspend fun body(): T = provider.body(response.freeze()).freeze()
+    suspend fun body():WeakReference<T> = WeakReference(provider.body(response).freeze())
     suspend fun <V : Any> typedBody(type: TypeInfo): V = provider.typedBody<V>(response, type).freeze()
 
     companion object {

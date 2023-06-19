@@ -9,14 +9,11 @@
 import SwiftUI
 
 struct MoreFilterOption: View {
-    
-    let multiSelect: Bool
     var option: String
-    @Binding var selectedValuesInList: [String]
-    let isItemSelected: ([String], String) -> (Bool)
+    @Binding var isSelected: Bool
+    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     
-    @State private var isSelected: Bool = false
-    let stringTable: String
+    private let stringTable = "DashboardFilter"
     
     var body: some View {
         VStack {
@@ -28,15 +25,9 @@ struct MoreFilterOption: View {
                     Spacer()
                         .frame(width: 5)
                 }
-                MoreFilterText(text: .constant(String.localizedString(forKey: option, inTable: stringTable, withComment: "String representation of \(option) option")))
+                MoreFilterText(text: .constant(String.localize(forKey: option, withComment: "String representation of observation type", inTable: stringTable)))
             }
             .padding(5)
         }
-        .onAppear {
-            isSelected = isItemSelected(selectedValuesInList, option)
-        }
-        .onChange(of: selectedValuesInList, perform: { _ in
-            isSelected = isItemSelected(selectedValuesInList, option)
-        })
     }
 }

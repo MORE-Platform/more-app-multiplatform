@@ -13,7 +13,7 @@ protocol SimpleQuestionObservationListener {
 }
 
 class SimpleQuestionObservationViewModel: ObservableObject {
-    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(observationFactory: AppDelegate.observationFactory)
+    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(observationFactory: AppDelegate.shared.observationFactory)
     
     @Published var simpleQuestoinModel: SimpleQuestionModel?
     @Published var answers: [String] = []

@@ -17,7 +17,7 @@ struct DatapointsCollection: View {
             if running {
                 CircleActivityIndicator()
             }
-            Title2(titleText: .constant(String.localizedString(forKey: "Datapoints collected", inTable: stringTable, withComment: "Shows collected Datapoints beneath")))
+            Title2(titleText: .constant(String.localize(forKey: "Datapoints collected", withComment: "Shows collected Datapoints beneath", inTable: stringTable)))
             
             Text(String(datapoints))
                 .font(.more.title2)

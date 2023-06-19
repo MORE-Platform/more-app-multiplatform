@@ -1,0 +1,17 @@
+/* 
+  BluetoothConnection.strings
+  iosApp
+
+  Created by Jan Cortiel on 26.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Connected devices" = "Connected devices";
+"No devices connected" = "No devices connected";
+"Discovered devices" = "Discovered devices";
+"No devices found nearby" = "No devices found nearby";
+"Searching for devices" = "Searching for devices";
+"External Device Setup" = "External Device Setup";
+"Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices" = "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices";
+"You can connect to and disconnect from devices at any time: Info > Devices" = "You can connect to and disconnect from devices at any time: Info > Devices";
+"Bluetooth disabled! Please enable to use!" = "Bluetooth disabled! Please enable to use!";

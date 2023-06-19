@@ -42,10 +42,7 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
 fun <T> MutableStateFlow<Set<T>>.append(value: T?) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.add(value ?: return)) {
-        val context = this
-        Scope.launch {
-            context.emit(mutableCollection)
-        }
+        this.set(mutableCollection)
     }
 }
 
@@ -53,10 +50,7 @@ fun <T> MutableStateFlow<Set<T>>.appendIfNotContains(value: T, includes: (T) -> 
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.firstOrNull(includes) == null) {
         if (mutableCollection.add(value)) {
-            val context = this
-            Scope.launch {
-                context.emit(mutableCollection)
-            }
+            this.set(mutableCollection)
         }
     }
 }
@@ -64,39 +58,27 @@ fun <T> MutableStateFlow<Set<T>>.appendIfNotContains(value: T, includes: (T) -> 
 fun <T> MutableStateFlow<Set<T>>.append(value: Collection<T>) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.addAll(value)) {
-        val context = this
-        Scope.launch {
-            context.emit(mutableCollection)
-        }
+        this.set(mutableCollection)
     }
 }
 
 fun <T> MutableStateFlow<Set<T>>.remove(value: T?) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.remove(value ?: return)) {
-        val context = this
-        Scope.launch {
-            context.emit(mutableCollection)
-        }
+        this.set(mutableCollection)
     }
 }
 
 fun <T> MutableStateFlow<Set<T>>.removeWhere(includes: (T) -> Boolean) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.removeAll(includes)) {
-        val context = this
-        Scope.launch {
-            context.emit(mutableCollection)
-        }
+        this.set(mutableCollection)
     }
 }
 
 fun <T> MutableStateFlow<Set<T>>.clear() {
     if (this.value.isNotEmpty()) {
-        val context = this
-        Scope.launch {
-            context.emit(emptySet())
-        }
+        this.set(emptySet())
     }
 }
 
@@ -107,4 +89,5 @@ fun <T> MutableStateFlow<T>.set(value: T?) {
         }
     }
 }
+
 

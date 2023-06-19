@@ -19,7 +19,7 @@ struct ConsentView: View {
             Title2(titleText: .constant(viewModel.permissionModel.studyTitle))
                 .padding(.bottom, 30)
 
-            ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localizedString(forKey: "Participant Information", inTable: taskStringTable, withComment: "Participant Information of study."), lineLimit: 4)
+            ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localize(forKey: "Participant Information", withComment: "Participant Information of study.", inTable: taskStringTable), lineLimit: 4)
                 .padding(.bottom, 35)
 
 
@@ -37,25 +37,22 @@ struct ConsentView: View {
                             ProgressView()
                                 .progressViewStyle(.circular)
                         } else {
-                            Text(verbatim: .localizedString(
+                            Text(verbatim: .localize(
                                 forKey: "accept_button",
-                                inTable: stringsTable,
-                                withComment: "Button to accept the study consent"))
+                                withComment: "Button to accept the study consent", inTable: stringsTable))
                         }
                     }
                 } errorAlert: {
                     Alert(title:
-                        Text(verbatim: .localizedString(
+                        Text(verbatim: .localize(
                             forKey: "permissions_denied",
-                            inTable: stringsTable,
-                            withComment: "Error dialog title"))
+                            withComment: "Error dialog title", inTable: stringsTable))
                             .foregroundColor(.more.important),
                         message: Text(viewModel.error),
                         primaryButton: .default(Text(
-                            verbatim: .localizedString(
+                            verbatim: .localize(
                                 forKey: "to_settings",
-                                inTable: stringsTable,
-                                withComment: "Dialog button to retry sending your consent for this study")),
+                                withComment: "Dialog button to retry sending your consent for this study", inTable: stringsTable)),
                         action: {
                             if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -69,10 +66,9 @@ struct ConsentView: View {
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                     viewModel.decline()
                 } label: {
-                    Text(verbatim: .localizedString(
+                    Text(verbatim: .localize(
                         forKey: "decline_button",
-                        inTable: stringsTable,
-                        withComment: "Button to decline the study"))
+                        withComment: "Button to decline the study", inTable: stringsTable))
                 }
             }
         }
@@ -88,6 +84,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository()))))
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

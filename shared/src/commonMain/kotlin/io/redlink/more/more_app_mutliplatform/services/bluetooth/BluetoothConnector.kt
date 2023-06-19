@@ -4,10 +4,23 @@ import io.ktor.utils.io.core.*
 
 interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 
-    val specificBluetoothConnectors: Map<String, BluetoothConnector>
-        get() = emptyMap()
-
     var observer: BluetoothConnectorObserver?
+
+    val connected: MutableSet<BluetoothDevice>
+
+    val discovered: MutableSet<BluetoothDevice>
+
+    var bluetoothState: BluetoothState
+
+    var scanning: Boolean
+
+    val specificBluetoothConnectors: MutableMap<String, BluetoothConnector>
+
+    fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector)
+
+    fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?)
+
+    fun replayStates()
 
     fun scan()
 
@@ -16,8 +29,5 @@ interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
     fun disconnect(device: BluetoothDevice)
 
     fun stopScanning()
-
-    fun isScanning(): Boolean
-
     override fun close()
 }

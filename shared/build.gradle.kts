@@ -38,7 +38,7 @@ kotlin {
     }
 
     val coroutinesVersion = "1.6.4"
-    val ktorVersion = "2.2.2"
+    val ktorVersion = "2.3.0"
     val napierVersion = "2.6.1"
     val serializationVersion = "1.5.0-RC"
     val axayVersion = "0.1.2"

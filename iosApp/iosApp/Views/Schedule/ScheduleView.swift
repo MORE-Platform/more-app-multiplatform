@@ -26,11 +26,11 @@ struct ScheduleView: View {
             ScrollView(.vertical) {
                 if (viewModel.schedulesByDate.isEmpty) {
                     if viewModel.scheduleListType == ScheduleListType.running {
-                        EmptyListView(text: "No running tasks currently".localize(useTable: stringsTable, withComment: "No running tasks in list"))
+                        EmptyListView(text: "No running tasks currently".localize(withComment: "No running tasks in list", useTable: stringsTable))
                     } else if viewModel.scheduleListType == ScheduleListType.completed {
-                        EmptyListView(text: "No tasks completed by now".localize(useTable: stringsTable, withComment: "No completed tasks in list"))
+                        EmptyListView(text: "No tasks completed by now".localize(withComment: "No completed tasks in list", useTable: stringsTable))
                     } else {
-                        EmptyListView(text: "No tasks to show".localize(useTable: stringsTable, withComment: "No tasks in list shown"))
+                        EmptyListView(text: "No tasks to show".localize(withComment: "No tasks in list shown", useTable: stringsTable))
                     }
                 } else {
                     LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
@@ -78,8 +78,7 @@ struct ScheduleView: View {
                 .environmentObject(navigationModalState)
         }
         .fullScreenCover(isPresented: $navigationModalState.limeSurveyOpen) {
-            LimeSurveyView(viewModel: LimeSurveyViewModel(scheduleId: navigationModalState.scheduleId))
-                .environmentObject(navigationModalState)
+            LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: navigationModalState))
         }
     }
 }

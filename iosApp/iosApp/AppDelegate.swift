@@ -15,22 +15,33 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private var fcmService: FCMService? = FCMService()
     static let polarConnector = PolarConnector()
-    static let recorder = IOSDataRecorder()
     static let dataUploadManager = DataUploadManager()
-    static let shared = Shared(sharedStorageRepository: UserDefaultsRepository())
-    static let dataManager = iOSObservationDataManager()
-    static let observationFactory = IOSObservationFactory(dataManager: dataManager)
+    static let shared: Shared = {
+        let dataManager = iOSObservationDataManager()
+        let bluetoothConnector = IOSBluetoothConnector()
+        bluetoothConnector.addSpecificBluetoothConnector(key: "polar", connector: polarConnector)
+        
+        return Shared(
+            sharedStorageRepository: UserDefaultsRepository(),
+            observationDataManager: dataManager,
+            mainBluetoothConnector: bluetoothConnector,
+            observationFactory: IOSObservationFactory(dataManager: dataManager),
+            dataRecorder: IOSDataRecorder()
+        )
+    }()
+    
+    private let fcmService: FCMService = FCMService()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         #if DEBUG
         NapierProxyKt.napierDebugBuild()
         #endif
         
+        AppDelegate.shared.onApplicationStart()
         
         FirebaseApp.configure()
-        fcmService?.register()
+        fcmService.register()
         
         registerBackgroundTasks()
         return true

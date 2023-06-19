@@ -4,12 +4,11 @@ import io.github.aakira.napier.Napier
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -86,17 +84,17 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
         realmDatabase().deleteItems(deviceIds)
     }
 
-    fun updateConnectedDevices() {
+    fun updateConnectedDevices(listenForTimeInMillis: Long = 5000) {
         bluetoothConnector?.let { bluetoothConnector ->
             val context = this
             CoroutineScope(Job() + Dispatchers.Default).launch {
-                realmDatabase().query<BluetoothDevice>().firstOrNull()?.let {
+                realmDatabase().query<BluetoothDevice>("connected == true").firstOrNull()?.let {
                     pairedDeviceIds.addAll(it.mapNotNull { it.address })
                     if (pairedDeviceIds.isNotEmpty()) {
-                        bluetoothConnector.observer = context
+                        bluetoothConnector.applyObserver(context)
                         bluetoothConnector.scan()
-                        delay(5000)
-                        bluetoothConnector.close()
+                        delay(listenForTimeInMillis)
+                        bluetoothConnector.stopScanning()
                         setConnectionState(pairedDeviceIds, false)
                         pairedDeviceIds.clear()
                     }
@@ -121,7 +119,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
     }
 
-    override fun discoveredDevice(device: BluetoothDevice) {
+    override fun didDiscoverDevice(device: BluetoothDevice) {
         device.address?.let {
             if (it in pairedDeviceIds) {
                 bluetoothConnector?.connect(device)
@@ -130,5 +128,11 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
+    }
+
+    override fun isScanning(boolean: Boolean) {
+    }
+
+    override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
     }
 }
