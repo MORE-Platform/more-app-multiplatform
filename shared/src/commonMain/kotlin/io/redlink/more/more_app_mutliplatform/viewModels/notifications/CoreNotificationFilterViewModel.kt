@@ -6,9 +6,10 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class CoreNotificationFilterViewModel {
+class CoreNotificationFilterViewModel: CoreViewModel() {
     private var highPriority: Long = 1
 
     val currentFilter = MutableStateFlow(NotificationFilterModel())
@@ -25,25 +26,28 @@ class CoreNotificationFilterViewModel {
         }
     }
 
+    override fun viewDidAppear() {
+
+    }
+
     fun setPlatformHighPriority(priority: Long) {
         highPriority = priority
     }
 
     fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
-        var filteredList = notificationList
-        if (currentFilter.value.isNotEmpty())
-            filteredList = filteredList.filter { notification -> ((
+        return if (currentFilter.value.isNotEmpty()) {
+            notificationList.filter { notification -> ((
                     if (currentFilter.value.contains(NotificationFilterTypeModel.IMPORTANT)) {
                         notification.priority == highPriority
                     } else
                         true
-                ) && (
+                    ) && (
                     if (currentFilter.value.contains(NotificationFilterTypeModel.UNREAD)) {
                         !notification.read
                     } else true
                     ))
             }
-        return filteredList
+        } else notificationList
     }
 
     fun getEnumAsList(): List<NotificationFilterTypeModel> {
@@ -53,4 +57,6 @@ class CoreNotificationFilterViewModel {
     fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {
         return currentFilter.asClosure(provideNewState)
     }
+
+
 }

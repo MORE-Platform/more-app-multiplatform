@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.notification.filter
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getString
@@ -11,11 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFilterViewModel): ViewModel() {
     private val scope = CoroutineScope(Dispatchers.Default + Job())
 
-    val currentFilter = MutableStateFlow(NotificationFilterModel())
+    val currentFilter = mutableStateOf(NotificationFilterModel())
 
     var notificationFilterList = mapOf(
         Pair(
@@ -35,9 +37,15 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
         coreViewModel.setPlatformHighPriority(2)
         scope.launch {
             coreViewModel.currentFilter.collect {
-                currentFilter.emit(it)
+                withContext(Dispatchers.Main) {
+                    currentFilter.value = it
+                }
             }
         }
+    }
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
     }
 
     fun processFilter(filter: String) {
