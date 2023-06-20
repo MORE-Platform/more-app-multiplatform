@@ -25,6 +25,7 @@ class NotificationViewModel: ObservableObject {
         coreModel.onNotificationLoad { notifications in
             if !notifications.isEmpty {
                 self.notificationList = notifications
+                self.notificationList = notifications.sorted { $0.timestamp < $1.timestamp}
             }
         }
         
