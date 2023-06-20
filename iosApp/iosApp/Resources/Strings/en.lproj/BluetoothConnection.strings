@@ -6,12 +6,17 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 
-"Connected devices" = "Connected devices";
-"No devices connected" = "No devices connected";
-"Discovered devices" = "Discovered devices";
-"No devices found nearby" = "No devices found nearby";
-"Searching for devices" = "Searching for devices";
 "External Device Setup" = "External Device Setup";
+
+"Connected devices" = "Connected devices";
+"Discovered devices" = "Discovered devices";
+"Searching for devices" = "Searching for devices";
+
+"No devices connected" = "No devices connected";
+"No devices found nearby" = "No devices found nearby";
+
+"Bluetooth disabled! Please enable to use!" = "Bluetooth disabled! Please enable to use!";
+
 "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices" = "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices";
 "You can connect to and disconnect from devices at any time: Info > Devices" = "You can connect to and disconnect from devices at any time: Info > Devices";
-"Bluetooth disabled! Please enable to use!" = "Bluetooth disabled! Please enable to use!";
+

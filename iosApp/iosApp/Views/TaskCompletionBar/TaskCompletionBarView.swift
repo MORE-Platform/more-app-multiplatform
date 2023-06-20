@@ -12,12 +12,16 @@ import shared
 struct TaskCompletionBarView: View {
     
     @StateObject var viewModel: TaskCompletionBarViewModel
-    @Binding var progressViewTitle: String
+    var progressViewTitle: String = ""
+
     
     var body: some View {
         VStack {
             HStack {
-                BasicText(text: $progressViewTitle, color: Color.more.secondary)
+                if progressViewTitle != "" {
+                    BasicText(text: .constant(progressViewTitle), color: Color.more.secondary)
+                }
+                
                 Spacer()
                 if viewModel.taskCompletion.totalTasks != 0 {
                     BasicText(text: .constant(String(format: "%.2f%%", viewModel.taskCompletionPercentage)))
@@ -38,6 +42,6 @@ struct TaskCompletionBarView: View {
 
 struct TaskCompletionBarView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant("Progress Bar Title"))
+        TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: "Progress Bar Title")
     }
 }

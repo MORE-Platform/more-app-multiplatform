@@ -1,1 +1,9 @@
-"no_filter_activated" = "Kein Filter aktiviert";
+/*
+  NotificationView.strings
+  iosApp
+
+  Created by Isabella Aigner on 12.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"no_filter_activated" = "Es wurde kein Filter wurde aktiviert.";

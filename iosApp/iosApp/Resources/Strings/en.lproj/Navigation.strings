@@ -5,12 +5,19 @@
   Created by Jan Cortiel on 15.03.23.
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
+
 "Dashboard" = "Dashboard";
-"Dashboard Fitler" = "Dashboard Filter";
+"Dashboard Filter" = "Dashboard Filter";
 "Notifications" = "Notifications";
 "Information" = "Information";
 "Settings" = "Settings";
-"Task Detail" = "Task Detail";
-"Scan QR Code" = "Scan QR Code";
-"Question Observation" = "Question Observation";
+"Task Details" = "Task Detail";
 "Observation Details" = "Observation Details";
+"Observation Filter" = "Observation Filter";
+"Question Observation" = "Question";
+"Study Details" = "Study Details";
+"Running Observations" = "Running Observations";
+"Past Observations" = "Past Observations";
+
+"Scan QR Code" = "Scan QR Code";
+

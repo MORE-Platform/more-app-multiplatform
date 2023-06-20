@@ -1,14 +1,31 @@
+/*
+  NotificationView.strings
+  iosApp
+
+  Created by Isabella Aigner on 12.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
 "acc-mobile-observation" = "Accelerometer";
-"All Items" = "Alle Daten";
-"ENTIRE_TIME" = "Gesamter Zeitraum";
-"gps-mobile-observation" = "GPS Mobile Observation";
+"gps-mobile-observation" = "GPS";
+"polar-verity-observation" = "Polar Verity";
+"question-observation" = "Question";
+"questionnaire-observation" = "Questionnaire";
+
 "no_filter_activated" = "No Filter activated";
+"filter_acitvated" = "Filter activated";
+"reset_filter" = "Reset filter";
+
+"All Items" = "All Items";
+"All types" = "All types";
+
+"ENTIRE_TIME" = "Entire time";
 "ONE_MONTH" = "1 Month";
 "ONE_WEEK" = "1 Week";
-"polar-verity-observation" = "Polar Verity Observation";
-"question-observation" = "Question Observation";
+"TODAY_AND_TOMORROW" = "Today and Tomorrow";
+
 "Select Time" = "Select Time";
 "Select Type" = "Select Type";
-"TODAY_AND_TOMORROW" = "Today and Tomorrow";
+
 "type" = "Type";
 "type_plural" = "Types";

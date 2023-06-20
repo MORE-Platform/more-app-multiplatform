@@ -1,10 +1,22 @@
-"active_for" = "Aktiv für";
-"No running tasks currently" = "Derzeit keine laufenden Aufgaben";
-"No tasks completed by now" = "Noch keine Aufgaben erledigt";
-"No tasks to show" = "Keine Aufgaben zu zeigen";
-"pause_observation" = "Beobachtung pausieren";
-"Start LimeSurvey" = "Start LimeSurvey";
-"start_observation" = "Starten der Beobachtung";
-"start_questionnaire" = "Fragebogen starten";
-"stop_observation" = "Beobachtung stoppen";
+/*
+  ScheduleListView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 07.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
 "timeframe" = "Zeitrahmen";
+"active_for" = "Aktiv für";
+
+"start_questionnaire" = "Starte den  Fragebogen";
+"start_observation" = "Aufzeichnung starten";
+"pause_observation" = "Aufzeichnung pausieren";
+"stop_observation" = "Aufzeichnung stoppen";
+"Start LimeSurvey" = "Start LimeSurvey";
+
+"data_capture_running" = "Aufzeichnung läuft";
+
+"No running tasks currently" = "Derzeit gibt es keine laufenden Aufzeichnungen";
+"No tasks completed by now" = "Noch keine Aufgaben erledigt";
+"No tasks to show" = "Keine zu zeigenden Aufgaben";
