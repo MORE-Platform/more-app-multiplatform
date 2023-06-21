@@ -14,7 +14,7 @@ fun Long.jvmLocalDateTime(): LocalDateTime {
     return LocalDateTime.ofEpochSecond(
         this,
         0,
-        ZoneId.systemDefault().rules.getOffset(Instant.now())
+        ZoneId.systemDefault().rules.getOffset(Instant.ofEpochSecond(this))
     )
 }
 
