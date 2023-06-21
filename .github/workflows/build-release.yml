@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
-      - 'MORE-563*'
+      - 'release'
 
 env:
   XCODE_VERSION: '14.2.0'
