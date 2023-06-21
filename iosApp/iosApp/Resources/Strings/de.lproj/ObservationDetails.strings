@@ -1,1 +1,10 @@
-"Observation Details" = "Beobachtung Details";
+/*
+  ObservationDetails.strings
+  iosApp
+
+  Created by Isabella Aigner on 19.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Observation Details" = "Aufzeichnungsdetails";
+"Participant Information" = "Informationen";

@@ -1,14 +1,28 @@
-"back_to_settings" = "Weiterhin teilnehmen!";
-"continue_study" = "Weiterhin teilnehmen";
-"first_message" = "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen.";
-"leave_study" = "Studie verlassen";
-"really_message" = "Möchten Sie wirklich die Studie verlassen?";
-"refresh_study_config" = "Studienkonfiguration neu laden";
-"second_message" = "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher aufgezeichneten  Daten werden von Ihrem Mobiltelefon gelöscht.";
-"settings_text" = "Sie haben alle notwendigen Zustimmungen erteilt. Sie können die Zustimmmungen zurückziehen, indem Sie die gesamte Studie verlassen.";
+/*
+  SettingsView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 08.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
 "settings_title" = "Einstellungen";
-"study_consent" = "Zustimmung";
-"sure_message" = "Sind Sie sicher, dass sie Ihre Teilnahme an der Studie beenden wollen?";
+
+"settings_text" = "Sie haben alle notwendigen Zustimmungen erteilt. Sie können die Zustimmmungen zurückziehen, indem Sie die gesamte Studie verlassen.";
+"refresh_study_config" = "Studienkonfiguration neu laden";
+
 "withdraw" = "Die Studie verlassen";
+"leave_study" = "Die Studie verlassen";
+"continue_study" = "Weiterhin teilnehmen!";
 "withdraw_study" = "Die Studie verlassen";
-"withdraw_swipe" = "Die Studie verlassen";
+"withdraw_swipe" = "Ziehen um die die Studie zu verlassen";
+
+"first_message" = "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen.";
+"second_message" = "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher aufgezeichneten  Daten werden von Ihrem Mobiltelefon gelöscht.";
+
+"really_message" = "Möchten Sie wirklich die Studie verlassen?";
+"sure_message" = "Sind Sie sicher, dass sie Ihre Teilnahme an der Studie beenden wollen?";
+"back_to_settings" = "Weiterhin teilnehmen!";
+
+"study_consent" = "Zustimmung";
+"update_error" = "Ein Fehler beim Update der Studie ist aufgetreten!";

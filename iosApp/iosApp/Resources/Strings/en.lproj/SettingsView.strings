@@ -7,16 +7,22 @@
 */
 
 "settings_title" = "Settings";
+
 "settings_text" = "All necessary permissions have been accepted. Permissions can be viewed here. If you want to withdraw permissions, you can only do so by withdrawing from the study.";
 "refresh_study_config" = "Refresh Study Configuration";
+
 "leave_study" = "Leave Study";
 "continue_study" = "Continue to participate";
+"withdraw" = "Withdraw from the study";
 "withdraw_study" = "Withdraw from the study";
 "withdraw_swipe" = "Swipe to withdraw";
-"back_to_settings" = "I want to continue participating!";
+
 "first_message" = "If you withdraw from the study, you will not be able to re-enter at a later date.";
 "second_message" = "If you leave this study, you may not re-enter. Your participation will be cancelled and your data will be deleted from your mobile phone!";
-"sure_message" = "Are you sure you want to withdraw your participation?";
+
 "really_message" = "Do you really want to withdraw?";
-"withdraw" = "Withdraw from study";
+"sure_message" = "Are you sure you want to withdraw your participation?";
+"back_to_settings" = "I want to continue participating!";
+
 "study_consent" = "Consent";
+"update_error" = "Error updating study!";

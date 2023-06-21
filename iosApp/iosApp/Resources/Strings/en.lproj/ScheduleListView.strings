@@ -8,11 +8,14 @@
 
 "timeframe" = "Timeframe";
 "active_for" = "Active for";
+
 "start_questionnaire" = "Start Questionnaire";
-"start_observation" = "Start Observation";
-"pause_observation" = "Pause Observation";
-"stop_observation" = "Stop Observation";
+"start_observation" = "Start Data Capture";
+"pause_observation" = "Pause Data Capture";
+"stop_observation" = "Stop Data Capture";
 "Start LimeSurvey" = "Start LimeSurvey";
+
+"data_capture_running" = "Data Capture is running";
 
 "No tasks to show" = "No tasks to show";
 "No tasks completed by now" = "No tasks completed by now";

@@ -7,9 +7,21 @@
 */
 
 "login_welcome_title" = "Welcome to More";
-"study_endpoint_headling" = "Study Endpoint";
-"participation_key_entry" = "Enter Registration Token";
-"qr_code_entry" = "Scan QR Code";
-"login_button" = "Login";
+
 "or" = "or";
+"login_button" = "Login";
+
+"participation_key_entry" = "Enter Registration Token";
+
+"study_endpoint_headling" = "Study Endpoint";
+"enter_study_endpoint" = "Enter Study Endpoint";
+
+"enter_token" = "Enter Token";
+"token_error" = "Token Error";
+
+"enter_study_url" = "Enter study URL";
+
 "scan_qr_code" = "Scan QR Code";
+"camera_to_scan_qr_code" = "Open camera to scan a QR Code";
+
+
