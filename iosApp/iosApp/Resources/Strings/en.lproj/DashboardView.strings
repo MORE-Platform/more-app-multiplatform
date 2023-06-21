@@ -6,3 +6,11 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 
+"tasks_completed" = "Overall Progress";
+"study_currently_inactive" = "Study currently inactive";
+"open_filter_settings" = "Open Filter Settings";
+"schedule" = "Schedule";
+
+"modules" = "Modules";
+"observations" = "Aufzeichnungen";
+"past_tasks" = "Past Tasks";

@@ -1,9 +1,22 @@
-"Dashboard" = "Dashboard";
-"Dashboard Fitler" = "Dashboard Filter";
+/*
+  Navigation.strings
+  iosApp
+
+  Created by Jan Cortiel on 15.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Dashboard" = "Übersicht";
+"Dashboard Filter" = "Filter";
+"Notifications" = "Nachrichten";
 "Information" = "Information";
-"Notifications" = "Benachrichtigungen";
-"Observation Details" = "Beobachtung Details";
-"Question Observation" = "Frage Beobachtung";
-"Scan QR Code" = "QR-Code scannen";
 "Settings" = "Einstellungen";
-"Task Detail" = "Aufgabe Details";
+"Task Details" = "Aufgabendetails";
+"Observation Details" = "Aufzeichnungsdetails";
+"Observation Filter" = "Filter";
+"Question Observation" = "Simple Frage";
+"Study Details" = "Studiendetails";
+"Running Observations" = "Laufende Aufzeichnungen";
+"Past Observations" = "Vergangene Aufzeichnungena";
+
+"Scan QR Code" = "QR-Code scannen";

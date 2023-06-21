@@ -1,7 +1,25 @@
-"login_button" = "Login";
+/*
+  LoginViewLocalizable.strings
+  iosApp
+
+  Created by Jan Cortiel on 06.02.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
 "login_welcome_title" = "Willkommen bei More";
+
 "or" = "oder";
-"participation_key_entry" = "Registrierungstoken eingeben";
-"qr_code_entry" = "QR-Code scannen";
-"scan_qr_code" = "QR-Code scannen";
-"study_endpoint_headling" = "URL der Studie eingeben";
+"login_button" = "Login";
+
+"participation_key_entry" = "Bitte geben Sie den Registrierungstoken ein";
+
+"study_endpoint_headling" = "Studienendpunkt";
+"enter_study_endpoint" = "Bearbeite den Studienendpunkt";
+
+"enter_token" = "Token eingeben";
+"token_error" = "Ein Fehler ist beim Token aufgetreten";
+
+"enter_study_url" = "URL der Studie eigeben";
+
+"scan_qr_code" = "Scannen Sie bitte Ihren QR Code";
+"camera_to_scan_qr_code" = "Öffnen Sie die Kamera um den QR code zu scannen";

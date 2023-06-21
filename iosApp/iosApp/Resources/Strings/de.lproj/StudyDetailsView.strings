@@ -1,9 +1,18 @@
-"close_view" = "Schließen";
+/*
+  StudyDetailsView.strings
+  iosApp
+
+  Created by Daniil Barkov on 22.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"study_duration" = "Studiendauer:";
+"participant_info" = "Informationen";
 "modules_string" = "Module";
-"no_filter_activated" = "Kein Filter aktiviert";
-"obs_modules" = "Module zur Beobachtung";
-"open_settings" = "Zu den Einstellungen";
-"participant_info" = "Teilnehmerinformation";
+"obs_modules" = "Module";
+"tasks_completed" = "Gesamtfortschritt";
+
+"close_view" = "Schließen";
 "schedule_string" = "Zeitplan";
-"study_duration" = "Dauer der Studie:";
-"tasks_completed" = "Erledigte Aufgaben";
+"open_settings" = "Gehe zu den Einstellungen";       
+"no_filter_activated" = "Kein Filter aktiviert";

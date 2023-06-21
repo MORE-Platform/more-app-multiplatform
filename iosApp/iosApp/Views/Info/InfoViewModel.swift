@@ -12,18 +12,20 @@ class InfoViewModel: ObservableObject {
     
     private let studyCoreModel = CoreStudyDetailsViewModel()
     @Published var studyTitle: String?
-    
-    // TODO: inforopository with infodata (not yet in bakcend) - exchange mock data to backend data after it exists
-    var institute: String = "Ludwig Boltzmann Institute "
-    var contactPerson: String = "Dr. Max Mustermann"
-    var contactEmail: String? = "max.mustermann@bolzmann.at"
-    var contactTel: String? = nil
+    @Published var contactInstitute: String?
+    @Published var contactPerson: String?
+    @Published var contactEmail: String?
+    @Published var contactPhoneNumber: String?
     
     init() {
         studyCoreModel.onLoadStudyDetails() {
             studyDetails in
             if let studyDetails {
                 self.studyTitle = studyDetails.study.studyTitle
+                self.contactInstitute = studyDetails.study.contactInstitute
+                self.contactPerson = studyDetails.study.contactPerson
+                self.contactEmail = studyDetails.study.contactEmail
+                self.contactPhoneNumber = studyDetails.study.contactPhoneNumber
             }
         }
     }

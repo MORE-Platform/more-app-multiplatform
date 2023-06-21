@@ -7,8 +7,10 @@
 */
 
 "Task Detail" = "Task Detail";
-"Abort" = "Abort";
-"Collected Datapoints" = "Collected Datapoints";
-"Timeframe" = "Timeframe: ";
 "Participant Information" = "Participant Information";
-"Pause Observation" = "Pause Observation";
+
+"Abort" = "Abort";
+"Timeframe" = "Timeframe: ";
+
+"Collected Datapoints" = "Collected Datapoints";
+"Pause Observation" = "Pause Data Capture";

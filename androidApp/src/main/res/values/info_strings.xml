@@ -14,4 +14,5 @@
     <string name="info_leave_study">Leave Study</string>
     <string name="info_leave_study_desc">Exit Application</string>
     <string name="info_disclaimer">When encountering problems, feel free to contact us.</string>
+    <string name="info_contact_data">Contact</string>
 </resources>

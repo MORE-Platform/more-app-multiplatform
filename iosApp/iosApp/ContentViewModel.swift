@@ -116,7 +116,7 @@ extension ContentViewModel: ConsentViewModelListener {
         DispatchQueue.main.async { [weak self] in
             if let self {
                 self.hasCredentials = true
-                scanBluetooth()
+                self.scanBluetooth()
                 AppDelegate.shared.activateObservationWatcher()
             }
         }

@@ -37,12 +37,12 @@ struct InfoView: View {
                     Spacer()
                     ScrollView {
                         ContactInfo(
-                            studyTitle: .constant(viewModel.studyTitle  ?? ""),
-                            institute: .constant(viewModel.institute),
-                            contactPerson: .constant(viewModel.contactPerson),
+                            title: .constant(String.localize(forKey: "info_contact_title", withComment: "Contact us.", inTable: infoStrings)),
                             info: .constant(String.localize(forKey: "info_disclaimer", withComment: "Contact us.", inTable: infoStrings)),
+                            contactInstitute: viewModel.contactInstitute,
+                            contactPerson: viewModel.contactPerson,
                             contactEmail: viewModel.contactEmail,
-                            contactTel: viewModel.contactTel
+                            contactPhoneNumber: viewModel.contactPhoneNumber
                         )
                     }
                     Spacer()

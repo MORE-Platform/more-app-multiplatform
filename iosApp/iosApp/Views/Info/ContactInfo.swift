@@ -9,13 +9,13 @@
 import SwiftUI
 
 struct ContactInfo: View {
-    @Binding var studyTitle: String
-    @Binding var institute: String
-    @Binding var contactPerson: String
+    @Binding var title: String
     @Binding var info: String
     
+    let contactInstitute: String?
+    let contactPerson: String?
     let contactEmail: String?
-    let contactTel: String?
+    let contactPhoneNumber: String?
     
     var body: some View {
         VStack {
@@ -26,28 +26,34 @@ struct ContactInfo: View {
                     spacing: 4
                 ) {
                     Spacer()
-                    BasicText(
-                        text: .constant(studyTitle),
-                        color: .more.primaryDark,
-                        font: .system(size: 20, weight: .bold)
-                    )
-                        .padding(.bottom, 18)
-                        .multilineTextAlignment(.center)
+                    if contactPerson != nil || contactEmail != nil || contactPhoneNumber != nil {
+                        BasicText(
+                            text: .constant(title),
+                            color: .more.primaryDark,
+                            font: .system(size: 20, weight: .bold)
+                        )
+                            .padding(.bottom, 18)
+                            .multilineTextAlignment(.center)
+                    }
                     
-                    BasicText(
-                        text: .constant(institute),
-                        font: .system(size: 16, weight: .bold)
-                    )
-                        .padding(.bottom, 9)
-                        .multilineTextAlignment(.center)
+                    if contactInstitute != nil {
+                        BasicText(
+                            text: .constant(contactInstitute ?? ""),
+                            font: .system(size: 16, weight: .bold)
+                        )
+                            .padding(.bottom, 9)
+                            .multilineTextAlignment(.center)
+                    }
                     
-                    BasicText(
-                        text: .constant(contactPerson),
-                        color: .more.secondary,
-                        font: .system(size: 16, weight: .semibold)
-                    )
-                        .padding(.bottom, 0)
-                        .multilineTextAlignment(.center)
+                    if contactPerson != nil {
+                        BasicText(
+                            text: .constant(contactPerson ?? ""),
+                            color: .more.secondary,
+                            font: .system(size: 16, weight: .semibold)
+                        )
+                            .padding(.bottom, 0)
+                            .multilineTextAlignment(.center)
+                    }
                     
                     if contactEmail != nil {
                         BasicText(
@@ -59,9 +65,9 @@ struct ContactInfo: View {
                             .multilineTextAlignment(.center)
                     }
                     
-                    if contactTel != nil {
+                    if contactPhoneNumber != nil {
                         BasicText(
-                            text: .constant(contactTel ?? ""),
+                            text: .constant(contactPhoneNumber ?? ""),
                             color: .more.secondary,
                             font: .system(size: 16)
                         )
@@ -69,16 +75,18 @@ struct ContactInfo: View {
                             .multilineTextAlignment(.center)
                     }
                     
-                    Divider()
-                        .frame(height: 36)
-                    
-                    BasicText(
-                        text: .constant(info),
-                        color: .more.secondary,
-                        font: .system(size: 14)
-                    )
+                    if contactPerson != nil || contactEmail != nil || contactPhoneNumber != nil {
+                        Divider()
+                            .frame(height: 36)
+                        
+                        BasicText(
+                            text: .constant(info),
+                            color: .more.secondary,
+                            font: .system(size: 14)
+                        )
                         .multilineTextAlignment(.center)
-                    Spacer()
+                        Spacer()
+                    }
                 }
                 Spacer()
             }

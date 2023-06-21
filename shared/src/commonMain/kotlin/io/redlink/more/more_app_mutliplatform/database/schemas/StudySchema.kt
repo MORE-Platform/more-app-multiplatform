@@ -8,6 +8,8 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyContact
 import kotlinx.datetime.*
 import org.mongodb.kbson.ObjectId
 
@@ -19,6 +21,10 @@ class StudySchema : RealmObject {
     var consentInfo: String = ""
     var start: RealmInstant? = null
     var end: RealmInstant? = null
+    var contactInstitute: String? = null
+    var contactPerson: String? = null
+    var contactEmail: String? = null
+    var contactPhoneNumber: String? = null
     var version: Long = 0
     var active: Boolean = false
 
@@ -36,6 +42,10 @@ class StudySchema : RealmObject {
                     study.end.atStartOfDayIn(TimeZone.currentSystemDefault())
                         .toEpochMilliseconds()
                 ).toRealmInstant()
+                contactInstitute = study.contact?.institute
+                contactPerson = study.contact?.person
+                contactEmail = study.contact?.email
+                contactPhoneNumber = study.contact?.phoneNumber
                 version = study.version
                 active = study.active ?: false
             }

@@ -6,13 +6,13 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 
-"no_filter_activated" = "No Filter activated";
-"tasks_completed" = "Completed Tasks";
-"schedule_string" = "Schedule";
-"modules_string" = "Modules";
-
 "study_duration" = "Study duration:";
-"open_settings" = "Go to settings";
-"close_view" = "Close";
 "participant_info" = "Participant information";
+"modules_string" = "Modules";
 "obs_modules" = "Observation Modules";
+"tasks_completed" = "Overall Progress";
+
+"close_view" = "Close";
+"schedule_string" = "Schedule";
+"open_settings" = "Go to settings";
+"no_filter_activated" = "No Filter activated";

@@ -9,7 +9,9 @@
 "Study Details" = "Study Details";
 "Running Observations" = "Running Observations";
 "Past Observations" = "Past Observations";
+"Devices" = "Devices";
 "Settings" = "Settings";
 "Leave Study" = "Leave Study";
-"Devices" = "Devices";
+
 "info_disclaimer" = "Feel free to contact us, when you encounter problems.";
+"info_contact_title" = "Contact";

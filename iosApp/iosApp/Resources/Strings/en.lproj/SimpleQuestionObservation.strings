@@ -7,7 +7,13 @@
 */
 
 "Answer" = "Answer";
-"thank_you" = "Thank You!";
-"answer_submitted" = "Your answer to the question has been successfully submitted!";
-"thank_you_participation" = "Thank you for your participation!";
+"select_answer" = "Please select an answer";
+
+"submit" = "Submit";
 "close" = "Close";
+"return_to_dashboard" = "Return to Dashboard";
+
+"answer_submitted" = "Your answer to the question has been successfully submitted!";
+
+"thank_you" = "Thank You!";
+"thank_you_participation" = "Thank You for your participation!";
