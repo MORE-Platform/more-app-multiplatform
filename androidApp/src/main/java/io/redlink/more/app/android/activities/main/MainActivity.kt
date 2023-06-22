@@ -222,7 +222,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     NavigationScreen.NOTIFICATION_FILTER.stringRes()
                 viewModel.showBackButton.value = true
 
-                NotificationFilterView(viewModel = viewModel.notificationViewModel.filterModel)
+                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel)
             }
             composable(NavigationScreen.RUNNING_SCHEDULES.route) {
                 viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()

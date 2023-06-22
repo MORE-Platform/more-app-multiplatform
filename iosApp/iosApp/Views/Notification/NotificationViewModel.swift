@@ -11,24 +11,22 @@ import shared
 
 
 class NotificationViewModel: ObservableObject {
-    let filterModel: NotificationFilterViewModel = NotificationFilterViewModel()
     let recorder = IOSDataRecorder()
+    private let filterViewModel: CoreNotificationFilterViewModel
     private let coreModel: CoreNotificationViewModel
     
     @Published var notificationList: [NotificationModel] = []
-    @Published var notificationCount: Int64 = 0
     @Published var filterText: String = "FilterText"
 
-    init() {
-        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterModel.coreModel)
-        self.notificationList = []
-        
-        coreModel.onNotificationLoad { notifications in
-            self.notificationList = notifications
-        }
-        
-        coreModel.onCountLoad { count in
-            self.notificationCount = count?.int64Value ?? 0
+    init(filterViewModel: CoreNotificationFilterViewModel) {
+        self.filterViewModel = filterViewModel
+        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel)
+        coreModel.onNotificationLoad { [weak self] notifications in
+            print("Fetched notifications")
+            DispatchQueue.main.async {
+                self?.notificationList = []
+                self?.notificationList = notifications
+            }
         }
     }
     
@@ -44,7 +42,7 @@ class NotificationViewModel: ObservableObject {
         coreModel.viewDidDisappear()
     }
 
-    func updateFilterText() {
-        self.filterText = filterModel.getFilterText()
+    func getFilterText(stringTable: String) {
+        self.filterText = filterViewModel.getActiveTypes().map{$0.localize(withComment: $0, useTable: stringTable)}.joined(separator: ", ")
     }
 }

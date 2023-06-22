@@ -1,29 +1,47 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.models.NotificationFilterModel
+import io.redlink.more.more_app_mutliplatform.extensions.remove
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class CoreNotificationFilterViewModel: CoreViewModel() {
     private var highPriority: Long = 1
 
-    val currentFilter = MutableStateFlow(NotificationFilterModel())
+    val filters = MutableStateFlow<Map<NotificationFilterTypeModel, Boolean>>(mapOf())
+    init {
+        val map = getEnumAsList().associateWith { false }.toMutableMap()
+        map[NotificationFilterTypeModel.ALL] = true
+        filters.set(map)
+    }
 
-    /**
-     * Pass the String representing a filter
-     * according to NotificationFilterTypeModel type field
-     */
-    fun processFilterChange(filter: String?) {
-        Scope.launch {
-//            currentFilter.emit(
-////                currentFilter.value.changeFilter(filter)
-//            )
+    fun toggleFilter(filter: NotificationFilterTypeModel) {
+        var filterMap = filters.value.toMutableMap()
+        if (filter == NotificationFilterTypeModel.ALL) {
+            filterMap = filterMap.mapValues { false }.toMutableMap()
+            filterMap[NotificationFilterTypeModel.ALL] = true
         }
+        else if (filterMap[NotificationFilterTypeModel.ALL] == true){
+            filterMap[NotificationFilterTypeModel.ALL] = false
+            filterMap[filter] = true
+        }
+        else if (filterMap[filter] == true) {
+            if (filterMap.values.filter { it }.size == 1) {
+                filterMap = filterMap.mapValues { false }.toMutableMap()
+                filterMap[NotificationFilterTypeModel.ALL] = true
+            } else {
+                filterMap[filter] = false
+            }
+        } else {
+            filterMap[filter] = true
+        }
+        filters.set(filterMap)
     }
 
     override fun viewDidAppear() {
@@ -35,28 +53,28 @@ class CoreNotificationFilterViewModel: CoreViewModel() {
     }
 
     fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
-        return if (currentFilter.value.isNotEmpty()) {
-            notificationList.filter { notification -> ((
-                    if (currentFilter.value.contains(NotificationFilterTypeModel.IMPORTANT)) {
+        return if (filterActive()) {
+            notificationList.filter { notification ->
+                    if (filters.value[NotificationFilterTypeModel.IMPORTANT] == true) {
                         notification.priority == highPriority
-                    } else
+                    } else {
                         true
-                    ) && (
-                    if (currentFilter.value.contains(NotificationFilterTypeModel.UNREAD)) {
+                    } && if (filters.value[NotificationFilterTypeModel.UNREAD] == true) {
                         !notification.read
-                    } else true
-                    ))
+                    } else {
+                        true
+                    }
             }
         } else notificationList
     }
 
-    fun getEnumAsList(): List<NotificationFilterTypeModel> {
+    fun filterActive() = filters.value[NotificationFilterTypeModel.ALL] == false
+
+    private fun getEnumAsList(): List<NotificationFilterTypeModel> {
         return NotificationFilterTypeModel.values().toList()
     }
 
-    fun onLoadCurrentFilters(provideNewState: ((NotificationFilterModel) -> Unit)): Closeable {
-        return currentFilter.asClosure(provideNewState)
-    }
+    fun getActiveTypes() = filters.value.filter { it.value }.map { it.key.type }.toSet()
 
-
+    fun onFilterChange(provideNewstate: (Map<NotificationFilterTypeModel, Boolean>) -> Unit) = filters.asClosure(provideNewstate)
 }

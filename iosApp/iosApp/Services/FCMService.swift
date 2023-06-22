@@ -66,12 +66,13 @@ extension FCMService: UNUserNotificationCenterDelegate {
         Messaging.messaging().apnsToken = deviceToken
     }
     
+    @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         let userInfo = notification.request.content.userInfo
         let uuid = UUID().uuidString
         let timestamp = NSDate().timeIntervalSince1970
         
-        notificationRepository.storeNotification(key: uuid, channelId: nil, title: notification.request.content.title, body: notification.request.content.body, timestamp: Int64(timestamp), priority: 1, read: false, userFacing: true, additionalData: nil)
+        notificationRepository.storeNotification(key: uuid, channelId: nil, title: notification.request.content.title, body: notification.request.content.body, timestamp: Int64(timestamp), priority: 2, read: false, userFacing: true, additionalData: nil)
         
         print(userInfo)
         return [.sound,.badge, .banner, .list]

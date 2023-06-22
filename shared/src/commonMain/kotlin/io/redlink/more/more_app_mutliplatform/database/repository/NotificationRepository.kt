@@ -65,9 +65,8 @@ class NotificationRepository : Repository<NotificationSchema>() {
 
     fun setNotificationReadStatus(key: String, read: Boolean = true) {
         realm()?.writeBlocking {
-            this.query<NotificationSchema>("notificationId = $0", key).first().find()?.let {
-                it.read = read
-            }
+            val notification = this.query<NotificationSchema>("notificationId == $0", key).first().find()
+            notification?.read = read
         }
     }
 

@@ -3,11 +3,10 @@ package io.redlink.more.app.android.activities.notification.filter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,13 +21,6 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
-
-    val notificationFilterList = viewModel.notificationFilterList
-
-    val onChangeFilterState: (String) -> Unit = {
-        viewModel.processFilter(it)
-    }
-
     LazyColumn {
         item {
             HeaderTitle(
@@ -38,11 +30,11 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
 
-        items(notificationFilterList.toList()) { filter ->
+        itemsIndexed(viewModel.currentFilters.entries.sortedBy { it.key.sortIndex }) { _, entry ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if(filter.let { viewModel.currentFilter.collectAsState().value.contains(filter.second) })
+                if(entry.value)
                     IconInline(
                         icon = Icons.Rounded.Done,
                         color = MoreColors.Approved,
@@ -52,11 +44,11 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { onChangeFilterState(filter.second) })
+                        .clickable(onClick = { viewModel.toggleFilter(entry.key) })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = filter.first,
+                        description = entry.key.type,
                         color = MoreColors.Secondary
                     )
                 }

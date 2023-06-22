@@ -6,3 +6,7 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 "no_filter_activated" = "No filter activated";
+"There are currently no notficiations to show" = "There are currently no notficiations to list";
+"All" = "All Notifications";
+"Unread" = "Not read";
+"Important" = "Only Important";

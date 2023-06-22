@@ -37,8 +37,7 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.9f)
+            .fillMaxSize()
     ) {
 
         item {
@@ -54,12 +53,12 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         item {
-            if (viewModel.notificationCount.value == 0) {
+            if (viewModel.notificationList.isEmpty()) {
                 Text(text = getStringResource(id = R.string.no_notifications_yet))
             }
         }
 
-        items(viewModel.notificationList.value) { notification ->
+        items(viewModel.notificationList.sortedByDescending { it.timestamp }) { notification ->
             Column(
                 modifier = Modifier.clickable {
                     viewModel.setNotificationToRead(notification)

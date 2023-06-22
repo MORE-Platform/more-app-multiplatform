@@ -21,7 +21,8 @@ struct DashboardView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(viewModel.scheduleViewModel)
+                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+                        .environmentObject(viewModel.scheduleViewModel)
                     if selection == 0 {
                         ScheduleView(viewModel: viewModel.scheduleViewModel)
                     } else {
