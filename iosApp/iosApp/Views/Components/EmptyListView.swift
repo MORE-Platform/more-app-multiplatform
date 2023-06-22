@@ -10,9 +10,10 @@ import SwiftUI
 
 struct EmptyListView: View {
     var text: String
+    var font: Font = Font.body
     var body: some View {
-        DetailsTitle(text: text, color: .more.textDefault)
-            .padding(32)
+        DetailsTitle(text: text, color: .more.textDefault, font: font)
+            .padding(.vertical, 16)
     }
 }
 

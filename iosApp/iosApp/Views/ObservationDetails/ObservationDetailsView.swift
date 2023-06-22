@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ObservationDetailsView: View {
     @StateObject var viewModel: ObservationDetailsViewModel
-    private let stringTable = "ObservationDetail"
+    private let stringTable = "ObservationDetails"
     private let navigationStrings = "Navigation"
     
     var body: some View {

@@ -6,4 +6,6 @@
   Copyright © 2023 Redlink GmbH. All rights reserved.
 */
 
-
+"accept_button" = "Akzeptieren";
+"decline_button" = "Ablehnen";
+"to_settings" = "Möchten Sie erneut versuchen die Settings zu senden? Wenn das Problem bestehen bleibt kontaktieren Sie bitte ihr Forschungsinstitut.";

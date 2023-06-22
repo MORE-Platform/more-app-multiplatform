@@ -1,7 +1,17 @@
+/*
+  Info.strings
+  iosApp
+
+  Created by Isabella Aigner on 20.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Study Details" = "Studiendetails";
+"Running Observations" = "Laufende Aufzeichnungen";
+"Past Observations" = "Vergangene Aufzeichnungen";
 "Devices" = "Geräte";
-"info_disclaimer" = "Wenden Sie sich an uns, wenn Sie auf Probleme stoßen.";
-"Leave Study" = "Studie verlassen";
-"Past Observations" = "Frühere Beobachtungen";
-"Running Observations" = "Laufende Beobachtungen";
 "Settings" = "Einstellungen";
-"Study Details" = "Details der Studie";
+"Leave Study" = "Studie verlassen";
+
+"info_disclaimer" = "Wenden Sie sich an uns, wenn Sie auf Probleme stoßen.";
+"info_contact_title" = "Kontaktdaten";

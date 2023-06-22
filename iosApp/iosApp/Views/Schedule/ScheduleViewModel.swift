@@ -47,12 +47,12 @@ class ScheduleViewModel: ObservableObject {
                 }
                 
                 if !added.isEmpty || !updated.isEmpty {
-                    let itemsToBeAdded = mergeSchedules(Array(added), Array(updated))
+                    let itemsToBeAdded = self.mergeSchedules(Array(added), Array(updated))
                     
                     let groupedSchedulesToAdd = Dictionary(grouping: itemsToBeAdded, by: { $0.start.startOfDate() })
                     
                     for (date, schedules) in groupedSchedulesToAdd {
-                        self.schedulesByDate[date] = mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: {
+                        self.schedulesByDate[date] = self.mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: {
                             if $0.start == $1.start {
                                 if $0.end == $1.end {
                                     if $0.observationTitle == $1.observationTitle {

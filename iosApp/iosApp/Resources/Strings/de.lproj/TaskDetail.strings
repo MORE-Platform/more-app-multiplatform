@@ -1,6 +1,18 @@
+/*
+  TaskDetail.strings
+  iosApp
+
+  Created by Isabella Aigner on 22.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Task Detail" = "Aufgabendetails";
+"Participant Information" = "Informationen";
+
 "Abort" = "Abbrechen";
-"Collected Datapoints" = "Gesammelte Datenpunkte";
-"Participant Information" = "Teilnehmerinformation";
-"Pause Observation" = "Beobachtung pausieren";
-"Task Detail" = "Aufgabe Details";
 "Timeframe" = "Zeitrahmen:";
+
+"Collected Datapoints" = "Gesammelte Datenpunkte";
+"Pause Observation" = "Aufzeichnung pausieren";
+
+

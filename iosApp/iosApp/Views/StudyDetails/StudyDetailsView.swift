@@ -15,10 +15,9 @@ struct StudyDetailsView: View {
     private let stringTable = "StudyDetailsView"
     
     @State var selection: Int = 0
-    private let navigationStrings = "Study Details"
+    private let navigationStrings = "Navigation"
     
     @State private var isObservationListOpen = false
-    
     
     var body: some View {
         MoreMainBackgroundView {
@@ -28,8 +27,7 @@ struct StudyDetailsView: View {
                         .padding(.top)
                         .padding(.bottom)
                     
-                    TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: .constant(String
-                        .localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: stringTable)))
+                    TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: String.localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: stringTable))
                     .padding(.bottom, 0.2)
                     
                     HStack(alignment: .center) {
@@ -68,7 +66,7 @@ struct StudyDetailsView: View {
                 
             }
         }
-        .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details title"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreens.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details"), displayMode: .inline)
         .onAppear {
             viewModel.viewDidAppear()
         }

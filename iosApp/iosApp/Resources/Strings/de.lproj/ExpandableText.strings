@@ -1,2 +1,10 @@
+/*
+  ExpandableText.strings
+  iosApp
+
+  Created by Isabella Aigner on 23.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
 "Read Less" = "Weniger";
 "Read More" = "Mehr";

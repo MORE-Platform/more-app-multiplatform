@@ -1,9 +1,22 @@
-"Bluetooth disabled! Please enable to use!" = "Bluetooth deaktiviert! Bitte aktivieren zum Verbinden!";
+/*
+  BluetoothConnection.strings
+  iosApp
+
+  Created by Jan Cortiel on 26.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"External Device Setup" = "Externe Geräteeinstellungen";
+
 "Connected devices" = "Verbundene Geräte";
 "Discovered devices" = "Entdeckte Geräte";
-"External Device Setup" = "Externe Geräteeinstellungen";
+"Searching for devices" = "Suche nach Geräten";
+
+
 "No devices connected" = "Keine Geräte angeschlossen";
 "No devices found nearby" = "Keine Geräte in der Nähe gefunden";
-"Searching for devices" = "Suche nach Geräten";
+
+"Bluetooth disabled! Please enable to use!" = "Bluetooth deaktiviert! Bitte aktivieren zum Verbinden!";
+
 "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices" = "Einige Aufgaben in dieser Studie erfordern bestimmte Bluetooth-Geräte, die nur aktiviert werden, wenn ein bestimmtes Gerät angeschlossen ist. Bitte stellen Sie sicher, dass Sie diese Geräte einschalten und verbinden";
 "You can connect to and disconnect from devices at any time: Info > Devices" = "Sie können sich jederzeit mit Geräten verbinden und die Verbindung zu ihnen trennen: Info > Geräte";
