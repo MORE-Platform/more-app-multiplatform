@@ -41,7 +41,6 @@ kotlin {
     val ktorVersion = "2.3.0"
     val napierVersion = "2.6.1"
     val serializationVersion = "1.5.0-RC"
-    val axayVersion = "0.1.2"
     val gsonVersion = "2.10.1"
 
     sourceSets {

@@ -1504,7 +1504,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "2.1-rc1";
+				MARKETING_VERSION = "2.3-rc1";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1540,7 +1540,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "2.1-rc1";
+				MARKETING_VERSION = "2.3-rc1";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
