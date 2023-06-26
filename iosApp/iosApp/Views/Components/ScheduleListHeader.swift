@@ -12,15 +12,17 @@ struct ScheduleListHeader: View {
     @EnvironmentObject var scheduleViewModel: ScheduleViewModel
     @Binding var totalTasks: Double
     @Binding var tasksCompleted: Double
-    
     private let stringTable = "DashboardView"
     
     var body: some View {
         VStack {
             TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: String.localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable:"DashboardView"))
             .padding(.bottom)
-            MoreFilter() {
-                    DashboardFilterView().environmentObject(scheduleViewModel.filterViewModel)
+            MoreFilter(filterText: .constant("All Items")) {
+                    DashboardFilterView()
+                    .environmentObject(scheduleViewModel.filterViewModel)
+            }.onAppear {
+                
             }
             .environmentObject(scheduleViewModel.filterViewModel)
             .padding(.bottom)

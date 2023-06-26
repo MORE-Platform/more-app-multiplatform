@@ -11,37 +11,38 @@ import shared
 
 
 class NotificationViewModel: ObservableObject {
-    // private let coreModel
-    
     let recorder = IOSDataRecorder()
-    private let coreModel: CoreNotificationViewModel = CoreNotificationViewModel(coreFilterModel: CoreNotificationFilterViewModel())
+    private let filterViewModel: CoreNotificationFilterViewModel
+    private let coreModel: CoreNotificationViewModel
     
     @Published var notificationList: [NotificationModel] = []
-    @Published var notificationCount: Int64 = 0
-    
-    init() {
-        self.notificationList = []
-        
-        coreModel.onNotificationLoad { notifications in
-            if !notifications.isEmpty {
-                self.notificationList = notifications
+    @Published var filterText: String = "FilterText"
+
+    init(filterViewModel: CoreNotificationFilterViewModel) {
+        self.filterViewModel = filterViewModel
+        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel)
+        coreModel.onNotificationLoad { [weak self] notifications in
+            print("Fetched notifications")
+            DispatchQueue.main.async {
+                self?.notificationList = []
+                self?.notificationList = notifications
             }
-        }
-        
-        coreModel.onCountLoad { count in
-            self.notificationCount = count?.int64Value ?? 0
         }
     }
     
     func setNotificationToRead(notification: NotificationModel) {
         coreModel.setNotificationReadStatus(notification: notification)
     }
-    
+
     func viewDidAppear() {
         coreModel.viewDidAppear()
     }
-    
+
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
+    }
+
+    func getFilterText(stringTable: String) {
+        self.filterText = filterViewModel.getActiveTypes().map{$0.localize(withComment: $0, useTable: stringTable)}.joined(separator: ", ")
     }
 }

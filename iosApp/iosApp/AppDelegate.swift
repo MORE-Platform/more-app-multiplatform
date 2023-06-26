@@ -44,6 +44,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         fcmService.register()
         
         registerBackgroundTasks()
+        
+        if let launchOptions, let userInfo = launchOptions[.remoteNotification] as? [AnyHashable: Any] {
+            print("Has launchoptions: \(userInfo)")
+            Task { @MainActor in
+                await self.application(application, didReceiveRemoteNotification: userInfo)
+            }
+        }
+        
         return true
     }
     
@@ -52,7 +60,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
-        return UIBackgroundFetchResult.noData
+        print("didReceiveRemoteNotification: \(userInfo)")
+        return .newData
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

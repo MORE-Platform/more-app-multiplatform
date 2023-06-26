@@ -13,6 +13,7 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
+import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -22,6 +23,7 @@ import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -30,7 +32,8 @@ class MainViewModel(context: Context) : ViewModel() {
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
-    val notificationViewModel = NotificationViewModel()
+    val notificationViewModel: NotificationViewModel
+    val notificationFilterViewModel: NotificationFilterViewModel
     val manualTasks =
         ScheduleViewModel(CoreDashboardFilterViewModel(), MoreApplication.shared!!.dataRecorder, ScheduleListType.MANUALS)
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
@@ -67,6 +70,9 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     init {
+        val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
+        notificationViewModel = NotificationViewModel(coreNotificationFilterViewModel)
+        notificationFilterViewModel = NotificationFilterViewModel(coreNotificationFilterViewModel)
         MoreApplication.shared!!.showBleSetup().let { (firstTime, hasBLEObservations) ->
             if (hasBLEObservations) {
                 if (firstTime) {

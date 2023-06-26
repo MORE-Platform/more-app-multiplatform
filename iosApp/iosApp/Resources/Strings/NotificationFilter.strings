@@ -1,0 +1,17 @@
+/* 
+  NotificationFilter.strings
+  iosApp
+
+  Created by Mikolaj Luzak on 25.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Select Filter" = "Select Filter";
+
+"ALL" = "All Notifications";
+"UNREAD" = "Unread";
+"IMPORTANT" = "Important";
+
+"no_filter_activated" = "No Filter activated";
+"filter" = "Filter";
+"filter_plural" = "Filters";

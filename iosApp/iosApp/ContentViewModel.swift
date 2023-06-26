@@ -39,11 +39,19 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
+    var notificationViewModel: NotificationViewModel
+    
+    var notificationFilterViewModel: NotificationFilterViewModel
+    
     lazy var infoViewModel = InfoViewModel()
 
     lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
     
     init() {
+        let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
+        notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
+        notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
+        
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
         if hasCredentials {
@@ -84,11 +92,15 @@ class ContentViewModel: ObservableObject {
     }
     
     private func reinitAllViewModels() {
-        isLeaveStudyOpen = false
+        self.isLeaveStudyOpen = false
         isLeaveStudyConfirmOpen = false
         dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
+        
+        let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
+        notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
+        notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
         
         settingsViewModel = SettingsViewModel()
         settingsViewModel.delegate = self

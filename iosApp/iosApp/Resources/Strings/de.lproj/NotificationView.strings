@@ -1,9 +1,5 @@
-/*
-  NotificationView.strings
-  iosApp
-
-  Created by Isabella Aigner on 12.04.23.
-  Copyright © 2023 Redlink GmbH. All rights reserved.
-*/
-
-"no_filter_activated" = "Es wurde kein Filter wurde aktiviert.";
+"no_filter_activated" = "Es wurde kein Filter wurde aktiviert";
+"There are currently no notficiations to show" = "Derzeit gibt es keine Nachrichten zum Anzeigen";
+"All" = "Alle Nachrichten";
+"Unread" = "Nicht gelesene";
+"Important" = "Nur wichtige";

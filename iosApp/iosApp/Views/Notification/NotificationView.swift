@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
+import shared
 
 struct NotificationView: View {
-    @StateObject var notificationViewModel: NotificationViewModel = NotificationViewModel()
+    @StateObject var notificationViewModel: NotificationViewModel
+    @StateObject var filterVM: NotificationFilterViewModel
     private let navigationStrings = "Navigation"
     private let stringTable = "NotificationView"
     
@@ -17,32 +19,40 @@ struct NotificationView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
-                    Text("Here should be a filter")
-                        .padding(.bottom)
+                    MoreFilter(filterText: $notificationViewModel.filterText) {
+                        NotificationFilterView(viewModel: filterVM)
+                    }
+                    .onAppear{
+                        notificationViewModel.getFilterText(stringTable: stringTable)
+                    }
+                    .padding(.bottom)
                     
-                    ScrollView {
-                        ForEach(Array(notificationViewModel.notificationList.enumerated()), id: \.element) { i, notification in
-                            
-                            VStack {
-                                NotificationItem(
-                                    title: .constant(notification.title),
-                                    message: .constant(notification.notificationBody),
-                                    read: .constant(notification.read),
-                                    isImportant: .constant((notification.priority == 2))
-                                )
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                notificationViewModel.setNotificationToRead(notification: notification)
+                    if notificationViewModel.notificationList.isEmpty {
+                        EmptyListView(text: "There are currently no notficiations to show".localize(withComment: "Empty notification list", useTable: stringTable))
+                    } else {
+                        ScrollView {
+                            ForEach(notificationViewModel.notificationList.sorted{$0.timestamp > $1.timestamp}, id: \.self) { notification in
+                                VStack {
+                                    NotificationItem(
+                                        title: .constant(notification.title),
+                                        message: .constant(notification.notificationBody),
+                                        read: .constant(notification.read),
+                                        isImportant: .constant((notification.priority == 2))
+                                    )
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    notificationViewModel.setNotificationToRead(notification: notification)
+                                }
                             }
                         }
                     }
-                    .onAppear {
-                        notificationViewModel.viewDidAppear()
-                    }
-                    .onDisappear {
-                        notificationViewModel.viewDidDisappear()
-                    }
+                }
+                .onAppear {
+                    notificationViewModel.viewDidAppear()
+                }
+                .onDisappear {
+                    notificationViewModel.viewDidDisappear()
                 }
             }
             .customNavigationTitle(with: NavigationScreens.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
@@ -51,8 +61,3 @@ struct NotificationView: View {
     }
 }
 
-struct NotificationView_Previews: PreviewProvider {
-    static var previews: some View {
-        NotificationView(notificationViewModel: NotificationViewModel())
-    }
-}

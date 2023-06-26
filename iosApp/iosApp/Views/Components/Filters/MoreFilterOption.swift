@@ -11,7 +11,6 @@ import SwiftUI
 struct MoreFilterOption: View {
     var option: String
     @Binding var isSelected: Bool
-    @EnvironmentObject var dashboardFilterViewModel: DashboardFilterViewModel
     
     private let stringTable = "DashboardFilter"
     
