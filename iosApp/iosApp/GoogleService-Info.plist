@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>867714323835-lhi1ql8stdvepo3ih565lkat08h17a5u.apps.googleusercontent.com</string>
+	<string>867714323835-nu2aackbeqll7sc6uq512g025ra382bp.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.867714323835-lhi1ql8stdvepo3ih565lkat08h17a5u</string>
+	<string>com.googleusercontent.apps.867714323835-nu2aackbeqll7sc6uq512g025ra382bp</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCDiCWYRXnlXQEzIYv0AZONq9rdRwKqAQk</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.redlink.more.ios</string>
+	<string>ac.at.lbg.dhp.more</string>
 	<key>PROJECT_ID</key>
 	<string>more-adad0</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:867714323835:ios:f694ac24fcb229ee5019de</string>
+	<string>1:867714323835:ios:bc9c9f196afa44815019de</string>
 </dict>
 </plist>

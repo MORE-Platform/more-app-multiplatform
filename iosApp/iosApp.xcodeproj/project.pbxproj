@@ -55,7 +55,6 @@
 		1F43998C29C1006800687906 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998B29C1006800687906 /* NotificationView.swift */; };
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
-		1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */; };
 		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
@@ -63,6 +62,7 @@
 		1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */; };
 		1F6A4E3C29F6C95B00F0247F /* PolarConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */; };
 		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
+		1F6B03062A4D71310094D435 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F6B03052A4D71310094D435 /* GoogleService-Info.plist */; };
 		1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C31502A121EA500EED533 /* WebViewViewModel.swift */; };
 		1F6C31532A13EB7F00EED533 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */; };
 		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
@@ -247,7 +247,6 @@
 		1F43998B29C1006800687906 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
-		1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
@@ -255,6 +254,7 @@
 		1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyListView.swift; sourceTree = "<group>"; };
 		1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConnector.swift; sourceTree = "<group>"; };
 		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
+		1F6B03052A4D71310094D435 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F6C31502A121EA500EED533 /* WebViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewModel.swift; sourceTree = "<group>"; };
 		1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
@@ -766,7 +766,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
-				1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */,
+				1F6B03052A4D71310094D435 /* GoogleService-Info.plist */,
 				EDAC149529DEF2010084CE1C /* iosApp.entitlements */,
 				1F27536929CC53FE00324417 /* BackgroundTasks */,
 				1F27536229CC39CA00324417 /* Services */,
@@ -1002,6 +1002,7 @@
 			files = (
 				1F9C74572A30C770003AE946 /* Info.strings in Resources */,
 				1F9C74302A30C72B003AE946 /* LoginView.strings in Resources */,
+				1F6B03062A4D71310094D435 /* GoogleService-Info.plist in Resources */,
 				1F9C74392A30C755003AE946 /* DashboardView.strings in Resources */,
 				1F9C74332A30C733003AE946 /* Default.strings in Resources */,
 				1F9C744E2A30C768003AE946 /* NotificationView.strings in Resources */,
@@ -1016,7 +1017,6 @@
 				1F9C743F2A30C75A003AE946 /* SettingsView.strings in Resources */,
 				1F9C74512A30C76B003AE946 /* DashboardFilter.strings in Resources */,
 				1F9C745D2A30C775003AE946 /* SimpleQuestionObservation.strings in Resources */,
-				1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F9C74602A30C779003AE946 /* LimeSurvey.strings in Resources */,
 				1F9C74542A30C76D003AE946 /* ObservationDetails.strings in Resources */,
