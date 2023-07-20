@@ -22,7 +22,8 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     NOTIFICATION_FILTER("Notification Filter", R.string.nav_notification_filter),
     LEAVE_STUDY("Leave Study", R.string.nav_leave_study),
     LEAVE_STUDY_CONFIRM("Confirm to leave the study", R.string.nav_leave_study_confirm),
-    LIMESURVEY("LimeSurvey", R.string.nav_limesurvey);
+    LIMESURVEY("LimeSurvey", R.string.nav_limesurvey),
+    PUSH_BUTTON("PushButton", R.string.nav_push_button);
 
     @Composable
     fun stringRes() = getStringResource(id = stringResource)

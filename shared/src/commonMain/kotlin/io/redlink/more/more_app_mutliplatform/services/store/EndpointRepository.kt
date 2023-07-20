@@ -26,6 +26,7 @@ class EndpointRepository(private val sharedStorageRepository: SharedStorageRepos
     companion object {
         private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
         private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://data.platform-test.more.redlink.io/api/v1"
+            //"https://data.platform-test.more.redlink.io/api/v1"
+            "https://moredata.ngrok.io/api/v1"
     }
 }

@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
+import io.redlink.more.more_app_mutliplatform.observations.extensions.pushButtonObservation.PushButtonObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
+        observations.add(PushButtonObservation())
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
                 studyObservationTypes.append(it)

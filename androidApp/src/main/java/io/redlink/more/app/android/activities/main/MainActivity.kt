@@ -23,6 +23,7 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
+import io.redlink.more.app.android.activities.observations.questionnaire.PushButtonView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -206,6 +207,28 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     ))
                 }
                 QuestionnaireView(
+                    navController = navController,
+                    viewModel = vm
+                )
+            }
+            composable(
+                "${NavigationScreen.PUSH_BUTTON.route}/scheduleId={scheduleId}",
+                arguments = listOf(
+                    navArgument("scheduleId") {
+                        type = NavType.StringType
+                    })
+            ) {
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
+                }
+                viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
+                viewModel.showBackButton.value = true
+                val vm by remember {
+                    mutableStateOf(viewModel.creteNewPushButtonViewModel(
+                        scheduleId
+                    ))
+                }
+                PushButtonView(
                     navController = navController,
                     viewModel = vm
                 )

@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
@@ -24,9 +26,6 @@ import io.redlink.more.app.android.shared_composables.TimeframeHours
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
-import io.redlink.more.app.android.extensions.jvmLocalDateTime
 
 
 @Composable
@@ -79,6 +78,16 @@ fun ScheduleListItem(
         )
         if (showButton && !scheduleModel.hidden) {
             when (scheduleModel.observationType) {
+                "push-button-observation" -> {
+                    SmallTextButton(
+                        text = getStringResource(id = R.string.more_questionnaire_start),
+                        enabled = scheduleModel.scheduleState.active()
+                    ) {
+                        navController.navigate(
+                            "${NavigationScreen.PUSH_BUTTON.route}/scheduleId=${scheduleModel.scheduleId}"
+                        )
+                    }
+                }
                 "question-observation" -> {
                     SmallTextButton(
                         text = getStringResource(id = R.string.more_questionnaire_start),

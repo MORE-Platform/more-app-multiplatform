@@ -14,6 +14,7 @@ import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
+import io.redlink.more.app.android.activities.observations.pushButton.PushButtonViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -65,6 +66,10 @@ class MainViewModel(context: Context) : ViewModel() {
         QuestionnaireViewModel()
     }
 
+    private val simplePushButtonViewModel by lazy {
+        PushButtonViewModel()
+    }
+
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
         TaskDetailsViewModel(MoreApplication.shared!!.dataRecorder)
     }
@@ -95,6 +100,10 @@ class MainViewModel(context: Context) : ViewModel() {
 
     fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {
         return simpleQuestionnaireViewModel.apply { setScheduleId(scheduleId) }
+    }
+
+    fun creteNewPushButtonViewModel(scheduleId: String): PushButtonViewModel {
+        return simplePushButtonViewModel.apply { setScheduleId(scheduleId) }
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
