@@ -37,9 +37,13 @@ class CoreBluetoothConnectionViewModel(
 
     override fun viewDidAppear() {
         bluetoothConnector.applyObserver(this)
+        bluetoothConnector.replayStates()
+        val context = this
         launchScope {
             bluetoothPower.collect {
                 if (it == BluetoothState.ON) {
+                    bluetoothConnector.applyObserver(context)
+                    bluetoothConnector.replayStates()
                     startPeriodicScan()
                 } else {
                     stopPeriodicScan()
@@ -92,8 +96,6 @@ class CoreBluetoothConnectionViewModel(
     fun disconnectFromDevice(device: BluetoothDevice) {
         Napier.i { "Disconnecting from $device" }
         bluetoothConnector.disconnect(device)
-        connectedDevices.removeWhere { it.address == device.address }
-        bluetoothDeviceRepository.setConnectionState(device, false)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -103,7 +105,7 @@ class CoreBluetoothConnectionViewModel(
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        if (!connectedDevices.value.mapNotNull { it.address }.contains(bluetoothDevice.address)) {
+        if (connectedDevices.value.none { it.address == bluetoothDevice.address }) {
             connectedDevices.append(bluetoothDevice)
             connectingDevices.remove(bluetoothDevice.address)
             bluetoothDeviceRepository.setConnectionState(bluetoothDevice, true)
@@ -127,8 +129,8 @@ class CoreBluetoothConnectionViewModel(
     }
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
-        if (!connectedDevices.value.mapNotNull { it.address }.contains(device.address)
-            && !discoveredDevices.value.mapNotNull { it.address }.contains(device.address)) {
+        if (connectedDevices.value.none { it.address == device.address }
+            && discoveredDevices.value.none { it.address == device.address }) {
             discoveredDevices.append(device)
         }
     }

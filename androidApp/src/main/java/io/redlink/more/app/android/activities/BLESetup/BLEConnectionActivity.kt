@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import io.redlink.more.app.android.shared_composables.EmptyListView
 import io.redlink.more.app.android.shared_composables.Heading
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.shared_composables.MoreDivider
+import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.ui.theme.MoreColors
@@ -45,6 +47,7 @@ class BLEConnectionActivity : ComponentActivity() {
         observationFactory = MoreApplication.shared!!.observationFactory,
         bluetoothConnector = MoreApplication.shared!!.mainBluetoothConnector
     )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val showDescrPart2 = intent.getBooleanExtra(SHOW_DESCR_PART2, false)
@@ -81,16 +84,22 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
         LazyColumn {
             item {
                 Title(text = getStringResource(id = R.string.more_ble_setup_title))
-                BasicText(text = "${getStringResource(id = R.string.more_ble_context_description)}:", modifier = Modifier.padding(vertical = 4.dp))
+                BasicText(
+                    text = "${getStringResource(id = R.string.more_ble_context_description)}:",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            itemsIndexed(viewModel.neededDevices) {_, item ->
+            itemsIndexed(viewModel.neededDevices) { _, item ->
                 SmallTitle(text = "- $item", fontSize = 16.sp, color = MoreColors.PrimaryDark)
             }
             if (showDescrPart2) {
                 item {
                     Spacer(modifier = Modifier.height(12.dp))
-                    BasicText(text = getStringResource(id = R.string.more_ble_context_description_part2), modifier = Modifier.padding(vertical = 4.dp))
+                    BasicText(
+                        text = getStringResource(id = R.string.more_ble_context_description_part2),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
             item {
@@ -120,13 +129,27 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
-                                .clickable {
-                                    viewModel.disconnectFromDevice(device)
-                                }
+                                .height(55.dp)
                         ) {
                             MoreDivider()
-                            SmallTitle(text = device.deviceName ?: getStringResource(id = R.string.more_ble_unknown_device))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SmallTitle(
+                                    text = device.deviceName
+                                        ?: getStringResource(id = R.string.more_ble_unknown_device),
+                                    modifier = Modifier.weight(0.7f)
+                                )
+                                //Spacer(modifier = Modifier.width(20.dp))
+                                SmallTextButton(
+                                    text = getStringResource(id = R.string.more_ble_disconnect),
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.weight(0.3f).fillMaxWidth(1f).height(45.dp)
+                                ) {
+                                    viewModel.disconnectFromDevice(device)
+                                }
+                            }
                         }
                     }
                 }
@@ -144,7 +167,7 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                         )
                         if (viewModel.connectedDevices.isEmpty()) {
                             BasicText(
-                                text = "${getStringResource(id = R.string.more_connect_device_info)}",
+                                text = getStringResource(id = R.string.more_connect_device_info),
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
@@ -155,19 +178,35 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                         EmptyListView(text = getStringResource(id = R.string.more_ble_no_discovered))
                     }
                 } else {
-                    itemsIndexed(viewModel.discoveredDevices){ _, device ->
+                    itemsIndexed(viewModel.discoveredDevices) { _, device ->
                         Column(
                             horizontalAlignment = Alignment.Start,
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
+                                .height(55.dp)
                                 .clickable {
                                     viewModel.connectToDevice(device)
                                 }
                         ) {
                             MoreDivider()
-                            SmallTitle(text = device.deviceName ?: getStringResource(id = R.string.more_ble_unknown_device))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SmallTitle(
+                                    text = device.deviceName
+                                        ?: getStringResource(id = R.string.more_ble_unknown_device)
+                                )
+                                if (device.address in viewModel.connectingDevices) {
+                                    CircularProgressIndicator(
+                                        strokeWidth = 1.dp,
+                                        modifier = Modifier
+                                            .width(20.dp)
+                                            .height(20.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -203,8 +242,15 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(Icons.Default.BluetoothDisabled, contentDescription = getStringResource(id = R.string.more_ble_disabled), tint = MoreColors.Important)
-                            SmallTitle(text = getStringResource(id = R.string.more_ble_disabled), color = MoreColors.Important)
+                            Icon(
+                                Icons.Default.BluetoothDisabled,
+                                contentDescription = getStringResource(id = R.string.more_ble_disabled),
+                                tint = MoreColors.Important
+                            )
+                            SmallTitle(
+                                text = getStringResource(id = R.string.more_ble_disabled),
+                                color = MoreColors.Important
+                            )
                         }
                     }
                 }

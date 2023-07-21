@@ -16,6 +16,7 @@ class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnect
     private val coreBLESetupViewModel = CoreBLESetupViewModel(observationFactory, bluetoothConnector)
     val discoveredDevices = mutableStateListOf<BluetoothDevice>()
     val connectedDevices = mutableStateListOf<BluetoothDevice>()
+    val connectingDevices = mutableStateListOf<String>()
     val isScanning = mutableStateOf(false)
     val bluetoothPowerState = mutableStateOf(false)
 
@@ -51,6 +52,13 @@ class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnect
         viewModelScope.launch {
             coreBLESetupViewModel.coreBluetooth.bluetoothPower.collect {
                 bluetoothPowerState.value = it == BluetoothState.ON
+            }
+        }
+
+        viewModelScope.launch {
+            coreBLESetupViewModel.coreBluetooth.connectingDevices.collect {
+                connectingDevices.clear()
+                connectingDevices.addAll(it)
             }
         }
     }
