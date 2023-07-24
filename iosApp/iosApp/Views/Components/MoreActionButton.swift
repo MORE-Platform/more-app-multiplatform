@@ -11,6 +11,7 @@ import SwiftUI
 struct MoreActionButton<ButtonLabel: View>: View {
     var color: Color = .more.primary
     var backgroundColor = Color.more.primary
+    var maxWidth: CGFloat = .infinity
     @Binding var disabled: Bool
     var disabeldColor = Color.more.secondaryMedium
     var disabledBackgroundColor = Color.more.primaryLight200
@@ -23,7 +24,7 @@ struct MoreActionButton<ButtonLabel: View>: View {
     var body: some View {
         Button(action: action, label: label)
             .disabled(disabled)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: maxWidth)
             .padding()
             .foregroundColor(disabled ? disabeldColor : .more.white)
             .background(disabled ? disabledBackgroundColor : backgroundColor)

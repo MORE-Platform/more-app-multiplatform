@@ -17,7 +17,8 @@ struct DetailsTitle: View {
         Text(text)
             .foregroundColor(color)
             .font(font)
-            .fontWeight(weight)    }
+            .fontWeight(weight)
+    }
 }
 
 struct DetailsTitle_Previews: PreviewProvider {
