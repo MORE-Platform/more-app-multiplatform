@@ -2,18 +2,34 @@ package io.redlink.more.more_app_mutliplatform
 
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 class Shared(
     private val sharedStorageRepository: SharedStorageRepository,
@@ -29,12 +45,16 @@ class Shared(
 
     var appIsInForeGround = false
 
+    val studyIsUpdating = MutableStateFlow(false)
+
+    val currentStudyState = MutableStateFlow(StudyState.NONE)
+
     init {
         onApplicationStart()
     }
 
     fun onApplicationStart() {
-
+        updateStudy()
     }
 
     fun appInForeground(boolean: Boolean) {
@@ -79,9 +99,64 @@ class Shared(
     fun showBleSetup(): Pair<Boolean, Boolean> {
         return Pair(
             firstStartUp(),
-            observationFactory.bleDevicesNeeded(observationFactory.studyObservationTypes.value).isNotEmpty()
+            observationFactory.bleDevicesNeeded(observationFactory.studyObservationTypes.value)
+                .isNotEmpty()
         )
     }
+
+    fun updateStudy(studyState: StudyState? = null) {
+        Scope.launch {
+            val (study, error) = networkService.getStudyConfig()
+            if (error != null) {
+                Napier.e { error.message }
+            } else {
+                study?.let { study ->
+                    val studyRepository = StudyRepository()
+                    studyRepository.getStudy().firstOrNull()?.let {
+                        if (it.active != it.active || it.version != study.version) {
+                            studyState?.let { currentStudyState.value = it }
+                            removeStudyData()
+                            studyRepository.storeStudy(study)
+                            resetFirstStartUp()
+                            activateObservationWatcher()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun exitStudy(onDeletion: () -> Unit) {
+        Scope.cancel()
+        CoroutineScope(Job() + Dispatchers.Default).launch {
+            dataRecorder.stopAll()
+            observationDataManager.stopListeningToCountChanges()
+            observationFactory.clearNeededObservationTypes()
+            networkService.deleteParticipation()
+            clearSharedStorage()
+            DatabaseManager.deleteAll()
+            onDeletion()
+        }
+    }
+
+    private fun clearSharedStorage() {
+        credentialRepository.remove()
+        endpointRepository.removeEndpoint()
+    }
+
+    private suspend fun removeStudyData() {
+        DatabaseManager.deleteAllFromSchema(
+            setOf(
+                StudySchema::class,
+                ObservationSchema::class,
+                ScheduleSchema::class,
+                ObservationDataSchema::class,
+                DataPointCountSchema::class,
+                NotificationSchema::class
+            )
+        )
+    }
+
 
     companion object {
         const val FIRST_OPEN_AFTER_LOGIN_KEY = "first_open_after_login_key"

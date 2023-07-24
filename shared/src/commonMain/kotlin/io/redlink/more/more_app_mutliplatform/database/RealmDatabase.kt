@@ -124,8 +124,8 @@ object RealmDatabase {
         }
     }
 
-    fun <T : BaseRealmObject> deleteAlOfSchema(schema: KClass<T>) {
-        realm?.writeBlocking {
+    suspend fun <T : BaseRealmObject> deleteAlOfSchema(schema: KClass<T>) {
+        realm?.write {
             delete(schema)
         }
     }
