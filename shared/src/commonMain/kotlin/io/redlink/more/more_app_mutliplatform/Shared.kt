@@ -3,7 +3,6 @@ package io.redlink.more.more_app_mutliplatform
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
@@ -11,13 +10,13 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSc
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
@@ -27,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -54,7 +52,6 @@ class Shared(
     }
 
     fun onApplicationStart() {
-        updateStudy()
     }
 
     fun appInForeground(boolean: Boolean) {
@@ -70,9 +67,13 @@ class Shared(
     }
 
     fun activateObservationWatcher() {
-        observationDataManager.listenToDatapointCountChanges()
-        updateTaskStates()
-        observationManager.activateScheduleUpdate()
+        Scope.launch {
+            if (StudyRepository().getStudy().firstOrNull()?.active == true) {
+                observationDataManager.listenToDatapointCountChanges()
+                updateTaskStates()
+                observationManager.activateScheduleUpdate()
+            }
+        }
     }
 
     fun resetFirstStartUp() {
@@ -104,24 +105,46 @@ class Shared(
         )
     }
 
-    fun updateStudy(studyState: StudyState? = null) {
+    fun updateStudyBlocking(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
         Scope.launch {
+            updateStudy(oldStudyState, newStudyState)
+        }
+    }
+
+    suspend fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
+        if (newStudyState != null) {
+            currentStudyState.set(newStudyState)
+        }
+        if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
+            studyIsUpdating.emit(true)
+            stopObservations()
+            removeStudyData()
+            studyIsUpdating.emit(false)
+        } else {
+            val studyRepository = StudyRepository()
             val (study, error) = networkService.getStudyConfig()
             if (error != null) {
                 Napier.e { error.message }
-            } else {
-                study?.let { study ->
-                    val studyRepository = StudyRepository()
-                    studyRepository.getStudy().firstOrNull()?.let {
-                        if (it.active != it.active || it.version != study.version) {
-                            studyState?.let { currentStudyState.value = it }
-                            removeStudyData()
-                            studyRepository.storeStudy(study)
-                            resetFirstStartUp()
-                            activateObservationWatcher()
-                        }
+                return
+            }
+            study?.let { study ->
+                studyIsUpdating.emit(true)
+                studyRepository.getStudy().firstOrNull()?.let { currentStudy ->
+                    currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
+                    if (currentStudy.active != study.active || currentStudy.version != study.version) {
+                        stopObservations()
+                        removeStudyData()
                     }
                 }
+                studyRepository.storeStudy(study)
+                if (newStudyState == null) {
+                    currentStudyState.set(if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
+                }
+                resetFirstStartUp()
+                if (study.active == true) {
+                    activateObservationWatcher()
+                }
+                studyIsUpdating.emit(false)
             }
         }
     }
@@ -129,8 +152,7 @@ class Shared(
     fun exitStudy(onDeletion: () -> Unit) {
         Scope.cancel()
         CoroutineScope(Job() + Dispatchers.Default).launch {
-            dataRecorder.stopAll()
-            observationDataManager.stopListeningToCountChanges()
+            stopObservations()
             observationFactory.clearNeededObservationTypes()
             networkService.deleteParticipation()
             clearSharedStorage()
@@ -139,12 +161,18 @@ class Shared(
         }
     }
 
+    private fun stopObservations() {
+        dataRecorder.stopAll()
+        observationDataManager.stopListeningToCountChanges()
+    }
+
     private fun clearSharedStorage() {
         credentialRepository.remove()
         endpointRepository.removeEndpoint()
     }
 
     private suspend fun removeStudyData() {
+        observationFactory.clearNeededObservationTypes()
         DatabaseManager.deleteAllFromSchema(
             setOf(
                 StudySchema::class,

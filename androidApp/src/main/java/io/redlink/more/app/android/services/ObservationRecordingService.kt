@@ -18,11 +18,15 @@ import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class ObservationRecordingService : Service() {
@@ -109,9 +113,11 @@ class ObservationRecordingService : Service() {
         Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
-            scheduleId.forEach {
-                if (observationManager?.start(it) == true) {
-                    runningSchedules.add(it)
+            if (StudyRepository().getStudy().firstOrNull()?.active == true) {
+                scheduleId.forEach {
+                    if (observationManager?.start(it) == true) {
+                        runningSchedules.add(it)
+                    }
                 }
             }
             if (runningSchedules.isEmpty()) {
@@ -217,33 +223,47 @@ class ObservationRecordingService : Service() {
         private const val SERVICE_RECEIVER_RESTART_ALL_STATES =
             "io.redlink.more.app.android.RESTART_ALL"
 
+        private const val MAX_RETRIES = 100
+
         var running = false
             private set
 
         private val runningSchedules = mutableSetOf<String>()
 
+
         fun start(
             scheduleIds: Set<String>,
         ) {
             val validToStart = scheduleIds.filter { it !in runningSchedules }
-            if (validToStart.isNotEmpty() && MoreApplication.shared?.appIsInForeGround == true || running) {
-                val serviceIntent =
-                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-                serviceIntent.action = SERVICE_RECEIVER_START_ACTION
-                serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(validToStart))
-                try {
-                    Handler(Looper.getMainLooper()).post {
-                        if (running) {
-                            MoreApplication.appContext?.startService(serviceIntent)
-                        } else {
-                            MoreApplication.appContext?.startForegroundService(serviceIntent)
-                        }
+            Scope.launch(Dispatchers.IO) {
+                var counter = 0
+                while (MoreApplication.shared?.appIsInForeGround == false) {
+                    if (counter++ >= MAX_RETRIES) {
+                        log { "Stopping retries for launching observations" }
+                        return@launch
                     }
-                } catch (e: Exception) {
-                    Napier.e(e.stackTraceToString())
+                    log { "Waiting till app goes into foreground to start observations..." }
+                    delay(1000)
                 }
-            } else {
-                Napier.w { "Application not in foreground" }
+                if (validToStart.isNotEmpty() && MoreApplication.shared?.appIsInForeGround == true || running) {
+                    val serviceIntent =
+                        Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                    serviceIntent.action = SERVICE_RECEIVER_START_ACTION
+                    serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(validToStart))
+                    try {
+                        Handler(Looper.getMainLooper()).post {
+                            if (running) {
+                                MoreApplication.appContext?.startService(serviceIntent)
+                            } else {
+                                MoreApplication.appContext?.startForegroundService(serviceIntent)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Napier.e(e.stackTraceToString())
+                    }
+                } else {
+                    Napier.w { "Application not in foreground" }
+                }
             }
         }
 

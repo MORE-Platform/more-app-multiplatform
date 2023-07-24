@@ -27,14 +27,11 @@ const val NOTIFICATION_DATA = "notification_data"
 class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(context, workerParameters) {
 
-    private val shared: Shared
-
-    init {
-        val observationDataManager = AndroidObservationDataManager(applicationContext)
-        shared = MoreApplication.shared ?: Shared(
+    private val shared: Shared = MoreApplication.shared ?: AndroidObservationDataManager(applicationContext).let {
+        Shared(
             sharedStorageRepository = SharedPreferencesRepository(applicationContext),
-            observationDataManager = observationDataManager,
-            observationFactory = AndroidObservationFactory(applicationContext, observationDataManager),
+            observationDataManager = it,
+            observationFactory = AndroidObservationFactory(applicationContext, it),
             dataRecorder = AndroidDataRecorder(),
             mainBluetoothConnector = PolarConnector(applicationContext)
         )
@@ -60,10 +57,12 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
         }
     }
 
-    private fun updateStudy(data: Map<String, String>) {
-        val oldStudyState = data[STUDY_OLD_STATE]?.let { StudyState.getState(it) } ?: StudyState.NONE
-        val newStudyState = data[STUDY_NEW_STATE]?.let { StudyState.getState(it) } ?: StudyState.NONE
-        shared.updateStudy(newStudyState)
+    private suspend fun updateStudy(data: Map<String, String>) {
+        val oldStudyState =
+            data[STUDY_OLD_STATE]?.let { StudyState.getState(it) }
+        val newStudyState =
+            data[STUDY_NEW_STATE]?.let { StudyState.getState(it) }
+        shared.updateStudy(oldStudyState, newStudyState)
     }
 
     companion object {

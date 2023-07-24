@@ -31,9 +31,13 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConf
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
+import io.redlink.more.app.android.activities.studyStates.StudyClosedView
+import io.redlink.more.app.android.activities.studyStates.StudyPausedView
+import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 
 class MainActivity : ComponentActivity() {
@@ -51,7 +55,15 @@ class MainActivity : ComponentActivity() {
                 navController.addOnDestinationChangedListener(destinationChangeListener)
                 viewModel.viewDidAppear()
             }
-            MainView(viewModel.navigationBarTitle.value, viewModel, navController)
+            if (viewModel.studyIsUpdating.value) {
+                StudyUpdateView()
+            } else if (viewModel.studyState.value == StudyState.PAUSED) {
+                StudyPausedView()
+            } else if (viewModel.studyState.value == StudyState.CLOSED) {
+                StudyClosedView()
+            } else {
+                MainView(viewModel.navigationBarTitle.value, viewModel, navController)
+            }
         }
     }
 }
