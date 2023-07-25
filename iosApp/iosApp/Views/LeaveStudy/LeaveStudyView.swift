@@ -21,7 +21,7 @@ struct LeaveStudyView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack(alignment: .leading) {
-                    Title2(titleText: .constant(viewModel.studyTitle ?? ""))
+                    Title2(titleText: viewModel.studyTitle ?? "")
                         .padding(.top)
                         .padding(.bottom)
                         .multilineTextAlignment(.center)
@@ -38,7 +38,7 @@ struct LeaveStudyView: View {
                         Spacer()
                     }.padding(.top)
 
-                    SectionHeading(sectionTitle: .constant(String.localize(forKey: "first_message", withComment: "exit message", inTable: stringTable)))
+                    SectionHeading(sectionTitle: String.localize(forKey: "first_message", withComment: "exit message", inTable: stringTable))
                         .foregroundColor(Color.more.important)
                         .padding(.bottom, 2)
                         .multilineTextAlignment(.center)

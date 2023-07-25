@@ -23,7 +23,7 @@ struct StudyDetailsView: View {
         MoreMainBackgroundView {
             ScrollView {
                 VStack(alignment: .leading) {
-                    Title2(titleText: .constant(viewModel.studyDetailsModel?.study.studyTitle ?? ""))
+                    Title2(titleText: viewModel.studyDetailsModel?.study.studyTitle ?? "")
                         .padding(.top)
                         .padding(.bottom)
                     
@@ -32,11 +32,11 @@ struct StudyDetailsView: View {
                     
                     HStack(alignment: .center) {
                         
-                        BasicText(text: .constant(String
-                            .localize(forKey: "study_duration", withComment: "string for study duration", inTable: stringTable)))
+                        BasicText(text: String
+                            .localize(forKey: "study_duration", withComment: "string for study duration", inTable: stringTable))
                         
                         Spacer()
-                        BasicText(text: .constant((viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString())),
+                        BasicText(text: (viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString()),
                                   color: Color.more.secondary
                         )
                     }.padding(.bottom)

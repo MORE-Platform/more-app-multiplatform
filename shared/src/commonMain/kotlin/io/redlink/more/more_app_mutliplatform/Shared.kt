@@ -10,6 +10,7 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSc
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
@@ -112,39 +113,47 @@ class Shared(
     }
 
     suspend fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
-        if (newStudyState != null) {
-            currentStudyState.set(newStudyState)
+        val studyRepository = StudyRepository()
+        val currentStudy = studyRepository.getStudy().firstOrNull()
+        if(currentStudy != null) {
+            currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
         }
         if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
+            currentStudyState.set(newStudyState)
             studyIsUpdating.emit(true)
             stopObservations()
             removeStudyData()
             studyIsUpdating.emit(false)
         } else {
-            val studyRepository = StudyRepository()
             val (study, error) = networkService.getStudyConfig()
             if (error != null) {
                 Napier.e { error.message }
                 return
             }
             study?.let { study ->
-                studyIsUpdating.emit(true)
-                studyRepository.getStudy().firstOrNull()?.let { currentStudy ->
-                    currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
-                    if (currentStudy.active != study.active || currentStudy.version != study.version) {
-                        stopObservations()
-                        removeStudyData()
+                var studyHasChanged = false
+                currentStudy?.let {
+                    if (it.active != study.active || it.version != study.version) {
+                        studyHasChanged = true
                     }
                 }
-                studyRepository.storeStudy(study)
-                if (newStudyState == null) {
-                    currentStudyState.set(if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
+                if (studyHasChanged || currentStudy == null) {
+                    studyIsUpdating.emit(true)
+                    stopObservations()
+                    removeStudyData()
+                    studyRepository.storeStudy(study)
+                    resetFirstStartUp()
+                    if (study.active == true) {
+                        activateObservationWatcher()
+                    }
+                    studyIsUpdating.emit(false)
+                    if (newStudyState == null) {
+                        currentStudyState.set(if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
+                    }
                 }
-                resetFirstStartUp()
-                if (study.active == true) {
-                    activateObservationWatcher()
-                }
-                studyIsUpdating.emit(false)
+            }
+            if (newStudyState != null) {
+                currentStudyState.set(newStudyState)
             }
         }
     }
@@ -184,6 +193,10 @@ class Shared(
             )
         )
     }
+
+    fun onStudyIsUpdatingChange(providedState: (Boolean) -> Unit) = studyIsUpdating.asClosure(providedState)
+
+    fun onStudyStateChange(providedState: (StudyState) -> Unit) = currentStudyState.asClosure(providedState)
 
 
     companion object {

@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct ConsentList: View {
-    @Binding var permissionModel: PermissionModel
+    var permissionModel: PermissionModel
     
     var body: some View {
         ScrollView {
@@ -26,9 +26,9 @@ struct ConsentList: View {
 
 struct ConsentList_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentList(permissionModel: .constant(PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "study consent", consentInfo: [
+        ConsentList(permissionModel: PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: "study consent", consentInfo: [
             PermissionConsentModel(title: "Study Consent", info: "Consent Info"),
             PermissionConsentModel(title: "Movement", info: "Accelerometer data"),
-        ])))
+        ]))
     }
 }

@@ -34,7 +34,7 @@ struct RadioButtonField: View {
                 Image(systemName: self.isMarked ? "largecircle.fill.circle" : "circle")
                     .clipShape(Circle())
                     .foregroundColor(.more.primary)
-                BasicText(text: .constant(label), color: .more.secondary)
+                BasicText(text: label, color: .more.secondary)
                 Spacer()
             }.foregroundColor(.more.primaryLight)
         }

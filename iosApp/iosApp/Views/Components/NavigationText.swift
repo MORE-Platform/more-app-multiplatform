@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NavigationText: View {
-    @Binding var text: String
+    var text: String
     var body: some View {
         Text(text)
             .font(.headline)
@@ -19,6 +19,6 @@ struct NavigationText: View {
 
 struct NavigationText_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationText(text: .constant("Hello World"))
+        NavigationText(text: "Hello World")
     }
 }

@@ -1,0 +1,17 @@
+/* 
+  StudyStates.strings
+  iosApp
+
+  Created by Jan Cortiel on 25.07.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"The study configuration is currently updating" = "The study configuration is currently updating";
+"Study currently paused" = "Study currently paused";
+"This study is currently paused by the Study Operator and will be resumed shortly" = "This study is currently paused by the Study Operator and will be resumed shortly";
+"Please wait until this process is finished" = "Please wait until this process is finished";
+"Study was completed" = "Study was completed";
+"Thank you for you participation" = "Thank you for you participation";
+"Message by the Study Operator" = "Message by the Study Operator";
+"Leave Study" = "Leave Study";
+

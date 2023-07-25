@@ -9,17 +9,19 @@
 import SwiftUI
 
 struct Title: View {
-    @Binding var titleText: String
+    var titleText: String
+    var textAlignment: TextAlignment = .leading
     var body: some View {
         Text(titleText)
             .font(.more.title)
             .foregroundColor(.more.primary)
             .fontWeight(.more.title)
+            .multilineTextAlignment(textAlignment)
     }
 }
 
 struct Title_Preview: PreviewProvider {
     static var previews: some View {
-        Title(titleText: .constant("Hello World"))
+        Title(titleText: "Hello World")
     }
 }

@@ -47,7 +47,7 @@ struct ScheduleView: View {
                                     }
                                 } header: {
                                     VStack(alignment: .leading) {
-                                        BasicText(text: .constant(key.formattedString()), color: Color.more.primaryDark)
+                                        BasicText(text: key.formattedString(), color: Color.more.primaryDark)
                                             .font(Font.more.headline)
                                         Divider()
                                     }.background(Color.more.secondaryLight)

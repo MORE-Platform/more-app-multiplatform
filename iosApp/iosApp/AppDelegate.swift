@@ -60,13 +60,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
-        print("didReceiveRemoteNotification: \(userInfo)")
+        print("Notification Received: \(userInfo)")
+        
+        
         return .newData
     }
+//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+//        print("didReceiveRemoteNotification: \(userInfo)")
+//        return .newData
+//    }
     
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
-    }
+//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+//        Messaging.messaging().apnsToken = deviceToken
+//    }
     
     
     private func registerBackgroundTasks() {

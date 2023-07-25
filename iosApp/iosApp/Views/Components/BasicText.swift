@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct BasicText: View {
-    @Binding var text: String
+    var text: String
     var color: Color = Color.more.primary
     var font: Font = Font.body
     var body: some View {
@@ -22,6 +22,6 @@ struct BasicText: View {
 
 struct BasicText_Previews: PreviewProvider {
     static var previews: some View {
-        BasicText(text: .constant("Hello World"))
+        BasicText(text: "Hello World")
     }
 }
