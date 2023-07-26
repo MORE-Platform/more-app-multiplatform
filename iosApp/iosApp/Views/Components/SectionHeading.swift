@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SectionHeading: View {
-    @Binding var sectionTitle: String
+    var sectionTitle: String
     var font: Font = Font.more.headline
     
     var body: some View {

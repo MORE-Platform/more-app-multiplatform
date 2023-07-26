@@ -66,6 +66,12 @@ extension FCMService: UNUserNotificationCenterDelegate {
         Messaging.messaging().apnsToken = deviceToken
     }
     
+    
+//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+//        print("didReceiveRemoteNotification: \(userInfo)")
+//        return .newData
+//    }
+    
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         let userInfo = notification.request.content.userInfo
@@ -81,6 +87,6 @@ extension FCMService: UNUserNotificationCenterDelegate {
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
-        print(userInfo)
+        print("User info: \(userInfo)")
     }
 }

@@ -34,10 +34,10 @@ struct NotificationView: View {
                             ForEach(notificationViewModel.notificationList.sorted{$0.timestamp > $1.timestamp}, id: \.self) { notification in
                                 VStack {
                                     NotificationItem(
-                                        title: .constant(notification.title),
-                                        message: .constant(notification.notificationBody),
-                                        read: .constant(notification.read),
-                                        isImportant: .constant((notification.priority == 2))
+                                        title: notification.title,
+                                        message: notification.notificationBody,
+                                        read: notification.read,
+                                        isImportant: (notification.priority == 2)
                                     )
                                 }
                                 .contentShape(Rectangle())

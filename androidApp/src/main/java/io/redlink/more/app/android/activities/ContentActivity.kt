@@ -7,7 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.activities.studyStates.StudyClosedView
+import io.redlink.more.app.android.activities.studyStates.StudyPausedView
+import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 
 class ContentActivity: ComponentActivity() {
     private val viewModel = ContentViewModel()

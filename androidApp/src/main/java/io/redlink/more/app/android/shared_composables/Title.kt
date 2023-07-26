@@ -14,7 +14,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 fun Title(text: String,
           modifier: Modifier = Modifier,
           color: Color = MoreColors.PrimaryDark,
-          textAlign: TextAlign = TextAlign.Left,
+          textAlign: TextAlign = TextAlign.Start,
           maxLines: Int  = 2
 ) {
     Text(

@@ -27,7 +27,7 @@ struct LeaveStudyConfirmationView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack(alignment: .leading) {
-                    Title2(titleText: .constant(viewModel.studyTitle ?? ""))
+                    Title2(titleText: viewModel.studyTitle ?? "")
                         .padding(.top)
                         .padding(.bottom)
                         .multilineTextAlignment(.center)

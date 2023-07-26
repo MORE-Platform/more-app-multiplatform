@@ -23,7 +23,7 @@ struct SettingsView: View {
                     .foregroundColor(.more.secondary)
                     .padding(.bottom, 15)
                 if let permissions = viewModel.permissionModel {
-                    ConsentList(permissionModel: .constant(permissions))
+                    ConsentList(permissionModel: permissions)
                         .padding(.top)
                 }
                 

@@ -18,7 +18,7 @@ struct ConsentListHeader: View {
                 Image(systemName: "checkmark")
                     .foregroundColor(.more.approved)
             }
-            SectionHeading(sectionTitle: .constant(title))
+            SectionHeading(sectionTitle: title)
             Spacer()
             UIToggleFoldViewButton(isOpen: $isOpen)
         }

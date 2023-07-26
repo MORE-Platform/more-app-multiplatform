@@ -22,7 +22,7 @@ struct SimpleQuetionObservationView: View {
     var body: some View {
         MoreMainBackgroundView {
             VStack {
-                Title2(titleText: .constant(viewModel.simpleQuestoinModel?.question ?? "Question"))
+                Title2(titleText: viewModel.simpleQuestoinModel?.question ?? "Question")
                     .padding(.bottom, 20)
                     .padding(.top, 40)
 

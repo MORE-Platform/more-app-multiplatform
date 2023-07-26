@@ -18,7 +18,7 @@ struct MoreFilter<Destination: View>: View {
            destination()
         } label: {
             HStack {
-                BasicText(text: $filterText)
+                BasicText(text: filterText)
                 image
                     .foregroundColor(Color.more.secondary)
             }

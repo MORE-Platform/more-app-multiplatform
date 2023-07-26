@@ -20,7 +20,7 @@ struct NotificationFilterView: View {
             MoreMainBackgroundView {
                 VStack(alignment: .leading) {
                     VStack {
-                        SectionHeading(sectionTitle: .constant(String.localize(forKey: "Select Filter", withComment: "Set Notification Filter", inTable: stringTable)))
+                        SectionHeading(sectionTitle: String.localize(forKey: "Select Filter", withComment: "Set Notification Filter", inTable: stringTable))
                             .padding(15)
                         Divider()
                         

@@ -21,7 +21,7 @@ struct DashboardFilterView: View {
                 VStack(alignment: .leading) {
                     VStack {
                         VStack {
-                            SectionHeading(sectionTitle: .constant(String.localize(forKey: "Select Time", withComment: "Set time filter", inTable: stringTable)))
+                            SectionHeading(sectionTitle: String.localize(forKey: "Select Time", withComment: "Set time filter", inTable: stringTable))
                                 .padding(15)
                             Divider()
                             
@@ -43,7 +43,7 @@ struct DashboardFilterView: View {
                         }.padding(.vertical, 20)
                         
                         VStack {
-                            SectionHeading(sectionTitle: .constant(String.localize(forKey: "Select Type", withComment: "Set titypeme filter", inTable: stringTable)))
+                            SectionHeading(sectionTitle: String.localize(forKey: "Select Type", withComment: "Set titypeme filter", inTable: stringTable))
                                 .padding(15)
                             Divider()
                             

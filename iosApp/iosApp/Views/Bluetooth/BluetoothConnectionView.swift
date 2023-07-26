@@ -34,23 +34,23 @@ struct BluetoothConnectionView: View {
                 }
                 ScrollView {
                     LazyVStack(alignment: .leading) {
-                        Title(titleText: .constant("External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings)))
-                        BasicText(text: .constant("\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):"), color: Color.more.secondary)
+                        Title(titleText: "External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings))
+                        BasicText(text: "\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):", color: Color.more.secondary)
                             .padding(.vertical, 8)
 
                         ForEach(viewModel.neededDevices, id: \.self) { device in
-                            SectionHeading(sectionTitle: .constant("- \(device)"))
+                            SectionHeading(sectionTitle: "- \(device)")
                         }
 
                         if showAsSeparateView {
-                            BasicText(text: .constant("You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings)), color: Color.more.secondary)
+                            BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings), color: Color.more.secondary)
                                 .padding(.top, 8)
                         }
 
                         Divider()
                             .padding(.bottom, 8)
-
-                        Section(header: SectionHeading(sectionTitle: .constant("Connected devices".localize(withComment: "Connected device section", useTable: bluetoothStrings)))) {
+                        
+                        Section(header: SectionHeading(sectionTitle: "Connected devices".localize(withComment: "Connected device section", useTable: bluetoothStrings))) {
                             if viewModel.connectedDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices connected", withComment: "No devices connected", inTable: bluetoothStrings))!")
                             } else {
@@ -82,9 +82,9 @@ struct BluetoothConnectionView: View {
                                 }
                             }
                         }
-                        
+
                         // .padding(.bottom, 8)
-                        Section(header: SectionHeading(sectionTitle: .constant("Discovered devices"))) {
+                        Section(header: SectionHeading(sectionTitle: "Discovered devices")) {
                             if viewModel.discoveredDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices found nearby", withComment: "No devices found nearby", inTable: bluetoothStrings))!")
                             } else {
@@ -111,7 +111,7 @@ struct BluetoothConnectionView: View {
                             if viewModel.bluetoothIsScanning {
                                 HStack {
                                     ProgressView()
-                                    BasicText(text: .constant("\(String.localize(forKey: "Searching for devices", withComment: "Searching for new devices", inTable: bluetoothStrings))..."))
+                                    BasicText(text: "\(String.localize(forKey: "Searching for devices", withComment: "Searching for new devices", inTable: bluetoothStrings))...")
                                 }
                             }
                         }

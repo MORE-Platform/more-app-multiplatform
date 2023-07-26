@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct ContactInfo: View {
-    @Binding var title: String
-    @Binding var info: String
+    var title: String
+    var info: String
     
     let contactInstitute: String?
     let contactPerson: String?
@@ -28,7 +28,7 @@ struct ContactInfo: View {
                     Spacer()
                     if contactPerson != nil || contactEmail != nil || contactPhoneNumber != nil {
                         BasicText(
-                            text: .constant(title),
+                            text: title,
                             color: .more.primaryDark,
                             font: .system(size: 20, weight: .bold)
                         )
@@ -38,7 +38,7 @@ struct ContactInfo: View {
                     
                     if contactInstitute != nil {
                         BasicText(
-                            text: .constant(contactInstitute ?? ""),
+                            text: contactInstitute ?? "",
                             font: .system(size: 16, weight: .bold)
                         )
                             .padding(.bottom, 9)
@@ -47,7 +47,7 @@ struct ContactInfo: View {
                     
                     if contactPerson != nil {
                         BasicText(
-                            text: .constant(contactPerson ?? ""),
+                            text: contactPerson ?? "",
                             color: .more.secondary,
                             font: .system(size: 16, weight: .semibold)
                         )
@@ -57,7 +57,7 @@ struct ContactInfo: View {
                     
                     if contactEmail != nil {
                         BasicText(
-                            text: .constant(contactEmail ?? ""),
+                            text: contactEmail ?? "",
                             color: .more.secondary,
                             font: .system(size: 16)
                         )
@@ -67,7 +67,7 @@ struct ContactInfo: View {
                     
                     if contactPhoneNumber != nil {
                         BasicText(
-                            text: .constant(contactPhoneNumber ?? ""),
+                            text: contactPhoneNumber ?? "",
                             color: .more.secondary,
                             font: .system(size: 16)
                         )
@@ -80,7 +80,7 @@ struct ContactInfo: View {
                             .frame(height: 36)
                         
                         BasicText(
-                            text: .constant(info),
+                            text: info,
                             color: .more.secondary,
                             font: .system(size: 14)
                         )
