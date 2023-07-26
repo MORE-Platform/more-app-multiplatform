@@ -8,6 +8,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.*
 
@@ -46,7 +47,7 @@ data class Study(
     @SerialName(value = "version") @Required val version: Long,
 
     /* The current study-state. Mainly used during the registration process. */
-    @SerialName(value = "active") val active: Boolean? = true
-
+    @SerialName(value = "active") val active: Boolean? = true,
+    @SerialName(value = "studyState") val studyState: String? = if (active == true) "active" else "passive"
 )
 

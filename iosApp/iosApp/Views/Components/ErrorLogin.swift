@@ -17,7 +17,7 @@ struct ErrorLogin: View {
     var body: some View {
         VStack {
             if !model.error.isEmpty {
-                ErrorText(message: $model.error)
+                ErrorText(message: model.error)
                     .padding(.bottom, 5)
             }
             

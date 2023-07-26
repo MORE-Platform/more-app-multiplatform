@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.PushNotificationService
 import io.redlink.more.app.android.workers.NOTIFICATION_DATA
@@ -22,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 private const val TAG = "FCMService"
 
@@ -47,6 +49,7 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d(TAG, "From: ${message.from}")
         if (message.data.isNotEmpty() || message.notification != null) {
+            Napier.d { message.toString() }
             CoroutineScope(Job() + Dispatchers.IO).launch {
                 notificationRepository.storeNotification(PushNotificationService.daoFromRemoteMessage(message))
             }

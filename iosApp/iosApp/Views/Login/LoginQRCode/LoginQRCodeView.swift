@@ -26,7 +26,7 @@ struct LoginQRCodeView: View {
                     .padding(.top, 15)
                     .padding(.bottom, 40)
                 
-                BasicText(text: .constant(String.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable)))
+                BasicText(text: String.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable))
                     .padding(.bottom, 5)
                 
                 RoundedRectangle(cornerRadius: .moreBorder.cornerRadius, style: .continuous)
@@ -36,7 +36,7 @@ struct LoginQRCodeView: View {
                 
                 VStack {
                     if !model.error.isEmpty {
-                        ErrorText(message: $model.error)
+                        ErrorText(message: model.error)
                             .padding(.bottom, 5)
                     }
                     VStack(alignment: .center) {

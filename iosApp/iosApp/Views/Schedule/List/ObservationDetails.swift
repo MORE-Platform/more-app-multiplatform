@@ -16,7 +16,7 @@ struct ObservationDetails: View {
     var body: some View {
         HStack{
             VStack(alignment: .leading) {
-                BasicText(text: $observationTitle)
+                BasicText(text: observationTitle)
                     .font(Font.more.headline)
                     .foregroundColor(Color.more.primary)
                     .padding(0.5)

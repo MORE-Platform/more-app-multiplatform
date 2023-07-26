@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ErrorText: View {
-    @Binding var message: String
+    var message: String
     var body: some View {
         Text(message)
             .foregroundColor(.more.important)
@@ -20,6 +20,6 @@ struct ErrorText: View {
 
 struct ErrorText_Previews: PreviewProvider {
     static var previews: some View {
-        ErrorText(message: .constant("System Error!"))
+        ErrorText(message: "System Error!")
     }
 }
