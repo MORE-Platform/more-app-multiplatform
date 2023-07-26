@@ -33,6 +33,8 @@ data class Study(
 
     @SerialName(value = "participantInfo") @Required val participantInfo: String,
 
+    @SerialName(value = "participant") val participant: Participant? = Participant(),
+
     @SerialName(value = "consentInfo") @Required val consentInfo: String,
 
     @SerialName(value = "start") @Required val start: LocalDate,

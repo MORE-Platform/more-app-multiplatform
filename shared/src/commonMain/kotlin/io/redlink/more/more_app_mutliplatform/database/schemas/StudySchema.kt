@@ -18,6 +18,8 @@ class StudySchema : RealmObject {
     @PrimaryKey
     var studyId: ObjectId = ObjectId.invoke()
     var studyTitle: String = ""
+    var participantId: Int? = null
+    var participantAlias: String? = ""
     var participantInfo: String = ""
     var consentInfo: String = ""
     var start: RealmInstant? = null
@@ -36,6 +38,8 @@ class StudySchema : RealmObject {
                 studyTitle = study.studyTitle
                 consentInfo = study.consentInfo
                 participantInfo = study.participantInfo
+                participantId = study.participant?.id
+                participantAlias = study.participant?.alias
                 start = Instant.fromEpochMilliseconds(
                     study.start.atStartOfDayIn(TimeZone.currentSystemDefault())
                         .toEpochMilliseconds()
