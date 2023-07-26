@@ -15,12 +15,23 @@ import RxSwift
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
     
-    static func setHRReady(ready: Bool) {
-        hrReady = ready
-        if ready {
-            AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
-        } else {
+    static func polarDeviceDisconnected() {
+        let polarDevices = AppDelegate.shared.mainBluetoothConnector.connected.filter{
+            if let deviceName = ($0 as? BluetoothDevice)?.deviceName {
+                return deviceName.lowercased().contains("polar")
+            }
+            return false
+        }
+        if polarDevices.isEmpty {
+            hrReady = false
             AppDelegate.shared.observationManager.pauseObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
+        }
+    }
+    
+    static func setHRReady() {
+        if !hrReady {
+            hrReady = true
+            AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
         }
     }
     

@@ -127,6 +127,7 @@ class PolarConnector: NSObject, BluetoothConnector {
         if let device = connected.filter({ ($0 as? BluetoothDevice)?.address == bluetoothDevice.address}).first {
             connected.remove(device)
         }
+        PolarVerityHeartRateObservation.polarDeviceDisconnected()
         updateObserver{ $0.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)}
     }
     
@@ -205,7 +206,6 @@ extension PolarConnector: PolarBleApiObserver {
     
     func deviceDisconnected(_ identifier: PolarDeviceInfo) {
         print("Polar disconnected: \(identifier.name)")
-        PolarVerityHeartRateObservation.setHRReady(ready: false)
         self.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
 }
@@ -257,7 +257,7 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         if feature == .feature_hr {
             print("HR ready")
-            PolarVerityHeartRateObservation.setHRReady(ready: true)
+            PolarVerityHeartRateObservation.setHRReady()
         }
     }
     

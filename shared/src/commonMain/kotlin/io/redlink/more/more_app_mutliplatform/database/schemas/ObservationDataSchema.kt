@@ -50,7 +50,7 @@ class ObservationDataSchema : RealmObject {
                     this.timestamp =
                         RealmInstant.from(epochSeconds = timestamp, nanosecondAdjustment = 0)
                 }
-                this.dataValue = data.asString() ?: ""
+                this.dataValue = data.asString() ?: "{}"
             }
         }
 

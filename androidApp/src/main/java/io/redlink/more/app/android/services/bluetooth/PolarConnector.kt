@@ -38,6 +38,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         api.setPolarFilter(false)
         api.setApiCallback(polarObserverCallback)
         api.setAutomaticReconnection(true)
+        api.setApiLogger { str -> Napier.d { str } }
         api
     }
 
@@ -114,7 +115,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
             Napier.d { "HR ready!" }
-            PolarHeartRateObservation.setHRReady(true)
+            PolarHeartRateObservation.setHRReady()
         }
     }
 
@@ -153,7 +154,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
         connected.removeAll { bluetoothDevice.address == it.address }
-        PolarHeartRateObservation.setHRReady(false)
+        PolarHeartRateObservation.polarDeviceDisconnected()
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 

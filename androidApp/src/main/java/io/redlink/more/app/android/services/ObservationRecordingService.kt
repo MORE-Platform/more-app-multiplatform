@@ -15,8 +15,6 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.AndroidDataRecorder
-import io.redlink.more.app.android.observations.AndroidObservationDataManager
-import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -41,8 +39,10 @@ class ObservationRecordingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (observationFactory == null) {
-            observationFactory =
-                MoreApplication.shared?.observationFactory ?: AndroidObservationFactory(this, AndroidObservationDataManager(this))
+            if (MoreApplication.shared == null) {
+                MoreApplication.initShared(applicationContext)
+            }
+            observationFactory = MoreApplication.shared!!.observationFactory
         }
         observationFactory?.let {
             if (observationManager == null) {

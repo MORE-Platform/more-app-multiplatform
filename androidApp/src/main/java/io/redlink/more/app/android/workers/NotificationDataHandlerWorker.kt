@@ -2,18 +2,13 @@ package io.redlink.more.app.android.workers
 
 import android.content.Context
 import android.util.Log
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.AndroidDataRecorder
-import io.redlink.more.app.android.observations.AndroidObservationDataManager
-import io.redlink.more.app.android.observations.AndroidObservationFactory
-import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.models.StudyState
-import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type
@@ -27,14 +22,13 @@ const val NOTIFICATION_DATA = "notification_data"
 class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(context, workerParameters) {
 
-    private val shared: Shared = MoreApplication.shared ?: AndroidObservationDataManager(applicationContext).let {
-        Shared(
-            sharedStorageRepository = SharedPreferencesRepository(applicationContext),
-            observationDataManager = it,
-            observationFactory = AndroidObservationFactory(applicationContext, it),
-            dataRecorder = AndroidDataRecorder(),
-            mainBluetoothConnector = PolarConnector(applicationContext)
-        )
+    private val shared: Shared
+
+    init {
+        if (MoreApplication.shared == null) {
+            MoreApplication.initShared(applicationContext)
+        }
+        shared = MoreApplication.shared!!
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
