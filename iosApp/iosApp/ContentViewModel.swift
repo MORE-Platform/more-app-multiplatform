@@ -63,6 +63,9 @@ class ContentViewModel: ObservableObject {
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
+            if self?.currentStudyState == .closed && studyState == StudyState.none {
+                self?.hasCredentials = false
+            }
             self?.currentStudyState = studyState
         }
         

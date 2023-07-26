@@ -115,7 +115,7 @@ class Shared(
     suspend fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
         val studyRepository = StudyRepository()
         val currentStudy = studyRepository.getStudy().firstOrNull()
-        if(currentStudy != null) {
+        if (currentStudy != null) {
             currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
         }
         if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
@@ -133,7 +133,7 @@ class Shared(
             study?.let { study ->
                 var studyHasChanged = false
                 currentStudy?.let {
-                    if (it.active != study.active || it.version != study.version) {
+                    if ((study.studyState?.let { StudyState.getState(it) } != it.state || it.active != study.active) || it.version != study.version) {
                         studyHasChanged = true
                     }
                 }
@@ -141,15 +141,18 @@ class Shared(
                     studyIsUpdating.emit(true)
                     stopObservations()
                     removeStudyData()
-                    studyRepository.storeStudy(study)
-                    resetFirstStartUp()
-                    if (study.active == true) {
-                        activateObservationWatcher()
+                    if (study.studyState?.let { StudyState.getState(it) } != StudyState.CLOSED) {
+                        studyRepository.storeStudy(study)
+                        resetFirstStartUp()
+                        if (study.active == true) {
+                            activateObservationWatcher()
+                        }
+                    }
+                    if (newStudyState == null) {
+                        currentStudyState.set(study.studyState?.let { StudyState.getState(it) }
+                            ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
                     }
                     studyIsUpdating.emit(false)
-                    if (newStudyState == null) {
-                        currentStudyState.set(if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
-                    }
                 }
             }
             if (newStudyState != null) {
@@ -167,6 +170,8 @@ class Shared(
             clearSharedStorage()
             DatabaseManager.deleteAll()
             onDeletion()
+            studyIsUpdating.set(false)
+            currentStudyState.set(StudyState.NONE)
         }
     }
 
@@ -194,9 +199,11 @@ class Shared(
         )
     }
 
-    fun onStudyIsUpdatingChange(providedState: (Boolean) -> Unit) = studyIsUpdating.asClosure(providedState)
+    fun onStudyIsUpdatingChange(providedState: (Boolean) -> Unit) =
+        studyIsUpdating.asClosure(providedState)
 
-    fun onStudyStateChange(providedState: (StudyState) -> Unit) = currentStudyState.asClosure(providedState)
+    fun onStudyStateChange(providedState: (StudyState) -> Unit) =
+        currentStudyState.asClosure(providedState)
 
 
     companion object {
