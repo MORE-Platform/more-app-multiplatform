@@ -21,11 +21,13 @@ import io.redlink.more.app.android.activities.studyDetails.observationDetails.Ob
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context) : ViewModel() {
@@ -35,7 +37,7 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val studyIsUpdating = mutableStateOf(false)
     val studyState = mutableStateOf(StudyState.NONE)
-    val finishText = mutableStateOf(null)
+    val finishText = mutableStateOf<String?>(null)
 
     private var initFinished = false
 
@@ -84,6 +86,7 @@ class MainViewModel(context: Context) : ViewModel() {
         }
         viewModelScope.launch {
             MoreApplication.shared!!.currentStudyState.collect {
+                finishText.value = StudyRepository().getStudy().firstOrNull()?.finishText
                 studyState.value = it
                 if (it == StudyState.ACTIVE && initFinished) {
                     showBLESetup(context)
