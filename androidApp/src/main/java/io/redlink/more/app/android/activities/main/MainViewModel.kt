@@ -35,6 +35,7 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val studyIsUpdating = mutableStateOf(false)
     val studyState = mutableStateOf(StudyState.NONE)
+    val finishText = mutableStateOf(null)
 
     private var initFinished = false
 

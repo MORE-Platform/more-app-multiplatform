@@ -24,6 +24,7 @@ import kotlinx.serialization.*
  * @param contact
  * @param version A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed.
  * @param active The current study-state. Mainly used during the registration process.
+ * @param finishText Finish message, when the study is set to completed.
  */
 @Serializable
 
@@ -50,6 +51,9 @@ data class Study(
 
     /* The current study-state. Mainly used during the registration process. */
     @SerialName(value = "active") val active: Boolean? = true,
-    @SerialName(value = "studyState") val studyState: String? = if (active == true) "active" else "passive"
+
+    @SerialName(value = "studyState") val studyState: String? = if (active == true) "active" else "passive",
+
+    @SerialName(value = "finishText") val finishText: String? = null
 )
 
