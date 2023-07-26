@@ -10,8 +10,8 @@ import SwiftUI
 
 
 struct ObservationDetailsData: View {
-    @Binding var dateRange: String
-    @Binding var timeframe: String
+    var dateRange: String
+    var timeframe: String
     
     private let stringTable = "TaskDetail"
     
@@ -20,7 +20,7 @@ struct ObservationDetailsData: View {
         VStack {
             HStack {
                 Image(systemName: "calendar")
-                BasicText(text: .constant(dateRange), color: .more.secondary)
+                BasicText(text: dateRange, color: .more.secondary)
                     .padding(1)
                 Spacer()
             }
@@ -30,7 +30,7 @@ struct ObservationDetailsData: View {
                 Text(String.localize(forKey: "Timeframe", withComment: "Timeframe of observation", inTable: stringTable))
                         .foregroundColor(.more.primary)
                     
-                    BasicText(text: .constant(timeframe), color: .more.secondary)
+                    BasicText(text: timeframe, color: .more.secondary)
                     Spacer()
             }
         }

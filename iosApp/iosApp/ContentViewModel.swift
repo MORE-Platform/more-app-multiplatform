@@ -18,6 +18,9 @@ class ContentViewModel: ObservableObject {
     @Published var isLeaveStudyOpen: Bool = false
     @Published var isLeaveStudyConfirmOpen: Bool = false
     @Published var showBleView = false
+    
+    @Published var studyIsUpdating: Bool = false
+    @Published var currentStudyState: StudyState = .none
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -48,14 +51,27 @@ class ContentViewModel: ObservableObject {
     lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
     
     init() {
+        
         let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
         notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
-        
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
+        
+        AppDelegate.shared.onStudyIsUpdatingChange { [weak self] kBool in
+            print("Study updating ")
+            self?.studyIsUpdating = kBool.boolValue
+        }
+        
+        AppDelegate.shared.onStudyStateChange { [weak self] studyState in
+            if self?.currentStudyState == .closed && studyState == StudyState.none {
+                self?.hasCredentials = false
+            }
+            self?.currentStudyState = studyState
+        }
         
         if hasCredentials {
             scanBluetooth()
+            AppDelegate.shared.updateStudyBlocking(oldStudyState: nil, newStudyState: nil)
             AppDelegate.shared.activateObservationWatcher()
         }
     }

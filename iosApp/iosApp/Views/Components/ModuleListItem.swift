@@ -16,10 +16,10 @@ struct ModuleListItem: View {
         VStack{
             HStack(){
                 VStack(alignment: .leading){
-                    BasicText(text: .constant(observation.observationTitle))
+                    BasicText(text: observation.observationTitle)
                         .padding(.bottom, (0.5))
                     
-                    BasicText(text: .constant(observation.observationType), color: Color.more.secondary)
+                    BasicText(text: observation.observationType, color: Color.more.secondary)
                 }
                 Spacer()
                 Image(systemName: "chevron.forward")

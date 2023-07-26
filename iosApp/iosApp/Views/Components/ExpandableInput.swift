@@ -26,7 +26,7 @@ struct ExpandableInput: View {
             
             HStack{
                 Spacer()
-                SectionHeading(sectionTitle: .constant(headerText))
+                SectionHeading(sectionTitle: headerText)
                 UIToggleFoldViewButton(isOpen: $expanded)
                 Spacer()
             }

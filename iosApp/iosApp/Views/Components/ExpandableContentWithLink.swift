@@ -16,7 +16,7 @@ struct ExpandableContentWithLink<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack() {
-                SectionHeading(sectionTitle: .constant(title()))
+                SectionHeading(sectionTitle: title())
                 Spacer()
                 UIToggleFoldViewButton(isOpen: $expanded)
             }

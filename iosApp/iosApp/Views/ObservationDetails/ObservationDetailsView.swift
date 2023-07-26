@@ -22,14 +22,14 @@ struct ObservationDetailsView: View {
                 ) {
                     VStack(alignment: HorizontalAlignment.leading) {
                         HStack {
-                            Title2(titleText: .constant(viewModel.observationDetailModel?.observationTitle ?? ""))
+                            Title2(titleText: viewModel.observationDetailModel?.observationTitle ?? "")
                                 .padding(0.5)
                                 
                         }
                         .frame(height: 40)
                         HStack(
                         ) {
-                            BasicText(text: .constant(viewModel.observationDetailModel?.observationType ?? ""), color: .more.secondary)
+                            BasicText(text: viewModel.observationDetailModel?.observationType ?? "", color: .more.secondary)
                             Spacer()
                         }
                     }
@@ -40,10 +40,10 @@ struct ObservationDetailsView: View {
                     
                     let time: String = (viewModel.observationDetailModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (viewModel.observationDetailModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
                     
-                    ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
+                    ObservationDetailsData(dateRange: date, timeframe: time)
                     
                     HStack {
-                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: .constant(viewModel.observationDetailModel?.participantInformation ?? ""), isOpen: true)
+                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.observationDetailModel?.participantInformation ?? "", isOpen: true)
                     }
                     .padding(.top, 10)
                     

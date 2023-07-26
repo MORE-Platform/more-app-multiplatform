@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_paused">Die Studie ist derzeit pausiert</string>
+    <string name="study_paused_descr">Die Studie ist vom Studienleiter derzeit pausiert und wird in kürze fortgesetzt</string>
+    <string name="study_update">Die Studienkonfiguration wird gerade aktualisiert!</string>
+    <string name="study_update_wait">Bitte warten Sie kurz, bis die Aktualisierung beendet wurde</string>
+    <string name="study_closed">Diese Studie wurde beendet</string>
+    <string name="study_closed_thanks">Vielen Dank für Ihre teilnahme</string>
+    <string name="study_personal_message">Nachricht von Ihrem Studiengangsleiter</string>
+</resources>
