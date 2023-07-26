@@ -164,6 +164,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
+        Napier.d { "Device Discovered: $device" }
         if (discovered.none { it.address == device.address } && connected.none { it.address == device.address }) {
             discovered.add(device)
         }
