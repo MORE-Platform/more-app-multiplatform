@@ -31,6 +31,7 @@ class StudySchema : RealmObject {
     var version: Long = 0
     var active: Boolean = false
     var state: StudyState = if(active) StudyState.ACTIVE else StudyState.PAUSED
+    var finishText: String? = null
 
     companion object {
         fun toSchema(study: Study): StudySchema {
@@ -55,6 +56,7 @@ class StudySchema : RealmObject {
                 version = study.version
                 active = study.active ?: false
                 state = study.studyState?.let { StudyState.getState(it) } ?: if (active) StudyState.ACTIVE else StudyState.PAUSED
+                finishText = study.finishText
             }
         }
     }

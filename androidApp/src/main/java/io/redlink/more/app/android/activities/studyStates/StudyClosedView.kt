@@ -34,11 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.ui.theme.MoreColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun StudyClosedView() {
+fun StudyClosedView(closedMessage: kotlin.String?) {
     val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
     MoreBackground {
@@ -68,7 +69,11 @@ fun StudyClosedView() {
                 }
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
-                    BasicText(text = "Here should be the personal message by the study operator")
+                    if ( closedMessage != null ) {
+                        BasicText(text = closedMessage as String, color = MoreColors.Secondary)
+                    } else {
+                        BasicText(text = getStringResource(id = R.string.study_closed), color = MoreColors.Secondary)
+                    }
                 }
             }
             Box(
@@ -102,5 +107,5 @@ fun StudyClosedView() {
 @Preview
 @Composable
 fun StudyClosedPreview() {
-    StudyClosedView()
+    StudyClosedView(null)
 }

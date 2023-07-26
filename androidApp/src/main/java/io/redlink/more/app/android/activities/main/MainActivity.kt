@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
             } else if (viewModel.studyState.value == StudyState.PAUSED) {
                 StudyPausedView()
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
-                StudyClosedView()
+                StudyClosedView(viewModel.finishText.value)
             } else {
                 MainView(viewModel.navigationBarTitle.value, viewModel, navController)
             }
