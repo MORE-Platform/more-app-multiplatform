@@ -186,4 +186,10 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
             }
         }
     }
+
+    fun resetAll() {
+        bluetoothConnector?.removeObserver(this)
+        pairedDeviceIds.clear()
+        connectedDevices.set(emptySet())
+    }
 }

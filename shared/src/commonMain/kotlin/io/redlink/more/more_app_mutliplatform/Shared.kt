@@ -171,6 +171,7 @@ class Shared(
             networkService.deleteParticipation()
             clearSharedStorage()
             DatabaseManager.deleteAll()
+            coreBluetooth.resetAll()
             onDeletion()
             studyIsUpdating.set(false)
             currentStudyState.set(StudyState.NONE)

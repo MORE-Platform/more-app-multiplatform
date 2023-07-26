@@ -209,11 +209,24 @@ class CoreBluetoothConnectionViewModel(
 
     fun bluetoothStateChanged(providedState: (BluetoothState) -> Unit) = bluetoothPower.asClosure(providedState)
 
+    fun resetAll() {
+        stopPeriodicScan()
+        close()
+        discoveredDevices.clear()
+        connectingDevices.clear()
+        connectedDevices.clear()
+        isScanning.set(false)
+        backgroundScanningEnabled = false
+        viewActive = false
+        bluetoothDeviceRepository.resetAll()
+        scanJob = null
+    }
+
     override fun close() {
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         bluetoothConnector.stopScanning()
-        bluetoothConnector.removeObserver(this)
+        //bluetoothConnector.removeObserver(this)
     }
 
     companion object {
