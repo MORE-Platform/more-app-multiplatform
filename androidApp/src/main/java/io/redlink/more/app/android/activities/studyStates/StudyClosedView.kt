@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.studyStates
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +31,15 @@ import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.Title
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import io.redlink.more.app.android.activities.ContentActivity
+import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun StudyClosedView() {
+    val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
     MoreBackground {
         Box(
@@ -79,6 +86,10 @@ fun StudyClosedView() {
                         loading = true
                         MoreApplication.shared!!.exitStudy {
                             loading = false
+                            (context as? Activity)?.let { activity ->
+                                activity.finish()
+                                showNewActivityAndClearStack(activity, ContentActivity::class.java)
+                            }
                         }
                     }
                 }
