@@ -45,13 +45,13 @@ class PolarConnector: NSObject, BluetoothConnector {
     
     override init() {
         super.init()
-        centralManager = CBCentralManager(delegate: self, queue: nil)
         
         self.polarApi.polarFilter(false)
         self.polarApi.observer = self
         self.polarApi.deviceInfoObserver = self
         self.polarApi.deviceFeaturesObserver = self
         self.polarApi.powerStateObserver = self
+        self.polarApi.automaticReconnection = true
     }
     
     func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
@@ -82,48 +82,33 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
     
     func scan() {
-        if !scanning {
-            switch centralManager.state {
-            case .unknown:
-                print("Bluetooth state unknown")
-                scanningWithUnknownBLEState = true
-            case .resetting:
-                print("Bluetooth state resetting")
-            case .unsupported:
-                print("Bluetooth state unsupported")
-            case .unauthorized:
-                print("Bluetooth state unauthorized")
-            case .poweredOff:
-                print("Bluetooth state powered off")
-                onBluetoothStateChange(bluetoothState: .off)
-            case .poweredOn:
-                print("Bluetooth state powered on")
-                scanning = true
-                self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
-                    if let self, !device.name.isEmpty {
-                        self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
-                    }
-                }, onError: { error in
-                    print(error)
-                }, onDisposed: { [weak self] in
-                    self?.scanning = false
-                })
-            @unknown default:
-                print("Bluetooth state unknown default")
-            }
-            
+        if !scanning && self.observer != nil && bluetoothState == BluetoothState.on {
+            print("Polar: Starting the scan...")
+            scanning = true
+            self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
+                if let self, !device.name.isEmpty {
+                    self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
+                }
+            }, onError: { [weak self] error in
+                print(error)
+                self?.scanning = false
+            }, onDisposed: { [weak self] in
+                self?.scanning = false
+            })
         }
     }
 
     func stopScanning() {
-        print("Polar: Stopping the scan and cleaning up...")
-        self.devicesSubscription?.dispose()
-        self.polarApi.cleanup()
-        self.scanning = false
+        if self.scanning {
+            print("Polar: Stopping the scan and cleaning up...")
+            self.devicesSubscription?.dispose()
+            self.polarApi.cleanup()
+            self.scanning = false
+        }
     }
 
     func close() {
-        stopScanning()
+        applyObserver(bluetoothConnectorObserver: nil)
     }
     
     func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -179,11 +164,14 @@ class PolarConnector: NSObject, BluetoothConnector {
         observer = bluetoothConnectorObserver
         if bluetoothConnectorObserver != nil {
             replayStates()
+        } else {
+            stopScanning()
         }
     }
     
     func replayStates() {
         print("Polar Connector: Replaying states...")
+        onBluetoothStateChange(bluetoothState: self.bluetoothState)
         connected.forEach { self.didConnectToDevice(bluetoothDevice: $0 as! BluetoothDevice)}
         discovered.forEach{ self.didDiscoverDevice(device: $0 as! BluetoothDevice)}
         isScanning(boolean: scanning)
@@ -204,7 +192,7 @@ extension PolarConnector: PolarBleApiObserver {
     
     func deviceDisconnected(_ identifier: PolarDeviceInfo) {
         print("Polar disconnected: \(identifier.name)")
-        PolarVerityHeartRateObservation.hrReady = false
+        PolarVerityHeartRateObservation.setHRReady(ready: false)
         self.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
 }
@@ -212,10 +200,28 @@ extension PolarConnector: PolarBleApiObserver {
 extension PolarConnector: PolarBleApiPowerStateObserver {
     func blePowerOn() {
         print("Polar power on")
+        self.onBluetoothStateChange(bluetoothState: .on)
+        Task { [weak self] in
+            self?.scan()
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            self?.stopScanning()
+        }
     }
     
     func blePowerOff() {
         print("Polar power off")
+        self.onBluetoothStateChange(bluetoothState: .off)
+        self.connected.forEach { [weak self] device in
+            if let device = device as? BluetoothDevice {
+                self?.didDisconnectFromDevice(bluetoothDevice: device)
+            }
+        }
+        self.discovered.forEach { [weak self] device in
+            if let device = device as? BluetoothDevice {
+                self?.removeDiscoveredDevice(device: device)
+            }
+        }
+        stopScanning()
     }
 }
 
@@ -238,7 +244,7 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         if feature == .feature_hr {
             print("HR ready")
-            PolarVerityHeartRateObservation.hrReady = true
+            PolarVerityHeartRateObservation.setHRReady(ready: true)
         }
     }
     
@@ -259,20 +265,5 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
 extension PolarConnector: PolarBleApiLogger {
     func message(_ str: String) {
         print("Polar logger: \(str)")
-    }
-}
-
-extension PolarConnector: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        print("Manager state is powered on: \(central.state == .poweredOn)")
-        if central.state == .poweredOn {
-            delegate?.bleHasPower()
-            if scanningWithUnknownBLEState {
-                self.scan()
-            }
-        }
-        if central.state != .unknown {
-            scanningWithUnknownBLEState = false
-        }
     }
 }

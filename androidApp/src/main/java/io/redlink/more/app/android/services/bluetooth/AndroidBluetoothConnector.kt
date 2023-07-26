@@ -31,7 +31,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     private val foundBluetoothDevices = mutableSetOf<String>()
 
     override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> = mutableMapOf()
-    override var observer: BluetoothConnectorObserver? = null
+    override var observer: MutableSet<BluetoothConnectorObserver> = mutableSetOf()
     override var scanning = false
     override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
     override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
@@ -142,7 +142,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
             ContextCompat.checkSelfPermission(MoreApplication.appContext!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             try {
                 specificBluetoothConnectors.values.forEach {
-                    it.observer = this
+                    it
                     it.bluetoothState = this.bluetoothState
                 }
                 val bondStateChangedFilter = IntentFilter()
@@ -162,11 +162,22 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         specificBluetoothConnectors[key] = connector
     }
 
-    override fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
-        this.observer = bluetoothConnectorObserver
-        if (bluetoothConnectorObserver != null) {
+    override fun addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.add(bluetoothConnectorObserver)
+        if (observer.isNotEmpty()) {
             replayStates()
         }
+    }
+
+    override fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.remove(bluetoothConnectorObserver)
+        if (observer.isEmpty()) {
+            stopScanning()
+        }
+    }
+
+    override fun updateObserver(action: (BluetoothConnectorObserver) -> Unit) {
+        observer.forEach(action)
     }
 
     override fun replayStates() {

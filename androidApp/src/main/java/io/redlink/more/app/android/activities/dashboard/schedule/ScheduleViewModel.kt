@@ -62,18 +62,18 @@ class ScheduleViewModel(
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
-                    val polarSchedules = schedulesByDate.values.flatten().filter { it.observationType == "polar-verity-observation" }
-                    if (!it) {
-                        polarSchedules.filter { it.scheduleState == ScheduleState.RUNNING }
-                            .forEach {
-                                pauseObservation(it.scheduleId)
-                            }
-                    } else {
-                        polarSchedules.filter { it.scheduleState == ScheduleState.PAUSED }
-                            .forEach {
-                                startObservation(it.scheduleId)
-                            }
-                    }
+//                    val polarSchedules = schedulesByDate.values.flatten().filter { it.observationType == "polar-verity-observation" }
+//                    if (!it) {
+//                        polarSchedules.filter { it.scheduleState == ScheduleState.RUNNING }
+//                            .forEach {
+//                                pauseObservation(it.scheduleId)
+//                            }
+//                    } else {
+//                        polarSchedules.filter { it.scheduleState == ScheduleState.PAUSED }
+//                            .forEach {
+//                                startObservation(it.scheduleId)
+//                            }
+//                    }
                 }
             }
         }

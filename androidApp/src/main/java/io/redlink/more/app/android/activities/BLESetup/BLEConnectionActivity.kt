@@ -43,10 +43,7 @@ import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 class BLEConnectionActivity : ComponentActivity() {
-    val viewModel = BLESetupViewModel(
-        observationFactory = MoreApplication.shared!!.observationFactory,
-        bluetoothConnector = MoreApplication.shared!!.mainBluetoothConnector
-    )
+    val viewModel = BLESetupViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

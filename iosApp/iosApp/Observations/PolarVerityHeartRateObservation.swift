@@ -14,6 +14,16 @@ import RxSwift
 
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
+    
+    static func setHRReady(ready: Bool) {
+        hrReady = ready
+        if ready {
+            AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
+        } else {
+            AppDelegate.shared.observationManager.pauseObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
+        }
+    }
+    
     private let deviceIdentificer = "Polar"
     private let polarConnector = AppDelegate.polarConnector
     private let bluetoothRepository = BluetoothDeviceRepository(bluetoothConnector: nil)
@@ -31,14 +41,12 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
     
     override func start() -> Bool {
-        if !self.connectedDevices.isEmpty {
-            if let address = connectedDevices.first?.address {
-                hrObservation = polarConnector.polarApi.startHrStreaming(address).subscribe(onNext: { [weak self] data in
+        if self.observerAccessible(){
+            if let address = (self.polarConnector.connected.allObjects.first as? BluetoothDevice)?.address {
+                hrObservation = self.polarConnector.polarApi.startHrStreaming(address).subscribe(onNext: { [weak self] data in
                     if let self, let hrData = data.first {
                         print("New HR data: \(hrData.hr)")
-                        self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
-
-                        }
+                        self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
                     }
                 }, onError: { error in
                     print(error)
@@ -55,7 +63,13 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
     
     override func observerAccessible() -> Bool {
-        true
+        if self.polarConnector.connected.count > 0 {
+            AppDelegate.shared.coreBluetooth.disableBackgroundScanner()
+            return true
+        } else {
+            AppDelegate.shared.coreBluetooth.enableBackgroundScanner()
+            return false
+        }
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){

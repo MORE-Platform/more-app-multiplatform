@@ -8,9 +8,12 @@ import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private val permissions =
@@ -35,8 +38,10 @@ class PolarHeartRateObservation :
 
     override fun start(): Boolean {
         Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
-        val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}
-        if (polarDevices.isNotEmpty()) {
+        if (observerAccessible()) {
+            val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
+                it.deviceName?.lowercase()?.contains("polar") ?: false
+            }
             return polarDevices.first().deviceId?.let {
                 try {
                     heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
@@ -45,8 +50,7 @@ class PolarHeartRateObservation :
                             storeData(mapOf("hr" to polarData.samples[0].hr))
                         },
                         { error ->
-                            Napier.e(error.stackTraceToString())
-                            stopAndSetState(ScheduleState.PAUSED, null)
+                            Napier.e("HR Recording error: ${error.stackTraceToString()}")
                         })
                     true
                 } catch (exception: Exception) {
@@ -68,7 +72,13 @@ class PolarHeartRateObservation :
     }
 
     override fun observerAccessible(): Boolean {
-        return hasPermissions(MoreApplication.appContext!!)
+        val empty = MoreApplication.shared!!.mainBluetoothConnector.connected.isEmpty()
+        if (empty) {
+            MoreApplication.shared!!.coreBluetooth.enableBackgroundScanner()
+        } else {
+            MoreApplication.shared!!.coreBluetooth.disableBackgroundScanner()
+        }
+        return hasPermissions(MoreApplication.appContext!!) && !empty
     }
 
     override fun bleDevicesNeeded(): Set<String> {
@@ -76,7 +86,7 @@ class PolarHeartRateObservation :
     }
 
     override fun ableToAutomaticallyStart(): Boolean {
-        return observerAccessible() && MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}.isNotEmpty()
+        return observerAccessible()
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
@@ -99,5 +109,21 @@ class PolarHeartRateObservation :
 
     companion object {
         val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        fun setHRReady(ready: Boolean) {
+            hrReady.set(ready)
+            if (ready) {
+                MoreApplication.shared!!.observationManager.startObservationType(
+                    PolarVerityHeartRateType(
+                        emptySet()
+                    ).observationType
+                )
+            } else {
+                MoreApplication.shared!!.observationManager.pauseObservationType(
+                    PolarVerityHeartRateType(
+                        emptySet()
+                    ).observationType
+                )
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ class PolarObserverCallback : PolarBleApiCallback() {
 
     override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceDisconnected(polarDeviceInfo)
-        Napier.i("Device disconnecting: ${polarDeviceInfo.name}")
+        Napier.i("Device disconnected: ${polarDeviceInfo.name}")
         connectionListener?.onDeviceDisconnected(polarDeviceInfo)
     }
 

@@ -4,7 +4,7 @@ import io.ktor.utils.io.core.*
 
 interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 
-    var observer: BluetoothConnectorObserver?
+    var observer: MutableSet<BluetoothConnectorObserver>
 
     val connected: MutableSet<BluetoothDevice>
 
@@ -18,7 +18,11 @@ interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 
     fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector)
 
-    fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?)
+    fun addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver)
+
+    fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver)
+
+    fun updateObserver(action: (BluetoothConnectorObserver) -> Unit)
 
     fun replayStates()
 

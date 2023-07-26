@@ -1,5 +1,7 @@
 package io.redlink.more.app.android.services.bluetooth
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
@@ -7,6 +9,7 @@ import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.HR.PolarConnectorListener
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.HR.PolarObserverCallback
@@ -14,9 +17,11 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnec
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListener {
@@ -45,7 +50,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> =
         mutableMapOf()
     override var scanning: Boolean = false
-    override var observer: BluetoothConnectorObserver? = null
+    override var observer: MutableSet<BluetoothConnectorObserver> = mutableSetOf()
 
     override var bluetoothState: BluetoothState = BluetoothState.OFF
 
@@ -54,19 +59,29 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     init {
         polarObserverCallback.connectionListener = this
+        (MoreApplication.appContext!!.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter?.let {
+            this.bluetoothState = when (it.state) {
+                BluetoothAdapter.STATE_ON -> BluetoothState.ON
+                BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.ON
+                else -> BluetoothState.OFF
+            }
+            Napier.d { "Current Bluetooth State: $bluetoothState" }
+        }
     }
 
     override fun scan() {
-        isScanning(true)
-        scanDisposable = polarApi.searchForDevice()
-            .subscribe(
-                { polarDeviceInfo: PolarDeviceInfo ->
-                    didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
-                },
-                { error: Throwable ->
-                    Napier.e { error.stackTraceToString() }
-                }
-            )
+        if (!scanning && observer != null && bluetoothState == BluetoothState.ON) {
+            isScanning(true)
+            scanDisposable = polarApi.searchForDevice()
+                .subscribe(
+                    { polarDeviceInfo: PolarDeviceInfo ->
+                        didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
+                    },
+                    { error: Throwable ->
+                        Napier.e { error.stackTraceToString() }
+                    }
+                )
+        }
     }
 
     override fun connect(device: BluetoothDevice): Error? {
@@ -92,17 +107,18 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun stopScanning() {
-        isScanning(false)
-        scanDisposable?.dispose()
-        polarApi.cleanup()
+        if (scanning) {
+            isScanning(false)
+            scanDisposable?.dispose()
+            polarApi.cleanup()
+        }
     }
 
 
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
-            CoroutineScope(Job() + Dispatchers.Default).launch {
-                PolarHeartRateObservation.hrReady.emit(true)
-            }
+            Napier.d { "HR ready!" }
+            PolarHeartRateObservation.setHRReady(true)
         }
     }
 
@@ -111,9 +127,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun onDeviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
-        CoroutineScope(Job() + Dispatchers.IO).launch {
-            PolarHeartRateObservation.hrReady.emit(false)
-        }
+        PolarHeartRateObservation.setHRReady(false)
         didDisconnectFromDevice(polarDeviceInfo.toBluetoothDevice())
     }
 
@@ -127,12 +141,11 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun close() {
         log { "Closing PolarConnector..." }
-        observer = null
         stopScanning()
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
-        observer?.isConnectingToDevice(bluetoothDevice)
+        updateObserver { it.isConnectingToDevice(bluetoothDevice) }
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
@@ -140,40 +153,73 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             connected.add(bluetoothDevice)
             removeDiscoveredDevice(bluetoothDevice)
         }
-        observer?.didConnectToDevice(bluetoothDevice)
+        updateObserver { it.didConnectToDevice(bluetoothDevice) }
     }
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
-        polarApi.cleanup()
         connected.removeAll { bluetoothDevice.address == it.address }
-        observer?.didDisconnectFromDevice(bluetoothDevice)
+        updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
     override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        observer?.didFailToConnectToDevice(bluetoothDevice)
+        updateObserver {
+            it.didFailToConnectToDevice(bluetoothDevice)
+        }
     }
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
         if (discovered.none { it.address == device.address } && connected.none { it.address == device.address }) {
             discovered.add(device)
         }
-        observer?.didDiscoverDevice(device)
+        updateObserver {
+            it.didDiscoverDevice(device)
+        }
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         discovered.removeAll { it.address == device.address }
-        observer?.removeDiscoveredDevice(device)
+        updateObserver {
+            it.removeDiscoveredDevice(device)
+        }
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
-        observer?.onBluetoothStateChange(bluetoothState)
+        this.bluetoothState = bluetoothState
+        updateObserver { it.onBluetoothStateChange(bluetoothState) }
+        if (bluetoothState == BluetoothState.ON) {
+            Scope.launch {
+                scan()
+                delay(10000)
+                stopScanning()
+            }
+        } else {
+            stopScanning()
+            connected.forEach {
+                didDisconnectFromDevice(it)
+            }
+            discovered.forEach {
+                removeDiscoveredDevice(it)
+            }
+        }
     }
 
-    override fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
-        this.observer = bluetoothConnectorObserver
+    override fun addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.add(bluetoothConnectorObserver)
+    }
+
+    override fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.remove(bluetoothConnectorObserver)
+        if (this.observer.isEmpty()) {
+            stopScanning()
+        }
+    }
+
+    override fun updateObserver(action: (BluetoothConnectorObserver) -> Unit) {
+        observer.forEach(action)
     }
 
     override fun replayStates() {
+        onBluetoothStateChange(bluetoothState)
         connected.forEach { didConnectToDevice(it) }
         discovered.forEach { didDiscoverDevice(it) }
         isScanning(scanning)
@@ -181,7 +227,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun isScanning(boolean: Boolean) {
         this.scanning = boolean
-        observer?.isScanning(boolean)
+        updateObserver { it.isScanning(boolean) }
     }
 
     override fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {

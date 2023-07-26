@@ -2,7 +2,6 @@ package io.redlink.more.more_app_mutliplatform
 
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -12,8 +11,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.flow.firstOrNull
+import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 
 class Shared(
     private val sharedStorageRepository: SharedStorageRepository,
@@ -26,6 +24,7 @@ class Shared(
     val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
+    val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
 
     var appIsInForeGround = false
 

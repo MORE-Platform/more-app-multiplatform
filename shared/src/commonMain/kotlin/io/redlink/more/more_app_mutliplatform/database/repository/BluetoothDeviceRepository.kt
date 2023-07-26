@@ -91,12 +91,13 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                 realmDatabase().query<BluetoothDevice>("connected == true").firstOrNull()?.let {
                     pairedDeviceIds.addAll(it.mapNotNull { it.address })
                     if (pairedDeviceIds.isNotEmpty()) {
-                        bluetoothConnector.applyObserver(context)
+                        bluetoothConnector.addObserver(context)
                         bluetoothConnector.scan()
                         delay(listenForTimeInMillis)
                         bluetoothConnector.stopScanning()
                         setConnectionState(pairedDeviceIds, false)
                         pairedDeviceIds.clear()
+                        bluetoothConnector.removeObserver(context)
                     }
                 }
             }
@@ -134,5 +135,23 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
+    }
+
+    fun shouldConnectToDiscoveredDevice(device: BluetoothDevice, onResult: (Boolean) -> Unit) {
+        launch {
+            device.address?.let { address ->
+                getDevices().firstOrNull()?.let {
+                    val addresses = it.mapNotNull { it.address }
+                    Napier.d { "Connected Device List: $it" }
+                    if (address in addresses) {
+                        onResult(true)
+                    } else {
+                        onResult(false)
+                    }
+                }
+            } ?: kotlin.run {
+                onResult(false)
+            }
+        }
     }
 }

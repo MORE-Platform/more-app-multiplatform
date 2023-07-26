@@ -18,6 +18,7 @@ import io.redlink.more.more_app_mutliplatform.util.Scope.repeatedLaunch
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 
 class CoreBluetoothConnectionViewModel(
     private val bluetoothConnector: BluetoothConnector,
@@ -31,20 +32,50 @@ class CoreBluetoothConnectionViewModel(
 
     val isScanning = MutableStateFlow(false)
 
+    private var backgroundScanningEnabled = false
+    private var viewActive = false
+
     private var scanJob: String? = null
 
     val bluetoothPower = MutableStateFlow(BluetoothState.ON)
 
-    override fun viewDidAppear() {
-        bluetoothConnector.applyObserver(this)
+    init {
+        bluetoothConnector.addObserver(this)
         bluetoothConnector.replayStates()
-        val context = this
+    }
+
+    fun enableBackgroundScanner() {
+        if (!backgroundScanningEnabled) {
+            backgroundScanningEnabled = true
+            Scope.launch {
+                if (!viewActive && bluetoothDeviceRepository.getDevices().firstOrNull()?.isNotEmpty() == true) {
+                    delay(2000)
+                    periodicScan(BACKGROUND_SCAN_DURATION, BACKGROUND_SCAN_INTERVAL)
+                }
+            }
+        }
+    }
+
+    fun disableBackgroundScanner() {
+        backgroundScanningEnabled = false
+        if (!viewActive) {
+            stopPeriodicScan()
+        }
+    }
+
+    override fun viewDidAppear() {
+        viewActive = true
+        if (backgroundScanningEnabled) {
+            stopPeriodicScan()
+        }
+        periodicScan()
+    }
+
+    private fun periodicScan(customScanDuration: Long = scanDuration, customScanInterval: Long = scanInterval) {
         launchScope {
             bluetoothPower.collect {
                 if (it == BluetoothState.ON) {
-                    bluetoothConnector.applyObserver(context)
-                    bluetoothConnector.replayStates()
-                    startPeriodicScan()
+                    startPeriodicScan(customScanDuration, customScanInterval)
                 } else {
                     stopPeriodicScan()
                 }
@@ -54,25 +85,40 @@ class CoreBluetoothConnectionViewModel(
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
+        viewActive = false
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         discoveredDevices.clear()
         connectingDevices.clear()
-        close()
+        stopPeriodicScan()
+        if (backgroundScanningEnabled) {
+            Scope.launch {
+                delay(10000L)
+                if (backgroundScanningEnabled) {
+                    periodicScan(BACKGROUND_SCAN_DURATION, BACKGROUND_SCAN_INTERVAL)
+                }
+            }
+        }
     }
 
-    private fun startPeriodicScan() {
+    private fun startPeriodicScan(customScanDuration: Long = scanDuration, customScanInterval: Long = scanInterval) {
         if (scanJob == null) {
-            scanJob = repeatedLaunch(scanInterval) {
+            Napier.d { "Starting period scanner with Duration= $customScanDuration; Interval= $customScanInterval" }
+            scanJob = repeatedLaunch(customScanInterval) {
+                Napier.d { "Scanning..." }
                 scanForDevices()
-                delay(scanDuration)
+                delay(customScanDuration)
+                Napier.d { "Stop Scanning..." }
                 stopScanning()
             }.first
         }
     }
 
     fun stopPeriodicScan() {
-        close()
+        Napier.d { "Stopping period scanner!" }
+        scanJob?.let { Scope.cancel(it) }
+        scanJob = null
+        bluetoothConnector.stopScanning()
     }
 
     fun scanForDevices() {
@@ -132,6 +178,9 @@ class CoreBluetoothConnectionViewModel(
         if (connectedDevices.value.none { it.address == device.address }
             && discoveredDevices.value.none { it.address == device.address }) {
             discoveredDevices.append(device)
+            bluetoothDeviceRepository.shouldConnectToDiscoveredDevice(device) {
+                connectToDevice(device)
+            }
         }
     }
 
@@ -161,6 +210,11 @@ class CoreBluetoothConnectionViewModel(
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         bluetoothConnector.stopScanning()
-        bluetoothConnector.applyObserver(null)
+        bluetoothConnector.removeObserver(this)
+    }
+
+    companion object {
+        private const val BACKGROUND_SCAN_DURATION = 2000L
+        private const val BACKGROUND_SCAN_INTERVAL = 10000L
     }
 }

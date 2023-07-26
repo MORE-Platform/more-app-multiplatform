@@ -9,6 +9,8 @@ enum class ScheduleState {
     ENDED
     ;
 
+    fun deactivated() = this == DEACTIVATED
+
     fun active() = this == ACTIVE || this == RUNNING || this == PAUSED
 
     fun running() = this == RUNNING || this == PAUSED

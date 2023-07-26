@@ -10,7 +10,7 @@ import Foundation
 import shared
 
 class BluetoothConnectionViewModel: ObservableObject {
-    private let coreViewModel: CoreBLESetupViewModel = CoreBLESetupViewModel(observationFactory: AppDelegate.shared.observationFactory, bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
+    private let coreViewModel: CoreBLESetupViewModel = CoreBLESetupViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.coreBluetooth)
 
     @Published var discoveredDevices: [BluetoothDevice] = []
     @Published var connectedDevices: [BluetoothDevice] = []
@@ -21,6 +21,14 @@ class BluetoothConnectionViewModel: ObservableObject {
     @Published var neededDevices: [String] = []
 
     init() {
+        coreViewModel.devicesNeededChange { [weak self] deviceList in
+            DispatchQueue.main.async {
+                self?.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded(types: deviceList))
+            }
+        }
+    }
+    
+    func viewDidAppear() {
         coreViewModel.coreBluetooth.discoveredDevicesListChanges { [weak self] deviceSet in
             if let self {
                 DispatchQueue.main.async {
@@ -72,20 +80,15 @@ class BluetoothConnectionViewModel: ObservableObject {
                 self?.connectingDevices = Array(connectingDevices)
             }
         }
-
-        coreViewModel.devicesNeededChange { [weak self] deviceList in
-            DispatchQueue.main.async {
-                self?.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded(types: deviceList))
-            }
-        }
-    }
-
-    func viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
 
     func viewDidDisappear() {
         coreViewModel.viewDidDisappear()
+        self.connectedDevices.removeAll()
+        self.discoveredDevices.removeAll()
+        self.connectingDevices.removeAll()
+        self.bluetoothIsScanning = false
     }
 
     func connectToDevice(device: BluetoothDevice) {
