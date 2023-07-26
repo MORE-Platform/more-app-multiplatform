@@ -18,11 +18,7 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnec
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListener {
     private val polarObserverCallback: PolarObserverCallback = PolarObserverCallback()
@@ -70,7 +66,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun scan() {
-        if (!scanning && observer != null && bluetoothState == BluetoothState.ON) {
+        if (!scanning && observer.isNotEmpty() && bluetoothState == BluetoothState.ON) {
             isScanning(true)
             scanDisposable = polarApi.searchForDevice()
                 .subscribe(
@@ -127,7 +123,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun onDeviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
-        PolarHeartRateObservation.setHRReady(false)
         didDisconnectFromDevice(polarDeviceInfo.toBluetoothDevice())
     }
 
@@ -158,6 +153,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
         connected.removeAll { bluetoothDevice.address == it.address }
+        PolarHeartRateObservation.setHRReady(false)
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
@@ -205,6 +201,9 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
         this.observer.add(bluetoothConnectorObserver)
+        if (this.observer.isNotEmpty()) {
+            replayStates()
+        }
     }
 
     override fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {

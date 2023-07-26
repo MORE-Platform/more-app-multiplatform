@@ -29,8 +29,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         appContext = this
 
         polarConnector = PolarConnector(this)
-        val androidBluetoothConnector = PolarConnector(this)
-        //androidBluetoothConnector.addSpecificBluetoothConnector("polar", polarConnector!!)
+        val androidBluetoothConnector = polarConnector!!
         val dataManager = AndroidObservationDataManager(this)
         shared = Shared(
             SharedPreferencesRepository(this),

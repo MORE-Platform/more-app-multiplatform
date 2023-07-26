@@ -35,7 +35,7 @@ class PolarConnector: NSObject, BluetoothConnector {
                                  .feature_polar_sdk_mode,
                                  .feature_polar_device_time_setup,
                              ])
-    weak var observer: BluetoothConnectorObserver?
+    var observer: KotlinMutableSet<BluetoothConnectorObserver> = KotlinMutableSet()
     
     var scanning = false {
         didSet {
@@ -82,7 +82,7 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
     
     func scan() {
-        if !scanning && self.observer != nil && bluetoothState == BluetoothState.on {
+        if !scanning && self.observer.count > 0 && bluetoothState == BluetoothState.on {
             print("Polar: Starting the scan...")
             scanning = true
             self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
@@ -108,11 +108,11 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
 
     func close() {
-        applyObserver(bluetoothConnectorObserver: nil)
+        
     }
     
     func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
-        observer?.isConnectingToDevice(bluetoothDevice: bluetoothDevice)
+        updateObserver { $0.isConnectingToDevice(bluetoothDevice: bluetoothDevice) }
     }
     
     func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
@@ -120,52 +120,65 @@ class PolarConnector: NSObject, BluetoothConnector {
             connected.add(bluetoothDevice)
             removeDiscoveredDevice(device: bluetoothDevice)
         }
-        observer?.didConnectToDevice(bluetoothDevice: bluetoothDevice)
+        updateObserver{ $0.didConnectToDevice(bluetoothDevice: bluetoothDevice)}
     }
     
     func didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
         if let device = connected.filter({ ($0 as? BluetoothDevice)?.address == bluetoothDevice.address}).first {
             connected.remove(device)
         }
-        observer?.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)
+        updateObserver{ $0.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)}
     }
     
     func didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        observer?.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
+        updateObserver{ $0.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)}
     }
     
     func removeDiscoveredDevice(device: BluetoothDevice) {
         if let address = device.address, let device = discovered.filter({($0 as? BluetoothDevice)?.address == address}).first {
             discovered.remove(device)
         }
-        observer?.removeDiscoveredDevice(device: device)
+        updateObserver{ $0.removeDiscoveredDevice(device: device)}
     }
     
     func didDiscoverDevice(device: BluetoothDevice) {
         if let address = device.address, !address.isEmpty && !connected.contains(where: { ($0 as? BluetoothDevice)?.address == address }) && !discovered.contains(where: {($0 as? BluetoothDevice)?.address == address}) {
             discovered.add(device)
         }
-        observer?.didDiscoverDevice(device: device)
+        updateObserver{ $0.didDiscoverDevice(device: device)}
     }
     
     func isScanning(boolean: Bool) {
         if boolean != scanning {
             scanning = boolean
         }
-        observer?.isScanning(boolean: boolean)
+        updateObserver{ $0.isScanning(boolean: boolean)}
     }
     
     func onBluetoothStateChange(bluetoothState: BluetoothState) {
         self.bluetoothState = bluetoothState
-        observer?.onBluetoothStateChange(bluetoothState: bluetoothState)
+        updateObserver{ $0.onBluetoothStateChange(bluetoothState: bluetoothState)}
     }
     
-    func applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
-        observer = bluetoothConnectorObserver
-        if bluetoothConnectorObserver != nil {
+    func addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        self.observer.add(bluetoothConnectorObserver)
+        if self.observer.count > 0 {
             replayStates()
-        } else {
+        }
+    }
+    
+    func removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        self.observer.remove(bluetoothConnectorObserver)
+        if self.observer.count == 0 {
             stopScanning()
+        }
+    }
+    
+    func updateObserver(action: @escaping (BluetoothConnectorObserver) -> Void) {
+        observer.forEach{
+            if let observer = $0 as? BluetoothConnectorObserver {
+                action(observer)
+            }
         }
     }
     
