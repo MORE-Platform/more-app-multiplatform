@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -12,10 +13,11 @@ import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnector: BluetoothConnector): ViewModel() {
-    private val coreBLESetupViewModel = CoreBLESetupViewModel(observationFactory, bluetoothConnector)
+class BLESetupViewModel: ViewModel() {
+    private val coreBLESetupViewModel = CoreBLESetupViewModel(MoreApplication.shared!!.observationFactory, MoreApplication.shared!!.coreBluetooth)
     val discoveredDevices = mutableStateListOf<BluetoothDevice>()
     val connectedDevices = mutableStateListOf<BluetoothDevice>()
+    val connectingDevices = mutableStateListOf<String>()
     val isScanning = mutableStateOf(false)
     val bluetoothPowerState = mutableStateOf(false)
 
@@ -45,12 +47,19 @@ class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnect
         viewModelScope.launch {
             coreBLESetupViewModel.devicesNeededToConnectTo.collect {
                 neededDevices.clear()
-                neededDevices.addAll(observationFactory.bleDevicesNeeded(it))
+                neededDevices.addAll(MoreApplication.shared!!.observationFactory.bleDevicesNeeded(it))
             }
         }
         viewModelScope.launch {
             coreBLESetupViewModel.coreBluetooth.bluetoothPower.collect {
                 bluetoothPowerState.value = it == BluetoothState.ON
+            }
+        }
+
+        viewModelScope.launch {
+            coreBLESetupViewModel.coreBluetooth.connectingDevices.collect {
+                connectingDevices.clear()
+                connectingDevices.addAll(it)
             }
         }
     }
@@ -61,6 +70,11 @@ class BLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnect
 
     fun viewDidDisappear() {
         coreBLESetupViewModel.viewDidDisappear()
+        connectingDevices.clear()
+        connectedDevices.clear()
+        discoveredDevices.clear()
+        isScanning.value = false
+        bluetoothPowerState.value = false
     }
 
     fun connectToDevice(device: BluetoothDevice) {

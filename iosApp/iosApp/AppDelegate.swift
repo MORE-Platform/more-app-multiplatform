@@ -19,13 +19,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let dataUploadManager = DataUploadManager()
     static let shared: Shared = {
         let dataManager = iOSObservationDataManager()
-        let bluetoothConnector = IOSBluetoothConnector()
-        bluetoothConnector.addSpecificBluetoothConnector(key: "polar", connector: polarConnector)
         
         return Shared(
             sharedStorageRepository: UserDefaultsRepository(),
             observationDataManager: dataManager,
-            mainBluetoothConnector: bluetoothConnector,
+            mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(dataManager: dataManager),
             dataRecorder: IOSDataRecorder()
         )

@@ -22,6 +22,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
+import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ class Shared(
     val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
+    val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
 
     var appIsInForeGround = false
 

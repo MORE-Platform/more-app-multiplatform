@@ -84,11 +84,6 @@ class ContentViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.showBleView = true
                 }
-            } else if pair.first != nil {
-                DispatchQueue.main.async {
-                    BluetoothDeviceRepository(bluetoothConnector: AppDelegate.shared.mainBluetoothConnector)
-                        .updateConnectedDevices(listenForTimeInMillis: 5000)
-                }
             }
         }
     }

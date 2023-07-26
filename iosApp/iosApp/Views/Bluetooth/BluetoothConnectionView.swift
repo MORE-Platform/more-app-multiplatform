@@ -12,7 +12,7 @@ struct BluetoothConnectionView: View {
     @StateObject var viewModel: BluetoothConnectionViewModel
     @Binding var viewOpen: Bool
     var showAsSeparateView: Bool = false
-    
+
     private let bluetoothStrings = "BluetoothConnection"
     var body: some View {
         MoreMainBackgroundView {
@@ -37,16 +37,16 @@ struct BluetoothConnectionView: View {
                         Title(titleText: "External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings))
                         BasicText(text: "\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):", color: Color.more.secondary)
                             .padding(.vertical, 8)
-                        
+
                         ForEach(viewModel.neededDevices, id: \.self) { device in
                             SectionHeading(sectionTitle: "- \(device)")
                         }
-                        
+
                         if showAsSeparateView {
                             BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings), color: Color.more.secondary)
                                 .padding(.top, 8)
                         }
-                        
+
                         Divider()
                             .padding(.bottom, 8)
                         
@@ -54,26 +54,41 @@ struct BluetoothConnectionView: View {
                             if viewModel.connectedDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices connected", withComment: "No devices connected", inTable: bluetoothStrings))!")
                             } else {
-                                ForEach(viewModel.connectedDevices, id: \.self.deviceId) { device in
+                                ForEach(viewModel.connectedDevices, id: \.self.address) { device in
                                     if let deviceName = device.deviceName {
                                         VStack(alignment: .leading) {
-                                            DetailsTitle(text: deviceName)
+                                            HStack {
+                                                DetailsTitle(text: deviceName)
+                                                Spacer()
+                                                Button(action: {
+                                                    viewModel.disconnectFromDevice(device: device)
+                                                }, label: {
+                                                    Text("Disconnect")
+                                                })
+                                                .frame(maxWidth: 90)
+                                                .padding(4)
+                                                .foregroundColor(.more.white)
+                                                .background(Color.more.primary)
+                                                .cornerRadius(.moreBorder.cornerRadius)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                                                        .stroke(Color.more.primary, lineWidth: 1)
+                                                )
+                                            }
                                             Divider()
                                         }
-                                        .padding(.vertical, 8)
-                                    } else {
-                                        EmptyView()
+                                        .padding(.vertical, 12)
                                     }
                                 }
                             }
                         }
-                        Divider()
-                            .padding(.bottom, 8)
+
+                        // .padding(.bottom, 8)
                         Section(header: SectionHeading(sectionTitle: "Discovered devices")) {
                             if viewModel.discoveredDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices found nearby", withComment: "No devices found nearby", inTable: bluetoothStrings))!")
                             } else {
-                                ForEach(viewModel.discoveredDevices, id: \.self.deviceId) { device in
+                                ForEach(viewModel.discoveredDevices, id: \.self.address) { device in
                                     if let deviceName = device.deviceName {
                                         VStack(alignment: .leading) {
                                             HStack(alignment: .firstTextBaseline) {
@@ -85,12 +100,11 @@ struct BluetoothConnectionView: View {
                                             }
                                             Divider()
                                         }
-                                        .padding(.vertical, 8)
+                                        .frame(height: 30)
+                                        .padding(.vertical, 12)
                                         .onTapGesture {
                                             viewModel.connectToDevice(device: device)
                                         }
-                                    } else {
-                                        EmptyView()
                                     }
                                 }
                             }
@@ -110,9 +124,8 @@ struct BluetoothConnectionView: View {
                     }
                     .padding(.horizontal, 8)
                 }
-                
             }
-        } 
+        }
     }
 }
 

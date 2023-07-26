@@ -14,6 +14,7 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.services.ObservationRecordingService
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
@@ -50,7 +51,10 @@ class ScheduleViewModel(
                 }
                 val schemasToAdd = mergeSchedules(added, updated)
                 schemasToAdd.groupBy { it.start.jvmLocalDate() }.forEach { (date, schedules) ->
-                    schedulesByDate[date] = mergeSchedules(schedules.toSet(), schedulesByDate.getOrDefault(date, emptyList()).toSet()).sortedBy { it.start }
+                    schedulesByDate[date] = mergeSchedules(
+                        schedules.toSet(),
+                        schedulesByDate.getOrDefault(date, emptyList()).toSet()
+                    ).sortedBy { it.start }
                 }
             }
         }
@@ -58,6 +62,18 @@ class ScheduleViewModel(
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
+//                    val polarSchedules = schedulesByDate.values.flatten().filter { it.observationType == "polar-verity-observation" }
+//                    if (!it) {
+//                        polarSchedules.filter { it.scheduleState == ScheduleState.RUNNING }
+//                            .forEach {
+//                                pauseObservation(it.scheduleId)
+//                            }
+//                    } else {
+//                        polarSchedules.filter { it.scheduleState == ScheduleState.PAUSED }
+//                            .forEach {
+//                                startObservation(it.scheduleId)
+//                            }
+//                    }
                 }
             }
         }
@@ -83,7 +99,10 @@ class ScheduleViewModel(
         coreViewModel.stop(scheduleId)
     }
 
-    private fun mergeSchedules(first: Set<ScheduleModel>, second: Set<ScheduleModel>): Set<ScheduleModel> {
+    private fun mergeSchedules(
+        first: Set<ScheduleModel>,
+        second: Set<ScheduleModel>
+    ): Set<ScheduleModel> {
         val firstIds = first.map { it.scheduleId }.toSet()
         val secondFiltered = second.filter { it.scheduleId !in firstIds }
         return first + secondFiltered

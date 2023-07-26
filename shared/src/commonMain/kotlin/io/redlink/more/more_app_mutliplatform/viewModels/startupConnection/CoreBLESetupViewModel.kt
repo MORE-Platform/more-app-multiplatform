@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
-class CoreBLESetupViewModel(observationFactory: ObservationFactory, bluetoothConnector: BluetoothConnector): CoreViewModel() {
-    val coreBluetooth = CoreBluetoothConnectionViewModel(bluetoothConnector, scanInterval = 2000)
-
+class CoreBLESetupViewModel(observationFactory: ObservationFactory, val coreBluetooth: CoreBluetoothConnectionViewModel): CoreViewModel() {
     val devicesNeededToConnectTo = observationFactory.studyObservationTypes
 
     override fun viewDidAppear() {
@@ -24,6 +22,7 @@ class CoreBLESetupViewModel(observationFactory: ObservationFactory, bluetoothCon
     override fun viewDidDisappear() {
         super.viewDidDisappear()
         coreBluetooth.viewDidDisappear()
+
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {

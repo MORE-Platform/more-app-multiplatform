@@ -101,10 +101,6 @@ class MainViewModel(context: Context) : ViewModel() {
             if (hasBLEObservations) {
                 if (firstTime) {
                     openBLESetupActivity(context)
-                } else {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        BluetoothDeviceRepository(MoreApplication.shared!!.mainBluetoothConnector).updateConnectedDevices()
-                    }
                 }
             }
         }

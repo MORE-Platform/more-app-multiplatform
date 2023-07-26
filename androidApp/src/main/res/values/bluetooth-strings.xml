@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="more_ble_connected_devices">Connected Devices</string>
+    <string name="more_ble_disconnect">Disconnect</string>
     <string name="more_ble_no_connected">No connected devices found</string>
     <string name="more_ble_discovered_devices">Discovered Devices</string>
     <string name="more_ble_no_discovered">No other bluetooth devices discovered</string>
