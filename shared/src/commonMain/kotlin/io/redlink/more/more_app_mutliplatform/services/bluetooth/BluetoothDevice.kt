@@ -11,6 +11,7 @@ class BluetoothDevice: RealmObject {
     var address: String? = null
     var isConnectable: Boolean = true
     var connected: Boolean = false
+    var shouldAutomaticallyReconnect: Boolean = false
 
     override fun toString(): String {
         return "BluetoothDevice {deviceId: $deviceId, name: $deviceName, address: $address, connected: $connected}"

@@ -42,17 +42,22 @@ class PolarHeartRateObservation :
             val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
                 it.deviceName?.lowercase()?.contains("polar") ?: false
             }
-            return polarDevices.first().deviceId?.let {
+            return polarDevices.first().let {
                 try {
-                    heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
-                        { polarData ->
-                            Napier.i { "Polar Data: $polarData" }
-                            storeData(mapOf("hr" to polarData.samples[0].hr))
-                        },
-                        { error ->
-                            Napier.e("HR Recording error: ${error.stackTraceToString()}")
-                        })
-                    true
+                    if (it.address != null) {
+                        heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
+                            { polarData ->
+                                Napier.i { "Polar Data: $polarData" }
+                                storeData(mapOf("hr" to polarData.samples[0].hr))
+                            },
+                            { error ->
+                                Napier.e("HR Recording error: ${error.stackTraceToString()}")
+                                polarDeviceDisconnected(it.deviceName)
+                            })
+                        true
+                    } else {
+                        false
+                    }
                 } catch (exception: Exception) {
                     Napier.e { exception.stackTraceToString() }
                     false
@@ -109,16 +114,25 @@ class PolarHeartRateObservation :
 
     companion object {
         val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
-        fun setHRReady(ready: Boolean) {
-            hrReady.set(ready)
-            if (ready) {
+
+        fun polarDeviceDisconnected(specificName: String? = null) {
+            MoreApplication.shared!!.mainBluetoothConnector.connected.filter { device ->
+                device.deviceName?.lowercase()?.contains(specificName?.lowercase() ?: "polar") == true
+            }.let {
+                if (it.isEmpty()) {
+                    hrReady.set(false)
+                    MoreApplication.shared!!.observationManager.pauseObservationType(
+                        PolarVerityHeartRateType(
+                            emptySet()
+                        ).observationType
+                    )
+                }
+            }
+        }
+        fun setHRReady() {
+            if (!hrReady.value) {
+                hrReady.set(true)
                 MoreApplication.shared!!.observationManager.startObservationType(
-                    PolarVerityHeartRateType(
-                        emptySet()
-                    ).observationType
-                )
-            } else {
-                MoreApplication.shared!!.observationManager.pauseObservationType(
                     PolarVerityHeartRateType(
                         emptySet()
                     ).observationType

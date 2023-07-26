@@ -142,6 +142,7 @@ class CoreBluetoothConnectionViewModel(
     fun disconnectFromDevice(device: BluetoothDevice) {
         Napier.i { "Disconnecting from $device" }
         bluetoothConnector.disconnect(device)
+        bluetoothDeviceRepository.setAutoReconnect(device, false)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -179,7 +180,9 @@ class CoreBluetoothConnectionViewModel(
             && discoveredDevices.value.none { it.address == device.address }) {
             discoveredDevices.append(device)
             bluetoothDeviceRepository.shouldConnectToDiscoveredDevice(device) {
-                connectToDevice(device)
+                if (it) {
+                    connectToDevice(device)
+                }
             }
         }
     }

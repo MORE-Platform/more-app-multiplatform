@@ -25,21 +25,9 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         if (BuildConfig.DEBUG) {
             napierDebugBuild()
         }
-
         appContext = this
 
-        polarConnector = PolarConnector(this)
-        val androidBluetoothConnector = polarConnector!!
-        val dataManager = AndroidObservationDataManager(this)
-        shared = Shared(
-            SharedPreferencesRepository(this),
-            dataManager,
-            androidBluetoothConnector,
-            AndroidObservationFactory(this, dataManager),
-            AndroidDataRecorder()
-        )
-
-
+        initShared(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
@@ -72,6 +60,21 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
         var polarConnector: PolarConnector? = null
             private set
+
+        fun initShared(context: Context) {
+            if (shared == null) {
+                polarConnector = PolarConnector(context)
+                val androidBluetoothConnector = polarConnector!!
+                val dataManager = AndroidObservationDataManager(context)
+                shared = Shared(
+                    SharedPreferencesRepository(context),
+                    dataManager,
+                    androidBluetoothConnector,
+                    AndroidObservationFactory(context, dataManager),
+                    AndroidDataRecorder()
+                )
+            }
+        }
 
     }
 }

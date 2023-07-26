@@ -36,8 +36,14 @@ abstract class ObservationDataManager {
         if (dataList.isNotEmpty()) {
             dataList.forEach { it.freeze() }
             observationDataRepository.addData(dataList)
+            if (scheduleCountJob == null) {
+                listenToDatapointCountChanges()
+            }
             Scope.launch(Dispatchers.Default) {
                 mutex.withLock {
+                    if (countJob == null) {
+                        listenToDatapointCountChanges()
+                    }
                     scheduleIdList.forEach {
                         scheduleCount[it] = scheduleCount.getOrElse(it) {0} + dataList.size
                     }
@@ -46,6 +52,9 @@ abstract class ObservationDataManager {
             Scope.launch {
                 val now = Clock.System.now().epochSeconds
                 val ids = dataList.map { it.observationId }.toSet()
+                if (observationTimestampJob == null) {
+                    listenToDatapointCountChanges()
+                }
                 timeStampMutex.withLock {
                     ids.forEach {
                         observationCollectionTimestamp[it] = now
@@ -140,6 +149,7 @@ abstract class ObservationDataManager {
         countJob = null
         scheduleCountJob = null
         observationTimestampJob = null
+        Napier.d { "Stopped listening for data changes!" }
     }
 
     private fun deleteAll(idSet: Set<String>) {

@@ -69,9 +69,9 @@ class Shared(
         }
     }
 
-    fun activateObservationWatcher() {
+    fun activateObservationWatcher(overwriteCheck: Boolean = false) {
         Scope.launch {
-            if (StudyRepository().getStudy().firstOrNull()?.active == true) {
+            if (overwriteCheck || StudyRepository().getStudy().firstOrNull()?.active == true) {
                 observationDataManager.listenToDatapointCountChanges()
                 updateTaskStates()
                 observationManager.activateScheduleUpdate()
@@ -147,7 +147,7 @@ class Shared(
                         studyRepository.storeStudy(study)
                         resetFirstStartUp()
                         if (study.active == true) {
-                            activateObservationWatcher()
+                            activateObservationWatcher(true)
                         }
                     }
                     if (newStudyState == null) {
