@@ -2,7 +2,6 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.internal.platform.freeze
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
@@ -64,6 +63,6 @@ class ObservationRepository : Repository<ObservationSchema>() {
         return realmDatabase().queryFirst<ObservationSchema>(
                 "observationId == $0",
                 queryArgs = arrayOf(observationId)
-            ).firstOrNull()?.freeze()
+            ).firstOrNull()
     }
 }

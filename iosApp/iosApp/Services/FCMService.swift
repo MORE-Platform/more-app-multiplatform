@@ -81,7 +81,7 @@ extension FCMService: UNUserNotificationCenterDelegate {
         notificationRepository.storeNotification(key: uuid, channelId: nil, title: notification.request.content.title, body: notification.request.content.body, timestamp: Int64(timestamp), priority: 2, read: false, userFacing: true, additionalData: nil)
         
         print(userInfo)
-        return [.sound,.badge, .banner, .list]
+        return [.sound,.badge, .banner]
     }
     
     @MainActor

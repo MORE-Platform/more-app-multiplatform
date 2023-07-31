@@ -22,7 +22,8 @@ It's recommended that you install the latest stable versions for compatibility a
 * [Android Studio](https://developer.android.com/studio)
 * [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 14.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
-* [JDK](https://www.oracle.com/java/technologies/downloads/)
+* [JDK 19](https://www.oracle.com/java/technologies/downloads/)
+* [Gradle 8.0+](https://gradle.org)
 
 Also, it's recommended to install the following plugins in the Android Studio directly:
 
@@ -70,7 +71,7 @@ To make sure everything works as expected, install and run the KDoctor tool:
 * Fix any failed checks `([x])`. You can find problem descriptions and potential solutions after the `*` symbol.
 * Check the warnings `([!])` and successful messages `([v])`. They may contain useful notes and tips, as well.
 
-_You may ignore KDoctor's warnings regarding the CocoaPods installation. In this project, we don't use this distribution option._
+_You may ignore KDoctor's warnings regarding the CocoaPods installation. In this project, we use Swift Package Manager and not CocoaPods._
 
 
 

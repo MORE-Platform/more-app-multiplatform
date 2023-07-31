@@ -1,5 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
+import io.realm.kotlin.ext.realmDictionaryOf
+import io.realm.kotlin.ext.toRealmDictionary
+import io.realm.kotlin.types.RealmDictionary
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -16,7 +19,7 @@ class NotificationSchema : RealmObject {
     var priority: Long = 0
     var read: Boolean = false
     var userFacing: Boolean = true
-    var notificationData: Map<String, String>? = emptyMap()
+    var notificationData: RealmDictionary<String> = realmDictionaryOf()
 
     companion object {
         fun toSchema(
@@ -39,7 +42,7 @@ class NotificationSchema : RealmObject {
                 this.priority = priority
                 this.read = read
                 this.userFacing = userFacing
-                this.notificationData = notificationData
+                this.notificationData = notificationData?.toRealmDictionary() ?: realmDictionaryOf()
             }
         }
     }

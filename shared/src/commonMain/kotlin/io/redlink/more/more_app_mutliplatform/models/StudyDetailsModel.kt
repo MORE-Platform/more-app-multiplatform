@@ -1,10 +1,8 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 import io.realm.kotlin.ext.copyFromRealm
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 
 data class StudyDetailsModel(
     val study: StudySchema,

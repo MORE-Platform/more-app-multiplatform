@@ -1,22 +1,18 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.*
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 fun <T: Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
-        provideNewState(it.freeze())
+        provideNewState(it)
     }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
     return object : Closeable {
         override fun close() {
@@ -29,7 +25,7 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
     val job = Scope.create()
     this.onEach {
         it?.let {
-            provideNewState(it.freeze())
+            provideNewState(it)
         }
     }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
     return object : Closeable {

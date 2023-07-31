@@ -3,10 +3,8 @@ package io.redlink.more.more_app_mutliplatform.services.network
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.discardRemaining
 import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.internal.platform.WeakReference
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
@@ -22,7 +20,6 @@ import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepositor
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.cancel
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
@@ -124,7 +121,7 @@ class NetworkService(
             if (registrationResponse.success) {
                 registrationResponse.body().let {
                     Napier.d { "Registration token valid!" }
-                    return Pair(it.get(), null).freeze()
+                    return Pair(it.get(), null)
                 }
             }
             val error = createErrorBody(
@@ -158,7 +155,7 @@ class NetworkService(
             if (consentResponse.success) {
                 consentResponse.body().let {
                     Napier.d { "Credentials received!" }
-                    return Pair(it.get(), null).freeze()
+                    return Pair(it.get(), null)
                 }
             }
             return Pair(
@@ -223,16 +220,16 @@ class NetworkService(
         initDataApi()
         try {
             Napier.i { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints wwith first being ${data.dataPoints.first()}..." }
-            val dataApiResponse = WeakReference(dataApi?.get()?.storeBulk(data).freeze() ?: return Pair(
+            val dataApiResponse = WeakReference(dataApi?.get()?.storeBulk(data) ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "No credentials set!")
-            )).freeze()
+            ))
             dataApiResponse.get()?.let { dataApiResponse ->
                 if (dataApiResponse.success) {
                     dataApiResponse.body().let {
                         Napier.d { "Sent data!" }
                         dataApiResponse.response.cancel()
-                        return Pair(it.get()?.toSet() ?: emptySet(), null).freeze()
+                        return Pair(it.get()?.toSet() ?: emptySet(), null)
                     }
                 }
             }
@@ -254,7 +251,7 @@ class NetworkService(
         Scope.launch {
             completionHandler(
                 WeakReference(sendData(data))
-            ).freeze()
+            )
         }
     }
 

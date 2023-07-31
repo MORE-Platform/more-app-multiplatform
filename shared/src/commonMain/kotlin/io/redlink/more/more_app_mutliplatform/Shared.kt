@@ -135,7 +135,7 @@ class Shared(
             study?.let { study ->
                 var studyHasChanged = false
                 currentStudy?.let {
-                    if ((study.studyState?.let { StudyState.getState(it) } != it.state || it.active != study.active) || it.version != study.version) {
+                    if ((study.studyState?.let { StudyState.getState(it) } != it.getState() || it.active != study.active) || it.version != study.version) {
                         studyHasChanged = true
                     }
                 }
