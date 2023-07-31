@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.util
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -26,7 +25,7 @@ object Scope {
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.launch(coroutineContext, start, block).freeze()
+        val job = scope.launch(coroutineContext, start, block)
         scope.launch {
             mutex.withLock {
                 jobs[uuid] = job
@@ -61,7 +60,7 @@ object Scope {
 
     fun repeatedLaunch(intervalMillis: Long, block: suspend CoroutineScope.() -> Unit): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.repeatEveryFewSeconds(intervalMillis, block).freeze()
+        val job = scope.repeatEveryFewSeconds(intervalMillis, block)
         scope.launch {
             mutex.withLock {
                 jobs[uuid] = job

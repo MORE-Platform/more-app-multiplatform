@@ -1,10 +1,9 @@
-
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.8.0"
+    kotlin("plugin.serialization")
 
     id("com.android.library")
-    id("io.realm.kotlin") version "1.6.0"
+    id("io.realm.kotlin") version "1.10.2"
     id("org.openapi.generator") version "6.3.0"
 }
 
@@ -17,10 +16,10 @@ val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 kotlin {
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "19"
             }
         }
         publishLibraryVariants("release")
@@ -33,14 +32,14 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
-            freeCompilerArgs = freeCompilerArgs + "-Xallocator=std"
+            //freeCompilerArgs = freeCompilerArgs + "-Xallocator=std"
         }
     }
 
-    val coroutinesVersion = "1.6.4"
-    val ktorVersion = "2.3.0"
+    val coroutinesVersion = "1.7.1"
+    val ktorVersion = "2.3.2"
     val napierVersion = "2.6.1"
-    val serializationVersion = "1.5.0-RC"
+    val serializationVersion = "1.5.1"
     val gsonVersion = "2.10.1"
 
     sourceSets {
@@ -56,7 +55,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 
-                implementation("io.realm.kotlin:library-base:1.6.0")
+                implementation("io.realm.kotlin:library-base:1.10.2")
 
                 implementation("io.github.aakira:napier:$napierVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
@@ -106,11 +105,10 @@ kotlin {
 
 android {
     namespace = "io.redlink.more.more_app_multiplatform"
-    compileSdk = 33
+    compileSdk = 34
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 29
-        targetSdk = 33
     }
 }
 

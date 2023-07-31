@@ -184,7 +184,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
         this.bluetoothState = bluetoothState
         updateObserver { it.onBluetoothStateChange(bluetoothState) }
-        if (bluetoothState == BluetoothState.ON) {
+        if (MoreApplication.shared?.credentialRepository?.hasCredentials() == true && bluetoothState == BluetoothState.ON) {
             Scope.launch {
                 scan()
                 delay(10000)

@@ -40,6 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         FirebaseApp.configure()
         fcmService.register()
+        UIApplication.shared.registerForRemoteNotifications()
         
         registerBackgroundTasks()
         
@@ -63,15 +64,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         return .newData
     }
-//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
-//        print("didReceiveRemoteNotification: \(userInfo)")
-//        return .newData
-//    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("Did register for Remote Notifications With Device Token: \(deviceToken)")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Did fail to register for remote notifications: \(error)")
+    }
     
 //    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 //        Messaging.messaging().apnsToken = deviceToken
 //    }
-    
+//
     
     private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in

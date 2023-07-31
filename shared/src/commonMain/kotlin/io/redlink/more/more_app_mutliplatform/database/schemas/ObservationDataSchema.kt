@@ -8,7 +8,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.observations.ObservationBulkModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.mongodb.kbson.ObjectId

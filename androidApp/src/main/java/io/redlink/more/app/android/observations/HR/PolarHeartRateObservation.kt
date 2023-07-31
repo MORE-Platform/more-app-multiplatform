@@ -42,7 +42,7 @@ class PolarHeartRateObservation :
             val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
                 it.deviceName?.lowercase()?.contains("polar") ?: false
             }
-            return polarDevices.first().let {
+            return polarDevices.firstOrNull()?.let {
                 try {
                     if (it.address != null) {
                         heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(

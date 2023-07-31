@@ -6,7 +6,7 @@ import org.mongodb.kbson.ObjectId
 
 class DataPointCountSchema: RealmObject {
     @PrimaryKey
-    var id: ObjectId = ObjectId()
+    var id: ObjectId = ObjectId.invoke()
     var scheduleId: String = ""
     var count: Long = 0
 }

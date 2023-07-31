@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.log
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.clear
@@ -57,6 +56,6 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
             if (!this.observationDataManagerAdded()) {
                 setDataManager(dataManager)
             }
-        }?.freeze()
+        }
     }
 }
