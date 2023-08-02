@@ -143,7 +143,7 @@ extension ContentViewModel: ConsentViewModelListener {
                 AppDelegate.shared.activateObservationWatcher(overwriteCheck: false)
             }
         }
-        FCMService.getNotificationToken()
+        AppDelegate.shared.doNewLogin()
     }
 
     func credentialsDeleted() {

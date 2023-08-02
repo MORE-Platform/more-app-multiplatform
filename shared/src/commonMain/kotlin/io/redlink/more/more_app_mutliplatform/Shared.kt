@@ -3,6 +3,7 @@ package io.redlink.more.more_app_mutliplatform
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
+import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
@@ -24,6 +25,8 @@ import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class Shared(
+    localNotificationListener: LocalNotificationListener,
     private val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
     val mainBluetoothConnector: BluetoothConnector,
@@ -43,6 +47,7 @@ class Shared(
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
+    val notificationManager = NotificationManager(localNotificationListener, networkService)
 
     var appIsInForeGround = false
 
@@ -60,7 +65,10 @@ class Shared(
     fun appInForeground(boolean: Boolean) {
         Napier.d { "App is in foreground: $boolean" }
         appIsInForeGround = boolean
-        updateTaskStates()
+        if (appIsInForeGround) {
+            updateTaskStates()
+            notificationManager.downloadMissedNotifications()
+        }
     }
 
     fun updateTaskStates() {
@@ -92,7 +100,7 @@ class Shared(
         }
     }
 
-    fun firstStartUp(): Boolean {
+    private fun firstStartUp(): Boolean {
         return if (sharedStorageRepository.load(FIRST_OPEN_AFTER_LOGIN_KEY, true)) {
             log { "Setting first startup to false..." }
             sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, false)
@@ -107,6 +115,7 @@ class Shared(
                 .isNotEmpty()
         )
     }
+
 
     fun updateStudyBlocking(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
         Scope.launch {
@@ -163,12 +172,17 @@ class Shared(
         }
     }
 
+    fun newLogin() {
+        notificationManager.newFCMToken()
+    }
+
     fun exitStudy(onDeletion: () -> Unit) {
         Scope.cancel()
         CoroutineScope(Job() + Dispatchers.Default).launch {
             stopObservations()
             observationFactory.clearNeededObservationTypes()
             networkService.deleteParticipation()
+            notificationManager.deleteFCMToken()
             clearSharedStorage()
             DatabaseManager.deleteAll()
             coreBluetooth.resetAll()

@@ -84,6 +84,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

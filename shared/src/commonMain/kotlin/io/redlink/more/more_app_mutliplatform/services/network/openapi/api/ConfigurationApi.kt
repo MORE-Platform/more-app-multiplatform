@@ -148,8 +148,6 @@ open class ConfigurationApi(
 
         val localVariableBody = pushNotificationToken
 
-        Napier.i { "$localVariableBody" }
-
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
@@ -166,10 +164,6 @@ open class ConfigurationApi(
             localVariableBody,
             localVariableAuthNames
         )
-        Napier.i { "$jsonRequest" }
         return jsonRequest?.wrap()
     }
-
-
-
 }

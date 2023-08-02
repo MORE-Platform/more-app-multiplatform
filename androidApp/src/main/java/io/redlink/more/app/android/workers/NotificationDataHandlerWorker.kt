@@ -6,6 +6,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import io.github.aakira.napier.Napier
+import io.realm.kotlin.ext.toRealmDictionary
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.models.StudyState
@@ -33,39 +35,17 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "Notification Worker started!")
+            Napier.d( "Notification Worker started!")
             val data = inputData.getString(NOTIFICATION_DATA)
             val type: Type = object : TypeToken<Map<String, String>>() {}.type
             val notificationData: Map<String, String> = Gson().fromJson(data, type)
-            Log.d(TAG, "Data: $data")
-            Log.d(TAG, "NotificationData: $notificationData")
-            if (notificationData.isNotEmpty()) {
-                if (notificationData[MAIN_DATA_KEY] == STUDY_CHANGED) {
-                    updateStudy(notificationData)
-                }
-            }
+            Napier.d( "NotificationData: $notificationData")
+            shared.notificationManager.handleNotificationData(shared, notificationData.toRealmDictionary())
             Result.success()
         } catch (err: Exception) {
-            Log.e(TAG, err.stackTraceToString())
+            Napier.e( err.stackTraceToString())
             Result.failure()
         }
     }
-
-    private suspend fun updateStudy(data: Map<String, String>) {
-        val oldStudyState =
-            data[STUDY_OLD_STATE]?.let { StudyState.getState(it) }
-        val newStudyState =
-            data[STUDY_NEW_STATE]?.let { StudyState.getState(it) }
-        shared.updateStudy(oldStudyState, newStudyState)
-    }
-
-    companion object {
-        private const val MAIN_DATA_KEY = "key"
-        private const val STUDY_CHANGED = "STUDY_STATE_CHANGED"
-
-        private const val STUDY_OLD_STATE = "oldState"
-        private const val STUDY_NEW_STATE = "newState"
-    }
-
 }
 

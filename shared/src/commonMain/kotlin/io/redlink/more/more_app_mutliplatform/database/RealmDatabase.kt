@@ -50,7 +50,13 @@ object RealmDatabase {
             scope.launch {
                 mutex.withLock {
                     realm?.write {
-                        realmObjects.forEach { copyToRealm(it, updatePolicy) }
+                        realmObjects.forEach {
+                            try {
+                                copyToRealm(it, updatePolicy)
+                            } catch (e: Exception) {
+                                Napier.d { "Copy to Realm exception: $e" }
+                            }
+                        }
                     }
                 }
             }

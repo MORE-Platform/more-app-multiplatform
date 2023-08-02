@@ -8,10 +8,12 @@ import io.realm.kotlin.internal.platform.WeakReference
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.NotificationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationServiceType
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
@@ -31,21 +33,25 @@ class NetworkService(
     private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
     private var dataApi: WeakReference<DataApi>? = null
+    private var notificationApi: NotificationApi? = null
 
     private var engineUseCounter = 10
 
     private fun initConfigApi() {
         if (configurationApi == null) {
-            Napier.d { "Initializing ConfigurationApi and DataApi..." }
-            credentialRepository.credentials()?.let {
-                httpClient = getHttpClient().apply {
+            Napier.d { "Initializing ConfigurationApi..." }
+            if (httpClient == null) {
+                httpClient = getHttpClient()
+            }
+            credentialRepository.credentials()?.let { credentials ->
+                httpClient?.let { httpClient ->
                     val url = endpointRepository.endpoint()
                     configurationApi = ConfigurationApi(
                         baseUrl = url,
-                        engine,
-                        httpClientConfig = { engineConfig })
-                    configurationApi?.setUsername(it.apiId)
-                    configurationApi?.setPassword(it.apiKey)
+                        httpClient.engine,
+                        httpClientConfig = { httpClient.engineConfig })
+                    configurationApi?.setUsername(credentials.apiId)
+                    configurationApi?.setPassword(credentials.apiKey)
                 }
             }
         }
@@ -53,16 +59,37 @@ class NetworkService(
 
     private fun initDataApi() {
         if (dataApi == null || dataApi?.get() == null) {
-            credentialRepository.credentials()?.let {
-                httpClient = getHttpClient().apply {
+            Napier.d { "Init DataAPI..." }
+            if (httpClient == null) {
+                httpClient = getHttpClient()
+            }
+            credentialRepository.credentials()?.let { credentials ->
+                httpClient?.let { httpClient ->
                     val api = DataApi(
                         baseUrl = endpointRepository.endpoint(),
-                        engine,
-                        httpClientConfig = { engineConfig }
+                        httpClient.engine,
+                        httpClientConfig = { httpClient.engineConfig }
                     )
-                    api.setUsername(it.apiId)
-                    api.setPassword(it.apiKey)
+                    api.setUsername(credentials.apiId)
+                    api.setPassword(credentials.apiKey)
                     dataApi = WeakReference(api)
+                }
+            }
+        }
+    }
+
+    private fun initNotificationApi() {
+        if (notificationApi == null) {
+            Napier.d { "Init Notification API..." }
+            if (httpClient == null) {
+                httpClient = getHttpClient()
+            }
+            credentialRepository.credentials()?.let { credentials ->
+                httpClient?.let { httpClient ->
+                    val api = NotificationApi(endpointRepository.endpoint(), httpClient.engine, httpClientConfig = {httpClient.engineConfig})
+                    api.setUsername(credentials.apiId)
+                    api.setPassword(credentials.apiKey)
+                    notificationApi = api
                 }
             }
         }
@@ -252,6 +279,48 @@ class NetworkService(
             completionHandler(
                 WeakReference(sendData(data))
             )
+        }
+    }
+
+    suspend fun downloadMissedNotifications(): List<PushNotification> {
+        initNotificationApi()
+        val list = notificationApi?.let { notificationApi ->
+            try {
+                Napier.d { "Downloading missed notifications from the Server..." }
+                notificationApi.listPushNotifications()?.let { response ->
+                    if (response.success) {
+                        response.body().get() ?: emptyList()
+                    } else {
+                        Napier.d { "No notifications received from the server" }
+                        emptyList()
+                    }
+                } ?: kotlin.run {
+                    Napier.d { "Notification Response Null" }
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                Napier.e { "Notification List error: $e" }
+                return emptyList()
+            }
+        } ?: emptyList()
+        Napier.d { "Downloaded Messages list: $list" }
+        return list
+    }
+
+    suspend fun deletePushNotification(msgId: String) {
+        initNotificationApi()
+        notificationApi?.let { notificationApi ->
+            try {
+                notificationApi.deleteNotification(msgId)?.let { httpResponse ->
+                    if (httpResponse.success) {
+                        Napier.d { "Successfully deleted notification with id: $msgId" }
+                    } else {
+                        Napier.d { "Push notification not found with msgID: $msgId. Could not delete!" }
+                    }
+                }
+            } catch (e: Exception) {
+                Napier.e { "Notification deletion error: $e" }
+            }
         }
     }
 

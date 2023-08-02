@@ -68,7 +68,8 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
                     title = notification.title,
                     body = notification.notificationBody,
                     read = notification.read,
-                    priority = notification.priority
+                    priority = notification.priority,
+                    timestamp = notification.timestamp
                 )
             }
         }

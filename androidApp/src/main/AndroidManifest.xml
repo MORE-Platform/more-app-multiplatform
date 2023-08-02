@@ -71,8 +71,6 @@
             </intent-filter>
         </service>
 
-        <service android:name=".services.PushNotificationService" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_channel_id" />

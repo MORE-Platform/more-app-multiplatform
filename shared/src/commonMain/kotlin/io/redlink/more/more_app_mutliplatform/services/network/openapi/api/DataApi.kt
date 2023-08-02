@@ -45,13 +45,11 @@ open class DataApi(
             requiresAuthentication = true,
         )
 
-        Napier.d { "Sending data with config: $localVariableConfig" }
-
         return jsonRequest(
             localVariableConfig,
             dataBulk,
             localVariableAuthNames
-        )?.wrap<StoreBulkResponse>()?.map { value}
+        )?.wrap<StoreBulkResponse>()?.map { value }
     }
 
 
@@ -60,10 +58,14 @@ open class DataApi(
         @OptIn(ExperimentalSerializationApi::class)
         @Serializer(StoreBulkResponse::class)
         companion object : KSerializer<StoreBulkResponse> {
-            private val serializer: KSerializer<List<kotlin.String>> = serializer<List<kotlin.String>>()
+            private val serializer: KSerializer<List<kotlin.String>> =
+                serializer<List<kotlin.String>>()
             override val descriptor = serializer.descriptor
-            override fun serialize(encoder: Encoder, obj: StoreBulkResponse) = serializer.serialize(encoder, obj.value)
-            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder))
+            override fun serialize(encoder: Encoder, obj: StoreBulkResponse) =
+                serializer.serialize(encoder, obj.value)
+
+            override fun deserialize(decoder: Decoder) =
+                StoreBulkResponse(serializer.deserialize(decoder))
         }
     }
 
