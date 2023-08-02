@@ -46,7 +46,9 @@ class NotificationSchema : RealmObject {
                 this.priority = priority
                 this.read = read
                 this.userFacing = userFacing
-                this.notificationData = notificationData?.toRealmDictionary() ?: realmDictionaryOf()
+                this.notificationData =
+                    notificationData?.mapKeys { it.key.replace(".", "_") }?.toRealmDictionary()
+                        ?: realmDictionaryOf()
             }
         }
 
@@ -56,9 +58,13 @@ class NotificationSchema : RealmObject {
                 this.title = notification.title
                 this.notificationBody = notification.body
                 this.userFacing = notification.type == "text"
-                this.notificationData =
-                    notification.data?.mapValues { it.value.toString() }?.toRealmDictionary()
-                        ?: realmDictionaryOf()
+                this.priority = 2
+                this.notificationData = notification.data?.entries?.associate {
+                    it.key.replace(
+                        ".",
+                        "_"
+                    ) to it.value.toString()
+                }?.toRealmDictionary() ?: realmDictionaryOf()
                 this.timestamp = notification.timestamp?.toRealmInstant() ?: RealmInstant.now()
             }
         }

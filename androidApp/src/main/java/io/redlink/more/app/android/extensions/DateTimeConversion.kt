@@ -18,6 +18,14 @@ fun Long.jvmLocalDateTime(): LocalDateTime {
     )
 }
 
+fun Long.jvmLocalDateTimeFromMilliseconds(): LocalDateTime {
+    return LocalDateTime.ofEpochSecond(
+        this / 1000,
+        0,
+        ZoneId.systemDefault().rules.getOffset(Instant.ofEpochSecond(this / 1000))  // convert milliseconds to seconds
+    )
+}
+
 fun Long.jvmLocalDate(): LocalDate = this.jvmLocalDateTime().toLocalDate()
 
 fun LocalDate.formattedString(pattern: String = "dd.MM.yyyy"): String {

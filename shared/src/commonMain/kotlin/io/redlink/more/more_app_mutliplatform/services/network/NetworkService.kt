@@ -291,9 +291,13 @@ class NetworkService(
                     if (response.success) {
                         response.body().get() ?: emptyList()
                     } else {
+                        Napier.d { "No notifications received from the server" }
                         emptyList()
                     }
-                } ?: emptyList()
+                } ?: kotlin.run {
+                    Napier.d { "Notification Response Null" }
+                    emptyList()
+                }
             } catch (e: Exception) {
                 Napier.e { "Notification List error: $e" }
                 return emptyList()

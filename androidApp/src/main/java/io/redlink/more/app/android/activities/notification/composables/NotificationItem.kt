@@ -12,11 +12,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.realm.kotlin.internal.interop.Timestamp
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
+import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
 import io.redlink.more.app.android.shared_composables.IconInline
+import io.redlink.more.more_app_mutliplatform.extensions.toLocalDateTime
 
 @Composable
 fun NotificationItem(
@@ -24,7 +29,8 @@ fun NotificationItem(
     titleColor: Color = MoreColors.Primary,
     body: String?,
     read: Boolean?,
-    priority: Long?
+    priority: Long?,
+    timestamp: Long?
 ) {
     Column {
         Row(
@@ -80,7 +86,19 @@ fun NotificationItem(
                 color = MoreColors.Secondary,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = if (it.isNotEmpty()) 30.dp else 5.dp)
+                    .padding(bottom = 5.dp)
+            )
+        }
+
+        timestamp?.let {
+            Text(
+                text = it.jvmLocalDateTimeFromMilliseconds().formattedString("dd.MM. hh:mm"),
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = MoreColors.Secondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 30.dp)
             )
         }
     }

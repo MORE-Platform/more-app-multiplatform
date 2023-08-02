@@ -52,7 +52,7 @@ extension FCMService: UNUserNotificationCenterDelegate {
         let content = response.notification.request.content
         print("User info: \(content.userInfo)")
         let data = content.userInfo.notNilStringDictionary()
-        let uuid = data["msgID"] ?? UUID().uuidString
+        let uuid = data["MSG_ID"] ?? UUID().uuidString
         
         AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: uuid, title: response.notification.request.content.title, body: response.notification.request.content.body, priority: 2, read: false, data: data)
     }

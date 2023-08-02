@@ -38,8 +38,9 @@ class FCMService : FirebaseMessagingService() {
 }
 
 fun RemoteMessage.daoFromRemoteMessage(): NotificationSchema {
+    val notificationId = this.data["MSG_ID"] ?: UUID.randomUUID().toString()
     return NotificationSchema.toSchema(
-        notificationId = this.messageId ?: UUID.randomUUID().toString(),
+        notificationId = notificationId,
         title = this.notification?.title,
         notificationBody = this.notification?.body,
         read = false,
