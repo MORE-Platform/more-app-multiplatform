@@ -10,6 +10,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
@@ -64,6 +65,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                 val androidBluetoothConnector = polarConnector!!
                 val dataManager = AndroidObservationDataManager(context)
                 shared = Shared(
+                    LocalPushNotificationService(context),
                     SharedPreferencesRepository(context),
                     dataManager,
                     androidBluetoothConnector,

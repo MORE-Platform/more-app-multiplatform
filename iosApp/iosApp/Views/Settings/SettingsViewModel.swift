@@ -31,7 +31,6 @@ class SettingsViewModel: ObservableObject {
     func leaveStudy() {
         dataDeleted = true
         coreSettingsViewModel.exitStudy()
-        FCMService().deleteNotificationToken()
         self.delegate?.credentialsDeleted()
     }
     

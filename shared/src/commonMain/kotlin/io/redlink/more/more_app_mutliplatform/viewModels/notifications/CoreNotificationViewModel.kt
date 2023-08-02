@@ -27,7 +27,7 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
             }
         }
         launchScope {
-            notificationRepository.getAllNotifications().cancellable().collect {
+            notificationRepository.getAllUserFacingNotifications().cancellable().collect {
                 originalNotificationList.clear()
                 originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
                 if (originalNotificationList.isNotEmpty() && coreFilterModel.filterActive()) {

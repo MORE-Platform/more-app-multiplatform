@@ -21,6 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let dataManager = iOSObservationDataManager()
         
         return Shared(
+            localNotificationListener: LocalPushNotifications(),
             sharedStorageRepository: UserDefaultsRepository(),
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
@@ -36,8 +37,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         NapierProxyKt.napierDebugBuild()
         #endif
         
-        AppDelegate.shared.onApplicationStart()
-        
         FirebaseApp.configure()
         fcmService.register()
         UIApplication.shared.registerForRemoteNotifications()
@@ -46,9 +45,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         if let launchOptions, let userInfo = launchOptions[.remoteNotification] as? [AnyHashable: Any] {
             print("Has launchoptions: \(userInfo)")
-            Task { @MainActor in
-                await self.application(application, didReceiveRemoteNotification: userInfo)
-            }
+            AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
         }
         
         return true
@@ -60,7 +57,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
         print("Notification Received: \(userInfo)")
-        
+        AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
         
         return .newData
     }
@@ -68,15 +65,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("Did register for Remote Notifications With Device Token: \(deviceToken)")
     }
-    
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Did fail to register for remote notifications: \(error)")
-    }
-    
-//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        Messaging.messaging().apnsToken = deviceToken
-//    }
-//
     
     private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
