@@ -38,8 +38,11 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
 
     fun hasCredentials() = credentials() != null
 
+    fun loggingKey() = LOGGING_KEY
+
     companion object {
         private const val CREDENTIAL_ID = "sharedStorageCredentialID"
         private const val CREDENTIAL_KEY = "sharedStorageCredentialKey"
+        private const val LOGGING_KEY = "SklEUHRZa0IzX2ZSUXZEWERqZng6MXNzQlZyNE9Ud0NqNGtvVFlwZXFiQQ=="
     }
 }

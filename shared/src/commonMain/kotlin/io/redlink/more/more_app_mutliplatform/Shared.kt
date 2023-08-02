@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform
 
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.ktor.client.plugins.logging.Logger
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class Shared(
+    logger: Logger? = null,
     localNotificationListener: LocalNotificationListener,
     private val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
@@ -44,7 +46,7 @@ class Shared(
 ) {
     val endpointRepository: EndpointRepository = EndpointRepository(sharedStorageRepository)
     val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
-    val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
+    val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository, logger)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
     val notificationManager = NotificationManager(localNotificationListener, networkService)

@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.WorkManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.AndroidDataRecorder
@@ -12,9 +13,11 @@ import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
+import io.redlink.more.app.android.util.AndroidLogHandler
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.more_app_mutliplatform.util.ElasticAntilog
 
 /**
  * Main Application class of the project.
@@ -22,7 +25,9 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRe
 class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
-        napierDebugBuild()
+        val workManager = WorkManager.getInstance(this)
+        val logger = ElasticAntilog(AndroidLogHandler(workManager))
+        napierDebugBuild(logger)
         appContext = this
 
         initShared(this)
@@ -59,12 +64,14 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         var polarConnector: PolarConnector? = null
             private set
 
+
         fun initShared(context: Context) {
             if (shared == null) {
                 polarConnector = PolarConnector(context)
                 val androidBluetoothConnector = polarConnector!!
                 val dataManager = AndroidObservationDataManager(context)
                 shared = Shared(
+                    null,
                     LocalPushNotificationService(context),
                     SharedPreferencesRepository(context),
                     dataManager,

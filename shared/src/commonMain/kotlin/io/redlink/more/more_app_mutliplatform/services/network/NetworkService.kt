@@ -2,7 +2,17 @@ package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.request.headers
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.internal.platform.WeakReference
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
@@ -13,6 +23,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.Regis
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationServiceType
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
@@ -28,7 +39,8 @@ private const val TAG = "NetworkService"
 
 class NetworkService(
     private val endpointRepository: EndpointRepository,
-    private val credentialRepository: CredentialRepository
+    private val credentialRepository: CredentialRepository,
+    private val customLogger: Logger? = null
 ) : Closeable {
     private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
@@ -41,7 +53,7 @@ class NetworkService(
         if (configurationApi == null) {
             Napier.d { "Initializing ConfigurationApi..." }
             if (httpClient == null) {
-                httpClient = getHttpClient()
+                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
             }
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -61,7 +73,7 @@ class NetworkService(
         if (dataApi == null || dataApi?.get() == null) {
             Napier.d { "Init DataAPI..." }
             if (httpClient == null) {
-                httpClient = getHttpClient()
+                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
             }
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -82,7 +94,7 @@ class NetworkService(
         if (notificationApi == null) {
             Napier.d { "Init Notification API..." }
             if (httpClient == null) {
-                httpClient = getHttpClient()
+                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
             }
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -92,6 +104,12 @@ class NetworkService(
                     notificationApi = api
                 }
             }
+        }
+    }
+
+    private fun initLoggingApi() {
+        if (httpClient == null) {
+            httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
         }
     }
 
@@ -322,6 +340,20 @@ class NetworkService(
                 Napier.e { "Notification deletion error: $e" }
             }
         }
+    }
+
+    suspend fun sendLogs(logs: List<Log>): Boolean {
+        initLoggingApi()
+        return httpClient?.let { client ->
+            client.request(endpointRepository.loggingEndpoint()) {
+                method = HttpMethod.Post
+                contentType(ContentType.Application.Json)
+                headers {
+                    append(HttpHeaders.Authorization, "ApiKey ${credentialRepository.loggingKey()}")
+                }
+                setBody(logs)
+            }.status == HttpStatusCode.Created
+        } ?: false
     }
 
     private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {

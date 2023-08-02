@@ -8,14 +8,14 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
-actual fun getHttpClient(): HttpClient = HttpClient(Android) {
+actual fun getHttpClient(customLogger: Logger): HttpClient = HttpClient(Android) {
     install(ContentNegotiation) {
         json()
         defaultRequest {
             contentType(ContentType.Application.Json)
         }
         Logging {
-            logger = Logger.DEFAULT
+            logger = customLogger
             level = LogLevel.ALL
         }
     }
