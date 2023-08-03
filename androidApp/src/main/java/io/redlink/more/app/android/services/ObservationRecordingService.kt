@@ -244,14 +244,16 @@ class ObservationRecordingService : Service() {
         ) {
             val validToStart = scheduleIds.filter { it !in runningSchedules }
             Scope.launch(Dispatchers.IO) {
-                var counter = 0
-                while (MoreApplication.shared?.appIsInForeGround == false) {
-                    if (counter++ >= MAX_RETRIES) {
-                        log { "Stopping retries for launching observations" }
-                        return@launch
+                if (!running) {
+                    var counter = 0
+                    while (MoreApplication.shared?.appIsInForeGround == false) {
+                        if (counter++ >= MAX_RETRIES) {
+                            log { "Stopping retries for launching observations" }
+                            return@launch
+                        }
+                        log { "Waiting till app goes into foreground to start observations..." }
+                        delay(1000)
                     }
-                    log { "Waiting till app goes into foreground to start observations..." }
-                    delay(1000)
                 }
                 if (validToStart.isNotEmpty() && MoreApplication.shared?.appIsInForeGround == true || running) {
                     val serviceIntent =
