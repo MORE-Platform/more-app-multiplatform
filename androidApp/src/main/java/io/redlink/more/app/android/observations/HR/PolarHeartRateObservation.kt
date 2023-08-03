@@ -37,7 +37,7 @@ class PolarHeartRateObservation :
     private var heartRateDisposable: Disposable? = null
 
     override fun start(): Boolean {
-        Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
+        Napier.d(tag = "PolarHeartRateObservation::start") { "Trying to start Polar Verity Heart Rate Observation..." }
         if (observerAccessible()) {
             val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
                 it.deviceName?.lowercase()?.contains("polar") ?: false
@@ -47,27 +47,28 @@ class PolarHeartRateObservation :
                     if (it.address != null) {
                         heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
                             { polarData ->
-                                Napier.i { "Polar Data: $polarData" }
+                                Napier.i(tag = "PolarHeartRateObservation::start") { "Polar Data: $polarData" }
                                 storeData(mapOf("hr" to polarData.samples[0].hr))
                             },
                             { error ->
-                                Napier.e("HR Recording error: ${error.stackTraceToString()}")
+                                Napier.e(tag = "PolarHeartRateObservation::start", message = "HR Recording error: ${error.stackTraceToString()}")
                                 polarDeviceDisconnected(it.deviceName)
                             })
                         true
                     } else {
+                        Napier.w(tag = "PolarHeartRateObservation::start") { "PolarHeartRateObservation: Could not find device with address: ${it.address}" }
                         false
                     }
                 } catch (exception: Exception) {
-                    Napier.e { exception.stackTraceToString() }
+                    Napier.e(tag = "PolarHeartRateObservation::start") { exception.stackTraceToString() }
                     false
                 }
             } ?: run {
-                Napier.d { "No connected devices..." }
+                Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
                 false
             }
         }
-        Napier.d { "No connected devices..." }
+        Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
         return false
     }
 
@@ -104,11 +105,11 @@ class PolarHeartRateObservation :
                     permission
                 ) == PackageManager.PERMISSION_DENIED
             ) {
-                Napier.e { "Polar has no bluetooth permissions!" }
+                Napier.e(tag = "PolarHeartRateObservation::hasPermission") { "Polar has no bluetooth permissions!" }
                 return false
             }
         }
-        log { "Polar has Bluetooth Permission!" }
+        Napier.d (tag = "PolarHeartRateObservation::hasPermission"){ "Polar has Bluetooth Permission!" }
         return true
     }
 
@@ -126,6 +127,7 @@ class PolarHeartRateObservation :
                             emptySet()
                         ).observationType
                     )
+                    Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature removed!" }
                 }
             }
         }
@@ -137,6 +139,7 @@ class PolarHeartRateObservation :
                         emptySet()
                     ).observationType
                 )
+                Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature Ready!" }
             }
         }
     }

@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
+import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
@@ -21,13 +22,14 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         observations.add(LimeSurveyObservation())
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
+                Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 studyObservationTypes.append(it)
             }
         }
     }
 
     fun addNeededObservationTypes(observationTypes: Set<String>) {
-        log { "Adding observation types to studyObservationTypes: $observationTypes" }
+        Napier.i(tag = "ObservationFactory::addNeededObservationTypes") { "Adding observation types to studyObservationTypes: $observationTypes" }
         studyObservationTypes.append(observationTypes)
     }
 
@@ -41,19 +43,25 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 
     fun bleDevicesNeeded(types: Set<String>): Set<String> {
-        log { "Filtering types for BLE: ${studyObservationTypes.value}" }
+        Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "Filtering types for BLE: ${studyObservationTypes.value}" }
         val bleTypes = observations.filter { it.observationType.observationType in types }
             .flatMap { it.bleDevicesNeeded() }.toSet()
-        log { "BLE observation types: $bleTypes" }
+        Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "BLE observation types: $bleTypes" }
         return bleTypes
     }
 
-    fun autoStartableObservations() = observations.filter { it.ableToAutomaticallyStart() }
-        .map { it.observationType.observationType }.toSet()
+    fun autoStartableObservations(): Set<String> {
+        val autoStartTypes = observations.filter { it.ableToAutomaticallyStart() }
+            .map { it.observationType.observationType }.toSet()
+        Napier.i(tag = "ObservationFactory::autoStartableObservations") { "Auto-startable observations: $autoStartTypes" }
+        return autoStartTypes
+    }
 
     fun observation(type: String): Observation? {
+        Napier.i(tag = "ObservationFactory::observation") { "Fetching observation of type: $type" }
         return observations.firstOrNull { it.observationType.observationType == type }?.apply {
             if (!this.observationDataManagerAdded()) {
+                Napier.i(tag = "ObservationFactory::observation") { "Adding data manager to observation of type: $type" }
                 setDataManager(dataManager)
             }
         }

@@ -58,7 +58,7 @@ class LocalPushNotificationService(private val context: Context): LocalNotificat
                 Napier.e("Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             } else {
-                Napier.d("FCM_Token: ${task.result}")
+                Napier.i("FCM_Token: ${task.result}")
                 onCompletion(task.result)
             }
         })

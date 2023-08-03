@@ -21,7 +21,7 @@ object DatabaseManager: Closeable {
 
     init {
         open()
-        Napier.d { "Opened Database!" }
+        Napier.i { "Opened Database!" }
     }
 
     fun open() {

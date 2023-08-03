@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Looper
 import android.util.Log
 import com.google.android.gms.location.*
+import io.github.aakira.napier.Napier
 
 
 private const val TAG = "GPSService"
@@ -16,13 +17,13 @@ class GPSService(context: Context) {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
-            Log.d(TAG, "New Location Result: LONG: ${result.lastLocation?.longitude}, LAT: ${result.lastLocation?.latitude}")
+            Napier.d(tag = "GPSService::onLocationResult") { "New Location Result: LONG: ${result.lastLocation?.longitude}, LAT: ${result.lastLocation?.latitude}" }
             gpsListener?.onLocationResult(result)
         }
 
         override fun onLocationAvailability(result: LocationAvailability) {
             super.onLocationAvailability(result)
-            Log.d(TAG, "Location available: ${result.isLocationAvailable}")
+            Napier.d(tag = "GPSService:onLocationAvailability") { "Location available: ${result.isLocationAvailable}" }
             gpsListener?.locationAvailable(result.isLocationAvailable)
         }
     }
@@ -80,7 +81,7 @@ class GPSService(context: Context) {
 
     @SuppressLint("MissingPermission")
     fun registerForLocationUpdates(listener: GPSListener) {
-        Log.d(TAG, "Registered new listener!")
+        Napier.d(tag = "GPSService::registerForLocationUpdates") { "Registered new listener!" }
         this.gpsListener = listener
         fusedLocationProviderClient.requestLocationUpdates(locationRequest.build(), locationCallback, Looper.getMainLooper())
     }
@@ -88,7 +89,7 @@ class GPSService(context: Context) {
     fun unregisterForLocationUpdates(listener: GPSListener) {
         gpsListener?.let {
             if (it == listener) {
-                Log.d(TAG, "Unregistered listener!")
+                Napier.d(tag = "GPSService::unregisterForLocationUpdates") { "Unregistered listener!" }
                 fusedLocationProviderClient.removeLocationUpdates(locationCallback)
                 this.gpsListener = null
             }

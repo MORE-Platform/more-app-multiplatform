@@ -30,14 +30,14 @@ object RealmDatabase {
 
     fun open(realmObjects: Set<KClass<out TypedRealmObject>>) {
         if (realm == null) {
-            Napier.d { "Init Realm..." }
+            Napier.i { "Init Realm..." }
             val config = RealmConfiguration.create(realmObjects)
             this.realm = Realm.open(config)
         }
     }
 
     fun close() {
-        Napier.d { "Closing Realm..." }
+        Napier.i { "Closing Realm..." }
         this.realm?.close()
         this.realm = null
     }
@@ -54,7 +54,7 @@ object RealmDatabase {
                             try {
                                 copyToRealm(it, updatePolicy)
                             } catch (e: Exception) {
-                                Napier.d { "Copy to Realm exception: $e" }
+                                Napier.i { "Copy to Realm exception: $e" }
                             }
                         }
                     }
@@ -137,7 +137,7 @@ object RealmDatabase {
     }
 
     fun deleteAll() {
-        Napier.d { "Deleting all data from database..." }
+        Napier.i { "Deleting all data from database..." }
         realm?.writeBlocking {
             this.deleteAll()
         }

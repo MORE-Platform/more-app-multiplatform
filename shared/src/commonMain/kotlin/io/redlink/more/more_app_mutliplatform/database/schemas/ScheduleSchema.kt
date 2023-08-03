@@ -57,17 +57,7 @@ class ScheduleSchema : RealmObject {
     }
 
     override fun toString(): String {
-        return """ScheduleSchema: {
-    "scheduleId": "$scheduleId",
-    "observationId": "$observationId",
-    "observationType": "$observationType",
-    "observationTitle": "$observationTitle",
-    "start": "${start?.toString()}",
-    "end": "${end?.toString()}",
-    "done": $done,
-    "hidden": $hidden,
-    "state": "$state"
-    }"""
+        return """ScheduleSchema: {"scheduleId": "$scheduleId", "observationId": "$observationId","observationType": "$observationType","observationTitle": "$observationTitle","start": "${start?.toString()}","end": "${end?.toString()}","done": $done,"hidden": $hidden,"state": "$state"}"""
     }
 
 

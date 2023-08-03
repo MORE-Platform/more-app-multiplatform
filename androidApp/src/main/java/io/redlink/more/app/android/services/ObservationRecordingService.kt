@@ -38,6 +38,7 @@ class ObservationRecordingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Napier.i { "ObservationRecordingService called..." }
         if (observationFactory == null) {
             if (MoreApplication.shared == null) {
                 MoreApplication.initShared(applicationContext)
@@ -54,6 +55,7 @@ class ObservationRecordingService : Service() {
             }
         }
         return intent?.action?.let { action ->
+            Napier.i { "ObservationRecordingService called with intent action: $action" }
             return@let when (action) {
                 SERVICE_RECEIVER_START_ACTION -> {
                     intent.getStringArrayListExtra(SCHEDULE_ID)?.let {
@@ -96,10 +98,11 @@ class ObservationRecordingService : Service() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        Napier.i{ "ObservationRecordingService taskRemove!"}
     }
 
     override fun onDestroy() {
-        log { "ObservationRecordingService is destroyed!" }
+        Napier.i { "ObservationRecordingService is destroyed!" }
         running = false
         super.onDestroy()
     }
@@ -110,7 +113,7 @@ class ObservationRecordingService : Service() {
     }
 
     private fun startObservation(scheduleId: Set<String>) {
-        Napier.d { "Starting the foreground service for scheduleId: $scheduleId..." }
+        Napier.i { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
             if (StudyRepository().getStudy().firstOrNull()?.active == true) {
@@ -152,15 +155,19 @@ class ObservationRecordingService : Service() {
     }
 
     private fun stopService() {
-        log { "Stopping ObservationRecordingService..." }
+        Napier.i { "Stopping ObservationRecordingService..." }
         stopForeground(STOP_FOREGROUND_REMOVE)
         running = false
         stopSelf()
-        log { "Stopped ObservationRecordingService!" }
+        Napier.i { "Stopped ObservationRecordingService!" }
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Napier.i { "ObservationRecording Service has low memory!" }
     }
 
     private fun restartAll() {
-        Napier.d { "Starting the foreground service..." }
         startForegroundService()
         scope.launch {
             val startedObservations = observationManager?.restartStillRunning() ?: emptySet()
@@ -173,6 +180,7 @@ class ObservationRecordingService : Service() {
     }
 
     private fun startForegroundService() {
+        Napier.d { "Starting the foreground service..." }
         startForeground(
             1001,
             buildNotification(

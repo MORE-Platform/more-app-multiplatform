@@ -29,7 +29,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
 
     fun setScheduleId(scheduleId: String) {
         if (scheduleId != this.scheduleId) {
-            Napier.d { "Setting scheduleId: $scheduleId for LimeSurvey" }
+            Napier.i { "Setting scheduleId: $scheduleId for LimeSurvey" }
             observation?.let { observation ->
                 if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
                     this.scheduleId = scheduleId
@@ -41,7 +41,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                     }
                     launchScope(Dispatchers.Main) {
                         scheduleRepository.scheduleWithId(scheduleId).cancellable().transform { scheduleSchema ->
-                            Napier.d { "Loaded schedule schema!" }
+                            Napier.i { "Loaded schedule schema!" }
                             emit(scheduleSchema?.let {
                                 observationRepository.observationById(it.observationId).cancellable().firstOrNull()
                             })

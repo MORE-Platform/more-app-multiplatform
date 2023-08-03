@@ -30,6 +30,7 @@ class ObservationManager(
     private val currentlyRunning = mutableSetOf<String>()
 
     fun activateScheduleUpdate() {
+        Napier.i(tag = "ObservationManager::activateScheduleUpdate") { "ObservationManager: ScheduleUpdater activating..."}
         Scope.launch {
             scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
                 if (runningObservations.isNotEmpty()) {
@@ -53,6 +54,7 @@ class ObservationManager(
     suspend fun restartStillRunning(): Set<String> {
         val startedObservations = mutableSetOf<String>()
         scheduleRepository.allScheduleWithRunningState().cancellable().firstOrNull()?.let { list ->
+            Napier.i(tag = "ObservationManager::restartStillRunning") { "Restarting schedules: $list" }
             list.filter { it.scheduleId.toHexString() !in runningObservations.keys }.forEach {
                 if (start(it.scheduleId.toHexString())) {
                     startedObservations.add(it.scheduleId.toHexString())
@@ -65,12 +67,13 @@ class ObservationManager(
     suspend fun start(scheduleId: String): Boolean {
         return if (scheduleId !in currentlyRunning) {
             currentlyRunning.add(scheduleId)
-            Napier.d { "Trying to start $scheduleId..." }
+            Napier.i(tag = "ObservationManager::start") { "Trying to start $scheduleId..." }
             val result = findOrCreateObservation(scheduleId)?.let { scheduleSchema ->
+                Napier.i(tag = "ObservationManager::start") { "Trying to start schedule: $scheduleSchema" }
                 val result =
                     observationRepository.getObservationByObservationId(scheduleSchema.observationId)
                         ?.let { observation ->
-                            Napier.d { "Found Observation Config: ${observation.configAsMap()}" }
+                            Napier.i(tag = "ObservationManager::start") { "Found Observation Config: ${observation.configAsMap()}" }
                             val config = observation.configAsMap().toMutableMap()
                             scheduleSchema.start?.let {
                                 config[Observation.CONFIG_TASK_START] = it.epochSeconds
@@ -87,6 +90,7 @@ class ObservationManager(
                             start(scheduleSchema, config)
                         } ?: false
                 if (!result) {
+                    Napier.w(tag = "ObservationManager::start") { "Could not retrieve Observation Schema for schedule: $scheduleSchema" }
                     runningObservations.remove(scheduleId)
                     scheduleSchemaList.removeAll { it.scheduleId.toHexString() == scheduleId }
                     currentlyRunning.remove(scheduleId)
@@ -94,6 +98,7 @@ class ObservationManager(
                 result
             } ?: false
             if (!result) {
+                Napier.w(tag = "ObservationManager::start") { "Could not find observation for schema for scheduleId: $scheduleId" }
                 currentlyRunning.remove(scheduleId)
             }
             result
@@ -112,10 +117,10 @@ class ObservationManager(
             ) == true
         ) {
             setObservationState(schedule, ScheduleState.RUNNING)
-            Napier.d { "Recording started of $schedule" }
+            Napier.i(tag = "ObservationManager::start") { "Recording started of $schedule" }
             true
         } else {
-            Napier.d { "Could not start $schedule!" }
+            Napier.i(tag = "ObservationManager::start") { "Could not start $schedule!" }
             false
         }
     }
@@ -123,10 +128,10 @@ class ObservationManager(
     fun pause(scheduleId: String) {
         runningObservations[scheduleId]?.let { observation ->
             scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
-                Napier.d { "Pausing schedule: $it" }
+                Napier.i(tag = "ObservationManager::pause") { "Pausing schedule: $it" }
                 observation.stop(scheduleId)
                 setObservationState(it, ScheduleState.PAUSED)
-                Napier.d { "Recording paused of ${it.scheduleId}" }
+                Napier.i(tag = "ObservationManager::pause") { "Recording paused of ${it.scheduleId}" }
             }
         } ?: kotlin.run {
             setObservationState(scheduleId, ScheduleState.PAUSED)
@@ -135,29 +140,29 @@ class ObservationManager(
     }
 
     fun pauseObservationType(type: String) {
-        Napier.d { "Pausing Observation type: $type" }
+        Napier.i(tag = "ObservationManager::pauseObservationType") { "Pausing Observation type: $type" }
         runningObservations.filterValues { it.observationType.observationType == type }
             .forEach { (key, value) ->
-                Napier.d { "Pausing schedule: $key" }
+                Napier.d(tag = "ObservationManager::pauseObservationType") { "Pausing schedule: $key" }
                 value.stop(key)
                 setObservationState(key, ScheduleState.PAUSED)
                 currentlyRunning.remove(key)
-                Napier.d { "Recording paused of $key" }
+                Napier.d(tag = "ObservationManager::pauseObservationType") { "Recording paused of $key" }
             }
     }
 
     fun startObservationType(type: String) {
         Scope.launch {
-            Napier.d { "Restarting Observations with type: $type" }
+            Napier.d(tag = "ObservationManager::startObservationType") { "Restarting Observations with type: $type" }
             scheduleRepository.allSchedulesWithStatus(false)
                 .firstOrNull()
                 ?.filter { it.observationType == type && it.getState().active() }
                 ?.forEach {
                     if (start(it.scheduleId.toHexString())) {
-                        Napier.d { "Started Schedule: $it" }
+                        Napier.i(tag = "ObservationManager::startObservationType") { "Started Schedule: $it" }
                     } else {
                         currentlyRunning.remove(it.scheduleId.toHexString())
-                        Napier.d { "Failed to start schedule: $it" }
+                        Napier.i(tag = "ObservationManager::startObservationType") { "Failed to start schedule: $it" }
                     }
                 }
         }
@@ -166,14 +171,14 @@ class ObservationManager(
     fun stop(scheduleId: String) {
         runningObservations[scheduleId]?.let { observation ->
             scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
-                log { "Stopping schedule: $it" }
+                Napier.i(tag = "ObservationManager::stop") { "Stopping schedule: $it" }
                 observation.stop(scheduleId)
                 observation.removeDataCount()
                 setObservationState(it, ScheduleState.DONE)
                 runningObservations.remove(scheduleId)
                 scheduleSchemaList.remove(it)
-                log { "Observation removed: ${it.scheduleId}! Observations left: $runningObservations" }
-                log { "Recording stopped of ${it.scheduleId}" }
+                Napier.i(tag = "ObservationManager::stop") { "Observation removed: ${it.scheduleId}! Observations left: $runningObservations" }
+                Napier.i(tag = "ObservationManager::stop") { "Recording stopped of ${it.scheduleId}" }
             }
         } ?: kotlin.run {
             setObservationState(scheduleId, ScheduleState.DONE)
@@ -182,7 +187,7 @@ class ObservationManager(
     }
 
     fun stopAll() {
-        Napier.d { "Stopping all observations..." }
+        Napier.i(tag = "ObservationManager::stopAll") { "Stopping all observations..." }
         stopAllInList()
     }
 
@@ -193,7 +198,7 @@ class ObservationManager(
     fun hasRunningTasks() = currentlyRunning.isNotEmpty()
 
     private fun stopAllInList() {
-        Napier.d { "Running Observations to be stopped: $runningObservations" }
+        Napier.d(tag = "ObservationManager::stopAllInList") { "Running Observations to be stopped: $runningObservations" }
         val runningObs = runningObservations.toList()
         runningObs.forEach { (scheduleId, observation) ->
             observation.stopAndFinish(scheduleId)
@@ -208,7 +213,7 @@ class ObservationManager(
     private suspend fun findOrCreateObservation(scheduleId: String): ScheduleSchema? {
         return scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
             val fixedScheduleSchema = it.copyFromRealm()
-            Napier.d { "Found Schema $it" }
+            Napier.d(tag = "ObservationManager::findOrCreateObservation") { "Found Schema $it" }
             if (findOrCreateObservation(fixedScheduleSchema)) fixedScheduleSchema else null
         }
     }
@@ -217,7 +222,7 @@ class ObservationManager(
         return (runningObservations[schedule.scheduleId.toHexString()]
             ?: observationFactory.observation(schedule.observationType)
                 ?.let { observation ->
-                    Napier.d { "Found Observation for ScheduleSchema: $schedule: $observation" }
+                    Napier.d(tag = "ObservationManager::findOrCreateObservation") { "Found Observation for ScheduleSchema: $schedule : $observation" }
                     runningObservations[schedule.scheduleId.toHexString()] = observation
                     scheduleSchemaList.add(schedule)
                     schedule
@@ -225,6 +230,7 @@ class ObservationManager(
     }
 
     private fun setObservationState(schedule: ScheduleSchema, state: ScheduleState) {
+        Napier.i(tag = "ObservationManager::setObservationState") { "New Schedule State for Schema: $schedule; ${schedule.state} -> $state" }
         setObservationState(schedule.scheduleId.toHexString(), state)
     }
 
