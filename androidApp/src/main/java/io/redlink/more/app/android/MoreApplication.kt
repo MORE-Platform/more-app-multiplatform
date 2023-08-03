@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.WorkManager
 import com.google.firebase.analytics.FirebaseAnalytics
+import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
@@ -28,6 +29,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         val workManager = WorkManager.getInstance(this)
         val logger = ElasticAntilog(AndroidLogHandler(workManager))
         napierDebugBuild(logger)
+        napierDebugBuild(DebugAntilog())
         appContext = this
 
         initShared(this)
@@ -41,13 +43,13 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        Napier.d { "App is in the foreground..." }
+        Napier.i { "App is in the foreground..." }
         shared?.appInForeground(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        Napier.d { "App is in the background..." }
+        Napier.i { "App is in the background..." }
         shared?.appInForeground(false)
     }
 
@@ -71,7 +73,6 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                 val androidBluetoothConnector = polarConnector!!
                 val dataManager = AndroidObservationDataManager(context)
                 shared = Shared(
-                    null,
                     LocalPushNotificationService(context),
                     SharedPreferencesRepository(context),
                     dataManager,

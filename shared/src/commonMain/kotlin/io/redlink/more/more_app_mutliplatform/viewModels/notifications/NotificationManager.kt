@@ -74,7 +74,7 @@ class NotificationManager(
     }
 
     fun deleteNotificationFromServer(msgID: String) {
-        Napier.d { "Deleting notification with msgID $msgID from server..." }
+        Napier.i { "Deleting notification with msgID $msgID from server..." }
         Scope.launch {
             networkService.deletePushNotification(msgID)
         }

@@ -60,7 +60,7 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
     }
 
     fun deleteAllWithId(idSet: Set<String>) {
-        Napier.d { "Deleting ${idSet.size} elements..." }
+        Napier.i { "Deleting ${idSet.size} elements..." }
         val objectIdSet = idSet.map { ObjectId(it) }.toSet()
         launch {
             mutex().withLock {

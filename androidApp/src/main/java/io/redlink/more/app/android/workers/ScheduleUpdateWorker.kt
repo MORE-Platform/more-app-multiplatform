@@ -22,7 +22,7 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
     }
 
     override suspend fun doWork() = withContext(Dispatchers.IO) {
-        Napier.d { "Running $WORKER_TAG! Updating Schedule..." }
+        Napier.i { "Running $WORKER_TAG! Updating Schedule..." }
         ScheduleRepository().updateTaskStatesSync(shared.observationFactory, shared.dataRecorder)
         return@withContext Result.success()
     }

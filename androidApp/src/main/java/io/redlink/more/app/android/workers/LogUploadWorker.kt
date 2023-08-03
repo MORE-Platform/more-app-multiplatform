@@ -18,6 +18,7 @@ import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class LogUploadWorker(context: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(context, workerParameters) {
@@ -30,8 +31,12 @@ class LogUploadWorker(context: Context, workerParameters: WorkerParameters) :
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            inputData.getString(WORKER_DATA)?.let { data ->
+            inputData.getString(WORKER_DATA)?.let { sharedPreferences.load(it, "") }?.let { data ->
+                if (data.isBlank()) {
+                    return@withContext Result.failure()
+                }
                 val logList = deserializeData(data)
+                android.util.Log.i("LogUploadWorker", "Data to send: $logList")
                 if (logList.isNotEmpty()) {
                     if (networkService.sendLogs(logList)) {
                         Result.success()
@@ -54,12 +59,15 @@ class LogUploadWorker(context: Context, workerParameters: WorkerParameters) :
         private const val WORKER_DATA = "logData"
 
         fun scheduleWorker(workManager: WorkManager, logs: List<Log>) {
+            //android.util.Log.i("LogUploadWorker", "Uploading $logs")
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiredNetworkType(NetworkType.NOT_ROAMING)
                 .build()
+            val key = "LOG_" + UUID.randomUUID()
+            MoreApplication.shared!!.sharedStorageRepository.store(key, serializeData(logs))
             val data = Data.Builder()
-                .putString(WORKER_DATA, serializeData(logs))
+                .putString(WORKER_DATA, key)
                 .build()
             val worker = OneTimeWorkRequestBuilder<LogUploadWorker>()
                 .setConstraints(constraints)

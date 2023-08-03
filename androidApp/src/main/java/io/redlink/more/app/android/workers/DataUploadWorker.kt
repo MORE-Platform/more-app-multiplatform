@@ -35,23 +35,30 @@ class DataUploadWorker (
     private val observationDataRepository = ObservationDataRepository()
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        Napier.i { "Starting DataUploadWorker doWork()" }
 
-        if (!credentialRepository.hasCredentials()) return@withContext Result.failure()
+        if (!credentialRepository.hasCredentials()) {
+            Napier.i { "No credentials found, DataUploadWorker failure" }
+            return@withContext Result.failure()
+        }
+
         try {
-            Log.d(TAG, "Worker started!")
+            Napier.i { "Worker started!" }
             return@withContext observationDataRepository.allAsBulk()?.let { bulk ->
                 if (bulk.dataPoints.isNotEmpty()) {
                     return@withContext uploadDataBulk(bulk).apply {
                         observationDataRepository.close()
                     }
                 }
+                Napier.i { "No data points found, DataUploadWorker success" }
                 Result.success()
             } ?: Result.failure()
         } catch (err: Exception) {
-            Log.e(TAG, err.stackTraceToString())
+            Napier.e(throwable = err, message =  "Exception in DataUploadWorker")
             if (isStopped) {
                 stopped = isStopped
                 workManager.cancelAllWork()
+                Napier.i { "WorkManager cancelled all work due to stopped state" }
             }
             Result.failure()
         }
@@ -60,14 +67,17 @@ class DataUploadWorker (
     private suspend fun uploadDataBulk(bulk: DataBulk): Result {
         val (ids, error) = networkService.sendData(bulk)
         return if (error != null) {
-            Napier.e { error.message }
+            Napier.e { "Error while sending data: ${error.message}" }
             if (stopped || runAttemptCount > MAX_WORKER_RETRY) {
+                Napier.i { "Worker stopped or max retry attempts reached, failure" }
                 Result.failure()
             }
+            Napier.i { "Worker retry" }
             Result.retry()
         } else {
-            Napier.d { "Deleting observation data..." }
+            Napier.i { "Deleting observation data..." }
             observationDataRepository.deleteAllWithId(ids)
+            Napier.i { "Deleted ${ids.size} observation data points, success" }
             Result.success()
         }
     }

@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.request.headers
+import io.ktor.client.request.post
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -12,6 +13,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.parseAuthorizationHeader
 import io.ktor.http.contentType
 import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.internal.platform.WeakReference
@@ -20,6 +22,8 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.Confi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.NotificationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.RequestConfig
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.RequestMethod
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
@@ -33,14 +37,15 @@ import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepositor
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.cancel
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.math.log
 
 private const val TAG = "NetworkService"
 
 class NetworkService(
     private val endpointRepository: EndpointRepository,
     private val credentialRepository: CredentialRepository,
-    private val customLogger: Logger? = null
 ) : Closeable {
     private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
@@ -51,10 +56,8 @@ class NetworkService(
 
     private fun initConfigApi() {
         if (configurationApi == null) {
-            Napier.d { "Initializing ConfigurationApi..." }
-            if (httpClient == null) {
-                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
-            }
+            Napier.i { "Initializing ConfigurationApi..." }
+            initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
                     val url = endpointRepository.endpoint()
@@ -71,10 +74,8 @@ class NetworkService(
 
     private fun initDataApi() {
         if (dataApi == null || dataApi?.get() == null) {
-            Napier.d { "Init DataAPI..." }
-            if (httpClient == null) {
-                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
-            }
+            Napier.i { "Init DataAPI..." }
+            initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
                     val api = DataApi(
@@ -92,10 +93,8 @@ class NetworkService(
 
     private fun initNotificationApi() {
         if (notificationApi == null) {
-            Napier.d { "Init Notification API..." }
-            if (httpClient == null) {
-                httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
-            }
+            Napier.i { "Init Notification API..." }
+            initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
                     val api = NotificationApi(endpointRepository.endpoint(), httpClient.engine, httpClientConfig = {httpClient.engineConfig})
@@ -108,15 +107,19 @@ class NetworkService(
     }
 
     private fun initLoggingApi() {
+        initHttpClient()
+    }
+
+    private fun initHttpClient() {
         if (httpClient == null) {
-            httpClient = getHttpClient(customLogger ?: Logger.DEFAULT)
+            httpClient = getHttpClient(Logger.DEFAULT)
         }
     }
 
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
             credentialRepository.credentials()?.let {
-                Napier.d { "Deleting Participation..." }
+                Napier.i { "Deleting Participation..." }
                 val httpClient = getHttpClient()
                 val url = endpointRepository.endpoint()
                 val registrationApi =
@@ -127,10 +130,10 @@ class NetworkService(
 
                 val registrationResponse =
                     registrationApi.unregisterFromStudy() ?: return Pair(false, NetworkServiceError(0, "Response null"))
-                Napier.d(registrationResponse.response.toString(), tag = TAG)
+                Napier.i(registrationResponse.response.toString(), tag = TAG)
                 close()
                 if (registrationResponse.success) {
-                    Napier.d { "Participation deleted!" }
+                    Napier.i { "Participation deleted!" }
                     return Pair(true, null)
                 }
                 println("Error; Code: ${registrationResponse.response.status.value}")
@@ -155,17 +158,17 @@ class NetworkService(
         endpoint: String? = null
     ): Pair<Study?, NetworkServiceError?> {
         try {
-            Napier.d { "Validating Registration token..." }
+            Napier.i { "Validating Registration token..." }
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
             val registrationApi =
                 RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
             val registrationResponse =
                 registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken) ?: return Pair(null, NetworkServiceError(0, "Response null"))
-            Napier.d(registrationResponse.response.toString(), tag = TAG)
+            Napier.i(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {
                 registrationResponse.body().let {
-                    Napier.d { "Registration token valid!" }
+                    Napier.i { "Registration token valid!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -189,7 +192,7 @@ class NetworkService(
         endpoint: String? = null
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
-            Napier.d { "Sending Consent..." }
+            Napier.i { "Sending Consent..." }
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
             val registrationApi = RegistrationApi(
@@ -199,7 +202,7 @@ class NetworkService(
             val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             if (consentResponse.success) {
                 consentResponse.body().let {
-                    Napier.d { "Credentials received!" }
+                    Napier.i { "Credentials received!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -215,7 +218,7 @@ class NetworkService(
     suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
         initConfigApi()
         try {
-            Napier.d { "Downloading study data..." }
+            Napier.i { "Downloading study data..." }
             val configResponse =
                 configurationApi?.getStudyConfiguration() ?: return Pair(
                     null,
@@ -223,7 +226,7 @@ class NetworkService(
                 )
             if (configResponse.success) {
                 configResponse.body().let {
-                    Napier.d { "Loading study data success!" }
+                    Napier.i { "Loading study data success!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -241,13 +244,13 @@ class NetworkService(
         initConfigApi()
         configurationApi?.let {
             try {
-                Napier.d { "Sending notification token..." }
+                Napier.i { "Sending notification token..." }
                 val tokenResponse = it.setPushNotificationToken(
                     serviceType = PushNotificationServiceType.FCM,
                     pushNotificationToken = PushNotificationToken(token = token)
                 ) ?: return Pair(false, NetworkServiceError(0, "Response null"))
                 if (tokenResponse.success) {
-                    Napier.d { "Uploading notification token success!" }
+                    Napier.i { "Uploading notification token success!" }
                     return Pair(true, null)
                 }
                 return Pair(
@@ -272,7 +275,7 @@ class NetworkService(
             dataApiResponse.get()?.let { dataApiResponse ->
                 if (dataApiResponse.success) {
                     dataApiResponse.body().let {
-                        Napier.d { "Sent data!" }
+                        Napier.i { "Sent data!" }
                         dataApiResponse.response.cancel()
                         return Pair(it.get()?.toSet() ?: emptySet(), null)
                     }
@@ -344,16 +347,21 @@ class NetworkService(
 
     suspend fun sendLogs(logs: List<Log>): Boolean {
         initLoggingApi()
-        return httpClient?.let { client ->
-            client.request(endpointRepository.loggingEndpoint()) {
-                method = HttpMethod.Post
-                contentType(ContentType.Application.Json)
-                headers {
-                    append(HttpHeaders.Authorization, "ApiKey ${credentialRepository.loggingKey()}")
+        val elasticData = serializeToNDJson(logs)
+        return if (elasticData.isNotBlank()) {
+            return httpClient?.let { client ->
+                val response = client.post(endpointRepository.loggingEndpoint()) {
+                    headers {
+                        append(HttpHeaders.Authorization, "ApiKey ${credentialRepository.loggingKey()}")
+                    }
+                    contentType(ContentType.Application.Json)
+                    setBody(elasticData)
                 }
-                setBody(logs)
-            }.status == HttpStatusCode.Created
-        } ?: false
+                return@let response.status == HttpStatusCode.Created || response.status == HttpStatusCode.OK
+            } ?: false
+        } else {
+            false
+        }
     }
 
     private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
@@ -387,6 +395,15 @@ class NetworkService(
         dataApi = null
         httpClient?.close()
         httpClient = null
+    }
+
+    private fun serializeToNDJson(logs: List<Log>): String {
+        return buildString {
+            logs.forEach { log ->
+                appendLine("{\"index\":{}}")
+                appendLine(Json.encodeToString(log))
+            }
+        }
     }
 }
 

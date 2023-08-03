@@ -13,14 +13,14 @@ Service to handle push notifications and firebase connections
 
 class FCMService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
-        Napier.d( "Refreshed token: $token")
+        Napier.i( "Refreshed token: $token")
         MoreApplication.shared!!.notificationManager.newFCMToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        Napier.d( "From: ${message.from}")
+        Napier.i( "From: ${message.from}")
         if (message.data.isNotEmpty() || message.notification != null) {
-            Napier.d { message.toString() }
+            Napier.i { message.toString() }
             MoreApplication.shared!!.notificationManager.storeAndHandleNotification(MoreApplication.shared!!, message.daoFromRemoteMessage())
         }
     }

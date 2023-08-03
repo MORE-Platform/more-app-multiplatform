@@ -38,7 +38,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         api.setPolarFilter(false)
         api.setApiCallback(polarObserverCallback)
         api.setAutomaticReconnection(true)
-        api.setApiLogger { str -> Napier.d { str } }
+        api.setApiLogger { str -> Napier.i { str } }
         api
     }
 
@@ -62,13 +62,14 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
                 BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.ON
                 else -> BluetoothState.OFF
             }
-            Napier.d { "Current Bluetooth State: $bluetoothState" }
+            Napier.i(tag = "PolarConnector::init") { "Current Bluetooth State: $bluetoothState" }
         }
     }
 
     override fun scan() {
         if (!scanning && observer.isNotEmpty() && bluetoothState == BluetoothState.ON) {
             isScanning(true)
+            Napier.i(tag = "PolarConnector::scan") { "Scanning started." }
             scanDisposable = polarApi.searchForDevice()
                 .subscribe(
                     { polarDeviceInfo: PolarDeviceInfo ->
@@ -82,28 +83,31 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun connect(device: BluetoothDevice): Error? {
+        Napier.i(tag = "PolarConnector::connect") { "Connecting to device: $device" }
         return try {
             device.address?.let {
                 polarApi.connectToDevice(it)
             }
             null
         } catch (error: Error) {
-            Napier.e { error.stackTraceToString() }
+            Napier.e(tag = "PolarConnector::connect") { error.stackTraceToString() }
             error
         }
     }
 
     override fun disconnect(device: BluetoothDevice) {
+        Napier.i(tag = "PolarConnector::disconnect") { "Disconnecting from device: $device" }
         try {
             device.address?.let {
                 polarApi.disconnectFromDevice(it)
             }
         } catch (error: Error) {
-            Napier.e { error.stackTraceToString() }
+            Napier.e(tag = "PolarConnector::disconnect") { error.stackTraceToString() }
         }
     }
 
     override fun stopScanning() {
+        Napier.i(tag = "PolarConnector::stopScanning") { "Stopping scanning." }
         if (scanning) {
             isScanning(false)
             scanDisposable?.dispose()
@@ -114,16 +118,18 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
-            Napier.d { "HR ready!" }
+            Napier.i(tag = "PolarConnector::onPolarFeatureReady"){ "HR ready!" }
             PolarHeartRateObservation.setHRReady()
         }
     }
 
     override fun onDeviceConnected(polarDeviceInfo: PolarDeviceInfo) {
+        Napier.i(tag = "PolarConnector::onDeviceConnected") { "Device connected: $polarDeviceInfo" }
         didConnectToDevice(polarDeviceInfo.toBluetoothDevice())
     }
 
     override fun onDeviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
+        Napier.i(tag = "PolarConnector::onDeviceDisconnected") { "Device disconnected: $polarDeviceInfo" }
         didDisconnectFromDevice(polarDeviceInfo.toBluetoothDevice())
     }
 
@@ -132,11 +138,12 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun onPowerChange(bluetoothState: BluetoothState) {
+        Napier.i(tag = "PolarConnector::onPowerChange") { "Bluetooth power change: $bluetoothState" }
         onBluetoothStateChange(bluetoothState)
     }
 
     override fun close() {
-        log { "Closing PolarConnector..." }
+        Napier.i(tag = "PolarConnector::close") { "Closing PolarConnector..." }
         stopScanning()
     }
 
@@ -165,7 +172,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
-        Napier.d { "Device Discovered: $device" }
+        Napier.i { "Device Discovered: $device" }
         if (discovered.none { it.address == device.address } && connected.none { it.address == device.address }) {
             discovered.add(device)
         }
@@ -216,6 +223,11 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun updateObserver(action: (BluetoothConnectorObserver) -> Unit) {
+        if (observer.isEmpty()) {
+            Napier.d(tag = "PolarConnector::updateObserver") { "No observer available to send data to!" }
+        } else {
+            Napier.d(tag = "PolarConnector::updateObserver") { "Sending data to observer..." }
+        }
         observer.forEach(action)
     }
 

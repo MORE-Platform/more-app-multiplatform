@@ -174,7 +174,7 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                 getAllDevicesWithAutoReconnectEnabled().firstOrNull()?.let {
                     val addresses = it.filter { it.shouldAutomaticallyReconnect && !it.connected }
                         .mapNotNull { it.address }
-                    Napier.d { "Connected Device List with automatic reconnection: $it" }
+                    Napier.i { "Connected Device List with automatic reconnection: $it" }
                     if (address in addresses) {
                         onResult(true)
                     } else {

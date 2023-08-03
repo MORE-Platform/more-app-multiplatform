@@ -2,6 +2,7 @@ package io.redlink.more.app.android.util
 
 import androidx.work.WorkManager
 import io.github.aakira.napier.LogLevel
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.workers.LogUploadWorker
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
 import io.redlink.more.more_app_mutliplatform.util.ElasticLogHandler
@@ -14,10 +15,12 @@ class AndroidLogHandler(private val workManager: WorkManager): ElasticLogHandler
     private val mutex = Mutex()
     override fun appendNewLog(log: Log) {
         Scope.launch {
+            //android.util.Log.i("AndroidLogHandler", "New Log added for Elastic")
             mutex.withLock {
                 logQueue.add(log)
             }
-            if (log.priority == LogLevel.ERROR || log.priority == LogLevel.ASSERT || logQueue.size >= 10) {
+            if (MoreApplication.shared != null && (log.priority == LogLevel.ERROR || log.priority == LogLevel.ASSERT || logQueue.size >= 10)) {
+                //android.util.Log.i("AndroidLogHandler", "Sending data to elastic")
                 releaseDataToBackend()
             }
         }

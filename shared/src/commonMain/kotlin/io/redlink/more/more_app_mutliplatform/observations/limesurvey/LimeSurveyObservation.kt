@@ -36,7 +36,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         )
         if (token != null && limeSurveyId != null) {
             val url = configToLink(limeSurveyLink, limeSurveyId, token)
-            Napier.d { "LimeSurvey link: $url" }
+            Napier.i { "LimeSurvey link: $url" }
             limeURL.set(url)
         }
     }

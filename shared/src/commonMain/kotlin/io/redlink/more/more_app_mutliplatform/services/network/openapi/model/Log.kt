@@ -4,7 +4,6 @@ import io.github.aakira.napier.LogLevel
 import io.redlink.more.more_app_mutliplatform.Platform
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,7 +31,7 @@ data class LogThrowable(
 ) {
     companion object {
         fun fromSystemThrowable(throwable: Throwable?): LogThrowable {
-            return LogThrowable(fromSystemThrowable(throwable?.cause), throwable?.message)
+            return LogThrowable(null, throwable?.message)
         }
     }
 }

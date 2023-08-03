@@ -35,11 +35,11 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            Napier.d( "Notification Worker started!")
+            Napier.i( "Notification Worker started!")
             val data = inputData.getString(NOTIFICATION_DATA)
             val type: Type = object : TypeToken<Map<String, String>>() {}.type
             val notificationData: Map<String, String> = Gson().fromJson(data, type)
-            Napier.d( "NotificationData: $notificationData")
+            Napier.i( "NotificationData: $notificationData")
             shared.notificationManager.handleNotificationData(shared, notificationData.toRealmDictionary())
             Result.success()
         } catch (err: Exception) {

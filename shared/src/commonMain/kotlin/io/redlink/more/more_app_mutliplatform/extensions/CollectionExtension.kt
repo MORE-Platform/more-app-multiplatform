@@ -12,7 +12,7 @@ fun Collection<ObservationDataSchema>.mapAsBulkData(): DataBulk? {
     if (dataPoints.isEmpty() || dataPoints.firstOrNull() == null) {
         return null
     }
-    Napier.d { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size} with first being: ${dataPoints.first()}" }
+    Napier.i { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size} with first being: ${dataPoints.first()}" }
     return DataBulk(
         bulkId = bulkId,
         dataPoints = dataPoints
