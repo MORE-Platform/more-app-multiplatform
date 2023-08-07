@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = 2
-        versionName = "2.3.4"
+        versionName = "2.3.6"
     }
     buildFeatures {
         compose = true
