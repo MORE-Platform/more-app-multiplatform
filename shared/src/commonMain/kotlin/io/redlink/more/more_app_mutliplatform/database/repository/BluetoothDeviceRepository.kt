@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnector? = null) : Repository<BluetoothDevice>(), BluetoothConnectorObserver {
+class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnector? = null) :
+    Repository<BluetoothDevice>(), BluetoothConnectorObserver {
     val connectedDevices = MutableStateFlow<Set<BluetoothDevice>>(emptySet())
     private val pairedDeviceIds = mutableSetOf<String>()
     override fun count(): Flow<Long> = realmDatabase().count<BluetoothDevice>()
@@ -41,9 +42,15 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                     if (device != null) {
                         Napier.i { "Setting state for device: $device to $connected" }
                         device.connected = connected
+                        if (connected) {
+                            device.shouldAutomaticallyReconnect = true
+                        }
                     } else {
                         Napier.i { "Adding device $bluetoothDevice and setting state to $connected" }
                         bluetoothDevice.connected = connected
+                        if (connected) {
+                            bluetoothDevice.shouldAutomaticallyReconnect = true
+                        }
                         this.copyToRealm(bluetoothDevice, updatePolicy = UpdatePolicy.ALL)
                     }
                 }
@@ -61,6 +68,23 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
         }
     }
 
+    fun setAutoReconnect(bluetoothDevice: BluetoothDevice, shouldAutoReconnect: Boolean) {
+        launch {
+            realm()?.write {
+                bluetoothDevice.address?.let {
+                    val device = this.query<BluetoothDevice>("address = $0", it).first().find()
+                    if (device != null) {
+                        Napier.i { "Setting auto reconnect state for device: $device to $shouldAutoReconnect" }
+                        device.shouldAutomaticallyReconnect = shouldAutoReconnect
+                    }
+                }
+            }
+        }
+    }
+
+    fun getAllDevicesWithAutoReconnectEnabled() =
+        realmDatabase().query<BluetoothDevice>(query = "shouldAutomaticallyReconnect = true")
+
     fun setConnectionState(deviceIds: Set<String>, connected: Boolean) {
         realm()?.writeBlocking {
             this.query<BluetoothDevice>()
@@ -74,11 +98,18 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
 
     fun getDevices() = realmDatabase().query<BluetoothDevice>()
 
-    fun getConnectedDevices(connected: Boolean = true) = realmDatabase().query<BluetoothDevice>(query = "connected = $0", queryArgs = arrayOf(connected))
+    fun getConnectedDevices(connected: Boolean = true) = realmDatabase().query<BluetoothDevice>(
+        query = "connected = $0",
+        queryArgs = arrayOf(connected)
+    )
 
-    fun connectedDevicesChange(connected: Boolean, provideNewState: (List<BluetoothDevice>) -> Unit) = getConnectedDevices(connected).asClosure(provideNewState)
+    fun connectedDevicesChange(
+        connected: Boolean,
+        provideNewState: (List<BluetoothDevice>) -> Unit
+    ) = getConnectedDevices(connected).asClosure(provideNewState)
 
-    fun getConnectedDevices(provideNewState: (Set<BluetoothDevice>) -> Unit) = connectedDevices.asClosure(provideNewState)
+    fun getConnectedDevices(provideNewState: (Set<BluetoothDevice>) -> Unit) =
+        connectedDevices.asClosure(provideNewState)
 
     fun removeDevices(deviceIds: Set<BluetoothDevice>) {
         realmDatabase().deleteItems(deviceIds)
@@ -91,12 +122,13 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
                 realmDatabase().query<BluetoothDevice>("connected == true").firstOrNull()?.let {
                     pairedDeviceIds.addAll(it.mapNotNull { it.address })
                     if (pairedDeviceIds.isNotEmpty()) {
-                        bluetoothConnector.applyObserver(context)
+                        bluetoothConnector.addObserver(context)
                         bluetoothConnector.scan()
                         delay(listenForTimeInMillis)
                         bluetoothConnector.stopScanning()
                         setConnectionState(pairedDeviceIds, false)
                         pairedDeviceIds.clear()
+                        bluetoothConnector.removeObserver(context)
                     }
                 }
             }
@@ -134,5 +166,30 @@ class BluetoothDeviceRepository(private val bluetoothConnector: BluetoothConnect
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
+    }
+
+    fun shouldConnectToDiscoveredDevice(device: BluetoothDevice, onResult: (Boolean) -> Unit) {
+        launch {
+            device.address?.let { address ->
+                getAllDevicesWithAutoReconnectEnabled().firstOrNull()?.let {
+                    val addresses = it.filter { it.shouldAutomaticallyReconnect && !it.connected }
+                        .mapNotNull { it.address }
+                    Napier.i { "Connected Device List with automatic reconnection: $it" }
+                    if (address in addresses) {
+                        onResult(true)
+                    } else {
+                        onResult(false)
+                    }
+                }
+            } ?: kotlin.run {
+                onResult(false)
+            }
+        }
+    }
+
+    fun resetAll() {
+        bluetoothConnector?.removeObserver(this)
+        pairedDeviceIds.clear()
+        connectedDevices.set(emptySet())
     }
 }

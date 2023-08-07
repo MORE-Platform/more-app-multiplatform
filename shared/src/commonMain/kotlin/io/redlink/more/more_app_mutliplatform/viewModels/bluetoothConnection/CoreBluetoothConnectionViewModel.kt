@@ -18,6 +18,7 @@ import io.redlink.more.more_app_mutliplatform.util.Scope.repeatedLaunch
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 
 class CoreBluetoothConnectionViewModel(
     private val bluetoothConnector: BluetoothConnector,
@@ -31,16 +32,50 @@ class CoreBluetoothConnectionViewModel(
 
     val isScanning = MutableStateFlow(false)
 
+    private var backgroundScanningEnabled = false
+    private var viewActive = false
+
     private var scanJob: String? = null
 
     val bluetoothPower = MutableStateFlow(BluetoothState.ON)
 
+    init {
+        bluetoothConnector.addObserver(this)
+        bluetoothConnector.replayStates()
+    }
+
+    fun enableBackgroundScanner() {
+        if (!backgroundScanningEnabled) {
+            backgroundScanningEnabled = true
+            Scope.launch {
+                if (!viewActive && bluetoothDeviceRepository.getDevices().firstOrNull()?.isNotEmpty() == true) {
+                    delay(2000)
+                    periodicScan(BACKGROUND_SCAN_DURATION, BACKGROUND_SCAN_INTERVAL)
+                }
+            }
+        }
+    }
+
+    fun disableBackgroundScanner() {
+        backgroundScanningEnabled = false
+        if (!viewActive) {
+            stopPeriodicScan()
+        }
+    }
+
     override fun viewDidAppear() {
-        bluetoothConnector.applyObserver(this)
+        viewActive = true
+        if (backgroundScanningEnabled) {
+            stopPeriodicScan()
+        }
+        periodicScan()
+    }
+
+    private fun periodicScan(customScanDuration: Long = scanDuration, customScanInterval: Long = scanInterval) {
         launchScope {
             bluetoothPower.collect {
                 if (it == BluetoothState.ON) {
-                    startPeriodicScan()
+                    startPeriodicScan(customScanDuration, customScanInterval)
                 } else {
                     stopPeriodicScan()
                 }
@@ -50,25 +85,40 @@ class CoreBluetoothConnectionViewModel(
 
     override fun viewDidDisappear() {
         super.viewDidDisappear()
+        viewActive = false
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         discoveredDevices.clear()
         connectingDevices.clear()
-        close()
+        stopPeriodicScan()
+        if (backgroundScanningEnabled) {
+            Scope.launch {
+                delay(10000L)
+                if (backgroundScanningEnabled) {
+                    periodicScan(BACKGROUND_SCAN_DURATION, BACKGROUND_SCAN_INTERVAL)
+                }
+            }
+        }
     }
 
-    private fun startPeriodicScan() {
+    private fun startPeriodicScan(customScanDuration: Long = scanDuration, customScanInterval: Long = scanInterval) {
         if (scanJob == null) {
-            scanJob = repeatedLaunch(scanInterval) {
+            Napier.i(tag = "CoreBluetoothConnectionViewModel::startPeriodicScan") { "Starting period scanner with Duration= $customScanDuration; Interval= $customScanInterval" }
+            scanJob = repeatedLaunch(customScanInterval) {
+                Napier.i(tag = "CoreBluetoothConnectionViewModel::startPeriodicScan") { "Scanning..." }
                 scanForDevices()
-                delay(scanDuration)
+                delay(customScanDuration)
+                Napier.i(tag = "CoreBluetoothConnectionViewModel::startPeriodicScan") { "Stop Scanning..." }
                 stopScanning()
             }.first
         }
     }
 
     fun stopPeriodicScan() {
-        close()
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::stopPeriodicScan") { "Stopping period scanner!" }
+        scanJob?.let { Scope.cancel(it) }
+        scanJob = null
+        bluetoothConnector.stopScanning()
     }
 
     fun scanForDevices() {
@@ -80,7 +130,7 @@ class CoreBluetoothConnectionViewModel(
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {
-        Napier.i { "Connecting to $device" }
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::connectToDevice") { "Connecting to $device" }
         connectingDevices.append(device.address)
         return bluetoothConnector.connect(device)?.let {
             connectingDevices.remove(device.address)
@@ -90,10 +140,9 @@ class CoreBluetoothConnectionViewModel(
     }
 
     fun disconnectFromDevice(device: BluetoothDevice) {
-        Napier.i { "Disconnecting from $device" }
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::disconnectFromDevice") { "Disconnecting from $device" }
         bluetoothConnector.disconnect(device)
-        connectedDevices.removeWhere { it.address == device.address }
-        bluetoothDeviceRepository.setConnectionState(device, false)
+        bluetoothDeviceRepository.setAutoReconnect(device, false)
     }
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
@@ -103,42 +152,54 @@ class CoreBluetoothConnectionViewModel(
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        if (!connectedDevices.value.mapNotNull { it.address }.contains(bluetoothDevice.address)) {
+        if (connectedDevices.value.none { it.address == bluetoothDevice.address }) {
+            Napier.i(tag = "CoreBluetoothConnectionViewModel::didConnectToDevice") { "Successfully connected to $bluetoothDevice" }
             connectedDevices.append(bluetoothDevice)
             connectingDevices.remove(bluetoothDevice.address)
             bluetoothDeviceRepository.setConnectionState(bluetoothDevice, true)
         }
     }
 
+
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::didDisconnectFromDevice") { "Disconnected from $bluetoothDevice" }
         connectedDevices.removeWhere { it.address == bluetoothDevice.address }
         bluetoothDeviceRepository.setConnectionState(bluetoothDevice, false)
     }
 
     override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+        Napier.e(tag = "CoreBluetoothConnectionViewModel::didFailToConnectToDevice") { "Failed to connect to $bluetoothDevice" }
         connectedDevices.remove(bluetoothDevice)
         connectingDevices.remove(bluetoothDevice.address)
         bluetoothDeviceRepository.setConnectionState(bluetoothDevice, false)
-        Napier.e { "Failed to connect to $bluetoothDevice" }
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::onBluetoothStateChange") { "Bluetooth state changed to $bluetoothState" }
         bluetoothPower.set(bluetoothState)
     }
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
-        if (!connectedDevices.value.mapNotNull { it.address }.contains(device.address)
-            && !discoveredDevices.value.mapNotNull { it.address }.contains(device.address)) {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::didDiscoverDevice"){ "Discovered device: $device" }
+        if (connectedDevices.value.none { it.address == device.address }
+            && discoveredDevices.value.none { it.address == device.address }) {
             discoveredDevices.append(device)
+            bluetoothDeviceRepository.shouldConnectToDiscoveredDevice(device) {
+                if (it) {
+                    connectToDevice(device)
+                }
+            }
         }
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::removeDiscoveredDevice") { "Removed discovered device: $device" }
         discoveredDevices.removeWhere { it.address == device.address }
         connectingDevices.remove(device.address)
     }
 
     override fun isScanning(boolean: Boolean) {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::isScanning") { "Scanning status changed to: $boolean" }
         this.isScanning.set(boolean)
     }
 
@@ -155,10 +216,28 @@ class CoreBluetoothConnectionViewModel(
 
     fun bluetoothStateChanged(providedState: (BluetoothState) -> Unit) = bluetoothPower.asClosure(providedState)
 
+    fun resetAll() {
+        Napier.i(tag = "CoreBluetoothConnectionViewModel::resetAll") { "Resetting Bluetooth data!" }
+        stopPeriodicScan()
+        close()
+        discoveredDevices.clear()
+        connectingDevices.clear()
+        connectedDevices.clear()
+        isScanning.set(false)
+        backgroundScanningEnabled = false
+        viewActive = false
+        bluetoothDeviceRepository.resetAll()
+        scanJob = null
+    }
+
     override fun close() {
         scanJob?.let { Scope.cancel(it) }
         scanJob = null
         bluetoothConnector.stopScanning()
-        bluetoothConnector.applyObserver(null)
+    }
+
+    companion object {
+        private const val BACKGROUND_SCAN_DURATION = 2000L
+        private const val BACKGROUND_SCAN_INTERVAL = 10000L
     }
 }

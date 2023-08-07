@@ -50,7 +50,7 @@ struct ExpandableText: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack{
-                SectionHeading(sectionTitle: .constant(title))
+                SectionHeading(sectionTitle: title)
                 Spacer()
                 if self.truncated {
                     Button {

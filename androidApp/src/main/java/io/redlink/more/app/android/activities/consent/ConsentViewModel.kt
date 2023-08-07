@@ -74,7 +74,7 @@ class ConsentViewModel(
                 coreModel.acceptConsent(info.toMD5(), uniqueDeviceId,
                     onSuccess = {
                         consentViewModelListener.credentialsStored()
-                        FCMService.newFirebaseToken()
+                        MoreApplication.shared!!.newLogin()
                     }, onError = {
                         error.value = it?.message
                     })

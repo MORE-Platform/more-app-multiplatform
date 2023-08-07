@@ -29,10 +29,10 @@ struct ConsentListItem: View {
                 	Divider()
                 Group {
                     if isOpen {
-                        BasicText(text: .constant(consentInfo.info))
+                        BasicText(text: consentInfo.info)
                             .padding(.bottom, 20)
                     } else if hasPreview && !isOpen {
-                        InactiveText(text: .constant(consentInfo.info))
+                        InactiveText(text: consentInfo.info)
                             .padding(.bottom, 20)
                     }
                 }

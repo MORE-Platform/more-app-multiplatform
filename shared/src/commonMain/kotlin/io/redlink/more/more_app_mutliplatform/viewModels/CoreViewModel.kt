@@ -37,10 +37,11 @@ abstract class CoreViewModel : Closeable {
     }
 
     private fun cancelScope() {
-        Scope.cancel(viewJobs.toSet())
         Scope.launch {
             mutex.withLock {
+                val jobsToCancel = viewJobs.toSet()
                 viewJobs.clear()
+                Scope.cancel(jobsToCancel)
             }
         }
     }

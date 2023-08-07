@@ -2,7 +2,6 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
@@ -29,23 +28,32 @@ abstract class ObservationDataManager {
     private var observationCollectionTimestamp = mutableMapOf<String, Long>()
 
     init {
-        log { "ObservationDataManager init!" }
+        Napier.i(tag = "ObservationDataManager::init") { "ObservationDataManager init!" }
     }
 
     fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
-            dataList.forEach { it.freeze() }
+            Napier.i(tag = "ObservationDataManager::add") { "Adding ${dataList.size} observations for schedule IDs: $scheduleIdList" }
             observationDataRepository.addData(dataList)
+            if (scheduleCountJob == null) {
+                listenToDatapointCountChanges()
+            }
             Scope.launch(Dispatchers.Default) {
                 mutex.withLock {
+                    if (countJob == null) {
+                        listenToDatapointCountChanges()
+                    }
                     scheduleIdList.forEach {
-                        scheduleCount[it] = scheduleCount.getOrElse(it) {0} + dataList.size
+                        scheduleCount[it] = scheduleCount.getOrElse(it) { 0 } + dataList.size
                     }
                 }
             }
             Scope.launch {
                 val now = Clock.System.now().epochSeconds
                 val ids = dataList.map { it.observationId }.toSet()
+                if (observationTimestampJob == null) {
+                    listenToDatapointCountChanges()
+                }
                 timeStampMutex.withLock {
                     ids.forEach {
                         observationCollectionTimestamp[it] = now
@@ -56,6 +64,7 @@ abstract class ObservationDataManager {
     }
 
     fun saveAndSend() {
+        Napier.i(tag = "ObservationDataManager::saveAndSend") { "Saving and sending observations" }
         Scope.launch {
             observationDataRepository.store()
             observationDataRepository.count().firstOrNull()?.let {
@@ -67,6 +76,7 @@ abstract class ObservationDataManager {
     }
 
     fun store() {
+        Napier.i(tag = "ObservationDataManager::store") { "Storing observations" }
         observationDataRepository.store()
         storeCount()
         storeTimestamps()
@@ -74,6 +84,7 @@ abstract class ObservationDataManager {
 
     private fun storeCount() {
         if (scheduleCount.isNotEmpty()) {
+            Napier.i(tag = "ObservationDataManager::storeCount") { "Storing count of observations" }
             Scope.launch {
                 val copiedScheduleCount = mutex.withLock {
                     val copiedScheduleCount = scheduleCount.toMap()
@@ -89,6 +100,7 @@ abstract class ObservationDataManager {
 
     private fun storeTimestamps() {
         if (observationCollectionTimestamp.isNotEmpty()) {
+            Napier.d(tag = "ObservationDataManager::storeTimestamps") { "Storing timestamps of observations" }
             Scope.launch {
                 val copiedMap = timeStampMutex.withLock {
                     val copiedMap = observationCollectionTimestamp.toMap()
@@ -103,6 +115,7 @@ abstract class ObservationDataManager {
     }
 
     fun removeDataPointCount(scheduleId: String) {
+        Napier.d(tag = "ObservationDataManager::removeDataPointCount") { "Removing datapoint count for schedule ID: $scheduleId" }
         scheduleCount.remove(scheduleId)
         observationCollectionTimestamp.remove(scheduleId)
     }
@@ -110,14 +123,12 @@ abstract class ObservationDataManager {
     abstract fun sendData(onCompletion: (Boolean) -> Unit = {})
 
     fun listenToDatapointCountChanges() {
-        Napier.d { "Creating listener for datapoints..." }
+        Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Starting to listen for changes in datapoint counts" }
         if (countJob == null || Scope.isActive(countJob!!)) {
             countJob = Scope.repeatedLaunch(10000) {
-                Napier.d { "Looking for new data..." }
                 observationDataRepository.count().cancellable().firstOrNull()?.let {
-                    Napier.d { "Datapoint count: $it" }
                     if (it > 0) {
-                        Napier.d { "Observation data count: $it! Sending data..." }
+                        Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Observation data count: $it! Sending data..." }
                         sendData()
                     }
                 }
@@ -136,6 +147,7 @@ abstract class ObservationDataManager {
     }
 
     fun stopListeningToCountChanges() {
+        Napier.d(tag = "ObservationDataManager::stopListeningToCountChanges") { "Stopped listening for changes in datapoint counts" }
         Scope.cancel(setOf(countJob, scheduleCountJob, observationTimestampJob).filterNotNull())
         countJob = null
         scheduleCountJob = null

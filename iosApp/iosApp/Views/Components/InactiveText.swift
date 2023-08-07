@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct InactiveText: View {
-    @Binding var text: String
+    var text: String
     var body: some View {
         Text(text)
             .font(.moreFont.inactiveText)
@@ -20,6 +20,6 @@ struct InactiveText: View {
 
 struct InactiveText_Previews: PreviewProvider {
     static var previews: some View {
-        InactiveText(text: .constant("Hello World"))
+        InactiveText(text: "Hello World")
     }
 }

@@ -19,12 +19,12 @@ struct TaskCompletionBarView: View {
         VStack {
             HStack {
                 if progressViewTitle != "" {
-                    BasicText(text: .constant(progressViewTitle), color: Color.more.secondary)
+                    BasicText(text: progressViewTitle, color: Color.more.secondary)
                 }
                 
                 Spacer()
                 if viewModel.taskCompletion.totalTasks != 0 {
-                    BasicText(text: .constant(String(format: "%.2f%%", viewModel.taskCompletionPercentage)))
+                    BasicText(text: String(format: "%.2f%%", viewModel.taskCompletionPercentage))
                 }
             }.foregroundColor(Color.more.secondary)
             ProgressView(value: Double(viewModel.taskCompletion.finishedTasks), total: Double(viewModel.taskCompletion.totalTasks))

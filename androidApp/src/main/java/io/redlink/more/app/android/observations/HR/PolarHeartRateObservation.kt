@@ -8,9 +8,12 @@ import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private val permissions =
@@ -34,31 +37,37 @@ class PolarHeartRateObservation :
     private var heartRateDisposable: Disposable? = null
 
     override fun start(): Boolean {
-        Napier.d { "Trying to start Polar Verity Heart Rate Observation..." }
-        val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}
-        if (polarDevices.isNotEmpty()) {
-            return polarDevices.first().deviceId?.let {
+        Napier.d(tag = "PolarHeartRateObservation::start") { "Trying to start Polar Verity Heart Rate Observation..." }
+        if (observerAccessible()) {
+            val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
+                it.deviceName?.lowercase()?.contains("polar") ?: false
+            }
+            return polarDevices.firstOrNull()?.let {
                 try {
-                    heartRateDisposable = polarConnector.polarApi.startHrStreaming(it).subscribe(
-                        { polarData ->
-                            Napier.i { "Polar Data: $polarData" }
-                            storeData(mapOf("hr" to polarData.samples[0].hr))
-                        },
-                        { error ->
-                            Napier.e(error.stackTraceToString())
-                            stopAndSetState(ScheduleState.PAUSED, null)
-                        })
-                    true
+                    if (it.address != null) {
+                        heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
+                            { polarData ->
+                                storeData(mapOf("hr" to polarData.samples[0].hr))
+                            },
+                            { error ->
+                                Napier.e(tag = "PolarHeartRateObservation::start", message = "HR Recording error: ${error.stackTraceToString()}")
+                                polarDeviceDisconnected(it.deviceName)
+                            })
+                        true
+                    } else {
+                        Napier.w(tag = "PolarHeartRateObservation::start") { "PolarHeartRateObservation: Could not find device with address: ${it.address}" }
+                        false
+                    }
                 } catch (exception: Exception) {
-                    Napier.e { exception.stackTraceToString() }
+                    Napier.e(tag = "PolarHeartRateObservation::start") { exception.stackTraceToString() }
                     false
                 }
             } ?: run {
-                Napier.d { "No connected devices..." }
+                Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
                 false
             }
         }
-        Napier.d { "No connected devices..." }
+        Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
         return false
     }
 
@@ -68,7 +77,13 @@ class PolarHeartRateObservation :
     }
 
     override fun observerAccessible(): Boolean {
-        return hasPermissions(MoreApplication.appContext!!)
+        val empty = MoreApplication.shared!!.mainBluetoothConnector.connected.isEmpty()
+        if (empty) {
+            MoreApplication.shared!!.coreBluetooth.enableBackgroundScanner()
+        } else {
+            MoreApplication.shared!!.coreBluetooth.disableBackgroundScanner()
+        }
+        return hasPermissions(MoreApplication.appContext!!) && !empty
     }
 
     override fun bleDevicesNeeded(): Set<String> {
@@ -76,7 +91,7 @@ class PolarHeartRateObservation :
     }
 
     override fun ableToAutomaticallyStart(): Boolean {
-        return observerAccessible() && MoreApplication.shared!!.mainBluetoothConnector.connected.filter { it.deviceName?.lowercase()?.contains("polar") ?: false}.isNotEmpty()
+        return observerAccessible()
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
@@ -89,15 +104,42 @@ class PolarHeartRateObservation :
                     permission
                 ) == PackageManager.PERMISSION_DENIED
             ) {
-                Napier.e { "Polar has no bluetooth permissions!" }
+                Napier.e(tag = "PolarHeartRateObservation::hasPermission") { "Polar has no bluetooth permissions!" }
                 return false
             }
         }
-        log { "Polar has Bluetooth Permission!" }
+        Napier.d (tag = "PolarHeartRateObservation::hasPermission"){ "Polar has Bluetooth Permission!" }
         return true
     }
 
     companion object {
         val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+        fun polarDeviceDisconnected(specificName: String? = null) {
+            MoreApplication.shared!!.mainBluetoothConnector.connected.filter { device ->
+                device.deviceName?.lowercase()?.contains(specificName?.lowercase() ?: "polar") == true
+            }.let {
+                if (it.isEmpty()) {
+                    hrReady.set(false)
+                    MoreApplication.shared!!.observationManager.pauseObservationType(
+                        PolarVerityHeartRateType(
+                            emptySet()
+                        ).observationType
+                    )
+                    Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature removed!" }
+                }
+            }
+        }
+        fun setHRReady() {
+            if (!hrReady.value) {
+                hrReady.set(true)
+                MoreApplication.shared!!.observationManager.startObservationType(
+                    PolarVerityHeartRateType(
+                        emptySet()
+                    ).observationType
+                )
+                Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature Ready!" }
+            }
+        }
     }
 }

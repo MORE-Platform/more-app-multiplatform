@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MoreTextFieldHL: View {
     @Binding var isSmTextfield: Bool
-    @Binding var headerText: String
+    var headerText: String
     @Binding var inputPlaceholder: String
     
     @Binding var input: String
@@ -22,7 +22,7 @@ struct MoreTextFieldHL: View {
             
             HStack{
                 Spacer()
-                SectionHeading(sectionTitle: .constant(headerText))
+                SectionHeading(sectionTitle: headerText)
                 Spacer()
             }
             .padding(3)
@@ -41,6 +41,6 @@ struct MoreTextFieldHL: View {
 struct MoreTextFieldHL_Previews: PreviewProvider {
     
     static var previews: some View {
-        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: .constant("Hello World Key"), inputPlaceholder: .constant(""), input: .constant("me"), uppercase: false)
+        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: "Hello World Key", inputPlaceholder: .constant(""), input: .constant("me"), uppercase: false)
     }
 }

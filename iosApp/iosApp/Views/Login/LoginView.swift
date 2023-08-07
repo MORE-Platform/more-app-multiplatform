@@ -31,7 +31,7 @@ struct LoginView: View {
                             .padding(.vertical, 40)
 
                         MoreTextFieldHL(isSmTextfield: .constant(false),
-                                        headerText: .constant(String.localize(forKey: "participation_key_entry", withComment: "headline for participation token entry field", inTable: stringTable)),
+                                        headerText: String.localize(forKey: "participation_key_entry", withComment: "headline for participation token entry field", inTable: stringTable),
                                         inputPlaceholder: .constant(String.localize(forKey: "participation_key_entry", withComment: "headline for participation token entry field", inTable: stringTable)),
                                         input: $model.token,
                                         uppercase: true,
@@ -68,6 +68,6 @@ struct LoginView: View {
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(dataManager: iOSObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        LoginView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(dataManager: iOSObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

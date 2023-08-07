@@ -47,7 +47,7 @@ class LoginViewModel(registrationService: RegistrationService, private val login
     }
 
     fun validateKey() {
-        coreLoginViewModel.sendRegistrationToken(participantKey.value, endpointError.value,
+        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value,
             onSuccess = {
                         loginViewModelListener.tokenIsValid(it)
             }, onError = {

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct StudyTitleForwardButton: View {
-    @Binding var title: String
+    var title: String
     let action: () -> Void = {}
     
     var body: some View {
@@ -17,7 +17,7 @@ struct StudyTitleForwardButton: View {
             action()
         } label: {
             HStack {
-                Title(titleText: $title)
+                Title(titleText: title)
                 Spacer()
                 Image(systemName: "chevron.forward")
             }
@@ -27,6 +27,6 @@ struct StudyTitleForwardButton: View {
 
 struct StudyTitleForwardButton_Previews: PreviewProvider {
     static var previews: some View {
-        StudyTitleForwardButton(title: .constant("Study Title"))
+        StudyTitleForwardButton(title: "Study Title")
     }
 }

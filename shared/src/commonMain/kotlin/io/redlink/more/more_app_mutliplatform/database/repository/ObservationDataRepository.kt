@@ -3,12 +3,10 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 import io.github.aakira.napier.Napier
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
-import kotlinx.coroutines.CompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -57,12 +55,12 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
         CoroutineScope(Job() + Dispatchers.Default).launch {
-            allAsBulk()?.let { completionHandler(it.freeze()) }
+            allAsBulk()?.let { completionHandler(it) }
         }
     }
 
     fun deleteAllWithId(idSet: Set<String>) {
-        Napier.d { "Deleting ${idSet.size} elements..." }
+        Napier.i { "Deleting ${idSet.size} elements..." }
         val objectIdSet = idSet.map { ObjectId(it) }.toSet()
         launch {
             mutex().withLock {

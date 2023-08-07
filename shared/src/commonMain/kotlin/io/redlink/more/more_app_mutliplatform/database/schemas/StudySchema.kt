@@ -1,22 +1,22 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmInstant
-import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyContact
-import kotlinx.datetime.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import org.mongodb.kbson.ObjectId
 
 class StudySchema : RealmObject {
     @PrimaryKey
     var studyId: ObjectId = ObjectId.invoke()
     var studyTitle: String = ""
+    var participantId: Int? = null
+    var participantAlias: String? = ""
     var participantInfo: String = ""
     var consentInfo: String = ""
     var start: RealmInstant? = null
@@ -27,6 +27,10 @@ class StudySchema : RealmObject {
     var contactPhoneNumber: String? = null
     var version: Long = 0
     var active: Boolean = false
+    var state: String = (if(active) StudyState.ACTIVE else StudyState.PAUSED).descr
+    var finishText: String? = null
+
+    fun getState() = StudyState.getState(state)
 
     companion object {
         fun toSchema(study: Study): StudySchema {
@@ -34,6 +38,8 @@ class StudySchema : RealmObject {
                 studyTitle = study.studyTitle
                 consentInfo = study.consentInfo
                 participantInfo = study.participantInfo
+                participantId = study.participant?.id
+                participantAlias = study.participant?.alias
                 start = Instant.fromEpochMilliseconds(
                     study.start.atStartOfDayIn(TimeZone.currentSystemDefault())
                         .toEpochMilliseconds()
@@ -48,6 +54,8 @@ class StudySchema : RealmObject {
                 contactPhoneNumber = study.contact?.phoneNumber
                 version = study.version
                 active = study.active ?: false
+                state = (study.studyState?.let { StudyState.getState(it) } ?: if (active) StudyState.ACTIVE else StudyState.PAUSED).descr
+                finishText = study.finishText
             }
         }
     }

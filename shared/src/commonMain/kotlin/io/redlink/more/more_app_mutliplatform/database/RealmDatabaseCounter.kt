@@ -5,11 +5,11 @@ import io.github.aakira.napier.Napier
 data class RealmDatabaseCounter(var counter: Int = 0){
     fun increment() {
         counter++
-        Napier.d { "RealmRepositoryCounter: $counter" }
+        Napier.i { "RealmRepositoryCounter: $counter" }
     }
 
     fun decrement() {
         counter--
-        Napier.d { "RealmRepositoryCounter: $counter" }
+        Napier.i { "RealmRepositoryCounter: $counter" }
     }
 }

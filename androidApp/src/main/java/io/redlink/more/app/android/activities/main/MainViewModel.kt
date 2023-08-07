@@ -21,16 +21,25 @@ import io.redlink.more.app.android.activities.studyDetails.observationDetails.Ob
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context) : ViewModel() {
     val tabIndex = mutableStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
+
+    val studyIsUpdating = mutableStateOf(false)
+    val studyState = mutableStateOf(StudyState.NONE)
+    val finishText = mutableStateOf<String?>(null)
+
+    private var initFinished = false
 
     val notificationViewModel: NotificationViewModel
     val notificationFilterViewModel: NotificationFilterViewModel
@@ -70,17 +79,32 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     init {
+        viewModelScope.launch {
+            MoreApplication.shared!!.studyIsUpdating.collect {
+                studyIsUpdating.value = it
+            }
+        }
+        viewModelScope.launch {
+            MoreApplication.shared!!.currentStudyState.collect {
+                finishText.value = StudyRepository().getStudy().firstOrNull()?.finishText
+                studyState.value = it
+                if (it == StudyState.ACTIVE && initFinished) {
+                    showBLESetup(context)
+                }
+            }
+        }
         val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
         notificationViewModel = NotificationViewModel(coreNotificationFilterViewModel)
         notificationFilterViewModel = NotificationFilterViewModel(coreNotificationFilterViewModel)
+        showBLESetup(context)
+        initFinished = true
+    }
+
+    private fun showBLESetup(context: Context) {
         MoreApplication.shared!!.showBleSetup().let { (firstTime, hasBLEObservations) ->
             if (hasBLEObservations) {
                 if (firstTime) {
                     openBLESetupActivity(context)
-                } else {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        BluetoothDeviceRepository(MoreApplication.shared!!.mainBluetoothConnector).updateConnectedDevices()
-                    }
                 }
             }
         }
@@ -90,7 +114,6 @@ class MainViewModel(context: Context) : ViewModel() {
         taskDetailsViewModel.apply { setSchedule(scheduleId) }
 
     fun viewDidAppear() {
-
     }
 
     fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {

@@ -23,6 +23,11 @@ fun Instant.toRealmInstant(): RealmInstant {
     }
 }
 
+fun Instant.fromUTCtoCurrent(): Instant {
+    val currentZone = TimeZone.currentSystemDefault()
+    return this.toLocalDateTime(currentZone).toInstant(currentZone)
+}
+
 fun Instant.localDateTime(): LocalDateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())
 
 fun LocalDate.time(): Long =

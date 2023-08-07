@@ -5,14 +5,13 @@ import io.ktor.client.engine.darwin.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
-actual fun getHttpClient(): HttpClient = HttpClient(Darwin) {
+actual fun getHttpClient(customLogger: Logger): HttpClient = HttpClient(Darwin) {
     install(ContentNegotiation) {
         json()
         defaultRequest {
@@ -22,7 +21,7 @@ actual fun getHttpClient(): HttpClient = HttpClient(Darwin) {
             contentType(ContentType.Application.Json)
         }
         Logging {
-            logger = Logger.DEFAULT
+            logger = customLogger
             level = LogLevel.ALL
         }
         Auth {

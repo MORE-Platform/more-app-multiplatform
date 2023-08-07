@@ -117,11 +117,12 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
 
     suspend fun updateTaskStatesSync(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
         val autoStartingObservations = observationFactory.autoStartableObservations()
-        Napier.d { "Updating Schedule states..." }
+        Napier.i { "Updating Schedule states..." }
         val activeIds = realm()?.let {
             it.write {
                 query<ScheduleSchema>("done = $0", false).find().mapNotNull { scheduleSchema ->
                     val newState = scheduleSchema.updateState()
+                    Napier.i { "State update for Schema: $scheduleSchema; ${scheduleSchema.getState()} -> $newState" }
                     if (autoStartingObservations.isNotEmpty()
                         && scheduleSchema.hidden
                         && newState.active()

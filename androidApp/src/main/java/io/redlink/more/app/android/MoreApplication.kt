@@ -5,16 +5,21 @@ import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.WorkManager
 import com.google.firebase.analytics.FirebaseAnalytics
+import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
-import io.redlink.more.app.android.services.bluetooth.AndroidBluetoothConnector
+import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
+import io.redlink.more.app.android.util.AndroidLogHandler
+import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.more_app_mutliplatform.util.ElasticAntilog
 
 /**
  * Main Application class of the project.
@@ -22,25 +27,11 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRe
 class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
-        if (BuildConfig.DEBUG) {
-            napierDebugBuild()
-        }
-
+        napierDebugBuild(FirebaseCrashlyticsAntilog())
+        napierDebugBuild()
         appContext = this
 
-        polarConnector = PolarConnector(this)
-        val androidBluetoothConnector = AndroidBluetoothConnector(this)
-        androidBluetoothConnector.addSpecificBluetoothConnector("polar", polarConnector!!)
-        val dataManager = AndroidObservationDataManager(this)
-        shared = Shared(
-            SharedPreferencesRepository(this),
-            dataManager,
-            androidBluetoothConnector,
-            AndroidObservationFactory(this, dataManager),
-            AndroidDataRecorder()
-        )
-
-
+        initShared(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
@@ -51,13 +42,13 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        Napier.d { "App is in the foreground..." }
+        Napier.i { "App is in the foreground..." }
         shared?.appInForeground(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        Napier.d { "App is in the background..." }
+        Napier.i { "App is in the background..." }
         shared?.appInForeground(false)
     }
 
@@ -73,6 +64,23 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
         var polarConnector: PolarConnector? = null
             private set
+
+
+        fun initShared(context: Context) {
+            if (shared == null) {
+                polarConnector = PolarConnector(context)
+                val androidBluetoothConnector = polarConnector!!
+                val dataManager = AndroidObservationDataManager(context)
+                shared = Shared(
+                    LocalPushNotificationService(context),
+                    SharedPreferencesRepository(context),
+                    dataManager,
+                    androidBluetoothConnector,
+                    AndroidObservationFactory(context, dataManager),
+                    AndroidDataRecorder()
+                )
+            }
+        }
 
     }
 }

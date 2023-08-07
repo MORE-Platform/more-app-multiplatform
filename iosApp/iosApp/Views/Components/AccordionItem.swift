@@ -11,7 +11,7 @@ import shared
 
 struct AccordionItem: View {
     let title: String
-    @Binding var info: String
+    var info: String
     @State var isOpen: Bool = false
     
     var body: some View {
@@ -21,7 +21,7 @@ struct AccordionItem: View {
                     ConsentListHeader(title: title, hasCheck: .constant(false), isOpen: $isOpen)
                     Divider()
                     if isOpen {
-                        BasicText(text: .constant(info), color: .more.secondary)
+                        BasicText(text: info, color: .more.secondary)
                     }
                 }
             }
@@ -31,6 +31,6 @@ struct AccordionItem: View {
 
 struct AccordionItem_Previews: PreviewProvider {
     static var previews: some View {
-        AccordionItem(title: "Accordion Title", info: .constant("Accordion Info"))
+        AccordionItem(title: "Accordion Title", info: "Accordion Info")
     }
 }

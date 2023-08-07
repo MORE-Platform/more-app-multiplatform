@@ -6,8 +6,8 @@ import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
-import io.realm.kotlin.types.BaseRealmObject
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.TypedRealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import kotlinx.coroutines.CoroutineScope
@@ -28,16 +28,16 @@ object RealmDatabase {
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
     val mutex = Mutex()
 
-    fun open(realmObjects: Set<KClass<out BaseRealmObject>>) {
+    fun open(realmObjects: Set<KClass<out TypedRealmObject>>) {
         if (realm == null) {
-            Napier.d { "Init Realm..." }
+            Napier.i { "Init Realm..." }
             val config = RealmConfiguration.create(realmObjects)
             this.realm = Realm.open(config)
         }
     }
 
     fun close() {
-        Napier.d { "Closing Realm..." }
+        Napier.i { "Closing Realm..." }
         this.realm?.close()
         this.realm = null
     }
@@ -50,22 +50,28 @@ object RealmDatabase {
             scope.launch {
                 mutex.withLock {
                     realm?.write {
-                        realmObjects.forEach { copyToRealm(it, updatePolicy) }
+                        realmObjects.forEach {
+                            try {
+                                copyToRealm(it, updatePolicy)
+                            } catch (e: Exception) {
+                                Napier.i { "Copy to Realm exception: $e" }
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    inline fun <reified T : BaseRealmObject> count(): Flow<Long> {
+    inline fun <reified T : TypedRealmObject> count(): Flow<Long> {
         return realm?.query<T>()?.count()?.asFlow() ?: emptyFlow()
     }
 
-    inline fun <reified T : BaseRealmObject> findByPrimaryKey(key: String): Flow<T?> {
+    inline fun <reified T : TypedRealmObject> findByPrimaryKey(key: String): Flow<T?> {
         return realm?.query<T>("_id == $0", key)?.firstAsFlow() ?: emptyFlow()
     }
 
-    inline fun <reified T : BaseRealmObject> query(
+    inline fun <reified T : TypedRealmObject> query(
         query: String? = null,
         sortBy: String? = null,
         sort: Sort = Sort.ASCENDING,
@@ -81,14 +87,14 @@ object RealmDatabase {
         return realmQuery.asMappedFlow()
     } ?: emptyFlow()
 
-    inline fun <reified T : BaseRealmObject, R : Any> queryAllWhereFieldInList(
+    inline fun <reified T : TypedRealmObject, R : Any> queryAllWhereFieldInList(
         field: String,
         list: Set<R>
     ): Flow<List<T>> {
         return realm?.query<T>("${field.trim()} IN $0", list)?.asMappedFlow() ?: emptyFlow()
     }
 
-    inline fun <reified T : BaseRealmObject> queryFirst(
+    inline fun <reified T : TypedRealmObject> queryFirst(
         query: String? = null,
         sortBy: String? = null,
         sort: Sort = Sort.ASCENDING,
@@ -105,7 +111,7 @@ object RealmDatabase {
         ).transform { emit(it.firstOrNull()) }
     }
 
-    inline fun <reified T : BaseRealmObject> deleteAllWhereFieldInList(
+    inline fun <reified T : TypedRealmObject> deleteAllWhereFieldInList(
         field: String,
         list: List<Any>
     ) {
@@ -116,7 +122,7 @@ object RealmDatabase {
         }
     }
 
-    fun deleteItems(items: Collection<BaseRealmObject>) {
+    fun deleteItems(items: Collection<TypedRealmObject>) {
         realm?.writeBlocking {
             items.forEach {
                 delete(it)
@@ -124,14 +130,14 @@ object RealmDatabase {
         }
     }
 
-    fun <T : BaseRealmObject> deleteAlOfSchema(schema: KClass<T>) {
-        realm?.writeBlocking {
+    suspend fun <T : TypedRealmObject> deleteAlOfSchema(schema: KClass<T>) {
+        realm?.write {
             delete(schema)
         }
     }
 
     fun deleteAll() {
-        Napier.d { "Deleting all data from database..." }
+        Napier.i { "Deleting all data from database..." }
         realm?.writeBlocking {
             this.deleteAll()
         }

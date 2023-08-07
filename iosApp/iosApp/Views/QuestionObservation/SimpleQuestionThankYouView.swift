@@ -21,18 +21,18 @@ struct SimpleQuestionThankYouView: View {
                         alignment: .leading,
                         spacing: 10
                     ) {
-                        Title2(titleText: .constant(String.localize(forKey: "thank_you", withComment: "Thank You!", inTable: simpleQuestionStrings)))
+                        Title2(titleText: String.localize(forKey: "thank_you", withComment: "Thank You!", inTable: simpleQuestionStrings))
                             .padding(.top, 30)
                             .padding(.bottom, 10)
-                        BasicText(text: .constant(String.localize(forKey: "answer_submitted", withComment: "Your answer was submitted!", inTable: simpleQuestionStrings)), color: .more.secondary)
+                        BasicText(text: String.localize(forKey: "answer_submitted", withComment: "Your answer was submitted!", inTable: simpleQuestionStrings), color: .more.secondary)
                             .padding(.bottom, 8)
-                        BasicText(text: .constant(String.localize(forKey: "thank_you_participation", withComment: "Thanks for your participation!", inTable: simpleQuestionStrings)), color: .more.secondary)
+                        BasicText(text: String.localize(forKey: "thank_you_participation", withComment: "Thanks for your participation!", inTable: simpleQuestionStrings), color: .more.secondary)
                         Spacer()
                         
                         MoreActionButton(disabled: .constant(false)) {
                             questionModelState.simpleQuestionThankYouOpen = false
                         } label: {
-                            BasicText(text: .constant(String.localize(forKey: "close", withComment: "Close", inTable: simpleQuestionStrings)), color: .more.white)
+                            BasicText(text: String.localize(forKey: "close", withComment: "Close", inTable: simpleQuestionStrings), color: .more.white)
                         }
                         .padding(.bottom, 20)
                     }

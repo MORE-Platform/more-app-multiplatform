@@ -22,11 +22,13 @@ abstract class Observation(val observationType: ObservationType) {
 
 
     fun apply(observationId: String, scheduleId: String) {
+        Napier.i(tag = "Observation::apply") { "Applying observation $observationId of type ${observationType.observationType} for schedule $scheduleId." }
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId
     }
 
     fun remove(observationId: String, scheduleId: String) {
+        Napier.i(tag = "Observation::remove") { "Removing observation $observationId of type ${observationType.observationType} for schedule $scheduleId." }
         observationIds.remove(observationId)
         scheduleIds.remove(scheduleId)
     }
@@ -39,7 +41,7 @@ abstract class Observation(val observationType: ObservationType) {
         }
         configChanged = false
         return if (!running) {
-            Napier.i { "Observation with type ${observationType.observationType} starting" }
+            Napier.i(tag = "Observation::start") { "Observation with type ${observationType.observationType} starting" }
             applyObservationConfig(config)
             running = start()
             return running
@@ -47,6 +49,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     fun stop(scheduleId: String) {
+        Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
         if (observationIds.size <= 1) {
             stop {
                 finish()
@@ -60,6 +63,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun observationDataManagerAdded() = dataManager != null
 
     fun setDataManager(observationDataManager: ObservationDataManager) {
+        Napier.i(tag = "Observation::setDataManager") { "Setting data manager for observation of type ${observationType.observationType}." }
         dataManager = observationDataManager
     }
 
@@ -68,6 +72,7 @@ abstract class Observation(val observationType: ObservationType) {
             Instant.fromEpochSeconds(it, 0)
         } ?: Clock.System.now()
         if (settings.isNotEmpty()) {
+            Napier.i(tag = "Observation::observationConfig") { "Applying new observation settings for ${observationType.observationType}: $settings" }
             val newConfig = this.config + settings
             if (newConfig != this.config) {
                 configChanged = true
@@ -96,19 +101,20 @@ abstract class Observation(val observationType: ObservationType) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
             ObservationBulkModel(data, timestamp)
         )).map { observationType.addObservationType(it) }
-        Napier.d { "Observation ${observationType.observationType} recorded new data: $data" }
+        Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
         val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
-        Napier.d { "Observation ${observationType.observationType} recorded ${data.size} new datapoints!" }
+        Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }
 
     fun stopAndFinish(scheduleId: String) {
+        Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
         stop {
             finish()
             observationShutdown(scheduleId)
@@ -116,6 +122,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
+        Napier.d(tag = "Observation::stopAndSetState") { "Stopping observation of type ${observationType.observationType} and setting state to $state for schedule $scheduleId." }
         stop {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
@@ -126,6 +133,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     fun stopAndSetDone(scheduleId: String) {
+        Napier.d(tag = "Observation::stopAndSetDone") { "Stopping observation of type ${observationType.observationType} and setting done for schedule $scheduleId." }
         stop {
             finish()
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
@@ -135,6 +143,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     open fun store(start: Long = -1, end: Long = -1, onCompletion: () -> Unit) {
+        Napier.d(tag = "Observation::store") { "Storing data for observation of type ${observationType.observationType} with start time: $start, end time: $end." }
         dataManager?.store()
         onCompletion()
     }
@@ -150,10 +159,12 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     protected fun finish() {
+        Napier.d(tag = "Observation::finish") { "Saving and sending data for observation of type ${observationType.observationType}." }
         dataManager?.saveAndSend()
     }
 
     fun removeDataCount() {
+        Napier.d(tag = "Observation::removeDataCount") { "Removing data point count for observation of type ${observationType.observationType}." }
         scheduleIds.keys.forEach {
             dataManager?.removeDataPointCount(it)
         }

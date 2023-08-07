@@ -16,6 +16,7 @@ import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,12 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
+
+    init {
+        if (hasCredentials.value) {
+            MoreApplication.shared!!.updateStudyBlocking()
+        }
+    }
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {

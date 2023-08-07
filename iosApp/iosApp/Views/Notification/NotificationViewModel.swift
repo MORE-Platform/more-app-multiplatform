@@ -22,7 +22,6 @@ class NotificationViewModel: ObservableObject {
         self.filterViewModel = filterViewModel
         self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel)
         coreModel.onNotificationLoad { [weak self] notifications in
-            print("Fetched notifications")
             DispatchQueue.main.async {
                 self?.notificationList = []
                 self?.notificationList = notifications

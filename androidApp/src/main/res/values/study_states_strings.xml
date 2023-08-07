@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_paused">Study currently paused</string>
+    <string name="study_paused_descr">This study is currently paused by the Study Operator and will be resumed shortly</string>
+    <string name="study_update">The study configuration is currently updating</string>
+    <string name="study_update_wait">Please wait until this process is finished</string>
+    <string name="study_closed">Study was completed</string>
+    <string name="study_closed_thanks">Thank you for your participation</string>
+    <string name="study_personal_message">Message by the Study Administrator</string>
+</resources>

@@ -16,36 +16,45 @@ struct InfoView: View {
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
-                VStack {
-                    Divider()
+                ScrollView {
                     VStack {
-                        InfoList()
-                            .fullScreenCover(isPresented: $contentViewModel.isLeaveStudyOpen) {
-                                LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
-                                    .environmentObject(contentViewModel)
-                            }
-                            .environmentObject(contentViewModel)
-                        .hideListRowSeparator()
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.more.primaryLight)
-                        .padding(.top, 7)
+                        Divider()
+                        VStack {
+                            InfoList()
+                                .fullScreenCover(isPresented: $contentViewModel.isLeaveStudyOpen) {
+                                    LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
+                                        .environmentObject(contentViewModel)
+                                }
+                                .environmentObject(contentViewModel)
+                                .hideListRowSeparator()
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.more.primaryLight)
+                                .padding(.top, 7)
+                            Spacer()
+                        }
+                        .listStyle(.plain)
+                        .clearListBackground()
+                        
                         Spacer()
-                    }
-                    .listStyle(.plain)
-                    .clearListBackground()
-                    
-                    Spacer()
-                    ScrollView {
+                        
+                        if let id = viewModel.participantId, let alias = viewModel.participantAlias {
+                            HStack(alignment: .center) {
+                                BasicText(text: "\("Participant".localize(withComment: "Participant ID", useTable: infoStrings)) \(id): \(alias)", color: .more.secondary)
+                            }
+                            Divider()
+                        }
+                        
                         ContactInfo(
-                            title: .constant(String.localize(forKey: "info_contact_title", withComment: "Contact us.", inTable: infoStrings)),
-                            info: .constant(String.localize(forKey: "info_disclaimer", withComment: "Contact us.", inTable: infoStrings)),
+                            title: String.localize(forKey: "info_contact_title", withComment: "Contact us.", inTable: infoStrings),
+                            info: String.localize(forKey: "info_disclaimer", withComment: "Contact us.", inTable: infoStrings),
                             contactInstitute: viewModel.contactInstitute,
                             contactPerson: viewModel.contactPerson,
                             contactEmail: viewModel.contactEmail,
                             contactPhoneNumber: viewModel.contactPhoneNumber
                         )
+                        
+                        Spacer()
                     }
-                    Spacer()
                 }
                 .padding(.horizontal, 24)
             } 

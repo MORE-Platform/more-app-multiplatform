@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("android")
-    id("io.realm.kotlin") version "1.6.0"
+    id("io.realm.kotlin") version "1.10.2"
     id("com.google.firebase.crashlytics")
 }
 
@@ -14,15 +14,15 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = 2
-        versionName = "2.3-rc1"
+        versionName = "2.3.6"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -37,14 +37,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "19"
     }
 }
 
-val composeVersion = "1.3.1"
-val workVersion = "2.8.0"
-val navVersion = "2.5.3"
-val sdk_version = "5.0.2"
+val composeVersion = "1.4.3"
+val workVersion = "2.8.1"
+val navVersion = "2.6.0"
+val polarSDKVersion = "5.1.0"
 
 dependencies {
     implementation(project(":shared"))
@@ -56,14 +56,14 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("io.realm.kotlin:library-base:1.6.0")
+    implementation("io.realm.kotlin:library-base:1.10.2")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.firebase:firebase-analytics-ktx:21.3.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:23.1.2")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.2.0")
     implementation("io.github.aakira:napier:2.6.1")
-    implementation("com.github.polarofficial:polar-ble-sdk:${sdk_version}")
+    implementation("com.github.polarofficial:polar-ble-sdk:${polarSDKVersion}")
     implementation("io.reactivex.rxjava3:rxjava:3.1.6")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation(platform("com.google.firebase:firebase-bom:31.5.0"))

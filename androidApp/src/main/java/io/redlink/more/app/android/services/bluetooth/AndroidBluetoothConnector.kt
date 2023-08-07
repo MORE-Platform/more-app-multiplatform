@@ -31,7 +31,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     private val foundBluetoothDevices = mutableSetOf<String>()
 
     override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> = mutableMapOf()
-    override var observer: BluetoothConnectorObserver? = null
+    override var observer: MutableSet<BluetoothConnectorObserver> = mutableSetOf()
     override var scanning = false
     override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
     override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
@@ -142,7 +142,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
             ContextCompat.checkSelfPermission(MoreApplication.appContext!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             try {
                 specificBluetoothConnectors.values.forEach {
-                    it.observer = this
+                    it
                     it.bluetoothState = this.bluetoothState
                 }
                 val bondStateChangedFilter = IntentFilter()
@@ -162,11 +162,22 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         specificBluetoothConnectors[key] = connector
     }
 
-    override fun applyObserver(bluetoothConnectorObserver: BluetoothConnectorObserver?) {
-        this.observer = bluetoothConnectorObserver
-        if (bluetoothConnectorObserver != null) {
+    override fun addObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.add(bluetoothConnectorObserver)
+        if (observer.isNotEmpty()) {
             replayStates()
         }
+    }
+
+    override fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver) {
+        this.observer.remove(bluetoothConnectorObserver)
+        if (observer.isEmpty()) {
+            stopScanning()
+        }
+    }
+
+    override fun updateObserver(action: (BluetoothConnectorObserver) -> Unit) {
+        observer.forEach(action)
     }
 
     override fun replayStates() {
@@ -211,7 +222,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 }
                 return null
             } else {
-                observer?.didFailToConnectToDevice(device)
+                updateObserver { it.didFailToConnectToDevice(device) }
             }
             return Error("Could not find device")
         }
@@ -227,7 +238,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 gatt.disconnect()
             }
         } else {
-            observer?.didDisconnectFromDevice(device)
+            updateObserver { it.didDisconnectFromDevice(device) }
         }
     }
 
@@ -255,7 +266,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
     override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
         i { "Connecting to $bluetoothDevice..." }
-        observer?.isConnectingToDevice(bluetoothDevice)
+        updateObserver { it.isConnectingToDevice(bluetoothDevice) }
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
@@ -264,7 +275,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
             connected.add(bluetoothDevice)
             removeDiscoveredDevice(bluetoothDevice)
         }
-        observer?.didConnectToDevice(bluetoothDevice)
+        updateObserver { it.didConnectToDevice(bluetoothDevice) }
         isConnecting = false
     }
 
@@ -272,12 +283,12 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         i { "Disconnected from $bluetoothDevice!" }
         connected.removeAll { it.address == bluetoothDevice.address }
         foundBluetoothDevices.remove(bluetoothDevice.address)
-        observer?.didDisconnectFromDevice(bluetoothDevice)
+        updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
     override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
         i { "Failed to connect to $bluetoothDevice!" }
-        observer?.didFailToConnectToDevice(bluetoothDevice)
+        updateObserver { didFailToConnectToDevice(bluetoothDevice) }
         isConnecting = false
     }
 
@@ -286,13 +297,13 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         if (!discovered.mapNotNull { it.address }.contains(device.address)) {
             discovered.add(device)
         }
-        observer?.didDiscoverDevice(device)
+        updateObserver { it.didDiscoverDevice(device) }
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         i { "Removing discovered $device..." }
         discovered.removeAll { it.address == device.address }
-        observer?.removeDiscoveredDevice(device)
+        updateObserver { it.removeDiscoveredDevice(device) }
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
@@ -305,12 +316,12 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 i { "Bluetooth Adapter not enabled!" }
             }
         }
-        observer?.onBluetoothStateChange(bluetoothState)
+        updateObserver { it.onBluetoothStateChange(bluetoothState) }
     }
 
     override fun isScanning(boolean: Boolean) {
         this.scanning = boolean
-        observer?.isScanning(boolean)
+        updateObserver { it.isScanning(boolean) }
     }
 
     private fun deviceConnected(bluetoothDevice: BluetoothDevice) {

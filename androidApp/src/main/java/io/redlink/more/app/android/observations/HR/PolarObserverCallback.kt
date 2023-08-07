@@ -29,41 +29,41 @@ class PolarObserverCallback : PolarBleApiCallback() {
 
     override fun blePowerStateChanged(powered: Boolean) {
         super.blePowerStateChanged(powered)
-        Napier.d("BLE power: $powered")
+        Napier.d("BLE power: $powered", tag = "PolarObserverCallback::blePowerStateChanged")
         connectionListener?.onPowerChange(if (powered) BluetoothState.ON else BluetoothState.OFF)
     }
 
     override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnected(polarDeviceInfo)
-        Napier.d("CONNECTED: ${polarDeviceInfo.deviceId}")
+        Napier.d("CONNECTED: ${polarDeviceInfo.deviceId}", tag = "PolarObserverCallback::deviceConnected")
         connectionListener?.onDeviceConnected(polarDeviceInfo)
     }
 
     override fun deviceConnecting(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceConnecting(polarDeviceInfo)
-        Napier.d("CONNECTING: ${polarDeviceInfo.deviceId}")
+        Napier.d("CONNECTING: ${polarDeviceInfo.deviceId}", tag = "PolarObserverCallback::deviceConnecting")
         connectionListener?.onDeviceConnecting(polarDeviceInfo)
     }
 
     override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
         super.deviceDisconnected(polarDeviceInfo)
-        Napier.i("Device disconnecting: ${polarDeviceInfo.name}")
+        Napier.i("Device disconnected: ${polarDeviceInfo.name}", tag = "PolarObserverCallback::deviceDisconnected")
         connectionListener?.onDeviceDisconnected(polarDeviceInfo)
     }
 
     override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
         super.bleSdkFeatureReady(identifier, feature)
-        Napier.i("SDK Feature ready: ${feature.name}, identifier: $identifier")
+        Napier.i("SDK Feature ready: ${feature.name}, identifier: $identifier", tag = "PolarObserverCallback::bleSdkFeatureReady")
         connectionListener?.onPolarFeatureReady(feature)
     }
 
     override fun disInformationReceived(identifier: String, uuid: UUID, value: String) {
         super.disInformationReceived(identifier, uuid, value)
-        Napier.i("Disinformation: $identifier, UUID: $uuid, Value: $value")
+        Napier.i("Disinformation: $identifier, UUID: $uuid, Value: $value", tag = "PolarObserverCallback::disInformationReceived")
     }
 
     override fun batteryLevelReceived(identifier: String, level: Int) {
         super.batteryLevelReceived(identifier, level)
-        Napier.i( "Battery Level Received: $level")
+        Napier.i( "Battery Level Received: $level", tag = "PolarObserverCallback::batteryLevelReceived")
     }
 }

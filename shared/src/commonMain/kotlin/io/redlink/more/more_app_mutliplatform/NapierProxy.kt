@@ -1,8 +1,9 @@
 package io.redlink.more.more_app_mutliplatform
 
+import io.github.aakira.napier.Antilog
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
-fun napierDebugBuild() {
-    Napier.base(DebugAntilog())
+fun napierDebugBuild(antilog: Antilog? = null) {
+    Napier.base(antilog ?: DebugAntilog())
 }

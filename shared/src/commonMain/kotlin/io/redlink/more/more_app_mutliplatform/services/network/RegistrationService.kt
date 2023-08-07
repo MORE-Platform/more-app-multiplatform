@@ -1,6 +1,5 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
@@ -10,9 +9,7 @@ import io.redlink.more.more_app_mutliplatform.models.CredentialModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationConsent
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
-import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +82,7 @@ class RegistrationService (
                     shared.resetFirstStartUp()
                     onSuccess(shared.credentialRepository.hasCredentials())
                 } else {
-                    onError(NetworkServiceError(null, "Could not store credentials").freeze())
+                    onError(NetworkServiceError(null, "Could not store credentials"))
                 }
             }
             networkError?.let {

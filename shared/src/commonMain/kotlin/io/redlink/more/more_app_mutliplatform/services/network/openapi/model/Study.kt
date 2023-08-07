@@ -8,6 +8,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.*
 
@@ -23,6 +24,7 @@ import kotlinx.serialization.*
  * @param contact
  * @param version A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed.
  * @param active The current study-state. Mainly used during the registration process.
+ * @param finishText Finish message, when the study is set to completed.
  */
 @Serializable
 
@@ -31,6 +33,8 @@ data class Study(
     @SerialName(value = "studyTitle") @Required val studyTitle: String,
 
     @SerialName(value = "participantInfo") @Required val participantInfo: String,
+
+    @SerialName(value = "participant") val participant: Participant? = Participant(),
 
     @SerialName(value = "consentInfo") @Required val consentInfo: String,
 
@@ -46,7 +50,10 @@ data class Study(
     @SerialName(value = "version") @Required val version: Long,
 
     /* The current study-state. Mainly used during the registration process. */
-    @SerialName(value = "active") val active: Boolean? = true
+    @SerialName(value = "active") val active: Boolean? = true,
 
+    @SerialName(value = "studyState") val studyState: String? = if (active == true) "active" else "passive",
+
+    @SerialName(value = "finishText") val finishText: String? = null
 )
 

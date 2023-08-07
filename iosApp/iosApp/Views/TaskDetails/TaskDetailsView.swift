@@ -29,7 +29,7 @@ struct TaskDetailsView: View {
                 ) {
                     VStack {
                         HStack {
-                            Title2(titleText: .constant(viewModel.taskDetailsModel?.observationTitle ?? ""))
+                            Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
                                 .padding(0.5)
                             Spacer()
                             if viewModel.taskDetailsModel?.state == ScheduleState.running {
@@ -41,7 +41,7 @@ struct TaskDetailsView: View {
                         .frame(height: 40)
                         HStack(
                         ) {
-                            BasicText(text: .constant(viewModel.taskDetailsModel?.observationType ?? ""), color: .more.secondary)
+                            BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
                             Spacer()
                         }
                     }
@@ -49,10 +49,10 @@ struct TaskDetailsView: View {
                     let date: String = viewModel.getDateRangeString()
                     let time: String = viewModel.getTimeRangeString()
 
-                    ObservationDetailsData(dateRange: .constant(date), timeframe: .constant(time))
+                    ObservationDetailsData(dateRange: date, timeframe: time)
 
                     HStack {
-                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: .constant(viewModel.taskDetailsModel?.participantInformation ?? ""))
+                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
                     }
                     if scheduleListType != .completed {
                         Spacer()

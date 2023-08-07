@@ -10,7 +10,6 @@ package io.redlink.more.more_app_mutliplatform.services.network.openapi.api
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
-import io.realm.kotlin.internal.platform.freeze
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.*
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import kotlinx.serialization.json.Json
@@ -46,13 +45,11 @@ open class DataApi(
             requiresAuthentication = true,
         )
 
-        Napier.d { "Sending data with config: $localVariableConfig" }
-
         return jsonRequest(
             localVariableConfig,
             dataBulk,
             localVariableAuthNames
-        )?.wrap<StoreBulkResponse>()?.map { value.freeze() }?.freeze()
+        )?.wrap<StoreBulkResponse>()?.map { value }
     }
 
 
@@ -61,10 +58,14 @@ open class DataApi(
         @OptIn(ExperimentalSerializationApi::class)
         @Serializer(StoreBulkResponse::class)
         companion object : KSerializer<StoreBulkResponse> {
-            private val serializer: KSerializer<List<kotlin.String>> = serializer<List<kotlin.String>>()
+            private val serializer: KSerializer<List<kotlin.String>> =
+                serializer<List<kotlin.String>>()
             override val descriptor = serializer.descriptor
-            override fun serialize(encoder: Encoder, obj: StoreBulkResponse) = serializer.serialize(encoder, obj.value)
-            override fun deserialize(decoder: Decoder) = StoreBulkResponse(serializer.deserialize(decoder)).freeze()
+            override fun serialize(encoder: Encoder, obj: StoreBulkResponse) =
+                serializer.serialize(encoder, obj.value)
+
+            override fun deserialize(decoder: Decoder) =
+                StoreBulkResponse(serializer.deserialize(decoder))
         }
     }
 

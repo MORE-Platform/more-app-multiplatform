@@ -31,17 +31,17 @@ class ScheduleSchema : RealmObject {
             (start?.epochSeconds?.times(1000))?.let { start ->
                 (end?.epochSeconds?.times(1000))?.let { end ->
                     state = if (end <= now) {
-                        if (getState() == ScheduleState.RUNNING) {
+                        if (getState().running()) {
                             ScheduleState.DONE.name
                         } else {
                             ScheduleState.ENDED.name
                         }
-                    } else if (start <= now && getState() != ScheduleState.RUNNING) {
-                        ScheduleState.ACTIVE.name
-                    } else if (getState() != ScheduleState.RUNNING) {
+                    } else if (now < start) {
                         ScheduleState.DEACTIVATED.name
+                    } else if (start <= now && !getState().running()) {
+                        ScheduleState.ACTIVE.name
                     } else {
-                        ScheduleState.RUNNING.name
+                        state
                     }
                 }
             }
@@ -55,6 +55,11 @@ class ScheduleSchema : RealmObject {
     fun equalsSchedule(other: ScheduleSchema): Boolean {
         return scheduleId == other.scheduleId
     }
+
+    override fun toString(): String {
+        return """ScheduleSchema: {"scheduleId": "$scheduleId", "observationId": "$observationId","observationType": "$observationType","observationTitle": "$observationTitle","start": "${start?.toString()}","end": "${end?.toString()}","done": $done,"hidden": $hidden,"state": "$state"}"""
+    }
+
 
     companion object {
         fun toSchema(

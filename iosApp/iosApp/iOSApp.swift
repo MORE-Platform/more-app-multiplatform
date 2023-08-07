@@ -23,6 +23,7 @@ struct iOSApp: App {
                         break
                     case .active:
                         AppDelegate.shared.appInForeground(boolean: true)
+                        appDelegate.cancelBackgroundTasks()
                         break
                     default:
                         break

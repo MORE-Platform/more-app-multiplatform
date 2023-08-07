@@ -16,14 +16,14 @@ struct ConsentView: View {
     private let taskStringTable = "TaskDetail"
     var body: some View {
         VStack {
-            Title2(titleText: .constant(viewModel.permissionModel.studyTitle))
+            Title2(titleText: viewModel.permissionModel.studyTitle)
                 .padding(.bottom, 30)
 
             ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localize(forKey: "Participant Information", withComment: "Participant Information of study.", inTable: taskStringTable), lineLimit: 4)
                 .padding(.bottom, 35)
 
 
-            ConsentList(permissionModel: .constant(viewModel.permissionModel))
+            ConsentList(permissionModel: viewModel.permissionModel)
             Spacer()
             if viewModel.isLoading {
                 ProgressView()
@@ -84,6 +84,6 @@ struct ConsentView: View {
 
 struct ConsentView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
     }
 }

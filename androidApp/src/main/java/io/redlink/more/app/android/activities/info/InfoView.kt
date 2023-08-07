@@ -103,18 +103,52 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
+
                     Column(
                         modifier = Modifier.fillMaxWidth(0.8f)
                     ) {
-                        Spacer(modifier = Modifier.height(28.dp))
+                        if (it.study.participantId != null || it.study.participantAlias != null) {
+                            Spacer(modifier = Modifier.height(25.dp))
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if(it.study.participantId != null ) {
+                                SmallTitle(
+                                    text = getStringResource(id = R.string.info_participant_credentials),
+                                    color = MoreColors.Secondary
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                SmallTitle(
+                                    text = it.study.participantId.toString(),
+                                    color = MoreColors.Secondary
+                                )
+                                SmallTitle(text = ": ", color = MoreColors.Secondary)
+                            }
+                            if(it.study.participantAlias != null) {
+                                BasicText(text = it.study.participantAlias.toString(), color = MoreColors.Secondary)
+                            }
+                        }
+                        if (it.study.participantId != null || it.study.participantAlias != null) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Divider()
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             SmallTitle(
-                                text = "Kontaktdaten",
+                                text = getStringResource(id = R.string.info_contact_data),
                                 color = MoreColors.PrimaryDark,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 25.dp),
+                                    .padding(bottom = 10.dp),
                                 textAlign = TextAlign.Center,
                                 fontSize = 18.sp
                             )
@@ -126,7 +160,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                                 text = it.study.contactInstitute as String,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 10.dp),
+                                    .padding(bottom = 5.dp),
                                 textAlign = TextAlign.Center
                             )
                         }

@@ -150,6 +150,9 @@ class PermissionManager: NSObject, ObservableObject {
             if let self {
                 if settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional {
                     self.notificationStatus = .accepted
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
                 } else if settings.authorizationStatus == .denied {
                     self.notificationStatus = .declined
                 } else {
@@ -159,6 +162,11 @@ class PermissionManager: NSObject, ObservableObject {
                             self.notificationStatus = .declined
                         } else {
                             self.notificationStatus = granted ? .accepted : .declined
+                            if granted {
+                                DispatchQueue.main.async {
+                                    UIApplication.shared.registerForRemoteNotifications()
+                                }
+                            }
                         }
                     }
                 }
