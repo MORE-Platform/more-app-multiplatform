@@ -32,7 +32,8 @@ class NotificationManager(
         body: String?,
         priority: Long = 2,
         read: Boolean = false,
-        data: Map<String, String>? = null
+        data: Map<String, String>? = null,
+        displayNotification: Boolean
     ) {
         storeAndHandleNotification(
             shared,
@@ -45,21 +46,24 @@ class NotificationManager(
                 read = read,
                 userFacing = title != null,
                 notificationData = data
-            )
+            ),
+            displayNotification
         )
     }
 
-    fun storeAndHandleNotification(shared: Shared, notification: NotificationSchema) {
-        storeAndDisplayNotification(notification)
+    fun storeAndHandleNotification(shared: Shared, notification: NotificationSchema, displayNotification: Boolean) {
+        storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
             handleNotificationDataAsync(shared, notification.notificationData)
         }
     }
 
-    fun storeAndDisplayNotification(notification: NotificationSchema) {
+    fun storeAndDisplayNotification(notification: NotificationSchema, displayNotification: Boolean) {
         if (notification.title != null && notification.notificationBody != null) {
             notificationRepository.storeNotification(notification)
-            localNotificationListener.displayNotification(notification)
+            if (displayNotification) {
+                localNotificationListener.displayNotification(notification)
+            }
         }
     }
 

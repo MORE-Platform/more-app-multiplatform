@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -39,6 +39,7 @@
 		1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */; };
 		1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */; };
 		1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536A29CC68FC00324417 /* ObservationExtension.swift */; };
+		1F2B23152A7D01AC00CFBE02 /* IOSLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B23142A7D01AC00CFBE02 /* IOSLogHandler.swift */; };
 		1F2C4BDD2A6F976F00C29888 /* StudyUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2C4BDC2A6F976F00C29888 /* StudyUpdateView.swift */; };
 		1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */; };
 		1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */; };
@@ -237,6 +238,7 @@
 		1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMSensorDataListExtension.swift; sourceTree = "<group>"; };
 		1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIntervalExtension.swift; sourceTree = "<group>"; };
 		1F27536A29CC68FC00324417 /* ObservationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationExtension.swift; sourceTree = "<group>"; };
+		1F2B23142A7D01AC00CFBE02 /* IOSLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSLogHandler.swift; sourceTree = "<group>"; };
 		1F2C4BDC2A6F976F00C29888 /* StudyUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyUpdateView.swift; sourceTree = "<group>"; };
 		1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSObservationFactory.swift; sourceTree = "<group>"; };
 		1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerObservation.swift; sourceTree = "<group>"; };
@@ -476,6 +478,7 @@
 		1F27536229CC39CA00324417 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1F2B23132A7D019C00CFBE02 /* Log */,
 				1F6A4E3A29F6C94B00F0247F /* Bluetooth */,
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
@@ -494,6 +497,14 @@
 				1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */,
 			);
 			path = BackgroundTasks;
+			sourceTree = "<group>";
+		};
+		1F2B23132A7D019C00CFBE02 /* Log */ = {
+			isa = PBXGroup;
+			children = (
+				1F2B23142A7D01AC00CFBE02 /* IOSLogHandler.swift */,
+			);
+			path = Log;
 			sourceTree = "<group>";
 		};
 		1F2C4BDB2A6F974900C29888 /* StudyStates */ = {
@@ -959,6 +970,7 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
+				1F8E9DB22A80D31D006E4AF4 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1051,6 +1063,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1F8E9DB22A80D31D006E4AF4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		7555FFB5242A651A00829871 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1134,6 +1168,7 @@
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
 				1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */,
 				B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */,
+				1F2B23152A7D01AC00CFBE02 /* IOSLogHandler.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,

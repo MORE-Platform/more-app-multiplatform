@@ -48,7 +48,7 @@ class LocalPushNotifications: LocalNotificationListener {
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: repeates)
         }
         
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: "LOCAL_\(identifier)", content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request)
         print("Local Notification requested!")

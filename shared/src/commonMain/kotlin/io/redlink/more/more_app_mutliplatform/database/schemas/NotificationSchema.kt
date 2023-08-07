@@ -23,6 +23,10 @@ class NotificationSchema : RealmObject {
     var userFacing: Boolean = true
     var notificationData: RealmDictionary<String> = realmDictionaryOf()
 
+    override fun toString(): String {
+        return "NotificationSchema(notificationId='$notificationId', channelId=$channelId, title=$title, notificationBody=$notificationBody, timestamp=$timestamp, priority=$priority, read=$read, userFacing=$userFacing, notificationData=$notificationData)"
+    }
+
     companion object {
         fun toSchema(
             notificationId: String,

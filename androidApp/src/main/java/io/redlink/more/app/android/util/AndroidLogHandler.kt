@@ -1,6 +1,7 @@
 package io.redlink.more.app.android.util
 
 import androidx.work.WorkManager
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.github.aakira.napier.LogLevel
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.workers.LogUploadWorker
@@ -11,31 +12,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class AndroidLogHandler(private val workManager: WorkManager): ElasticLogHandler {
-    private val logQueue = mutableListOf<Log>()
-    private val mutex = Mutex()
-    override fun appendNewLog(log: Log) {
-        Scope.launch {
-            //android.util.Log.i("AndroidLogHandler", "New Log added for Elastic")
-            mutex.withLock {
-                logQueue.add(log)
-            }
-            if (MoreApplication.shared != null && (log.priority == LogLevel.ERROR || log.priority == LogLevel.ASSERT || logQueue.size >= 10)) {
-                //android.util.Log.i("AndroidLogHandler", "Sending data to elastic")
-                releaseDataToBackend()
-            }
-        }
+//    override fun writeLogs(logs: Set<Log>) {
+//        //FirebaseCrashlytics.getInstance().recordException(logs.)
+//    }
+
+    override fun writeLogs(logs: Set<String>) {
+        TODO("Not yet implemented")
     }
 
-    private suspend fun releaseDataToBackend() {
-        if (logQueue.isNotEmpty()) {
-            var queueCopy: List<Log>
-            mutex.withLock {
-                queueCopy = logQueue.toList()
-                logQueue.clear()
-            }
-            if (queueCopy.isNotEmpty()) {
-                LogUploadWorker.scheduleWorker(workManager, queueCopy)
-            }
-        }
-    }
 }

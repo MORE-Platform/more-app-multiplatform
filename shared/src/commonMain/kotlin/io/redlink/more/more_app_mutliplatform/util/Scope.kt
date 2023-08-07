@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.util
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.typeOf
 
 object Scope {
     private val mutex = Mutex()
@@ -37,12 +39,11 @@ object Scope {
                     scope.launch {
                         mutex.withLock {
                             try {
-                                it?.let {
-                                    Napier.e(throwable = it) { "Coroutine with UUID: $uuid has thrown!" }
-                                }
                                 jobs.remove(uuid)
-                            } catch (e: Exception) {
-                                Napier.e { e.stackTraceToString() }
+                            }  catch (e: Exception) {
+                                if (e !is CancellationException) {
+                                    Napier.e(tag = "Scope::launch::invokeOnCompletion") { e.stackTraceToString() }
+                                }
                             }
                         }
                     }

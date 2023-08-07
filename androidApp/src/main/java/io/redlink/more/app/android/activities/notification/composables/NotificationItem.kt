@@ -92,7 +92,7 @@ fun NotificationItem(
 
         timestamp?.let {
             Text(
-                text = it.jvmLocalDateTimeFromMilliseconds().formattedString("dd.MM. hh:mm"),
+                text = it.jvmLocalDateTimeFromMilliseconds().formattedString("dd.MM.yyyy hh:mm"),
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 color = MoreColors.Secondary,

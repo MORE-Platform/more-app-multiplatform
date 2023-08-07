@@ -47,7 +47,6 @@ class PolarHeartRateObservation :
                     if (it.address != null) {
                         heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
                             { polarData ->
-                                Napier.i(tag = "PolarHeartRateObservation::start") { "Polar Data: $polarData" }
                                 storeData(mapOf("hr" to polarData.samples[0].hr))
                             },
                             { error ->

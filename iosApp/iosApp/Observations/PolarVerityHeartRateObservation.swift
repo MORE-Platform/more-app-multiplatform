@@ -56,7 +56,6 @@ class PolarVerityHeartRateObservation: Observation_ {
             if let address = (self.polarConnector.connected.allObjects.first as? BluetoothDevice)?.address {
                 hrObservation = self.polarConnector.polarApi.startHrStreaming(address).subscribe(onNext: { [weak self] data in
                     if let self, let hrData = data.first {
-                        print("New HR data: \(hrData.hr)")
                         self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
                     }
                 }, onError: { error in

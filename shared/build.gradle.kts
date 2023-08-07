@@ -32,7 +32,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
-            //freeCompilerArgs = freeCompilerArgs + "-Xallocator=std"
+            freeCompilerArgs = freeCompilerArgs + "-Xallocator=std"
         }
     }
 

@@ -56,7 +56,7 @@ class NetworkService(
 
     private fun initConfigApi() {
         if (configurationApi == null) {
-            Napier.i { "Initializing ConfigurationApi..." }
+            Napier.i(tag = "NetworkService::initConfigApi") { "Initializing ConfigurationApi..." }
             initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -74,7 +74,7 @@ class NetworkService(
 
     private fun initDataApi() {
         if (dataApi == null || dataApi?.get() == null) {
-            Napier.i { "Init DataAPI..." }
+            Napier.i(tag = "NetworkService::initDataApi") { "Init DataAPI..." }
             initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -93,7 +93,7 @@ class NetworkService(
 
     private fun initNotificationApi() {
         if (notificationApi == null) {
-            Napier.i { "Init Notification API..." }
+            Napier.i(tag = "NetworkService::initNotificationApi") { "Init Notification API..." }
             initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
@@ -119,7 +119,7 @@ class NetworkService(
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
             credentialRepository.credentials()?.let {
-                Napier.i { "Deleting Participation..." }
+                Napier.i(tag = "NetworkService::deleteParticipation") { "Deleting Participation..." }
                 val httpClient = getHttpClient()
                 val url = endpointRepository.endpoint()
                 val registrationApi =
@@ -133,10 +133,10 @@ class NetworkService(
                 Napier.i(registrationResponse.response.toString(), tag = TAG)
                 close()
                 if (registrationResponse.success) {
-                    Napier.i { "Participation deleted!" }
+                    Napier.i(tag = "NetworkService::deleteParticipation") { "Participation deleted!" }
                     return Pair(true, null)
                 }
-                println("Error; Code: ${registrationResponse.response.status.value}")
+                Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${registrationResponse.response.status.value}" }
                 val error = createErrorBody(
                     registrationResponse.response.status.value,
                     registrationResponse.response
@@ -148,7 +148,7 @@ class NetworkService(
             }
             return Pair(false, NetworkServiceError(null, "No credentials"))
         } catch (err: Exception) {
-            err.printStackTrace()
+            Napier.e(tag = "NetworkService::deleteParticipation") { err.stackTraceToString() }
             return Pair(false, getException(err))
         }
     }
@@ -158,7 +158,7 @@ class NetworkService(
         endpoint: String? = null
     ): Pair<Study?, NetworkServiceError?> {
         try {
-            Napier.i { "Validating Registration token..." }
+            Napier.i(tag = "NetworkService::validateRegistrationToken") { "Validating Registration token..." }
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
             val registrationApi =
@@ -168,7 +168,7 @@ class NetworkService(
             Napier.i(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {
                 registrationResponse.body().let {
-                    Napier.i { "Registration token valid!" }
+                    Napier.i(tag = "NetworkService::validateRegistrationToken") { "Registration token valid!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -182,6 +182,7 @@ class NetworkService(
             )
 
         } catch (err: Exception) {
+            Napier.e(tag = "NetworkService::validateRegistrationToken") { err.stackTraceToString() }
             return Pair(null, getException(err))
         }
     }
@@ -192,7 +193,7 @@ class NetworkService(
         endpoint: String? = null
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
-            Napier.i { "Sending Consent..." }
+            Napier.i(tag = "NetworkService::sendConsent") { "Sending Consent..." }
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
             val registrationApi = RegistrationApi(
@@ -202,7 +203,7 @@ class NetworkService(
             val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             if (consentResponse.success) {
                 consentResponse.body().let {
-                    Napier.i { "Credentials received!" }
+                    Napier.i(tag = "NetworkService::sendConsent") { "Credentials received!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -211,6 +212,7 @@ class NetworkService(
                 createErrorBody(consentResponse.response.status.value, consentResponse.response)
             )
         } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::sendConsent") { e.stackTraceToString() }
             return Pair(null, getException(e))
         }
     }
@@ -218,7 +220,7 @@ class NetworkService(
     suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
         initConfigApi()
         try {
-            Napier.i { "Downloading study data..." }
+            Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
             val configResponse =
                 configurationApi?.getStudyConfiguration() ?: return Pair(
                     null,
@@ -226,7 +228,7 @@ class NetworkService(
                 )
             if (configResponse.success) {
                 configResponse.body().let {
-                    Napier.i { "Loading study data success!" }
+                    Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
                     return Pair(it.get(), null)
                 }
             }
@@ -236,6 +238,7 @@ class NetworkService(
                 createErrorBody(configResponse.response.status.value, configResponse.response)
             )
         } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::getStudyConfig") { e.stackTraceToString() }
             return Pair(null, getException(e))
         }
     }
@@ -244,13 +247,13 @@ class NetworkService(
         initConfigApi()
         configurationApi?.let {
             try {
-                Napier.i { "Sending notification token..." }
+                Napier.i(tag = "NetworkService::sendNotificationToken") { "Sending notification token..." }
                 val tokenResponse = it.setPushNotificationToken(
                     serviceType = PushNotificationServiceType.FCM,
                     pushNotificationToken = PushNotificationToken(token = token)
                 ) ?: return Pair(false, NetworkServiceError(0, "Response null"))
                 if (tokenResponse.success) {
-                    Napier.i { "Uploading notification token success!" }
+                    Napier.i(tag = "NetworkService::sendNotificationToken") { "Uploading notification token success!" }
                     return Pair(true, null)
                 }
                 return Pair(
@@ -258,6 +261,7 @@ class NetworkService(
                     createErrorBody(tokenResponse.status, tokenResponse.response)
                 )
             } catch (err: Exception) {
+                Napier.e(tag = "NetworkService::sendNotificationToken") { err.stackTraceToString() }
                 return Pair(false, getException(err))
             }
         }
@@ -267,7 +271,7 @@ class NetworkService(
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         initDataApi()
         try {
-            Napier.i { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints wwith first being ${data.dataPoints.first()}..." }
+            Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
             val dataApiResponse = WeakReference(dataApi?.get()?.storeBulk(data) ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "No credentials set!")
@@ -275,7 +279,7 @@ class NetworkService(
             dataApiResponse.get()?.let { dataApiResponse ->
                 if (dataApiResponse.success) {
                     dataApiResponse.body().let {
-                        Napier.i { "Sent data!" }
+                        Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
                         dataApiResponse.response.cancel()
                         return Pair(it.get()?.toSet() ?: emptySet(), null)
                     }
@@ -288,6 +292,7 @@ class NetworkService(
                 createErrorBody(dataApiResponse.get()?.response?.status?.value ?: 500, dataApiResponse.get()?.response)
             )
         } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::sendData") { e.stackTraceToString() }
             return Pair(emptySet(), getException(e))
         }
     }
@@ -307,24 +312,24 @@ class NetworkService(
         initNotificationApi()
         val list = notificationApi?.let { notificationApi ->
             try {
-                Napier.d { "Downloading missed notifications from the Server..." }
+                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
                 notificationApi.listPushNotifications()?.let { response ->
                     if (response.success) {
                         response.body().get() ?: emptyList()
                     } else {
-                        Napier.d { "No notifications received from the server" }
+                        Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
                         emptyList()
                     }
                 } ?: kotlin.run {
-                    Napier.d { "Notification Response Null" }
+                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Notification Response Null" }
                     emptyList()
                 }
             } catch (e: Exception) {
-                Napier.e { "Notification List error: $e" }
+                Napier.e(tag = "NetworkService::downloadMissedNotifications") { "Notification List error: $e" }
                 return emptyList()
             }
         } ?: emptyList()
-        Napier.d { "Downloaded Messages list: $list" }
+        Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloaded Messages list: $list" }
         return list
     }
 
@@ -334,13 +339,13 @@ class NetworkService(
             try {
                 notificationApi.deleteNotification(msgId)?.let { httpResponse ->
                     if (httpResponse.success) {
-                        Napier.d { "Successfully deleted notification with id: $msgId" }
+                        Napier.d(tag = "NetworkService::deletePushNotification") { "Successfully deleted notification with id: $msgId" }
                     } else {
-                        Napier.d { "Push notification not found with msgID: $msgId. Could not delete!" }
+                        Napier.d(tag = "NetworkService::deletePushNotification") { "Push notification not found with msgID: $msgId. Could not delete!" }
                     }
                 }
             } catch (e: Exception) {
-                Napier.e { "Notification deletion error: $e" }
+                Napier.e(tag = "NetworkService::deletePushNotification") { "Notification deletion error: $e" }
             }
         }
     }
@@ -389,7 +394,7 @@ class NetworkService(
     }
 
     override fun close() {
-        Napier.d { "Clearing the Http engine..." }
+        Napier.d(tag = "NetworkService::close") { "Clearing the Http engine..." }
         engineUseCounter = 10
         configurationApi = null
         dataApi = null

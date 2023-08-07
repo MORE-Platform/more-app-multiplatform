@@ -15,6 +15,7 @@ import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.app.android.util.AndroidLogHandler
+import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
@@ -26,10 +27,8 @@ import io.redlink.more.more_app_mutliplatform.util.ElasticAntilog
 class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
-        val workManager = WorkManager.getInstance(this)
-        val logger = ElasticAntilog(AndroidLogHandler(workManager))
-        napierDebugBuild(logger)
-        napierDebugBuild(DebugAntilog())
+        napierDebugBuild(FirebaseCrashlyticsAntilog())
+        napierDebugBuild()
         appContext = this
 
         initShared(this)

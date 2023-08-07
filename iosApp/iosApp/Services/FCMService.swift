@@ -17,10 +17,8 @@ class FCMService: NSObject {
     private let notificationRepository = NotificationRepository()
 
     func register() {
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.delegate = self
+        UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
-        
     }
 }
 
@@ -39,22 +37,28 @@ extension FCMService: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         let content = notification.request.content
         let data = content.userInfo.notNilStringDictionary()
-        let uuid = data["msgID"] ?? UUID().uuidString
-        
-        AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: uuid, title: content.title, body: content.body, priority: 2, read: false, data: data)
-        
-        print(data)
+        if let msgId = data["MSG_ID"] {
+            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: msgId, title: content.title, body: content.body, priority: 2, read: false, data: data, displayNotification: false)
+            
+            print("Will present Notification with content \(content)")
+            return [.banner]
+        }
         return [.sound,.badge, .banner]
     }
     
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        let content = response.notification.request.content
-        print("User info: \(content.userInfo)")
-        let data = content.userInfo.notNilStringDictionary()
-        let uuid = data["MSG_ID"] ?? UUID().uuidString
-        
-        AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: uuid, title: response.notification.request.content.title, body: response.notification.request.content.body, priority: 2, read: false, data: data)
+        if response.notification.request.identifier.contains("LOCAL_") {
+            let content = response.notification.request.content
+            print("User info: \(content.userInfo)")
+            let data = content.userInfo.notNilStringDictionary()
+            let uuid = data["MSG_ID"] ?? UUID().uuidString
+            
+            print("Received Notification with content: \(content)")
+            
+            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: uuid, title: response.notification.request.content.title, body: response.notification.request.content.body, priority: 2, read: false, data: data, displayNotification: false)
+        }
+            
     }
 }
 

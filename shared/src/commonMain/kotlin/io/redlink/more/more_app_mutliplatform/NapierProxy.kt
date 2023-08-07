@@ -4,6 +4,6 @@ import io.github.aakira.napier.Antilog
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
-fun napierDebugBuild(antilog: Antilog = DebugAntilog()) {
-    Napier.base(antilog)
+fun napierDebugBuild(antilog: Antilog? = null) {
+    Napier.base(antilog ?: DebugAntilog())
 }

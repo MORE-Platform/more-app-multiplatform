@@ -34,12 +34,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         #if DEBUG
-        NapierProxyKt.napierDebugBuild()
+        NapierProxyKt.napierDebugBuild(antilog: nil)
         #endif
         
         FirebaseApp.configure()
+        FirebaseConfiguration.shared.setLoggerLevel(.debug)
         fcmService.register()
-        UIApplication.shared.registerForRemoteNotifications()
+        
         
         registerBackgroundTasks()
         
@@ -55,6 +56,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
     }
     
+    
+    
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
         print("Notification Received: \(userInfo)")
         AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
@@ -63,7 +66,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Did register for Remote Notifications With Device Token: \(deviceToken)")
+        print("Did register for Remote Notifications With Device Token: \(String(decoding: deviceToken, as: UTF8.self))")
+        Messaging.messaging().apnsToken = deviceToken
+        
+    }
+    
+    private func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("App did fail to register for remote notifications: \(error)")
     }
     
     private func registerBackgroundTasks() {
@@ -72,6 +81,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 DataUploadBackgroundTask().handleProcessingTask(task: task)
             }
         }
+    }
+    
+    func cancelBackgroundTasks() {
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DataUploadBackgroundTask.taskID)
     }
     
     func scheduleTasks() {

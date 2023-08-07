@@ -13,6 +13,7 @@ struct NotificationItem: View {
     var message: String
     var read: Bool
     var isImportant: Bool
+    var timestamp: Int64
 
     var body: some View {
         VStack(
@@ -36,7 +37,8 @@ struct NotificationItem: View {
             Divider()
                 .frame(height: 0.5)
             BasicText(text: message, color: Color.more.secondary)
-                .padding(.bottom, 20)
+            BasicText(text: (timestamp / 1000).toDateString(dateFormat: "dd.MM.yyyy HH:mm"))
+                .padding(.vertical)
         }
     }
 
@@ -50,6 +52,6 @@ struct NotificationItem: View {
 
 struct NotificationItem_Preview: PreviewProvider {
     static var previews: some View {
-        NotificationItem(title: "Test Title", message: "Some message", read: false, isImportant: false)
+        NotificationItem(title: "Test Title", message: "Some message", read: false, isImportant: false, timestamp: 0)
     }
 }

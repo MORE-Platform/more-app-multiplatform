@@ -37,7 +37,8 @@ struct NotificationView: View {
                                         title: notification.title,
                                         message: notification.notificationBody,
                                         read: notification.read,
-                                        isImportant: (notification.priority == 2)
+                                        isImportant: (notification.priority == 2),
+                                        timestamp: notification.timestamp
                                     )
                                 }
                                 .contentShape(Rectangle())

@@ -17,13 +17,11 @@ class GPSService(context: Context) {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
-            Napier.d(tag = "GPSService::onLocationResult") { "New Location Result: LONG: ${result.lastLocation?.longitude}, LAT: ${result.lastLocation?.latitude}" }
             gpsListener?.onLocationResult(result)
         }
 
         override fun onLocationAvailability(result: LocationAvailability) {
             super.onLocationAvailability(result)
-            Napier.d(tag = "GPSService:onLocationAvailability") { "Location available: ${result.isLocationAvailable}" }
             gpsListener?.locationAvailable(result.isLocationAvailable)
         }
     }

@@ -16,6 +16,8 @@ class InfoViewModel: ObservableObject {
     @Published var contactPerson: String?
     @Published var contactEmail: String?
     @Published var contactPhoneNumber: String?
+    @Published var participantId: Int?
+    @Published var participantAlias: String?
     
     init() {
         studyCoreModel.onLoadStudyDetails() {
@@ -26,6 +28,8 @@ class InfoViewModel: ObservableObject {
                 self.contactPerson = studyDetails.study.contactPerson
                 self.contactEmail = studyDetails.study.contactEmail
                 self.contactPhoneNumber = studyDetails.study.contactPhoneNumber
+                self.participantId = studyDetails.study.participantId?.intValue
+                self.participantAlias = studyDetails.study.participantAlias
             }
         }
     }
