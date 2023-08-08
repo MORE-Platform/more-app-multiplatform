@@ -1,55 +1,42 @@
 package io.redlink.more.app.android.activities.login
 
-import android.app.Activity
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.composables.EndpointView
 import io.redlink.more.app.android.activities.login.composables.ParticipationKeyInput
-import io.redlink.more.app.android.activities.login.composables.QRCodeButton
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.R
+import io.redlink.more.app.android.shared_composables.AppVersion
 
-
-
-@Composable
-private fun OpenPermActivity() {
-    val context = LocalContext.current as? Activity
-    context?.let {
-//        val intent = Intent(context, PermissionActivity::class.java)
-//        it.finish()
-//        it.startActivity(intent)
-    }
-}
 
 @Composable
 fun LoginView(model: LoginViewModel) {
-    if (model.tokenIsValid()) {
-        OpenPermActivity()
-    }
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight(0.95f)
+        modifier = Modifier.fillMaxSize(0.95f)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
-            Image(id = R.drawable.welcome_to_more, contentDescription = getStringResource(id = R.string.more_welcome_title))
-            Spacer(Modifier.height(24.dp))
+            Image(
+                id = R.drawable.welcome_to_more,
+                contentDescription = getStringResource(id = R.string.more_welcome_title)
+            )
 
             LoginForm(model = model)
+            AppVersion()
         }
-        Box(Modifier.fillMaxHeight(1f))
     }
 }
 
@@ -58,25 +45,26 @@ fun LoginForm(model: LoginViewModel) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    Box(modifier = Modifier.fillMaxWidth(0.90f)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Column(
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ParticipationKeyInput(
-                    model = model,
-                    focusRequester = focusRequester,
-                    focusManager = focusManager
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            EndpointView(model = model, focusRequester = focusRequester, focusManager = focusManager)
+            ParticipationKeyInput(
+                model = model,
+                focusRequester = focusRequester,
+                focusManager = focusManager
+            )
         }
+        EndpointView(
+            model = model,
+            focusRequester = focusRequester,
+            focusManager = focusManager
+        )
     }
 }
