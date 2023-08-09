@@ -86,7 +86,7 @@ class MainViewModel(context: Context) : ViewModel() {
         }
         viewModelScope.launch {
             MoreApplication.shared!!.currentStudyState.collect {
-                finishText.value = StudyRepository().getStudy().firstOrNull()?.finishText
+                finishText.value = MoreApplication.shared!!.finishText
                 studyState.value = it
                 if (it == StudyState.ACTIVE && initFinished) {
                     showBLESetup(context)

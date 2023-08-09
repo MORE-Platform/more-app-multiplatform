@@ -21,6 +21,8 @@ class ContentViewModel: ObservableObject {
     
     @Published var studyIsUpdating: Bool = false
     @Published var currentStudyState: StudyState = .none
+    
+    @Published var finishText: String? = nil
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -51,7 +53,6 @@ class ContentViewModel: ObservableObject {
     lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
     
     init() {
-        
         let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
         notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
@@ -63,9 +64,7 @@ class ContentViewModel: ObservableObject {
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
-            if self?.currentStudyState == .closed && studyState == StudyState.none {
-                self?.hasCredentials = false
-            }
+            self?.finishText = AppDelegate.shared.finishText
             self?.currentStudyState = studyState
         }
         
@@ -92,6 +91,7 @@ class ContentViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.registrationService.reset()
             self.loginViewScreenNr = 0
+            self.hasCredentials = false
         }
     }
     

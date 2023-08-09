@@ -32,6 +32,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
@@ -53,6 +54,7 @@ class Shared(
     val studyIsUpdating = MutableStateFlow(false)
 
     val currentStudyState = MutableStateFlow(StudyState.NONE)
+    var finishText: String? = null
 
     init {
         onApplicationStart()
@@ -127,6 +129,9 @@ class Shared(
         val currentStudy = studyRepository.getStudy().firstOrNull()
         if (currentStudy != null) {
             currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
+            currentStudy.finishText?.let {
+                finishText = it
+            }
         }
         if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
             currentStudyState.set(newStudyState)
@@ -173,10 +178,13 @@ class Shared(
 
     fun newLogin() {
         notificationManager.newFCMToken()
+        currentStudyState.set(StudyState.ACTIVE)
+        Scope.launch {
+            finishText = StudyRepository().getStudy().firstOrNull()?.finishText
+        }
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
-        Scope.cancel()
         CoroutineScope(Job() + Dispatchers.Default).launch {
             stopObservations()
             observationFactory.clearNeededObservationTypes()
