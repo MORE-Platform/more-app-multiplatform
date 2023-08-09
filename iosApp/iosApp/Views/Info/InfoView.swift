@@ -54,9 +54,10 @@ struct InfoView: View {
                         )
                         
                         Spacer()
+                        AppVersion()
                     }
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 10)
             } 
             .customNavigationTitle(with: NavigationScreens.info.localize(useTable: navigationStrings, withComment: "Information Title"))
             .onAppear {

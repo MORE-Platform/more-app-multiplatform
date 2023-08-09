@@ -131,6 +131,8 @@
 		1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264B29C1D1660011D8A4 /* InfoList.swift */; };
 		1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4446F29C849DC006AA11C /* Semaphore.swift */; };
 		1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */; };
+		1FF5B28B2A8274C10076EF8E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF5B28A2A8274C10076EF8E /* AppVersion.swift */; };
+		1FF5B28D2A8275790076EF8E /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF5B28C2A8275790076EF8E /* Bundle.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */; };
@@ -346,6 +348,8 @@
 		1FDC264B29C1D1660011D8A4 /* InfoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoList.swift; sourceTree = "<group>"; };
 		1FE4446F29C849DC006AA11C /* Semaphore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Semaphore.swift; sourceTree = "<group>"; };
 		1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDataRecorder.swift; sourceTree = "<group>"; };
+		1FF5B28A2A8274C10076EF8E /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
+		1FF5B28C2A8275790076EF8E /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		7555FF7B242A565900829871 /* More.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = More.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -619,6 +623,7 @@
 				071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */,
 				07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */,
 				1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */,
+				1FF5B28A2A8274C10076EF8E /* AppVersion.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -686,6 +691,7 @@
 				ED74FF4529DEC73600BAA1EF /* KotlinLongExtension.swift */,
 				1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */,
 				1F9B81BC2A28CBF70013738A /* KotlinMutableSetExtension.swift */,
+				1FF5B28C2A8275790076EF8E /* Bundle.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1110,6 +1116,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */,
+				1FF5B28D2A8275790076EF8E /* Bundle.swift in Sources */,
 				1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */,
 				B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */,
 				B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */,
@@ -1166,6 +1173,7 @@
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
 				1F69081329D44D900079C219 /* DateExtension.swift in Sources */,
 				EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */,
+				1FF5B28B2A8274C10076EF8E /* AppVersion.swift in Sources */,
 				1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */,
 				B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */,
 				1F2B23152A7D01AC00CFBE02 /* IOSLogHandler.swift in Sources */,

@@ -23,6 +23,7 @@ import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.showNewActivity
+import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
@@ -214,6 +215,9 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
             }
 
 
+        }
+        item {
+            AppVersion()
         }
     }
 }
