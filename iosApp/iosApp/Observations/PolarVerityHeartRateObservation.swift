@@ -73,11 +73,15 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
     
     override func observerAccessible() -> Bool {
-        if self.polarConnector.connected.count > 0 {
-            AppDelegate.shared.coreBluetooth.disableBackgroundScanner()
-            return true
+        if let hasBleObservations = AppDelegate.shared.showBleSetup().second?.boolValue, hasBleObservations {
+            if self.polarConnector.connected.count > 0 {
+                AppDelegate.shared.coreBluetooth.disableBackgroundScanner()
+                return true
+            } else {
+                AppDelegate.shared.coreBluetooth.enableBackgroundScanner()
+                return false
+            }
         } else {
-            AppDelegate.shared.coreBluetooth.enableBackgroundScanner()
             return false
         }
     }

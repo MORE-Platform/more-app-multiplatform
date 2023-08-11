@@ -20,19 +20,6 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
-
-    fun apply(observationId: String, scheduleId: String) {
-        Napier.i(tag = "Observation::apply") { "Applying observation $observationId of type ${observationType.observationType} for schedule $scheduleId." }
-        observationIds.add(observationId)
-        scheduleIds[scheduleId] = observationId
-    }
-
-    fun remove(observationId: String, scheduleId: String) {
-        Napier.i(tag = "Observation::remove") { "Removing observation $observationId of type ${observationType.observationType} for schedule $scheduleId." }
-        observationIds.remove(observationId)
-        scheduleIds.remove(scheduleId)
-    }
-
     fun start(observationId: String, scheduleId: String): Boolean {
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId

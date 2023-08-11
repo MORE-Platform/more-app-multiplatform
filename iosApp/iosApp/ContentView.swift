@@ -11,7 +11,7 @@ struct ContentView: View {
                 } else if viewModel.currentStudyState == StudyState.paused {
                     StudyPausedView()
                 } else if viewModel.currentStudyState == StudyState.closed {
-                    StudyClosedView()
+                    StudyClosedView(viewModel: viewModel)
                 } else {
                     MainTabView()
                         .environmentObject(viewModel)

@@ -56,6 +56,7 @@ struct LoginView: View {
                                 textType: .URL
                             )
                         }
+                        AppVersion()
                     }
                     .padding(.horizontal, 60)
                 }

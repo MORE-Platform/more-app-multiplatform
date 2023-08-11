@@ -18,9 +18,10 @@ class ObservationRepository : Repository<ObservationSchema>() {
     fun observations() = realmDatabase().query<ObservationSchema>()
 
     fun observationWithUndoneSchedules(): Flow<Map<ObservationSchema, List<ScheduleSchema>>> {
-        return ScheduleRepository().allSchedulesWithStatus().combine(observations()){ schedules, observations ->
-            observations.associateWith { observation -> schedules.filter { it.observationId == observation.observationId } }
-        }
+        return ScheduleRepository().allSchedulesWithStatus()
+            .combine(observations()) { schedules, observations ->
+                observations.associateWith { observation -> schedules.filter { it.observationId == observation.observationId } }
+            }
     }
 
     fun lastCollection(type: String, timestamp: Long) {
@@ -42,8 +43,14 @@ class ObservationRepository : Repository<ObservationSchema>() {
                 )
             }
 
+    fun collectAllTimestamps() = observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
+
     fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
-       return collectionTimestamp(type).asClosure(newState)
+        return collectionTimestamp(type).asClosure(newState)
+    }
+
+    fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
+        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }.asClosure(newState)
     }
 
     fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationSchema, List<ScheduleSchema>>) -> Unit): Closeable {
@@ -51,7 +58,9 @@ class ObservationRepository : Repository<ObservationSchema>() {
     }
 
     fun observationTypes(): Flow<Set<String>> {
-        return observations().transform { observationList -> emit(observationList.map { it.observationType }.toSet()) }
+        return observations().transform { observationList ->
+            emit(observationList.map { it.observationType }.toSet())
+        }
     }
 
     fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(
@@ -61,8 +70,8 @@ class ObservationRepository : Repository<ObservationSchema>() {
 
     suspend fun getObservationByObservationId(observationId: String): ObservationSchema? {
         return realmDatabase().queryFirst<ObservationSchema>(
-                "observationId == $0",
-                queryArgs = arrayOf(observationId)
-            ).firstOrNull()
+            "observationId == $0",
+            queryArgs = arrayOf(observationId)
+        ).firstOrNull()
     }
 }

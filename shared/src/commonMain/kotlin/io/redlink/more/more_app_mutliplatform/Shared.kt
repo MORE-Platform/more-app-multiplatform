@@ -32,6 +32,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
@@ -53,12 +54,16 @@ class Shared(
     val studyIsUpdating = MutableStateFlow(false)
 
     val currentStudyState = MutableStateFlow(StudyState.NONE)
+    var finishText: String? = null
 
     init {
         onApplicationStart()
     }
 
     fun onApplicationStart() {
+        if (credentialRepository.hasCredentials()) {
+            activateObservationWatcher()
+        }
     }
 
     fun appInForeground(boolean: Boolean) {
@@ -66,17 +71,17 @@ class Shared(
         appIsInForeGround = boolean
         if (appIsInForeGround) {
             updateTaskStates()
-            notificationManager.downloadMissedNotifications()
         }
     }
 
     fun updateTaskStates() {
         if (appIsInForeGround && credentialRepository.hasCredentials()) {
             observationManager.updateTaskStates()
+            notificationManager.downloadMissedNotifications()
         }
     }
 
-    fun activateObservationWatcher(overwriteCheck: Boolean = false) {
+    private fun activateObservationWatcher(overwriteCheck: Boolean = false) {
         Scope.launch {
             if (overwriteCheck || StudyRepository().getStudy().firstOrNull()?.active == true) {
                 observationDataManager.listenToDatapointCountChanges()
@@ -127,6 +132,9 @@ class Shared(
         val currentStudy = studyRepository.getStudy().firstOrNull()
         if (currentStudy != null) {
             currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
+            currentStudy.finishText?.let {
+                finishText = it
+            }
         }
         if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
             currentStudyState.set(newStudyState)
@@ -173,10 +181,14 @@ class Shared(
 
     fun newLogin() {
         notificationManager.newFCMToken()
+        currentStudyState.set(StudyState.ACTIVE)
+        Scope.launch {
+            finishText = StudyRepository().getStudy().firstOrNull()?.finishText
+        }
+        activateObservationWatcher()
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
-        Scope.cancel()
         CoroutineScope(Job() + Dispatchers.Default).launch {
             stopObservations()
             observationFactory.clearNeededObservationTypes()

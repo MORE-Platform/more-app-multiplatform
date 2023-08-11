@@ -14,10 +14,11 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = 2
-        versionName = "2.3.6"
+        versionName = "2.3.7"
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -28,8 +29,13 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        debug{
+            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
+            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
+        }
+        release {
+            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
+            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
         }
     }
     compileOptions {
@@ -61,7 +67,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.firebase:firebase-analytics-ktx:21.3.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:23.2.0")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
     implementation("io.github.aakira:napier:2.6.1")
     implementation("com.github.polarofficial:polar-ble-sdk:${polarSDKVersion}")
     implementation("io.reactivex.rxjava3:rxjava:3.1.6")
