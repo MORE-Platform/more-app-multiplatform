@@ -70,8 +70,6 @@ class ContentViewModel: ObservableObject {
         
         if hasCredentials {
             scanBluetooth()
-            AppDelegate.shared.updateStudyBlocking(oldStudyState: nil, newStudyState: nil)
-            AppDelegate.shared.activateObservationWatcher(overwriteCheck: false)
         }
     }
     
@@ -140,7 +138,6 @@ extension ContentViewModel: ConsentViewModelListener {
             if let self {
                 self.hasCredentials = true
                 self.scanBluetooth()
-                AppDelegate.shared.activateObservationWatcher(overwriteCheck: false)
             }
         }
         AppDelegate.shared.doNewLogin()

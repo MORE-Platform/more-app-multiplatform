@@ -122,7 +122,9 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             it.write {
                 query<ScheduleSchema>("done = $0", false).find().mapNotNull { scheduleSchema ->
                     val newState = scheduleSchema.updateState()
-                    Napier.i { "State update for Schema: $scheduleSchema; ${scheduleSchema.getState()} -> $newState" }
+                    if (scheduleSchema.getState() != newState) {
+                        Napier.i { "State update for Schema: $scheduleSchema; ${scheduleSchema.getState()} -> $newState" }
+                    }
                     if (autoStartingObservations.isNotEmpty()
                         && scheduleSchema.hidden
                         && newState.active()

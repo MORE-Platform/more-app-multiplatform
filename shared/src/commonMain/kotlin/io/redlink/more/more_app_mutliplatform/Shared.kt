@@ -61,6 +61,9 @@ class Shared(
     }
 
     fun onApplicationStart() {
+        if (credentialRepository.hasCredentials()) {
+            activateObservationWatcher()
+        }
     }
 
     fun appInForeground(boolean: Boolean) {
@@ -68,17 +71,17 @@ class Shared(
         appIsInForeGround = boolean
         if (appIsInForeGround) {
             updateTaskStates()
-            notificationManager.downloadMissedNotifications()
         }
     }
 
     fun updateTaskStates() {
         if (appIsInForeGround && credentialRepository.hasCredentials()) {
             observationManager.updateTaskStates()
+            notificationManager.downloadMissedNotifications()
         }
     }
 
-    fun activateObservationWatcher(overwriteCheck: Boolean = false) {
+    private fun activateObservationWatcher(overwriteCheck: Boolean = false) {
         Scope.launch {
             if (overwriteCheck || StudyRepository().getStudy().firstOrNull()?.active == true) {
                 observationDataManager.listenToDatapointCountChanges()
@@ -182,6 +185,7 @@ class Shared(
         Scope.launch {
             finishText = StudyRepository().getStudy().firstOrNull()?.finishText
         }
+        activateObservationWatcher()
     }
 
     fun exitStudy(onDeletion: () -> Unit) {

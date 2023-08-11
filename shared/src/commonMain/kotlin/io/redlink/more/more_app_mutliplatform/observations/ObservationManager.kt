@@ -1,15 +1,15 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.realm.kotlin.ext.copyFromRealm
+import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
@@ -28,6 +28,7 @@ class ObservationManager(
     private val scheduleSchemaList = mutableSetOf<ScheduleSchema>()
 
     private val currentlyRunning = mutableSetOf<String>()
+    private var upToDateTimestamps: Map<String, RealmInstant> = emptyMap()
 
     fun activateScheduleUpdate() {
         Napier.i(tag = "ObservationManager::activateScheduleUpdate") { "ObservationManager: ScheduleUpdater activating..."}
@@ -47,6 +48,11 @@ class ObservationManager(
             delay(firstCall - Clock.System.now().toEpochMilliseconds())
             Scope.repeatedLaunch(30000L) {
                 updateTaskStates()
+            }
+        }
+        Scope.launch {
+            observationRepository.collectAllTimestamps().cancellable().collect {
+                upToDateTimestamps = it
             }
         }
     }
@@ -197,6 +203,8 @@ class ObservationManager(
 
     fun hasRunningTasks() = currentlyRunning.isNotEmpty()
 
+    fun allRunningObservations() = runningObservations.toMap()
+
     private fun stopAllInList() {
         Napier.d(tag = "ObservationManager::stopAllInList") { "Running Observations to be stopped: $runningObservations" }
         val runningObs = runningObservations.toList()
@@ -207,6 +215,29 @@ class ObservationManager(
             runningObservations.remove(scheduleId)
             scheduleSchemaList.removeAll { it.scheduleId.toHexString() == scheduleId }
             currentlyRunning.clear()
+        }
+    }
+
+    fun collectAllData(onCompletion: (Boolean) -> Unit){
+        Scope.launch {
+            restartStillRunning()
+            if (!hasRunningTasks()) {
+                onCompletion(true)
+            }
+            var counter = 0
+            runningObservations.values.forEach {
+                upToDateTimestamps[it.observationType.observationType]?.let { lastTimestamp ->
+                    it.store(lastTimestamp.epochSeconds, Clock.System.now().epochSeconds) {
+                        if (++counter == runningObservations.size) {
+                            onCompletion(true)
+                        }
+                    }
+                } ?: kotlin.run {
+                    if (++counter == runningObservations.size) {
+                        onCompletion(true)
+                    }
+                }
+            }
         }
     }
 

@@ -19,52 +19,34 @@ class DataUploadBackgroundTask {
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("Background Task scheduled")
+            print("DataUploadBackgroundTask::schedule - Background Task scheduled")
         } catch {
-            print("Error requesting for a background task")
+            print("DataUploadBackgroundTask:schedule - Error requesting for a background task")
         }
     }
 
-    private let uploadDataManager = AppDelegate.dataUploadManager
     private let dataCollector = ObservationDataCollector()
     
-    private var currentUploadingTask: Task<(), Never>? = nil
-
-    private func uploadCollectedData(completion: @escaping (Bool) -> Void) {
-        print("Uploading Data in background")
-        self.uploadDataManager.uploadData { success in
-            if success {
-                print("Upload success!")
-            } else {
-                print("Could not upload!")
-            }
-            completion(success)
-        }
-    }
-    
     private func collectRecordedData(completion: @escaping () -> Void) {
-        print("\(Date()): Collecting recorded data...")
+        print("DataUploadBackgroundTask::collectRecordedData - \(Date()): Collecting recorded data...")
         dataCollector.collectData { dataCollected in
             if dataCollected {
-                print("\(Date()): Data collected")
+                print("DataUploadBackgroundTask::collectRecordedData - \(Date()): Data collected")
             } else {
-                print("\(Date()): No data collected")
+                print("DataUploadBackgroundTask::collectRecordedData - \(Date()): No data collected")
             }
             completion()
         }
     }
     
     private func close() {
-        self.currentUploadingTask?.cancel()
-        self.uploadDataManager.close()
-        self.dataCollector.close()
     }
 }
 
 extension DataUploadBackgroundTask: BackgroundTaskHandler {
     @MainActor
     func handleProcessingTask(task: BGProcessingTask) {
-        print("Starting Background Processing Task")
+        print("DataUploadBackgroundTask::handleProcessingTask - Starting Background Processing Task")
         task.expirationHandler = {
             print("\(Date()): Task will soon expire! Cleaning up...")
             self.close()
@@ -75,21 +57,19 @@ extension DataUploadBackgroundTask: BackgroundTaskHandler {
             }
         }
         collectRecordedData { [weak self] in
-            if let self {
-                self.uploadCollectedData(completion: { success in
-                    self.close()
-                    DataUploadBackgroundTask.schedule()
-                    DispatchQueue.main.async {
-                        print("\(Date()): Task finished with success: \(success)")
-                        task.setTaskCompleted(success: success)
-                    }
-                })
-            } else {
-                self?.close()
+            guard let strongSelf = self else {
                 DataUploadBackgroundTask.schedule()
                 task.setTaskCompleted(success: false)
+                return
+            }
+            
+            strongSelf.close()
+            DataUploadBackgroundTask.schedule()
+            DispatchQueue.main.async {
+                task.setTaskCompleted(success: true)
             }
         }
+
     }
 
     func handleRefreshTask(task: BGAppRefreshTask) {

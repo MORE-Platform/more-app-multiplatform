@@ -10,7 +10,7 @@ import SwiftUI
 
 struct StudyClosedView: View {
     @StateObject var viewModel: ContentViewModel
-    private let stringsTable = "StudyState"
+    private let stringsTable = "StudyStates"
     var body: some View {
         MoreMainBackgroundView {
             VStack {
@@ -18,7 +18,7 @@ struct StudyClosedView: View {
                     VStack(alignment: .center) {
                         Title(titleText: "\("Study was completed".localize(withComment: "Study closed", useTable: stringsTable))!")
                             .padding(.bottom, 8)
-                        Title2(titleText: "\("Thank you for you participation".localize(withComment: "Thanks for the participation", useTable: stringsTable))!")
+                        Title2(titleText: "\("Thank you for your participation".localize(withComment: "Thanks for the participation", useTable: stringsTable))!")
                     }
                     Divider()
                     VStack {

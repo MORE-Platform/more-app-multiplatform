@@ -77,13 +77,16 @@ class PolarHeartRateObservation :
     }
 
     override fun observerAccessible(): Boolean {
-        val empty = MoreApplication.shared!!.mainBluetoothConnector.connected.isEmpty()
-        if (empty) {
-            MoreApplication.shared!!.coreBluetooth.enableBackgroundScanner()
-        } else {
-            MoreApplication.shared!!.coreBluetooth.disableBackgroundScanner()
+        if (MoreApplication.shared!!.showBleSetup().second) {
+            val empty = MoreApplication.shared!!.mainBluetoothConnector.connected.isEmpty()
+            if (empty) {
+                MoreApplication.shared!!.coreBluetooth.enableBackgroundScanner()
+            } else {
+                MoreApplication.shared!!.coreBluetooth.disableBackgroundScanner()
+            }
+            return hasPermissions(MoreApplication.appContext!!) && !empty
         }
-        return hasPermissions(MoreApplication.appContext!!) && !empty
+        return false
     }
 
     override fun bleDevicesNeeded(): Set<String> {
