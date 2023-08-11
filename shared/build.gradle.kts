@@ -130,3 +130,7 @@ openApiGenerate {
 openApiValidate {
     inputSpec.set(mobileAppApiInput)
 }
+
+task("testClasses").doLast {
+    println("This is a dummy testClasses task")
+}
