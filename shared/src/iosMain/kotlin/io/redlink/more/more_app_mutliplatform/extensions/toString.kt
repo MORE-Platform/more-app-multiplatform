@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.*
 

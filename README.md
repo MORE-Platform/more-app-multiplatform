@@ -23,7 +23,7 @@ It's recommended that you install the latest stable versions for compatibility a
 * [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 14.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK 19](https://www.oracle.com/java/technologies/downloads/)
-* [Gradle 8.0+](https://gradle.org)
+* [Gradle 8.2+](https://gradle.org)
 
 Also, it's recommended to install the following plugins in the Android Studio directly:
 
