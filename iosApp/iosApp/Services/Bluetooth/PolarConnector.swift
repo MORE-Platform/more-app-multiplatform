@@ -194,6 +194,11 @@ class PolarConnector: NSObject, BluetoothConnector {
 }
 
 extension PolarConnector: PolarBleApiObserver {
+    func deviceDisconnected(_ identifier: PolarBleSdk.PolarDeviceInfo, pairingError: Bool) {
+        print("Polar disconnected: \(identifier.name). Had paring error: \(pairingError)")
+        self.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
+    }
+    
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
         print("Polar connecting: \(identifier.name)")
         self.isConnectingToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
@@ -202,11 +207,6 @@ extension PolarConnector: PolarBleApiObserver {
     func deviceConnected(_ identifier: PolarDeviceInfo) {
         print("Polar connected: \(identifier.name)")
         self.didConnectToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
-    }
-    
-    func deviceDisconnected(_ identifier: PolarDeviceInfo) {
-        print("Polar disconnected: \(identifier.name)")
-        self.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
     }
 }
 

@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("android")
-    id("io.realm.kotlin") version "1.10.2"
+    id("io.realm.kotlin") version "1.11.1"
     id("com.google.firebase.crashlytics")
 }
 
@@ -21,7 +21,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -47,9 +47,9 @@ android {
     }
 }
 
-val composeVersion = "1.4.3"
+val composeVersion = "1.5.1"
 val workVersion = "2.8.1"
-val navVersion = "2.6.0"
+val navVersion = "2.7.2"
 val polarSDKVersion = "5.1.0"
 
 dependencies {
@@ -62,7 +62,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("io.realm.kotlin:library-base:1.10.2")
+    implementation("io.realm.kotlin:library-base:1.11.1")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
@@ -79,5 +79,5 @@ dependencies {
     implementation("com.google.firebase:firebase-inappmessaging-display-ktx")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
-    implementation("androidx.lifecycle:lifecycle-process:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-process:2.6.2")
 }
