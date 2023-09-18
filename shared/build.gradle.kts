@@ -3,8 +3,7 @@ plugins {
     kotlin("plugin.serialization")
 
     id("com.android.library")
-    id("io.realm.kotlin") version "1.10.2"
-    id("org.openapi.generator") version "6.3.0"
+    id("io.realm.kotlin") version "1.11.1"
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -36,10 +35,10 @@ kotlin {
         }
     }
 
-    val coroutinesVersion = "1.7.1"
-    val ktorVersion = "2.3.2"
+    val coroutinesVersion = "1.7.3"
+    val ktorVersion = "2.3.4"
     val napierVersion = "2.6.1"
-    val serializationVersion = "1.5.1"
+    val serializationVersion = "1.6.0"
     val gsonVersion = "2.10.1"
 
     sourceSets {
@@ -55,7 +54,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
 
-                implementation("io.realm.kotlin:library-base:1.10.2")
+                implementation("io.realm.kotlin:library-base:1.11.1")
 
                 implementation("io.github.aakira:napier:$napierVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
@@ -110,25 +109,6 @@ android {
     defaultConfig {
         minSdk = 29
     }
-}
-
-
-openApiGenerate {
-    generatorName.set("kotlin")
-    inputSpec.set(mobileAppApiInput)
-    outputDir.set(mobileAppApiOutputDir)
-    packageName.set(mobileAppApiPackage)
-    invokerPackage.set("$mobileAppApiPackage.invoke")
-    modelPackage.set("$mobileAppApiPackage.model")
-    apiPackage.set("$mobileAppApiPackage.api")
-    ignoreFileOverride.set(openapiIgnore)
-
-    configOptions.put("library", "multiplatform")
-    configOptions.put("enumPropertyNaming", "UPPERCASE")
-    configOptions.put("hideGenerationTimestamp", "true")
-}
-openApiValidate {
-    inputSpec.set(mobileAppApiInput)
 }
 
 task("testClasses").doLast {
