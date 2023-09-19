@@ -85,7 +85,7 @@ fun ScheduleListItem(
                         enabled = scheduleModel.scheduleState.active()
                     ) {
                         navController.navigate(
-                            "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
+                            NavigationScreen.SIMPLE_QUESTION.navigationRoute("scheduleId" to scheduleModel.scheduleId)
                         )
                     }
                 }
@@ -94,14 +94,7 @@ fun ScheduleListItem(
                         text = getStringResource(id = R.string.more_limesurvey_start),
                         enabled = scheduleModel.scheduleState.active()
                     ) {
-                        (context as? Activity)?.let { activity ->
-                            val intent = Intent(context, LimeSurveyActivity::class.java)
-                            intent.putExtra(
-                                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
-                                scheduleModel.scheduleId
-                            )
-                            activity.startActivity(intent)
-                        }
+                        navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel.scheduleId))
                     }
                 }
                 else -> {

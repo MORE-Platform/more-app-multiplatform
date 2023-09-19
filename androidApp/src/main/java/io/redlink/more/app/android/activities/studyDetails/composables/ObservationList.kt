@@ -16,8 +16,6 @@ import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import org.mongodb.kbson.ObjectId
 
 @Composable
 fun ObservationList(navController: NavController, observations: List<ObservationSchema>) {
@@ -25,34 +23,38 @@ fun ObservationList(navController: NavController, observations: List<Observation
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxWidth()
     ) {
-            observations.forEach { observation ->
-                Row(
+        observations.forEach { observation ->
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .clickable {
+                        navController.navigate(
+                            NavigationScreen.OBSERVATION_DETAILS.navigationRoute(
+                                "observationId" to observation.observationId
+                            )
+                        )
+                    }
+                    .padding(top = 12.dp, bottom = 0.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
                     modifier = Modifier
                         .padding(bottom = 8.dp)
-                        .clickable {
-                            navController.navigate("${NavigationScreen.OBSERVATION_DETAILS.route}/observationId=${observation.observationId}")
-                        }
-                        .padding(top = 12.dp, bottom = 0.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                    ) {
-                        MediumTitle(text = observation.observationTitle)
-                        BasicText(text = observation.observationType, color = MoreColors.Secondary)
-                    }
-                    Icon(
-                        Icons.Default.ArrowForwardIos,
-                        contentDescription = "View observation details",
-                        tint = MoreColors.Primary,
-                        modifier = Modifier
-                            .size(16.dp)
-                    )
+                    MediumTitle(text = observation.observationTitle)
+                    BasicText(text = observation.observationType, color = MoreColors.Secondary)
                 }
-                MoreDivider()
+                Icon(
+                    Icons.Default.ArrowForwardIos,
+                    contentDescription = "View observation details",
+                    tint = MoreColors.Primary,
+                    modifier = Modifier
+                        .size(16.dp)
+                )
             }
+            MoreDivider()
+        }
     }
 }

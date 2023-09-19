@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -21,7 +21,7 @@ import io.redlink.more.app.android.R
 
 @Composable
 fun QuestionnaireResponseView(navController: NavController) {
-    val title = getString(R.string.more_quest_thank_you)
+    val title = stringResource(R.string.more_quest_thank_you)
 
     MoreBackground {
         Column(
@@ -36,11 +36,11 @@ fun QuestionnaireResponseView(navController: NavController) {
 
                 Spacer(Modifier.height(24.dp))
 
-                HeaderDescription(description = getString(R.string.more_quest_validation))
+                HeaderDescription(description = stringResource(R.string.more_quest_validation))
 
                 Spacer(Modifier.height(12.dp))
 
-                HeaderDescription(description = getString(R.string.more_quest_thank_you_full))
+                HeaderDescription(description = stringResource(R.string.more_quest_thank_you_full))
             }
             TextButton(
                 onClick = { navController.navigate(NavigationScreen.DASHBOARD.route) },

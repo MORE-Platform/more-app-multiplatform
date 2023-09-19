@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="error">Fehler</string>
+    <string name="data_not_found">Daten konnten nicht geladen werden</string>
 </resources>

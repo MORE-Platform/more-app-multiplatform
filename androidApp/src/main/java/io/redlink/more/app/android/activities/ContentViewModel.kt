@@ -48,7 +48,10 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 ExistingPeriodicWorkPolicy.KEEP,
                 worker
             )
-            showNewActivityAndClearStack(it, MainActivity::class.java)
+            showNewActivityAndClearStack(it, MainActivity::class.java,
+                forwardExtras = true,
+                forwardDeepLink = true
+            )
         }
     }
 
