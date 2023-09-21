@@ -15,4 +15,5 @@
     <string name="nav_leave_study">Leave Study</string>
     <string name="nav_leave_study_confirm">Confirm to leave the study</string>
     <string name="nav_limesurvey">Limesurvey</string>
+    <string name="nav_self_learning_multiple_choice_question">Self Learning Multiple Choice Question</string>
 </resources>

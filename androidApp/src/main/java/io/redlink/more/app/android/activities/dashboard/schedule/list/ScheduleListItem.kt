@@ -16,7 +16,6 @@ import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.toDate
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
@@ -79,6 +78,16 @@ fun ScheduleListItem(
         )
         if (showButton && !scheduleModel.hidden) {
             when (scheduleModel.observationType) {
+                "self-learning-multiple-choice-question-observation" -> {
+                    SmallTextButton(
+                        text = getStringResource(id = R.string.more_questionnaire_start),
+                        enabled = scheduleModel.scheduleState.active()
+                    ) {
+                        navController.navigate(
+                            "${NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.route}/scheduleId=${scheduleModel.scheduleId}"
+                        )
+                    }
+                }
                 "question-observation" -> {
                     SmallTextButton(
                         text = getStringResource(id = R.string.more_questionnaire_start),

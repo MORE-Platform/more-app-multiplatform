@@ -6,6 +6,13 @@ import android.content.SharedPreferences
 class SharedPreferencesRepository(context: Context): SharedStorageRepository {
     private var sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(context)
 
+    override fun store(key: String, value: List<String>) {
+        sharedPreferences
+            .edit()
+            ?.putStringSet(key, value.toSet())
+            ?.apply()
+    }
+
     override fun store(key: String, value: String) {
         sharedPreferences
             .edit()
@@ -39,6 +46,11 @@ class SharedPreferencesRepository(context: Context): SharedStorageRepository {
             .edit()
             ?.putLong(key, value.toRawBits())
             ?.apply()
+    }
+
+    override fun load(key: String, default: List<String>): List<String> {
+        val defaultValue = emptySet<String>()
+        return sharedPreferences.getStringSet(key, defaultValue)?.toList() ?: emptyList()
     }
 
     override fun load(key: String, default: String): String {

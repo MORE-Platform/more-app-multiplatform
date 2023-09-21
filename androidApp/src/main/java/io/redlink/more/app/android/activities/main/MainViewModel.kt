@@ -15,19 +15,16 @@ import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
+import io.redlink.more.app.android.activities.observations.selfLearningMultipleChoiceQuestion.SelfLearningMultipleChoiceQuestionViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context) : ViewModel() {
@@ -68,6 +65,10 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val infoVM: InfoViewModel by lazy {
         InfoViewModel()
+    }
+
+    private val selfLearningMultipleChoiceQuestionViewModel by lazy {
+        SelfLearningMultipleChoiceQuestionViewModel()
     }
 
     private val simpleQuestionnaireViewModel by lazy {
@@ -114,6 +115,10 @@ class MainViewModel(context: Context) : ViewModel() {
         taskDetailsViewModel.apply { setSchedule(scheduleId) }
 
     fun viewDidAppear() {
+    }
+
+    fun creteNewSelfLearningMultipleChoiceQuestionViewModel(scheduleId: String): SelfLearningMultipleChoiceQuestionViewModel {
+        return selfLearningMultipleChoiceQuestionViewModel.apply { setScheduleId(scheduleId) }
     }
 
     fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {

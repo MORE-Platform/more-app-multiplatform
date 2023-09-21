@@ -1,10 +1,10 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.clear
+import io.redlink.more.more_app_mutliplatform.observations.selfLearningMultipleChoiceQuestionObservation.SelfLearningMultipleChoiceQuestionObservation
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.util.Scope
@@ -20,6 +20,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
+        observations.add(SelfLearningMultipleChoiceQuestionObservation())
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }

@@ -3,6 +3,9 @@ package io.redlink.more.more_app_mutliplatform.services.store
 class ImMemoryStorageRepository : SharedStorageRepository {
 
     private val storageMap = HashMap<String, Any>()
+    override fun store(key: String, value: List<String>) {
+        storageMap[key] = value
+    }
 
     override fun store(key: String, value: String) {
         storageMap[key] = value
@@ -22,6 +25,11 @@ class ImMemoryStorageRepository : SharedStorageRepository {
 
     override fun store(key: String, value: Double) {
         storageMap[key] = value
+    }
+
+    override fun load(key: String, default: List<String>): List<String> {
+        return storageMap[key] as? List<String> ?: default
+
     }
 
     override fun load(key: String, default: String): String {

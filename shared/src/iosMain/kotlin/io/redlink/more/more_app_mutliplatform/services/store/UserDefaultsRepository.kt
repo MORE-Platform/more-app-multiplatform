@@ -6,6 +6,10 @@ import platform.darwin.NSInteger
 
 
 class UserDefaultsRepository: SharedStorageRepository {
+
+    override fun store(key: String, value: List<String>) {
+        NSUserDefaults.standardUserDefaults.setObject(NSArray(value), key)
+    }
     override fun store(key: String, value: String) {
         NSUserDefaults.standardUserDefaults.setObject(value, key)
     }
@@ -24,6 +28,11 @@ class UserDefaultsRepository: SharedStorageRepository {
 
     override fun store(key: String, value: Double) {
         NSUserDefaults.standardUserDefaults.setDouble(value, key)
+    }
+
+    override fun load(key: String, default: List<String>): List<String> {
+        val nsArray = NSUserDefaults.standardUserDefaults.objectForKey(key) as? NSArray
+        return nsArray?.toList() as? List<String> ?: default
     }
 
     override fun load(key: String, default: String): String {

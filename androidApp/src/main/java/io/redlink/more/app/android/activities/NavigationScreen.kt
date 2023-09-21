@@ -22,7 +22,9 @@ enum class NavigationScreen(val route: String, @StringRes val stringResource: In
     NOTIFICATION_FILTER("Notification Filter", R.string.nav_notification_filter),
     LEAVE_STUDY("Leave Study", R.string.nav_leave_study),
     LEAVE_STUDY_CONFIRM("Confirm to leave the study", R.string.nav_leave_study_confirm),
-    LIMESURVEY("LimeSurvey", R.string.nav_limesurvey);
+    LIMESURVEY("LimeSurvey", R.string.nav_limesurvey),
+    SELF_LEARNING_MULTIPLE_CHOICE_QUESTION("Self Learning Multiple Choice Question", R.string.nav_self_learning_multiple_choice_question),
+    SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE("Self Learning Multiple Choice Question", R.string.nav_self_learning_multiple_choice_question);
 
     @Composable
     fun stringRes() = getStringResource(id = stringResource)

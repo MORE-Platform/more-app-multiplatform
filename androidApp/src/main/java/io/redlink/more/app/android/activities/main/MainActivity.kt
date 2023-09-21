@@ -25,6 +25,8 @@ import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
+import io.redlink.more.app.android.activities.observations.selfLearningMultipleChoiceQuestion.SelfLearningMultipleChoiceQuestionResponseView
+import io.redlink.more.app.android.activities.observations.selfLearningMultipleChoiceQuestion.SelfLearningMultipleChoiceQuestionView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.more.app.android.activities.setting.SettingsView
 import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConfirmView
@@ -199,6 +201,35 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     })
                 }
                 DashboardFilterView(viewModel = vm)
+            }
+            composable(
+                "${NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.route}/scheduleId={scheduleId}",
+                arguments = listOf(
+                    navArgument("scheduleId") {
+                        type = NavType.StringType
+                    })
+            ) {
+                val scheduleId by remember {
+                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
+                }
+                viewModel.navigationBarTitle.value = NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.stringRes()
+                viewModel.showBackButton.value = true
+                val vm by remember {
+                    mutableStateOf(viewModel.creteNewSelfLearningMultipleChoiceQuestionViewModel(
+                        scheduleId
+                    ))
+                }
+                SelfLearningMultipleChoiceQuestionView(
+                    navController = navController,
+                    viewModel = vm
+                )
+            }
+            composable(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.route) {
+                viewModel.navigationBarTitle.value =
+                    NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.stringRes()
+                viewModel.showBackButton.value = false
+
+                SelfLearningMultipleChoiceQuestionResponseView(navController)
             }
             composable(
                 "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
