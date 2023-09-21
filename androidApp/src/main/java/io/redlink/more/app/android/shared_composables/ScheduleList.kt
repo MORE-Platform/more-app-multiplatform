@@ -28,13 +28,26 @@ fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, sho
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    itemsIndexed(entry.value.sortedWith(compareBy({it.start}, {it.end}, {it.observationTitle}, {it.scheduleId}))) { _, item ->
+                    itemsIndexed(
+                        entry.value.sortedWith(
+                            compareBy(
+                                { it.start },
+                                { it.end },
+                                { it.observationTitle },
+                                { it.scheduleId })
+                        )
+                    ) { _, item ->
                         MoreDivider(Modifier.fillMaxWidth())
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    navController.navigate("${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId=${item.scheduleId}&scheduleListType=${viewModel.scheduleListType}")
+                                    navController.navigate(
+                                        NavigationScreen.SCHEDULE_DETAILS.navigationRoute(
+                                            "scheduleId" to item.scheduleId,
+                                            "scheduleListType" to viewModel.scheduleListType
+                                        )
+                                    )
                                 }
                         ) {
                             ScheduleListItem(

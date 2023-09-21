@@ -1,5 +1,7 @@
 package io.redlink.more.app.android.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +16,9 @@ class ContentActivity: ComponentActivity() {
     private val viewModel = ContentViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent.getStringExtra("deepLink")?.let {
+            intent.data = Uri.parse(it)
+        }
         setContent {
             ContentView(viewModel = viewModel)
         }

@@ -3,9 +3,13 @@ package io.redlink.more.app.android.activities.main
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
@@ -14,6 +18,7 @@ import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
@@ -116,8 +121,32 @@ class MainViewModel(context: Context) : ViewModel() {
     fun viewDidAppear() {
     }
 
-    fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {
-        return simpleQuestionnaireViewModel.apply { setScheduleId(scheduleId) }
+    fun openLimesurvey(context: Context, activityResultLauncher: ActivityResultLauncher<Intent>, scheduleId: String?, observationId: String?) {
+        (context as? Activity)?.let { activity ->
+            val intent = Intent(activity, LimeSurveyActivity::class.java)
+            intent.putExtra(
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
+                scheduleId
+            )
+            intent.putExtra(
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID,
+                observationId
+            )
+            activityResultLauncher.launch(intent)
+        }
+    }
+
+    fun creteNewSimpleQuestionViewModel(scheduleId: String? = null, observationId: String? = null): QuestionnaireViewModel {
+        if (scheduleId != null || observationId != null) {
+            simpleQuestionnaireViewModel.apply {
+                if (!scheduleId.isNullOrBlank()) {
+                    setScheduleId(scheduleId)
+                } else if (!observationId.isNullOrBlank()) {
+                    setObservationId(observationId)
+                }
+            }
+        }
+        return simpleQuestionnaireViewModel
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {

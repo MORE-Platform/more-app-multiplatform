@@ -30,6 +30,18 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             queryArgs = arrayOf(scheduleState.name)
         )
 
+    fun firstScheduleAvailableForObservationId(observationId: String): Flow<String?> {
+        return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()?.transform { scheduleList ->
+            val now = Clock.System.now().epochSeconds
+            val filtered = scheduleList.filter {
+                !it.getState()
+                    .completed() && it.start != null && it.end != null && (it.end?.epochSeconds
+                    ?: 0) > now
+            }.sortedBy { it.start?.epochSeconds }.firstOrNull()
+            emit(filtered?.scheduleId?.toHexString())
+        } ?: emptyFlow()
+    }
+
     fun collectRunningState(
         forState: ScheduleState,
         provideNewState: (List<ScheduleSchema>) -> Unit
@@ -62,17 +74,6 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()
                 ?.updateState(if (wasDone) ScheduleState.DONE else ScheduleState.ENDED)
         }
-    }
-
-    fun getNextScheduleStart(): Flow<ScheduleSchema?> {
-        return allSchedulesWithStatus().transform { schemas ->
-            emit(schemas.filter { (it.start ?: RealmInstant.now()) > RealmInstant.now() }
-                .sortedBy { it.start }.firstOrNull())
-        }
-    }
-
-    fun getNextScheduleEnd(scheduleId: String): Flow<Long?> {
-        return scheduleWithId(scheduleId).transform { emit(it?.end?.epochSeconds) }
     }
 
     fun nextSchedule(): Flow<Long?> {
@@ -115,7 +116,10 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }
     }
 
-    suspend fun updateTaskStatesSync(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
+    suspend fun updateTaskStatesSync(
+        observationFactory: ObservationFactory,
+        dataRecorder: DataRecorder
+    ) {
         val autoStartingObservations = observationFactory.autoStartableObservations()
         Napier.i { "Updating Schedule states..." }
         val activeIds = realm()?.let {
