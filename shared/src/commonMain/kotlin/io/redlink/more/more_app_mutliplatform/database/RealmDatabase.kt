@@ -21,7 +21,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
-private const val DB_SCHEMA_VERSION: Long = 2
+private const val DB_SCHEMA_VERSION: Long = 3
 
 object RealmDatabase {
     var realm: Realm? = null
