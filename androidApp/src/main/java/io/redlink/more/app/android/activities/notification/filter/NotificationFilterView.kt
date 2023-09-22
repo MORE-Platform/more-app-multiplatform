@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -24,7 +24,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
     LazyColumn {
         item {
             HeaderTitle(
-                title = getString(R.string.more_select_filter),
+                title = stringResource(R.string.more_select_filter),
                 modifier = Modifier.padding(top = 20.dp)
             )
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))

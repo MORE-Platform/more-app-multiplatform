@@ -49,6 +49,12 @@ class SelfLearningMultipleChoiceQuestionCoreViewModel(observationFactory: Observ
         }
     }
 
+    fun setScheduleViaObservationId(observationId: String) {
+        launchScope {
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it)}
+        }
+    }
+
     fun finishQuestion(data: List<String>, userTextAnswer: String, setObservationToDone: Boolean){
         if(userTextAnswer.isNotBlank())
         {

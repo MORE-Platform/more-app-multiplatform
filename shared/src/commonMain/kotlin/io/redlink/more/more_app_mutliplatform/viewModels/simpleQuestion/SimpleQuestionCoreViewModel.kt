@@ -7,6 +7,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.SimpleQuestionModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
@@ -23,7 +24,7 @@ class SimpleQuestionCoreViewModel(
     private var observation: Observation? = null
 
     init {
-        observationFactory.observation("question-observation")?.let {
+        observationFactory.observation(SimpleQuestionType().observationType)?.let {
             observation = it
         }
     }
@@ -31,11 +32,17 @@ class SimpleQuestionCoreViewModel(
     fun setScheduleId(scheduleId: String) {
         this.scheduleId = scheduleId
         launchScope {
-            scheduleRepository.scheduleWithId(scheduleId).cancellable().firstOrNull()?.let{ scheduleSchema ->
+            scheduleRepository.scheduleWithId(scheduleId).cancellable().firstOrNull()?.let { scheduleSchema ->
                 observationRepository.observationById(scheduleSchema.observationId).cancellable().firstOrNull()?.let { observationSchema ->
                     simpleQuestionModel.emit(SimpleQuestionModel.createModelFrom(observationSchema, scheduleId))
                 }
             }
+        }
+    }
+
+    fun setScheduleViaObservationId(observationId: String) {
+        launchScope {
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it)}
         }
     }
 

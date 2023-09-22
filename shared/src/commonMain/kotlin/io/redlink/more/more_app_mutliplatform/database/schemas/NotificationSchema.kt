@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
+import io.ktor.http.Url
 import io.realm.kotlin.ext.realmDictionaryOf
 import io.realm.kotlin.ext.toRealmDictionary
 import io.realm.kotlin.types.RealmDictionary
@@ -9,6 +10,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.extensions.fromUTCtoCurrent
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.datetime.Instant
 
 class NotificationSchema : RealmObject {
@@ -21,10 +23,11 @@ class NotificationSchema : RealmObject {
     var priority: Long = 0
     var read: Boolean = false
     var userFacing: Boolean = true
+    var deepLink: String? = null
     var notificationData: RealmDictionary<String> = realmDictionaryOf()
 
     override fun toString(): String {
-        return "NotificationSchema(notificationId='$notificationId', channelId=$channelId, title=$title, notificationBody=$notificationBody, timestamp=$timestamp, priority=$priority, read=$read, userFacing=$userFacing, notificationData=$notificationData)"
+        return "NotificationSchema(notificationId='$notificationId', channelId=$channelId, title=$title, notificationBody=$notificationBody, timestamp=$timestamp, priority=$priority, read=$read, userFacing=$userFacing, deepLink=$deepLink, notificationData=$notificationData)"
     }
 
     companion object {
@@ -44,15 +47,16 @@ class NotificationSchema : RealmObject {
                 this.channelId = channelId
                 this.title = title
                 this.notificationBody = notificationBody
-                if (timestamp != null) {
-                    this.timestamp = Instant.fromEpochMilliseconds(timestamp).toRealmInstant()
-                }
                 this.priority = priority
                 this.read = read
                 this.userFacing = userFacing
                 this.notificationData =
                     notificationData?.mapKeys { it.key.replace(".", "_") }?.toRealmDictionary()
                         ?: realmDictionaryOf()
+                this.deepLink = extractDeepLink(this.notificationData)
+                if (timestamp != null) {
+                    this.timestamp = Instant.fromEpochMilliseconds(timestamp).toRealmInstant()
+                }
             }
         }
 
@@ -69,11 +73,14 @@ class NotificationSchema : RealmObject {
                         "_"
                     ) to it.value.toString()
                 }?.toRealmDictionary() ?: realmDictionaryOf()
+                this.deepLink = extractDeepLink(this.notificationData)
                 this.timestamp = notification.timestamp?.toRealmInstant() ?: RealmInstant.now()
             }
         }
 
         fun toSchemaList(notifications: List<PushNotification>): List<NotificationSchema> =
             notifications.map { toSchema(it) }
+
+        private fun extractDeepLink(data: Map<String, String>) = data[NotificationManager.DEEP_LINK]
     }
 }

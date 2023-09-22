@@ -15,6 +15,7 @@ class SelfLearningMultipleChoiceQuestionViewModel  : ViewModel() {
     private val coreViewModel: SelfLearningMultipleChoiceQuestionCoreViewModel = SelfLearningMultipleChoiceQuestionCoreViewModel(
         MoreApplication.shared!!.observationFactory,MoreApplication.shared!!.sharedStorageRepository)
 
+    val hasData = mutableStateOf(false)
     val observationTitle = mutableStateOf("")
     val question = mutableStateOf("")
     var answers = mutableStateListOf("")
@@ -27,13 +28,16 @@ class SelfLearningMultipleChoiceQuestionViewModel  : ViewModel() {
     init {
         scope.launch {
             coreViewModel.selfLearningMultipleChoiceQuestionModel.collect { model ->
-                model?.let {
-                    withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
+                    model?.let {
+                        hasData.value = true
                         observationTitle.value = it.observationTitle
                         question.value = it.question
                         answers.clear()
                         answers.addAll(it.answers)
                         observationParticipantInfo.value = it.participantInfo
+                    } ?: kotlin.run {
+                        hasData.value = false
                     }
                 }
             }
@@ -46,10 +50,15 @@ class SelfLearningMultipleChoiceQuestionViewModel  : ViewModel() {
 
     fun viewDidDisappear() {
         coreViewModel.viewDidDisappear()
+        hasData.value = false
     }
 
     fun setScheduleId(scheduleId: String) {
         coreViewModel.setScheduleId(scheduleId)
+    }
+
+    fun setObservationId(observationId: String) {
+        coreViewModel.setScheduleViaObservationId(observationId)
     }
 
     fun finish(setObservationToDone: Boolean = true) {

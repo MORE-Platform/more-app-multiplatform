@@ -3,13 +3,11 @@ package io.redlink.more.app.android.activities.dashboard.filter
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formatDateFilterString
 import io.redlink.more.app.android.extensions.getQuantityString
-import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
-import io.redlink.more.more_app_mutliplatform.models.FilterModel
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +67,7 @@ class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterVie
                 filterString += getQuantityString(R.plurals.filter_text, typesAmount, typesAmount)
             }
         } else {
-            filterString += getString(R.string.more_filter_deactivated)
+            filterString += stringResource(R.string.more_filter_deactivated)
         }
 
         return filterString

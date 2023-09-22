@@ -41,12 +41,10 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                     }
                     launchScope(Dispatchers.Main) {
                         scheduleRepository.scheduleWithId(scheduleId).cancellable().transform { scheduleSchema ->
-                            Napier.i { "Loaded schedule schema!" }
                             emit(scheduleSchema?.let {
                                 observationRepository.observationById(it.observationId).cancellable().firstOrNull()
                             })
                         }.cancellable().firstOrNull().let { observationSchema ->
-                            log { "Loaded observation schema!" }
                             observationSchema?.let {
                                 observationId = it.observationId
                                 observation.observationConfig(it.configAsMap())
@@ -58,6 +56,12 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                 }
 
             }
+        }
+    }
+
+    fun setObservationId(observationId: String) {
+        launchScope {
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it) }
         }
     }
 

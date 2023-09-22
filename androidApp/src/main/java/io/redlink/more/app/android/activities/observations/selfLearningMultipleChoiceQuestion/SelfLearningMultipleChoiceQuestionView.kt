@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.observations.selfLearningMultiple
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -11,7 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireButtons
+import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireQuestionAnswer
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.ErrorMessage
 
 @Composable
 fun SelfLearningMultipleChoiceQuestionView(navController: NavController, viewModel: SelfLearningMultipleChoiceQuestionViewModel) {
@@ -25,14 +31,16 @@ fun SelfLearningMultipleChoiceQuestionView(navController: NavController, viewMod
             viewModel.viewDidDisappear()
         }
     }
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .fillMaxHeight(0.8f)
-            .fillMaxWidth(0.8f)
-    ) {
-        SelfLearningMultipleChoiceQuestionAnswer(model = viewModel)
+    if (viewModel.hasData.value) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SelfLearningMultipleChoiceQuestionAnswer(model = viewModel)
+        }
+        SelfLearningMultipleChoiceQuestionButtons(navController = navController, model = viewModel)
+    } else {
+        ErrorMessage(message = "${getStringResource(id = R.string.data_not_found)}!")
     }
-    SelfLearningMultipleChoiceQuestionButtons(navController = navController, model = viewModel)
 }

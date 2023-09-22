@@ -1,20 +1,28 @@
 package io.redlink.more.app.android.activities.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
@@ -37,24 +45,34 @@ import io.redlink.more.app.android.activities.studyStates.StudyClosedView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.extensions.applicationId
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 
 class MainActivity : ComponentActivity() {
+    private lateinit var navHostController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val viewModel = MainViewModel(this)
+
+        val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (::navHostController.isInitialized) {
+                navHostController.popBackStack()
+            }
+        }
+
         val destinationChangeListener =
             NavController.OnDestinationChangedListener { controller, destination, arguments ->
                 viewModel.navigationBarTitle.value = destination.navigatorName
             }
         setContent {
-            val navController = rememberNavController()
+            navHostController = rememberNavController()
+
             LaunchedEffect(Unit) {
-                navController.addOnDestinationChangedListener(destinationChangeListener)
+                navHostController.addOnDestinationChangedListener(destinationChangeListener)
                 viewModel.viewDidAppear()
             }
             if (viewModel.studyIsUpdating.value) {
@@ -64,14 +82,19 @@ class MainActivity : ComponentActivity() {
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
-                MainView(viewModel.navigationBarTitle.value, viewModel, navController)
+                MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
             }
         }
+    }
+
+    companion object {
+        val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
     }
 }
 
 @Composable
-fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController) {
+fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController, activityResultLauncher: ActivityResultLauncher<Intent>) {
+    val currentContext = rememberUpdatedState(LocalContext.current)
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
@@ -92,211 +115,354 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             navController = navController,
             startDestination = NavigationScreen.DASHBOARD.route
         ) {
-            composable(NavigationScreen.DASHBOARD.route) {
-                viewModel.tabIndex.value = 0
-                viewModel.showBackButton.value = false
-                viewModel.navigationBarTitle.value = NavigationScreen.DASHBOARD.stringRes()
-                DashboardView(
-                    navController, viewModel = viewModel.dashboardViewModel,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
-                )
-            }
-            composable(NavigationScreen.NOTIFICATIONS.route) {
-                viewModel.tabIndex.value = 1
-                viewModel.showBackButton.value = false
-                viewModel.navigationBarTitle.value = NavigationScreen.NOTIFICATIONS.stringRes()
-                NotificationView(navController, viewModel = viewModel.notificationViewModel)
-            }
-            composable(NavigationScreen.INFO.route) {
-                viewModel.tabIndex.value = 2
-                viewModel.showBackButton.value = false
-                viewModel.navigationBarTitle.value = NavigationScreen.INFO.stringRes()
-                InfoView(navController, viewModel = viewModel.infoVM)
-            }
-            composable(NavigationScreen.SETTINGS.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.SETTINGS.stringRes()
-                viewModel.showBackButton.value = true
-                SettingsView(model = viewModel.settingsViewModel, navController = navController)
-            }
-            composable(
-                "${NavigationScreen.SCHEDULE_DETAILS.route}/scheduleId={scheduleId}&scheduleListType={scheduleListType}",
-                arguments = listOf(
-                    navArgument("scheduleId") {
-                        type = NavType.StringType
-                    })
-            ) {
-                val arguments = requireNotNull(it.arguments)
-                val scheduleId by remember {
-                    mutableStateOf(requireNotNull( arguments.getString("scheduleId")))
+            NavigationScreen.DASHBOARD.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.tabIndex.value = 0
+                    viewModel.showBackButton.value = false
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    DashboardView(
+                        navController, viewModel = viewModel.dashboardViewModel,
+                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                    )
                 }
-                val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
-                val scheduleListType by remember {
-                    mutableStateOf(ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL")))
+            }
+            NavigationScreen.NOTIFICATIONS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    viewModel.tabIndex.value = 1
+                    viewModel.showBackButton.value = false
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    NotificationView(navController, viewModel = viewModel.notificationViewModel)
                 }
-
-                viewModel.navigationBarTitle.value = NavigationScreen.SCHEDULE_DETAILS.stringRes()
-                viewModel.showBackButton.value = true
-
-                TaskDetailsView(
-                    navController = navController,
-                    viewModel = taskVM,
-                    scheduleId = scheduleId,
-                    scheduleListType = scheduleListType
-                )
             }
 
-            composable(
-                "${NavigationScreen.OBSERVATION_DETAILS.route}/observationId={observationId}",
-                arguments = listOf(
-                    navArgument("observationId") {
-                        type = NavType.StringType
-                    })
-            ) {
-                val arguments = requireNotNull(it.arguments)
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.OBSERVATION_DETAILS.stringRes()
-                val observationId = arguments.getString("observationId")
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.OBSERVATION_DETAILS.stringRes()
-                viewModel.showBackButton.value = true
+            NavigationScreen.INFO.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
 
-                val obsDetailsVM by remember {
-                    mutableStateOf(viewModel.createObservationDetailView(observationId ?: ""))
+                ) {
+                    viewModel.tabIndex.value = 2
+                    viewModel.showBackButton.value = false
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    InfoView(navController, viewModel = viewModel.infoVM)
                 }
-
-                ObservationDetailsView(
-                    viewModel = obsDetailsVM,
-                    navController = navController
-                )
             }
 
-            composable(NavigationScreen.STUDY_DETAILS.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.STUDY_DETAILS.stringRes()
-                viewModel.showBackButton.value = true
+            NavigationScreen.SETTINGS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
 
-                StudyDetailsView(
-                    viewModel = viewModel.studyDetailsViewModel, navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
-                )
+                ) {
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    SettingsView(model = viewModel.settingsViewModel, navController = navController)
+                }
             }
-            composable(
-                "${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType={scheduleListType}",
-                arguments = listOf(
-                    navArgument("scheduleListType") {
-                        type = NavType.StringType
-                    })
-            ) {
-                viewModel.navigationBarTitle.value = NavigationScreen.OBSERVATION_FILTER.stringRes()
-                viewModel.showBackButton.value = true
+            NavigationScreen.SCHEDULE_DETAILS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
 
-                val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
-                val vm by remember {
-                    mutableStateOf(when (ScheduleListType.valueOf(arguments.getString("scheduleListType", "ALL"))) {
-                        ScheduleListType.MANUALS -> viewModel.manualTasks.filterModel
-                        ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
-                        ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
-                        ScheduleListType.ALL -> DashboardFilterViewModel(
-                            CoreDashboardFilterViewModel()
+                ) {
+                    val arguments = requireNotNull(it.arguments)
+                    val scheduleId by remember {
+                        mutableStateOf(requireNotNull(arguments.getString("scheduleId")))
+                    }
+                    val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
+                    val scheduleListType by remember {
+                        mutableStateOf(
+                            ScheduleListType.valueOf(
+                                arguments.getString(
+                                    "scheduleListType",
+                                    "ALL"
+                                )
+                            )
                         )
-                    })
-                }
-                DashboardFilterView(viewModel = vm)
-            }
-            composable(
-                "${NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.route}/scheduleId={scheduleId}",
-                arguments = listOf(
-                    navArgument("scheduleId") {
-                        type = NavType.StringType
-                    })
-            ) {
-                val scheduleId by remember {
-                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
-                }
-                viewModel.navigationBarTitle.value = NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.stringRes()
-                viewModel.showBackButton.value = true
-                val vm by remember {
-                    mutableStateOf(viewModel.creteNewSelfLearningMultipleChoiceQuestionViewModel(
-                        scheduleId
-                    ))
-                }
-                SelfLearningMultipleChoiceQuestionView(
-                    navController = navController,
-                    viewModel = vm
-                )
-            }
-            composable(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.stringRes()
-                viewModel.showBackButton.value = false
+                    }
 
-                SelfLearningMultipleChoiceQuestionResponseView(navController)
-            }
-            composable(
-                "${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId={scheduleId}",
-                arguments = listOf(
-                    navArgument("scheduleId") {
-                        type = NavType.StringType
-                    })
-            ) {
-                val scheduleId by remember {
-                    mutableStateOf(requireNotNull(it.arguments?.getString("scheduleId")))
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    viewModel.showBackButton.value = true
+
+                    TaskDetailsView(
+                        navController = navController,
+                        viewModel = taskVM,
+                        scheduleId = scheduleId,
+                        scheduleListType = scheduleListType
+                    )
                 }
-                viewModel.navigationBarTitle.value = NavigationScreen.SIMPLE_QUESTION.stringRes()
-                viewModel.showBackButton.value = true
-                val vm by remember {
-                    mutableStateOf(viewModel.creteNewSimpleQuestionViewModel(
-                        scheduleId
-                    ))
+            }
+            NavigationScreen.OBSERVATION_DETAILS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    val arguments = requireNotNull(it.arguments)
+                    viewModel.navigationBarTitle.value =
+                        NavigationScreen.OBSERVATION_DETAILS.stringRes()
+                    val observationId = arguments.getString("observationId")
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+
+                    val obsDetailsVM by remember {
+                        mutableStateOf(viewModel.createObservationDetailView(observationId ?: ""))
+                    }
+
+                    ObservationDetailsView(
+                        viewModel = obsDetailsVM,
+                        navController = navController
+                    )
                 }
-                QuestionnaireView(
-                    navController = navController,
-                    viewModel = vm
-                )
             }
-            composable(NavigationScreen.QUESTIONNAIRE_RESPONSE.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.QUESTIONNAIRE_RESPONSE.stringRes()
-                viewModel.showBackButton.value = false
 
-                QuestionnaireResponseView(navController)
-            }
-            composable(NavigationScreen.NOTIFICATION_FILTER.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.NOTIFICATION_FILTER.stringRes()
-                viewModel.showBackButton.value = true
+            NavigationScreen.STUDY_DETAILS.let { screen ->
+                composable(
+                    screen.routeWithParameters(), screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    viewModel.showBackButton.value = true
 
-                NotificationFilterView(viewModel = viewModel.notificationFilterViewModel)
+                    StudyDetailsView(
+                        viewModel = viewModel.studyDetailsViewModel, navController = navController,
+                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                    )
+                }
             }
-            composable(NavigationScreen.RUNNING_SCHEDULES.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.RUNNING_SCHEDULES.stringRes()
-                viewModel.showBackButton.value = true
 
-                RunningSchedulesView(
-                    viewModel = viewModel.runningSchedulesViewModel,
-                    navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
-                )
+            NavigationScreen.OBSERVATION_FILTER.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+
+                    val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
+                    val vm by remember {
+                        mutableStateOf(
+                            when (ScheduleListType.valueOf(
+                                arguments.getString(
+                                    "scheduleListType",
+                                    "ALL"
+                                )
+                            )) {
+                                ScheduleListType.MANUALS -> viewModel.manualTasks.filterModel
+                                ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
+                                ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
+                                ScheduleListType.ALL -> DashboardFilterViewModel(
+                                    CoreDashboardFilterViewModel()
+                                )
+                            }
+                        )
+                    }
+                    DashboardFilterView(viewModel = vm)
+                }
             }
-            composable(NavigationScreen.COMPLETED_SCHEDULES.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.COMPLETED_SCHEDULES.stringRes()
-                viewModel.showBackButton.value = true
-                CompletedSchedulesView(
-                    viewModel = viewModel.completedSchedulesViewModel,
-                    navController = navController,
-                    taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
-                )
+
+            NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    val scheduleId by remember {
+                        mutableStateOf(it.arguments?.getString("scheduleId"))
+                    }
+                    val observationId by remember {
+                        mutableStateOf(it.arguments?.getString("observationId"))
+                    }
+
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    val vm by remember {
+                        mutableStateOf(
+                            viewModel.createNewSelfLearningMultipleChoiceQuestionViewModel(
+                                scheduleId,
+                                observationId
+                            )
+                        )
+                    }
+                    SelfLearningMultipleChoiceQuestionView(
+                        navController = navController,
+                        viewModel = vm
+                    )
+                }
             }
-            composable(NavigationScreen.LEAVE_STUDY.route) {
-                viewModel.navigationBarTitle.value = NavigationScreen.LEAVE_STUDY.stringRes()
-                viewModel.showBackButton.value = true
-                LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
+
+            NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.let { screen ->
+                composable(
+                    screen.routeWithParameters(), screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = false
+
+                    SelfLearningMultipleChoiceQuestionResponseView(navController)
+                }
             }
-            composable(NavigationScreen.LEAVE_STUDY_CONFIRM.route) {
-                viewModel.navigationBarTitle.value =
-                    NavigationScreen.LEAVE_STUDY_CONFIRM.stringRes()
-                viewModel.showBackButton.value = true
-                LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
+
+            NavigationScreen.SIMPLE_QUESTION.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    val scheduleId by remember {
+                        mutableStateOf(it.arguments?.getString("scheduleId"))
+                    }
+                    val observationId by remember {
+                        mutableStateOf(it.arguments?.getString("observationId"))
+                    }
+
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    val vm by remember {
+                        mutableStateOf(
+                            viewModel.createNewSimpleQuestionViewModel(
+                                scheduleId,
+                                observationId
+                            )
+                        )
+                    }
+                    QuestionnaireView(
+                        navController = navController,
+                        viewModel = vm
+                    )
+                }
+            }
+
+            NavigationScreen.LIMESURVEY.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+
+                ) {
+                    val scheduleId by remember {
+                        mutableStateOf(it.arguments?.getString("scheduleId"))
+                    }
+                    val observationId by remember {
+                        mutableStateOf(it.arguments?.getString("observationId"))
+                    }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (scheduleId != null || observationId != null) {
+                            LaunchedEffect(Unit) {
+                                viewModel.openLimesurvey(currentContext.value, activityResultLauncher, scheduleId, observationId)
+                            }
+                        }
+                    }
+                }
+            }
+
+            NavigationScreen.QUESTIONNAIRE_RESPONSE.let { screen ->
+                composable(
+                    screen.routeWithParameters(), screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = false
+
+                    QuestionnaireResponseView(navController)
+                }
+            }
+
+            NavigationScreen.NOTIFICATION_FILTER.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+
+                    NotificationFilterView(viewModel = viewModel.notificationFilterViewModel)
+                }
+            }
+
+            NavigationScreen.RUNNING_SCHEDULES.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+
+                    RunningSchedulesView(
+                        viewModel = viewModel.runningSchedulesViewModel,
+                        navController = navController,
+                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                    )
+                }
+            }
+
+            NavigationScreen.COMPLETED_SCHEDULES.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    CompletedSchedulesView(
+                        viewModel = viewModel.completedSchedulesViewModel,
+                        navController = navController,
+                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                    )
+                }
+            }
+
+            NavigationScreen.LEAVE_STUDY.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
+                }
+            }
+
+            NavigationScreen.LEAVE_STUDY_CONFIRM.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
+                }
             }
         }
     }

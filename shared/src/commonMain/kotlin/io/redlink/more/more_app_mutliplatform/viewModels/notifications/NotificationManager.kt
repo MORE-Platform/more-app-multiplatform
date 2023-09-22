@@ -135,5 +135,7 @@ class NotificationManager(
 
         private const val STUDY_OLD_STATE = "oldState"
         private const val STUDY_NEW_STATE = "newState"
+
+        const val DEEP_LINK = "deepLink"
     }
 }

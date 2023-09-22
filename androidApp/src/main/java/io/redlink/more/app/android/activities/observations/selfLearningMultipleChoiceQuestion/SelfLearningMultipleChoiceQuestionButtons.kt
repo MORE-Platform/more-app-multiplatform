@@ -12,9 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.extensions.getString
 import io.redlink.more.app.android.ui.theme.morePrimary
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.stringResource
 
 
 @Composable
@@ -26,7 +26,6 @@ fun SelfLearningMultipleChoiceQuestionButtons(navController: NavController, mode
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.8f)
             .padding(bottom = 20.dp)
 
     ) {
@@ -42,10 +41,9 @@ fun SelfLearningMultipleChoiceQuestionButtons(navController: NavController, mode
                 } else {
                     Toast.makeText(
                         context,
-                        getString(R.string.more_questionnaire_select),
+                        stringResource(R.string.more_questionnaire_select),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    ).show()
                 }
             },
             colors = ButtonDefaults.morePrimary(),
@@ -54,7 +52,7 @@ fun SelfLearningMultipleChoiceQuestionButtons(navController: NavController, mode
                 .height(IntrinsicSize.Min)
                 .padding(6.dp)
         ) {
-            Text(text = getString(R.string.more_quest_complete))
+            Text(text = stringResource(R.string.more_quest_complete))
         }
     }
 }

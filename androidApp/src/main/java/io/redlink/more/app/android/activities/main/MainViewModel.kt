@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.main
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.observations.selfLearningMultipleChoiceQuestion.SelfLearningMultipleChoiceQuestionViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
@@ -41,19 +43,23 @@ class MainViewModel(context: Context) : ViewModel() {
     val notificationViewModel: NotificationViewModel
     val notificationFilterViewModel: NotificationFilterViewModel
     val manualTasks =
-        ScheduleViewModel(CoreDashboardFilterViewModel(), MoreApplication.shared!!.dataRecorder, ScheduleListType.MANUALS)
+            ScheduleViewModel(
+                    CoreDashboardFilterViewModel(),
+                    MoreApplication.shared!!.dataRecorder,
+                    ScheduleListType.MANUALS
+            )
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
-            CoreDashboardFilterViewModel(),
-            MoreApplication.shared!!.dataRecorder,
-            ScheduleListType.RUNNING
+                CoreDashboardFilterViewModel(),
+                MoreApplication.shared!!.dataRecorder,
+                ScheduleListType.RUNNING
         )
     }
     val completedSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
-            CoreDashboardFilterViewModel(),
-            MoreApplication.shared!!.dataRecorder,
-            ScheduleListType.COMPLETED
+                CoreDashboardFilterViewModel(),
+                MoreApplication.shared!!.dataRecorder,
+                ScheduleListType.COMPLETED
         )
     }
     val dashboardViewModel = DashboardViewModel(manualTasks)
@@ -63,17 +69,13 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
-    val infoVM: InfoViewModel by lazy {
-        InfoViewModel()
-    }
+    val infoVM: InfoViewModel by lazy { InfoViewModel() }
 
     private val selfLearningMultipleChoiceQuestionViewModel by lazy {
         SelfLearningMultipleChoiceQuestionViewModel()
     }
 
-    private val simpleQuestionnaireViewModel by lazy {
-        QuestionnaireViewModel()
-    }
+    private val simpleQuestionnaireViewModel by lazy { QuestionnaireViewModel() }
 
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
         TaskDetailsViewModel(MoreApplication.shared!!.dataRecorder)
@@ -81,9 +83,7 @@ class MainViewModel(context: Context) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            MoreApplication.shared!!.studyIsUpdating.collect {
-                studyIsUpdating.value = it
-            }
+            MoreApplication.shared!!.studyIsUpdating.collect { studyIsUpdating.value = it }
         }
         viewModelScope.launch {
             MoreApplication.shared!!.currentStudyState.collect {
@@ -112,17 +112,54 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     fun getTaskDetailsVM(scheduleId: String) =
-        taskDetailsViewModel.apply { setSchedule(scheduleId) }
+            taskDetailsViewModel.apply { setSchedule(scheduleId) }
 
-    fun viewDidAppear() {
+    fun viewDidAppear() {}
+
+    fun openLimesurvey(
+            context: Context,
+            activityResultLauncher: ActivityResultLauncher<Intent>,
+            scheduleId: String?,
+            observationId: String?
+    ) {
+        (context as? Activity)?.let { activity ->
+            val intent = Intent(activity, LimeSurveyActivity::class.java)
+            intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleId)
+            intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID, observationId)
+            activityResultLauncher.launch(intent)
+        }
     }
 
-    fun creteNewSelfLearningMultipleChoiceQuestionViewModel(scheduleId: String): SelfLearningMultipleChoiceQuestionViewModel {
-        return selfLearningMultipleChoiceQuestionViewModel.apply { setScheduleId(scheduleId) }
+    fun createNewSimpleQuestionViewModel(
+            scheduleId: String? = null,
+            observationId: String? = null
+    ): QuestionnaireViewModel {
+        if (scheduleId != null || observationId != null) {
+            simpleQuestionnaireViewModel.apply {
+                if (!scheduleId.isNullOrBlank()) {
+                    setScheduleId(scheduleId)
+                } else if (!observationId.isNullOrBlank()) {
+                    setObservationId(observationId)
+                }
+            }
+        }
+        return simpleQuestionnaireViewModel
     }
 
-    fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {
-        return simpleQuestionnaireViewModel.apply { setScheduleId(scheduleId) }
+    fun createNewSelfLearningMultipleChoiceQuestionViewModel(
+            scheduleId: String? = null,
+            observationId: String? = null
+    ): SelfLearningMultipleChoiceQuestionViewModel {
+        if (scheduleId != null || observationId != null) {
+            selfLearningMultipleChoiceQuestionViewModel.apply {
+                if (!scheduleId.isNullOrBlank()) {
+                    setScheduleId(scheduleId)
+                } else if (!observationId.isNullOrBlank()) {
+                    setObservationId(observationId)
+                }
+            }
+        }
+        return selfLearningMultipleChoiceQuestionViewModel
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {
