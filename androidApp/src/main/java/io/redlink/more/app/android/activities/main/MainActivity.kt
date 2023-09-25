@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -57,11 +58,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
-        if (intent.data != null) {
-            intent.getStringExtra("MSG_ID")?.let {
-                viewModel.notificationViewModel.deleteNotification(it)
-            }
-        }
 
         val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (::navHostController.isInitialized) {
@@ -92,6 +88,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (intent.getStringExtra("deepLink") != null) {
+            intent.getStringExtra("MSG_ID")?.let {
+                MoreApplication.shared!!.notificationManager.notificationRepository.deleteNotification(it)
+            }
+        }
+    }
+
     companion object {
         val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
     }
@@ -100,15 +105,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController, activityResultLauncher: ActivityResultLauncher<Intent>) {
     val currentContext = rememberUpdatedState(LocalContext.current)
-    LaunchedEffect(Unit) {
-        (currentContext as? Activity)?.let {
-            if (it.intent.getStringExtra("deepLink") != null) {
-                it.intent.getStringExtra("MSG_ID")?.let {
-                    viewModel.notificationViewModel.deleteNotification(it)
-                }
-            }
-        }
-    }
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,

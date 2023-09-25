@@ -1,18 +1,14 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.github.aakira.napier.Napier
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class NotificationRepository : Repository<NotificationSchema>() {
     private val deletedNotificationIds = mutableSetOf<String>()
-    private val mutex = Mutex()
     fun storeNotification(
         key: String,
         channelId: String?,
@@ -24,49 +20,37 @@ class NotificationRepository : Repository<NotificationSchema>() {
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
     ) {
-        Scope.launch {
-            mutex.withLock {
-                if (key !in deletedNotificationIds) {
-                    storeNotification(
-                        NotificationSchema.toSchema(
-                            key,
-                            channelId,
-                            title,
-                            body,
-                            timestamp,
-                            priority,
-                            read,
-                            userFacing,
-                            additionalData
-                        )
-                    )
-                } else {
-                    deletedNotificationIds.remove(key)
-                }
-            }
+        if (key !in deletedNotificationIds) {
+            storeNotification(
+                NotificationSchema.toSchema(
+                    key,
+                    channelId,
+                    title,
+                    body,
+                    timestamp,
+                    priority,
+                    read,
+                    userFacing,
+                    additionalData
+                )
+            )
+        } else {
+            deletedNotificationIds.remove(key)
         }
     }
 
     fun storeNotification(notification: NotificationSchema) {
-        Scope.launch {
-            mutex.withLock {
-                if (notification.notificationId !in deletedNotificationIds) {
-                    realmDatabase().store(setOf(notification), UpdatePolicy.ERROR)
-                } else {
-                    deletedNotificationIds.remove(notification.notificationId)
-                }
-            }
+        if (notification.notificationId !in deletedNotificationIds) {
+            realmDatabase().store(setOf(notification), UpdatePolicy.ERROR)
+        } else {
+            deletedNotificationIds.remove(notification.notificationId)
         }
     }
 
     fun storeNotifications(notifications: List<NotificationSchema>) {
-        Scope.launch {
-            mutex.withLock {
-                val (notificationsToStore, notificationsToDelete) = notifications.partition { it.notificationId !in deletedNotificationIds }
-                realmDatabase().store(notificationsToStore, UpdatePolicy.ERROR)
-                notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
-            }
-        }
+        val (notificationsToStore, notificationsToDelete) = notifications.partition { it.notificationId !in deletedNotificationIds }
+        realmDatabase().store(notificationsToStore, UpdatePolicy.ERROR)
+        notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
     }
 
     override fun count(): Flow<Long> = realmDatabase().count<NotificationSchema>()
@@ -113,17 +97,12 @@ class NotificationRepository : Repository<NotificationSchema>() {
     }
 
     fun deleteNotification(notificationId: String) {
-        Scope.launch {
-            mutex.withLock {
-                deletedNotificationIds.add(notificationId)
-                realm()?.writeBlocking {
-                    val notification = this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
-                    notification?.let {
-                        delete(notification)
-                        deletedNotificationIds.remove(notificationId)
-
-                    }
-                }
+        deletedNotificationIds.add(notificationId)
+        realm()?.writeBlocking {
+            val notification = this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
+            notification?.let {
+                delete(notification)
+               deletedNotificationIds.remove(notificationId)
             }
         }
     }
