@@ -23,7 +23,7 @@ class NotificationManager(
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService
 ) {
-    private val notificationRepository = NotificationRepository()
+    val notificationRepository = NotificationRepository()
 
     fun storeAndHandleNotification(
         shared: Shared,

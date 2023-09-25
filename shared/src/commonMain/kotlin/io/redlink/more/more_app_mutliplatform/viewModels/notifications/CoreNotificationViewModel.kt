@@ -9,8 +9,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 
-class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel): CoreViewModel() {
-    private val notificationRepository: NotificationRepository = NotificationRepository()
+class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel, private val notificationRepository: NotificationRepository): CoreViewModel() {
     private val originalNotificationList = mutableListOf<NotificationModel>()
     val notificationList: MutableStateFlow<List<NotificationModel>> = MutableStateFlow(listOf())
 

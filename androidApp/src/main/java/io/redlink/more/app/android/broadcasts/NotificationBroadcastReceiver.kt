@@ -3,6 +3,7 @@ package io.redlink.more.app.android.broadcasts
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
-    private var notificationRepository = NotificationRepository()
+    private var notificationRepository = MoreApplication.shared!!.notificationManager.notificationRepository
 
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 

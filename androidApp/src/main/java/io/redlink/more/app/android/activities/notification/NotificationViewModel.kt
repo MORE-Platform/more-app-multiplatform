@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.notification
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.withContext
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
     private val coreViewModel: CoreNotificationViewModel =
-        CoreNotificationViewModel(coreFilterViewModel)
+        CoreNotificationViewModel(coreFilterViewModel, MoreApplication.shared!!.notificationManager.notificationRepository)
     val notificationList = mutableStateListOf<NotificationModel>()
 
     init {
