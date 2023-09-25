@@ -45,5 +45,12 @@ class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFil
 
     fun setNotificationReadStatus(notification: NotificationModel) {
         notificationRepository.setNotificationReadStatus(notification.notificationId)
+        if (notification.deepLink != null) {
+            deleteNotification(notification.notificationId)
+        }
+    }
+
+    fun deleteNotification(notificationId: String) {
+        notificationRepository.deleteNotification(notificationId)
     }
 }

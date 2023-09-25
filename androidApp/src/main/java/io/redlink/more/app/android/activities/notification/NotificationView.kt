@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.notification
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,6 +62,9 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         items(viewModel.notificationList.sortedByDescending { it.timestamp }) { notification ->
             Column(
                 modifier = Modifier.clickable {
+                    notification.deepLink?.let {
+                        navController.navigate(Uri.parse(it))
+                    }
                     viewModel.setNotificationToRead(notification)
                 }
             ) {

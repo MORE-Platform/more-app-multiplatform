@@ -42,6 +42,14 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         coreViewModel.setNotificationReadStatus(notification)
     }
 
+    fun deleteNotification(notification: NotificationModel) {
+        coreViewModel.deleteNotification(notificationId = notification.notificationId)
+    }
+
+    fun deleteNotification(notificationId: String) {
+        coreViewModel.deleteNotification(notificationId)
+    }
+
     fun getFilterString(): String {
         if (!coreFilterViewModel.filterActive()) {
             return stringResource(R.string.more_filter_notification_all)

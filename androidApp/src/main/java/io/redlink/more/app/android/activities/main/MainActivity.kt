@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.integerArrayResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -55,6 +57,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
+        if (intent.data != null) {
+            intent.getStringExtra("MSG_ID")?.let {
+                viewModel.notificationViewModel.deleteNotification(it)
+            }
+        }
 
         val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (::navHostController.isInitialized) {
@@ -93,6 +100,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController, activityResultLauncher: ActivityResultLauncher<Intent>) {
     val currentContext = rememberUpdatedState(LocalContext.current)
+    LaunchedEffect(Unit) {
+        (currentContext as? Activity)?.let {
+            if (it.intent.getStringExtra("deepLink") != null) {
+                it.intent.getStringExtra("MSG_ID")?.let {
+                    viewModel.notificationViewModel.deleteNotification(it)
+                }
+            }
+        }
+    }
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
