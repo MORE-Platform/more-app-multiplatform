@@ -5,9 +5,11 @@ import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.Shared
+import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
+import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -32,13 +34,17 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
 
     fun firstScheduleAvailableForObservationId(observationId: String): Flow<String?> {
         return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()?.transform { scheduleList ->
-            val now = Clock.System.now().epochSeconds
-            val filtered = scheduleList.filter {
-                !it.getState()
-                    .completed() && it.start != null && it.end != null && (it.end?.epochSeconds
-                    ?: 0) > now
-            }.sortedBy { it.start?.epochSeconds }.firstOrNull()
-            emit(filtered?.scheduleId?.toHexString())
+            if (realm()?.query<ObservationSchema>("observationId = $0", observationId)?.firstAsFlow()?.firstOrNull()?.scheduleLess == true) {
+                emit(scheduleList.sortedBy { it.end }.last().scheduleId.toHexString())
+            } else {
+                val now = Clock.System.now().epochSeconds
+                val filtered = scheduleList.filter {
+                    !it.getState()
+                        .completed() && it.start != null && it.end != null && (it.end?.epochSeconds
+                        ?: 0) > now
+                }.sortedBy { it.start?.epochSeconds }.firstOrNull()
+                emit(filtered?.scheduleId?.toHexString())
+            }
         } ?: emptyFlow()
     }
 
