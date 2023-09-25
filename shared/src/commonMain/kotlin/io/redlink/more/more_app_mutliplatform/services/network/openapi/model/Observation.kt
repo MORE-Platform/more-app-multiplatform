@@ -39,6 +39,8 @@ data class Observation (
 
     @SerialName(value = "schedule") @Required val schedule: kotlin.collections.List<ObservationSchedule>,
 
+    @SerialName(value = "noSchedule") var noSchedule: kotlin.Boolean = false,
+
     @SerialName(value = "required") @Required val required: kotlin.Boolean = true,
 
     /* A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed. */
