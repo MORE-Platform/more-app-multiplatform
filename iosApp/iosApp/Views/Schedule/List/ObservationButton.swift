@@ -31,6 +31,17 @@ struct ObservationButton: View {
                         )
                     }
                 }
+            } else if observationType == "self-learning-multiple-choice-question-observation" {
+                MoreActionButton(disabled: .constant(disabled), action: {
+                    navigationModalState.scheduleId = scheduleId
+                    navigationModalState.selfLearningQuestionOpen = true
+                }) {
+                    VStack {
+                        Text(
+                            String.localize(forKey: "start_questionnaire", withComment: "Button to start a questionnaire", inTable: stringTable)
+                        )
+                    }
+                }
             } else if observationType == "lime-survey-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
                     navigationModalState.scheduleId = scheduleId

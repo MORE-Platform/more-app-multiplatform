@@ -16,6 +16,7 @@ enum NavigationScreens: String {
     case taskDetails = "Task Details"
     case studyDetails = "Study Details"
     case scanQRCode = "Scan QR Code"
+    case selfLearningQuestionObservation = "Self Learning Multiple Choice Question Observation"
     case questionObservation = "Question Observation"
     case dashboardFilter = "Dashboard Filter"
     case notificationFilter = "Notification Filter"

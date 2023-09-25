@@ -10,6 +10,8 @@ import Foundation
 import shared
 
 class NavigationModalState: ObservableObject {
+    @Published var selfLearningQuestionOpen = false
+    @Published var selfLearningQuestionThankYouOpen = false
     @Published var simpleQuestionOpen = false
     @Published var simpleQuestionThankYouOpen = false
     @Published var limeSurveyOpen = false

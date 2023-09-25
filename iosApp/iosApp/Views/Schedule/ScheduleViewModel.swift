@@ -22,6 +22,8 @@ class ScheduleViewModel: ObservableObject {
     }()
     
     lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
+    
+    lazy var selflearningQuestionVM = SelfLearningMultipleChoiceQuestionViewModel()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
@@ -81,6 +83,11 @@ class ScheduleViewModel: ObservableObject {
     func getSimpleQuestionObservationVM(scheduleId: String) -> SimpleQuestionObservationViewModel {
         simpleQuestionVM.setScheduleId(scheduleId: scheduleId)
         return simpleQuestionVM
+    }
+    
+    func getSelfLearningMultipleChoiceQuestionObservationVM(scheduleId: String) -> SelfLearningMultipleChoiceQuestionViewModel {
+        selflearningQuestionVM.setScheduleId(scheduleId: scheduleId)
+        return selflearningQuestionVM
     }
 
     func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
