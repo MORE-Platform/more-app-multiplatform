@@ -12,6 +12,7 @@ data class NotificationModel(
     var priority: Long,
     var read: Boolean,
     var userFacing: Boolean,
+    var deepLink: String?,
     var notificationData: Map<String, String>
 ) {
 
@@ -23,7 +24,7 @@ data class NotificationModel(
                     val title = it.title ?: return@mapNotNull null
                     val notificationBody = it.notificationBody ?: return@mapNotNull null
                     val timestamp = it.timestamp ?: return@mapNotNull null
-                    val notificationData = it.notificationData ?: return@mapNotNull null
+                    val notificationData = it.notificationData
                     NotificationModel(
                         notificationId = it.notificationId,
                         channelId = channelId,
@@ -33,6 +34,7 @@ data class NotificationModel(
                         priority = it.priority,
                         read = it.read,
                         userFacing = it.userFacing,
+                        deepLink = it.deepLink,
                         notificationData = notificationData
                     )
                 }

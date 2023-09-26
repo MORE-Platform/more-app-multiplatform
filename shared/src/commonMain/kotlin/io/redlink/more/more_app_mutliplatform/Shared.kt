@@ -70,6 +70,7 @@ class Shared(
         Napier.i { "App is in foreground: $boolean" }
         appIsInForeGround = boolean
         if (appIsInForeGround) {
+            notificationManager.clearAllNotifications()
             updateTaskStates()
         }
     }
@@ -193,6 +194,7 @@ class Shared(
             stopObservations()
             observationFactory.clearNeededObservationTypes()
             networkService.deleteParticipation()
+            notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
             clearSharedStorage()
             DatabaseManager.deleteAll()

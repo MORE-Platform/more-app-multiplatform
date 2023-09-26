@@ -1,5 +1,6 @@
 package io.redlink.more.app.android.activities.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.integerArrayResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -81,6 +84,15 @@ class MainActivity : ComponentActivity() {
                 StudyClosedView(viewModel.finishText.value)
             } else {
                 MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (intent.getStringExtra("deepLink") != null) {
+            intent.getStringExtra("MSG_ID")?.let {
+                MoreApplication.shared!!.notificationManager.notificationRepository.deleteNotification(it)
             }
         }
     }
