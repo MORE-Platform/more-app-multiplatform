@@ -49,7 +49,7 @@ android {
 
 val composeVersion = "1.5.1"
 val workVersion = "2.8.1"
-val navVersion = "2.7.2"
+val navVersion = "2.7.3"
 val polarSDKVersion = "5.1.0"
 
 dependencies {
@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+    implementation("androidx.fragment:fragment:1.6.1")
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("io.realm.kotlin:library-base:1.11.1")
     implementation("androidx.navigation:navigation-compose:$navVersion")

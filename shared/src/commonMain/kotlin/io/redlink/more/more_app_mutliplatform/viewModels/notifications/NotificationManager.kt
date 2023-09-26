@@ -16,6 +16,7 @@ interface LocalNotificationListener {
     fun displayNotification(notification: NotificationSchema)
 
     fun createNewFCMToken(onCompletion: (String) -> Unit)
+    fun clearNotifications()
     fun deleteFCMToken()
 }
 
@@ -61,7 +62,7 @@ class NotificationManager(
     fun storeAndDisplayNotification(notification: NotificationSchema, displayNotification: Boolean) {
         if (notification.title != null && notification.notificationBody != null) {
             notificationRepository.storeNotification(notification)
-            if (displayNotification) {
+            if (displayNotification && notification.deepLink == null) {
                 localNotificationListener.displayNotification(notification)
             }
         }
@@ -116,6 +117,10 @@ class NotificationManager(
 
     fun deleteFCMToken() {
         localNotificationListener.deleteFCMToken()
+    }
+
+    fun clearAllNotifications() {
+        localNotificationListener.clearNotifications()
     }
 
     private suspend fun updateStudy(shared: Shared, data: Map<String, String>) {
