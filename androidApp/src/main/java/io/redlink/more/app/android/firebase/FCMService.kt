@@ -35,6 +35,7 @@ fun RemoteMessage.daoFromRemoteMessage(): NotificationSchema {
         userFacing = this.notification != null,
         priority = this.priority.toLong(),
         notificationData = this.data,
-        channelId = null
+        channelId = null,
+        timestamp = sentTime
     )
 }

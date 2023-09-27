@@ -60,6 +60,12 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
         }
     }
 
+    override fun clearNotifications() {
+        context.getSystemService(NotificationManager::class.java)?.let {
+            it.cancelAll()
+        }
+    }
+
     override fun createNewFCMToken(onCompletion: (String) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
