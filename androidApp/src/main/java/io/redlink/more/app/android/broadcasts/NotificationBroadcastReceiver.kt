@@ -6,6 +6,7 @@ import android.content.Intent
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,7 +20,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         intent?.let { intent ->
             if (intent.action == NOTIFICATION_SET_ON_READ_ACTION) {
-                intent.getStringExtra(LocalPushNotificationService.NOTIFICATION_KEY)?.let { key ->
+                intent.getStringExtra(NotificationManager.MSG_ID)?.let { key ->
                     scope.launch {
                         notificationRepository.setNotificationReadStatus(key, true)
                     }
