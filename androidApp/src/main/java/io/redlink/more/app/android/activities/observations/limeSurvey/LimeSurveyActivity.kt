@@ -51,7 +51,8 @@ class LimeSurveyActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         viewModel.setModel(
             intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
-            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID)
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID)
         )
 
         webView = WebView(this)
@@ -109,6 +110,7 @@ class LimeSurveyActivity : ComponentActivity() {
     companion object {
         const val LIME_SURVEY_ACTIVITY_SCHEDULE_ID = "LIME_SURVEY_ACTIVITY_SCHEDULE_ID"
         const val LIME_SURVEY_ACTIVITY_OBSERVATION_ID = "LIME_SURVEY_ACTIVITY_OBSERVATION_ID"
+        const val LIME_SURVEY_ACTIVITY_NOTIFICATION_ID = "LIME_SURVEY_ACTIVITY_NOTIFICATION_ID"
     }
 }
 

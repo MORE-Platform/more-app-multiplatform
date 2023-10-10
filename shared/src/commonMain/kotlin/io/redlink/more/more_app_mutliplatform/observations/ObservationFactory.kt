@@ -8,6 +8,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -35,6 +36,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
 
     fun clearNeededObservationTypes() {
         studyObservationTypes.clear()
+    }
+
+    fun setNotificationManager(notificationManager: NotificationManager) {
+        observations.forEach { it.setNotificationManager(notificationManager) }
     }
 
     fun observationTypes() = observations.map { it.observationType.observationType }.toSet()

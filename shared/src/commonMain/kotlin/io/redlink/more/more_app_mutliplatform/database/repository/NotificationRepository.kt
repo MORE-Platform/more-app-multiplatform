@@ -19,7 +19,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
         title: String?,
         body: String?,
         timestamp: Long,
-        priority: Long,
+        priority: Long = 1,
         read: Boolean = false,
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
@@ -79,16 +79,20 @@ class NotificationRepository : Repository<NotificationSchema>() {
         realmDatabase().query<NotificationSchema>("userFacing == true")
 
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
-        realm()?.writeBlocking {
-            this.query<NotificationSchema>("notificationId = $0", notificationId).first().find()
-                ?.let {
-                    if (read != null) {
-                        it.read = read
-                    }
-                    if (priority != null) {
-                        it.priority = priority
-                    }
+        Scope.launch {
+            mutex.withLock {
+                realm()?.write {
+                    this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
+                        ?.let {
+                            if (read != null) {
+                                it.read = read
+                            }
+                            if (priority != null) {
+                                it.priority = priority
+                            }
+                        }
                 }
+            }
         }
     }
 
@@ -116,18 +120,16 @@ class NotificationRepository : Repository<NotificationSchema>() {
 
     fun deleteNotification(notificationId: String) {
         Scope.launch {
-            mutex.lock()
             deletedNotificationIds.add(notificationId)
-            Napier.i { "Delete Notification: $deletedNotificationIds" }
-            realm()?.writeBlocking {
-                val notification = this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
-                notification?.let {
-                    delete(notification)
-                    deletedNotificationIds.remove(notificationId)
-                    Napier.i { "Deleted Notification: $deletedNotificationIds" }
-                    mutex.unlock()
-                } ?: kotlin.run {
-                    mutex.unlock()
+            mutex.withLock {
+                Napier.i { "Delete Notification: $deletedNotificationIds" }
+                realm()?.write {
+                    val notification = this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
+                    notification?.let {
+                        delete(notification)
+                        deletedNotificationIds.remove(notificationId)
+                        Napier.i { "Deleted Notification: $deletedNotificationIds" }
+                    }
                 }
             }
         }

@@ -8,12 +8,13 @@ import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRe
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
-import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 
 interface LocalNotificationListener {
     fun displayNotification(notification: NotificationSchema)
+
+    fun deleteNotificationFromSystem(notificationId: Int)
 
     fun createNewFCMToken(onCompletion: (String) -> Unit)
     fun clearNotifications()
@@ -31,7 +32,7 @@ class NotificationManager(
         key: String,
         title: String?,
         body: String?,
-        priority: Long = 2,
+        priority: Long = 1,
         read: Boolean = false,
         data: Map<String, String>? = null,
         displayNotification: Boolean
@@ -62,7 +63,7 @@ class NotificationManager(
     fun storeAndDisplayNotification(notification: NotificationSchema, displayNotification: Boolean) {
         if (notification.title != null && notification.notificationBody != null) {
             notificationRepository.storeNotification(notification)
-            if (displayNotification && notification.deepLink == null) {
+            if (displayNotification) {
                 localNotificationListener.displayNotification(notification)
             }
         }
@@ -74,8 +75,14 @@ class NotificationManager(
 
     fun downloadMissedNotifications() {
         Scope.launch {
+            Napier.d { "Updating notifications" }
             storeNotifications(NotificationSchema.toSchemaList(networkService.downloadMissedNotifications()))
         }
+    }
+
+    fun deleteNotificationFromRepository(notificationId: String) {
+        deleteNotificationFromSystemTray(notificationId)
+        notificationRepository.deleteNotification(notificationId)
     }
 
     fun deleteNotificationFromServer(msgID: String) {
@@ -83,6 +90,15 @@ class NotificationManager(
         Scope.launch {
             networkService.deletePushNotification(msgID)
         }
+    }
+
+    fun deleteNotificationFromSystemTray(notificationId: String) {
+        localNotificationListener.deleteNotificationFromSystem(notificationId = notificationId.hashCode())
+    }
+
+    fun markNotificationAsRead(notificationId: String) {
+        notificationRepository.setNotificationReadStatus(notificationId, true)
+        deleteNotificationFromSystemTray(notificationId)
     }
 
     fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
@@ -134,7 +150,7 @@ class NotificationManager(
     companion object {
         private const val FCM_TOKEN = "FCM_TOKEN"
 
-        private const val MSG_ID = "MSG_ID"
+        const val MSG_ID = "MSG_ID"
         private const val MAIN_DATA_KEY = "key"
         private const val STUDY_CHANGED = "STUDY_STATE_CHANGED"
 

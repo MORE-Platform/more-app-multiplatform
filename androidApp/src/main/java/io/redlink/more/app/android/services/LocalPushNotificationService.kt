@@ -54,16 +54,18 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                         mChannel.description = descriptionText
                         notificationManager.createNotificationChannel(mChannel)
 
-                        notificationManager.notify(0, notificationBuilder.build())
+                        notificationManager.notify(notification.notificationId.hashCode(), notificationBuilder.build())
                     }
             }
         }
     }
 
+    override fun deleteNotificationFromSystem(notificationId: Int) {
+        context.getSystemService(NotificationManager::class.java)?.cancel(notificationId)
+    }
+
     override fun clearNotifications() {
-        context.getSystemService(NotificationManager::class.java)?.let {
-            it.cancelAll()
-        }
+        context.getSystemService(NotificationManager::class.java)?.cancelAll()
     }
 
     override fun createNewFCMToken(onCompletion: (String) -> Unit) {

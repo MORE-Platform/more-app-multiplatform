@@ -5,24 +5,29 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
 abstract class Observation(val observationType: ObservationType) {
     private val scheduleRepository = ScheduleRepository()
     private var dataManager: ObservationDataManager? = null
+    private var notificationManager: NotificationManager? = null
     private var running = false
     private val observationIds = mutableSetOf<String>()
     private val scheduleIds = mutableMapOf<String, String>()
+    private val notificationIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
-    fun start(observationId: String, scheduleId: String): Boolean {
+    fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
         scheduleIds[scheduleId] = observationId
+        notificationId?.let {
+            notificationIds[scheduleId] = notificationId
+        }
         if (running && configChanged) {
             stopAndFinish(scheduleId)
         }
@@ -39,11 +44,11 @@ abstract class Observation(val observationType: ObservationType) {
         Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
         if (observationIds.size <= 1) {
             stop {
-                finish()
+                saveAndSend()
                 observationShutdown(scheduleId)
             }
         } else {
-            finish()
+            saveAndSend()
         }
     }
 
@@ -52,6 +57,14 @@ abstract class Observation(val observationType: ObservationType) {
     fun setDataManager(observationDataManager: ObservationDataManager) {
         Napier.i(tag = "Observation::setDataManager") { "Setting data manager for observation of type ${observationType.observationType}." }
         dataManager = observationDataManager
+    }
+
+    fun setNotificationManager(notificationManager: NotificationManager) {
+        this.notificationManager = notificationManager
+    }
+
+    fun addNotificationId(scheduleId: String, notificationId: String) {
+        notificationIds[scheduleId] = notificationId
     }
 
     fun observationConfig(settings: Map<String, Any>) {
@@ -103,7 +116,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndFinish(scheduleId: String) {
         Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
         stop {
-            finish()
+            saveAndSend()
             observationShutdown(scheduleId)
         }
     }
@@ -111,7 +124,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
         Napier.d(tag = "Observation::stopAndSetState") { "Stopping observation of type ${observationType.observationType} and setting state to $state for schedule $scheduleId." }
         stop {
-            finish()
+            saveAndSend()
             scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
             scheduleId?.let {
                 observationShutdown(it)
@@ -122,7 +135,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndSetDone(scheduleId: String) {
         Napier.d(tag = "Observation::stopAndSetDone") { "Stopping observation of type ${observationType.observationType} and setting done for schedule $scheduleId." }
         stop {
-            finish()
+            saveAndSend()
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
             observationShutdown(scheduleId)
             removeDataCount()
@@ -136,6 +149,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     private fun observationShutdown(scheduleId: String) {
+       handleNotification(scheduleId)
         val observationId = scheduleIds.remove(scheduleId)
         observationId?.let { observationIds.remove(it) }
         if (observationIds.isEmpty()) {
@@ -145,7 +159,13 @@ abstract class Observation(val observationType: ObservationType) {
         }
     }
 
-    protected fun finish() {
+    private fun handleNotification(scheduleId: String) {
+        notificationIds.remove(scheduleId)?.let {
+            notificationManager?.markNotificationAsRead(it)
+        }
+    }
+
+    protected fun saveAndSend() {
         Napier.d(tag = "Observation::finish") { "Saving and sending data for observation of type ${observationType.observationType}." }
         dataManager?.saveAndSend()
     }

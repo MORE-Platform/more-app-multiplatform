@@ -58,6 +58,7 @@ class Shared(
 
     init {
         onApplicationStart()
+        observationFactory.setNotificationManager(notificationManager)
     }
 
     fun onApplicationStart() {

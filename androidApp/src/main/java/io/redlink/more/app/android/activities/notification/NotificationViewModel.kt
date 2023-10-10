@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
     private val coreViewModel: CoreNotificationViewModel =
-        CoreNotificationViewModel(coreFilterViewModel, MoreApplication.shared!!.notificationManager.notificationRepository)
+        CoreNotificationViewModel(coreFilterViewModel, MoreApplication.shared!!.notificationManager)
     val notificationList = mutableStateListOf<NotificationModel>()
 
     init {
@@ -41,14 +41,6 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
 
     fun setNotificationToRead(notification: NotificationModel) {
         coreViewModel.setNotificationReadStatus(notification)
-    }
-
-    fun deleteNotification(notification: NotificationModel) {
-        coreViewModel.deleteNotification(notificationId = notification.notificationId)
-    }
-
-    fun deleteNotification(notificationId: String) {
-        coreViewModel.deleteNotification(notificationId)
     }
 
     fun getFilterString(): String {

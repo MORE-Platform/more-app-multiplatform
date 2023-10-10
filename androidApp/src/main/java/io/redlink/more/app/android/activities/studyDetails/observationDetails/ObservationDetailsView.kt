@@ -22,7 +22,7 @@ fun ObservationDetailsView(
     navController: NavController
 ) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.OBSERVATION_DETAILS.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.OBSERVATION_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }

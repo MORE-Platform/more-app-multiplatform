@@ -33,7 +33,7 @@ fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewM
             onClick = {
                 if (model.answerSet.value.isNotBlank()) {
                     model.finish()
-                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.route)
+                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.routeWithParameters())
                 } else {
                     Toast.makeText(
                         context,

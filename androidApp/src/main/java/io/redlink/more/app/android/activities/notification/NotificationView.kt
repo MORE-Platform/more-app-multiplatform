@@ -23,9 +23,9 @@ import io.redlink.more.app.android.extensions.getStringResource
 
 @Composable
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
-
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.NOTIFICATIONS.route)
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.NOTIFICATIONS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -62,18 +62,17 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         items(viewModel.notificationList.sortedByDescending { it.timestamp }) { notification ->
             Column(
                 modifier = Modifier.clickable {
-                    notification.deepLink?.let {
-                        navController.navigate(Uri.parse(it))
+                    if (!notification.read) {
+                        notification.deepLink?.let {
+                            navController.navigate(Uri.parse(it))
+                        } ?: run {
+                            viewModel.setNotificationToRead(notification)
+                        }
                     }
-                    viewModel.setNotificationToRead(notification)
                 }
             ) {
                 NotificationItem(
-                    title = notification.title,
-                    body = notification.notificationBody,
-                    read = notification.read,
-                    priority = notification.priority,
-                    timestamp = notification.timestamp
+                    notification
                 )
             }
         }
