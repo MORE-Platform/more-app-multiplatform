@@ -143,6 +143,7 @@ class Shared(
             studyIsUpdating.emit(true)
             stopObservations()
             removeStudyData()
+            notificationManager.clearAllNotifications()
             studyIsUpdating.emit(false)
         } else {
             val (study, error) = networkService.getStudyConfig()

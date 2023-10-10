@@ -70,6 +70,7 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
                         }
                     }
                 }
+                    .padding(bottom = 10.dp)
             ) {
                 NotificationItem(
                     notification

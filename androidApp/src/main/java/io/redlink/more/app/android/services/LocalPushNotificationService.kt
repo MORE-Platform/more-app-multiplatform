@@ -26,7 +26,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                 intent.action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
                 intent.putExtra(NOTIFICATION_KEY, notification.notificationId)
 
-                notification.deepLink?.let {
+                notification.deepLink()?.let {
                     intent.data = Uri.parse(it)
                 }
                 val pendingIntent = PendingIntent.getActivity(

@@ -30,10 +30,14 @@ class NotificationSchema : RealmObject {
     }
 
     fun deepLink(): String? = deepLink?.let {
-        if (it.contains("?")) {
-            "$it&notificationId=$notificationId"
+        if (!it.contains("notificationId=")) {
+            if (it.contains("?")) {
+                "$it&notificationId=$notificationId"
+            } else {
+                "$it?notificationId=$notificationId"
+            }
         } else {
-            "$it?notificationId=$notificationId"
+            it
         }
     }
 

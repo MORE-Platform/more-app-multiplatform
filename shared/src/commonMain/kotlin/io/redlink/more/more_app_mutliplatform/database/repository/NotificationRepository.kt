@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class NotificationRepository : Repository<NotificationSchema>() {
+    private val readNotificationIds = mutableSetOf<String>()
     private val deletedNotificationIds = mutableSetOf<String>()
     private val mutex = Mutex()
     fun storeNotification(
@@ -52,6 +53,10 @@ class NotificationRepository : Repository<NotificationSchema>() {
             mutex.withLock {
                 Napier.i { "Delete Notification: $deletedNotificationIds. Notification to store: $notification" }
                 if (notification.notificationId !in deletedNotificationIds) {
+                    if (notification.notificationId in readNotificationIds) {
+                        notification.read = true
+                        readNotificationIds.remove(notification.notificationId)
+                    }
                     realmDatabase().store(setOf(notification), UpdatePolicy.ERROR)
                 } else {
                     deletedNotificationIds.remove(notification.notificationId)
@@ -65,7 +70,11 @@ class NotificationRepository : Repository<NotificationSchema>() {
             mutex.withLock {
                 val (notificationsToStore, notificationsToDelete) = notifications.partition { it.notificationId !in deletedNotificationIds }
                 Napier.i { "Delete Notification: $deletedNotificationIds. Storing notifications: $notificationsToStore. Notifications to delete: $notificationsToDelete" }
-                realmDatabase().store(notificationsToStore, UpdatePolicy.ERROR)
+                realmDatabase().store(notificationsToStore.map {
+                    it.apply {
+                        read = it.notificationId in readNotificationIds
+                    }
+                }, UpdatePolicy.ERROR)
                 notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
             }
         }
@@ -82,7 +91,8 @@ class NotificationRepository : Repository<NotificationSchema>() {
         Scope.launch {
             mutex.withLock {
                 realm()?.write {
-                    this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
+                    this.query<NotificationSchema>("notificationId == $0", notificationId).first()
+                        .find()
                         ?.let {
                             if (read != null) {
                                 it.read = read
@@ -111,10 +121,23 @@ class NotificationRepository : Repository<NotificationSchema>() {
     }
 
     fun setNotificationReadStatus(key: String, read: Boolean = true) {
-        realm()?.writeBlocking {
-            val notification =
-                this.query<NotificationSchema>("notificationId == $0", key).first().find()
-            notification?.read = read
+        if (read) {
+            readNotificationIds.add(key)
+        } else {
+            readNotificationIds.remove(key)
+        }
+
+        Scope.launch {
+            mutex.withLock {
+                realm()?.write {
+                    val notification =
+                        this.query<NotificationSchema>("notificationId == $0", key).first().find()
+                    notification?.let {
+                        it.read = read
+                        readNotificationIds.remove(key)
+                    }
+                }
+            }
         }
     }
 
@@ -124,7 +147,9 @@ class NotificationRepository : Repository<NotificationSchema>() {
             mutex.withLock {
                 Napier.i { "Delete Notification: $deletedNotificationIds" }
                 realm()?.write {
-                    val notification = this.query<NotificationSchema>("notificationId == $0", notificationId).first().find()
+                    val notification =
+                        this.query<NotificationSchema>("notificationId == $0", notificationId)
+                            .first().find()
                     notification?.let {
                         delete(notification)
                         deletedNotificationIds.remove(notificationId)

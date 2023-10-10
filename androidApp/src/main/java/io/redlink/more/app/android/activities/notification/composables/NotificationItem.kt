@@ -83,7 +83,7 @@ fun NotificationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .height(65.dp)
         ) {
             Column(verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxHeight()) {
                 Text(
@@ -95,7 +95,7 @@ fun NotificationItem(
 
                 Text(
                     text = notificationModel.timestamp.jvmLocalDateTimeFromMilliseconds()
-                        .formattedString("dd.MM.yyyy hh:mm:ss"),
+                        .formattedString("dd.MM.yyyy HH:mm:ss"),
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     color = MoreColors.Secondary,

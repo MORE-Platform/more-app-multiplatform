@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
@@ -50,6 +51,7 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class MainActivity : ComponentActivity() {
     private lateinit var navHostController: NavHostController
@@ -76,12 +78,24 @@ class MainActivity : ComponentActivity() {
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()
+                navHostController.navigate(
+                    NavigationScreen.DASHBOARD.navigationRoute()
+                )
             } else if (viewModel.studyState.value == StudyState.PAUSED) {
                 StudyPausedView()
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
                 MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null) {
+            intent.getStringExtra(NotificationManager.MSG_ID)?.let {
+                MoreApplication.shared!!.notificationManager.markNotificationAsRead(it)
             }
         }
     }

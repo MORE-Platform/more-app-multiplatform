@@ -21,10 +21,12 @@ class ContentActivity: ComponentActivity() {
         intent.getStringExtra("deepLink")?.let {
             var deepLink = it
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                deepLink += if (deepLink.contains("?")) {
-                    "&$NavigationNotificationIDKey=$msgId"
-                } else {
-                    "?$NavigationNotificationIDKey=$msgId"
+                if (!deepLink.contains(NavigationNotificationIDKey)) {
+                    deepLink += if (deepLink.contains("?")) {
+                        "&$NavigationNotificationIDKey=$msgId"
+                    } else {
+                        "?$NavigationNotificationIDKey=$msgId"
+                    }
                 }
             }
 
