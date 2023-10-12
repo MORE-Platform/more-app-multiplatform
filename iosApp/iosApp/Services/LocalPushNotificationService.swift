@@ -12,6 +12,14 @@ import shared
 import FirebaseMessaging
 
 class LocalPushNotifications: LocalNotificationListener {
+    func clearNotifications() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+    
+    func deleteNotificationFromSystem(notificationId: String) {
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationId])
+    }
+    
     func createNewFCMToken(onCompletion: @escaping (String) -> Void) {
         Messaging.messaging().token { token, error in
             if let error {
@@ -36,7 +44,7 @@ class LocalPushNotifications: LocalNotificationListener {
         }
     }
     
-    func requestLocalNotification(identifier: String = UUID().uuidString, title: String, subtitle: String, timeInterval: TimeInterval = 0, repeates: Bool = false) {
+    private func requestLocalNotification(identifier: String, title: String, subtitle: String, timeInterval: TimeInterval = 0, repeates: Bool = false) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.subtitle = subtitle
@@ -48,7 +56,7 @@ class LocalPushNotifications: LocalNotificationListener {
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: repeates)
         }
         
-        let request = UNNotificationRequest(identifier: "LOCAL_\(identifier)", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request)
         print("Local Notification requested!")

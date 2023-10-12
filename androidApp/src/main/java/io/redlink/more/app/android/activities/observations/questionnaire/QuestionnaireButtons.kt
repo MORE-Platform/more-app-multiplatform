@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.ui.theme.morePrimary
 import io.redlink.more.app.android.R
 
@@ -25,8 +25,7 @@ fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewM
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.8f)
+            .fillMaxSize()
             .padding(bottom = 20.dp)
 
     ) {
@@ -34,11 +33,11 @@ fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewM
             onClick = {
                 if (model.answerSet.value.isNotBlank()) {
                     model.finish()
-                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.route)
+                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.routeWithParameters())
                 } else {
                     Toast.makeText(
                         context,
-                        getString(R.string.more_questionnaire_select),
+                        stringResource(R.string.more_questionnaire_select),
                         Toast.LENGTH_SHORT
                     )
                         .show()
@@ -50,7 +49,7 @@ fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewM
                 .height(IntrinsicSize.Min)
                 .padding(6.dp)
         ) {
-            Text(text = getString(R.string.more_quest_complete))
+            Text(text = stringResource(R.string.more_quest_complete))
         }
     }
 }

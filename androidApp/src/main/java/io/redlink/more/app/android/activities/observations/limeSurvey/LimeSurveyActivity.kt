@@ -49,10 +49,12 @@ class LimeSurveyActivity : ComponentActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log { "LimeSurveyActivity created!" }
-        intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID)?.let {
-            viewModel.setScheduleId(it)
-        }
+        viewModel.setModel(
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID)
+        )
+
         webView = WebView(this)
         webView?.let { webView ->
             webClientListener = LimeSurveyWebClient()
@@ -107,6 +109,8 @@ class LimeSurveyActivity : ComponentActivity() {
 
     companion object {
         const val LIME_SURVEY_ACTIVITY_SCHEDULE_ID = "LIME_SURVEY_ACTIVITY_SCHEDULE_ID"
+        const val LIME_SURVEY_ACTIVITY_OBSERVATION_ID = "LIME_SURVEY_ACTIVITY_OBSERVATION_ID"
+        const val LIME_SURVEY_ACTIVITY_NOTIFICATION_ID = "LIME_SURVEY_ACTIVITY_NOTIFICATION_ID"
     }
 }
 
@@ -121,6 +125,11 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
     MoreBackground(
         navigationTitle = NavigationScreen.LIMESURVEY.stringRes(),
         maxWidth = 1f,
+        leftCornerContent = {
+            if (viewModel.networkLoading.value) {
+                CircularProgressIndicator(color = MoreColors.Primary, strokeWidth = 2.dp)
+            }
+        },
         rightCornerContent = {
             IconButton(
                 onClick = {
@@ -160,14 +169,6 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            if (viewModel.networkLoading.value) {
-                                LinearProgressIndicator(
-                                    color = MoreColors.Primary,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(4.dp)
-                                )
-                            }
                             AndroidView(factory = {
                                 webView.apply {
                                     loadUrl(limeSurveyLink)

@@ -23,15 +23,21 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 
 @Composable
-fun FilterView(navController: NavController, model: DashboardFilterViewModel, scheduleListType: ScheduleListType) {
+fun FilterView(
+    navController: NavController,
+    model: DashboardFilterViewModel,
+    scheduleListType: ScheduleListType
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 19.dp)
-            .clickable(onClick = { navController.navigate("${NavigationScreen.OBSERVATION_FILTER.route}/scheduleListType=${scheduleListType}") })
-    ){
+            .clickable(onClick = {
+                navController.navigate(NavigationScreen.OBSERVATION_DETAILS.navigationRoute("scheduleListType" to scheduleListType))
+            })
+    ) {
         Text(
             text = model.getFilterString(),
             color = MoreColors.Primary,

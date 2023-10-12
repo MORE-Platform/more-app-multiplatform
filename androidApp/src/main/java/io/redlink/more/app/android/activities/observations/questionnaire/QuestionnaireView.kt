@@ -2,8 +2,7 @@ package io.redlink.more.app.android.activities.observations.questionnaire
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -11,12 +10,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.ErrorMessage
 
 @Composable
 fun QuestionnaireView(navController: NavController, viewModel: QuestionnaireViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SIMPLE_QUESTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SIMPLE_QUESTION.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -25,14 +27,16 @@ fun QuestionnaireView(navController: NavController, viewModel: QuestionnaireView
             viewModel.viewDidDisappear()
         }
     }
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .fillMaxHeight(0.8f)
-            .fillMaxWidth(0.8f)
-    ) {
-        QuestionnaireQuestionAnswer(model = viewModel)
+    if (viewModel.hasData.value) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            QuestionnaireQuestionAnswer(model = viewModel)
+        }
+        QuestionnaireButtons(navController = navController, model = viewModel)
+    } else {
+        ErrorMessage(message = "${getStringResource(id = R.string.data_not_found)}!")
     }
-    QuestionnaireButtons(navController = navController, model = viewModel)
 }

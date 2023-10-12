@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.getString
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -31,7 +31,7 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
     LazyColumn {
         item {
             HeaderTitle(
-                title = getString(R.string.more_filter_set_duration),
+                title = stringResource(R.string.more_filter_set_duration),
                 modifier = Modifier.padding(top = 20.dp)
             )
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
@@ -66,7 +66,7 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
 
         item {
             HeaderTitle(
-                title = getString(R.string.more_filter_set_type),
+                title = stringResource(R.string.more_filter_set_type),
                 modifier = Modifier.padding(top = 20.dp)
             )
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
@@ -90,7 +90,7 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = getString(R.string.more_filter_all),
+                        description = stringResource(R.string.more_filter_all),
                         color = if (!viewModel.typeFilterActive.value) MoreColors.Primary else MoreColors.Secondary
                     )
                 }

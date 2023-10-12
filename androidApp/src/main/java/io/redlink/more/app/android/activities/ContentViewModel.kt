@@ -32,12 +32,6 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
 
-    init {
-        if (hasCredentials.value) {
-            MoreApplication.shared!!.updateStudyBlocking()
-        }
-    }
-
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
             val workManager = WorkManager.getInstance(context)
@@ -48,7 +42,10 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 ExistingPeriodicWorkPolicy.KEEP,
                 worker
             )
-            showNewActivityAndClearStack(it, MainActivity::class.java)
+            showNewActivityAndClearStack(it, MainActivity::class.java,
+                forwardExtras = true,
+                forwardDeepLink = true
+            )
         }
     }
 

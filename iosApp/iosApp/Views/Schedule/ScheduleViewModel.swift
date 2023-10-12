@@ -78,13 +78,15 @@ class ScheduleViewModel: ObservableObject {
         coreModel.viewDidDisappear()
     }
 
-    func getSimpleQuestionObservationVM(scheduleId: String) -> SimpleQuestionObservationViewModel {
-        simpleQuestionVM.setScheduleId(scheduleId: scheduleId)
+    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
+        simpleQuestionVM.setScheduleId(navigationState: navigationState)
         return simpleQuestionVM
     }
 
-    func getTaskDetailsVM(scheduleId: String) -> TaskDetailsViewModel {
-        taskDetailsVM.setSchedule(scheduleId: scheduleId)
+    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
+        if let scheduleId = navigationState.scheduleId {
+            taskDetailsVM.setSchedule(scheduleId: scheduleId)
+        }
         return taskDetailsVM
     }
     

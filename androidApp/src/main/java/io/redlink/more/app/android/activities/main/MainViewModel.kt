@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.main
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,20 +15,17 @@ import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterViewModel
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.setting.SettingsViewModel
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class MainViewModel(context: Context) : ViewModel() {
@@ -116,8 +114,33 @@ class MainViewModel(context: Context) : ViewModel() {
     fun viewDidAppear() {
     }
 
-    fun creteNewSimpleQuestionViewModel(scheduleId: String): QuestionnaireViewModel {
-        return simpleQuestionnaireViewModel.apply { setScheduleId(scheduleId) }
+    fun openLimesurvey(context: Context, activityResultLauncher: ActivityResultLauncher<Intent>, scheduleId: String?, observationId: String?, notificationId: String?) {
+        (context as? Activity)?.let { activity ->
+            val intent = Intent(activity, LimeSurveyActivity::class.java)
+            intent.putExtra(
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
+                scheduleId
+            )
+            intent.putExtra(
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID,
+                observationId
+            )
+            intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID, notificationId)
+            activityResultLauncher.launch(intent)
+        }
+    }
+
+    fun creteNewSimpleQuestionViewModel(scheduleId: String? = null, observationId: String? = null, notificationId: String?): QuestionnaireViewModel {
+        if (scheduleId != null || observationId != null) {
+            simpleQuestionnaireViewModel.apply {
+                if (!scheduleId.isNullOrBlank()) {
+                    setScheduleId(scheduleId, notificationId)
+                } else if (!observationId.isNullOrBlank()) {
+                    setObservationId(observationId, notificationId)
+                }
+            }
+        }
+        return simpleQuestionnaireViewModel
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {

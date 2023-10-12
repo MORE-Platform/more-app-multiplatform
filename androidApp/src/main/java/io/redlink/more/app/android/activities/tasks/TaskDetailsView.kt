@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.toDate
 import io.redlink.more.app.android.shared_composables.*
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary2
@@ -28,13 +27,16 @@ import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurvey
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 
 
 @Composable
 fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
     val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -121,26 +123,24 @@ fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewMode
                                 text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
                                     id = R.string.more_observation_pause
                                 )
-                                else if (viewModel.taskDetailsModel.value.observationType == "question-observation") getStringResource(
+                                else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
                                     id = R.string.more_questionnaire_start
                                 )
-                                else if (viewModel.taskDetailsModel.value.observationType == "lime-survey-observation") getStringResource(
+                                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
                                     id = R.string.more_limesurvey_start
                                 )
                                 else getStringResource(
                                     id = R.string.more_observation_start
                                 ),
-                                enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == "polar-verity-observation") viewModel.polarHrReady.value else true
+                                enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
+                                        emptySet()
+                                    ).observationType) viewModel.polarHrReady.value else true
                             ) {
-                                if (viewModel.taskDetailsModel.value.observationType == "question-observation") {
-                                    navController.navigate("${NavigationScreen.SIMPLE_QUESTION.route}/scheduleId=${scheduleId}")
+                                if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
+                                    navController.navigate(NavigationScreen.SIMPLE_QUESTION.navigationRoute("scheduleId" to scheduleId))
                                 }
-                                else if (viewModel.taskDetailsModel.value.observationType == "lime-survey-observation") {
-                                    (context as? Activity)?.let { activity ->
-                                        val intent = Intent(context, LimeSurveyActivity::class.java)
-                                        intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleId)
-                                        activity.startActivity(intent)
-                                    }
+                                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
+                                    navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleId))
                                 } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                                     viewModel.pauseObservation()
                                 } else {

@@ -1,7 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey
 
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -11,9 +10,7 @@ import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurvey
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 
@@ -27,7 +24,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
     private val scheduleRepository = ScheduleRepository()
     private val observationRepository = ObservationRepository()
 
-    fun setScheduleId(scheduleId: String) {
+    fun setScheduleId(scheduleId: String, notificationId: String?) {
         if (scheduleId != this.scheduleId) {
             Napier.i { "Setting scheduleId: $scheduleId for LimeSurvey" }
             observation?.let { observation ->
@@ -41,16 +38,14 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                     }
                     launchScope(Dispatchers.Main) {
                         scheduleRepository.scheduleWithId(scheduleId).cancellable().transform { scheduleSchema ->
-                            Napier.i { "Loaded schedule schema!" }
                             emit(scheduleSchema?.let {
                                 observationRepository.observationById(it.observationId).cancellable().firstOrNull()
                             })
                         }.cancellable().firstOrNull().let { observationSchema ->
-                            log { "Loaded observation schema!" }
                             observationSchema?.let {
                                 observationId = it.observationId
                                 observation.observationConfig(it.configAsMap())
-                                observation.start(it.observationId, scheduleId)
+                                observation.start(it.observationId, scheduleId, notificationId)
                             }
                             dataLoading.set(false)
                         }
@@ -58,6 +53,12 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                 }
 
             }
+        }
+    }
+
+    fun setObservationId(observationId: String, notificationId: String?) {
+        launchScope {
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId) }
         }
     }
 

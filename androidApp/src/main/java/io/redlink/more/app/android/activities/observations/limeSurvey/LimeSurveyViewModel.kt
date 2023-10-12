@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.observations.limeSurvey
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
@@ -39,8 +40,12 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
         }
     }
 
-    fun setScheduleId(scheduleId: String) {
-        coreViewModel.setScheduleId(scheduleId)
+    fun setModel(scheduleId: String? = null, observationId: String? = null, notificationId: String? = null) {
+        if (!scheduleId.isNullOrBlank()) {
+            coreViewModel.setScheduleId(scheduleId, notificationId)
+        } else if (!observationId.isNullOrBlank()) {
+            coreViewModel.setObservationId(observationId, notificationId)
+        }
     }
 
     fun viewDidAppear() {

@@ -21,6 +21,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
+private const val DB_SCHEMA_VERSION: Long = 3
+
 object RealmDatabase {
     var realm: Realm? = null
         private set
@@ -31,7 +33,9 @@ object RealmDatabase {
     fun open(realmObjects: Set<KClass<out TypedRealmObject>>) {
         if (realm == null) {
             Napier.i { "Init Realm..." }
-            val config = RealmConfiguration.create(realmObjects)
+            val config = RealmConfiguration.Builder(realmObjects)
+                .schemaVersion(DB_SCHEMA_VERSION)
+                .build()
             this.realm = Realm.open(config)
         }
     }

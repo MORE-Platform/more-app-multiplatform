@@ -2,9 +2,14 @@ package io.redlink.more.app.android.activities.notification.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,15 +27,11 @@ import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.more_app_mutliplatform.extensions.toLocalDateTime
+import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 
 @Composable
 fun NotificationItem(
-    title: String?,
-    titleColor: Color = MoreColors.Primary,
-    body: String?,
-    read: Boolean?,
-    priority: Long?,
-    timestamp: Long?
+    notificationModel: NotificationModel
 ) {
     Column {
         Row(
@@ -42,7 +43,7 @@ fun NotificationItem(
             Row(
                 verticalAlignment = Alignment.Top
             ) {
-                priority?.let {
+                notificationModel.priority.let {
                     if (it.toInt() == 2) {
                         Image(
                             id = R.drawable.warning_exclamation,
@@ -52,22 +53,22 @@ fun NotificationItem(
                                 .padding(top = 4.dp)
                         )
                         Spacer(
-                            modifier = if (read != null && read) Modifier.width(5.dp) else Modifier.width(
+                            modifier = if (notificationModel.read) Modifier.width(5.dp) else Modifier.width(
                                 8.dp
                             )
                         )
                     }
                     Text(
-                        text = title ?: getStringResource(id = R.string.notification),
-                        fontWeight = if (read != null && read) FontWeight.Normal else FontWeight.Bold,
+                        text = notificationModel.title,
+                        fontWeight = if (notificationModel.read) FontWeight.Normal else FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = if (it.toInt() == 2) MoreColors.Important else titleColor,
+                        color = if (it.toInt() == 2) MoreColors.Important else MoreColors.Primary,
                         modifier = Modifier.fillMaxWidth(0.96f)
                     )
                 }
             }
 
-            if (read == false) {
+            if (!notificationModel.read) {
                 IconInline(
                     icon = Icons.Filled.Circle,
                     color = MoreColors.Important,
@@ -77,29 +78,36 @@ fun NotificationItem(
         }
 
         Divider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 65.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxHeight()) {
+                Text(
+                    text = notificationModel.notificationBody,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    color = MoreColors.Secondary,
+                )
 
-        body?.let {
-            Text(
-                text = it,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                color = MoreColors.Secondary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 5.dp)
-            )
-        }
-
-        timestamp?.let {
-            Text(
-                text = it.jvmLocalDateTimeFromMilliseconds().formattedString("dd.MM.yyyy hh:mm"),
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                color = MoreColors.Secondary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 30.dp)
-            )
+                Text(
+                    text = notificationModel.timestamp.jvmLocalDateTimeFromMilliseconds()
+                        .formattedString("dd.MM.yyyy HH:mm:ss"),
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    color = MoreColors.Secondary,
+                )
+            }
+            if (notificationModel.deepLink != null) {
+                Icon(
+                    if(notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
+                    contentDescription = getStringResource(id = R.string.more_observation_open),
+                    tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
+                )
+            }
         }
     }
 }

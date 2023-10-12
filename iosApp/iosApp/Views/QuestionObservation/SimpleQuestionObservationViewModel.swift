@@ -30,8 +30,12 @@ class SimpleQuestionObservationViewModel: ObservableObject {
         }
     }
     
-    func setScheduleId(scheduleId: String) {
-        coreModel.setScheduleId(scheduleId: scheduleId)
+    func setScheduleId(navigationState: NavigationState) {
+        if let scheduleId = navigationState.scheduleId {
+            coreModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationState.notificationId)
+        } else if let observationId = navigationState.observationId {
+            coreModel.setScheduleViaObservationId(observationId: observationId, notificationId: navigationState.notificationId)
+        }
     }
     
     func viewDidAppear() {
@@ -40,6 +44,7 @@ class SimpleQuestionObservationViewModel: ObservableObject {
     
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
+        answerSet = ""
     }
     
     func setAnswer(answer: String) {

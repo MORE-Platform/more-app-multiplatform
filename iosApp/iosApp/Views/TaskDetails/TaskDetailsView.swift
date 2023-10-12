@@ -11,7 +11,6 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
-    var scheduleId: String
     var scheduleListType: ScheduleListType
     
     @EnvironmentObject var navigationModalState: NavigationModalState
@@ -32,7 +31,7 @@ struct TaskDetailsView: View {
                             Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
                                 .padding(0.5)
                             Spacer()
-                            if viewModel.taskDetailsModel?.state == ScheduleState.running {
+                            if viewModel.taskDetailsModel?.state == ScheduleState.running, let scheduleId = navigationModalState.navigationState.scheduleId {
                                 InlineAbortButton {
                                     viewModel.stop(scheduleId: scheduleId)
                                 }
@@ -64,14 +63,13 @@ struct TaskDetailsView: View {
                         Spacer()
                     }
                     if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
-                        if let model = viewModel.taskDetailsModel {
+                        if let model = viewModel.taskDetailsModel, let scheduleId = navigationModalState.navigationState.scheduleId {
                             ObservationButton(
                                 observationActionDelegate: viewModel,
                                 scheduleId: scheduleId,
                                 observationType: model.observationType,
                                 state: model.state,
                                 disabled: !model.state.active())
-                            .environmentObject(navigationModalState)
                         }
                     }
                     Spacer()

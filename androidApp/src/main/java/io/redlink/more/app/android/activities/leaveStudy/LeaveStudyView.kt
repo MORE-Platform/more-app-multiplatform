@@ -41,7 +41,7 @@ fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel)
     val context = LocalContext.current
 
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -113,7 +113,7 @@ fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel)
                 buttonColors = ButtonDefaults.moreImportant(),
                 borderStroke = MoreColors.borderImportant()
             ) {
-                navController.navigate(NavigationScreen.LEAVE_STUDY_CONFIRM.route)
+                navController.navigate(NavigationScreen.LEAVE_STUDY_CONFIRM.routeWithParameters())
             }
         }
     }

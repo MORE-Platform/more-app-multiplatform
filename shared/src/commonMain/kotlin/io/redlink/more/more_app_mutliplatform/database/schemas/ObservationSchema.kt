@@ -24,6 +24,7 @@ class ObservationSchema : RealmObject {
     var participantInfo: String = ""
     var configuration: String? = null
     var hidden: Boolean? = null
+    var scheduleLess: Boolean = false
     var version: Long = 0
     var required: Boolean = false
     var collectionTimestamp: RealmInstant = RealmInstant.now()
@@ -46,6 +47,7 @@ class ObservationSchema : RealmObject {
                 participantInfo = observation.participantInfo
                 configuration = observation.configuration.toString()
                 hidden = observation.hidden
+                scheduleLess = observation.noSchedule
                 required = observation.required
                 version = observation.version
             }

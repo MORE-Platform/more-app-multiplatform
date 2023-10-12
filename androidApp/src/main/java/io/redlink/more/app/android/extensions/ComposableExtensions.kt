@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavDeepLink
 
 @Composable
 @ReadOnlyComposable
@@ -49,10 +50,17 @@ fun Image(
         colorFilter
     )
 
-fun showNewActivityAndClearStack(context: Context, cls: Class<*>) {
+fun showNewActivityAndClearStack(context: Context, cls: Class<*>, forwardExtras: Boolean = false, forwardDeepLink: Boolean = false) {
     (context as? Activity)?.let {
         val intent = Intent(context, cls)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        if (forwardExtras) {
+            intent.putExtras(it.intent)
+        }
+
+        if (forwardDeepLink) {
+            intent.data = it.intent.data
+        }
         TaskStackBuilder.create(it).addNextIntentWithParentStack(intent).startActivities()
     }
 }

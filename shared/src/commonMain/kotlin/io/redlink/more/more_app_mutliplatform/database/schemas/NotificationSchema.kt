@@ -6,9 +6,10 @@ import io.realm.kotlin.types.RealmDictionary
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import io.redlink.more.more_app_mutliplatform.extensions.fromUTCtoCurrent
+import io.redlink.more.more_app_mutliplatform.extensions.asString
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.datetime.Instant
 
 class NotificationSchema : RealmObject {
@@ -21,10 +22,23 @@ class NotificationSchema : RealmObject {
     var priority: Long = 0
     var read: Boolean = false
     var userFacing: Boolean = true
+    var deepLink: String? = null
     var notificationData: RealmDictionary<String> = realmDictionaryOf()
 
     override fun toString(): String {
-        return "NotificationSchema(notificationId='$notificationId', channelId=$channelId, title=$title, notificationBody=$notificationBody, timestamp=$timestamp, priority=$priority, read=$read, userFacing=$userFacing, notificationData=$notificationData)"
+        return "NotificationSchema(notificationId='$notificationId', channelId=$channelId, title=$title, notificationBody=$notificationBody, timestamp=${timestamp.toString()}, priority=$priority, read=$read, userFacing=$userFacing, deepLink=$deepLink, notificationData=$notificationData)"
+    }
+
+    fun deepLink(): String? = deepLink?.let {
+        if (!it.contains("notificationId=")) {
+            if (it.contains("?")) {
+                "$it&notificationId=$notificationId"
+            } else {
+                "$it?notificationId=$notificationId"
+            }
+        } else {
+            it
+        }
     }
 
     companion object {
@@ -37,43 +51,45 @@ class NotificationSchema : RealmObject {
             priority: Long,
             read: Boolean,
             userFacing: Boolean,
-            notificationData: Map<String, String>?
+            notificationData: Map<String, String>?,
+            deepLink: String? = null
         ): NotificationSchema {
             return NotificationSchema().apply {
                 this.notificationId = notificationId
                 this.channelId = channelId
                 this.title = title
                 this.notificationBody = notificationBody
-                if (timestamp != null) {
-                    this.timestamp = Instant.fromEpochMilliseconds(timestamp).toRealmInstant()
-                }
-                this.priority = priority
                 this.read = read
                 this.userFacing = userFacing
                 this.notificationData =
                     notificationData?.mapKeys { it.key.replace(".", "_") }?.toRealmDictionary()
                         ?: realmDictionaryOf()
+                this.deepLink = deepLink ?: extractDeepLink(this.notificationData)
+                this.priority = if (this.deepLink != null) 2 else priority
+                this.timestamp =
+                    timestamp?.let { Instant.fromEpochMilliseconds(timestamp).toRealmInstant() }
+                        ?: RealmInstant.now()
             }
         }
 
         fun toSchema(notification: PushNotification): NotificationSchema {
-            return NotificationSchema().apply {
-                this.notificationId = notification.msgId
-                this.title = notification.title
-                this.notificationBody = notification.body
-                this.userFacing = notification.type == "text"
-                this.priority = 2
-                this.notificationData = notification.data?.entries?.associate {
-                    it.key.replace(
-                        ".",
-                        "_"
-                    ) to it.value.toString()
-                }?.toRealmDictionary() ?: realmDictionaryOf()
-                this.timestamp = notification.timestamp?.toRealmInstant() ?: RealmInstant.now()
-            }
+            return toSchema(
+                notificationId = notification.msgId,
+                channelId = null,
+                title = notification.title,
+                notificationBody = notification.body,
+                timestamp = notification.timestamp?.toEpochMilliseconds(),
+                priority = 1,
+                read = false,
+                userFacing = notification.type == "text",
+                notificationData = notification.data?.mapValues { it.value.toString() },
+                deepLink = notification.deepLink
+            )
         }
 
         fun toSchemaList(notifications: List<PushNotification>): List<NotificationSchema> =
             notifications.map { toSchema(it) }
+
+        private fun extractDeepLink(data: Map<String, String>) = data[NotificationManager.DEEP_LINK]
     }
 }
