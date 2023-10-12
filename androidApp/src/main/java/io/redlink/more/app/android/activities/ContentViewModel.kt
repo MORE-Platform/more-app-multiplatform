@@ -32,12 +32,6 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
 
-    init {
-        if (hasCredentials.value) {
-            MoreApplication.shared!!.updateStudyBlocking()
-        }
-    }
-
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
             val workManager = WorkManager.getInstance(context)

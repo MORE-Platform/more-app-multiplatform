@@ -29,7 +29,7 @@ fun NotificationFilterViewButton(navController: NavController, viewModel: Notifi
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 19.dp)
-            .clickable(onClick = { navController.navigate(NavigationScreen.NOTIFICATION_FILTER.route) })
+            .clickable(onClick = { navController.navigate(NavigationScreen.NOTIFICATION_FILTER.routeWithParameters()) })
     ){
         Text(
             text = viewModel.getFilterString(),

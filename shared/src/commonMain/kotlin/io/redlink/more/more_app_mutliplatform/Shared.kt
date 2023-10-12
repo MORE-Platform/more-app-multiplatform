@@ -22,6 +22,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
+import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
@@ -32,7 +33,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
@@ -44,6 +44,7 @@ class Shared(
 ) {
     val endpointRepository: EndpointRepository = EndpointRepository(sharedStorageRepository)
     val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
+    val studyStateRepository: StudyStateRepository = StudyStateRepository(sharedStorageRepository)
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
@@ -53,11 +54,12 @@ class Shared(
 
     val studyIsUpdating = MutableStateFlow(false)
 
-    val currentStudyState = MutableStateFlow(StudyState.NONE)
+    val currentStudyState = studyStateRepository.currentState()
     var finishText: String? = null
 
     init {
         onApplicationStart()
+        observationFactory.setNotificationManager(notificationManager)
     }
 
     fun onApplicationStart() {
@@ -72,6 +74,7 @@ class Shared(
         if (appIsInForeGround) {
             notificationManager.clearAllNotifications()
             updateTaskStates()
+            updateStudyBlocking()
         }
     }
 
@@ -129,19 +132,25 @@ class Shared(
     }
 
     suspend fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
+        Napier.d(tag = "Shared::updateStudy") { "Updating study with oldState: $oldStudyState and new state: $newStudyState" }
         val studyRepository = StudyRepository()
         val currentStudy = studyRepository.getStudy().firstOrNull()
         if (currentStudy != null) {
-            currentStudyState.set(if (currentStudy.active) StudyState.ACTIVE else StudyState.PAUSED)
+            Napier.d(tag = "Shared::updateStudy") { "Has current study: $currentStudy with study state: ${currentStudy.getState()} is active: ${currentStudy.active}" }
+            if (currentStudyState.firstOrNull() == StudyState.NONE) {
+                studyStateRepository.storeState(currentStudy.getState())
+            }
             currentStudy.finishText?.let {
                 finishText = it
             }
         }
         if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
-            currentStudyState.set(newStudyState)
+            Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
+            studyStateRepository.storeState(newStudyState)
             studyIsUpdating.emit(true)
             stopObservations()
             removeStudyData()
+            notificationManager.clearAllNotifications()
             studyIsUpdating.emit(false)
         } else {
             val (study, error) = networkService.getStudyConfig()
@@ -168,21 +177,21 @@ class Shared(
                         }
                     }
                     if (newStudyState == null) {
-                        currentStudyState.set(study.studyState?.let { StudyState.getState(it) }
+                        studyStateRepository.storeState(study.studyState?.let { StudyState.getState(it) }
                             ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
                     }
                     studyIsUpdating.emit(false)
                 }
             }
             if (newStudyState != null) {
-                currentStudyState.set(newStudyState)
+                studyStateRepository.storeState(newStudyState)
             }
         }
     }
 
     fun newLogin() {
         notificationManager.newFCMToken()
-        currentStudyState.set(StudyState.ACTIVE)
+        studyStateRepository.storeState(StudyState.ACTIVE)
         Scope.launch {
             finishText = StudyRepository().getStudy().firstOrNull()?.finishText
         }
@@ -201,7 +210,7 @@ class Shared(
             coreBluetooth.resetAll()
             onDeletion()
             studyIsUpdating.set(false)
-            currentStudyState.set(StudyState.NONE)
+            studyStateRepository.storeState(StudyState.NONE)
         }
     }
 

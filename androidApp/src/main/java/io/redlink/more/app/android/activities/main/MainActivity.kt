@@ -1,6 +1,5 @@
 package io.redlink.more.app.android.activities.main
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +8,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,15 +16,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.integerArrayResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
@@ -52,8 +51,11 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class MainActivity : ComponentActivity() {
+    private var loadedNavController = false
+
     private lateinit var navHostController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +68,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val destinationChangeListener =
-            NavController.OnDestinationChangedListener { controller, destination, arguments ->
+            NavController.OnDestinationChangedListener { _, destination, _ ->
                 viewModel.navigationBarTitle.value = destination.navigatorName
             }
         setContent {
@@ -78,21 +80,27 @@ class MainActivity : ComponentActivity() {
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()
+                if (loadedNavController) {
+                    navHostController.navigate(
+                        NavigationScreen.DASHBOARD.navigationRoute()
+                    )
+                }
             } else if (viewModel.studyState.value == StudyState.PAUSED) {
                 StudyPausedView()
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
                 MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+                loadedNavController = true
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (intent.getStringExtra("deepLink") != null) {
-            intent.getStringExtra("MSG_ID")?.let {
-                MoreApplication.shared!!.notificationManager.notificationRepository.deleteNotification(it)
+        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null && intent.data == null) {
+            intent.getStringExtra(NotificationManager.MSG_ID)?.let {
+                MoreApplication.shared!!.notificationManager.markNotificationAsRead(it)
             }
         }
     }
@@ -115,15 +123,15 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             viewModel.showBackButton.value = false
             viewModel.tabIndex.value = it
             when (it) {
-                0 -> navController.navigate(NavigationScreen.DASHBOARD.route)
-                1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.route)
-                2 -> navController.navigate(NavigationScreen.INFO.route)
+                0 -> navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters())
+                1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.routeWithParameters())
+                2 -> navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
         }
     ) {
         NavHost(
             navController = navController,
-            startDestination = NavigationScreen.DASHBOARD.route
+            startDestination = NavigationScreen.DASHBOARD.routeWithParameters()
         ) {
             NavigationScreen.DASHBOARD.let { screen ->
                 composable(
@@ -293,13 +301,15 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute(MainActivity.DEEPLINK)
-
                 ) {
                     val scheduleId by remember {
                         mutableStateOf(it.arguments?.getString("scheduleId"))
                     }
                     val observationId by remember {
                         mutableStateOf(it.arguments?.getString("observationId"))
+                    }
+                    val notificationId by remember {
+                        mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
                     }
 
                     viewModel.navigationBarTitle.value =
@@ -309,7 +319,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         mutableStateOf(
                             viewModel.creteNewSimpleQuestionViewModel(
                                 scheduleId,
-                                observationId
+                                observationId,
+                                notificationId
                             )
                         )
                     }
@@ -333,10 +344,13 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     val observationId by remember {
                         mutableStateOf(it.arguments?.getString("observationId"))
                     }
+                    val notificationId by remember {
+                        mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
+                    }
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (scheduleId != null || observationId != null) {
                             LaunchedEffect(Unit) {
-                                viewModel.openLimesurvey(currentContext.value, activityResultLauncher, scheduleId, observationId)
+                                viewModel.openLimesurvey(currentContext.value, activityResultLauncher, scheduleId, observationId, notificationId)
                             }
                         }
                     }

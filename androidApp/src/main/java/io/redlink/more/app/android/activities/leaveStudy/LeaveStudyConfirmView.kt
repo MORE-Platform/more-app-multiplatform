@@ -32,7 +32,7 @@ fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyVie
     val context = LocalContext.current
 
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY_CONFIRM.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY_CONFIRM.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -100,7 +100,7 @@ fun LeaveStudyConfirmView(navController: NavController, viewModel: LeaveStudyVie
                 buttonColors = ButtonDefaults.moreApproved(),
                 borderStroke = MoreColors.borderApproved()
             ) {
-                navController.navigate(NavigationScreen.INFO.route)
+                navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
 
             Row(

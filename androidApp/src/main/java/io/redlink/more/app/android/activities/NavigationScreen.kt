@@ -3,11 +3,11 @@ package io.redlink.more.app.android.activities
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavArgument
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
@@ -15,11 +15,12 @@ import io.redlink.more.more_app_mutliplatform.observations.observationTypes.Simp
 
 data class NavigationParameter(
     val type: NavType<*>,
-    val default: Any?
+    val default: Any?,
+    val nullable: Boolean = true
 )
 
 enum class NavigationScreen(
-    val route: String,
+    private val route: String,
     val parameters: Map<String, NavigationParameter> = emptyMap(),
     @StringRes val stringResource: Int
 ) {
@@ -80,14 +81,17 @@ enum class NavigationScreen(
     @Composable
     fun stringRes() = getStringResource(id = stringResource)
 
+    private fun allParam() = parameters + globalParameters
+
     fun routeWithParameters(): String {
         if (cachedRoute == null) {
             var fullRoute = route
-            if (parameters.isNotEmpty()) {
+            val params = allParam()
+            if (params.isNotEmpty()) {
                 fullRoute += "?"
-                parameters.entries.forEachIndexed { index, entry ->
+                params.entries.forEachIndexed { index, entry ->
                     fullRoute += "${entry.key}={${entry.key}}"
-                    if (index < parameters.size - 1) {
+                    if (index < params.size - 1) {
                         fullRoute += "&"
                     }
                 }
@@ -97,29 +101,42 @@ enum class NavigationScreen(
         return cachedRoute!!
     }
 
-    fun navigationRoute(vararg routeParameters: Pair<String, Any?>): String {
+    fun navigationRoute(
+        vararg routeParameters: Pair<String, Any?>,
+        notificationId: String? = null
+    ): String {
         var fullRoute = route
         val routeMap = routeParameters.toMap()
-        if (parameters.isNotEmpty() && routeMap.isNotEmpty()) {
-            fullRoute += "?"
-            parameters.entries.forEachIndexed { index, entry ->
+        val params = allParam()
+        val queryParams = mutableListOf<String>()
+
+        if (params.isNotEmpty() && routeMap.isNotEmpty()) {
+            params.entries.forEach { entry ->
                 if (entry.key in routeMap.keys) {
-                    fullRoute += "${entry.key}=${routeMap[entry.key]}"
-                    if (index < parameters.size - 1 && index < routeMap.size - 1) {
-                        fullRoute += "&"
-                    }
+                    queryParams.add("${entry.key}=${routeMap[entry.key]}")
                 }
             }
         }
+
+        notificationId?.let {
+            queryParams.add("$NavigationNotificationIDKey=$it")
+        }
+
+        if (queryParams.isNotEmpty()) {
+            fullRoute += "?" + queryParams.joinToString("&")
+        }
+
         return fullRoute
     }
 
+
     fun createListOfNavArguments(): List<NamedNavArgument> {
         if (cachedNavArguments == null) {
-            cachedNavArguments = parameters.map {
+            cachedNavArguments = allParam().map {
                 navArgument(it.key) {
                     type = it.value.type
                     defaultValue = it.value.default
+                    nullable = it.value.nullable
                 }
             }
         }
@@ -128,12 +145,18 @@ enum class NavigationScreen(
 
     fun createDeepLinkRoute(deepLinkHost: String): List<NavDeepLink> {
         if (cachedDeepLinks == null) {
-            cachedDeepLinks = listOf(navDeepLink { uriPattern = deepLinkHost + routeWithParameters() })
+            cachedDeepLinks =
+                listOf(navDeepLink { uriPattern = deepLinkHost + routeWithParameters() })
         }
         return cachedDeepLinks!!
     }
 
     companion object {
+        const val NavigationNotificationIDKey = "notificationId"
+
+        private val globalParameters =
+            mapOf(NavigationNotificationIDKey to NavigationParameter(NavType.StringType, ""))
+
         fun byRoute(route: String) = NavigationScreen.values().firstOrNull { it.route == route }
     }
 }

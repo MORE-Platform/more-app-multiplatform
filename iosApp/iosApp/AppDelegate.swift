@@ -15,6 +15,7 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    static let navigationScreenHandler = NavigationModalState()
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()
     static let shared: Shared = {
@@ -43,11 +44,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         
         registerBackgroundTasks()
-        
-        if let launchOptions, let userInfo = launchOptions[.remoteNotification] as? [AnyHashable: Any] {
-            print("Has launchoptions: \(userInfo)")
-            AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
-        }
         
         return true
     }

@@ -28,7 +28,7 @@ fun SettingsView(
     navController: NavController
 ) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.routeWithParameters())
     LaunchedEffect(route) {
         model.viewDidAppear()
     }

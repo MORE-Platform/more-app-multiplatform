@@ -12,7 +12,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class CoreNotificationFilterViewModel: CoreViewModel() {
-    private var highPriority: Long = 1
+    private var highPriority: Long = 2
 
     val filters = MutableStateFlow<Map<NotificationFilterTypeModel, Boolean>>(mapOf())
     init {

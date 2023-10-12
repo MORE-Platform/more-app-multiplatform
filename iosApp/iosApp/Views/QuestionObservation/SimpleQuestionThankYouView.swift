@@ -30,7 +30,7 @@ struct SimpleQuestionThankYouView: View {
                         Spacer()
                         
                         MoreActionButton(disabled: .constant(false)) {
-                            questionModelState.simpleQuestionThankYouOpen = false
+                            questionModelState.closeView(screen: .questionObservationThanks)
                         } label: {
                             BasicText(text: String.localize(forKey: "close", withComment: "Close", inTable: simpleQuestionStrings), color: .more.white)
                         }

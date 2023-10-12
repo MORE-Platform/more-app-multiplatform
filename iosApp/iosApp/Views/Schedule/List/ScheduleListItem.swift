@@ -23,8 +23,7 @@ struct ScheduleListItem: View {
     var body: some View {
         VStack {
             Button {
-                navigationModalState.scheduleId = scheduleModel.scheduleId
-                navigationModalState.taskDetailsOpen = true
+                navigationModalState.openView(screen: .taskDetails, scheduleId: scheduleModel.scheduleId)
             } label: {
                 VStack(alignment: .leading) {
                     ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
@@ -40,7 +39,6 @@ struct ScheduleListItem: View {
                     observationType: scheduleModel.observationType,
                     state: scheduleModel.scheduleState,
                     disabled: !scheduleModel.scheduleState.active())
-                .environmentObject(navigationModalState)
             }
         }
     }

@@ -19,8 +19,7 @@ class ContentViewModel: ObservableObject {
     @Published var isLeaveStudyConfirmOpen: Bool = false
     @Published var showBleView = false
     
-    @Published var studyIsUpdating: Bool = false
-    @Published var currentStudyState: StudyState = .none
+    @Published var mainTabViewSelection = 0
     
     @Published var finishText: String? = nil
 
@@ -58,14 +57,13 @@ class ContentViewModel: ObservableObject {
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
-        AppDelegate.shared.onStudyIsUpdatingChange { [weak self] kBool in
-            print("Study updating ")
-            self?.studyIsUpdating = kBool.boolValue
+        AppDelegate.shared.onStudyIsUpdatingChange { kBool in
+            AppDelegate.navigationScreenHandler.studyIsUpdating(kBool.boolValue)
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
             self?.finishText = AppDelegate.shared.finishText
-            self?.currentStudyState = studyState
+            AppDelegate.navigationScreenHandler.setStudyState(studyState)
         }
         
         if hasCredentials {

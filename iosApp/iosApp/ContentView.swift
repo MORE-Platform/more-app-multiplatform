@@ -3,18 +3,20 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel: ContentViewModel
+    @StateObject var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
         VStack {
             if viewModel.hasCredentials {
-                if viewModel.studyIsUpdating {
-                    StudyUpdateView()
-                } else if viewModel.currentStudyState == StudyState.paused {
-                    StudyPausedView()
-                } else if viewModel.currentStudyState == StudyState.closed {
-                    StudyClosedView(viewModel: viewModel)
+                if !navigationModalState.mayChangeViewStructure() {
+                    if navigationModalState.studyIsUpdating {
+                        StudyUpdateView()
+                    } else if navigationModalState.currentStudyState == StudyState.paused {
+                        StudyPausedView()
+                    } else if navigationModalState.currentStudyState == StudyState.closed {
+                        StudyClosedView(viewModel: viewModel)
+                    }
                 } else {
                     MainTabView()
-                        .environmentObject(viewModel)
                         .sheet(isPresented: $viewModel.showBleView) {
                             BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
                         }
@@ -31,6 +33,12 @@ struct ContentView: View {
                 }
             }
         }
+        .environmentObject(viewModel)
+        .environmentObject(navigationModalState)
+    }
+
+    private func handleIncomingURL(_ url: URL) {
+        AppDelegate.navigationScreenHandler.openWithDeepLink(url: url)
     }
 }
 

@@ -13,5 +13,6 @@ data class PushNotification(
     @SerialName(value = "title") @Required val title: String? = null,
     @SerialName(value = "body") @Required val body: String? = null,
     @SerialName(value = "data") @Required val data: JsonObject? = null,
+    @SerialName(value = "deepLink") val deepLink: String? = null,
     @SerialName(value = "timestamp") @Required val timestamp: Instant? = null
 )
