@@ -19,6 +19,7 @@ fun MoreBackground(
     navigationTitle: String = "",
     showBackButton: Boolean = false,
     onBackButtonClick: () -> Unit = {},
+    leftCornerContent: @Composable () -> Unit = {},
     rightCornerContent: @Composable () -> Unit = {},
     showTabRow: Boolean = false,
     tabSelectionIndex: Int = 0,
@@ -28,7 +29,7 @@ fun MoreBackground(
 ) {
     MorePlatformTheme {
         Scaffold(topBar = {
-            MoreTopAppBar(navigationTitle, showBackButton, onBackButtonClick, rightCornerContent)
+            MoreTopAppBar(navigationTitle, showBackButton, onBackButtonClick, leftCornerContent, rightCornerContent)
         },
             bottomBar = {
                 if (showTabRow) {
@@ -61,6 +62,7 @@ fun MoreTopAppBar(
     navigationTitle: String,
     showBackButton: Boolean = true,
     onBackButtonClick: () -> Unit = {},
+    leftCornerContent: @Composable () -> Unit = {},
     rightCornerContent: @Composable () -> Unit = {}
 ) {
     TopAppBar(
@@ -92,6 +94,8 @@ fun MoreTopAppBar(
                                 contentDescription = "Back",
                             )
                         }
+                    } else {
+                        leftCornerContent()
                     }
                 }
                 Box(
@@ -100,11 +104,6 @@ fun MoreTopAppBar(
                 ) {
                     NavigationBarTitle(text = navigationTitle)
                 }
-//                Image(
-//                    id = R.drawable.more_logo_blue_vector,
-//                    contentDescription = "More Logo",
-//                    modifier = Modifier.weight(0.8f)
-//                )
                 Box(
                     modifier = Modifier.weight(0.1f),
                     contentAlignment = Alignment.CenterEnd

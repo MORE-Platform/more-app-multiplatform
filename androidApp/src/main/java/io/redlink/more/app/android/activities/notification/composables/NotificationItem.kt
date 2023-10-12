@@ -83,7 +83,7 @@ fun NotificationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(65.dp)
+                .defaultMinSize(minHeight = 65.dp)
         ) {
             Column(verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxHeight()) {
                 Text(

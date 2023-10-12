@@ -73,7 +73,7 @@ enum NavigationScreens: CaseIterable {
         case .withdrawStudyConfirm:
             return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study")
         case .limeSurvey:
-            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey", parameters: [.observationId, .notificaitonId])
+            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId])
         }
     }
     

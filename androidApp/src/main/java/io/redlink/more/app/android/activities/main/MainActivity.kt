@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null) {
+        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null && intent.data == null) {
             intent.getStringExtra(NotificationManager.MSG_ID)?.let {
                 MoreApplication.shared!!.notificationManager.markNotificationAsRead(it)
             }

@@ -40,7 +40,7 @@ abstract class Observation(val observationType: ObservationType) {
         } else true
     }
 
-    fun stop(scheduleId: String) {
+    fun stop(scheduleId: String, removeNotification: Boolean = false) {
         Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
         if (observationIds.size <= 1) {
             stop {
@@ -49,6 +49,9 @@ abstract class Observation(val observationType: ObservationType) {
             }
         } else {
             saveAndSend()
+        }
+        if (removeNotification) {
+            handleNotification(scheduleId)
         }
     }
 
@@ -139,6 +142,7 @@ abstract class Observation(val observationType: ObservationType) {
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
             observationShutdown(scheduleId)
             removeDataCount()
+            handleNotification(scheduleId)
         }
     }
 
@@ -149,7 +153,6 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     private fun observationShutdown(scheduleId: String) {
-       handleNotification(scheduleId)
         val observationId = scheduleIds.remove(scheduleId)
         observationId?.let { observationIds.remove(it) }
         if (observationIds.isEmpty()) {

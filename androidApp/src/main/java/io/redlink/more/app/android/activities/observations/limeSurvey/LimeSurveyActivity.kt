@@ -125,6 +125,11 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
     MoreBackground(
         navigationTitle = NavigationScreen.LIMESURVEY.stringRes(),
         maxWidth = 1f,
+        leftCornerContent = {
+            if (viewModel.networkLoading.value) {
+                CircularProgressIndicator(color = MoreColors.Primary, strokeWidth = 2.dp)
+            }
+        },
         rightCornerContent = {
             IconButton(
                 onClick = {
@@ -164,14 +169,6 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            if (viewModel.networkLoading.value) {
-                                LinearProgressIndicator(
-                                    color = MoreColors.Primary,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(4.dp)
-                                )
-                            }
                             AndroidView(factory = {
                                 webView.apply {
                                     loadUrl(limeSurveyLink)
