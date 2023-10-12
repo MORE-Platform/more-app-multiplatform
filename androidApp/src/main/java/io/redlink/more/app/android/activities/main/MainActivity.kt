@@ -54,6 +54,8 @@ import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboard
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class MainActivity : ComponentActivity() {
+    private var loadedNavController = false
+
     private lateinit var navHostController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,15 +80,18 @@ class MainActivity : ComponentActivity() {
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()
-                navHostController.navigate(
-                    NavigationScreen.DASHBOARD.navigationRoute()
-                )
+                if (loadedNavController) {
+                    navHostController.navigate(
+                        NavigationScreen.DASHBOARD.navigationRoute()
+                    )
+                }
             } else if (viewModel.studyState.value == StudyState.PAUSED) {
                 StudyPausedView()
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
                 MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+                loadedNavController = true
             }
         }
     }

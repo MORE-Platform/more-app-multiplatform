@@ -62,8 +62,8 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
         }
     }
 
-    override fun deleteNotificationFromSystem(notificationId: Int) {
-        context.getSystemService(NotificationManager::class.java)?.cancel(notificationId)
+    override fun deleteNotificationFromSystem(notificationId: String) {
+        context.getSystemService(NotificationManager::class.java)?.cancel(notificationId.hashCode())
     }
 
     override fun clearNotifications() {

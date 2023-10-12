@@ -20,7 +20,7 @@ class NotificationViewModel: ObservableObject {
 
     init(filterViewModel: CoreNotificationFilterViewModel) {
         self.filterViewModel = filterViewModel
-        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel)
+        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager)
         coreModel.onNotificationLoad { [weak self] notifications in
             DispatchQueue.main.async {
                 self?.notificationList = []

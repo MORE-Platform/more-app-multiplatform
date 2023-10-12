@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 interface LocalNotificationListener {
     fun displayNotification(notification: NotificationSchema)
 
-    fun deleteNotificationFromSystem(notificationId: Int)
+    fun deleteNotificationFromSystem(notificationId: String)
 
     fun createNewFCMToken(onCompletion: (String) -> Unit)
     fun clearNotifications()
@@ -93,7 +93,7 @@ class NotificationManager(
     }
 
     fun deleteNotificationFromSystemTray(notificationId: String) {
-        localNotificationListener.deleteNotificationFromSystem(notificationId = notificationId.hashCode())
+        localNotificationListener.deleteNotificationFromSystem(notificationId = notificationId)
     }
 
     fun markNotificationAsRead(notificationId: String) {

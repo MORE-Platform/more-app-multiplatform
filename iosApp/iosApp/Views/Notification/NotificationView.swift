@@ -15,6 +15,8 @@ struct NotificationView: View {
     private let navigationStrings = "Navigation"
     private let stringTable = "NotificationView"
     
+    @EnvironmentObject var navigationModalState: NavigationModalState
+    
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
@@ -33,17 +35,18 @@ struct NotificationView: View {
                         ScrollView {
                             ForEach(notificationViewModel.notificationList.sorted{$0.timestamp > $1.timestamp}, id: \.self) { notification in
                                 VStack {
-                                    NotificationItem(
-                                        title: notification.title,
-                                        message: notification.notificationBody,
-                                        read: notification.read,
-                                        isImportant: (notification.priority == 2),
-                                        timestamp: notification.timestamp
-                                    )
+                                    NotificationItem(notificationModel: notification)
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    notificationViewModel.setNotificationToRead(notification: notification)
+                                    if !notification.read {
+                                        if let deepLinkString = notification.deepLink, let deepLink = URL(string: deepLinkString) {
+                                            navigationModalState.openWithDeepLink(url: deepLink, notificationId: notification.notificationId)
+                                        } else {
+                                            notificationViewModel.setNotificationToRead(notification: notification)
+                                        }
+                                    }
+                                        
                                 }
                             }
                         }
