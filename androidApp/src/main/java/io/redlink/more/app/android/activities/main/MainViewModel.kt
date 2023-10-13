@@ -120,26 +120,29 @@ class MainViewModel(context: Context) : ViewModel() {
             context: Context,
             activityResultLauncher: ActivityResultLauncher<Intent>,
             scheduleId: String?,
-            observationId: String?
+            observationId: String?,
+            notificationId: String?
     ) {
         (context as? Activity)?.let { activity ->
             val intent = Intent(activity, LimeSurveyActivity::class.java)
             intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID, scheduleId)
             intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID, observationId)
+            intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID, notificationId)
             activityResultLauncher.launch(intent)
         }
     }
 
-    fun createNewSimpleQuestionViewModel(
+    fun creteNewSimpleQuestionViewModel(
             scheduleId: String? = null,
-            observationId: String? = null
+            observationId: String? = null,
+            notificationId: String?
     ): QuestionnaireViewModel {
         if (scheduleId != null || observationId != null) {
             simpleQuestionnaireViewModel.apply {
                 if (!scheduleId.isNullOrBlank()) {
-                    setScheduleId(scheduleId)
+                    setScheduleId(scheduleId, notificationId)
                 } else if (!observationId.isNullOrBlank()) {
-                    setObservationId(observationId)
+                    setObservationId(observationId, notificationId)
                 }
             }
         }

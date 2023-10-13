@@ -22,7 +22,7 @@ import io.redlink.more.app.android.shared_composables.ErrorMessage
 @Composable
 fun SelfLearningMultipleChoiceQuestionView(navController: NavController, viewModel: SelfLearningMultipleChoiceQuestionViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }

@@ -40,11 +40,11 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
         }
     }
 
-    fun setModel(scheduleId: String? = null, observationId: String? = null) {
+    fun setModel(scheduleId: String? = null, observationId: String? = null, notificationId: String? = null) {
         if (!scheduleId.isNullOrBlank()) {
-            coreViewModel.setScheduleId(scheduleId)
+            coreViewModel.setScheduleId(scheduleId, notificationId)
         } else if (!observationId.isNullOrBlank()) {
-            coreViewModel.setObservationId(observationId)
+            coreViewModel.setObservationId(observationId, notificationId)
         }
     }
 

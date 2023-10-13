@@ -33,7 +33,7 @@ fun RemoteMessage.daoFromRemoteMessage(): NotificationSchema {
         notificationBody = this.notification?.body,
         read = false,
         userFacing = this.notification != null,
-        priority = this.priority.toLong(),
+        priority = 1,
         notificationData = this.data,
         channelId = null,
         timestamp = sentTime

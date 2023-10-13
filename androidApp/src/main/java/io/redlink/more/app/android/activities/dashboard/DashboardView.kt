@@ -23,7 +23,7 @@ import io.redlink.more.app.android.shared_composables.ScheduleListHeader
 fun DashboardView(navController: NavController, viewModel: DashboardViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
 //    PolarHeartRateObservation.scanForDevices()
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.DASHBOARD.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.DASHBOARD.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -57,7 +57,7 @@ fun DashboardView(navController: NavController, viewModel: DashboardViewModel, t
                     Text(text = getStringResource(id = R.string.more_dashboard_study_not_active))
                 }
             } else {
-                ScheduleListView(navController, NavigationScreen.DASHBOARD.route, scheduleViewModel = viewModel.scheduleViewModel, showButton = true)
+                ScheduleListView(navController, NavigationScreen.DASHBOARD.routeWithParameters(), scheduleViewModel = viewModel.scheduleViewModel, showButton = true)
             }
         }
     }

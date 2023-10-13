@@ -7,17 +7,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class ContentActivity: ComponentActivity() {
     private val viewModel = ContentViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent.getStringExtra("deepLink")?.let {
-            intent.data = Uri.parse(it)
+            var deepLink = it
+            intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
+                if (!deepLink.contains(NavigationNotificationIDKey)) {
+                    deepLink += if (deepLink.contains("?")) {
+                        "&$NavigationNotificationIDKey=$msgId"
+                    } else {
+                        "?$NavigationNotificationIDKey=$msgId"
+                    }
+                }
+            }
+
+            intent.data = Uri.parse(deepLink)
         }
         setContent {
             ContentView(viewModel = viewModel)

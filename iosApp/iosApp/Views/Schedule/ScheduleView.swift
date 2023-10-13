@@ -12,14 +12,13 @@ import shared
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
     
-    @StateObject var navigationModalState = NavigationModalState()
+    @EnvironmentObject var navigationModalState: NavigationModalState
     
     private let stringsTable = "ScheduleListView"
     var body: some View {
         VStack {
-            NavigationLink(isActive: $navigationModalState.taskDetailsOpen) {
-                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(scheduleId: navigationModalState.scheduleId), scheduleId: navigationModalState.scheduleId, scheduleListType: viewModel.scheduleListType)
-                    .environmentObject(navigationModalState)
+            NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
+                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState), scheduleListType: viewModel.scheduleListType)
             } label: {
                 EmptyView()
             }.opacity(0)
@@ -41,7 +40,6 @@ struct ScheduleView: View {
                                     ForEach(schedules, id: \.scheduleId) { schedule in
                                         VStack {
                                             ScheduleListItem(viewModel: viewModel, scheduleModel: schedule, showButton: viewModel.scheduleListType != .completed)
-                                                .environmentObject(navigationModalState)
                                             Divider()
                                         }
                                     }
@@ -64,12 +62,12 @@ struct ScheduleView: View {
         }
         .onAppear {
             viewModel.viewDidAppear()
-            navigationModalState.taskDetailsOpen = false
+            navigationModalState.closeView(screen: .taskDetails)
         }
         .onDisappear {
             viewModel.viewDidDisappear()
         }
-        .fullScreenCover(isPresented: $navigationModalState.selfLearningQuestionOpen) {
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .selfLearningQuestionObservation)) {
             SelfLearningMultipleChoiceQuestionView(viewModel: viewModel.getSelfLearningMultipleChoiceQuestionObservationVM(scheduleId: navigationModalState.scheduleId))
                 .environmentObject(navigationModalState)
         }
@@ -77,15 +75,13 @@ struct ScheduleView: View {
             SelfLearningMultipleChoiceQuestionThankYouView()
                 .environmentObject(navigationModalState)
         }
-        .fullScreenCover(isPresented: $navigationModalState.simpleQuestionOpen) {
-            SimpleQuetionObservationView(viewModel: viewModel.getSimpleQuestionObservationVM(scheduleId: navigationModalState.scheduleId))
-                .environmentObject(navigationModalState)
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
+            SimpleQuetionObservationView(viewModel: viewModel.getSimpleQuestionObservationVM(navigationState: navigationModalState.navigationState ))
         }
-        .fullScreenCover(isPresented: $navigationModalState.simpleQuestionThankYouOpen) {
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
             SimpleQuestionThankYouView()
-                .environmentObject(navigationModalState)
         }
-        .fullScreenCover(isPresented: $navigationModalState.limeSurveyOpen) {
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
             LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: navigationModalState))
         }
     }

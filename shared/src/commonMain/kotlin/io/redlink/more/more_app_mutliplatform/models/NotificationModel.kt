@@ -34,7 +34,7 @@ data class NotificationModel(
                         priority = it.priority,
                         read = it.read,
                         userFacing = it.userFacing,
-                        deepLink = it.deepLink,
+                        deepLink = it.deepLink(),
                         notificationData = notificationData
                     )
                 }

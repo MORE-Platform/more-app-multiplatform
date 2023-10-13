@@ -7,28 +7,24 @@
 //
 
 import SwiftUI
+import shared
 
 struct NotificationItem: View {
-    var title: String
-    var message: String
-    var read: Bool
-    var isImportant: Bool
-    var timestamp: Int64
+    let notificationModel: NotificationModel
 
     var body: some View {
         VStack(
-            alignment: .leading,
-            spacing: 5
+            alignment: .leading
         ) {
             HStack {
-                if isImportant {
+                if notificationModel.priority == 2 {
                     Image("more_warning_exclamation_small")
                         .frame(height: 0.5)
                 }
-                SectionHeading(sectionTitle: title, font: getFontStyle())
-                    .foregroundColor(isImportant ? Color.more.important : Color.more.primary)
+                SectionHeading(sectionTitle: notificationModel.title, font: getFontStyle())
+                    .foregroundColor(notificationModel.priority == 2 ? Color.more.important : Color.more.primary)
                 Spacer()
-                if !read {
+                if !notificationModel.read {
                     Image(systemName: "circle.fill")
                         .foregroundColor(Color.more.important)
                         .font(.system(size: 10))
@@ -36,14 +32,25 @@ struct NotificationItem: View {
             }
             Divider()
                 .frame(height: 0.5)
-            BasicText(text: message, color: Color.more.secondary)
-            BasicText(text: (timestamp / 1000).toDateString(dateFormat: "dd.MM.yyyy HH:mm"))
-                .padding(.vertical)
+                .padding(.vertical, 4)
+            HStack(alignment: .center) {
+                VStack(alignment: .leading) {
+                    BasicText(text: notificationModel.notificationBody, color: .more.secondary)
+                        .padding(.bottom, 2)
+                    BasicText(text: (notificationModel.timestamp / 1000).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
+                }
+                Spacer()
+                if notificationModel.deepLink != nil {
+                    Image(systemName: notificationModel.read ? "checkmark.circle" : "chevron.right")
+                        .foregroundColor(notificationModel.read ? .more.approved : .more.secondary)
+                }
+            }
         }
+        .padding(.bottom)
     }
 
     func getFontStyle() -> Font {
-        if read {
+        if notificationModel.read {
             return Font.body
         }
         return .more.headline
@@ -52,6 +59,6 @@ struct NotificationItem: View {
 
 struct NotificationItem_Preview: PreviewProvider {
     static var previews: some View {
-        NotificationItem(title: "Test Title", message: "Some message", read: false, isImportant: false, timestamp: 0)
+        NotificationItem(notificationModel: NotificationModel(notificationId: "abc2", channelId: nil, title: "Title", notificationBody: "Message", timestamp: Int64(Date().timeIntervalSince1970), priority: 2, read: true, userFacing: true, deepLink: "app://", notificationData: [:]))
     }
 }

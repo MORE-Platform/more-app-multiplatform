@@ -36,7 +36,7 @@ import io.redlink.more.more_app_mutliplatform.observations.observationTypes.Simp
 fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
     val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
