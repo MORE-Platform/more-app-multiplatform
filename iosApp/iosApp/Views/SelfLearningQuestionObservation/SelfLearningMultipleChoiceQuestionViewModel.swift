@@ -44,6 +44,7 @@ class SelfLearningMultipleChoiceQuestionViewModel: ObservableObject {
     }
     
     func setAnswer(answer: [String]) {
+        self.answerSet.removeAll()
         self.answerSet = answer
     }
     
