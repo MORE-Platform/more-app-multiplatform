@@ -30,7 +30,7 @@ struct SelfLearningMultipleChoiceQuestionThankYouView: View {
                         Spacer()
                         
                         MoreActionButton(disabled: .constant(false)) {
-                            questionModelState.selfLearningQuestionThankYouOpen = false
+                            questionModelState.closeView(screen: .selfLearningQuestionObservationThanks)
                         } label: {
                             BasicText(text: String.localize(forKey: "close", withComment: "Close", inTable: selfLearningQuestionStrings), color: .more.white)
                         }

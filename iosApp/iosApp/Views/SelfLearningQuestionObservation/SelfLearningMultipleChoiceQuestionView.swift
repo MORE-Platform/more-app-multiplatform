@@ -60,8 +60,8 @@ struct SelfLearningMultipleChoiceQuestionView: View {
                                 }
                                 if !viewModel.answerSet.isEmpty {
                                     viewModel.finish()
-                                    navigationModalState.selfLearningQuestionThankYouOpen = true
-                                    navigationModalState.selfLearningQuestionOpen = false
+                                    navigationModalState.openView(screen: .selfLearningQuestionObservationThanks)
+                                    navigationModalState.closeView(screen: .selfLearningQuestionObservation)
                                 }
                             } label: {
                                 Text(String.localize(forKey: "Answer", withComment: "Click answer button to send your answer.", inTable: selfLearningQuestionStrings))

@@ -32,8 +32,7 @@ struct ObservationButton: View {
                 }
             } else if observationType == "self-learning-multiple-choice-question-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.scheduleId = scheduleId
-                    navigationModalState.selfLearningQuestionOpen = true
+                    navigationModalState.openView(screen: .selfLearningQuestionObservation, scheduleId: scheduleId)
                 }) {
                     VStack {
                         Text(

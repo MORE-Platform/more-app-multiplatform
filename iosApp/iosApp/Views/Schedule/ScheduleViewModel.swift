@@ -85,8 +85,8 @@ class ScheduleViewModel: ObservableObject {
         return simpleQuestionVM
     }
     
-    func getSelfLearningMultipleChoiceQuestionObservationVM(scheduleId: String) -> SelfLearningMultipleChoiceQuestionViewModel {
-        selflearningQuestionVM.setScheduleId(scheduleId: scheduleId)
+    func getSelfLearningMultipleChoiceQuestionObservationVM(navigationState: NavigationState) -> SelfLearningMultipleChoiceQuestionViewModel {
+        selflearningQuestionVM.setScheduleId(navigationState: navigationState)
         return selflearningQuestionVM
     }
 

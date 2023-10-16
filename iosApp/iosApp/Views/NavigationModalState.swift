@@ -10,7 +10,7 @@ import shared
 import SwiftUI
 
 struct NavigationState {
-    var scheduleId: String? = nil
+    var scheduleId: String? = nil	
     var observationId: String? = nil
     var notificationId: String? = nil
 }

@@ -38,7 +38,7 @@ enum NavigationScreens: CaseIterable {
     case withdrawStudyConfirm
     case limeSurvey
     case selfLearningQuestionObservation
-    case selfLearningQuestionThankYouOpen
+    case selfLearningQuestionObservationThanks
 
     var values: NavigationScreenValues {
         switch self {
@@ -62,8 +62,8 @@ enum NavigationScreens: CaseIterable {
             return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks")
         case .selfLearningQuestionObservation:
             return NavigationScreenValues(screenName: "Self Learning Multiple Choice Question Observation", navigationLink: "/self-learning-multiple-choice-question-observation")
-        case .questionObservationThanks:
-            return NavigationScreenValues(screenName: "Self Learning Multiple Choice Question Thanks", navigationLink: "/question-thanks")
+        case .selfLearningQuestionObservationThanks:
+            return NavigationScreenValues(screenName: "Self Learning Multiple Choice Question Thanks", navigationLink: "/self-learning-multiple-choice-question-observation-thanks")
         case .dashboardFilter:
             return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: "/dashboard-filter")
         case .notificationFilter:
