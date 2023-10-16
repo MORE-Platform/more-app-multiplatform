@@ -311,7 +311,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     val observationId by remember {
                         mutableStateOf(it.arguments?.getString("observationId"))
                     }
-
+                    val notificationId by remember {
+                        mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
+                    }
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -319,7 +321,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         mutableStateOf(
                             viewModel.createNewSelfLearningMultipleChoiceQuestionViewModel(
                                 scheduleId,
-                                observationId
+                                observationId,
+                                notificationId
                             )
                         )
                     }

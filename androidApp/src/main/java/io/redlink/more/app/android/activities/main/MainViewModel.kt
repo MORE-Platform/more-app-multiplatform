@@ -151,14 +151,15 @@ class MainViewModel(context: Context) : ViewModel() {
 
     fun createNewSelfLearningMultipleChoiceQuestionViewModel(
             scheduleId: String? = null,
-            observationId: String? = null
+            observationId: String? = null,
+            notificationId: String?
     ): SelfLearningMultipleChoiceQuestionViewModel {
         if (scheduleId != null || observationId != null) {
             selfLearningMultipleChoiceQuestionViewModel.apply {
                 if (!scheduleId.isNullOrBlank()) {
-                    setScheduleId(scheduleId)
+                    setScheduleId(scheduleId, notificationId)
                 } else if (!observationId.isNullOrBlank()) {
-                    setObservationId(observationId)
+                    setObservationId(observationId, notificationId)
                 }
             }
         }

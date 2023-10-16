@@ -7,6 +7,8 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.models.SelfLearningMultipleChoiceQuestionModel
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SelfLearningMultipleChoiceQuestionObservationType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,16 +24,14 @@ class SelfLearningMultipleChoiceQuestionCoreViewModel(observationFactory: Observ
     private val observationRepository: ObservationRepository = ObservationRepository()
 
     val selfLearningMultipleChoiceQuestionModel = MutableStateFlow<SelfLearningMultipleChoiceQuestionModel?>(null)
-    private var observation: Observation? = null
+    private var observation: Observation? = observationFactory.observation(
+        SelfLearningMultipleChoiceQuestionObservationType().observationType)
 
-    init {
-        observationFactory.observation("self-learning-multiple-choice-question-observation")?.let {
-            observation = it
-        }
-    }
+    private var notificationId: String? = null
 
-    fun setScheduleId(scheduleId: String) {
+    fun setScheduleId(scheduleId: String, notificationId: String? = null) {
         this.scheduleId = scheduleId
+        this.notificationId = notificationId
         answers.clear()
         answers.addAll(sharedStorageRepository.load(MULTIPLE_CHOICE_KEY,emptyList()))
         launchScope {
@@ -49,9 +49,9 @@ class SelfLearningMultipleChoiceQuestionCoreViewModel(observationFactory: Observ
         }
     }
 
-    fun setScheduleViaObservationId(observationId: String) {
+    fun setScheduleViaObservationId(observationId: String, notificationId: String? = null) {
         launchScope {
-            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it)}
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it,notificationId)}
         }
     }
 
@@ -63,12 +63,13 @@ class SelfLearningMultipleChoiceQuestionCoreViewModel(observationFactory: Observ
         }
         selfLearningMultipleChoiceQuestionModel.value?.let {
             observation?.let { observation ->
-                observation.start(it.observationId, it.scheduleId)
+                observation.start(it.observationId, it.scheduleId, notificationId)
                 observation.storeData(mapOf("answer" to data)) {
                     scheduleId?.let {
                         observation.stopAndSetDone(it)
                     }
                 }
+                notificationId = null
             }
         }
     }
