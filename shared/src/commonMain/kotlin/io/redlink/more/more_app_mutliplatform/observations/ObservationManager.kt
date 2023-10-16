@@ -198,6 +198,7 @@ class ObservationManager(
     }
 
     fun updateTaskStates() {
+        Napier.d(tag = "ObservationManager::updateTaskStates") { "" }
         scheduleRepository.updateTaskStates(observationFactory, dataRecorder)
     }
 

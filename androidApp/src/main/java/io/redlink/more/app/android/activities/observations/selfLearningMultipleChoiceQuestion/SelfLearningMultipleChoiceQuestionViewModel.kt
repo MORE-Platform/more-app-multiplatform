@@ -53,12 +53,12 @@ class SelfLearningMultipleChoiceQuestionViewModel  : ViewModel() {
         hasData.value = false
     }
 
-    fun setScheduleId(scheduleId: String) {
-        coreViewModel.setScheduleId(scheduleId)
+    fun setScheduleId(scheduleId: String, notificationId: String?) {
+        coreViewModel.setScheduleId(scheduleId, notificationId)
     }
 
-    fun setObservationId(observationId: String) {
-        coreViewModel.setScheduleViaObservationId(observationId)
+    fun setObservationId(observationId: String, notificationId: String?) {
+        coreViewModel.setScheduleViaObservationId(observationId, notificationId)
     }
 
     fun finish(setObservationToDone: Boolean = true) {

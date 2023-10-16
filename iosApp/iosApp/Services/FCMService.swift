@@ -37,28 +37,23 @@ extension FCMService: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         let content = notification.request.content
         let data = content.userInfo.notNilStringDictionary()
-        if let msgId = data["MSG_ID"] {
-            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: msgId, title: content.title, body: content.body, priority: 2, read: false, data: data, displayNotification: false)
-            
-            print("Will present Notification with content \(content)")
-            return [.banner]
+        if let msgId = data[NotificationManager.companion.MSG_ID] {
+            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: msgId, title: content.title, body: content.body, priority: 1, read: false, data: data, displayNotification: false)
         }
         return [.sound,.badge, .banner]
     }
     
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        if response.notification.request.identifier.contains("LOCAL_") {
-            let content = response.notification.request.content
-            print("User info: \(content.userInfo)")
-            let data = content.userInfo.notNilStringDictionary()
-            let uuid = data["MSG_ID"] ?? UUID().uuidString
-            
-            print("Received Notification with content: \(content)")
-            
-            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: uuid, title: response.notification.request.content.title, body: response.notification.request.content.body, priority: 2, read: false, data: data, displayNotification: false)
+        let data = response.notification.request.content.userInfo.notNilStringDictionary()
+        let msgId = data[NotificationManager.companion.MSG_ID]
+        if let deepLinkString = data[NotificationManager.companion.DEEP_LINK] {
+            if let deepLink = URL(string: deepLinkString) {
+                AppDelegate.navigationScreenHandler.openWithDeepLink(url: deepLink, notificationId: msgId)
+            }
+        } else if let msgId {
+            AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: msgId)
         }
-            
     }
 }
 

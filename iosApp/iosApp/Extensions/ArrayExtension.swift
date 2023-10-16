@@ -13,3 +13,11 @@ extension Array where Element: Collection {
         return reduce([],+)
     }
 }
+
+extension Array where Element: Equatable {
+    mutating func remove(_ elementToRemove: Element) {
+        if let i = self.firstIndex(of: elementToRemove) {
+            self.remove(at: i)
+        }
+    }
+}

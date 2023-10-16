@@ -16,6 +16,7 @@ import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager.Companion.MSG_ID
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
     override fun displayNotification(notification: NotificationSchema) {
@@ -24,11 +25,12 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                 val intent = Intent(context, ContentActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 intent.action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
-                intent.putExtra(NOTIFICATION_KEY, notification.notificationId)
+                intent.putExtra(MSG_ID, notification.notificationId)
 
-                notification.deepLink?.let {
+                notification.deepLink()?.let {
                     intent.data = Uri.parse(it)
                 }
+
                 val pendingIntent = PendingIntent.getActivity(
                     context, 0, intent,
                     PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
@@ -54,10 +56,18 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                         mChannel.description = descriptionText
                         notificationManager.createNotificationChannel(mChannel)
 
-                        notificationManager.notify(0, notificationBuilder.build())
+                        notificationManager.notify(notification.notificationId.hashCode(), notificationBuilder.build())
                     }
             }
         }
+    }
+
+    override fun deleteNotificationFromSystem(notificationId: String) {
+        context.getSystemService(NotificationManager::class.java)?.cancel(notificationId.hashCode())
+    }
+
+    override fun clearNotifications() {
+        context.getSystemService(NotificationManager::class.java)?.cancelAll()
     }
 
     override fun createNewFCMToken(onCompletion: (String) -> Unit) {

@@ -43,7 +43,7 @@ fun SelfLearningMultipleChoiceQuestionResponseView(navController: NavController)
                 HeaderDescription(description = stringResource(R.string.more_quest_thank_you_full))
             }
             TextButton(
-                onClick = { navController.navigate(NavigationScreen.DASHBOARD.route) },
+                onClick = { navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) },
                 colors = ButtonDefaults.morePrimary(),
                 modifier = Modifier
                     .padding(bottom = 16.dp)

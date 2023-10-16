@@ -37,7 +37,7 @@ fun SelfLearningMultipleChoiceQuestionButtons(navController: NavController, mode
                 if (model.answerSet.isNotEmpty()) {
                     model.finish()
                     model.answerSet.clear()
-                    navController.navigate(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.route)
+                    navController.navigate(NavigationScreen.SELF_LEARNING_MULTIPLE_CHOICE_QUESTION_RESPONSE.routeWithParameters())
                 } else {
                     Toast.makeText(
                         context,

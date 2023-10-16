@@ -22,8 +22,7 @@ struct ObservationButton: View {
         VStack {
             if observationType == "question-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.scheduleId = scheduleId
-                    navigationModalState.simpleQuestionOpen = true
+                    navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
                 }) {
                     VStack {
                         Text(
@@ -44,8 +43,7 @@ struct ObservationButton: View {
                 }
             } else if observationType == "lime-survey-observation" {
                 MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.scheduleId = scheduleId
-                    navigationModalState.limeSurveyOpen = true
+                    navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
                 }) {
                     VStack {
                         Text(
@@ -54,7 +52,7 @@ struct ObservationButton: View {
                         )
                     }
                 }
-            } else {
+            } else if let scheduleId = navigationModalState.navigationState.scheduleId {
                 MoreActionButton(disabled: .constant(disabled), action: {
                     if state == .running {
                         observationActionDelegate.pause(scheduleId: scheduleId)

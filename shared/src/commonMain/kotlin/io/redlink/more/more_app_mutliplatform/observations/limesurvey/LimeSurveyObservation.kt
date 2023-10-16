@@ -30,7 +30,8 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         val limeSurveyId = settings[LIMESURVEY_ID]?.toString()?.trim('\"')
         val token = settings[LIMESURVEY_TOKEN]?.toString()?.trim('\"')
         val limeSurveyLink = (settings[LIMESURVEY_URL]?.toString()?.trim('\"')
-            ?: "https://lime.platform-test.more.redlink.io").replaceFirst(
+            //?: "https://lime.platform-test.more.redlink.io").replaceFirst(
+            ?: "https://limesurvey.more-health.at").replaceFirst(
             Regex("^(http://|https://)"),
             ""
         )

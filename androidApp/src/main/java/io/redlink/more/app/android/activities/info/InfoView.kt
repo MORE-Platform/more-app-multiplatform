@@ -32,7 +32,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 fun InfoView(navController: NavController, viewModel: InfoViewModel) {
     val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -49,7 +49,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.Info,
                 contentDescription = getStringResource(id = R.string.info_study_details_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.STUDY_DETAILS.route)
+                    navController.navigate(NavigationScreen.STUDY_DETAILS.routeWithParameters())
                 }
             )
             InfoItem(
@@ -57,7 +57,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Outlined.Autorenew,
                 contentDescription = getStringResource(id = R.string.info_running_observations_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.RUNNING_SCHEDULES.route)
+                    navController.navigate(NavigationScreen.RUNNING_SCHEDULES.routeWithParameters())
                 }
             )
             InfoItem(
@@ -65,7 +65,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.Check,
                 contentDescription = getStringResource(id = R.string.info_completed_observations_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.COMPLETED_SCHEDULES.route)
+                    navController.navigate(NavigationScreen.COMPLETED_SCHEDULES.routeWithParameters())
                 }
             )
             InfoItem(
@@ -83,7 +83,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.Settings,
                 contentDescription = getStringResource(id = R.string.info_consent_settings_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.SETTINGS.route)
+                    navController.navigate(NavigationScreen.SETTINGS.routeWithParameters())
                 }
             )
             InfoItem(
@@ -91,7 +91,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 imageVector = Icons.Default.ExitToApp,
                 contentDescription = getStringResource(id = R.string.info_leave_study_desc),
                 onClick = {
-                    navController.navigate(NavigationScreen.LEAVE_STUDY.route)
+                    navController.navigate(NavigationScreen.LEAVE_STUDY.routeWithParameters())
                 }
             )
         }

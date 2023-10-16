@@ -18,7 +18,7 @@ import io.redlink.more.app.android.shared_composables.ErrorMessage
 @Composable
 fun QuestionnaireView(navController: NavController, viewModel: QuestionnaireViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SIMPLE_QUESTION.route)
+    val route = backStackEntry?.arguments?.getString(NavigationScreen.SIMPLE_QUESTION.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
