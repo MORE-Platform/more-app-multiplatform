@@ -10,37 +10,40 @@ import SwiftUI
 
 struct ExpandableInput: View {
     @Binding var expanded: Bool
-    
+
     @Binding var isSmTextfield: Bool
     @Binding var headerText: String
     @Binding var inputPlaceholder: String
-    
+
     @Binding var input: String
-    
+
     var uppercase: Bool = false
     var autoCorrectDisabled: Bool = false
     var textType: UITextContentType? = nil
-    
+
     var body: some View {
-        VStack(alignment: .leading) {
-            
-            HStack{
-                Spacer()
-                SectionHeading(sectionTitle: headerText)
-                UIToggleFoldViewButton(isOpen: $expanded)
-                Spacer()
+        VStack(alignment: .center) {
+            Button {
+                self.expanded.toggle()
+            } label: {
+                HStack {
+                    SectionHeading(sectionTitle: headerText)
+                    UIToggleFoldViewButton(isOpen: $expanded)
+                }
+                .padding()
             }
-            .padding(3)
-            
+            .buttonStyle(.plain)
+            .frame(height: 40)
+
             if expanded {
                 if isSmTextfield {
-                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase, textType: textType)
+                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, textType: textType)
                 } else {
                     MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, textType: textType)
                 }
             }
-            
         }
+        .animation(.more.foldingAnimation, value: expanded)
     }
 }
 

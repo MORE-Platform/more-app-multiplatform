@@ -12,11 +12,16 @@ struct BasicText: View {
     var text: String
     var color: Color = Color.more.primary
     var font: Font = Font.body
+    var lineLimit: Int? = nil
+    var textAlign: TextAlignment = .leading
     var body: some View {
         Text(text)
             .foregroundColor(color)
+            .multilineTextAlignment(textAlign)
             .fixedSize(horizontal: false, vertical: true)
             .font(font)
+            .lineLimit(lineLimit)
+            .truncationMode(.tail)
     }
 }
 

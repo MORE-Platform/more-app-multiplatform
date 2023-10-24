@@ -29,11 +29,12 @@ class RegistrationService (
 
     fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
-    fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
+    fun sendRegistrationToken(token: String, manualEndpoint: String? = null, onSuccess: (Study) -> Unit, onError: ((NetworkServiceError?) -> Unit), onFinish: () -> Unit) {
         if (token.isNotEmpty()) {
             Scope.launch {
-                val (result, networkError) = shared.networkService.validateRegistrationToken( token.uppercase(), endpoint)
+                val (result, networkError) = shared.networkService.validateRegistrationToken( token.uppercase(), manualEndpoint)
                 result?.let {
+                    endpoint = manualEndpoint
                     study = it
                     participationToken = token
                     onSuccess(it)

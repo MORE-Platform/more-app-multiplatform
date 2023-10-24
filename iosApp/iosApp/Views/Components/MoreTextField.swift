@@ -14,6 +14,7 @@ struct MoreTextField: View {
     var uppercase: Bool = false
     var autoCorrectDisabled: Bool = false
     var textType: UITextContentType? = nil
+
     var body: some View {
         TextField(titleKey, text: $inputText)
             .textFieldAutoCapitalizataion(uppercase: uppercase)
@@ -25,12 +26,10 @@ struct MoreTextField: View {
                     .stroke(Color.more.primaryMedium, lineWidth: .moreBorder.lineWidth)
             )
             .background(Color.more.primaryLight)
-            
     }
 }
 
 struct MoreTextField_Previews: PreviewProvider {
-    
     static var previews: some View {
         MoreTextField(titleKey: .constant("Hello World Key"), inputText: .constant(""), uppercase: true)
     }
