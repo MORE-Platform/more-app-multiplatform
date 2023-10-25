@@ -50,7 +50,7 @@ class LoginViewModel(registrationService: RegistrationService, private val login
     fun currentEndpoint() = dataEndpoint.value.ifEmpty { defaultEndpoint.value }
 
     fun validateKey() {
-        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value,
+        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value.ifEmpty { null },
             onSuccess = {
                         loginViewModelListener.tokenIsValid(it)
             }, onError = {
