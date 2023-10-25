@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = 2
-        versionName = "2.4.0"
+        versionName = "2.4.2"
     }
     buildFeatures {
         compose = true
@@ -47,7 +47,7 @@ android {
     }
 }
 
-val composeVersion = "1.5.3"
+val composeVersion = "1.5.4"
 val workVersion = "2.8.1"
 val navVersion = "2.7.4"
 val polarSDKVersion = "5.1.0"
@@ -67,8 +67,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.firebase:firebase-analytics-ktx:21.3.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.4.0")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.3.0")
     implementation("io.github.aakira:napier:2.6.1")
     implementation("com.github.polarofficial:polar-ble-sdk:${polarSDKVersion}")
     implementation("io.reactivex.rxjava3:rxjava:3.1.6")

@@ -20,7 +20,8 @@ class LoginViewModel(registrationService: RegistrationService, private val login
     val loadingState = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
 
-    val dataEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
+    val dataEndpoint = mutableStateOf("");
+    val defaultEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
     val endpointError = mutableStateOf<String?>(null)
 
     fun participationKeyNotBlank(): Boolean = this.participantKey.value.isNotBlank()
@@ -45,6 +46,8 @@ class LoginViewModel(registrationService: RegistrationService, private val login
     fun viewDidDisappear() {
         coreLoginViewModel.viewDidDisappear()
     }
+
+    fun currentEndpoint() = dataEndpoint.value.ifEmpty { defaultEndpoint.value }
 
     fun validateKey() {
         coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value,

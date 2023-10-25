@@ -10,39 +10,45 @@ import Foundation
 import SwiftUI
 import Combine
 
+class KeyboardResponder: ObservableObject {
+    @Published var currentHeight: CGFloat = 0
+
+    var keyboardShow: AnyCancellable?
+    var keyboardHide: AnyCancellable?
+
+    init() {
+        keyboardShow = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification))
+            .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect }
+            .map { $0.height }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] height in
+                self?.currentHeight = height
+            }
+
+        keyboardHide = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .map { _ in CGFloat.zero }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] height in
+                self?.currentHeight = height
+            }
+    }
+}
+
+
 struct ViewAdaptsToOpenKeyboard: ViewModifier {
-    @State var currentHeight: CGFloat = 0
+    @ObservedObject var keyboardResponder = KeyboardResponder()
+    var animation: Animation = .easeOut(duration: 0.16)
     
     func body(content: Content) -> some View {
-        GeometryReader { geometry in
-            content
-                .padding(.bottom, self.currentHeight)
-                .onAppear(perform: {
-                    NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillShowNotification)
-                        .merge(with: NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillChangeFrameNotification))
-                        .compactMap { notification in
-                            withAnimation(.easeOut(duration: 0.16)) {
-                                notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-                            }
-                    }
-                    .map { rect in
-                        rect.height - geometry.safeAreaInsets.bottom
-                    }
-                    .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))
-                    
-                    NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillHideNotification)
-                        .compactMap { notification in
-                            CGFloat.zero
-                    }
-                    .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))
-                })
-        }
-        .background(Color.more.secondaryLight)
+        content
+            .padding(.bottom, keyboardResponder.currentHeight)
+            .animation(animation, value: keyboardResponder.currentHeight)
     }
 }
 
 extension View {
-    func viewAdaptsToOpenKeyboard() -> some View {
-        return modifier(ViewAdaptsToOpenKeyboard())
+    func viewAdaptsToOpenKeyboard(animation: Animation = .easeOut(duration: 0.16)) -> some View {
+        return modifier(ViewAdaptsToOpenKeyboard(animation: animation))
     }
 }

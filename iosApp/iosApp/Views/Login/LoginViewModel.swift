@@ -22,6 +22,7 @@ class LoginViewModel: ObservableObject {
 
     @Published var isLoading = false
     @Published var endpoint: String = ""
+    @Published var defaultEndpoint: String = ""
     @Published var token: String = ""
     @Published var error: String = ""
     
@@ -29,7 +30,7 @@ class LoginViewModel: ObservableObject {
     init(registrationService: RegistrationService) {
         print("LoginViewModel allocated!")
         coreModel = CoreLoginViewModel(registrationService: registrationService)
-        endpoint = registrationService.getEndpointRepository().endpoint()
+        defaultEndpoint = registrationService.getEndpointRepository().endpoint()
         
         coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
@@ -40,7 +41,7 @@ class LoginViewModel: ObservableObject {
     
     func validate() {
         self.error = ""
-        coreModel.sendRegistrationToken(token: token, endpoint: endpoint) { study in
+        coreModel.sendRegistrationToken(token: token, endpoint: endpoint.isEmpty ? nil : endpoint) { study in
             self.delegate?.tokenValid(study: study)
             DispatchQueue.main.async {
                 self.token = ""
@@ -54,6 +55,10 @@ class LoginViewModel: ObservableObject {
     
     func checkTokenCount() -> Bool {
         return self.token.count == 0
+    }
+    
+    func currentStudyEndpoint() -> String {
+        endpoint.isEmpty ? defaultEndpoint : endpoint
     }
     
     deinit {

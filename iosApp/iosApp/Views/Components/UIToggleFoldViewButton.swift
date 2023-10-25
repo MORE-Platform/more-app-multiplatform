@@ -10,21 +10,11 @@ import SwiftUI
 
 struct UIToggleFoldViewButton: View {
     @Binding var isOpen: Bool
-    @State private var rotationAngle = 0.0
+
     var body: some View {
-        Button {
-            withAnimation(.more.foldingAnimation) {
-                if !isOpen {
-                    rotationAngle += 180
-                } else {
-                    rotationAngle -= 180
-                }
-            }
-            isOpen.toggle()
-        } label: {
-            Image.more.toggleFoldView
-                .rotationEffect(Angle(degrees: rotationAngle))
-        }.buttonStyle(.plain)
+        Image(systemName: "chevron.up")
+            .rotationEffect(Angle(degrees: isOpen ? 0 : 180))
+            .animation(.more.foldingAnimation, value: isOpen)
     }
 }
 

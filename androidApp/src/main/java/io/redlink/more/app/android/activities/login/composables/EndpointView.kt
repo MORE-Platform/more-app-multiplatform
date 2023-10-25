@@ -3,6 +3,7 @@ package io.redlink.more.app.android.activities.login.composables
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
@@ -43,7 +45,7 @@ fun EndpointView(
         animationSpec = tween(
             durationMillis = 100,
             easing = LinearEasing
-        )
+        ), label = ""
     )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +62,8 @@ fun EndpointView(
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { isOpen = !isOpen }
             ) {
                 Text(
                     text = getStringResource(id = R.string.more_endpoint_label),
@@ -86,6 +89,7 @@ fun EndpointView(
                 focusManager = focusManager
             )
         }
+        BasicText(text = model.currentEndpoint(), fontSize = 10.sp)
     }
 }
 
