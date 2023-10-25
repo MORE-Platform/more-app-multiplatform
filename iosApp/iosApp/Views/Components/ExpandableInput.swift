@@ -28,12 +28,15 @@ struct ExpandableInput: View {
             } label: {
                 HStack {
                     SectionHeading(sectionTitle: headerText)
-                    UIToggleFoldViewButton(isOpen: $expanded)
+                    Image(systemName: "chevron.up")
+                        .rotationEffect(Angle(degrees: expanded ? 0 : 180))
+                        .animation(.more.foldingAnimation, value: expanded)
                 }
                 .padding()
             }
             .buttonStyle(.plain)
-            .frame(height: 40)
+            .contentShape(Rectangle())
+            .frame(height: 45)
 
             if expanded {
                 if isSmTextfield {

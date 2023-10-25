@@ -54,15 +54,16 @@ struct LoginView: View {
                             expanded: $showEndpoint,
                             isSmTextfield: .constant(true),
                             headerText: .constant(String.localize(forKey: "study_endpoint_headling", withComment: "headling for endpoint entryfield", inTable: stringTable)),
-                            inputPlaceholder: $model.defaultEndpoint,
+                            inputPlaceholder: .constant(String.localize(forKey: "enter_study_endpoint", withComment: "Text input field for the study endpoint", inTable: stringTable)),
                             input: $model.endpoint,
                             textType: .URL
                         )
 
+                        if !showEndpoint {
+                            BasicText(text: "\(model.currentStudyEndpoint())", font: .footnote, lineLimit: 1, textAlign: .center)
+                        }
                     }
-                    if !showEndpoint {
-                        BasicText(text: "\(model.currentStudyEndpoint())", font: .footnote, lineLimit: 1, textAlign: .center)
-                    }
+                    .padding(.bottom, 8)
                     AppVersion()
                 }
                 .padding(.horizontal, 60)
