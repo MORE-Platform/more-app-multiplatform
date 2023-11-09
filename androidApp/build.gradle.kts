@@ -13,7 +13,7 @@ android {
         applicationId = "io.redlink.more.app.android"
         minSdk = 29
         targetSdk = 34
-        versionCode = 2
+        versionCode = 3
         versionName = "2.4.4"
     }
     buildFeatures {
