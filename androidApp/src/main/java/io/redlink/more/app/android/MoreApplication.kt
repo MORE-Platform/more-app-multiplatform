@@ -5,21 +5,17 @@ import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.work.WorkManager
 import com.google.firebase.analytics.FirebaseAnalytics
-import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
-import io.redlink.more.app.android.util.AndroidLogHandler
 import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
-import io.redlink.more.more_app_mutliplatform.util.ElasticAntilog
 
 /**
  * Main Application class of the project.
