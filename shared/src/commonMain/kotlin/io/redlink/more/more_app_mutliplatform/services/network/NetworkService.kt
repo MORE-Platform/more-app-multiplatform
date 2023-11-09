@@ -350,25 +350,6 @@ class NetworkService(
         }
     }
 
-    suspend fun sendLogs(logs: List<Log>): Boolean {
-        initLoggingApi()
-        val elasticData = serializeToNDJson(logs)
-        return if (elasticData.isNotBlank()) {
-            return httpClient?.let { client ->
-                val response = client.post(endpointRepository.loggingEndpoint()) {
-                    headers {
-                        append(HttpHeaders.Authorization, "ApiKey ${credentialRepository.loggingKey()}")
-                    }
-                    contentType(ContentType.Application.Json)
-                    setBody(elasticData)
-                }
-                return@let response.status == HttpStatusCode.Created || response.status == HttpStatusCode.OK
-            } ?: false
-        } else {
-            false
-        }
-    }
-
     private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
         return try {
             if (responseBody == null) {
