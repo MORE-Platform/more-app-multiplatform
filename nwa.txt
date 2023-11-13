@@ -8,7 +8,3 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.more_app_mutliplatform
-
-class GreetingTests {
-}
