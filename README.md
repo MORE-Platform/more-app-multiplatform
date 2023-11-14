@@ -174,5 +174,5 @@ The source code of the shared module is organized in three source sets according
 <!-- CONTACT -->
 ## Contact
 
-Redlink GmbH - [redlink.at](https://redlink.at/) - office@redlink.at
+Ludwig Boltzmann Institute for Digital Health and Prevention - [more-health.at](https://more-health.at/) -  more@dhp.lbg.ac.at
 
