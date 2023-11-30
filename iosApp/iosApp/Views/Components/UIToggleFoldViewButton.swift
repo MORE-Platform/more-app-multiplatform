@@ -3,28 +3,25 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 06.02.23.
-//  Copyright © 2023 Redlink GmbH. All rights reserved.
+//  Copyright © 2023 Ludwig Boltzmann Institute for
+//  Digital Health and Prevention - A research institute
+//  of the Ludwig Boltzmann Gesellschaft,
+//  Oesterreichische Vereinigung zur Foerderung
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
+//  (see https://www.apache.org/licenses/LICENSE-2.0 and
+//  https://commonsclause.com/).
 //
 
 import SwiftUI
 
 struct UIToggleFoldViewButton: View {
     @Binding var isOpen: Bool
-    @State private var rotationAngle = 0.0
+
     var body: some View {
-        Button {
-            withAnimation(.more.foldingAnimation) {
-                if !isOpen {
-                    rotationAngle += 180
-                } else {
-                    rotationAngle -= 180
-                }
-            }
-            isOpen.toggle()
-        } label: {
-            Image.more.toggleFoldView
-                .rotationEffect(Angle(degrees: rotationAngle))
-        }.buttonStyle(.plain)
+        Image(systemName: "chevron.up")
+            .rotationEffect(Angle(degrees: isOpen ? 0 : 180))
+            .animation(.more.foldingAnimation, value: isOpen)
     }
 }
 

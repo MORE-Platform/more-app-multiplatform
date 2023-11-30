@@ -3,7 +3,14 @@
 //  iosApp
 //
 //  Created by Jan Cortiel on 06.02.23.
-//  Copyright © 2023 Redlink GmbH. All rights reserved.
+//  Copyright © 2023 Ludwig Boltzmann Institute for
+//  Digital Health and Prevention - A research institute
+//  of the Ludwig Boltzmann Gesellschaft,
+//  Oesterreichische Vereinigung zur Foerderung
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
+//  (see https://www.apache.org/licenses/LICENSE-2.0 and
+//  https://commonsclause.com/).
 //
 
 
@@ -22,6 +29,7 @@ class LoginViewModel: ObservableObject {
 
     @Published var isLoading = false
     @Published var endpoint: String = ""
+    @Published var defaultEndpoint: String = ""
     @Published var token: String = ""
     @Published var error: String = ""
     
@@ -29,7 +37,7 @@ class LoginViewModel: ObservableObject {
     init(registrationService: RegistrationService) {
         print("LoginViewModel allocated!")
         coreModel = CoreLoginViewModel(registrationService: registrationService)
-        endpoint = registrationService.getEndpointRepository().endpoint()
+        defaultEndpoint = registrationService.getEndpointRepository().endpoint()
         
         coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
@@ -40,7 +48,7 @@ class LoginViewModel: ObservableObject {
     
     func validate() {
         self.error = ""
-        coreModel.sendRegistrationToken(token: token, endpoint: endpoint) { study in
+        coreModel.sendRegistrationToken(token: token, endpoint: endpoint.isEmpty ? nil : endpoint) { study in
             self.delegate?.tokenValid(study: study)
             DispatchQueue.main.async {
                 self.token = ""
@@ -54,6 +62,10 @@ class LoginViewModel: ObservableObject {
     
     func checkTokenCount() -> Bool {
         return self.token.count == 0
+    }
+    
+    func currentStudyEndpoint() -> String {
+        endpoint.isEmpty ? defaultEndpoint : endpoint
     }
     
     deinit {

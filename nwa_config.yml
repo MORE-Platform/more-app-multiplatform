@@ -1,0 +1,6 @@
+nwa:
+  cmd: "add"
+  year: "2023"
+  path: ["./androidApp/src","./shared/src"]
+  skip: ["**/*.xml","**/*.yaml","**/*.yml","**/*.sql","**/*.cmd","**/*.txt","**/*.md","**/*.json","**/*.properties","**/*.csv","**/*.png","**/*.svg","**/*.pcss","**/*.kts","**/*.plist","**/*.entitlements","**/*.storyboard","**/*.webp"]
+  tmpl: "nwa.txt"

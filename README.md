@@ -156,7 +156,11 @@ The source code of the shared module is organized in three source sets according
 * Use **Sync Project with Gradle Files** in the **File** tab.
 * Use **Invalidate Caches** in the **File** tab.
 
-
+### Operating System Management of MORE Apps
+As the mobile phone operating systems are attempting to limit unintended application data access and background activities for privacy and battery preservation, as well as for overall performance reasons, please consider checking through operating system settings that:
+* MORE can run without battery saving limitations as a background application
+* Access to the required sensing APIs is available (particularly GPS, accellerometry and wider physical activity according to your study needs) and ideally not limited to episodes of active (foreground) application use only
+* If pairing with further sensing devices is intended, please assure that Bluetooth is enabled with appropriate access rights and consider resetting the connection or manually linking devices through operating system functionalities if the integrated pairing in MORE fails
 
 ## Useful links
 * https://kotlinlang.org/docs/multiplatform-mobile-setup.html
@@ -168,11 +172,11 @@ The source code of the shared module is organized in three source sets according
 
 ## License
 
-[//]: # (TODO: write the license agreement)
+Apache 2.0 with Commons Clause; see LICENSE.txt for further details
 
 
 <!-- CONTACT -->
 ## Contact
 
-Redlink GmbH - [redlink.at](https://redlink.at/) - office@redlink.at
+Ludwig Boltzmann Institute for Digital Health and Prevention - [more-health.at](https://more-health.at/) -  more@dhp.lbg.ac.at
 

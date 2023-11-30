@@ -39,7 +39,6 @@
 		1F27536429CC3B8500324417 /* CMSensorDataListExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */; };
 		1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */; };
 		1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F27536A29CC68FC00324417 /* ObservationExtension.swift */; };
-		1F2B23152A7D01AC00CFBE02 /* IOSLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2B23142A7D01AC00CFBE02 /* IOSLogHandler.swift */; };
 		1F2C4BDD2A6F976F00C29888 /* StudyUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2C4BDC2A6F976F00C29888 /* StudyUpdateView.swift */; };
 		1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */; };
 		1F34797529B8BECB0030CA15 /* AccelerometerObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */; };

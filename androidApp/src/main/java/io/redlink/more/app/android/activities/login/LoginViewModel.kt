@@ -1,3 +1,13 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
 package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +30,8 @@ class LoginViewModel(registrationService: RegistrationService, private val login
     val loadingState = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
 
-    val dataEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
+    val dataEndpoint = mutableStateOf("");
+    val defaultEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
     val endpointError = mutableStateOf<String?>(null)
 
     fun participationKeyNotBlank(): Boolean = this.participantKey.value.isNotBlank()
@@ -46,8 +57,10 @@ class LoginViewModel(registrationService: RegistrationService, private val login
         coreLoginViewModel.viewDidDisappear()
     }
 
+    fun currentEndpoint() = dataEndpoint.value.ifEmpty { defaultEndpoint.value }
+
     fun validateKey() {
-        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value,
+        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value.ifEmpty { null },
             onSuccess = {
                         loginViewModelListener.tokenIsValid(it)
             }, onError = {

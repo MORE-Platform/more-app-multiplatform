@@ -1,3 +1,13 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
 package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
@@ -347,25 +357,6 @@ class NetworkService(
             } catch (e: Exception) {
                 Napier.e(tag = "NetworkService::deletePushNotification") { "Notification deletion error: $e" }
             }
-        }
-    }
-
-    suspend fun sendLogs(logs: List<Log>): Boolean {
-        initLoggingApi()
-        val elasticData = serializeToNDJson(logs)
-        return if (elasticData.isNotBlank()) {
-            return httpClient?.let { client ->
-                val response = client.post(endpointRepository.loggingEndpoint()) {
-                    headers {
-                        append(HttpHeaders.Authorization, "ApiKey ${credentialRepository.loggingKey()}")
-                    }
-                    contentType(ContentType.Application.Json)
-                    setBody(elasticData)
-                }
-                return@let response.status == HttpStatusCode.Created || response.status == HttpStatusCode.OK
-            } ?: false
-        } else {
-            false
         }
     }
 
