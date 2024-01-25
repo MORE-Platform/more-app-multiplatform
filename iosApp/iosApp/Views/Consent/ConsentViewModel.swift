@@ -29,7 +29,11 @@ class ConsentViewModel: NSObject, ObservableObject {
     var delegate: ConsentViewModelListener? = nil
     var stringTable = "SettingsView"
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingView"), consentInfo: [])
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingView"), consentInfo: []) {
+        didSet {
+            self.permissionManager.setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
+        }
+    }
     @Published var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false

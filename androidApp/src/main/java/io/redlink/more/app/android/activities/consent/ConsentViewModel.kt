@@ -52,7 +52,7 @@ class ConsentViewModel(
             coreModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
-                    permissions.addAll(MoreApplication.shared!!.observationFactory.sensorPermissions())
+                    permissions.addAll(MoreApplication.shared!!.observationFactory.studySensorPermissions())
                 }
             }
         }

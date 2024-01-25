@@ -20,7 +20,7 @@ open class HttpResponse<T : Any>(val response: io.ktor.client.statement.HttpResp
     val status: Int = response.status.value
     val success: Boolean = response.status.isSuccess()
     val headers: Map<String, List<String>> = response.headers.mapEntries()
-    suspend fun body():WeakReference<T> = WeakReference(provider.body(response))
+    suspend fun body() = provider.body(response)
     suspend fun <V : Any> typedBody(type: TypeInfo): V = provider.typedBody<V>(response, type)
 
     companion object {

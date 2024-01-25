@@ -99,7 +99,7 @@ class PermissionManager: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        setPermisssionValues(observationPermissions: AppDelegate.shared.observationFactory.sensorPermissions())
+        setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
     }
 
     private func requestGpsAuthorization(always: Bool = true) {
@@ -194,7 +194,7 @@ class PermissionManager: NSObject, ObservableObject {
         })
     }
     
-    private func setPermisssionValues(observationPermissions: Set<String> = []) {
+    func setPermissionValues(observationPermissions: Set<String> = []) {
         gpsStatus = observationPermissions.contains("gpsAlways") ? .requesting : .non
         cameraStatus = observationPermissions.contains("camera") ? .requesting : .non
         cmSensorStatus = observationPermissions.contains("cmsensorrecorder") ? .requesting : .non

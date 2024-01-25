@@ -57,6 +57,7 @@ class RegistrationService(
                     endpoint = manualEndpoint
                     study = it
                     participationToken = token
+                    addObservationPermissions(it)
                     onSuccess(it)
                 }
                 networkError?.let {
@@ -123,8 +124,7 @@ class RegistrationService(
                     } else {
                         study?.let { study ->
                             StudyRepository().storeStudy(study)
-                            shared.observationFactory
-                                .addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
+                            addObservationPermissions(study)
                             shared.resetFirstStartUp()
                             onSuccess(shared.credentialRepository.hasCredentials())
                         } ?: kotlin.run {
@@ -140,6 +140,11 @@ class RegistrationService(
             }
             onFinish()
         }
+    }
+
+    private fun addObservationPermissions(study: Study) {
+        shared.observationFactory
+            .addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
     }
 
 
