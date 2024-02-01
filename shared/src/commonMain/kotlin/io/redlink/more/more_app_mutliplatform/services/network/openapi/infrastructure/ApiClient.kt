@@ -100,7 +100,7 @@ open class ApiClient(
     protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse? {
         requestConfig.updateForAuth(authNames)
         val headers = requestConfig.headers
-        val response = WeakReference(client.request {
+        return client.request {
             this.url {
                 this.takeFrom(URLBuilder(baseUrl))
                 appendPath(requestConfig.path.trimStart('/').split('/'))
@@ -125,13 +125,12 @@ open class ApiClient(
                 )) {
                 this.setBody(body)
             }
-        })
-        return response.get()
+        }
     }
 
     private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: List<String>) {
         for (authName in authNames) {
-            val auth = authentications?.get(authName) ?: throw Exception("Authentication undefined: $authName")
+            val auth = authentications[authName] ?: throw Exception("Authentication undefined: $authName")
             auth.apply(query, headers)
         }
     }

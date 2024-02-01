@@ -211,7 +211,6 @@ class Shared(
     fun exitStudy(onDeletion: () -> Unit) {
         CoroutineScope(Job() + Dispatchers.Default).launch {
             stopObservations()
-            observationFactory.clearNeededObservationTypes()
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
@@ -219,6 +218,7 @@ class Shared(
             DatabaseManager.deleteAll()
             coreBluetooth.resetAll()
             onDeletion()
+            observationFactory.clearNeededObservationTypes()
             studyIsUpdating.set(false)
             studyStateRepository.storeState(StudyState.NONE)
         }
