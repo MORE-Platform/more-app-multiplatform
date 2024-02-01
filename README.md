@@ -47,11 +47,12 @@ The following is an instruction on how to install and configure the project on y
     ```
 2. Open the project in Android Studio.
 3. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files** and wait until it's done.
-4. Now we can build the project. Go to the terminal and perform the following command in the root folder of the project:
+4. This project requires **JDK 19** or later. To build the project you need to set your **runtime to JDK 19 or later**, and then under **Project Structure** --> **Modules** set in either **androidApp** and **shared** the **Source Compatability** and the **Target Compatability** to at least **$JavaVersion.VERSION_19**.
+5. Now we can build the project. Go to the terminal and perform the following command in the root folder of the project:
     ```sh
     ./gradlew build
     ```
-5. Now you should be good to go. You can create an emulator device and start your application.
+6. Now you should be good to go. You can create an emulator device and start your application.
 
 ### Troubleshooting with KDoctor
 
