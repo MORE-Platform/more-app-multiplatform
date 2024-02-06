@@ -19,8 +19,8 @@ import CryptoKit
 extension String {
     func localize(withComment comment: String, useTable table: String? = nil) -> String {
         var result = NSLocalizedString(self, tableName: table, comment: comment)
-        if result == self {
-            result = NSLocalizedString(self, tableName: table, comment: comment)
+        if result.isEmpty {
+            return self
         }
         return result
     }

@@ -16,6 +16,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -108,7 +109,7 @@ class ObservationRecordingService : Service() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        Napier.i{ "ObservationRecordingService taskRemove!"}
+        Napier.i { "ObservationRecordingService taskRemove!" }
     }
 
     override fun onDestroy() {
@@ -191,14 +192,15 @@ class ObservationRecordingService : Service() {
 
     private fun startForegroundService() {
         Napier.d { "Starting the foreground service..." }
-        startForeground(
-            1001,
-            buildNotification(
-                channelId = getString(R.string.default_channel_id),
-                notificationTitle = getString(R.string.more_observation_running),
-                notificationText = getString(R.string.more_observation_notification_explanation)
-            )
+        val notification = buildNotification(
+            channelId = getString(R.string.default_channel_id),
+            notificationTitle = getString(R.string.more_observation_running),
+            notificationText = getString(R.string.more_observation_notification_explanation)
         )
+        startForeground(
+            1001, notification, ServiceInfo.
+        )
+        startForeground()
         running = true
     }
 

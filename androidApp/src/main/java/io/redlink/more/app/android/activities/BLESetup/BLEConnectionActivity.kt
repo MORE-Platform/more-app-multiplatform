@@ -86,7 +86,8 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
         showBackButton = true,
         onBackButtonClick = {
             (context as? Activity)?.finish()
-        }
+        },
+        alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         LazyColumn {
             item {

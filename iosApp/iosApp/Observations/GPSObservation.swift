@@ -7,58 +7,57 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
+import CoreLocation
 import Foundation
 import shared
-import CoreLocation
+import UIKit
 
 class GPSObservation: Observation_ {
-    
     private let manager: CLLocationManager = CLLocationManager()
     public var currentLocation = CLLocation()
     private var running = false
-    
+
     init(sensorPermissions: Set<String>) {
         super.init(observationType: GPSType(sensorPermissions: sensorPermissions))
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }
-    
+
     override func start() -> Bool {
-        Task {
-            if (observerAccessible()) {
-                manager.allowsBackgroundLocationUpdates = true
-                manager.showsBackgroundLocationIndicator = true
-                manager.requestAlwaysAuthorization()
-                manager.startUpdatingLocation()
+        if observerAccessible() {
+            manager.allowsBackgroundLocationUpdates = true
+            manager.showsBackgroundLocationIndicator = true
+            manager.startUpdatingLocation()
+            return true
+        } else {
+            if manager.authorizationStatus == .notDetermined {
+                manager.requestWhenInUseAuthorization()
             } else {
-                manager.requestAlwaysAuthorization()
-                running = true
-                stopAndSetState(state: .active, scheduleId: nil)
+                self.showPermissionAlert()
             }
+            return false
         }
-        return true
     }
-    
+
     override func stop(onCompletion: @escaping () -> Void) {
         manager.stopUpdatingLocation()
         running = false
         onCompletion()
     }
-    
+
     override func observerAccessible() -> Bool {
         return CLLocationManager.locationServicesEnabled()
             && (manager.authorizationStatus == .authorizedWhenInUse
             || manager.authorizationStatus == .authorizedAlways)
     }
-    
-    override func applyObservationConfig(settings: Dictionary<String, Any>){}
-    
+
+    override func applyObservationConfig(settings: Dictionary<String, Any>) {}
 }
 
 extension GPSObservation: CLLocationManagerDelegate {
@@ -67,7 +66,11 @@ extension GPSObservation: CLLocationManagerDelegate {
             let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
             return ObservationBulkModel(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
         }
-        self.storeData(data: data) {}
+        storeData(data: data) {}
+    }
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
+            super.stopAndSetState(state: .active, scheduleId: nil)
+        }
     }
 }
- 

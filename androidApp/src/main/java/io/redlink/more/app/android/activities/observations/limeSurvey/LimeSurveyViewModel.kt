@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,8 +32,16 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
     val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)
     val networkLoading = mutableStateOf(false)
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
 
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
         viewModelScope.launch {
             coreViewModel.dataLoading.collect {
                 withContext(Dispatchers.Main) {

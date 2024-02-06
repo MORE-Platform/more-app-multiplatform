@@ -17,10 +17,8 @@ import Foundation
 import shared
 
 class IOSObservationFactory: ObservationFactory {
-
     override init(dataManager: ObservationDataManager) {
         super.init(dataManager: dataManager)
-//        observations.add(AccelerometerObservation(sensorPermission: []))
         observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
         observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))
         observations.add(PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"]))
