@@ -197,10 +197,7 @@ class ObservationRecordingService : Service() {
             notificationTitle = getString(R.string.more_observation_running),
             notificationText = getString(R.string.more_observation_notification_explanation)
         )
-        startForeground(
-            1001, notification, ServiceInfo.
-        )
-        startForeground()
+        startForeground(1001, notification)
         running = true
     }
 
