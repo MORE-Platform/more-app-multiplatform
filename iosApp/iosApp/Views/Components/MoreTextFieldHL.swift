@@ -29,7 +29,7 @@ struct MoreTextFieldHL: View {
             
             HStack{
                 Spacer()
-                SectionHeading(sectionTitle: headerText)
+                SectionHeading(sectionTitle: headerText, showAllText: true)
                 Spacer()
             }
             .padding(3)
