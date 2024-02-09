@@ -18,6 +18,7 @@ import shared
 import PolarBleSdk
 import CoreBluetooth
 import RxSwift
+import UIKit
 
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
@@ -71,6 +72,7 @@ class PolarVerityHeartRateObservation: Observation_ {
                 return true
             }
         }
+        self.showPermissionAlert()
         return false
     }
     

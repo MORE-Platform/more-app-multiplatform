@@ -12,6 +12,7 @@ package io.redlink.more.app.android
 
 import android.app.Application
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -71,6 +72,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         var polarConnector: PolarConnector? = null
             private set
 
+        val openSettings = mutableStateOf(false)
 
         fun initShared(context: Context) {
             if (shared == null) {

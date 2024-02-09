@@ -123,6 +123,7 @@ class RegistrationService(
                         onError(NetworkServiceError(null, "Could not get study: ${error.message}"))
                     } else {
                         study?.let { study ->
+                            Napier.i { study.toString() }
                             StudyRepository().storeStudy(study)
                             addObservationPermissions(study)
                             shared.resetFirstStartUp()

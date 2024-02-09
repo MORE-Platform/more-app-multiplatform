@@ -26,11 +26,15 @@ import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
@@ -41,6 +45,18 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
+
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
+    }
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {

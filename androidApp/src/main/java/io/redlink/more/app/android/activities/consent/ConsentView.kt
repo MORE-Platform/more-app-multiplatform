@@ -10,7 +10,16 @@
  */
 package io.redlink.more.app.android.activities.consent
 
-import androidx.compose.foundation.layout.*
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
@@ -32,23 +41,6 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun ConsentView(model: ConsentViewModel) {
-    val context = LocalContext.current
-    model.error.value?.let {
-        MessageAlertDialog(title = getStringResource(id = R.string.more_permission_message_dialog_title),
-            message = "$it\n ${getStringResource(id = R.string.more_permission_message_dialog_message_retry)}",
-            positiveButtonTitle = getStringResource(id = R.string.more_permission_message_dialog_message_retry_button),
-            onPositive = {
-                model.acceptConsent(context)
-                model.error.value = null
-            },
-            negativeButtonTitle = getStringResource(id = R.string.more_permission_message_dialog_message_cancel_button),
-            onNegative = {
-                model.decline()
-                model.error.value = null
-            }
-        )
-    }
-
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

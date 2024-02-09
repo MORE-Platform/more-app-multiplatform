@@ -29,6 +29,7 @@ class ContentViewModel: ObservableObject {
     @Published var mainTabViewSelection = 0
     
     @Published var finishText: String? = nil
+    @Published var alertDialogModel: AlertDialogModel? = nil
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -71,6 +72,11 @@ class ContentViewModel: ObservableObject {
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
             self?.finishText = AppDelegate.shared.finishText
             AppDelegate.navigationScreenHandler.setStudyState(studyState)
+        }
+        
+        AppDelegate.shared.mainContentCoreViewModel.onNewAlertDialogModel { [weak self] alertDialogModel in
+            print(alertDialogModel ?? "nil")
+            self?.alertDialogModel = alertDialogModel
         }
         
         if hasCredentials {

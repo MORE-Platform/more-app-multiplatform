@@ -62,10 +62,6 @@ class CoreTaskDetailsViewModel(
         }
     }
 
-    override fun viewDidDisappear() {
-        super.viewDidDisappear()
-    }
-
     fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable =
         taskDetailsModel.asClosure(provideNewState)
 
