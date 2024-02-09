@@ -34,6 +34,7 @@ import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
@@ -59,6 +60,7 @@ class Shared(
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
     val notificationManager = NotificationManager(localNotificationListener, networkService)
+    val mainContentCoreViewModel = CoreContentViewModel()
 
     var appIsInForeGround = false
 

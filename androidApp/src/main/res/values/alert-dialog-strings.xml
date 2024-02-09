@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="required_permissions_not_granted_title">Required Permissions Were Not Granted</string>
+    <string name="required_permission_not_granted_message">This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?</string>
+    <string name="notification_permission_not_granted_title">Notification Permissions Not Granted</string>
+    <string name="notification_permission_not_granted_message">We request permission to send you push notifications. This assists in maintaining the study\'s current status at all times and serves as a reminder for your tasks.</string>
+    <string name="proceed_to_settings_button">Proceed to Settings</string>
+    <string name="proceed_without_granting_button">Proceed Without Granting Permissions</string>
+</resources>

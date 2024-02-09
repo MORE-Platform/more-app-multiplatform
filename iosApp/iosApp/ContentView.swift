@@ -15,7 +15,7 @@ struct ContentView: View {
     @StateObject var viewModel: ContentViewModel
     @StateObject var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
-        VStack {
+        ZStack {
             if viewModel.hasCredentials {
                 if !navigationModalState.mayChangeViewStructure() {
                     if navigationModalState.studyIsUpdating {
@@ -41,6 +41,9 @@ struct ContentView: View {
                         }
                     }
                 }
+            }
+            if let alertDialog = viewModel.alertDialogModel {
+                MoreAlertDialog(alertDialogModel: alertDialog)
             }
         }
         .environmentObject(viewModel)

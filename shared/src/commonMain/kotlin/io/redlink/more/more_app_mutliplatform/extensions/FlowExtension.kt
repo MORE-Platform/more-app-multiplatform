@@ -45,6 +45,18 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
     }
 }
 
+fun <T: Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
+    val job = Scope.create()
+    this.onEach {
+        provideNewState(it)
+    }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
+    return object : Closeable {
+        override fun close() {
+            job.second.cancel()
+        }
+    }
+}
+
 fun <T> MutableStateFlow<Set<T>>.append(value: T?) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.add(value ?: return)) {
@@ -93,6 +105,12 @@ fun <T> MutableStateFlow<T>.set(value: T?) {
         Scope.launch {
             emit(it)
         }
+    }
+}
+
+fun <T> MutableStateFlow<T?>.setNullable(value: T?) {
+    Scope.launch {
+        emit(value)
     }
 }
 

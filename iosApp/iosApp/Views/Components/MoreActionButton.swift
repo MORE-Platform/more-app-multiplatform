@@ -16,7 +16,6 @@
 import SwiftUI
 
 struct MoreActionButton<ButtonLabel: View>: View {
-    var color: Color = .more.primary
     var backgroundColor = Color.more.primary
     var maxWidth: CGFloat = .infinity
     @Binding var disabled: Bool

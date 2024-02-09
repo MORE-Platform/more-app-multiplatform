@@ -10,7 +10,6 @@
  */
 package io.redlink.more.app.android.activities
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -46,6 +45,7 @@ class ContentActivity: ComponentActivity() {
             ContentView(viewModel = viewModel)
         }
     }
+
 }
 
 @Composable
@@ -53,7 +53,7 @@ fun ContentView(viewModel: ContentViewModel) {
     if (viewModel.hasCredentials.value) {
         viewModel.openMainActivity(LocalContext.current)
     } else {
-        MoreBackground(showBackButton = false) {
+        MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
             if (viewModel.loginViewScreenNr.value == 0) {
                 LoginView(model = viewModel.loginViewModel)
                 AppVersion()

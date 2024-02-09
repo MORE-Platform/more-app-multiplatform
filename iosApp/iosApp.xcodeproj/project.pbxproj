@@ -124,10 +124,12 @@
 		1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */; };
 		1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */; };
 		1FC4F87429D2B86100F65026 /* DataUploadBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */; };
+		1FD531B52B693C3400C2D9FB /* AlertDialog.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1FD531B72B693C3400C2D9FB /* AlertDialog.strings */; };
 		1FDC264629C1C60F0011D8A4 /* ListViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */; };
 		1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264729C1CEF40011D8A4 /* InfoListItem.swift */; };
 		1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264929C1CFE80011D8A4 /* NavigationText.swift */; };
 		1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264B29C1D1660011D8A4 /* InfoList.swift */; };
+		1FDFB9852B62A81000CB87B1 /* MoreAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDFB9842B62A81000CB87B1 /* MoreAlertDialog.swift */; };
 		1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4446F29C849DC006AA11C /* Semaphore.swift */; };
 		1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */; };
 		1FF5B28B2A8274C10076EF8E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF5B28A2A8274C10076EF8E /* AppVersion.swift */; };
@@ -341,10 +343,13 @@
 		1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterViewModel.swift; sourceTree = "<group>"; };
 		1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterView.swift; sourceTree = "<group>"; };
 		1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataUploadBackgroundTask.swift; sourceTree = "<group>"; };
+		1FD531B62B693C3400C2D9FB /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AlertDialog.strings; sourceTree = "<group>"; };
+		1FD531B82B693C3900C2D9FB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AlertDialog.strings; sourceTree = "<group>"; };
 		1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewExtension.swift; sourceTree = "<group>"; };
 		1FDC264729C1CEF40011D8A4 /* InfoListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoListItem.swift; sourceTree = "<group>"; };
 		1FDC264929C1CFE80011D8A4 /* NavigationText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationText.swift; sourceTree = "<group>"; };
 		1FDC264B29C1D1660011D8A4 /* InfoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoList.swift; sourceTree = "<group>"; };
+		1FDFB9842B62A81000CB87B1 /* MoreAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreAlertDialog.swift; sourceTree = "<group>"; };
 		1FE4446F29C849DC006AA11C /* Semaphore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Semaphore.swift; sourceTree = "<group>"; };
 		1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDataRecorder.swift; sourceTree = "<group>"; };
 		1FF5B28A2A8274C10076EF8E /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
@@ -623,6 +628,7 @@
 				07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */,
 				1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */,
 				1FF5B28A2A8274C10076EF8E /* AppVersion.swift */,
+				1FDFB9842B62A81000CB87B1 /* MoreAlertDialog.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -667,6 +673,7 @@
 				1F9C745F2A30C775003AE946 /* SimpleQuestionObservation.strings */,
 				1F9C74622A30C779003AE946 /* LimeSurvey.strings */,
 				1F750CAA2A6F9C9B006E455E /* StudyStates.strings */,
+				1FD531B72B693C3400C2D9FB /* AlertDialog.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -1015,7 +1022,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 				de,
 			);
 			mainGroup = 7555FF72242A565900829871;
@@ -1059,6 +1065,7 @@
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				1F9C74602A30C779003AE946 /* LimeSurvey.strings in Resources */,
 				1F9C74542A30C76D003AE946 /* ObservationDetails.strings in Resources */,
+				1FD531B52B693C3400C2D9FB /* AlertDialog.strings in Resources */,
 				1F9C743C2A30C758003AE946 /* ScheduleListView.strings in Resources */,
 				1F6C31532A13EB7F00EED533 /* Launch Screen.storyboard in Resources */,
 				1F9C744B2A30C766003AE946 /* ExpandableText.strings in Resources */,
@@ -1253,6 +1260,7 @@
 				1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
+				1FDFB9852B62A81000CB87B1 /* MoreAlertDialog.swift in Sources */,
 				1F27536129CC372500324417 /* AppState.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
@@ -1437,6 +1445,15 @@
 			name = LimeSurvey.strings;
 			sourceTree = "<group>";
 		};
+		1FD531B72B693C3400C2D9FB /* AlertDialog.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1FD531B62B693C3400C2D9FB /* de */,
+				1FD531B82B693C3900C2D9FB /* en */,
+			);
+			name = AlertDialog.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -1579,7 +1596,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "2.3-rc1";
+				MARKETING_VERSION = "3.0.5-rc1";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1616,7 +1633,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "2.3-rc1";
+				MARKETING_VERSION = "3.0.5-rc1";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",

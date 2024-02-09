@@ -137,7 +137,8 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.routeWithParameters())
                 2 -> navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
-        }
+        },
+        alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         NavHost(
             navController = navController,
