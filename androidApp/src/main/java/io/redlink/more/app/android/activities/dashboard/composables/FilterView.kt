@@ -45,7 +45,7 @@ fun FilterView(
             .fillMaxWidth()
             .padding(vertical = 19.dp)
             .clickable(onClick = {
-                navController.navigate(NavigationScreen.OBSERVATION_DETAILS.navigationRoute("scheduleListType" to scheduleListType))
+                navController.navigate(NavigationScreen.OBSERVATION_FILTER.navigationRoute("scheduleListType" to scheduleListType))
             })
     ) {
         Text(
