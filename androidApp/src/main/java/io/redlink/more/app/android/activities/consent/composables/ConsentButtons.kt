@@ -153,6 +153,7 @@ fun checkPermissions(
         launcher.launch(permissions.toTypedArray())
         false
     } else {
+        launcher.launch(permissions.toTypedArray())
         true
     }
 }
