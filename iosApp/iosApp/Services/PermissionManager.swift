@@ -48,9 +48,10 @@ class PermissionManager: NSObject, ObservableObject {
     var observer: PermissionManagerObserver?
     private var permissionsRequested = false
     
-    private var authorizationTimer: Timer? = nil
+    private var authorizationTimer: Timer?
 
     private let locationManager: CLLocationManager = CLLocationManager()
+    private var cbManager: CBCentralManager?
 
     private var cameraPermissionGranted = false
 
@@ -169,7 +170,9 @@ class PermissionManager: NSObject, ObservableObject {
     }
 
     private func checkBluetoothAuthorization(always: Bool = true) -> PermissionStatus {
-        if CBManager.authorization == CBManagerAuthorization.notDetermined {
+        print("Checking for Bluetooth authorization")
+        if CBManager.authorization == .notDetermined {
+            self.cbManager = CBCentralManager(delegate: self, queue: nil)
             return .requesting
         } else if CBManager.authorization == .restricted || CBManager.authorization == .denied {
             return .declined
@@ -224,9 +227,7 @@ class PermissionManager: NSObject, ObservableObject {
         gpsStatus = observationPermissions.contains("gpsAlways") ? .requesting : .non
         cameraStatus = observationPermissions.contains("camera") ? .requesting : .non
         cmSensorStatus = observationPermissions.contains("cmsensorrecorder") ? .requesting : .non
-        if observationPermissions.contains("bluetoothAlways") {
-            bluetoothStatus = checkBluetoothAuthorization()
-        }
+        bluetoothStatus = observationPermissions.contains("bluetoothAlways") ? .requesting : .non
     }
 
     func requestPermission(permissionRequest: Bool = false) {
@@ -276,5 +277,12 @@ extension PermissionManager: CLLocationManagerDelegate {
         } else if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             gpsStatus = .accepted
         }
+    }
+}
+
+extension PermissionManager: CBCentralManagerDelegate {
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        self.cbManager = nil
+        self.bluetoothStatus = checkBluetoothAuthorization()
     }
 }
