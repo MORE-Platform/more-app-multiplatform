@@ -22,7 +22,7 @@ import UIKit
 
 class PolarConnector: NSObject, BluetoothConnector {
     var specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary()
-    var bluetoothState: BluetoothState = .off
+    var bluetoothState: BluetoothState = .on
     
     var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
@@ -30,34 +30,37 @@ class PolarConnector: NSObject, BluetoothConnector {
     var delegate: BLEConnectorDelegate?
     private var scanningWithUnknownBLEState = false
     private var devicesSubscription: Disposable? = nil
-    var polarApi = PolarBleApiDefaultImpl
-        .polarImplementation(DispatchQueue.main,
-                             features: [
-                                 .feature_hr,
-                                 .feature_battery_info,
-                                 .feature_device_info,
-                                 .feature_polar_offline_recording,
-                                 .feature_polar_online_streaming,
-                                 .feature_polar_sdk_mode,
-                                 .feature_polar_device_time_setup,
-                             ])
+    
+    lazy var polarApi: PolarBleApi = { [weak self] in
+        var api = PolarBleApiDefaultImpl
+            .polarImplementation(DispatchQueue.main,
+                                features: [
+                                    .feature_hr,
+                                    .feature_battery_info,
+                                    .feature_device_info,
+                                    .feature_polar_offline_recording,
+                                    .feature_polar_online_streaming,
+                                    .feature_polar_sdk_mode,
+                                    .feature_polar_device_time_setup,
+                                ])
+        
+        if let self {
+            api.observer = self
+            api.polarFilter(false)
+            api.deviceInfoObserver = self
+            api.deviceFeaturesObserver = self
+            api.powerStateObserver = self
+        }
+        
+        return api
+    }()
+    
     var observer: KotlinMutableSet<BluetoothConnectorObserver> = KotlinMutableSet()
     
     var scanning = false {
         didSet {
             isScanning(boolean: scanning)
         }
-    }
-    
-    override init() {
-        super.init()
-        
-        self.polarApi.polarFilter(false)
-        self.polarApi.observer = self
-        self.polarApi.deviceInfoObserver = self
-        self.polarApi.deviceFeaturesObserver = self
-        self.polarApi.powerStateObserver = self
-        self.polarApi.automaticReconnection = true
     }
     
     func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
@@ -100,26 +103,30 @@ class PolarConnector: NSObject, BluetoothConnector {
         }
         else if !scanning && self.observer.count > 0 && bluetoothState == BluetoothState.on {
             print("Polar: Starting the scan...")
-            scanning = true
-            self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
-                if let self, !device.name.isEmpty {
-                    self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
+            DispatchQueue.main.async { [weak self] in
+                if let self {
+                    self.scanning = true
+                    self.devicesSubscription = self.polarApi.searchForDevice().subscribe(onNext: { device in
+                        self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
+                    }, onError: { error in
+                        print(error)
+                        self.scanning = false
+                    }, onDisposed: {
+                        self.scanning = false
+                    })
                 }
-            }, onError: { [weak self] error in
-                print(error)
-                self?.scanning = false
-            }, onDisposed: { [weak self] in
-                self?.scanning = false
-            })
+            }
         }
     }
 
     func stopScanning() {
-        if self.scanning {
-            print("Polar: Stopping the scan and cleaning up...")
-            self.devicesSubscription?.dispose()
-            self.polarApi.cleanup()
-            self.scanning = false
+        DispatchQueue.main.async { [weak self] in
+            if let self, self.scanning {
+                print("Polar: Stopping the scan and cleaning up...")
+                self.devicesSubscription?.dispose()
+                self.polarApi.cleanup()
+                self.scanning = false
+            }
         }
     }
 

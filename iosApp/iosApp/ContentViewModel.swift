@@ -75,7 +75,6 @@ class ContentViewModel: ObservableObject {
         }
         
         AppDelegate.shared.mainContentCoreViewModel.onNewAlertDialogModel { [weak self] alertDialogModel in
-            print(alertDialogModel ?? "nil")
             self?.alertDialogModel = alertDialogModel
         }
         
