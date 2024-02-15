@@ -133,12 +133,10 @@ fun checkAndRequestPermissions(
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
-    if(permissions.isEmpty()) {
-        model.acceptConsent(context)
-    } else if (hasBackgroundLocationPermission) {
+    if (hasBackgroundLocationPermission) {
         checkPermissionForBackgroundLocationAccess(context, launcher, model)
     } else {
-        checkPermissions(context, launcher, permissions)
+        checkPermissions(context, launcher, permissions, model)
     }
 }
 
@@ -146,6 +144,7 @@ fun checkPermissions(
     context: Context,
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     permissions: Set<String>,
+    model: ConsentViewModel,
 ): Boolean {
     return if (
         !permissions.all {
@@ -155,6 +154,7 @@ fun checkPermissions(
         launcher.launch(permissions.toTypedArray())
         false
     } else {
+        model.acceptConsent(context)
         true
     }
 }
