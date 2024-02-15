@@ -133,7 +133,9 @@ fun checkAndRequestPermissions(
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
-    if (hasBackgroundLocationPermission) {
+    if(permissions.isEmpty()) {
+        model.acceptConsent(context)
+    } else if (hasBackgroundLocationPermission) {
         checkPermissionForBackgroundLocationAccess(context, launcher, model)
     } else {
         checkPermissions(context, launcher, permissions)
