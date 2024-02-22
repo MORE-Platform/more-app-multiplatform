@@ -16,6 +16,7 @@ struct ContentView: View {
     @StateObject var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
         ZStack {
+        
             if viewModel.hasCredentials {
                 if !navigationModalState.mayChangeViewStructure() {
                     if navigationModalState.studyIsUpdating {

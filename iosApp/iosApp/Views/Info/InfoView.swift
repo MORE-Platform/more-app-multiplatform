@@ -16,14 +16,24 @@
 import SwiftUI
 
 struct InfoView: View {
-    @EnvironmentObject var contentViewModel: ContentViewModel
     @StateObject var viewModel: InfoViewModel
     private let navigationStrings = "Navigation"
     private let infoStrings = "Info"
+    
+    @EnvironmentObject private var contentViewModel: ContentViewModel
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
                 ScrollView {
+                    NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
+                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState))
+                            .onDisappear {
+                                navigationModalState.closeView(screen: .taskDetails)
+                            }
+                    } label: {
+                        EmptyView()
+                    }.opacity(0)
                     VStack {
                         Divider()
                         VStack {

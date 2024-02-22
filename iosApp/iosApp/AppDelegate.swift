@@ -52,6 +52,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         registerBackgroundTasks()
         
+        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreens.allCases.map{$0.values.navigationLink}))
+        
         return true
     }
     

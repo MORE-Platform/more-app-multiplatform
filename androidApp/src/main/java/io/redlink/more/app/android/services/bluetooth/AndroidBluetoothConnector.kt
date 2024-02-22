@@ -23,7 +23,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.Napier.i

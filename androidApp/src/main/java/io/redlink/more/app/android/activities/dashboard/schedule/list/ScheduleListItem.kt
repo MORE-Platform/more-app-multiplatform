@@ -10,23 +10,27 @@
  */
 package io.redlink.more.app.android.activities.dashboard.schedule.list
 
-import android.app.Activity
-import android.content.Intent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
@@ -34,9 +38,6 @@ import io.redlink.more.app.android.shared_composables.TimeframeHours
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
-import io.redlink.more.app.android.extensions.jvmLocalDateTime
 
 
 @Composable
@@ -46,7 +47,6 @@ fun ScheduleListItem(
     viewModel: ScheduleViewModel,
     showButton: Boolean
 ) {
-    val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -76,7 +76,7 @@ fun ScheduleListItem(
         ) {
             BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
             Icon(
-                Icons.Rounded.KeyboardArrowRight,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = getStringResource(id = R.string.more_schedule_details),
                 tint = MoreColors.Primary
             )

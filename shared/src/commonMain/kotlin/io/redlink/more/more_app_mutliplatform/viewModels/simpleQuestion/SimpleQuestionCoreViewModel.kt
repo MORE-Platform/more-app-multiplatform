@@ -10,7 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion
 
-import io.ktor.utils.io.core.*
+import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -19,7 +19,6 @@ import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
@@ -50,7 +49,7 @@ class SimpleQuestionCoreViewModel(
 
     fun setScheduleViaObservationId(observationId: String, notificationId: String? = null) {
         launchScope {
-            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId)}
+            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId)}
         }
     }
 

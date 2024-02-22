@@ -31,7 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -211,16 +210,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         mutableStateOf(requireNotNull(arguments.getString("scheduleId")))
                     }
                     val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
-                    val scheduleListType by remember {
-                        mutableStateOf(
-                            ScheduleListType.valueOf(
-                                arguments.getString(
-                                    "scheduleListType",
-                                    "ALL"
-                                )
-                            )
-                        )
-                    }
 
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -228,8 +217,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     TaskDetailsView(
                         navController = navController,
                         viewModel = taskVM,
-                        scheduleId = scheduleId,
-                        scheduleListType = scheduleListType
+                        scheduleId = scheduleId
                     )
                 }
             }
