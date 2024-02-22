@@ -42,6 +42,10 @@ class ContentViewModel: ObservableObject {
         return viewModel
     }()
     
+    lazy var taskDetailsVM: TaskDetailsViewModel = {
+        TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
+    }()
+    
     var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -108,6 +112,14 @@ class ContentViewModel: ObservableObject {
             self.loginViewScreenNr = 1
             self.consentViewModel.onAppear()
         }
+    }
+    
+    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
+        print("Test")
+        if let scheduleId = navigationState.scheduleId {
+            taskDetailsVM.setSchedule(scheduleId: scheduleId)
+        }
+        return taskDetailsVM
     }
     
     private func reinitAllViewModels() {

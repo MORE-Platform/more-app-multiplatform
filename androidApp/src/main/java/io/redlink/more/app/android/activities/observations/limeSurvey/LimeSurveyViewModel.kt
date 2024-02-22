@@ -13,7 +13,6 @@ package io.redlink.more.app.android.activities.observations.limeSurvey
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier

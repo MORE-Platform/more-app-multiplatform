@@ -18,6 +18,7 @@ import shared
 
 struct DashboardView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     @StateObject var viewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
@@ -28,6 +29,11 @@ struct DashboardView: View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
+                    NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
+                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState))
+                    } label: {
+                        EmptyView()
+                    }.opacity(0)
                     ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
                         .environmentObject(viewModel.scheduleViewModel)
                     if selection == 0 {

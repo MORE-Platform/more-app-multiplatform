@@ -24,7 +24,6 @@ import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 import java.time.LocalDate
-import java.util.*
 
 @Composable
 fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier = Modifier){

@@ -12,12 +12,14 @@ package io.redlink.more.app.android.activities
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
@@ -27,12 +29,11 @@ import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
@@ -68,10 +69,28 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 ExistingPeriodicWorkPolicy.KEEP,
                 worker
             )
-            showNewActivityAndClearStack(it, MainActivity::class.java,
-                forwardExtras = true,
-                forwardDeepLink = true
-            )
+
+            it.intent.getStringExtra("deepLink")?.let { deepLink ->
+                Scope.launch {
+                    MoreApplication.shared!!.deeplinkManager.modifyDeepLink(deepLink).firstOrNull()?.let { modifiedDeepLink ->
+                        Napier.d { modifiedDeepLink }
+                        val link = Uri.parse(modifiedDeepLink)
+                        withContext(Dispatchers.Main) {
+                            it.intent.data = link
+                            showNewActivityAndClearStack(it, MainActivity::class.java,
+                                forwardExtras = true,
+                                forwardDeepLink = true
+                            )
+                        }
+                    }
+                }
+            } ?: run {
+                showNewActivityAndClearStack(it, MainActivity::class.java,
+                    forwardExtras = true,
+                    forwardDeepLink = true
+                )
+            }
+
         }
     }
 

@@ -22,12 +22,18 @@ struct NotificationView: View {
     private let navigationStrings = "Navigation"
     private let stringTable = "NotificationView"
     
-    @EnvironmentObject var navigationModalState: NavigationModalState
+    @EnvironmentObject private var contentViewModel: ContentViewModel
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     
     var body: some View {
         Navigation {
             MoreMainBackgroundView {
                 VStack {
+                    NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
+                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState))
+                    } label: {
+                        EmptyView()
+                    }.opacity(0)
                     MoreFilter(filterText: $notificationViewModel.filterText) {
                         NotificationFilterView(viewModel: filterVM)
                     }

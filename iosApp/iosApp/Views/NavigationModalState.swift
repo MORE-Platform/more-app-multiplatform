@@ -86,22 +86,31 @@ class NavigationModalState: ObservableObject {
     }
     
     func openWithDeepLink(url: URL, notificationId: String? = nil) {
-        let path = url.path
-        if let matchingScreen = NavigationScreens.allCases.first(where: { $0.values.navigationLink == path }) {
-            
-            var parameters: [NavigationParameter: String] = [:]
-            let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            
-            for queryItem in components?.queryItems ?? [] {
-                if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
-                    parameters[parameter] = value
+        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString) { modifiedDeepLink in
+            if let modifiedDeepLink,
+               let modifiedURL = URL(string: modifiedDeepLink) {
+                let path = modifiedURL.path
+                if let matchingScreen = NavigationScreens.allCases.first(where: { $0.values.navigationLink == path }) {
+                    var parameters: [NavigationParameter: String] = [:]
+                    let components = URLComponents(url: modifiedURL, resolvingAgainstBaseURL: false)
+                    
+                    for queryItem in components?.queryItems ?? [] {
+                        if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
+                            parameters[parameter] = value
+                        }
+                    }
+                    
+                    let observationId = parameters[.observationId]
+                    let notificationId = parameters[.notificaitonId] ?? notificationId
+                    let scheduleId = parameters[.scheduleId]
+                    
+                    self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                 }
+                
             }
-
-            let observationId = parameters[.observationId]
-            let notificationId = parameters[.notificaitonId] ?? notificationId
-            openView(screen: matchingScreen, observationId: observationId, notificationId: notificationId)
         }
+        
+        
     }
 
 }

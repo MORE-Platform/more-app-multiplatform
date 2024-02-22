@@ -10,15 +10,11 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
-import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.remove
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.NotificationFilterTypeModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class CoreNotificationFilterViewModel: CoreViewModel() {

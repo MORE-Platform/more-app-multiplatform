@@ -24,11 +24,7 @@ struct ScheduleView: View {
     private let stringsTable = "ScheduleListView"
     var body: some View {
         VStack {
-            NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
-                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState), scheduleListType: viewModel.scheduleListType)
-            } label: {
-                EmptyView()
-            }.opacity(0)
+            
             ScrollView(.vertical) {
                 if (viewModel.schedulesByDate.isEmpty) {
                     if viewModel.scheduleListType == ScheduleListType.running {

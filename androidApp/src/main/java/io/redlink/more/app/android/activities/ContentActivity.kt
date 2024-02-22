@@ -10,7 +10,6 @@
  */
 package io.redlink.more.app.android.activities
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,8 +37,7 @@ class ContentActivity: ComponentActivity() {
                     }
                 }
             }
-
-            intent.data = Uri.parse(deepLink)
+            intent.putExtra("deepLink", deepLink)
         }
         setContent {
             ContentView(viewModel = viewModel)
