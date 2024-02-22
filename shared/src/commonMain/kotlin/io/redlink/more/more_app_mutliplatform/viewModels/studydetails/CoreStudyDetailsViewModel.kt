@@ -51,7 +51,7 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                             }.cancellable().collect { (triple, observations) ->
                                 triple.first?.let {studySchema ->
                                     println(studySchema)
-                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations, triple.third,
+                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations.sortedBy { it.observationTitle }, triple.third,
                                         triple.second.toLong()
                                     )
                                 }
