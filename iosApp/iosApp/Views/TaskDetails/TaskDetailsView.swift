@@ -18,7 +18,6 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
-    var scheduleListType: ScheduleListType
     
     @EnvironmentObject var navigationModalState: NavigationModalState
     
@@ -38,7 +37,7 @@ struct TaskDetailsView: View {
                             Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
                                 .padding(0.5)
                             Spacer()
-                            if viewModel.taskDetailsModel?.state == ScheduleState.running, let scheduleId = navigationModalState.navigationState.scheduleId {
+                            if let detailsModel = viewModel.taskDetailsModel, detailsModel.state == .running, let scheduleId = navigationModalState.navigationState.scheduleId {
                                 InlineAbortButton {
                                     viewModel.stop(scheduleId: scheduleId)
                                 }
@@ -60,23 +59,22 @@ struct TaskDetailsView: View {
                     HStack {
                         AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
                     }
-                    if scheduleListType != .completed {
+                    if let detailsModel = viewModel.taskDetailsModel, !detailsModel.state.completed() {
                         Spacer()
                         HStack {
-                            if let task = viewModel.taskDetailsModel {
-                                DatapointsCollection(datapoints: $viewModel.dataCount, running: task.state == .running)
-                            }
+                            DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
                         }
                         Spacer()
-                    }
-                    if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
-                        if let model = viewModel.taskDetailsModel, let scheduleId = navigationModalState.navigationState.scheduleId {
-                            ObservationButton(
-                                observationActionDelegate: viewModel,
-                                scheduleId: scheduleId,
-                                observationType: model.observationType,
-                                state: model.state,
-                                disabled: !model.state.active())
+                        
+                        if !detailsModel.hidden {
+                            if let scheduleId = navigationModalState.navigationState.scheduleId {
+                                ObservationButton(
+                                    observationActionDelegate: viewModel,
+                                    scheduleId: scheduleId,
+                                    observationType: detailsModel.observationType,
+                                    state: detailsModel.state,
+                                    disabled: !detailsModel.state.active())
+                            }
                         }
                     }
                     Spacer()

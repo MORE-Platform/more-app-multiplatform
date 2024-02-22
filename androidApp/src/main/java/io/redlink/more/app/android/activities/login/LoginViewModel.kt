@@ -16,7 +16,9 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 interface LoginViewModelListener {
     fun tokenIsValid(study: Study)

@@ -68,7 +68,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
 
     fun setObservationId(observationId: String, notificationId: String?) {
         launchScope {
-            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId) }
+            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId) }
         }
     }
 

@@ -10,9 +10,6 @@
  */
 package io.redlink.more.app.android.activities.consent
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +23,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +31,6 @@ import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.AccordionReadMore
-import io.redlink.more.app.android.shared_composables.MessageAlertDialog
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 

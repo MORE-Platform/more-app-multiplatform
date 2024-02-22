@@ -12,23 +12,35 @@ package io.redlink.more.app.android.activities.notification
 
 import android.net.Uri
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -74,7 +86,14 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
                 modifier = Modifier.clickable {
                     if (!notification.read) {
                         notification.deepLink?.let {
-                            navController.navigate(Uri.parse(it))
+                            Scope.launch {
+                                MoreApplication.shared!!.deeplinkManager.modifyDeepLink(it).firstOrNull()?.let { modifiedDeepLink ->
+                                    Napier.d { modifiedDeepLink }
+                                    withContext(Dispatchers.Main) {
+                                        navController.navigate(Uri.parse(modifiedDeepLink))
+                                    }
+                                }
+                            }
                         } ?: run {
                             viewModel.setNotificationToRead(notification)
                         }

@@ -10,8 +10,6 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-
 enum class StudyState(val descr: String) {
     NONE("none"),
     ACTIVE("active"),

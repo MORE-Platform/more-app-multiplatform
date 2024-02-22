@@ -17,7 +17,6 @@ import io.ktor.http.parametersOf
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {

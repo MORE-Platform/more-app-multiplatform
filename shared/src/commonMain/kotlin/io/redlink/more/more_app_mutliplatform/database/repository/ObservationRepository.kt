@@ -10,17 +10,16 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.ktor.utils.io.core.*
+import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
 
 class ObservationRepository : Repository<ObservationSchema>() {
     override fun count(): Flow<Long> = realmDatabase().count<ObservationSchema>()
