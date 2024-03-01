@@ -25,20 +25,13 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var limeSurveyLink: URL?
     @Published var dataLoading = false
     @Published var wasAnswered = false
-    
-    
-    private let navigationModalState: NavigationModalState
 
-    init(navigationModalState: NavigationModalState) {
-        self.navigationModalState = navigationModalState
+    private var navigationModalState: NavigationModalState?
+
+    init() {
         webViewModel.delegate = self
-        if let scheduleId = navigationModalState.navigationState.scheduleId {
-            coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationModalState.navigationState.notificationId)
-        } else if let observationId = navigationModalState.navigationState.observationId {
-            coreViewModel.setObservationId(observationId: observationId, notificationId: navigationModalState.navigationState.notificationId)
-        }
+        
         coreViewModel.onLimeSurveyLinkChange { [weak self] link in
-            print("Link: \(String(describing: link))")
             DispatchQueue.main.async {
                 if let link {
                     self?.limeSurveyLink = URL(string: link)
@@ -53,23 +46,34 @@ class LimeSurveyViewModel: ObservableObject {
             }
         }
     }
-    
+
     func viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
 
     func viewDidDisappear() {
+        limeSurveyLink = nil
+        dataLoading = false
+        wasAnswered = false
         coreViewModel.viewDidDisappear()
+    }
+    
+    func setNavigationModalState(navigationModalState: NavigationModalState) {
+        self.navigationModalState = navigationModalState
+        if let scheduleId = navigationModalState.navigationState.scheduleId {
+            coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationModalState.navigationState.notificationId)
+        } else if let observationId = navigationModalState.navigationState.observationId {
+            coreViewModel.setObservationId(observationId: observationId, notificationId: navigationModalState.navigationState.notificationId)
+        }
     }
 
     func onFinish() {
         if wasAnswered {
             coreViewModel.finish()
-            
         } else {
             coreViewModel.cancel()
         }
-        self.navigationModalState.closeView(screen: .limeSurvey)
+        self.navigationModalState?.closeView(screen: .limeSurvey)
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {

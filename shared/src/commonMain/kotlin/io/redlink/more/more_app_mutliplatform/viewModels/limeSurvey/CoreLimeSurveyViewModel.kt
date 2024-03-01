@@ -103,10 +103,10 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
     }
 
     fun clear() {
+        limeSurveyLink.setNullable(null)
         scheduleId = null
         observationId = null
         dataLoading.value = false
-        limeSurveyLink.setNullable(null)
     }
 
     override fun close() {

@@ -63,6 +63,6 @@ struct LimeSurveyView: View {
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: NavigationModalState()))
+        LimeSurveyView(viewModel: LimeSurveyViewModel())
     }
 }

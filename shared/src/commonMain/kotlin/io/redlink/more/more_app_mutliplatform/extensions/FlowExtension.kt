@@ -10,6 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.extensions
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
