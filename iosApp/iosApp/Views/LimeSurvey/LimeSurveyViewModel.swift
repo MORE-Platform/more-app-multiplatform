@@ -26,6 +26,7 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var dataLoading = false
     @Published var wasAnswered = false
     
+    
     private let navigationModalState: NavigationModalState
 
     init(navigationModalState: NavigationModalState) {
@@ -52,7 +53,7 @@ class LimeSurveyViewModel: ObservableObject {
             }
         }
     }
-
+    
     func viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
@@ -64,6 +65,7 @@ class LimeSurveyViewModel: ObservableObject {
     func onFinish() {
         if wasAnswered {
             coreViewModel.finish()
+            
         } else {
             coreViewModel.cancel()
         }

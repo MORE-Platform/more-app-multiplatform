@@ -28,12 +28,8 @@ struct LimeSurveyView: View {
                             Text("Data is loading...")
                         }
                     } else {
-                        if let url = viewModel.limeSurveyLink {
-                            WebView(url: url, viewModel: viewModel.webViewModel)
+                            WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
                                 .ignoresSafeArea(.all, edges: .bottom)
-                        } else {
-                            Text("URL is nil")
-                        }
                     }
                 }
             }
