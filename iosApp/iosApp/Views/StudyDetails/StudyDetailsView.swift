@@ -49,7 +49,7 @@ struct StudyDetailsView: View {
                     }.padding(.bottom)
                     
                     ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localize(forKey: "participant_info", withComment: "Participant Information of study.", inTable: stringTable), lineLimit: 4)
-                        .padding(.bottom, 35)
+                        .padding( .bottom, 35)
                     
                     ExpandableContentWithLink(
                         content: {

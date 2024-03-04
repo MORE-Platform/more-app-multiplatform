@@ -14,7 +14,9 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.extensions.asNullableClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
+import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
@@ -72,7 +74,7 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
         }
     }
 
-    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) = limeSurveyLink.asClosure(providedState)
+    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) = limeSurveyLink.asNullableClosure(providedState)
 
     fun onDataLoadingChange(providedState: (Boolean) -> Unit) = dataLoading.asClosure(providedState)
 
@@ -101,10 +103,10 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
     }
 
     fun clear() {
+        limeSurveyLink.setNullable(null)
         scheduleId = null
         observationId = null
         dataLoading.value = false
-        limeSurveyLink.set(null)
     }
 
     override fun close() {
