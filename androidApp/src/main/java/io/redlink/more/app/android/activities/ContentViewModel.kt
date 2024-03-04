@@ -70,7 +70,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 worker
             )
 
-            it.intent.getStringExtra("deepLink")?.let { deepLink ->
+            (it.intent.getStringExtra("deepLink") ?: it.intent.data?.toString())?.let { deepLink ->
                 Scope.launch {
                     MoreApplication.shared!!.deeplinkManager.modifyDeepLink(deepLink).firstOrNull()?.let { modifiedDeepLink ->
                         Napier.d { modifiedDeepLink }
