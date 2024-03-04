@@ -15,6 +15,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.parametersOf
 import io.redlink.more.more_app_mutliplatform.extensions.set
+import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
     }
 
     override fun stop(onCompletion: () -> Unit) {
-        limeURL.set(null)
+        limeURL.value = null
         onCompletion()
     }
 
@@ -46,7 +47,7 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
         if (token != null && limeSurveyId != null) {
             val url = configToLink(limeSurveyLink, limeSurveyId, token)
             Napier.i { "LimeSurvey link: $url" }
-            limeURL.set(url)
+            limeURL.setNullable(url)
         }
     }
 

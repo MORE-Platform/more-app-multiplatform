@@ -29,7 +29,7 @@ class ScheduleViewModel: ObservableObject {
     }()
     
     lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
-    private lazy var limeSurveyVM = LimeSurveyViewModel()
+    let limeSurveyVM = LimeSurveyViewModel()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
