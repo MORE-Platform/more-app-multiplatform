@@ -48,14 +48,16 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
                 }
             }
         }
-        viewModelScope.launch {
-            coreViewModel.limeSurveyLink.collect {
-                Napier.d { "LimeSurveyLink collected: $it" }
-                withContext(Dispatchers.Main) {
-                    limeSurveyLink.value = it
+        coreViewModel.limeSurveyLink?.let { flow ->
+            viewModelScope.launch {
+                flow.collect {
+                    withContext(Dispatchers.Main) {
+                        limeSurveyLink.value = it
+                    }
                 }
             }
         }
+
     }
 
     fun setModel(scheduleId: String? = null, observationId: String? = null, notificationId: String? = null) {

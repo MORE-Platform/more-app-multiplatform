@@ -27,11 +27,23 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var wasAnswered = false
 
     private var navigationModalState: NavigationModalState?
+    
+    private var limeSurveyLinkChange: Ktor_ioCloseable?
 
     init() {
         webViewModel.delegate = self
+        coreViewModel.onDataLoadingChange { [weak self] boolean in
+            DispatchQueue.main.async {
+                self?.dataLoading = boolean.boolValue
+            }
+        }
         
-        coreViewModel.onLimeSurveyLinkChange { [weak self] link in
+    }
+
+    func viewDidAppear() {
+        coreViewModel.viewDidAppear()
+        
+        limeSurveyLinkChange = coreViewModel.onLimeSurveyLinkChange { [weak self] link in
             DispatchQueue.main.async {
                 if let link {
                     self?.limeSurveyLink = URL(string: link)
@@ -40,19 +52,12 @@ class LimeSurveyViewModel: ObservableObject {
                 }
             }
         }
-        coreViewModel.onDataLoadingChange { [weak self] boolean in
-            DispatchQueue.main.async {
-                self?.dataLoading = boolean.boolValue
-            }
-        }
-    }
-
-    func viewDidAppear() {
-        coreViewModel.viewDidAppear()
+        
     }
 
     func viewDidDisappear() {
-        limeSurveyLink = nil
+        limeSurveyLinkChange?.close()
+        limeSurveyLinkChange = nil
         dataLoading = false
         wasAnswered = false
         coreViewModel.viewDidDisappear()
