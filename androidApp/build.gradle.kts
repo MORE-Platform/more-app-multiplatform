@@ -10,11 +10,11 @@ android {
     namespace = "io.redlink.more.app.android"
     compileSdk = 34
     defaultConfig {
-        applicationId = "io.redlink.more.app.android"
+        applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 34
-        versionCode = 3
-        versionName = "3.0.7"
+        versionCode = 1
+        versionName = "3.0.8"
     }
     buildFeatures {
         compose = true
