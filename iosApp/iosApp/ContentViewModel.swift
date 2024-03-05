@@ -115,7 +115,6 @@ class ContentViewModel: ObservableObject {
     }
     
     func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
-        print("Test")
         if let scheduleId = navigationState.scheduleId {
             taskDetailsVM.setSchedule(scheduleId: scheduleId)
         }
@@ -143,9 +142,11 @@ class ContentViewModel: ObservableObject {
 
 extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
-        self.consentViewModel.consentInfo = study.consentInfo
-        self.consentViewModel.buildConsentModel()
-        showConsentView()
+        DispatchQueue.main.async {
+            self.consentViewModel.consentInfo = study.consentInfo
+            self.consentViewModel.buildConsentModel()
+            self.showConsentView()
+        }
     }
 }
 

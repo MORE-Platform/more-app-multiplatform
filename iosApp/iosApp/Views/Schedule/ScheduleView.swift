@@ -77,7 +77,7 @@ struct ScheduleView: View {
             SimpleQuestionThankYouView()
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
-            LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: navigationModalState))
+            LimeSurveyView(viewModel: viewModel.getLimeSurveyVM(navigationModalState: navigationModalState))
         }
     }
 }

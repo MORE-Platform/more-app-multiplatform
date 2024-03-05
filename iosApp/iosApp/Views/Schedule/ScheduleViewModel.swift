@@ -29,6 +29,7 @@ class ScheduleViewModel: ObservableObject {
     }()
     
     lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
+    let limeSurveyVM = LimeSurveyViewModel()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
@@ -88,6 +89,11 @@ class ScheduleViewModel: ObservableObject {
     func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
         simpleQuestionVM.setScheduleId(navigationState: navigationState)
         return simpleQuestionVM
+    }
+    
+    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
+        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
+        return limeSurveyVM
     }
 
     func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {

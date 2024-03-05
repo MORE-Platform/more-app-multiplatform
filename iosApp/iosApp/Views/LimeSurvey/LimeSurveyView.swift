@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,7 +17,7 @@ import SwiftUI
 
 struct LimeSurveyView: View {
     @StateObject var viewModel: LimeSurveyViewModel
-    
+
     private let stringsTable = "LimeSurvey"
     var body: some View {
         Navigation {
@@ -28,12 +28,9 @@ struct LimeSurveyView: View {
                             Text("Data is loading...")
                         }
                     } else {
-                        if let url = viewModel.limeSurveyLink {
-                            WebView(url: url, viewModel: viewModel.webViewModel)
-                                .ignoresSafeArea(.all, edges: .bottom)
-                        } else {
-                            Text("URL is nil")
-                        }
+                        
+                        WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
+                            .ignoresSafeArea(.all, edges: .bottom)
                     }
                 }
             }
@@ -67,6 +64,6 @@ struct LimeSurveyView: View {
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: NavigationModalState()))
+        LimeSurveyView(viewModel: LimeSurveyViewModel())
     }
 }
