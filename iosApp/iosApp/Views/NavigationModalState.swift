@@ -30,6 +30,14 @@ class NavigationModalState: ObservableObject {
     @Published var studyIsUpdating: Bool = false
     @Published var currentStudyState: StudyState = .none
     
+    @Published var tagState: Int = 0{
+        willSet(newValue){
+            if tagState != newValue{
+                clearViews()
+            }
+        }
+    }
+    
     func screenBinding(for screen: NavigationScreens) -> Binding<Bool> {
         Binding<Bool>(
             get: {

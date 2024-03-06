@@ -17,33 +17,35 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     private let strings = "Navigation"
     var body: some View {
-        TabView {
-            Group {
-                DashboardView(viewModel: contentViewModel.dashboardViewModel)
-                    .tabItem {
-                        Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
-                    }
-                    .environmentObject(contentViewModel)
-                NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
-                    .tabItem {
-                        Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                    }
-                InfoView(viewModel: contentViewModel.infoViewModel)
-                    .tabItem {
-                        Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
-                    }
-                    .environmentObject(contentViewModel)
+        TabView(selection: $navigationModalState.tagState){
+                Group {
+                    DashboardView(viewModel: contentViewModel.dashboardViewModel)
+                        .tabItem {
+                            Label(NavigationScreens.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
+                        }.tag(0)
+                        .environmentObject(contentViewModel)
+                    NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                        .tabItem {
+                            Label(NavigationScreens.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                        }.tag(1)
+                    InfoView(viewModel: contentViewModel.infoViewModel)
+                        .tabItem {
+                            Label(NavigationScreens.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
+                        }.tag(2)
+                        .environmentObject(contentViewModel)
+                }
+            }
+            .accent(color: .more.primaryDark)
+            .onAppear {
+                UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
+                UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
+                UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
             }
         }
-        .accent(color: .more.primaryDark)
-        .onAppear {
-            UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
-            UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
-            UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.more.secondary)]
-        }
-    }
+    
 }
 
 struct MainTabView_Previews: PreviewProvider {
