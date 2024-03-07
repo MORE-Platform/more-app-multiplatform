@@ -21,12 +21,15 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
@@ -39,12 +42,17 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
-    private val registrationService: RegistrationService by lazy { RegistrationService(MoreApplication.shared!!) }
+    private val registrationService: RegistrationService by lazy {
+        RegistrationService(
+            MoreApplication.shared!!
+        )
+    }
 
     val loginViewModel: LoginViewModel by lazy { LoginViewModel(registrationService, this) }
     val consentViewModel: ConsentViewModel by lazy { ConsentViewModel(registrationService, this) }
 
-    val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
+    val hasCredentials =
+        mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
 
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
@@ -72,12 +80,14 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
             (it.intent.getStringExtra("deepLink") ?: it.intent.data?.toString())?.let { deepLink ->
                 Scope.launch {
-                    MoreApplication.shared!!.deeplinkManager.modifyDeepLink(deepLink).firstOrNull()?.let { modifiedDeepLink ->
-                        Napier.d { modifiedDeepLink }
+                    MoreApplication.shared!!.deeplinkManager.modifyDeepLink(
+                        deepLink, stringResource(R.string.app_scheme), applicationId
+                    ).firstOrNull()?.let { modifiedDeepLink ->
                         val link = Uri.parse(modifiedDeepLink)
                         withContext(Dispatchers.Main) {
                             it.intent.data = link
-                            showNewActivityAndClearStack(it, MainActivity::class.java,
+                            showNewActivityAndClearStack(
+                                it, MainActivity::class.java,
                                 forwardExtras = true,
                                 forwardDeepLink = true
                             )
@@ -85,7 +95,8 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                     }
                 }
             } ?: run {
-                showNewActivityAndClearStack(it, MainActivity::class.java,
+                showNewActivityAndClearStack(
+                    it, MainActivity::class.java,
                     forwardExtras = true,
                     forwardDeepLink = true
                 )

@@ -36,7 +36,9 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -87,8 +89,7 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
                     if (!notification.read) {
                         notification.deepLink?.let {
                             Scope.launch {
-                                MoreApplication.shared!!.deeplinkManager.modifyDeepLink(it).firstOrNull()?.let { modifiedDeepLink ->
-                                    Napier.d { modifiedDeepLink }
+                                MoreApplication.shared!!.deeplinkManager.modifyDeepLink(it, stringResource(R.string.app_scheme), applicationId).firstOrNull()?.let { modifiedDeepLink ->
                                     withContext(Dispatchers.Main) {
                                         navController.navigate(Uri.parse(modifiedDeepLink))
                                     }
