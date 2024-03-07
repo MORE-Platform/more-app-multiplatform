@@ -94,7 +94,7 @@ class NavigationModalState: ObservableObject {
     }
     
     func openWithDeepLink(url: URL, notificationId: String? = nil) {
-        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString) { modifiedDeepLink in
+        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: nil, hostReplacement: nil) { modifiedDeepLink in
             if let modifiedDeepLink,
                let modifiedURL = URL(string: modifiedDeepLink) {
                 let path = modifiedURL.path
