@@ -32,7 +32,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -54,8 +53,6 @@ import io.redlink.more.app.android.activities.studyStates.StudyClosedView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
-import io.redlink.more.app.android.extensions.applicationId
-import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
@@ -113,10 +110,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    companion object {
-        val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
-    }
 }
 
 @Composable
@@ -147,7 +140,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.tabIndex.value = 0
                     viewModel.showBackButton.value = false
@@ -162,7 +155,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.tabIndex.value = 1
@@ -176,7 +169,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.tabIndex.value = 2
@@ -190,7 +183,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
@@ -202,7 +195,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
@@ -225,7 +218,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
@@ -250,7 +243,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             NavigationScreen.STUDY_DETAILS.let { screen ->
                 composable(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -266,7 +259,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.navigationBarTitle.value =
@@ -299,7 +292,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     val scheduleId by remember {
                         mutableStateOf(it.arguments?.getString("scheduleId"))
@@ -334,7 +327,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val scheduleId by remember {
@@ -359,7 +352,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             NavigationScreen.QUESTIONNAIRE_RESPONSE.let { screen ->
                 composable(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -373,7 +366,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -387,7 +380,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -405,7 +398,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -422,7 +415,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -434,7 +427,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
