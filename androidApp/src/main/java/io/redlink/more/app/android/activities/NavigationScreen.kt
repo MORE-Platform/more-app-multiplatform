@@ -152,7 +152,7 @@ enum class NavigationScreen(
         return cachedNavArguments!!
     }
 
-    fun createDeepLinkRoute(deepLinkHost: String): List<NavDeepLink> {
+    fun createDeepLinkRoute(deepLinkHost: String = ContentActivity.DEEPLINK): List<NavDeepLink> {
         if (cachedDeepLinks == null) {
             cachedDeepLinks =
                 listOf(navDeepLink { uriPattern = deepLinkHost + routeWithParameters() })

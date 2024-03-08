@@ -15,9 +15,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.extensions.applicationId
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
@@ -44,6 +47,9 @@ class ContentActivity: ComponentActivity() {
         }
     }
 
+    companion object {
+        val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
+    }
 }
 
 @Composable
