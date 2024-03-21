@@ -72,7 +72,7 @@
 		1F750CAF2A6FA8AE006E455E /* StudyClosedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F750CAE2A6FA8AE006E455E /* StudyClosedView.swift */; };
 		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
 		1F7F095029D4185200081B88 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094F29D4185200081B88 /* ArrayExtension.swift */; };
-		1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4429C2524F004667B1 /* NavigationScreens.swift */; };
+		1F80EC4529C2524F004667B1 /* NavigationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4429C2524F004667B1 /* NavigationScreen.swift */; };
 		1F80EC4729C83F74004667B1 /* iOSObservationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */; };
 		1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B629911E6E0023EF10 /* LoginViewModel.swift */; };
 		1F8847BA29914C8D0023EF10 /* Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847B929914C8D0023EF10 /* Title.swift */; };
@@ -274,7 +274,7 @@
 		1F750CAE2A6FA8AE006E455E /* StudyClosedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyClosedView.swift; sourceTree = "<group>"; };
 		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
 		1F7F094F29D4185200081B88 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
-		1F80EC4429C2524F004667B1 /* NavigationScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationScreens.swift; sourceTree = "<group>"; };
+		1F80EC4429C2524F004667B1 /* NavigationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationScreen.swift; sourceTree = "<group>"; };
 		1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSObservationDataManager.swift; sourceTree = "<group>"; };
 		1F8847B629911E6E0023EF10 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		1F8847B929914C8D0023EF10 /* Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Title.swift; sourceTree = "<group>"; };
@@ -687,7 +687,7 @@
 				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
 				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
 				1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */,
-				1F80EC4429C2524F004667B1 /* NavigationScreens.swift */,
+				1F80EC4429C2524F004667B1 /* NavigationScreen.swift */,
 				1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */,
 				1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */,
 				1F27536A29CC68FC00324417 /* ObservationExtension.swift */,
@@ -1151,7 +1151,7 @@
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
-				1F80EC4529C2524F004667B1 /* NavigationScreens.swift in Sources */,
+				1F80EC4529C2524F004667B1 /* NavigationScreen.swift in Sources */,
 				1F750CAD2A6FA771006E455E /* StudyPausedView.swift in Sources */,
 				EDEF4C8329EFD4CA00E830DA /* RunningSchedules.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,

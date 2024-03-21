@@ -23,13 +23,7 @@ class ScheduleViewModel: ObservableObject {
     let filterViewModel: DashboardFilterViewModel = DashboardFilterViewModel()
     
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
-    
-    lazy var taskDetailsVM: TaskDetailsViewModel = {
-        TaskDetailsViewModel(dataRecorder: recorder)
-    }()
-    
-    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
-    let limeSurveyVM = LimeSurveyViewModel()
+
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
@@ -84,23 +78,6 @@ class ScheduleViewModel: ObservableObject {
 
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
-    }
-
-    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
-        simpleQuestionVM.setScheduleId(navigationState: navigationState)
-        return simpleQuestionVM
-    }
-    
-    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
-        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
-        return limeSurveyVM
-    }
-
-    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
-        if let scheduleId = navigationState.scheduleId {
-            taskDetailsVM.setSchedule(scheduleId: scheduleId)
-        }
-        return taskDetailsVM
     }
     
     func mergeSchedules(_ lhs: [ScheduleModel], _ rhs: [ScheduleModel]) -> [ScheduleModel] {

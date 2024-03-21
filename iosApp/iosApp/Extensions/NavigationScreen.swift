@@ -19,6 +19,7 @@ struct NavigationScreenValues {
     let screenName: String
     let navigationLink: String
     var parameters: [NavigationParameter] = []
+    var fullScreen: Bool = false
 }
 
 enum NavigationParameter: String {
@@ -27,11 +28,14 @@ enum NavigationParameter: String {
     case scheduleId
 }
 
-enum NavigationScreens: CaseIterable {
+enum NavigationScreen: CaseIterable, Equatable, Identifiable {
+    var id: Self { self }
+    
     case dashboard
     case notifications
     case info
     case settings
+    case bluetoothConnections
     case taskDetails
     case studyDetails
     case scanQRCode
@@ -56,6 +60,8 @@ enum NavigationScreens: CaseIterable {
             return NavigationScreenValues(screenName: "Information", navigationLink: "/info")
         case .settings:
             return NavigationScreenValues(screenName: "Settings", navigationLink: "/settings")
+        case .bluetoothConnections:
+            return NavigationScreenValues(screenName: "Devices", navigationLink: "/devices")
         case .taskDetails:
             return NavigationScreenValues(screenName: "Task Details", navigationLink: "/task-details", parameters: [.observationId, .notificaitonId, .scheduleId])
         case .studyDetails:
@@ -63,9 +69,9 @@ enum NavigationScreens: CaseIterable {
         case .scanQRCode:
             return NavigationScreenValues(screenName: "Scan QR Code", navigationLink: "/scan-qr-code")
         case .questionObservation:
-            return NavigationScreenValues(screenName: "Question Observation", navigationLink: "/question-observation", parameters: [.observationId, .notificaitonId, .scheduleId])
+            return NavigationScreenValues(screenName: "Question Observation", navigationLink: "/question-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
         case .questionObservationThanks:
-            return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks")
+            return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks", fullScreen: true)
         case .dashboardFilter:
             return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: "/dashboard-filter")
         case .notificationFilter:
@@ -77,11 +83,11 @@ enum NavigationScreens: CaseIterable {
         case .observationDetails:
             return NavigationScreenValues(screenName: "Observation Details", navigationLink: "/observation-details", parameters: [.observationId])
         case .withdrawStudy:
-            return NavigationScreenValues(screenName: "Leave Study", navigationLink: "/leave-study")
+            return NavigationScreenValues(screenName: "Leave Study", navigationLink: "/leave-study", fullScreen: true)
         case .withdrawStudyConfirm:
-            return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study")
+            return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study", fullScreen: true)
         case .limeSurvey:
-            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId])
+            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
         }
     }
 
@@ -89,7 +95,7 @@ enum NavigationScreens: CaseIterable {
     static let PARAM_NOTIFICATION_ID = "notificationId"
 }
 
-extension NavigationScreens {
+extension NavigationScreen {
     func localize(useTable table: String, withComment comment: String) -> String {
         return values.screenName.localize(withComment: comment, useTable: table)
     }

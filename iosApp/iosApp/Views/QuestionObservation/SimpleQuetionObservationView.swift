@@ -25,54 +25,52 @@ struct SimpleQuetionObservationView: View {
     private let simpleQuestionStrings = "SimpleQuestinoObservation"
 
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView {
-                VStack {
-                    Title2(titleText: viewModel.simpleQuestoinModel?.question ?? "Question")
-                        .padding(.bottom, 20)
-                        .padding(.top, 40)
-
-                    VStack(
-                        alignment: .leading) {
-                            ForEach(viewModel.answers, id: \.self) { answerOption in
-                                RadioButtonField(id: answerOption, label: answerOption, isMarked: viewModel.answerSet == answerOption ? true : false,
-                                                 callback: { selected in
-                                                     viewModel.setAnswer(answer: selected)
-                                                 })
-                            }
-
-                            VStack {
-                                MoreActionButton(disabled: .constant(viewModel.answerSet.isEmpty)) {
-                                    if !self.viewModel.answerSet.isEmpty {
-                                        viewModel.finish()
-                                        navigationModalState.openView(screen: .questionObservationThanks)
-                                        navigationModalState.closeView(screen: .questionObservation)
-                                    }
-                                } label: {
-                                    Text(String.localize(forKey: "Answer", withComment: "Click answer button to send your answer.", inTable: simpleQuestionStrings))
+        MoreMainBackgroundView {
+            VStack {
+                Title2(titleText: viewModel.simpleQuestoinModel?.question ?? "Question")
+                    .padding(.bottom, 20)
+                    .padding(.top, 40)
+                
+                VStack(
+                    alignment: .leading) {
+                        ForEach(viewModel.answers, id: \.self) { answerOption in
+                            RadioButtonField(id: answerOption, label: answerOption, isMarked: viewModel.answerSet == answerOption ? true : false,
+                                             callback: { selected in
+                                viewModel.setAnswer(answer: selected)
+                            })
+                        }
+                        
+                        VStack {
+                            MoreActionButton(disabled: .constant(viewModel.answerSet.isEmpty)) {
+                                if !self.viewModel.answerSet.isEmpty {
+                                    viewModel.finish()
+                                    navigationModalState.openView(screen: .questionObservationThanks)
+                                    navigationModalState.closeView(screen: .questionObservation)
                                 }
-                                .padding(.top, 30)
+                            } label: {
+                                Text(String.localize(forKey: "Answer", withComment: "Click answer button to send your answer.", inTable: simpleQuestionStrings))
                             }
+                            .padding(.top, 30)
                         }
-                        .padding(.horizontal, 10)
-                        .onAppear {
-                            viewModel.viewDidAppear()
-                        }
-                        .onDisappear {
-                            viewModel.viewDidDisappear()
-                        }
-                    Spacer()
-                }
-            }
-            .customNavigationTitle(with: NavigationScreens.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"), displayMode: .inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        navigationModalState.closeView(screen: .questionObservation)
-                    } label: {
-                        Image(systemName: "chevron.down")
-                            .foregroundColor(.more.important)
                     }
+                    .padding(.horizontal, 10)
+                    .onAppear {
+                        viewModel.viewDidAppear()
+                    }
+                    .onDisappear {
+                        viewModel.viewDidDisappear()
+                    }
+                Spacer()
+            }
+        }
+        .customNavigationTitle(with: NavigationScreen.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"), displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    navigationModalState.closeView(screen: .questionObservation)
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.more.important)
                 }
             }
         }
