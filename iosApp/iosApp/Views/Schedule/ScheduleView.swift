@@ -65,19 +65,10 @@ struct ScheduleView: View {
         }
         .onAppear {
             viewModel.viewDidAppear()
-            navigationModalState.closeView(screen: .taskDetails)
+            //navigationModalState.closeView(screen: .taskDetails)
         }
         .onDisappear {
             viewModel.viewDidDisappear()
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
-            SimpleQuetionObservationView(viewModel: viewModel.getSimpleQuestionObservationVM(navigationState: navigationModalState.navigationState ))
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
-            SimpleQuestionThankYouView()
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
-            LimeSurveyView(viewModel: viewModel.getLimeSurveyVM(navigationModalState: navigationModalState))
         }
     }
 }
