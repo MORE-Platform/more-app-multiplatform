@@ -16,7 +16,8 @@
 import SwiftUI
 struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
-    @EnvironmentObject var contentViewModel: ContentViewModel
+    @EnvironmentObject private var contentViewModel: ContentViewModel
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     var float = CGFloat(0)
     
     private let stringTable = "SettingsView"
@@ -31,74 +32,62 @@ struct LeaveStudyConfirmationView: View {
     
     
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView {
-                VStack(alignment: .leading) {
-                    Title2(titleText: viewModel.studyTitle ?? "")
-                        .padding(.top)
-                        .padding(.bottom)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-
-                    Spacer()
-
-                    HStack(alignment: .center) {
-                        Spacer()
-
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(Color.more.important)
-                            .padding()
-                        Spacer()
-
-                    }.padding(.top)
-
-                    Text(String.localize(forKey: "second_message", withComment: "second exit message", inTable: stringTable))
-                        .foregroundColor(Color.more.secondary)
-                        .padding(.bottom, 2)
-                        .multilineTextAlignment(.center)
-
-                    Text(String.localize(forKey: "sure_message", withComment: "last exit message", inTable: stringTable))
-                        .foregroundColor(Color.more.primary)
-                        .fontWeight(.bold)
-                        .padding(.bottom, 2)
-                        .multilineTextAlignment(.center)
-
-                    Spacer()
-                        .frame(height: 150)
-
-                    MoreActionButton(
-                        backgroundColor: .more.approved,
-                        disabled: .constant(false)
-                    ) {
-                        contentViewModel.isLeaveStudyConfirmOpen = false
-                        contentViewModel.isLeaveStudyOpen = false
-                    } label: {
-                        Text(String.localize(forKey: "continue_study", withComment: "button to continue study", inTable: stringTable)).foregroundColor(Color.more.white)
-                    }
-                    .padding(.bottom, 2)
-
-                    MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
-                        viewModel.leaveStudy()
-                        contentViewModel.isLeaveStudyConfirmOpen = false
-                        contentViewModel.isLeaveStudyConfirmOpen = false
-                    } label: {
-                        Text(String.localize(forKey: "withdraw", withComment: "button to exit study", inTable: stringTable))
-                    }
-
-                    Spacer()
-                }
-                .padding(.horizontal, 40)
+        MoreMainBackgroundView {
+            VStack {
+                Title2(titleText: viewModel.studyTitle ?? "")
+                    .padding(.vertical)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
                 
+                Spacer()
+                
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(Color.more.important)
+                    .padding()
+                
+                Text(String.localize(forKey: "second_message", withComment: "second exit message", inTable: stringTable))
+                    .foregroundColor(Color.more.secondary)
+                    .padding(.bottom, 2)
+                    .multilineTextAlignment(.center)
+                
+                Text(String.localize(forKey: "sure_message", withComment: "last exit message", inTable: stringTable))
+                    .foregroundColor(Color.more.primary)
+                    .fontWeight(.bold)
+                    .padding(.bottom, 2)
+                    .multilineTextAlignment(.center)
+                
+                Spacer()
+                    .frame(height: 150)
+                
+                MoreActionButton(
+                    backgroundColor: .more.approved,
+                    disabled: .constant(false)
+                ) {
+                    navigationModalState.closeView(screen: .withdrawStudy)
+                    navigationModalState.closeView(screen: .withdrawStudyConfirm)
+                } label: {
+                    Text(String.localize(forKey: "continue_study", withComment: "button to continue study", inTable: stringTable)).foregroundColor(Color.more.white)
+                }
+                .padding(.bottom, 2)
+                
+                MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
+                    viewModel.leaveStudy()
+                    navigationModalState.clearViews()
+                } label: {
+                    Text(String.localize(forKey: "withdraw", withComment: "button to exit study", inTable: stringTable))
+                }
+                
+                Spacer()
             }
-            .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-            .onAppear {
-                viewModel.viewDidAppear()
-            }
-            .onDisappear{
-                viewModel.viewDidDisappear()
-            }
-            
+            .padding(.horizontal, 40)
+        }
+        .customNavigationTitle(with: NavigationScreen.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
+        .onAppear {
+            viewModel.viewDidAppear()
+        }
+        .onDisappear{
+            viewModel.viewDidDisappear()
         }
     
     }

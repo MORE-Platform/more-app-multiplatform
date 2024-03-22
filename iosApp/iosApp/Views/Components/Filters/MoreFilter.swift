@@ -8,14 +8,16 @@
 
 import SwiftUI
 
-struct MoreFilter<Destination: View>: View {
+struct MoreFilter: View {
     @Binding var filterText: String
-    var destination: () -> Destination
+    var destination: NavigationScreen
     var image = Image(systemName: "slider.horizontal.3")
     
+    @EnvironmentObject private var navigationModalState: NavigationModalState
+
     var body: some View {
-        NavigationLink {
-           destination()
+        Button {
+            navigationModalState.openView(screen: destination)
         } label: {
             HStack {
                 BasicText(text: filterText)
@@ -28,8 +30,6 @@ struct MoreFilter<Destination: View>: View {
 
 struct MoreFilter_Previews: PreviewProvider {
     static var previews: some View {
-        MoreFilter(filterText: .constant("test")) {
-            EmptyView()
-        }
+        MoreFilter(filterText: .constant("test"), destination: .dashboard)
     }
 }

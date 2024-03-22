@@ -65,10 +65,12 @@ class LimeSurveyViewModel: ObservableObject {
     
     func setNavigationModalState(navigationModalState: NavigationModalState) {
         self.navigationModalState = navigationModalState
-        if let scheduleId = navigationModalState.navigationState.scheduleId {
-            coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationModalState.navigationState.notificationId)
-        } else if let observationId = navigationModalState.navigationState.observationId {
-            coreViewModel.setObservationId(observationId: observationId, notificationId: navigationModalState.navigationState.notificationId)
+        if let state = navigationModalState.navigationState(for: .limeSurvey) {
+            if let scheduleId = state.scheduleId {
+                coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: state.notificationId)
+            } else if let observationId = state.observationId {
+                coreViewModel.setObservationId(observationId: observationId, notificationId: state.notificationId)
+            }
         }
     }
 

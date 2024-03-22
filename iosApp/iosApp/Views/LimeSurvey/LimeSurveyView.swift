@@ -20,36 +20,34 @@ struct LimeSurveyView: View {
 
     private let stringsTable = "LimeSurvey"
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView(contentPadding: 0) {
-                VStack {
-                    if viewModel.dataLoading {
-                        HStack {
-                            Text("Data is loading...")
-                        }
-                    } else {
-                        
-                        WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
-                            .ignoresSafeArea(.all, edges: .bottom)
-                    }
-                }
-            }
-            .customNavigationTitle(with: NavigationScreens.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
-            .toolbar {
-                if viewModel.wasAnswered {
-                    Button {
-                        viewModel.onFinish()
-                    } label: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.more.secondary)
+        MoreMainBackgroundView(contentPadding: 0) {        
+            VStack {
+                if viewModel.dataLoading {
+                    HStack {
+                        Text("Data is loading...")
                     }
                 } else {
-                    Button {
-                        viewModel.onFinish()
-                    } label: {
-                        Image(systemName: "chevron.down")
-                            .foregroundColor(.more.important)
-                    }
+                    
+                    WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
+                        .ignoresSafeArea(.all, edges: .bottom)
+                }
+            }
+        }
+        .customNavigationTitle(with: NavigationScreen.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
+        .toolbar {
+            if viewModel.wasAnswered {
+                Button {
+                    viewModel.onFinish()
+                } label: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.more.secondary)
+                }
+            } else {
+                Button {
+                    viewModel.onFinish()
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.more.important)
                 }
             }
         }
