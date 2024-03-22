@@ -13,7 +13,7 @@ android {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 34
-        versionCode = 3
+        versionCode = 4
         versionName = "3.0.12"
     }
     buildFeatures {
