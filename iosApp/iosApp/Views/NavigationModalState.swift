@@ -42,9 +42,9 @@ class NavigationModalState: ObservableObject {
     @Published var currentStudyState: StudyState = .none
 
     @Published var tagState: Int = 0 {
-        willSet(newValue) {
-            if tagState != newValue {
-                clearViews()
+        didSet {
+            if let onReset = currentNavigationAction()?.onReset {
+                onReset()
             }
         }
     }
