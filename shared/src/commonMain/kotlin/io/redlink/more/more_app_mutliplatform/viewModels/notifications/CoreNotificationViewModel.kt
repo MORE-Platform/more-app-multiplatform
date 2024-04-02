@@ -57,12 +57,6 @@ class CoreNotificationViewModel(
         return notificationList.asClosure(provideNewState)
     }
 
-    fun setNotificationReadStatus(notification: NotificationModel) {
-        if (!notification.read) {
-            notificationManager.markNotificationAsRead(notification.notificationId)
-        }
-    }
-
     fun handleNotificationAction(
         notification: NotificationModel,
         deepLinkHandler: ((String) -> Unit)
