@@ -54,10 +54,6 @@ struct ContentView: View {
         .environmentObject(navigationModalState)
         .environmentObject(viewModel)
     }
-
-    private func handleIncomingURL(_ url: URL) {
-        AppDelegate.navigationScreenHandler.openWithDeepLink(url: url)
-    }
 }
 
 struct ContentView_Previews: PreviewProvider {

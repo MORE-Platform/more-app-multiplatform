@@ -19,7 +19,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
@@ -35,6 +34,7 @@ import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -84,6 +84,13 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                         deepLink, stringResource(R.string.app_scheme), applicationId
                     ).firstOrNull()?.let { modifiedDeepLink ->
                         val link = Uri.parse(modifiedDeepLink)
+                        it.intent.getStringExtra(NotificationManager.MSG_ID)
+                            ?.let { notificationId ->
+                                MoreApplication.shared!!.notificationManager.handleNotificationInteraction(
+                                    notificationId,
+                                    modifiedDeepLink
+                                )
+                            }
                         withContext(Dispatchers.Main) {
                             it.intent.data = link
                             showNewActivityAndClearStack(
@@ -92,6 +99,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                                 forwardDeepLink = true
                             )
                         }
+
                     }
                 }
             } ?: run {
