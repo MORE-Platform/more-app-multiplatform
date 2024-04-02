@@ -24,20 +24,18 @@ struct SettingsView: View {
     private let navigationStrings = "Navigation"
     
     var body: some View {
-        MoreMainBackgroundView {
-            VStack(alignment: .leading) {
-                Text(String.localize(forKey: "settings_text", withComment: "information about accepted permissions", inTable: stringTable))
-                    .foregroundColor(.more.secondary)
-                    .padding(.bottom, 15)
-                if let permissions = viewModel.permissionModel {
-                    ConsentList(permissionModel: permissions)
-                        .padding(.top)
-                }
-                
-                Spacer()
+        VStack(alignment: .leading) {
+            Text(String.localize(forKey: "settings_text", withComment: "information about accepted permissions", inTable: stringTable))
+                .foregroundColor(.more.secondary)
+                .padding(.bottom, 15)
+            if let permissions = viewModel.permissionModel {
+                ConsentList(permissionModel: permissions)
+                    .padding(.top)
             }
+            
+            Spacer()
         }
-        .customNavigationTitle(with: NavigationScreens.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
+        .customNavigationTitle(with: NavigationScreen.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
         .onAppear {
             viewModel.viewDidAppear()
         }

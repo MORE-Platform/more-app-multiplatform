@@ -7,17 +7,16 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct DashboardView: View {
-    @EnvironmentObject var contentViewModel: ContentViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
     @StateObject var viewModel: DashboardViewModel
     private let stringTable = "DashboardView"
@@ -26,25 +25,15 @@ struct DashboardView: View {
     @State var tasksCompleted: Double = 0
     private let navigationStrings = "Navigation"
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView {
-                VStack {
-                    NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
-                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState))
-                    } label: {
-                        EmptyView()
-                    }.opacity(0)
-                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
-                        .environmentObject(viewModel.scheduleViewModel)
-                    if selection == 0 {
-                        ScheduleView(viewModel: viewModel.scheduleViewModel)
-                    } else {
-                        EmptyView()
-                    }
-                }
+        VStack {
+            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            if selection == 0 {
+                ScheduleView(viewModel: viewModel.scheduleViewModel)
+            } else {
+                EmptyView()
             }
-            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
         }
+        .customNavigationTitle(with: NavigationScreen.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
         .onAppear {
             viewModel.viewDidAppear()
         }
@@ -62,4 +51,3 @@ struct DashboardView_Previews: PreviewProvider {
         }
     }
 }
-

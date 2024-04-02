@@ -46,6 +46,9 @@ class ContentViewModel: ObservableObject {
         TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
     }()
     
+    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
+    lazy var limeSurveyVM = LimeSurveyViewModel()
+    
     var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -121,9 +124,18 @@ class ContentViewModel: ObservableObject {
         return taskDetailsVM
     }
     
+    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
+        simpleQuestionVM.setScheduleId(navigationState: navigationState)
+        return simpleQuestionVM
+    }
+    
+    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
+        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
+        return limeSurveyVM
+    }
+
+    
     private func reinitAllViewModels() {
-        self.isLeaveStudyOpen = false
-        isLeaveStudyConfirmOpen = false
         dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
