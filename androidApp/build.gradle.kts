@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 34
         versionCode = 4
-        versionName = "3.0.12"
+        versionName = "3.0.13"
     }
     buildFeatures {
         compose = true
@@ -29,13 +29,13 @@ android {
         }
     }
     buildTypes {
-        debug{
+        debug {
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
+            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
         }
         release {
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
-            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
+            buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
         }
     }
     compileOptions {

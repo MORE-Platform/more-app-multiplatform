@@ -31,7 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -57,7 +56,6 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class MainActivity : ComponentActivity() {
     private var loadedNavController = false
@@ -67,11 +65,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
 
-        val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (::navHostController.isInitialized) {
-                navHostController.popBackStack()
+        val activityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (::navHostController.isInitialized) {
+                    navHostController.popBackStack()
+                }
             }
-        }
 
         val destinationChangeListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -96,24 +95,25 @@ class MainActivity : ComponentActivity() {
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
-                MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+                MainView(
+                    viewModel.navigationBarTitle.value,
+                    viewModel,
+                    navHostController,
+                    activityLauncher
+                )
                 loadedNavController = true
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null && intent.data == null) {
-            intent.getStringExtra(NotificationManager.MSG_ID)?.let {
-                MoreApplication.shared!!.notificationManager.markNotificationAsRead(it)
             }
         }
     }
 }
 
 @Composable
-fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController, activityResultLauncher: ActivityResultLauncher<Intent>) {
+fun MainView(
+    navigationTitle: String,
+    viewModel: MainViewModel,
+    navController: NavHostController,
+    activityResultLauncher: ActivityResultLauncher<Intent>
+) {
     val currentContext = rememberUpdatedState(LocalContext.current)
     MoreBackground(
         navigationTitle = navigationTitle,
@@ -342,7 +342,13 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (scheduleId != null || observationId != null) {
                             LaunchedEffect(Unit) {
-                                viewModel.openLimesurvey(currentContext.value, activityResultLauncher, scheduleId, observationId, notificationId)
+                                viewModel.openLimesurvey(
+                                    currentContext.value,
+                                    activityResultLauncher,
+                                    scheduleId,
+                                    observationId,
+                                    notificationId
+                                )
                             }
                         }
                     }

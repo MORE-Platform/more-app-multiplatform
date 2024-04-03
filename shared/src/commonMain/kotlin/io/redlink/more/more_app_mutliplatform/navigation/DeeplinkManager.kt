@@ -20,20 +20,38 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
         this.deepLinks.addAll(deepLinks)
     }
 
-    fun modifyDeepLink(deepLink: String?, protocolReplacement: String? = null, hostReplacement: String? = null): Flow<String?> = flow {
+    fun modifyDeepLink(
+        deepLink: String?,
+        protocolReplacement: String? = null,
+        hostReplacement: String? = null
+    ): Flow<String?> = flow {
         deepLink?.let { deepLink ->
             val queryParams = deepLink.mapQueryParams()
-            val newDeepLink = queryParams.getOrElse("observationId") { emptySet() }.firstOrNull()?.let { observationId ->
-                val schedule = scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()
-                deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement)
-            } ?: if (validateRoute(deepLink)) deepLink else replaceRoute(deepLink, DASHBOARD, null, protocolReplacement, hostReplacement)
+            val newDeepLink = queryParams.getOrElse("observationId") { emptySet() }.firstOrNull()
+                ?.let { observationId ->
+                    val schedule =
+                        scheduleRepository.firstScheduleAvailableForObservationId(observationId)
+                            .cancellable().firstOrNull()
+                    deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement)
+                } ?: if (validateRoute(deepLink)) deepLink else replaceRoute(
+                deepLink,
+                DASHBOARD,
+                null,
+                protocolReplacement,
+                hostReplacement
+            )
             emit(newDeepLink)
         } ?: run {
             emit(deepLink)
         }
     }
 
-    private fun deepLinkModifier(deepLink: String, schedule: ScheduleSchema?, protocolReplacement: String?, hostReplacement: String?): String {
+    private fun deepLinkModifier(
+        deepLink: String,
+        schedule: ScheduleSchema?,
+        protocolReplacement: String?,
+        hostReplacement: String?
+    ): String {
         val selectedRoute = selectRoute(deepLink, schedule)
         return replaceRoute(deepLink, selectedRoute, schedule, protocolReplacement, hostReplacement)
     }
@@ -46,7 +64,7 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
 
     private fun routeForObservation(deepLink: String): String? {
         return deepLink.extractRouteFromDeepLink()?.let { route ->
-            observationFactory.observationTypes().firstOrNull{
+            observationFactory.observationTypes().firstOrNull {
                 it.contains(route)
             }?.let {
                 if (validateRoute(deepLink)) route else null
@@ -66,19 +84,30 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
         } ?: OBSERVATION_DETAILS
     }
 
-    private fun replaceRoute(deepLink: String, routeToReplace: String, schedule: ScheduleSchema? = null, protocolReplacement: String? = null, hostReplacement: String? = null): String {
+    private fun replaceRoute(
+        deepLink: String,
+        routeToReplace: String,
+        schedule: ScheduleSchema? = null,
+        protocolReplacement: String? = null,
+        hostReplacement: String? = null
+    ): String {
         val protocolAndHost = (protocolReplacement ?: deepLink.substringBefore("://")) + "://"
         val afterProtocol = deepLink.substringAfter("://")
         val hostAndPath = afterProtocol.substringBefore('?')
-        val host = hostReplacement ?: hostAndPath.substringBeforeLast("/", missingDelimiterValue = hostAndPath)
+        val host = hostReplacement ?: hostAndPath.substringBeforeLast(
+            "/",
+            missingDelimiterValue = hostAndPath
+        )
         val fragment = deepLink.substringAfter('#', "")
 
-        val newHostAndPath = if (hostAndPath.contains('/')) "$host/$routeToReplace" else "$hostAndPath/$routeToReplace"
+        val newHostAndPath =
+            if (hostAndPath.contains('/')) "$host/$routeToReplace" else "$hostAndPath/$routeToReplace"
 
         val paramsMap = deepLink.mapQueryParams().toMutableMap()
 
         schedule?.let {
-            val scheduleIdKeySet = paramsMap.getOrElse("scheduleId") { mutableSetOf() }.toMutableSet()
+            val scheduleIdKeySet =
+                paramsMap.getOrElse("scheduleId") { mutableSetOf() }.toMutableSet()
             scheduleIdKeySet.add(it.scheduleId.toHexString())
             paramsMap["scheduleId"] = scheduleIdKeySet
         }
@@ -96,10 +125,16 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
         }
     }
 
-    fun modifyDeepLink(deepLink: String?, protocolReplacement: String? = null, hostReplacement: String? = null, newState: (String?) -> Unit) = modifyDeepLink(deepLink, protocolReplacement, hostReplacement).asClosure(newState)
+    fun modifyDeepLink(
+        deepLink: String?,
+        protocolReplacement: String? = null,
+        hostReplacement: String? = null,
+        newState: (String?) -> Unit
+    ) = modifyDeepLink(deepLink, protocolReplacement, hostReplacement).asClosure(newState)
+
     companion object {
-        private const val TASK_DETAILS = "task-details"
-        private const val OBSERVATION_DETAILS = "observation-details"
-        private const val DASHBOARD = "dashboard"
+        const val TASK_DETAILS = "task-details"
+        const val OBSERVATION_DETAILS = "observation-details"
+        const val DASHBOARD = "dashboard"
     }
 }

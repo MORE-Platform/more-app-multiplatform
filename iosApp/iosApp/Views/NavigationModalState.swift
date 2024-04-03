@@ -32,10 +32,10 @@ class NavigationModalState: ObservableObject {
 
     @Published var navigationStack: [NavigationScreen] = []
     @Published var navigationStateStack: [NavigationState] = []
-    
+
     @Published var fullscreenNavigationStack: [NavigationScreen] = []
     @Published var fullscreenNavigationStateStack: [NavigationState] = []
-    
+
     @Published var navigationActions: [NavigationActions] = []
 
     @Published var studyIsUpdating: Bool = false
@@ -83,11 +83,11 @@ class NavigationModalState: ObservableObject {
             clearViews()
         }
     }
-    
+
     func currentNavigationAction() -> NavigationActions? {
         navigationActions.last
     }
-    
+
     func currentScreen() -> NavigationScreen? {
         if !navigationStack.isEmpty {
             return navigationStack.last
@@ -156,21 +156,21 @@ class NavigationModalState: ObservableObject {
         navigationStateStack.removeAll()
         fullscreenNavigationStack.removeAll()
         fullscreenNavigationStateStack.removeAll()
-        
+
         if let onReset = currentNavigationAction()?.onReset {
             onReset()
             navigationActions.removeAll()
         }
     }
-    
+
     func pushNavigationAction(actions: NavigationActions) {
         navigationActions.append(actions)
     }
-    
+
     func popNavigationAction() {
         let _ = navigationActions.removeFirst()
     }
-    
+
     func removeNavigationAction() {
         if !navigationActions.isEmpty {
             let _ = navigationActions.popLast()
@@ -199,6 +199,10 @@ class NavigationModalState: ObservableObject {
                     let observationId = parameters[.observationId]
                     let notificationId = parameters[.notificaitonId] ?? notificationId
                     let scheduleId = parameters[.scheduleId]
+
+                    if let notificationId {
+                        AppDelegate.shared.notificationManager.handleNotificationInteraction(notificationId: notificationId, deeplink: modifiedDeepLink)
+                    }
 
                     self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                 }
