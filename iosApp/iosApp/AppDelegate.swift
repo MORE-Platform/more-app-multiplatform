@@ -14,12 +14,12 @@
 //
 
 import BackgroundTasks
-import Firebase
-import FirebaseAnalytics
-import FirebaseMessaging
 import Foundation
 import shared
 import UIKit
+import FirebaseCore
+import FirebaseMessaging
+import FirebaseCrashlyticsSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     static let navigationScreenHandler = NavigationModalState()
@@ -95,9 +95,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DispatchQueue.main.async {
             UIApplication.shared.registerForRemoteNotifications()
         }
-    }
-
-    deinit {
     }
 }
 

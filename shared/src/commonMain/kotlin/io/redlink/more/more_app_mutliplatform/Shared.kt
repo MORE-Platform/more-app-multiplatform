@@ -61,7 +61,8 @@ class Shared(
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
-    val notificationManager = NotificationManager(localNotificationListener, networkService)
+    val notificationManager =
+        NotificationManager(localNotificationListener, networkService, deeplinkManager)
     val mainContentCoreViewModel = CoreContentViewModel()
 
     var appIsInForeGround = false
@@ -191,7 +192,11 @@ class Shared(
                         }
                     }
                     if (newStudyState == null) {
-                        studyStateRepository.storeState(study.studyState?.let { StudyState.getState(it) }
+                        studyStateRepository.storeState(study.studyState?.let {
+                            StudyState.getState(
+                                it
+                            )
+                        }
                             ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
                     }
                     studyIsUpdating.emit(false)

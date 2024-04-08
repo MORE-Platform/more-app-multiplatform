@@ -37,16 +37,8 @@ struct NotificationView: View {
                         VStack {
                             NotificationItem(notificationModel: notification)
                         }
-                        
                         .onTapGesture {
-                            if !notification.read {
-                                if let deepLinkString = notification.deepLink, let deepLink = URL(string: deepLinkString) {
-                                    navigationModalState.openWithDeepLink(url: deepLink, notificationId: notification.notificationId)
-                                } else {
-                                    notificationViewModel.setNotificationToRead(notification: notification)
-                                }
-                            }
-                            
+                            notificationViewModel.handleNotificationAction(notification: notification, navigationModalState: navigationModalState)
                         }
                     }
                 }
@@ -62,7 +54,6 @@ struct NotificationView: View {
             notificationViewModel.viewDidDisappear()
         }
         .customNavigationTitle(with: NavigationScreen.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
-
     }
 }
 
