@@ -59,6 +59,8 @@
 	<string>$(PRODUCT_NAME) needs access to your location to track your position for certain studies</string>
 	<key>NSMotionUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs access to your motion data to record your movement data in the background</string>
+	<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
+	<string></string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
