@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0.13</string>
+	<string>4.0.2</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.0.13</string>
+	<string>4.0.2</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -59,8 +59,6 @@
 	<string>$(PRODUCT_NAME) needs access to your location to track your position for certain studies</string>
 	<key>NSMotionUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs access to your motion data to record your movement data in the background</string>
-	<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
-	<string></string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
