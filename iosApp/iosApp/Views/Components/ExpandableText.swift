@@ -94,7 +94,7 @@ struct ExpandableText: View {
 
 struct ExpandableText_Previews: PreviewProvider {
     static var previews: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        ScrollView() {
             ExpandableText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut laborum", "Title", lineLimit: 4)
             ExpandableText("Small text", "Title", lineLimit: 3)
             ExpandableText("Render the limited text and measure its size, R", "Title", lineLimit: 1)

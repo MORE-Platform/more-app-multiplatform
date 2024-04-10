@@ -11,7 +11,6 @@
 package io.redlink.more.app.android.observations
 
 import android.content.Context
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation

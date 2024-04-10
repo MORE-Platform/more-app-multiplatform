@@ -19,10 +19,6 @@ import android.util.Log
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val TAG = "AccelerometerObservation"
 

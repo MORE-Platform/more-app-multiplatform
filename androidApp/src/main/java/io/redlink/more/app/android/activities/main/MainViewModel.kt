@@ -32,11 +32,14 @@ import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(context: Context) : ViewModel() {
     val tabIndex = mutableStateOf(0)
@@ -85,8 +88,17 @@ class MainViewModel(context: Context) : ViewModel() {
     private val taskDetailsViewModel: TaskDetailsViewModel by lazy {
         TaskDetailsViewModel(MoreApplication.shared!!.dataRecorder)
     }
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
+
 
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
         viewModelScope.launch {
             MoreApplication.shared!!.studyIsUpdating.collect {
                 studyIsUpdating.value = it

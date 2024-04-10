@@ -18,7 +18,6 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
-    var scheduleListType: ScheduleListType
     
     @EnvironmentObject var navigationModalState: NavigationModalState
     
@@ -28,62 +27,55 @@ struct TaskDetailsView: View {
     private let navigationStrings = "Navigation"
 
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView {
-                VStack(
-                    spacing: 20
-                ) {
-                    VStack {
-                        HStack {
-                            Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
-                                .padding(0.5)
-                            Spacer()
-                            if viewModel.taskDetailsModel?.state == ScheduleState.running, let scheduleId = navigationModalState.navigationState.scheduleId {
-                                InlineAbortButton {
-                                    viewModel.stop(scheduleId: scheduleId)
-                                }
-                            }
-                        }
-                        .frame(height: 40)
-                        HStack(
-                        ) {
-                            BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
-                            Spacer()
-                        }
-                    }
-
-                    let date: String = viewModel.getDateRangeString()
-                    let time: String = viewModel.getTimeRangeString()
-
-                    ObservationDetailsData(dateRange: date, timeframe: time)
-
+        MoreMainBackgroundView(contentPadding: 0) {
+            VStack(spacing: 20) {
+                VStack {
                     HStack {
-                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
-                    }
-                    if scheduleListType != .completed {
+                        Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
+                            .padding(0.5)
                         Spacer()
-                        HStack {
-                            if let task = viewModel.taskDetailsModel {
-                                DatapointsCollection(datapoints: $viewModel.dataCount, running: task.state == .running)
+                        if let detailsModel = viewModel.taskDetailsModel, detailsModel.state == .running, let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
+                            InlineAbortButton {
+                                viewModel.stop(scheduleId: scheduleId)
                             }
                         }
+                    }
+                    .frame(height: 40)
+                    
+                    HStack(
+                    ) {
+                        BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
                         Spacer()
                     }
-                    if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
-                        if let model = viewModel.taskDetailsModel, let scheduleId = navigationModalState.navigationState.scheduleId {
+                }
+                
+                
+                ObservationDetailsData(dateRange: viewModel.getDateRangeString(), timeframe: viewModel.getTimeRangeString())
+                
+                HStack {
+                    AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
+                }
+                if let detailsModel = viewModel.taskDetailsModel, !detailsModel.state.completed() {
+                    Spacer()
+                    HStack {
+                        DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
+                    }
+                    Spacer()
+                    
+                    if !detailsModel.hidden {
+                        if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                             ObservationButton(
                                 observationActionDelegate: viewModel,
                                 scheduleId: scheduleId,
-                                observationType: model.observationType,
-                                state: model.state,
-                                disabled: !model.state.active())
+                                observationType: detailsModel.observationType,
+                                state: detailsModel.state,
+                                disabled: !detailsModel.state.active())
                         }
                     }
-                    Spacer()
                 }
-
+                Spacer()
             }
-            .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
+            .customNavigationTitle(with: NavigationScreen.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .onAppear {
                 viewModel.viewDidAppear()
             }

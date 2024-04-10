@@ -13,12 +13,11 @@ package io.redlink.more.app.android.activities.studyDetails
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
-import kotlinx.coroutines.*
-import org.mongodb.kbson.ObjectId
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StudyDetailsViewModel: ViewModel() {
     private val coreViewModel = CoreStudyDetailsViewModel()

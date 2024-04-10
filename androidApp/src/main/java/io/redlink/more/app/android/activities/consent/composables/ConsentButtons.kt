@@ -14,10 +14,16 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
@@ -28,10 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.R
 
 
 @Composable
@@ -40,13 +46,30 @@ fun ConsentButtons(model: ConsentViewModel) {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissionsMap ->
-        val areGranted = permissionsMap.values.reduce { acc, next -> acc && next }
-        if (areGranted) {
-            model.acceptConsent(context = context)
+        val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.POST_NOTIFICATIONS
         } else {
-            model.permissionsNotGranted.value = true
+            null
+        }
+
+        val mutablePermissionMap = permissionsMap.toMutableMap()
+
+        notificationPermission?.let {
+            if (mutablePermissionMap[it] == false) {
+                model.openNotificationPermissionDeniedAlertDialog()
+                mutablePermissionMap.remove(it)
+            }
+        }
+
+        val anyPermissionDenied = mutablePermissionMap.values.any { !it }
+
+        if (anyPermissionDenied) {
+            model.openPermissionDeniedAlertDialog(context)
+        } else {
+            model.acceptConsent(context)
         }
     }
+
 
     if (!model.loading.value) {
         Column(
@@ -57,8 +80,7 @@ fun ConsentButtons(model: ConsentViewModel) {
         ) {
             Button(
                 onClick = {
-                    model.getNeededPermissions()
-                    checkAndRequestLocationPermissions(context, launcher, model)
+                    checkAndRequestPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults
                     .buttonColors(backgroundColor = MoreColors.Primary,
@@ -100,21 +122,26 @@ fun ConsentButtons(model: ConsentViewModel) {
     }
 }
 
-fun checkAndRequestLocationPermissions(
+fun checkAndRequestPermissions(
     context: Context,
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
+    extraPermissions: Set<String> = emptySet()
 ) {
     val permissions = model.permissions
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+    }
+    permissions.addAll(extraPermissions)
+
     val hasBackgroundLocationPermission = permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
-    if (checkPermissions(context, launcher, permissions)) {
-        if (hasBackgroundLocationPermission) {
-            checkPermissionForBackgroundLocationAccess(context, launcher, model)
-        }
-        model.acceptConsent(context = context)
+    if (hasBackgroundLocationPermission) {
+        checkPermissionForBackgroundLocationAccess(context, launcher, model)
+    } else {
+        checkPermissions(context, launcher, permissions, model)
     }
 }
 
@@ -122,6 +149,7 @@ fun checkPermissions(
     context: Context,
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     permissions: Set<String>,
+    model: ConsentViewModel,
 ): Boolean {
     return if (
         !permissions.all {
@@ -131,6 +159,7 @@ fun checkPermissions(
         launcher.launch(permissions.toTypedArray())
         false
     } else {
+        model.acceptConsent(context)
         true
     }
 }
@@ -147,13 +176,13 @@ fun checkPermissionForBackgroundLocationAccess(
     AlertDialog.Builder(context)
         .setTitle(R.string.background_location_permission_title)
         .setMessage(R.string.background_location_permission_message)
-        .setPositiveButton("Accept") { _, _ ->
-            launcher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-
+        .setPositiveButton("Accept") { dialog, _ ->
+            checkAndRequestPermissions(context, launcher, model, setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            dialog.dismiss()
         }
         .setNegativeButton("Decline") { dialog, _ ->
+            checkAndRequestPermissions(context, launcher, model)
             dialog.dismiss()
-            model.decline()
         }
         .create()
         .show()

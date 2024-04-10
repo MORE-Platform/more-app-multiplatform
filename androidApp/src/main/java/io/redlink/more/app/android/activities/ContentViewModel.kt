@@ -12,6 +12,7 @@ package io.redlink.more.app.android.activities
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,28 +20,52 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
-import io.redlink.more.more_app_mutliplatform.models.StudyState
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
-    private val registrationService: RegistrationService by lazy { RegistrationService(MoreApplication.shared!!) }
+    private val registrationService: RegistrationService by lazy {
+        RegistrationService(
+            MoreApplication.shared!!
+        )
+    }
 
     val loginViewModel: LoginViewModel by lazy { LoginViewModel(registrationService, this) }
     val consentViewModel: ConsentViewModel by lazy { ConsentViewModel(registrationService, this) }
 
-    val hasCredentials = mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
+    val hasCredentials =
+        mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
     val loginViewScreenNr = mutableStateOf(0)
+
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
+    }
 
     fun openMainActivity(context: Context) {
         (context as? Activity)?.let {
@@ -52,10 +77,39 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 ExistingPeriodicWorkPolicy.KEEP,
                 worker
             )
-            showNewActivityAndClearStack(it, MainActivity::class.java,
-                forwardExtras = true,
-                forwardDeepLink = true
-            )
+
+            (it.intent.getStringExtra("deepLink") ?: it.intent.data?.toString())?.let { deepLink ->
+                Scope.launch {
+                    MoreApplication.shared!!.deeplinkManager.modifyDeepLink(
+                        deepLink, stringResource(R.string.app_scheme), applicationId
+                    ).firstOrNull()?.let { modifiedDeepLink ->
+                        val link = Uri.parse(modifiedDeepLink)
+                        it.intent.getStringExtra(NotificationManager.MSG_ID)
+                            ?.let { notificationId ->
+                                MoreApplication.shared!!.notificationManager.handleNotificationInteraction(
+                                    notificationId,
+                                    modifiedDeepLink
+                                )
+                            }
+                        withContext(Dispatchers.Main) {
+                            it.intent.data = link
+                            showNewActivityAndClearStack(
+                                it, MainActivity::class.java,
+                                forwardExtras = true,
+                                forwardDeepLink = true
+                            )
+                        }
+
+                    }
+                }
+            } ?: run {
+                showNewActivityAndClearStack(
+                    it, MainActivity::class.java,
+                    forwardExtras = true,
+                    forwardDeepLink = true
+                )
+            }
+
         }
     }
 

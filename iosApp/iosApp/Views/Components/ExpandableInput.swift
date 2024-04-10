@@ -24,7 +24,7 @@ struct ExpandableInput: View {
 
     @Binding var input: String
 
-    var uppercase: Bool = false
+    var capitalization: Capitalization = .normal
     var autoCorrectDisabled: Bool = false
     var textType: UITextContentType? = nil
 
@@ -47,9 +47,9 @@ struct ExpandableInput: View {
 
             if expanded {
                 if isSmTextfield {
-                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, textType: textType)
+                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
                 } else {
-                    MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, textType: textType)
+                    MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
                 }
             }
         }
@@ -59,6 +59,6 @@ struct ExpandableInput: View {
 
 struct ExpandableInput_Preview: PreviewProvider {
     static var previews: some View {
-        ExpandableInput(expanded: .constant(true), isSmTextfield: .constant(false), headerText: .constant("Text for header"), inputPlaceholder: .constant("Placeholdertext for input"), input: .constant("me"), uppercase: false)
+        ExpandableInput(expanded: .constant(true), isSmTextfield: .constant(false), headerText: .constant("Text for header"), inputPlaceholder: .constant("Placeholdertext for input"), input: .constant("me"), capitalization: .normal)
     }
 }

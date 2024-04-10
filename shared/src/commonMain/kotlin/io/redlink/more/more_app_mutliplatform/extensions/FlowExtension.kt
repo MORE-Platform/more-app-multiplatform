@@ -10,12 +10,15 @@
  */
 package io.redlink.more.more_app_mutliplatform.extensions
 
-import io.ktor.utils.io.core.*
+import io.github.aakira.napier.Napier
+import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -37,6 +40,30 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
         it?.let {
             provideNewState(it)
         }
+    }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
+    return object : Closeable {
+        override fun close() {
+            job.second.cancel()
+        }
+    }
+}
+
+fun <T: Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
+    val job = Scope.create()
+    this.onEach {
+        provideNewState(it)
+    }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
+    return object : Closeable {
+        override fun close() {
+            job.second.cancel()
+        }
+    }
+}
+
+fun <T: Any?> StateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
+    val job = Scope.create()
+    this.onEach {
+        provideNewState(it)
     }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
     return object : Closeable {
         override fun close() {
@@ -93,6 +120,12 @@ fun <T> MutableStateFlow<T>.set(value: T?) {
         Scope.launch {
             emit(it)
         }
+    }
+}
+
+fun <T> MutableStateFlow<T?>.setNullable(value: T?) {
+    Scope.launch {
+        emit(value)
     }
 }
 

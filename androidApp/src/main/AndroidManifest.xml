@@ -77,7 +77,9 @@
             android:foregroundServiceType="location" />
         <service
             android:name=".firebase.FCMService"
-            android:exported="false">
+            android:exported="false"
+            android:foregroundServiceType=""
+            >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

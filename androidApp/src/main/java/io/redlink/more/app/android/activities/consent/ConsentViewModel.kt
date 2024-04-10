@@ -10,9 +10,7 @@
  */
 package io.redlink.more.app.android.activities.consent
 
-import android.Manifest
 import android.content.Context
-import android.os.Build
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +18,7 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
@@ -44,7 +43,6 @@ class ConsentViewModel(
         mutableStateOf(PermissionModel("Title", "Participation Info", "Study Consent Info", emptyList()))
     val loading = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
-    val permissionsNotGranted = mutableStateOf(false)
     val permissions = mutableSetOf<String>()
 
     init {
@@ -52,7 +50,7 @@ class ConsentViewModel(
             coreModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
-                    permissions.addAll(MoreApplication.shared!!.observationFactory.sensorPermissions())
+                    permissions.addAll(MoreApplication.shared!!.observationFactory.studySensorPermissions())
                 }
             }
         }
@@ -63,12 +61,6 @@ class ConsentViewModel(
                     loading.value = it
                 }
             }
-        }
-    }
-
-    fun getNeededPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -88,6 +80,39 @@ class ConsentViewModel(
                     })
             }
         }
+    }
+
+    fun openPermissionDeniedAlertDialog(context: Context) {
+        MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
+            title = stringResource(R.string.required_permissions_not_granted_title),
+            message = stringResource(R.string.required_permission_not_granted_message),
+            positiveTitle = stringResource(R.string.proceed_to_settings_button),
+            negativeTitle = stringResource(R.string.proceed_without_granting_button),
+            onPositive = {
+                MoreApplication.openSettings.value = true
+                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+            },
+            onNegative = {
+                acceptConsent(context)
+                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+            }
+        ))
+    }
+
+    fun openNotificationPermissionDeniedAlertDialog() {
+        MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
+            title = stringResource(R.string.notification_permission_not_granted_title),
+            message = stringResource(R.string.notification_permission_not_granted_message),
+            positiveTitle = stringResource(R.string.proceed_to_settings_button),
+            negativeTitle = stringResource(R.string.proceed_without_granting_button),
+            onPositive = {
+                MoreApplication.openSettings.value = true
+                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+            },
+            onNegative = {
+                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+            }
+        ))
     }
 
     fun decline() {

@@ -11,7 +11,6 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.append
 import io.redlink.more.more_app_mutliplatform.extensions.clear
@@ -47,6 +46,8 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     fun clearNeededObservationTypes() {
         studyObservationTypes.clear()
     }
+
+    fun studySensorPermissions() = observations.filter { it.observationType.observationType in studyObservationTypes.value }.map { it.observationType.sensorPermissions }.flatten().toSet()
 
     fun setNotificationManager(notificationManager: NotificationManager) {
         observations.forEach { it.setNotificationManager(notificationManager) }

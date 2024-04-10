@@ -16,7 +16,6 @@ import io.realm.kotlin.types.RealmDictionary
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import io.redlink.more.more_app_mutliplatform.extensions.asString
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager

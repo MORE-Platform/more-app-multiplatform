@@ -15,14 +15,15 @@
 
 import SwiftUI
 
-struct InfoListItem<Destination: View>: View {
+struct InfoListItem: View {
     var title: String
     var icon: String
-    var destination: () -> Destination
+    var destination: NavigationScreen
+    @EnvironmentObject private var navigationModalState: NavigationModalState
     var body: some View {
         VStack(spacing: 14) {
-            NavigationLink {
-                destination()
+            Button {
+                navigationModalState.openView(screen: destination)
             } label: {
                 HStack {
                     Image(systemName: icon)
@@ -39,8 +40,6 @@ struct InfoListItem<Destination: View>: View {
 
 struct InfoListItem_Previews: PreviewProvider {
     static var previews: some View {
-        InfoListItem(title: "Test", icon: "info.circle") {
-            SettingsView(viewModel: SettingsViewModel())
-        }
+        InfoListItem(title: "Test", icon: "info.circle", destination: .settings)
     }
 }

@@ -19,35 +19,33 @@ struct StudyClosedView: View {
     @StateObject var viewModel: ContentViewModel
     private let stringsTable = "StudyStates"
     var body: some View {
-        MoreMainBackgroundView {
-            VStack {
-                ScrollView {
-                    VStack(alignment: .center) {
-                        Title(titleText: "\("Study was completed".localize(withComment: "Study closed", useTable: stringsTable))!")
-                            .padding(.bottom, 8)
-                        Title2(titleText: "\("Thank you for your participation".localize(withComment: "Thanks for the participation", useTable: stringsTable))!")
-                    }
-                    Divider()
-                    VStack {
-                        SectionHeading(sectionTitle: "\("Message by the Study Operator".localize(withComment: "Study Operator message", useTable: stringsTable)):")
-                            .padding(.vertical, 8)
-                        if let finishText = AppDelegate.shared.finishText {
-                            BasicText(text: finishText)
-                        } else {
-                            BasicText(text: "Study was completed".localize(withComment: "Study closed", useTable: stringsTable))
-                        }
-                    }
+        VStack {
+            ScrollView {
+                VStack(alignment: .center) {
+                    Title(titleText: "\("Study was completed".localize(withComment: "Study closed", useTable: stringsTable))!")
+                        .padding(.bottom, 8)
+                    Title2(titleText: "\("Thank you for your participation".localize(withComment: "Thanks for the participation", useTable: stringsTable))!")
                 }
-                MoreActionButton(disabled: .constant(false)) {
-                    AppDelegate.shared.exitStudy {
-                        viewModel.showLoginView()
+                Divider()
+                VStack {
+                    SectionHeading(sectionTitle: "\("Message by the Study Operator".localize(withComment: "Study Operator message", useTable: stringsTable)):")
+                        .padding(.vertical, 8)
+                    if let finishText = AppDelegate.shared.finishText {
+                        BasicText(text: finishText)
+                    } else {
+                        BasicText(text: "Study was completed".localize(withComment: "Study closed", useTable: stringsTable))
                     }
-                } label: {
-                    BasicText(text: "Leave Study".localize(withComment: "Leave Study Button Text", useTable: stringsTable), color: .more.white, font: .headline)
                 }
             }
-            .padding(.vertical)
+            MoreActionButton(disabled: .constant(false)) {
+                AppDelegate.shared.exitStudy {
+                    viewModel.showLoginView()
+                }
+            } label: {
+                BasicText(text: "Leave Study".localize(withComment: "Leave Study Button Text", useTable: stringsTable), color: .more.white, font: .headline)
+            }
         }
+        .padding(.vertical)
     }
 }
 

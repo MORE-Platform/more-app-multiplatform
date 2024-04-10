@@ -15,13 +15,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreBLESetupViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BLESetupViewModel: ViewModel() {
     private val coreBLESetupViewModel = CoreBLESetupViewModel(MoreApplication.shared!!.observationFactory, MoreApplication.shared!!.coreBluetooth)
@@ -33,7 +33,17 @@ class BLESetupViewModel: ViewModel() {
 
     val neededDevices = mutableStateListOf<String>()
 
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
+
+
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
         viewModelScope.launch(Dispatchers.Default) {
             coreBLESetupViewModel.coreBluetooth.discoveredDevices.collect {
                 discoveredDevices.clear()
