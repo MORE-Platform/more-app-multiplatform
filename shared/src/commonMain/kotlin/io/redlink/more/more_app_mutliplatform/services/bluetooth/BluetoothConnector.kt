@@ -10,7 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.bluetooth
 
-import io.ktor.utils.io.core.Closeable
+import io.ktor.utils.io.core.*
 
 interface BluetoothConnector: BluetoothConnectorObserver, Closeable {
 

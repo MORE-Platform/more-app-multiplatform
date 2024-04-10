@@ -15,12 +15,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.more_app_mutliplatform.extensions.set
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private val permissions =
@@ -75,7 +78,6 @@ class PolarHeartRateObservation :
             }
         }
         Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
-        showPermissionAlertDialog()
         return false
     }
 

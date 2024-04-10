@@ -29,9 +29,6 @@ struct ConsentListHeader: View {
             Spacer()
             UIToggleFoldViewButton(isOpen: $isOpen)
         }
-        .onTapGesture {
-            isOpen = !isOpen
-        }
     }
 }
 

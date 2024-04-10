@@ -16,7 +16,6 @@
 import Foundation
 import CoreMotion
 import shared
-import UIKit
 
 class AccelerometerBackgroundObservation: Observation_ {
     private var recordForDurationInSec: Double = 60 * 10
@@ -54,7 +53,6 @@ class AccelerometerBackgroundObservation: Observation_ {
             
             return true
         }
-        self.showPermissionAlert()
         return false
     }
     

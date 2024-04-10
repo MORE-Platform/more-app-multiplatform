@@ -27,13 +27,9 @@ class ConsentViewModel: NSObject, ObservableObject {
     private let coreModel: CorePermissionViewModel
     var consentInfo: String? = nil
     var delegate: ConsentViewModelListener? = nil
-    private let stringTable = "SettingsView"
+    var stringTable = "SettingsView"
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingsView"), consentInfo: []) {
-        didSet {
-            self.permissionManager.setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
-        }
-    }
+    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingView"), consentInfo: [])
     @Published var isLoading = false
     @Published var error: String = ""
     @Published var showErrorAlert: Bool = false
@@ -64,11 +60,6 @@ class ConsentViewModel: NSObject, ObservableObject {
     func onDisappear() {
         coreModel.viewDidDisappear()
         permissionManager.observer = nil
-    }
-    
-    func resetPermissionRequest() {
-        self.requestedPermissions = false
-        self.permissionManager.resetRequest()
     }
 
     func requestPermissions() {
@@ -113,22 +104,16 @@ class ConsentViewModel: NSObject, ObservableObject {
 
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
-        if permissionManager.anyNeededPermissionDeclined() {
-            AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-                self.resetPermissionRequest()
-            }, onNegative: {
-                self.acceptConsent()
-                self.requestedPermissions = false
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-            }))
-        } else {
+        DispatchQueue.main.async {
             self.acceptConsent()
+            self.requestedPermissions = false            
+        }
+    }
+
+    func declined() {
+        DispatchQueue.main.async {
+            self.showErrorAlert = true
             self.requestedPermissions = false
         }
-        
     }
 }

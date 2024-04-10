@@ -18,8 +18,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 /**
  * available services for push-notification

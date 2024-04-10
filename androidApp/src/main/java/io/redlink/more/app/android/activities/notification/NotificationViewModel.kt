@@ -10,14 +10,11 @@
  */
 package io.redlink.more.app.android.activities.notification
 
-import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
@@ -30,12 +27,7 @@ import kotlinx.coroutines.withContext
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
     private val coreViewModel: CoreNotificationViewModel =
-        CoreNotificationViewModel(
-            coreFilterViewModel,
-            MoreApplication.shared!!.notificationManager,
-            stringResource(R.string.app_scheme),
-            applicationId
-        )
+        CoreNotificationViewModel(coreFilterViewModel, MoreApplication.shared!!.notificationManager)
     val notificationList = mutableStateListOf<NotificationModel>()
 
     init {
@@ -57,10 +49,8 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         coreViewModel.viewDidDisappear()
     }
 
-    fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
-        coreViewModel.handleNotificationAction(notification) { deepLink ->
-            navController.navigate(Uri.parse(deepLink))
-        }
+    fun setNotificationToRead(notification: NotificationModel) {
+        coreViewModel.setNotificationReadStatus(notification)
     }
 
     fun getFilterString(): String {

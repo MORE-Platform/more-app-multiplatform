@@ -28,6 +28,6 @@ enum class ScheduleState {
     fun completed() = this == ENDED || this == DONE
 
     companion object {
-        fun getState(name: String) = entries.firstOrNull { it.name == name } ?: DEACTIVATED
+        fun getState(name: String) = ScheduleState.values().firstOrNull { it.name == name } ?: DEACTIVATED
     }
 }

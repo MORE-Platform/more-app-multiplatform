@@ -16,14 +16,10 @@ import io.realm.kotlin.types.RealmDictionary
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.models.StudyState
-import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.withContext
 
 interface LocalNotificationListener {
     fun displayNotification(notification: NotificationSchema)
@@ -37,8 +33,7 @@ interface LocalNotificationListener {
 
 class NotificationManager(
     private val localNotificationListener: LocalNotificationListener,
-    private val networkService: NetworkService,
-    private val deeplinkManager: DeeplinkManager
+    private val networkService: NetworkService
 ) {
     val notificationRepository = NotificationRepository()
 
@@ -68,21 +63,14 @@ class NotificationManager(
         )
     }
 
-    fun storeAndHandleNotification(
-        shared: Shared,
-        notification: NotificationSchema,
-        displayNotification: Boolean
-    ) {
+    fun storeAndHandleNotification(shared: Shared, notification: NotificationSchema, displayNotification: Boolean) {
         storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
             handleNotificationDataAsync(shared, notification.notificationData)
         }
     }
 
-    fun storeAndDisplayNotification(
-        notification: NotificationSchema,
-        displayNotification: Boolean
-    ) {
+    fun storeAndDisplayNotification(notification: NotificationSchema, displayNotification: Boolean) {
         if (notification.title != null && notification.notificationBody != null) {
             notificationRepository.storeNotification(notification)
             if (displayNotification) {
@@ -137,44 +125,6 @@ class NotificationManager(
             data[MSG_ID]?.let {
                 deleteNotificationFromServer(it)
             }
-        }
-    }
-
-    fun handleNotificationInteraction(
-        notificationId: String,
-        deeplink: String? = null
-    ) {
-        if (deeplink == null || deeplink.contains(DeeplinkManager.TASK_DETAILS) || deeplink.contains(
-                DeeplinkManager.OBSERVATION_DETAILS
-            )
-        ) {
-            markNotificationAsRead(notificationId)
-        }
-    }
-
-    fun handleNotificationInteraction(
-        notification: NotificationModel,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null,
-        deepLinkHandler: ((String) -> Unit)
-    ) {
-        notification.deepLink?.let { deepLink ->
-            Scope.launch {
-                deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
-                    .firstOrNull()?.let { modifiedDeepLink ->
-                        if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
-                                DeeplinkManager.OBSERVATION_DETAILS
-                            )
-                        ) {
-                            markNotificationAsRead(notification.notificationId)
-                        }
-                        withContext(Dispatchers.Main) {
-                            deepLinkHandler(modifiedDeepLink)
-                        }
-                    }
-            }
-        } ?: run {
-            markNotificationAsRead(notification.notificationId)
         }
     }
 

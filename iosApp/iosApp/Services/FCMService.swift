@@ -13,11 +13,12 @@
 //  https://commonsclause.com/).
 //
 
+import Firebase
+import FirebaseAnalytics
+import FirebaseMessaging
 import Foundation
 import shared
 import Realm
-import UserNotifications
-import FirebaseMessaging
 
 class FCMService: NSObject {
     private let notificationRepository = NotificationRepository()

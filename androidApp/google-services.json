@@ -7,42 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:867714323835:android:8ec18f3dace4c8cb5019de",
-        "android_client_info": {
-          "package_name": "ac.at.lbg.dhp.more"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "867714323835-diq7io7nnpi78dmolkam7qreea5qpg71.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDOamQrEMV2y3cieAIImOO59DDOYe_n_qQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "867714323835-diq7io7nnpi78dmolkam7qreea5qpg71.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "867714323835-jhsjqjereaj3ctk3c709kk8mci20p0qm.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "io.redlink.more.app.multiplatform"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:867714323835:android:c18e2baa787d7a3a5019de",
         "android_client_info": {
           "package_name": "io.redlink.more.app.android"
@@ -65,13 +29,6 @@
             {
               "client_id": "867714323835-diq7io7nnpi78dmolkam7qreea5qpg71.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "867714323835-jhsjqjereaj3ctk3c709kk8mci20p0qm.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "io.redlink.more.app.multiplatform"
-              }
             }
           ]
         }

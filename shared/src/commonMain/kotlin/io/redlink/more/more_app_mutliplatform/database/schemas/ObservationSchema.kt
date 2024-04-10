@@ -11,11 +11,16 @@
 package io.redlink.more.more_app_mutliplatform.database.schemas
 
 import io.github.aakira.napier.Napier
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.types.RealmInstant
+import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Observation
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import org.mongodb.kbson.ObjectId
 

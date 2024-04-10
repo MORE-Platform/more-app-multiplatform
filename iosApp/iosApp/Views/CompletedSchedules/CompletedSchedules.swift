@@ -22,10 +22,13 @@ struct CompletedSchedules: View {
     @State var tasksCompleted: Double = 0
     @State var totalTasks: Double = 0
     var body: some View {
-        VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
-            ScheduleView(viewModel: scheduleViewModel)
+        MoreMainBackgroundView {
+            VStack {
+                ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(scheduleViewModel)
+                ScheduleView(viewModel: scheduleViewModel)
+            }
+            .padding(14)
         }
-        .customNavigationTitle(with: NavigationScreen.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"),displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreens.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"),displayMode: .inline)
     }
 }

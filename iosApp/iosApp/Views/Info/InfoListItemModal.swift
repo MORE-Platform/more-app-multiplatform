@@ -44,7 +44,9 @@ struct InfoListItemModal<Destination: View>: View {
 
 struct InfoListItemModal_Previews: PreviewProvider {
     static var previews: some View {
-        InfoListItem(title: "Test", icon: "info.circle", destination: .settings)
+        InfoListItem(title: "Test", icon: "info.circle") {
+            SettingsView(viewModel: SettingsViewModel())
+        }
     }
 }
 

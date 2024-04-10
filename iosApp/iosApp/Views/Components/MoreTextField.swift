@@ -18,13 +18,13 @@ import SwiftUI
 struct MoreTextField: View {
     @Binding var titleKey: String
     @Binding var inputText: String
-    var capitalization: Capitalization = .normal
+    var uppercase: Bool = false
     var autoCorrectDisabled: Bool = false
     var textType: UITextContentType? = nil
 
     var body: some View {
         TextField(titleKey, text: $inputText)
-            .textFieldAutoCapitalizataion(capitalization: capitalization)
+            .textFieldAutoCapitalizataion(uppercase: uppercase)
             .autocorrectionDisabled(autoCorrectDisabled)
             .textContentType(textType)
             .padding(.moreTextFieldPadding.textFieldInnerPadding)
@@ -38,6 +38,6 @@ struct MoreTextField: View {
 
 struct MoreTextField_Previews: PreviewProvider {
     static var previews: some View {
-        MoreTextField(titleKey: .constant("Hello World Key"), inputText: .constant(""), capitalization: .normal)
+        MoreTextField(titleKey: .constant("Hello World Key"), inputText: .constant(""), uppercase: true)
     }
 }

@@ -27,12 +27,4 @@ extension Array where Element: Equatable {
             self.remove(at: i)
         }
     }
-    
-    mutating func pop(_ elementToPop: Element) -> Int {
-        if let index = self.lastIndex(of: elementToPop) {
-            self.remove(at: index)
-            return index
-        }
-        return -1
-    }
 }

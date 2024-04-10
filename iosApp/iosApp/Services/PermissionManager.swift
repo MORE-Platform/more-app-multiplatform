@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung
-//  Licensed under the Apache 2.0 license with Commons Clause
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,48 +18,34 @@ import CoreBluetooth
 import CoreLocation
 import CoreMotion
 import Foundation
-import shared
-import UIKit
 import UserNotifications
+import UIKit
 
 enum PermissionStatus {
     case accepted, declined, requesting, non
 }
 
-extension PermissionStatus {
-    func userResponded() -> Bool {
-        self == .accepted || self == .declined
-    }
-
-    func resetStatus() -> PermissionStatus {
-        userResponded() || self == .requesting ? .requesting : .non
-    }
-
-    func declined() -> Bool {
-        self == .declined
-    }
-}
-
 protocol PermissionManagerObserver {
     func accepted()
+    func declined()
 }
 
 class PermissionManager: NSObject, ObservableObject {
     var observer: PermissionManagerObserver?
     private var permissionsRequested = false
-    
-    private var authorizationTimer: Timer?
 
     private let locationManager: CLLocationManager = CLLocationManager()
-    private var cbManager: CBCentralManager?
 
     private var cameraPermissionGranted = false
 
     private var gpsStatus: PermissionStatus = .non {
         didSet {
-            if gpsStatus.userResponded() {
+            if gpsStatus == .accepted {
                 locationManager.delegate = nil
                 requestPermission()
+            } else if gpsStatus == .declined {
+                locationManager.delegate = nil
+                observer?.declined()
             } else if gpsStatus == .requesting {
                 locationManager.delegate = self
                 locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -69,118 +55,102 @@ class PermissionManager: NSObject, ObservableObject {
 
     private var cmSensorStatus: PermissionStatus = .non {
         didSet {
-            print("cmSensor \(cmSensorStatus)")
-            if cmSensorStatus.userResponded() {
+            if cmSensorStatus == .accepted {
                 requestPermission()
+            } else if cmSensorStatus == .declined {
+                observer?.declined()
             }
         }
     }
-
-    private var notificationStatus: PermissionStatus = .requesting {
+    
+    private var notificationStatus: PermissionStatus = .non {
         didSet {
-            if notificationStatus.userResponded() {
-                if notificationStatus == .accepted {
-                    AppDelegate.registerForNotifications()
-                } else {
-                    AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Notification Permissions Not Granted", message: "We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks.", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                        if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        }
-                        AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-                    }, onNegative: {
-                        AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-                    }))
-                }
+            if notificationStatus == .accepted {
+                AppDelegate.registerForNotifications()
                 requestPermission()
+            } else if notificationStatus == .declined {
+                observer?.declined()
             }
         }
     }
 
     private var cameraStatus: PermissionStatus = .non {
         didSet {
-            if cameraStatus.userResponded() {
+            if cameraStatus == .accepted {
                 requestPermission()
+            } else if cameraStatus == .declined {
+                observer?.declined()
             }
         }
     }
 
     private var bluetoothStatus: PermissionStatus = .non {
         didSet {
-            if bluetoothStatus.userResponded() {
+            if bluetoothStatus == .accepted {
                 requestPermission()
+            } else if bluetoothStatus == .declined {
+                observer?.declined()
             }
         }
     }
+    
 
     var permissionsGranted: Bool = true
 
     override init() {
         super.init()
-        setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
+        setPermisssionValues(observationPermissions: AppDelegate.shared.observationFactory.sensorPermissions())
     }
 
     private func requestGpsAuthorization(always: Bool = true) {
         if locationManager.authorizationStatus == .notDetermined {
-            locationManager.requestWhenInUseAuthorization()
-            locationManager.requestAlwaysAuthorization()
+            if always {
+                locationManager.requestAlwaysAuthorization()
+            } else {
+                locationManager.requestWhenInUseAuthorization()
+            }
             gpsStatus = .requesting
         } else if locationManager.authorizationStatus == CLAuthorizationStatus.denied
             || locationManager.authorizationStatus == CLAuthorizationStatus.restricted || locationManager.accuracyAuthorization != .fullAccuracy {
             gpsStatus = .declined
-        } else {
-            gpsStatus = .accepted
         }
+        gpsStatus = .accepted
     }
 
     private func requestCMSensorRecorder() {
         let status = CMSensorRecorder.authorizationStatus()
         if status == .notDetermined {
-            DispatchQueue.main.async { [weak self] in
-                let activityManager = CMMotionActivityManager()
-                self?.authorizationTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { [weak self] timer in
-                    guard let self = self else {
-                        timer.invalidate()
-                        return
-                    }
-                    let status = CMSensorRecorder.authorizationStatus()
-                    if status == .authorized {
-                        self.cmSensorStatus = .accepted
-                        timer.invalidate()
-                        self.authorizationTimer = nil
-                    } else if status == .denied || status == .restricted {
-                        self.cmSensorStatus = .declined
-                        timer.invalidate()
-                        self.authorizationTimer = nil
-                    }
+            let activityManager = CMMotionActivityManager()
+            let timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+                let status = CMSensorRecorder.authorizationStatus()
+                if status == .authorized {
+                    self.cmSensorStatus = .accepted
+                    timer.invalidate()
+                } else if status == .restricted || status == .denied {
+                    self.cmSensorStatus = .declined
+                    timer.invalidate()
                 }
-                
-                activityManager.startActivityUpdates(to: OperationQueue.main) { [weak self] _ in
-                    print("Starting Activity Updates")
-                    self?.cmSensorStatus = .accepted
-                    self?.authorizationTimer?.invalidate()
-                    self?.authorizationTimer = nil
-                    activityManager.stopActivityUpdates()
-                }
+            }
+            activityManager.startActivityUpdates(to: OperationQueue.main) { _ in
+                self.cmSensorStatus = .accepted
+                timer.invalidate()
+                activityManager.stopActivityUpdates()
             }
         } else if status == .authorized {
             cmSensorStatus = .accepted
-        } else {
-            cmSensorStatus = .declined
         }
     }
 
     private func checkBluetoothAuthorization(always: Bool = true) -> PermissionStatus {
-        print("Checking for Bluetooth authorization")
-        if CBManager.authorization == .notDetermined {
-            self.cbManager = CBCentralManager(delegate: self, queue: nil)
+        if CBManager.authorization == CBManagerAuthorization.notDetermined {
             return .requesting
-        } else if CBManager.authorization == .restricted || CBManager.authorization == .denied {
+        } else if CBManager.authorization == CBManagerAuthorization.denied {
             return .declined
         } else {
             return .accepted
         }
     }
-
+    
     private func checkPushNotificationAuthorization() {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.getNotificationSettings { [weak self] settings in
@@ -210,7 +180,12 @@ class PermissionManager: NSObject, ObservableObject {
             }
         }
     }
+    
+    private func checkAcceptedPerms() {
+        permissionsGranted = (locationManager.authorizationStatus == CLAuthorizationStatus.authorizedAlways)
 
+    }
+    
     private func requestPermissionCamera() {
         AVCaptureDevice.requestAccess(for: .video, completionHandler: { accessGranted in
             DispatchQueue.main.async {
@@ -218,50 +193,34 @@ class PermissionManager: NSObject, ObservableObject {
             }
         })
     }
-
-    func anyNeededPermissionDeclined() -> Bool {
-        gpsStatus.declined() || cameraStatus.declined() || cmSensorStatus.declined() || bluetoothStatus.declined()
-    }
-
-    func setPermissionValues(observationPermissions: Set<String> = []) {
+    
+    private func setPermisssionValues(observationPermissions: Set<String> = []) {
         gpsStatus = observationPermissions.contains("gpsAlways") ? .requesting : .non
         cameraStatus = observationPermissions.contains("camera") ? .requesting : .non
         cmSensorStatus = observationPermissions.contains("cmsensorrecorder") ? .requesting : .non
-        bluetoothStatus = observationPermissions.contains("bluetoothAlways") ? .requesting : .non
+        bluetoothStatus = observationPermissions.contains("bluetoothAlways") ?.requesting : .non
     }
 
     func requestPermission(permissionRequest: Bool = false) {
-        print("Requesting Permissions")
         if permissionRequest {
             permissionsRequested = true
         }
         if permissionsRequested, let observer {
-            if notificationStatus == .requesting && !notificationStatus.userResponded() {
+            if notificationStatus != .accepted {
                 checkPushNotificationAuthorization()
-            } else if gpsStatus == .requesting && !gpsStatus.userResponded() {
+            } else if gpsStatus == .requesting && gpsStatus != .accepted {
                 requestGpsAuthorization()
-            } else if bluetoothStatus == .requesting && !bluetoothStatus.userResponded() {
+            } else if bluetoothStatus == .requesting && bluetoothStatus != .accepted {
                 bluetoothStatus = checkBluetoothAuthorization()
-            } else if cmSensorStatus == .requesting && !cmSensorStatus.userResponded() {
+            } else if cmSensorStatus == .requesting && cmSensorStatus != .accepted {
                 requestCMSensorRecorder()
             } else {
-                print("Continuing")
                 observer.accepted()
             }
         }
     }
-
-    func resetRequest() {
-        notificationStatus = .requesting
-        gpsStatus = gpsStatus.resetStatus()
-        bluetoothStatus = bluetoothStatus.resetStatus()
-        cmSensorStatus = cmSensorStatus.resetStatus()
-        cameraStatus = cameraStatus.resetStatus()
-        permissionsRequested = false
-    }
-
     func reset() {
-        notificationStatus = .requesting
+        notificationStatus = .non
         gpsStatus = .non
         bluetoothStatus = .non
         cmSensorStatus = .non
@@ -277,12 +236,5 @@ extension PermissionManager: CLLocationManagerDelegate {
         } else if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             gpsStatus = .accepted
         }
-    }
-}
-
-extension PermissionManager: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        self.cbManager = nil
-        self.bluetoothStatus = checkBluetoothAuthorization()
     }
 }

@@ -19,7 +19,7 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +52,6 @@ class GPSObservation(
             }
             return true
         }
-        showPermissionAlertDialog()
         return false
     }
 

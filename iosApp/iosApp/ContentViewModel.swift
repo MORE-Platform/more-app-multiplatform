@@ -29,7 +29,6 @@ class ContentViewModel: ObservableObject {
     @Published var mainTabViewSelection = 0
     
     @Published var finishText: String? = nil
-    @Published var alertDialogModel: AlertDialogModel? = nil
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -41,13 +40,6 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
-    
-    lazy var taskDetailsVM: TaskDetailsViewModel = {
-        TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
-    }()
-    
-    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
-    lazy var limeSurveyVM = LimeSurveyViewModel()
     
     var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
@@ -79,10 +71,6 @@ class ContentViewModel: ObservableObject {
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
             self?.finishText = AppDelegate.shared.finishText
             AppDelegate.navigationScreenHandler.setStudyState(studyState)
-        }
-        
-        AppDelegate.shared.mainContentCoreViewModel.onNewAlertDialogModel { [weak self] alertDialogModel in
-            self?.alertDialogModel = alertDialogModel
         }
         
         if hasCredentials {
@@ -117,25 +105,9 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
-        if let scheduleId = navigationState.scheduleId {
-            taskDetailsVM.setSchedule(scheduleId: scheduleId)
-        }
-        return taskDetailsVM
-    }
-    
-    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
-        simpleQuestionVM.setScheduleId(navigationState: navigationState)
-        return simpleQuestionVM
-    }
-    
-    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
-        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
-        return limeSurveyVM
-    }
-
-    
     private func reinitAllViewModels() {
+        self.isLeaveStudyOpen = false
+        isLeaveStudyConfirmOpen = false
         dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -154,11 +126,9 @@ class ContentViewModel: ObservableObject {
 
 extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
-        DispatchQueue.main.async {
-            self.consentViewModel.consentInfo = study.consentInfo
-            self.consentViewModel.buildConsentModel()
-            self.showConsentView()
-        }
+        self.consentViewModel.consentInfo = study.consentInfo
+        self.consentViewModel.buildConsentModel()
+        showConsentView()
     }
 }
 

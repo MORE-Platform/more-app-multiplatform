@@ -23,37 +23,40 @@ struct NotificationFilterView: View {
     private let navigationStrings = "Navigation"
     
     var body: some View {
-        VStack(alignment: .leading) {
-            ScrollView {
-                SectionHeading(sectionTitle: String.localize(forKey: "Select Filter", withComment: "Set Notification Filter", inTable: stringTable))
-                    .padding(15)
-                Divider()
-                
-                ForEach(viewModel.allFilters.keys.sorted{$0.sortIndex < $1.sortIndex}, id: \.self) { filter in
-                    if let selected = viewModel.allFilters[filter]?.boolValue {
-                        Button {
-                            viewModel.toggleFilters(filter: filter)
-                        } label: {
-                            MoreFilterOption(option: filter.type.localize(withComment: filter.type, useTable: stringTable), isSelected: .constant(selected))
-                            Spacer()
-                        }
-                        .buttonStyle(.borderless)
-                        .frame(maxWidth: .infinity)
+        Navigation {
+            MoreMainBackgroundView {
+                VStack(alignment: .leading) {
+                    VStack {
+                        SectionHeading(sectionTitle: String.localize(forKey: "Select Filter", withComment: "Set Notification Filter", inTable: stringTable))
+                            .padding(15)
                         Divider()
                         
-                    }
+                        ForEach(viewModel.allFilters.keys.sorted{$0.sortIndex < $1.sortIndex}, id: \.self) { filter in
+                            if let selected = viewModel.allFilters[filter]?.boolValue {
+                                Button {
+                                    viewModel.toggleFilters(filter: filter)
+                                } label: {
+                                    MoreFilterOption(option: filter.type.localize(withComment: filter.type, useTable: stringTable), isSelected: .constant(selected))
+                                    Spacer()
+                                }
+                                .buttonStyle(.borderless)
+                                .frame(maxWidth: .infinity)
+                                Divider()
+
+                            }
+                        }
+                    }.padding(.vertical, 20)
                 }
-            }.padding(.vertical, 20)
-            Spacer()
+                .onAppear {
+                    viewModel.viewDidAppear()
+                }
+                .onDisappear {
+                    viewModel.viewDidDisappear()
+                }
+            }
+            .customNavigationTitle(with: NavigationScreens.notificationFilter.localize(useTable: navigationStrings, withComment: "Select Notification Filter"))
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear {
-            viewModel.viewDidDisappear()
-        }
-        .customNavigationTitle(with: NavigationScreen.notificationFilter.localize(useTable: navigationStrings, withComment: "Select Notification Filter"))
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

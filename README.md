@@ -47,13 +47,11 @@ The following is an instruction on how to install and configure the project on y
     ```
 2. Open the project in Android Studio.
 3. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files** and wait until it's done.
-4. This project requires **JDK 11** or later. To build the project you need to set your **runtime to JDK 11 or later**, and then under **Project Structure** --> **Modules** set in either **androidApp** and **shared** the **Source Compatibility** and the **Target Compatibility** to at least **$JavaVersion.VERSION_11**.
-5. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be accessed by pressing cmd + , on Mac or Ctrl + Alt + S on Windows/Linux. Then, navigate to "Build, Execution, Deployment > Build Tools > Gradle". The JDK location can be set within that section.
-6. Now we can build the project. Go to the terminal and perform the following command in the root folder of the project:
+4. Now we can build the project. Go to the terminal and perform the following command in the root folder of the project:
     ```sh
     ./gradlew build
     ```
-7. Now you should be good to go. You can create an emulator device and start your application.
+5. Now you should be good to go. You can create an emulator device and start your application.
 
 ### Troubleshooting with KDoctor
 

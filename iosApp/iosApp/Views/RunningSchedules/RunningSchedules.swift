@@ -7,14 +7,14 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung
-//  Licensed under the Apache 2.0 license with Commons Clause
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct RunningSchedules: View {
     @StateObject var scheduleViewModel: ScheduleViewModel
@@ -22,10 +22,12 @@ struct RunningSchedules: View {
     @State var tasksCompleted: Double = 0
     private let navigationStrings = "Navigation"
     var body: some View {
-        VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
-            ScheduleView(viewModel: scheduleViewModel)
-        }
-        .customNavigationTitle(with: NavigationScreen.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"), displayMode: .inline)
-    }
+        MoreMainBackgroundView {
+            VStack {
+                ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted).environmentObject(scheduleViewModel)
+                ScheduleView(viewModel: scheduleViewModel)
+            }.padding(14)
+        } 
+        .customNavigationTitle(with: NavigationScreens.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"), displayMode: .inline)
+    }    
 }

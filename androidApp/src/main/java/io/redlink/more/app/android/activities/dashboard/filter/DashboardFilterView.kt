@@ -27,8 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline

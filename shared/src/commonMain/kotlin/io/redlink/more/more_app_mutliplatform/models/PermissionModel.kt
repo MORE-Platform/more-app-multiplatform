@@ -25,10 +25,7 @@ data class PermissionModel(
         fun create(study: Study, studyConsentTitle: String): PermissionModel {
             val observationConsent = mutableListOf<PermissionConsentModel>()
             observationConsent.add(PermissionConsentModel(studyConsentTitle, study.consentInfo))
-            observationConsent.addAll(
-                study.observations.sortedBy { it.observationTitle }
-                    .map { PermissionConsentModel(it.observationTitle, it.participantInfo) }
-            )
+            observationConsent.addAll( study.observations.map { PermissionConsentModel(it.observationTitle, it.participantInfo) })
             return PermissionModel(study.studyTitle, study.participantInfo, study.consentInfo, observationConsent)
         }
         fun createFromSchema(studySchema: StudySchema, observations: List<ObservationSchema>): PermissionModel {

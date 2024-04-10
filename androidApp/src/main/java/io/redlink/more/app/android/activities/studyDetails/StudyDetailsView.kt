@@ -10,13 +10,7 @@
  */
 package io.redlink.more.app.android.activities.studyDetails
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -26,11 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
-import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
-import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
@@ -38,6 +28,18 @@ import io.redlink.more.app.android.shared_composables.AccordionReadMore
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
+import io.redlink.more.app.android.extensions.toDate
+import io.redlink.more.app.android.shared_composables.TimeframeDays
+import org.mongodb.kbson.ObjectId
+import java.sql.Date
+import java.sql.Timestamp
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 @Composable

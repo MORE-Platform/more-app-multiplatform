@@ -11,9 +11,10 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.ktor.utils.io.core.Closeable
+import io.ktor.utils.io.core.*
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -23,10 +24,7 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope.launch
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
 import org.mongodb.kbson.ObjectId
 
@@ -44,29 +42,21 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             queryArgs = arrayOf(scheduleState.name)
         )
 
-    fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleSchema?> {
-        return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()
-            ?.transform { scheduleList ->
-                if (realm()?.query<ObservationSchema>("observationId = $0", observationId)
-                        ?.firstAsFlow()?.firstOrNull()?.scheduleLess == true
-                ) {
-                    emit(scheduleList.sortedBy { it.end }.last())
-                } else {
-                    val now = Clock.System.now().epochSeconds
-                    val filtered = scheduleList.filter {
-                        !it.getState().completed()
-                                && it.start != null
-                                && it.end != null
-                                && (it.end?.epochSeconds ?: 0) > now
-                    }.sortedBy { it.start?.epochSeconds }.firstOrNull()
-                    emit(filtered)
-                }
-            } ?: emptyFlow()
+    fun firstScheduleAvailableForObservationId(observationId: String): Flow<String?> {
+        return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()?.transform { scheduleList ->
+            if (realm()?.query<ObservationSchema>("observationId = $0", observationId)?.firstAsFlow()?.firstOrNull()?.scheduleLess == true) {
+                emit(scheduleList.sortedBy { it.end }.last().scheduleId.toHexString())
+            } else {
+                val now = Clock.System.now().epochSeconds
+                val filtered = scheduleList.filter {
+                    !it.getState()
+                        .completed() && it.start != null && it.end != null && (it.end?.epochSeconds
+                        ?: 0) > now
+                }.sortedBy { it.start?.epochSeconds }.firstOrNull()
+                emit(filtered?.scheduleId?.toHexString())
+            }
+        } ?: emptyFlow()
     }
-
-
-    fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
-        firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId?.toHexString() }
 
     fun collectRunningState(
         forState: ScheduleState,

@@ -18,12 +18,14 @@ import SwiftUI
 struct StudyPausedView: View {
     private let stringsTable = "StudyStates"
     var body: some View {
-        VStack(alignment: .center) {
-            Spacer()
-            Title(titleText: "\("Study currently paused".localize(withComment: "Study paused", useTable: stringsTable))!", textAlignment: .center)
-                .padding(.bottom, 8)
-            Title2(titleText: "\("This study is currently paused by the Study Operator and will be resumed shortly".localize(withComment: "Study will be resumed shortly", useTable: stringsTable))!", textAlignment: .center)
-            Spacer()
+        MoreMainBackgroundView {
+            VStack(alignment: .center) {
+                Spacer()
+                Title(titleText: "\("Study currently paused".localize(withComment: "Study paused", useTable: stringsTable))!", textAlignment: .center)
+                    .padding(.bottom, 8)
+                Title2(titleText: "\("This study is currently paused by the Study Operator and will be resumed shortly".localize(withComment: "Study will be resumed shortly", useTable: stringsTable))!", textAlignment: .center)
+                Spacer()
+            }
         }
     }
 }

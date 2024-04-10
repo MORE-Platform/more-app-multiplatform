@@ -14,13 +14,26 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.parseAuthorizationHeader
+import io.ktor.http.contentType
 import io.ktor.utils.io.core.Closeable
+import io.realm.kotlin.internal.platform.WeakReference
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.NotificationApi
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.RequestConfig
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure.RequestMethod
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
@@ -36,6 +49,7 @@ import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.math.log
 
 private const val TAG = "NetworkService"
 
@@ -45,7 +59,7 @@ class NetworkService(
 ) : Closeable {
     private var httpClient: HttpClient? = null
     private var configurationApi: ConfigurationApi? = null
-    private var dataApi: DataApi? = null
+    private var dataApi: WeakReference<DataApi>? = null
     private var notificationApi: NotificationApi? = null
 
     private var engineUseCounter = 10
@@ -57,7 +71,8 @@ class NetworkService(
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
                     val url = endpointRepository.endpoint()
-                    configurationApi = ConfigurationApi(baseUrl = url,
+                    configurationApi = ConfigurationApi(
+                        baseUrl = url,
                         httpClient.engine,
                         httpClientConfig = { httpClient.engineConfig })
                     configurationApi?.setUsername(credentials.apiId)
@@ -68,17 +83,19 @@ class NetworkService(
     }
 
     private fun initDataApi() {
-        if (dataApi == null || dataApi == null) {
+        if (dataApi == null || dataApi?.get() == null) {
             Napier.i(tag = "NetworkService::initDataApi") { "Init DataAPI..." }
             initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
-                    val api = DataApi(baseUrl = endpointRepository.endpoint(),
+                    val api = DataApi(
+                        baseUrl = endpointRepository.endpoint(),
                         httpClient.engine,
-                        httpClientConfig = { httpClient.engineConfig })
+                        httpClientConfig = { httpClient.engineConfig }
+                    )
                     api.setUsername(credentials.apiId)
                     api.setPassword(credentials.apiKey)
-                    dataApi = api
+                    dataApi = WeakReference(api)
                 }
             }
         }
@@ -90,9 +107,7 @@ class NetworkService(
             initHttpClient()
             credentialRepository.credentials()?.let { credentials ->
                 httpClient?.let { httpClient ->
-                    val api = NotificationApi(endpointRepository.endpoint(),
-                        httpClient.engine,
-                        httpClientConfig = { httpClient.engineConfig })
+                    val api = NotificationApi(endpointRepository.endpoint(), httpClient.engine, httpClientConfig = {httpClient.engineConfig})
                     api.setUsername(credentials.apiId)
                     api.setPassword(credentials.apiKey)
                     notificationApi = api
@@ -123,9 +138,8 @@ class NetworkService(
                 registrationApi.setUsername(it.apiId)
                 registrationApi.setPassword(it.apiKey)
 
-                val registrationResponse = registrationApi.unregisterFromStudy() ?: return Pair(
-                    false, NetworkServiceError(0, "Response null")
-                )
+                val registrationResponse =
+                    registrationApi.unregisterFromStudy() ?: return Pair(false, NetworkServiceError(0, "Response null"))
                 Napier.i(registrationResponse.response.toString(), tag = TAG)
                 close()
                 if (registrationResponse.success) {
@@ -134,10 +148,12 @@ class NetworkService(
                 }
                 Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${registrationResponse.response.status.value}" }
                 val error = createErrorBody(
-                    registrationResponse.response.status.value, registrationResponse.response
+                    registrationResponse.response.status.value,
+                    registrationResponse.response
                 )
                 return Pair(
-                    false, error
+                    false,
+                    error
                 )
             }
             return Pair(false, NetworkServiceError(null, "No credentials"))
@@ -148,7 +164,8 @@ class NetworkService(
     }
 
     suspend fun validateRegistrationToken(
-        registrationToken: String, endpoint: String? = null
+        registrationToken: String,
+        endpoint: String? = null
     ): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::validateRegistrationToken") { "Validating Registration token..." }
@@ -157,20 +174,21 @@ class NetworkService(
             val registrationApi =
                 RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
             val registrationResponse =
-                registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken)
-                    ?: return Pair(null, NetworkServiceError(0, "Response null"))
+                registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             Napier.i(registrationResponse.response.toString(), tag = TAG)
             if (registrationResponse.success) {
                 registrationResponse.body().let {
                     Napier.i(tag = "NetworkService::validateRegistrationToken") { "Registration token valid!" }
-                    return Pair(it, null)
+                    return Pair(it.get(), null)
                 }
             }
             val error = createErrorBody(
-                registrationResponse.response.status.value, registrationResponse.response
+                registrationResponse.response.status.value,
+                registrationResponse.response
             )
             return Pair(
-                null, error
+                null,
+                error
             )
 
         } catch (err: Exception) {
@@ -180,23 +198,23 @@ class NetworkService(
     }
 
     suspend fun sendConsent(
-        registrationToken: String, studyConsent: StudyConsent, endpoint: String? = null
+        registrationToken: String,
+        studyConsent: StudyConsent,
+        endpoint: String? = null
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendConsent") { "Sending Consent..." }
             val httpClient = getHttpClient()
             val url = endpoint ?: endpointRepository.endpoint()
-            val registrationApi = RegistrationApi(baseUrl = url,
+            val registrationApi = RegistrationApi(
+                baseUrl = url,
                 httpClient.engine,
                 httpClientConfig = { httpClient.engineConfig })
-            val consentResponse =
-                registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(
-                    null, NetworkServiceError(0, "Response null")
-                )
+            val consentResponse = registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(null, NetworkServiceError(0, "Response null"))
             if (consentResponse.success) {
                 consentResponse.body().let {
                     Napier.i(tag = "NetworkService::sendConsent") { "Credentials received!" }
-                    return Pair(it, null)
+                    return Pair(it.get(), null)
                 }
             }
             return Pair(
@@ -213,18 +231,21 @@ class NetworkService(
         initConfigApi()
         try {
             Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
-            val configResponse = configurationApi?.getStudyConfiguration() ?: return Pair(
-                null, NetworkServiceError(null, "No credentials set!")
-            )
+            val configResponse =
+                configurationApi?.getStudyConfiguration() ?: return Pair(
+                    null,
+                    NetworkServiceError(null, "No credentials set!")
+                )
             if (configResponse.success) {
                 configResponse.body().let {
                     Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
-                    return Pair(it, null)
+                    return Pair(it.get(), null)
                 }
             }
 
             return Pair(
-                null, createErrorBody(configResponse.response.status.value, configResponse.response)
+                null,
+                createErrorBody(configResponse.response.status.value, configResponse.response)
             )
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::getStudyConfig") { e.stackTraceToString() }
@@ -246,7 +267,8 @@ class NetworkService(
                     return Pair(true, null)
                 }
                 return Pair(
-                    false, createErrorBody(tokenResponse.status, tokenResponse.response)
+                    false,
+                    createErrorBody(tokenResponse.status, tokenResponse.response)
                 )
             } catch (err: Exception) {
                 Napier.e(tag = "NetworkService::sendNotificationToken") { err.stackTraceToString() }
@@ -260,22 +282,24 @@ class NetworkService(
         initDataApi()
         try {
             Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
-            val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
-                emptySet(), NetworkServiceError(null, "No credentials set!")
-            )
-            if (dataApiResponse.success) {
-                dataApiResponse.body().let {
-                    Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
-                    dataApiResponse.response.cancel()
-                    return Pair(it.toSet() ?: emptySet(), null)
+            val dataApiResponse = WeakReference(dataApi?.get()?.storeBulk(data) ?: return Pair(
+                emptySet(),
+                NetworkServiceError(null, "No credentials set!")
+            ))
+            dataApiResponse.get()?.let { dataApiResponse ->
+                if (dataApiResponse.success) {
+                    dataApiResponse.body().let {
+                        Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
+                        dataApiResponse.response.cancel()
+                        return Pair(it.get()?.toSet() ?: emptySet(), null)
+                    }
                 }
             }
-            dataApiResponse.response.cancel()
+            dataApiResponse.get()?.response?.cancel()
 
             return Pair(
-                emptySet(), createErrorBody(
-                    dataApiResponse.response.status.value, dataApiResponse.response
-                )
+                emptySet(),
+                createErrorBody(dataApiResponse.get()?.response?.status?.value ?: 500, dataApiResponse.get()?.response)
             )
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendData") { e.stackTraceToString() }
@@ -285,11 +309,11 @@ class NetworkService(
 
     fun iosSendData(
         data: DataBulk,
-        completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit
+        completionHandler: (WeakReference<Pair<Set<String>, NetworkServiceError?>>) -> Unit
     ) {
         Scope.launch {
             completionHandler(
-                sendData(data)
+                WeakReference(sendData(data))
             )
         }
     }
@@ -301,7 +325,7 @@ class NetworkService(
                 Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
                 notificationApi.listPushNotifications()?.let { response ->
                     if (response.success) {
-                        response.body()
+                        response.body().get() ?: emptyList()
                     } else {
                         Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
                         emptyList()
@@ -341,9 +365,10 @@ class NetworkService(
             if (responseBody == null) {
                 return NetworkServiceError(code = code, message = "Error")
             }
-            val error = Json.decodeFromString<Error>(
-                responseBody.toString()
-            )
+            val error =
+                Json.decodeFromString<Error>(
+                    responseBody.toString()
+                )
             NetworkServiceError(code = code, message = error.msg ?: "Error")
         } catch (e: Exception) {
             getException(e)

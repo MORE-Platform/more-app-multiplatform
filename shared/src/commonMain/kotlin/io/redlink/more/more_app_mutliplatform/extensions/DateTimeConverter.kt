@@ -11,13 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
 import io.realm.kotlin.types.RealmInstant
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 
 fun RealmInstant.toInstant(): Instant {
     val sec: Long = this.epochSeconds

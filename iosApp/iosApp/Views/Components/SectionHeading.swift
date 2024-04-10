@@ -18,16 +18,9 @@ import SwiftUI
 struct SectionHeading: View {
     var sectionTitle: String
     var font: Font = Font.more.headline
-    var showAllText = false
     
     var body: some View {
-        if showAllText {
-            Text(sectionTitle)
-                .font(font)
-                .fixedSize(horizontal: false, vertical: true)
-        } else {
-            Text(sectionTitle)
-                .font(font)
-        }
+        Text(sectionTitle)
+            .font(font)
     }
 }

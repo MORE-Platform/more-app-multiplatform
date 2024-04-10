@@ -26,13 +26,11 @@ struct ConsentView: View {
             Title2(titleText: viewModel.permissionModel.studyTitle)
                 .padding(.bottom, 30)
 
-            ScrollView {
-                ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localize(forKey: "Participant Information", withComment: "Participant Information of study.", inTable: taskStringTable), lineLimit: 4)
-                    .padding(.bottom, 35)
-                
-                ConsentList(permissionModel: viewModel.permissionModel)
-            }
-            
+            ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localize(forKey: "Participant Information", withComment: "Participant Information of study.", inTable: taskStringTable), lineLimit: 4)
+                .padding(.bottom, 35)
+
+
+            ConsentList(permissionModel: viewModel.permissionModel)
             Spacer()
             if viewModel.isLoading {
                 ProgressView()

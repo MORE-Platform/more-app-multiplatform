@@ -18,12 +18,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 
-class CoreNotificationViewModel(
-    private val coreFilterModel: CoreNotificationFilterViewModel,
-    private val notificationManager: NotificationManager,
-    private val protocolReplacement: String? = null,
-    private val hostReplacement: String? = null
-) : CoreViewModel() {
+class CoreNotificationViewModel(private val coreFilterModel: CoreNotificationFilterViewModel, private val notificationManager: NotificationManager): CoreViewModel() {
     private val originalNotificationList = mutableListOf<NotificationModel>()
     val notificationList: MutableStateFlow<List<NotificationModel>> = MutableStateFlow(listOf())
 
@@ -40,16 +35,15 @@ class CoreNotificationViewModel(
             }
         }
         launchScope {
-            notificationManager.notificationRepository.getAllUserFacingNotifications().cancellable()
-                .collect {
-                    originalNotificationList.clear()
-                    originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
-                    if (originalNotificationList.isNotEmpty() && coreFilterModel.filterActive()) {
-                        notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
-                    } else {
-                        notificationList.set(originalNotificationList.toList())
-                    }
+            notificationManager.notificationRepository.getAllUserFacingNotifications().cancellable().collect {
+                originalNotificationList.clear()
+                originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
+                if (originalNotificationList.isNotEmpty() && coreFilterModel.filterActive()) {
+                    notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
+                } else {
+                    notificationList.set(originalNotificationList.toList())
                 }
+            }
         }
     }
 
@@ -57,15 +51,7 @@ class CoreNotificationViewModel(
         return notificationList.asClosure(provideNewState)
     }
 
-    fun handleNotificationAction(
-        notification: NotificationModel,
-        deepLinkHandler: ((String) -> Unit)
-    ) {
-        notificationManager.handleNotificationInteraction(
-            notification,
-            protocolReplacement,
-            hostReplacement,
-            deepLinkHandler
-        )
+    fun setNotificationReadStatus(notification: NotificationModel) {
+        notificationManager.markNotificationAsRead(notification.notificationId)
     }
 }

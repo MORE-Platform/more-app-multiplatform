@@ -32,9 +32,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     let connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     let discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     
-    private lazy var centralManager: CBCentralManager = {
-        CBCentralManager(delegate: self, queue: nil)
-    }()
+    private var centralManager: CBCentralManager!
     private var discoveredDevices: BluetoothDeviceList = [:]
     private var connectedDevices: BluetoothDeviceList = [:]
     var scanning = false
@@ -47,6 +45,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     
     override init() {
         super.init()
+        centralManager = CBCentralManager(delegate: self, queue: nil)
         specificBluetoothConnectors.allValues
             .forEach{ ($0 as? BluetoothConnector)?.observer.add(self) }
     }

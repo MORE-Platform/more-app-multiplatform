@@ -10,12 +10,9 @@
  */
 package io.redlink.more.app.android.activities.tasks
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import android.app.Activity
+import android.content.Intent
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
@@ -26,35 +23,28 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.jvmLocalDate
-import io.redlink.more.app.android.extensions.jvmLocalDateTime
-import io.redlink.more.app.android.shared_composables.Accordion
-import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.DatapointCollectionView
-import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.shared_composables.SmallTextButton
-import io.redlink.more.app.android.shared_composables.SmallTextIconButton
-import io.redlink.more.app.android.shared_composables.TimeframeDays
-import io.redlink.more.app.android.shared_composables.TimeframeHours
+import io.redlink.more.app.android.shared_composables.*
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
+import io.redlink.more.app.android.extensions.jvmLocalDate
+import io.redlink.more.app.android.extensions.jvmLocalDateTime
+import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 
 
 @Composable
-fun TaskDetailsView(
-    navController: NavController,
-    viewModel: TaskDetailsViewModel,
-    scheduleId: String?
-) {
+fun TaskDetailsView(navController: NavController, viewModel: TaskDetailsViewModel, scheduleId: String?, scheduleListType: ScheduleListType) {
+    val context = LocalContext.current
     val backStackEntry = remember { navController.currentBackStackEntry }
     val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
@@ -132,7 +122,7 @@ fun TaskDetailsView(
 
 
                 scheduleId?.let {
-                    if (!viewModel.taskDetailsModel.value.state.completed()) {
+                    if (scheduleListType != ScheduleListType.COMPLETED) {
                         DatapointCollectionView(
                             viewModel.dataPointCount.value,
                             viewModel.taskDetailsModel.value.state

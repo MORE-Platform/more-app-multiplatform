@@ -10,12 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.infrastructure
 
-import io.ktor.utils.io.core.ByteReadPacket
-import io.ktor.utils.io.core.Input
-import io.ktor.utils.io.core.buildPacket
-import io.ktor.utils.io.core.readAvailable
-import io.ktor.utils.io.core.readBytes
-import io.ktor.utils.io.core.writeFully
+import io.ktor.utils.io.core.*
 import kotlin.experimental.and
 
 private val digits = "0123456789abcdef".toCharArray()

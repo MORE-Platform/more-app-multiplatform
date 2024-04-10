@@ -11,22 +11,11 @@
 package io.redlink.more.app.android.activities.info
 
 import android.app.Activity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Watch
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.AppVersion

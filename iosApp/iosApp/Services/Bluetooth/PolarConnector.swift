@@ -18,11 +18,12 @@ import Foundation
 import PolarBleSdk
 import RxSwift
 import shared
-import UIKit
 
 class PolarConnector: NSObject, BluetoothConnector {
     var specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary()
-    var bluetoothState: BluetoothState = .on
+    private var centralManager: CBCentralManager!
+    
+    var bluetoothState: BluetoothState = .off
     
     var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
@@ -30,37 +31,34 @@ class PolarConnector: NSObject, BluetoothConnector {
     var delegate: BLEConnectorDelegate?
     private var scanningWithUnknownBLEState = false
     private var devicesSubscription: Disposable? = nil
-    
-    lazy var polarApi: PolarBleApi = { [weak self] in
-        var api = PolarBleApiDefaultImpl
-            .polarImplementation(DispatchQueue.main,
-                                features: [
-                                    .feature_hr,
-                                    .feature_battery_info,
-                                    .feature_device_info,
-                                    .feature_polar_offline_recording,
-                                    .feature_polar_online_streaming,
-                                    .feature_polar_sdk_mode,
-                                    .feature_polar_device_time_setup,
-                                ])
-        
-        if let self {
-            api.observer = self
-            api.polarFilter(false)
-            api.deviceInfoObserver = self
-            api.deviceFeaturesObserver = self
-            api.powerStateObserver = self
-        }
-        
-        return api
-    }()
-    
+    var polarApi = PolarBleApiDefaultImpl
+        .polarImplementation(DispatchQueue.main,
+                             features: [
+                                 .feature_hr,
+                                 .feature_battery_info,
+                                 .feature_device_info,
+                                 .feature_polar_offline_recording,
+                                 .feature_polar_online_streaming,
+                                 .feature_polar_sdk_mode,
+                                 .feature_polar_device_time_setup,
+                             ])
     var observer: KotlinMutableSet<BluetoothConnectorObserver> = KotlinMutableSet()
     
     var scanning = false {
         didSet {
             isScanning(boolean: scanning)
         }
+    }
+    
+    override init() {
+        super.init()
+        
+        self.polarApi.polarFilter(false)
+        self.polarApi.observer = self
+        self.polarApi.deviceInfoObserver = self
+        self.polarApi.deviceFeaturesObserver = self
+        self.polarApi.powerStateObserver = self
+        self.polarApi.automaticReconnection = true
     }
     
     func addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
@@ -91,42 +89,28 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
     
     func scan() {
-        if CBManager.authorization == .restricted || CBManager.authorization == .denied {
-            AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-            }, onNegative: {
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-            }))
-        }
-        else if !scanning && self.observer.count > 0 && bluetoothState == BluetoothState.on {
+        if !scanning && self.observer.count > 0 && bluetoothState == BluetoothState.on {
             print("Polar: Starting the scan...")
-            DispatchQueue.main.async { [weak self] in
-                if let self {
-                    self.scanning = true
-                    self.devicesSubscription = self.polarApi.searchForDevice().subscribe(onNext: { device in
-                        self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
-                    }, onError: { error in
-                        print(error)
-                        self.scanning = false
-                    }, onDisposed: {
-                        self.scanning = false
-                    })
+            scanning = true
+            self.devicesSubscription = polarApi.searchForDevice().subscribe(onNext: { [weak self] device in
+                if let self, !device.name.isEmpty {
+                    self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
                 }
-            }
+            }, onError: { [weak self] error in
+                print(error)
+                self?.scanning = false
+            }, onDisposed: { [weak self] in
+                self?.scanning = false
+            })
         }
     }
 
     func stopScanning() {
-        DispatchQueue.main.async { [weak self] in
-            if let self, self.scanning {
-                print("Polar: Stopping the scan and cleaning up...")
-                self.devicesSubscription?.dispose()
-                self.polarApi.cleanup()
-                self.scanning = false
-            }
+        if self.scanning {
+            print("Polar: Stopping the scan and cleaning up...")
+            self.devicesSubscription?.dispose()
+            self.polarApi.cleanup()
+            self.scanning = false
         }
     }
 

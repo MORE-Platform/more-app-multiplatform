@@ -11,11 +11,14 @@
 package io.redlink.more.app.android.workers
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk

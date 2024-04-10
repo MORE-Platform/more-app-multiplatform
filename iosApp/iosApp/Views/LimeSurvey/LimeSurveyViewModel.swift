@@ -25,25 +25,19 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var limeSurveyLink: URL?
     @Published var dataLoading = false
     @Published var wasAnswered = false
-
-    private var navigationModalState: NavigationModalState?
     
-    private var limeSurveyLinkChange: Ktor_ioCloseable?
+    private let navigationModalState: NavigationModalState
 
-    init() {
+    init(navigationModalState: NavigationModalState) {
+        self.navigationModalState = navigationModalState
         webViewModel.delegate = self
-        coreViewModel.onDataLoadingChange { [weak self] boolean in
-            DispatchQueue.main.async {
-                self?.dataLoading = boolean.boolValue
-            }
+        if let scheduleId = navigationModalState.navigationState.scheduleId {
+            coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationModalState.navigationState.notificationId)
+        } else if let observationId = navigationModalState.navigationState.observationId {
+            coreViewModel.setObservationId(observationId: observationId, notificationId: navigationModalState.navigationState.notificationId)
         }
-        
-    }
-
-    func viewDidAppear() {
-        coreViewModel.viewDidAppear()
-        
-        limeSurveyLinkChange = coreViewModel.onLimeSurveyLinkChange { [weak self] link in
+        coreViewModel.onLimeSurveyLinkChange { [weak self] link in
+            print("Link: \(String(describing: link))")
             DispatchQueue.main.async {
                 if let link {
                     self?.limeSurveyLink = URL(string: link)
@@ -52,26 +46,19 @@ class LimeSurveyViewModel: ObservableObject {
                 }
             }
         }
-        
+        coreViewModel.onDataLoadingChange { [weak self] boolean in
+            DispatchQueue.main.async {
+                self?.dataLoading = boolean.boolValue
+            }
+        }
+    }
+
+    func viewDidAppear() {
+        coreViewModel.viewDidAppear()
     }
 
     func viewDidDisappear() {
-        limeSurveyLinkChange?.close()
-        limeSurveyLinkChange = nil
-        dataLoading = false
-        wasAnswered = false
         coreViewModel.viewDidDisappear()
-    }
-    
-    func setNavigationModalState(navigationModalState: NavigationModalState) {
-        self.navigationModalState = navigationModalState
-        if let state = navigationModalState.navigationState(for: .limeSurvey) {
-            if let scheduleId = state.scheduleId {
-                coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: state.notificationId)
-            } else if let observationId = state.observationId {
-                coreViewModel.setObservationId(observationId: observationId, notificationId: state.notificationId)
-            }
-        }
     }
 
     func onFinish() {
@@ -80,7 +67,7 @@ class LimeSurveyViewModel: ObservableObject {
         } else {
             coreViewModel.cancel()
         }
-        self.navigationModalState?.closeView(screen: .limeSurvey)
+        self.navigationModalState.closeView(screen: .limeSurvey)
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {

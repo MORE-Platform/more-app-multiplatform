@@ -17,7 +17,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import io.redlink.more.app.android.MoreApplication
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
@@ -39,18 +39,19 @@ enum class NavigationScreen(
     INFO("information", stringResource = R.string.nav_info),
     SETTINGS("settings", stringResource = R.string.nav_settings),
     SCHEDULE_DETAILS(
-        "task-details", parameters = mapOf(
-            "scheduleId" to NavigationParameter(type = NavType.StringType, "")
+        "task_details", parameters = mapOf(
+            "scheduleId" to NavigationParameter(type = NavType.StringType, ""),
+            "scheduleListType" to NavigationParameter(type = NavType.StringType, "")
         ), stringResource = R.string.nav_task_detail
     ),
     OBSERVATION_DETAILS(
-        "observation-details",
+        "observation_details",
         mapOf("observationId" to NavigationParameter(type = NavType.StringType, "")),
         stringResource = R.string.nav_observation_detail
     ),
-    STUDY_DETAILS("study-details", stringResource = R.string.nav_study_details),
+    STUDY_DETAILS("study_details", stringResource = R.string.nav_study_details),
     OBSERVATION_FILTER(
-        "observation-filter", mapOf(
+        "observation_filter", mapOf(
             "scheduleListType" to NavigationParameter(type = NavType.StringType, "")
         ), stringResource = R.string.nav_observation_filter
     ),
@@ -66,12 +67,12 @@ enum class NavigationScreen(
         stringResource = R.string.nav_simple_question
     ),
     BLUETOOTH_CONNECTION("devices", stringResource = R.string.more_ble_view_title),
-    RUNNING_SCHEDULES("running-observations", stringResource = R.string.nav_running_schedules),
-    COMPLETED_SCHEDULES("past-observations", stringResource = R.string.nav_completed_schedules),
-    NOTIFICATION_FILTER("notification-filter", stringResource = R.string.nav_notification_filter),
-    LEAVE_STUDY("leave-study", stringResource = R.string.nav_leave_study),
+    RUNNING_SCHEDULES("running_observations", stringResource = R.string.nav_running_schedules),
+    COMPLETED_SCHEDULES("past_observations", stringResource = R.string.nav_completed_schedules),
+    NOTIFICATION_FILTER("notification_filter", stringResource = R.string.nav_notification_filter),
+    LEAVE_STUDY("leave_study", stringResource = R.string.nav_leave_study),
     LEAVE_STUDY_CONFIRM(
-        "leave-study-confirmation",
+        "leave_study_confirmation",
         stringResource = R.string.nav_leave_study_confirm
     ),
     LIMESURVEY(
@@ -152,14 +153,10 @@ enum class NavigationScreen(
         return cachedNavArguments!!
     }
 
-    fun createDeepLinkRoute(deepLinkHost: String = ContentActivity.DEEPLINK): List<NavDeepLink> {
+    fun createDeepLinkRoute(deepLinkHost: String): List<NavDeepLink> {
         if (cachedDeepLinks == null) {
             cachedDeepLinks =
                 listOf(navDeepLink { uriPattern = deepLinkHost + routeWithParameters() })
-            cachedDeepLinks?.let { list ->
-                MoreApplication.shared!!.deeplinkManager.addAvailableDeepLinks(list.mapNotNull { it.uriPattern }
-                    .toSet())
-            }
         }
         return cachedDeepLinks!!
     }
@@ -170,8 +167,6 @@ enum class NavigationScreen(
         private val globalParameters =
             mapOf(NavigationNotificationIDKey to NavigationParameter(NavType.StringType, ""))
 
-        fun byRoute(route: String) = entries.firstOrNull { it.route == route }
-
-        fun allDeepLinks(deepLinkHost: String) = entries.flatMap { it.createDeepLinkRoute(deepLinkHost).mapNotNull { it.uriPattern } }.toSet()
+        fun byRoute(route: String) = NavigationScreen.values().firstOrNull { it.route == route }
     }
 }

@@ -28,7 +28,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
@@ -83,8 +86,7 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
         showBackButton = true,
         onBackButtonClick = {
             (context as? Activity)?.finish()
-        },
-        alertDialogModel = viewModel.alertDialogOpen.value
+        }
     ) {
         LazyColumn {
             item {

@@ -21,13 +21,13 @@ class NotificationViewModel: ObservableObject {
     let recorder = IOSDataRecorder()
     private let filterViewModel: CoreNotificationFilterViewModel
     private let coreModel: CoreNotificationViewModel
-
+    
     @Published var notificationList: [NotificationModel] = []
     @Published var filterText: String = "FilterText"
 
     init(filterViewModel: CoreNotificationFilterViewModel) {
         self.filterViewModel = filterViewModel
-        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager, protocolReplacement: nil, hostReplacement: nil)
+        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager)
         coreModel.onNotificationLoad { [weak self] notifications in
             DispatchQueue.main.async {
                 self?.notificationList = []
@@ -35,13 +35,9 @@ class NotificationViewModel: ObservableObject {
             }
         }
     }
-
-    func handleNotificationAction(notification: NotificationModel, navigationModalState: NavigationModalState) {
-        coreModel.handleNotificationAction(notification: notification) { deepLink in
-            if let uri = URL(string: deepLink) {
-                navigationModalState.openWithDeepLink(url: uri, notificationId: notification.notificationId)
-            }
-        }
+    
+    func setNotificationToRead(notification: NotificationModel) {
+        coreModel.setNotificationReadStatus(notification: notification)
     }
 
     func viewDidAppear() {
@@ -53,9 +49,6 @@ class NotificationViewModel: ObservableObject {
     }
 
     func getFilterText(stringTable: String) {
-        self.filterText = filterViewModel.getActiveTypes().map {
-            $0.localize(withComment: $0, useTable: stringTable)
-        }
-        .joined(separator: ", ")
+        self.filterText = filterViewModel.getActiveTypes().map{$0.localize(withComment: $0, useTable: stringTable)}.joined(separator: ", ")
     }
 }

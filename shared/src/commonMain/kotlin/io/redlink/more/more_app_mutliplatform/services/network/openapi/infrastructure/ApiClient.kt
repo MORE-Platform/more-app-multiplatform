@@ -14,27 +14,22 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.*
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.client.request.request
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.Parameters
-import io.ktor.http.URLBuilder
-import io.ktor.http.content.PartData
-import io.ktor.http.contentType
-import io.ktor.http.encodeURLQueryComponent
-import io.ktor.http.encodedPath
-import io.ktor.http.takeFrom
+import io.ktor.client.statement.HttpStatement
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.http.*
+import io.ktor.http.content.PartData
+import io.realm.kotlin.internal.platform.WeakReference
+import kotlin.Unit
+import kotlinx.serialization.json.Json
+
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.Authentication
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.auth.HttpBasicAuth
-import kotlinx.serialization.json.Json
 
 open class ApiClient(
         private val baseUrl: String,
@@ -105,7 +100,7 @@ open class ApiClient(
     protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse? {
         requestConfig.updateForAuth(authNames)
         val headers = requestConfig.headers
-        return client.request {
+        val response = WeakReference(client.request {
             this.url {
                 this.takeFrom(URLBuilder(baseUrl))
                 appendPath(requestConfig.path.trimStart('/').split('/'))
@@ -130,12 +125,13 @@ open class ApiClient(
                 )) {
                 this.setBody(body)
             }
-        }
+        })
+        return response.get()
     }
 
     private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: List<String>) {
         for (authName in authNames) {
-            val auth = authentications[authName] ?: throw Exception("Authentication undefined: $authName")
+            val auth = authentications?.get(authName) ?: throw Exception("Authentication undefined: $authName")
             auth.apply(query, headers)
         }
     }

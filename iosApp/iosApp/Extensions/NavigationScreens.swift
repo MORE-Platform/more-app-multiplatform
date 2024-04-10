@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung
-//  Licensed under the Apache 2.0 license with Commons Clause
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -19,23 +19,18 @@ struct NavigationScreenValues {
     let screenName: String
     let navigationLink: String
     var parameters: [NavigationParameter] = []
-    var fullScreen: Bool = false
 }
 
 enum NavigationParameter: String {
-    case observationId
-    case notificaitonId
-    case scheduleId
+    case observationId = "observationId"
+    case notificaitonId = "notificaitonId"
 }
 
-enum NavigationScreen: CaseIterable, Equatable, Identifiable {
-    var id: Self { self }
-    
+enum NavigationScreens: CaseIterable {
     case dashboard
     case notifications
     case info
     case settings
-    case bluetoothConnections
     case taskDetails
     case studyDetails
     case scanQRCode
@@ -60,18 +55,16 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
             return NavigationScreenValues(screenName: "Information", navigationLink: "/info")
         case .settings:
             return NavigationScreenValues(screenName: "Settings", navigationLink: "/settings")
-        case .bluetoothConnections:
-            return NavigationScreenValues(screenName: "Devices", navigationLink: "/devices")
         case .taskDetails:
-            return NavigationScreenValues(screenName: "Task Details", navigationLink: "/task-details", parameters: [.observationId, .notificaitonId, .scheduleId])
+            return NavigationScreenValues(screenName: "Task Details", navigationLink: "/task-details")
         case .studyDetails:
             return NavigationScreenValues(screenName: "Study Details", navigationLink: "/study-details")
         case .scanQRCode:
             return NavigationScreenValues(screenName: "Scan QR Code", navigationLink: "/scan-qr-code")
         case .questionObservation:
-            return NavigationScreenValues(screenName: "Question Observation", navigationLink: "/question-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
+            return NavigationScreenValues(screenName: "Question Observation", navigationLink: "/question-observation", parameters: [.observationId, .notificaitonId])
         case .questionObservationThanks:
-            return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks", fullScreen: true)
+            return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks")
         case .dashboardFilter:
             return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: "/dashboard-filter")
         case .notificationFilter:
@@ -81,38 +74,38 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
         case .runningObservations:
             return NavigationScreenValues(screenName: "Running Observations", navigationLink: "/running-observations")
         case .observationDetails:
-            return NavigationScreenValues(screenName: "Observation Details", navigationLink: "/observation-details", parameters: [.observationId])
+            return NavigationScreenValues(screenName: "Observation Details", navigationLink: "/observation-details")
         case .withdrawStudy:
-            return NavigationScreenValues(screenName: "Leave Study", navigationLink: "/leave-study", fullScreen: true)
+            return NavigationScreenValues(screenName: "Leave Study", navigationLink: "/leave-study")
         case .withdrawStudyConfirm:
-            return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study", fullScreen: true)
+            return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study")
         case .limeSurvey:
-            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
+            return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId])
         }
     }
-
+    
     static let PARAM_OBSERVATION_ID = "observationId"
     static let PARAM_NOTIFICATION_ID = "notificationId"
 }
 
-extension NavigationScreen {
+extension NavigationScreens {
     func localize(useTable table: String, withComment comment: String) -> String {
         return values.screenName.localize(withComment: comment, useTable: table)
     }
-
+    
     func generateURL(withParameters params: [NavigationParameter: String]) -> URL? {
-        var components = URLComponents()
-        components.path = values.navigationLink
+            var components = URLComponents()
+            components.path = values.navigationLink
 
-        var queryItems: [URLQueryItem] = []
-        for parameter in values.parameters {
-            if let value = params[parameter] {
-                queryItems.append(URLQueryItem(name: parameter.rawValue, value: value))
+            var queryItems: [URLQueryItem] = []
+            for parameter in values.parameters {
+                if let value = params[parameter] {
+                    queryItems.append(URLQueryItem(name: parameter.rawValue, value: value))
+                }
             }
+            
+            components.queryItems = queryItems
+
+            return components.url
         }
-
-        components.queryItems = queryItems
-
-        return components.url
-    }
 }

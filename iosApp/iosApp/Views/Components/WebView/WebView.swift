@@ -49,8 +49,6 @@ struct SwiftUIWebView: UIViewRepresentable {
         print("WebView URL: \(String(describing: url))")
         if let url {
             self.viewModel.webView.load(URLRequest(url: url))
-        } else {
-            self.viewModel.webView.load(URLRequest(url: URL(string:"about:blank")!))
         }
     }
 }

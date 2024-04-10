@@ -14,6 +14,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.services.LocalPushNotificationService
+import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

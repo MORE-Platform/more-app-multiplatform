@@ -22,21 +22,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.Heading
 import io.redlink.more.app.android.shared_composables.MediumTitle
@@ -44,7 +39,14 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.Title
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import io.redlink.more.app.android.activities.ContentActivity
+import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.ui.theme.MoreColors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun StudyClosedView(closedMessage: kotlin.String?) {

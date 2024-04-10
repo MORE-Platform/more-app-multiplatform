@@ -48,7 +48,7 @@ struct ObservationButton: View {
                         )
                     }
                 }
-            } else {
+            } else if let scheduleId = navigationModalState.navigationState.scheduleId {
                 MoreActionButton(disabled: .constant(disabled), action: {
                     if state == .running {
                         observationActionDelegate.pause(scheduleId: scheduleId)

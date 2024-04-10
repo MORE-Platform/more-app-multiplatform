@@ -19,8 +19,11 @@ package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
 import kotlinx.datetime.Instant
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
 /**
  * 

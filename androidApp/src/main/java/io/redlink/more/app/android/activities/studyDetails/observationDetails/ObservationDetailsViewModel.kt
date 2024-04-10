@@ -15,9 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.more_app_mutliplatform.models.ObservationDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.observationDetails.CoreObservationDetailsViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class ObservationDetailsViewModel(
     observationId: String,

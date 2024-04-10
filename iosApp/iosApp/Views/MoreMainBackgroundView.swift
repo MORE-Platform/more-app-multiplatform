@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung
-//  Licensed under the Apache 2.0 license with Commons Clause
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -16,20 +16,18 @@
 import SwiftUI
 
 struct MoreMainBackgroundView<Content: View>: View {
-    var contentPadding: CGFloat = 0
+    var contentPadding: CGFloat = 10
     var content: () -> Content
-    @EnvironmentObject private var contentViewModel: ContentViewModel
-    @EnvironmentObject private var navigationModalState: NavigationModalState
     var body: some View {
         ZStack(alignment: .top) {
-            Color.more.mainBackground.ignoresSafeArea(.all)
+            Color.more.mainBackground.ignoresSafeArea()
             VStack(alignment: .center) {
                 content()
-                    .padding(.horizontal, contentPadding)
             }
             .foregroundColor(.more.primary)
+            .padding(.horizontal, contentPadding)
         }
-        .frame(maxWidth: .infinity)
+        
     }
 }
 

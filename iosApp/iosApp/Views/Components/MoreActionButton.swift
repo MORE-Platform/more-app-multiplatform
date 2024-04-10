@@ -16,6 +16,7 @@
 import SwiftUI
 
 struct MoreActionButton<ButtonLabel: View>: View {
+    var color: Color = .more.primary
     var backgroundColor = Color.more.primary
     var maxWidth: CGFloat = .infinity
     @Binding var disabled: Bool
@@ -28,20 +29,18 @@ struct MoreActionButton<ButtonLabel: View>: View {
     var errorAlert: () -> Alert = {Alert(title: Text("Alert"), dismissButton: .default(Text("Ok")))}
 
     var body: some View {
-        Button(action: action){
-            label()
-        .frame(maxWidth: maxWidth)
-        .padding()
-        .foregroundColor(disabled ? disabeldColor : .more.white)
-        .background(disabled ? disabledBackgroundColor : backgroundColor)
-        .cornerRadius(.moreBorder.cornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
-                .stroke(disabled ? disabeldBorderColor : backgroundColor, lineWidth: 1)
-        )
-    }
-        .disabled(disabled)
-        .alert(isPresented: alertOpen, content: errorAlert)
+        Button(action: action, label: label)
+            .disabled(disabled)
+            .frame(maxWidth: maxWidth)
+            .padding()
+            .foregroundColor(disabled ? disabeldColor : .more.white)
+            .background(disabled ? disabledBackgroundColor : backgroundColor)
+            .cornerRadius(.moreBorder.cornerRadius)
+            .alert(isPresented: alertOpen, content: errorAlert)
+            .overlay(
+                RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                    .stroke(disabled ? disabeldBorderColor : backgroundColor, lineWidth: 1)
+            )
     }
 }
 

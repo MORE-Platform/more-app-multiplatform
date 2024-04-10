@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 
 data class ScheduleModel(
     val scheduleId: String,

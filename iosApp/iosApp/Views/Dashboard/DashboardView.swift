@@ -7,17 +7,17 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung
-//  Licensed under the Apache 2.0 license with Commons Clause
+//  der wissenschaftlichen Forschung 
+//  Licensed under the Apache 2.0 license with Commons Clause 
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct DashboardView: View {
-    @EnvironmentObject private var navigationModalState: NavigationModalState
+    @EnvironmentObject var contentViewModel: ContentViewModel
     @StateObject var viewModel: DashboardViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
@@ -25,15 +25,20 @@ struct DashboardView: View {
     @State var tasksCompleted: Double = 0
     private let navigationStrings = "Navigation"
     var body: some View {
-        VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
-            if selection == 0 {
-                ScheduleView(viewModel: viewModel.scheduleViewModel)
-            } else {
-                EmptyView()
+        Navigation {
+            MoreMainBackgroundView {
+                VStack {
+                    ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+                        .environmentObject(viewModel.scheduleViewModel)
+                    if selection == 0 {
+                        ScheduleView(viewModel: viewModel.scheduleViewModel)
+                    } else {
+                        EmptyView()
+                    }
+                }
             }
+            .customNavigationTitle(with: NavigationScreens.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
         }
-        .customNavigationTitle(with: NavigationScreen.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
         .onAppear {
             viewModel.viewDidAppear()
         }
@@ -51,3 +56,4 @@ struct DashboardView_Previews: PreviewProvider {
         }
     }
 }
+
