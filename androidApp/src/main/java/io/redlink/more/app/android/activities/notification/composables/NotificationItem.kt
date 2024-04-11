@@ -10,6 +10,8 @@
  */
 package io.redlink.more.app.android.activities.notification.composables
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -27,8 +30,10 @@ import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +42,7 @@ import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
+import io.redlink.more.app.android.extensions.toAnnotatedString
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
@@ -45,6 +51,7 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 fun NotificationItem(
     notificationModel: NotificationModel
 ) {
+    val context = LocalContext.current
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -97,12 +104,27 @@ fun NotificationItem(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 65.dp)
         ) {
-            Column(verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxHeight()) {
-                Text(
-                    text = notificationModel.notificationBody,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    color = MoreColors.Secondary,
+            val annotatedNotificationModelBody = remember {
+                notificationModel.notificationBody.toAnnotatedString()
+            }
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                ClickableText(
+                    text = annotatedNotificationModelBody,
+                    onClick = { offset ->
+                        annotatedNotificationModelBody.getStringAnnotations(
+                            tag = "URL",
+                            start = offset,
+                            end = offset
+                        )
+                            .firstOrNull()?.let { annotation ->
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))
+                                context.startActivity(intent)
+                            }
+                    }
                 )
 
                 Text(
@@ -115,7 +137,7 @@ fun NotificationItem(
             }
             if (notificationModel.deepLink != null) {
                 Icon(
-                    if(notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
+                    if (notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
                     contentDescription = getStringResource(id = R.string.more_observation_open),
                     tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
                 )

@@ -14,7 +14,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

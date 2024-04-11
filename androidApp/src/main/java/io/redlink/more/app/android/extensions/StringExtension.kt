@@ -10,22 +10,33 @@
  */
 package io.redlink.more.app.android.extensions
 
-import android.net.Uri
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
+import io.redlink.more.more_app_mutliplatform.extensions.urlRegex
 
-fun String.extractKeyValuePairs(): Map<String, String> {
-    val keyValuePairs = mutableMapOf<String, String>()
+fun String.toAnnotatedString(): AnnotatedString {
+    val urlStyle = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)
+    val builder = AnnotatedString.Builder()
 
-    val pairs = this.split("&")
+    var lastEndIndex = 0
 
-    for (pair in pairs) {
-        val keyValue = pair.split("=")
-        if (keyValue.size == 2) {
-            val key = Uri.decode(keyValue[0])
-            val value = Uri.decode(keyValue[1])
+    urlRegex().findAll(this).forEach { matchResult ->
+        builder.append(this.substring(lastEndIndex, matchResult.range.first))
 
-            keyValuePairs[key] = value
-        }
+        builder.pushStringAnnotation(tag = "URL", annotation = matchResult.value)
+        builder.pushStyle(urlStyle)
+        builder.append(matchResult.value)
+        builder.pop()
+        builder.pop()
+
+        lastEndIndex = matchResult.range.last + 1
     }
 
-    return keyValuePairs
+    if (lastEndIndex < this.length) {
+        builder.append(this.substring(lastEndIndex))
+    }
+
+    return builder.toAnnotatedString()
 }
