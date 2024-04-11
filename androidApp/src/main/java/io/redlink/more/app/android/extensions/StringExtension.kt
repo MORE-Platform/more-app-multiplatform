@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
-import io.redlink.more.more_app_mutliplatform.extensions.urlRegex
+import io.redlink.more.more_app_mutliplatform.util.RegexData
 
 fun String.toAnnotatedString(): AnnotatedString {
     val urlStyle = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)
@@ -22,7 +22,7 @@ fun String.toAnnotatedString(): AnnotatedString {
 
     var lastEndIndex = 0
 
-    urlRegex().findAll(this).forEach { matchResult ->
+    RegexData.url.toRegex().findAll(this).forEach { matchResult ->
         builder.append(this.substring(lastEndIndex, matchResult.range.first))
 
         builder.pushStringAnnotation(tag = "URL", annotation = matchResult.value)

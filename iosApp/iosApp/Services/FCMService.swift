@@ -58,6 +58,7 @@ extension FCMService: UNUserNotificationCenterDelegate {
                 AppDelegate.navigationScreenHandler.openWithDeepLink(url: deepLink, notificationId: msgId)
             }
         } else if let msgId {
+            AppDelegate.navigationScreenHandler.tagState = 1
             AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: msgId)
         }
     }
