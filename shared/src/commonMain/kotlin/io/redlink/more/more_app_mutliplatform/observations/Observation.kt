@@ -15,7 +15,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 

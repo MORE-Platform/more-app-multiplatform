@@ -37,8 +37,8 @@ import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepositor
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

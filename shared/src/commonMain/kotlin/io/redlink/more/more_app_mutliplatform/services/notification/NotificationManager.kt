@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.more_app_mutliplatform.viewModels.notifications
+package io.redlink.more.more_app_mutliplatform.services.notification
 
 import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.toRealmDictionary
@@ -156,7 +156,7 @@ class NotificationManager(
         notification: NotificationModel,
         protocolReplacement: String? = null,
         hostReplacement: String? = null,
-        deepLinkHandler: ((String) -> Unit)
+        handler: ((NotificationActionHandler, String) -> Unit)
     ) {
         notification.deepLink?.let { deepLink ->
             Scope.launch {
@@ -169,7 +169,7 @@ class NotificationManager(
                             markNotificationAsRead(notification.notificationId)
                         }
                         withContext(Dispatchers.Main) {
-                            deepLinkHandler(modifiedDeepLink)
+                            handler(NotificationActionHandler.DEEPLINK, modifiedDeepLink)
                         }
                     }
             }
@@ -210,13 +210,12 @@ class NotificationManager(
     companion object {
         private const val FCM_TOKEN = "FCM_TOKEN"
 
-        const val MSG_ID = "MSG_ID"
         private const val MAIN_DATA_KEY = "key"
         private const val STUDY_CHANGED = "STUDY_STATE_CHANGED"
-
         private const val STUDY_OLD_STATE = "oldState"
         private const val STUDY_NEW_STATE = "newState"
 
         const val DEEP_LINK = "deepLink"
+        const val MSG_ID = "MSG_ID"
     }
 }

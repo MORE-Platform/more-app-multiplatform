@@ -14,6 +14,8 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
@@ -59,13 +61,13 @@ class CoreNotificationViewModel(
 
     fun handleNotificationAction(
         notification: NotificationModel,
-        deepLinkHandler: ((String) -> Unit)
+        handler: ((NotificationActionHandler, String) -> Unit)
     ) {
         notificationManager.handleNotificationInteraction(
             notification,
             protocolReplacement,
             hostReplacement,
-            deepLinkHandler
+            handler
         )
     }
 }

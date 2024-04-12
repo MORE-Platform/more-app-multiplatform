@@ -23,13 +23,13 @@ import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 
-class ContentActivity: ComponentActivity() {
+class ContentActivity : ComponentActivity() {
     private val viewModel = ContentViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.getStringExtra("deepLink")?.let {
+        intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
             var deepLink = it
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
                 if (!deepLink.contains(NavigationNotificationIDKey)) {
@@ -40,7 +40,7 @@ class ContentActivity: ComponentActivity() {
                     }
                 }
             }
-            intent.putExtra("deepLink", deepLink)
+            intent.putExtra(NotificationManager.DEEP_LINK, deepLink)
         }
         setContent {
             ContentView(viewModel = viewModel)

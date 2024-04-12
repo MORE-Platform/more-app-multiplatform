@@ -25,8 +25,8 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.LocalNotificationListener
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager.Companion.MSG_ID
+import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager.Companion.MSG_ID
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
     override fun displayNotification(notification: NotificationSchema) {

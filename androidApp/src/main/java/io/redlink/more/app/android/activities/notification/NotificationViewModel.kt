@@ -20,6 +20,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationViewModel
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +59,10 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
     }
 
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
-        coreViewModel.handleNotificationAction(notification) { deepLink ->
-            navController.navigate(Uri.parse(deepLink))
+        coreViewModel.handleNotificationAction(notification) { actionType, data ->
+            when (actionType) {
+                NotificationActionHandler.DEEPLINK -> navController.navigate(Uri.parse(data))
+            }
         }
     }
 

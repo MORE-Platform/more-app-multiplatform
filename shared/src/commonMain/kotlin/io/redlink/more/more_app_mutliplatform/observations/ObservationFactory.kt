@@ -17,7 +17,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
