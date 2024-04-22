@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization")
 
     id("com.android.library")
-    id("io.realm.kotlin") version "1.13.0"
+    id("io.realm.kotlin") version "1.14.1"
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -15,7 +15,7 @@ val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 val coroutinesVersion = "1.7.3"
-val ktorVersion = "2.3.7"
+val ktorVersion = "2.3.10"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.6.0"
 val gsonVersion = "2.10.1"

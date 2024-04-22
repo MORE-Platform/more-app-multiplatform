@@ -12,12 +12,12 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.extensions.append
+import io.redlink.more.more_app_mutliplatform.extensions.appendAll
 import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -33,21 +33,23 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
-                studyObservationTypes.append(it)
+                studyObservationTypes.appendAll(it)
             }
         }
     }
 
     fun addNeededObservationTypes(observationTypes: Set<String>) {
         Napier.i(tag = "ObservationFactory::addNeededObservationTypes") { "Adding observation types to studyObservationTypes: $observationTypes" }
-        studyObservationTypes.append(observationTypes)
+        studyObservationTypes.appendAll(observationTypes)
     }
 
     fun clearNeededObservationTypes() {
         studyObservationTypes.clear()
     }
 
-    fun studySensorPermissions() = observations.filter { it.observationType.observationType in studyObservationTypes.value }.map { it.observationType.sensorPermissions }.flatten().toSet()
+    fun studySensorPermissions() =
+        observations.filter { it.observationType.observationType in studyObservationTypes.value }
+            .map { it.observationType.sensorPermissions }.flatten().toSet()
 
     fun setNotificationManager(notificationManager: NotificationManager) {
         observations.forEach { it.setNotificationManager(notificationManager) }
@@ -58,10 +60,11 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     fun sensorPermissions() =
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 
-    fun bleDevicesNeeded(types: Set<String>): Set<String> {
+    fun bleDevicesNeeded(): Set<String> {
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "Filtering types for BLE: ${studyObservationTypes.value}" }
-        val bleTypes = observations.filter { it.observationType.observationType in types }
-            .flatMap { it.bleDevicesNeeded() }.toSet()
+        val bleTypes =
+            observations.filter { it.observationType.observationType in studyObservationTypes.value }
+                .flatMap { it.bleDevicesNeeded() }.toSet()
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "BLE observation types: $bleTypes" }
         return bleTypes
     }

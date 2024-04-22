@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.app.android.activities.BLESetup
+package io.redlink.more.app.android.activities.bluetooth
 
 import android.app.Activity
 import android.os.Bundle
@@ -50,7 +50,7 @@ import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 class BLEConnectionActivity : ComponentActivity() {
-    val viewModel = BLESetupViewModel()
+    val viewModel = BluetoothViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +76,7 @@ class BLEConnectionActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
+fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
     val context = LocalContext.current
     val progressSize = 20.dp
     MoreBackground(
@@ -150,7 +150,10 @@ fun LoginBLESetupView(viewModel: BLESetupViewModel, showDescrPart2: Boolean) {
                                 SmallTextButton(
                                     text = getStringResource(id = R.string.more_ble_disconnect),
                                     fontSize = 10.sp,
-                                    modifier = Modifier.weight(0.3f).fillMaxWidth(1f).height(45.dp)
+                                    modifier = Modifier
+                                        .weight(0.3f)
+                                        .fillMaxWidth(1f)
+                                        .height(45.dp)
                                 ) {
                                     viewModel.disconnectFromDevice(device)
                                 }

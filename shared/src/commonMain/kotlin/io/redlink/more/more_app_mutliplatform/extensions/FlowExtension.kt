@@ -10,19 +10,17 @@
  */
 package io.redlink.more.more_app_mutliplatform.extensions
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-fun <T: Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
+fun <T : Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
         provideNewState(it)
@@ -34,7 +32,7 @@ fun <T: Any?> Flow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     }
 }
 
-fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
+fun <T : Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
         it?.let {
@@ -48,7 +46,7 @@ fun <T: Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Clo
     }
 }
 
-fun <T: Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
+fun <T : Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
         provideNewState(it)
@@ -60,7 +58,7 @@ fun <T: Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> U
     }
 }
 
-fun <T: Any?> StateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
+fun <T : Any?> StateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
         provideNewState(it)
@@ -88,7 +86,7 @@ fun <T> MutableStateFlow<Set<T>>.appendIfNotContains(value: T, includes: (T) -> 
     }
 }
 
-fun <T> MutableStateFlow<Set<T>>.append(value: Collection<T>) {
+fun <T> MutableStateFlow<Set<T>>.appendAll(value: Collection<T>) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.addAll(value)) {
         this.set(mutableCollection)
@@ -105,6 +103,13 @@ fun <T> MutableStateFlow<Set<T>>.remove(value: T?) {
 fun <T> MutableStateFlow<Set<T>>.removeWhere(includes: (T) -> Boolean) {
     val mutableCollection = this.value.toMutableSet()
     if (mutableCollection.removeAll(includes)) {
+        this.set(mutableCollection)
+    }
+}
+
+fun <T> MutableStateFlow<Set<T>>.removeAll(values: Collection<T>) {
+    val mutableCollection = this.value.toMutableSet()
+    if (mutableCollection.removeAll(values.toSet())) {
         this.set(mutableCollection)
     }
 }

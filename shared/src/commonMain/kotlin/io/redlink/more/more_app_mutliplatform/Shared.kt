@@ -30,15 +30,15 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
+import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
-import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -60,7 +60,7 @@ class Shared(
     val studyStateRepository: StudyStateRepository = StudyStateRepository(sharedStorageRepository)
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
-    val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
+    val coreBluetooth = BluetoothController(mainBluetoothConnector)
     val notificationManager =
         NotificationManager(localNotificationListener, networkService, deeplinkManager)
     val mainContentCoreViewModel = CoreContentViewModel()
@@ -68,6 +68,7 @@ class Shared(
     var appIsInForeGround = false
 
     val studyIsUpdating = MutableStateFlow(false)
+    val showBluetoothView = MutableStateFlow(false)
 
     val currentStudyState = studyStateRepository.currentState()
     var finishText: String? = null
@@ -134,7 +135,7 @@ class Shared(
     fun showBleSetup(): Pair<Boolean, Boolean> {
         return Pair(
             firstStartUp(),
-            observationFactory.bleDevicesNeeded(observationFactory.studyObservationTypes.value)
+            observationFactory.bleDevicesNeeded()
                 .isNotEmpty()
         )
     }

@@ -17,10 +17,15 @@ import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private val permissions =
@@ -39,32 +44,34 @@ private val permissions =
 
 class PolarHeartRateObservation :
     Observation(observationType = PolarVerityHeartRateType(permissions)) {
+    private val deviceManager = BluetoothDeviceManager
     private val deviceIdentifier = setOf("Polar")
     private val polarConnector = MoreApplication.polarConnector!!
     private var heartRateDisposable: Disposable? = null
+    private var deviceConnectionListener: Job? = null
 
     override fun start(): Boolean {
         Napier.d(tag = "PolarHeartRateObservation::start") { "Trying to start Polar Verity Heart Rate Observation..." }
         if (observerAccessible()) {
-            val polarDevices = MoreApplication.shared!!.mainBluetoothConnector.connected.filter {
-                it.deviceName?.lowercase()?.contains("polar") ?: false
+            val polarDevices = deviceManager.connectedDevices.value.filter {
+                (it.deviceName?.lowercase()?.contains("polar") ?: false) && it.address != null
             }
             return polarDevices.firstOrNull()?.let {
                 try {
-                    if (it.address != null) {
-                        heartRateDisposable = polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
+                    heartRateDisposable =
+                        polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
                             { polarData ->
                                 storeData(mapOf("hr" to polarData.samples[0].hr))
                             },
                             { error ->
-                                Napier.e(tag = "PolarHeartRateObservation::start", message = "HR Recording error: ${error.stackTraceToString()}")
-                                polarDeviceDisconnected(it.deviceName)
+                                Napier.e(
+                                    tag = "PolarHeartRateObservation::start",
+                                    message = "HR Recording error: ${error.stackTraceToString()}"
+                                )
+                                pauseObservation(PolarVerityHeartRateType(emptySet()))
                             })
-                        true
-                    } else {
-                        Napier.w(tag = "PolarHeartRateObservation::start") { "PolarHeartRateObservation: Could not find device with address: ${it.address}" }
-                        false
-                    }
+                    deviceConnectionListener = listenToDeviceConnection()
+                    true
                 } catch (exception: Exception) {
                     Napier.e(tag = "PolarHeartRateObservation::start") { exception.stackTraceToString() }
                     false
@@ -81,20 +88,15 @@ class PolarHeartRateObservation :
 
     override fun stop(onCompletion: () -> Unit) {
         heartRateDisposable?.dispose()
+        deviceConnectionListener?.cancel()
+        deviceConnectionListener = null
         onCompletion()
     }
 
     override fun observerAccessible(): Boolean {
-        if (MoreApplication.shared!!.showBleSetup().second) {
-            val empty = MoreApplication.shared!!.mainBluetoothConnector.connected.isEmpty()
-            if (empty) {
-                MoreApplication.shared!!.coreBluetooth.enableBackgroundScanner()
-            } else {
-                MoreApplication.shared!!.coreBluetooth.disableBackgroundScanner()
-            }
-            return hasPermissions(MoreApplication.appContext!!) && !empty
-        }
-        return false
+        return hasPermissions(MoreApplication.appContext!!) && MoreApplication.shared!!.coreBluetooth.observerDeviceAccessible(
+            deviceIdentifier
+        )
     }
 
     override fun bleDevicesNeeded(): Set<String> {
@@ -119,28 +121,25 @@ class PolarHeartRateObservation :
                 return false
             }
         }
-        Napier.d (tag = "PolarHeartRateObservation::hasPermission"){ "Polar has Bluetooth Permission!" }
+        Napier.d(tag = "PolarHeartRateObservation::hasPermission") { "Polar has Bluetooth Permission!" }
         return true
+    }
+
+    private fun listenToDeviceConnection(): Job {
+        return Scope.launch {
+            BluetoothDeviceManager.connectedDevices.collect { devices ->
+                if (deviceIdentifier.anyNameIn(devices)) {
+                    pauseObservation(PolarVerityHeartRateType(emptySet()))
+                    hrReady.set(false)
+                    Napier.d(tag = "PolarHeartRateObservation::Companion::listenToDeviceConnection") { "HR Feature removed!" }
+                }
+            }
+        }.second
     }
 
     companion object {
         val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-        fun polarDeviceDisconnected(specificName: String? = null) {
-            MoreApplication.shared!!.mainBluetoothConnector.connected.filter { device ->
-                device.deviceName?.lowercase()?.contains(specificName?.lowercase() ?: "polar") == true
-            }.let {
-                if (it.isEmpty()) {
-                    hrReady.set(false)
-                    MoreApplication.shared!!.observationManager.pauseObservationType(
-                        PolarVerityHeartRateType(
-                            emptySet()
-                        ).observationType
-                    )
-                    Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature removed!" }
-                }
-            }
-        }
         fun setHRReady() {
             if (!hrReady.value) {
                 hrReady.set(true)

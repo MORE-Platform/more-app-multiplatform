@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("android")
-    id("io.realm.kotlin") version "1.13.0"
+    id("io.realm.kotlin") version "1.14.1"
     id("com.google.firebase.crashlytics")
 }
 

@@ -18,7 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
+import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.info.InfoViewModel
@@ -55,7 +55,11 @@ class MainViewModel(context: Context) : ViewModel() {
     val notificationViewModel: NotificationViewModel
     val notificationFilterViewModel: NotificationFilterViewModel
     val manualTasks =
-        ScheduleViewModel(CoreDashboardFilterViewModel(), MoreApplication.shared!!.dataRecorder, ScheduleListType.MANUALS)
+        ScheduleViewModel(
+            CoreDashboardFilterViewModel(),
+            MoreApplication.shared!!.dataRecorder,
+            ScheduleListType.MANUALS
+        )
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
             CoreDashboardFilterViewModel(),
@@ -136,7 +140,13 @@ class MainViewModel(context: Context) : ViewModel() {
     fun viewDidAppear() {
     }
 
-    fun openLimesurvey(context: Context, activityResultLauncher: ActivityResultLauncher<Intent>, scheduleId: String?, observationId: String?, notificationId: String?) {
+    fun openLimesurvey(
+        context: Context,
+        activityResultLauncher: ActivityResultLauncher<Intent>,
+        scheduleId: String?,
+        observationId: String?,
+        notificationId: String?
+    ) {
         (context as? Activity)?.let { activity ->
             val intent = Intent(activity, LimeSurveyActivity::class.java)
             intent.putExtra(
@@ -152,7 +162,11 @@ class MainViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun creteNewSimpleQuestionViewModel(scheduleId: String? = null, observationId: String? = null, notificationId: String?): QuestionnaireViewModel {
+    fun creteNewSimpleQuestionViewModel(
+        scheduleId: String? = null,
+        observationId: String? = null,
+        notificationId: String?
+    ): QuestionnaireViewModel {
         if (scheduleId != null || observationId != null) {
             simpleQuestionnaireViewModel.apply {
                 if (!scheduleId.isNullOrBlank()) {

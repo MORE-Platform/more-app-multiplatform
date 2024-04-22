@@ -5,6 +5,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 
 fun Observation.showPermissionAlertDialog() {
     MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
@@ -20,4 +21,10 @@ fun Observation.showPermissionAlertDialog() {
             MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
         }
     ))
+}
+
+fun Observation.pauseObservation(observationType: ObservationType) {
+    MoreApplication.shared!!.observationManager.pauseObservationType(
+        observationType.observationType
+    )
 }

@@ -13,7 +13,7 @@ package io.redlink.more.more_app_mutliplatform.services.bluetooth
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class BluetoothDevice: RealmObject {
+class BluetoothDevice : RealmObject {
     @PrimaryKey
     var deviceId: String? = null
     var deviceName: String? = null
@@ -26,8 +26,15 @@ class BluetoothDevice: RealmObject {
         return "BluetoothDevice {deviceId: $deviceId, name: $deviceName, address: $address, connected: $connected}"
     }
 
+    override fun hashCode(): Int = address?.hashCode() ?: super.hashCode()
+
     companion object {
-        fun create(deviceId: String, deviceName: String, address: String, isConnectable: Boolean = true): BluetoothDevice {
+        fun create(
+            deviceId: String,
+            deviceName: String,
+            address: String,
+            isConnectable: Boolean = true
+        ): BluetoothDevice {
             return BluetoothDevice().apply {
                 this.deviceId = deviceId
                 this.deviceName = deviceName

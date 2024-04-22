@@ -21,11 +21,9 @@ import shared
 import UIKit
 
 class PolarConnector: NSObject, BluetoothConnector {
+    let deviceManager = BluetoothDeviceManager.shared
     var specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary()
     var bluetoothState: BluetoothState = .on
-    
-    var discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
-    var connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
     
     var delegate: BLEConnectorDelegate?
     private var scanningWithUnknownBLEState = false
@@ -46,7 +44,7 @@ class PolarConnector: NSObject, BluetoothConnector {
         
         if let self {
             api.observer = self
-            api.polarFilter(false)
+            api.polarFilter(true)
             api.deviceInfoObserver = self
             api.deviceFeaturesObserver = self
             api.powerStateObserver = self
@@ -139,17 +137,15 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
     
     func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        if let address = bluetoothDevice.address, !address.isEmpty && !connected.contains(where: { ($0 as? BluetoothDevice)?.address == address }) {
-            connected.add(bluetoothDevice)
+        if let address = bluetoothDevice.address, !address.isEmpty {
+            deviceManager.addConnectedDevices(devices: [bluetoothDevice])
             removeDiscoveredDevice(device: bluetoothDevice)
         }
         updateObserver{ $0.didConnectToDevice(bluetoothDevice: bluetoothDevice)}
     }
     
     func didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
-        if let device = connected.filter({ ($0 as? BluetoothDevice)?.address == bluetoothDevice.address}).first {
-            connected.remove(device)
-        }
+        deviceManager.removeConnectedDevices(devices: [bluetoothDevice])
         PolarVerityHeartRateObservation.polarDeviceDisconnected()
         updateObserver{ $0.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)}
     }
@@ -159,16 +155,12 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
     
     func removeDiscoveredDevice(device: BluetoothDevice) {
-        if let address = device.address, let device = discovered.filter({($0 as? BluetoothDevice)?.address == address}).first {
-            discovered.remove(device)
-        }
+        deviceManager.removeDiscoveredDevices(devices: [device])
         updateObserver{ $0.removeDiscoveredDevice(device: device)}
     }
     
     func didDiscoverDevice(device: BluetoothDevice) {
-        if let address = device.address, !address.isEmpty && !connected.contains(where: { ($0 as? BluetoothDevice)?.address == address }) && !discovered.contains(where: {($0 as? BluetoothDevice)?.address == address}) {
-            discovered.add(device)
-        }
+        deviceManager.addConnectedDevices(devices: [device])
         updateObserver{ $0.didDiscoverDevice(device: device)}
     }
     
@@ -209,8 +201,6 @@ class PolarConnector: NSObject, BluetoothConnector {
     func replayStates() {
         print("Polar Connector: Replaying states...")
         onBluetoothStateChange(bluetoothState: self.bluetoothState)
-        connected.forEach { self.didConnectToDevice(bluetoothDevice: $0 as! BluetoothDevice)}
-        discovered.forEach{ self.didDiscoverDevice(device: $0 as! BluetoothDevice)}
         isScanning(boolean: scanning)
     }
     
@@ -247,16 +237,13 @@ extension PolarConnector: PolarBleApiPowerStateObserver {
     func blePowerOff() {
         print("Polar power off")
         self.onBluetoothStateChange(bluetoothState: .off)
-        self.connected.forEach { [weak self] device in
-            if let device = device as? BluetoothDevice {
-                self?.didDisconnectFromDevice(bluetoothDevice: device)
-            }
+        deviceManager.foreachConnectedDevice { [weak self] device in
+            self?.didDisconnectFromDevice(bluetoothDevice: device)
         }
-        self.discovered.forEach { [weak self] device in
-            if let device = device as? BluetoothDevice {
-                self?.removeDiscoveredDevice(device: device)
-            }
+        deviceManager.foreachDiscoveredDevice { [weak self] device in
+            self?.removeDiscoveredDevice(device: device)
         }
+
         stopScanning()
     }
 }
