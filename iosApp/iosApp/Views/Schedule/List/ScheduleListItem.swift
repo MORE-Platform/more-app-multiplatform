@@ -33,7 +33,7 @@ struct ScheduleListItem: View {
                 navigationModalState.openView(screen: .taskDetails, scheduleId: scheduleModel.scheduleId)
             } label: {
                 VStack(alignment: .leading) {
-                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType)
+                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType, observerHasErrors: viewModel.observationErrors[scheduleModel.observationType]?.isEmpty ?? false)
                         .padding(.bottom, 4)
                     ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                 }

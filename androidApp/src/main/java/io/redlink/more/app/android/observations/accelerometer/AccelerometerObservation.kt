@@ -56,8 +56,12 @@ class AccelerometerObservation(
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return this.sensor != null
+    override fun observerErrors(): Set<String> {
+        val errors = mutableSetOf<String>()
+        if (this.sensor == null) {
+            errors.add("Cannot access Accelerometer sensor!")
+        }
+        return errors
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

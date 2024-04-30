@@ -16,22 +16,20 @@ import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.util.Scope.launch
-import kotlinx.coroutines.CoroutineScope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.mongodb.kbson.ObjectId
 
-class ObservationDataRepository: Repository<ObservationDataSchema>() {
+class ObservationDataRepository : Repository<ObservationDataSchema>() {
     private var queue = mutableSetOf<ObservationDataSchema>()
     private val mutex = Mutex()
 
     fun addData(dataList: List<ObservationDataSchema>) {
-        launch {
+        StudyScope.launch {
             mutex.withLock {
                 queue.addAll(dataList)
             }
@@ -43,7 +41,7 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     fun store() {
         if (queue.isNotEmpty()) {
-            launch {
+            StudyScope.launch {
                 val queueCopy = mutex.withLock {
                     val queueCopy = queue.toSet()
                     queue = mutableSetOf()
@@ -59,12 +57,13 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
 
     suspend fun allAsBulk(): DataBulk? {
         return mutex().withLock {
-            realmDatabase().query<ObservationDataSchema>(limit = 5000).firstOrNull()?.mapAsBulkData()
+            realmDatabase().query<ObservationDataSchema>(limit = 5000).firstOrNull()
+                ?.mapAsBulkData()
         }
     }
 
     fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
-        CoroutineScope(Job() + Dispatchers.Default).launch {
+        StudyScope.launch(Dispatchers.IO) {
             allAsBulk()?.let { completionHandler(it) }
         }
     }
@@ -72,12 +71,13 @@ class ObservationDataRepository: Repository<ObservationDataSchema>() {
     fun deleteAllWithId(idSet: Set<String>) {
         Napier.i { "Deleting ${idSet.size} elements..." }
         val objectIdSet = idSet.map { ObjectId(it) }.toSet()
-        launch {
+        StudyScope.launch {
             mutex().withLock {
                 realm()?.write {
-                    this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }.forEach {
-                        delete(it)
-                    }
+                    this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }
+                        .forEach {
+                            delete(it)
+                        }
                 }
             }
         }

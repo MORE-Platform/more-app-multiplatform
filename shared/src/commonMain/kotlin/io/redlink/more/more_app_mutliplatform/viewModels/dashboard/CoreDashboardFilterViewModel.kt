@@ -25,10 +25,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 
-class CoreDashboardFilterViewModel: CoreViewModel() {
+class CoreDashboardFilterViewModel : CoreViewModel() {
     val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
     val currentDateFilter = MutableStateFlow(
-        DateFilterModel.values().associateWith { it == DateFilterModel.ENTIRE_TIME })
+        DateFilterModel.entries.associateWith { it == DateFilterModel.ENTIRE_TIME })
 
     init {
         Scope.launch {
@@ -37,6 +37,7 @@ class CoreDashboardFilterViewModel: CoreViewModel() {
             }
         }
     }
+
     override fun viewDidAppear() {
 
     }
@@ -106,8 +107,11 @@ class CoreDashboardFilterViewModel: CoreViewModel() {
         return schedules
     }
 
-    fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) = currentTypeFilter.asClosure(provideNewState)
+    fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) =
+        currentTypeFilter.asClosure(provideNewState)
 
-    fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) = currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }.asClosure(provideNewState)
+    fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) =
+        currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }
+            .asClosure(provideNewState)
 
 }

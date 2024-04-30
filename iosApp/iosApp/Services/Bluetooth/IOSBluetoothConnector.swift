@@ -29,9 +29,6 @@ typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
     let specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary<NSString, BluetoothConnector>()
     
-    let connected: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
-    let discovered: KotlinMutableSet<BluetoothDevice> = KotlinMutableSet()
-    
     private lazy var centralManager: CBCentralManager = {
         CBCentralManager(delegate: self, queue: nil)
     }()
@@ -102,8 +99,6 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
     
     func replayStates() {
-        self.connectedDevices.keys.forEach{didConnectToDevice(bluetoothDevice: $0)}
-        self.discoveredDevices.keys.forEach{ didDiscoverDevice(device: $0)}
         isScanning(boolean: scanning)
     }
     
@@ -249,7 +244,6 @@ extension IOSBluetoothConnector: CBCentralManagerDelegate {
         if peripheral.name != nil {
             let device = peripheral.toBluetoothDevice()
             if peripheral.state == .connected {
-                device.connected = true
                 connectedDevices[device] = peripheral
                 self.didConnectToDevice(bluetoothDevice: device)
             } else {
@@ -269,8 +263,7 @@ extension CBPeripheral {
         BluetoothDevice.Companion().create(
             deviceId: self.identifier.uuidString,
             deviceName: self.name ?? "Unknown",
-            address: self.identifier.uuidString,
-            isConnectable: true
+            address: self.identifier.uuidString
         )
     }
 }

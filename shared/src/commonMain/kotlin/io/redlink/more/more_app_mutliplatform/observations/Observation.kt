@@ -16,6 +16,9 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSc
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -31,6 +34,14 @@ abstract class Observation(val observationType: ObservationType) {
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
+
+    private val _observationErrors = MutableStateFlow<Pair<String, Set<String>>>(
+        Pair(
+            this.observationType.observationType,
+            emptySet()
+        )
+    )
+    val observationErrors: StateFlow<Pair<String, Set<String>>> = _observationErrors;
 
     fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
@@ -102,7 +113,13 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected abstract fun stop(onCompletion: () -> Unit)
 
-    abstract fun observerAccessible(): Boolean
+    fun observerAccessible(): Boolean {
+        val errors = observerErrors()
+        this._observationErrors.update { Pair(observationType.observationType, errors) }
+        return errors.isEmpty()
+    }
+
+    open fun observerErrors(): Set<String> = emptySet()
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 

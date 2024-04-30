@@ -15,10 +15,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreBluetoothViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +29,7 @@ import kotlinx.coroutines.withContext
 class BluetoothViewModel : ViewModel() {
     private val coreBluetoothViewModel = CoreBluetoothViewModel(
         MoreApplication.shared!!.observationFactory,
-        MoreApplication.shared!!.coreBluetooth
+        MoreApplication.shared!!.bluetoothController
     )
     val discoveredDevices = mutableStateListOf<BluetoothDevice>()
     val connectedDevices = mutableStateListOf<BluetoothDevice>()
@@ -42,7 +44,7 @@ class BluetoothViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+            AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
                     alertDialogOpen.value = it
                 }
@@ -90,9 +92,11 @@ class BluetoothViewModel : ViewModel() {
 
     fun viewDidAppear() {
         coreBluetoothViewModel.viewDidAppear()
+        ViewManager.bleViewOpen(true)
     }
 
     fun viewDidDisappear() {
+        ViewManager.bleViewOpen(false)
         coreBluetoothViewModel.viewDidDisappear()
         connectingDevices.clear()
         connectedDevices.clear()

@@ -21,11 +21,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Obs
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 
 class RegistrationService(
     private val shared: Shared
@@ -35,8 +31,6 @@ class RegistrationService(
 
     var participationToken: String? = null
     private var endpoint: String? = null
-
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
@@ -48,7 +42,7 @@ class RegistrationService(
         onFinish: () -> Unit
     ) {
         if (token.isNotEmpty()) {
-            Scope.launch {
+            StudyScope.launch {
                 val (result, networkError) = shared.networkService.validateRegistrationToken(
                     token.uppercase(),
                     manualEndpoint
@@ -75,7 +69,7 @@ class RegistrationService(
         onError: ((NetworkServiceError?) -> Unit),
         onFinish: () -> Unit
     ) {
-        Scope.launch {
+        StudyScope.launch {
             shared.credentialRepository.remove()
             shared.endpointRepository.removeEndpoint()
             DatabaseManager.deleteAll()
@@ -103,7 +97,7 @@ class RegistrationService(
         onError: ((NetworkServiceError?) -> Unit),
         onFinish: () -> Unit
     ) {
-        scope.launch {
+        StudyScope.launch {
             val (config, networkError) = shared.networkService.sendConsent(
                 token,
                 studyConsent,

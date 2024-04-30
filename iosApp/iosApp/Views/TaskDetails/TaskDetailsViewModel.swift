@@ -19,17 +19,33 @@ import SwiftUI
 class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
     
-    @Published var taskDetailsModel: TaskDetailsModel?
+    @Published var taskDetailsModel: TaskDetailsModel? {
+        didSet {
+            if self.taskDetailsModel == nil {
+                self.observationErrors = []
+            }
+        }
+    }
     @Published var dataCount: Int64 = 0
+    @Published var observationErrors: [String] = []
     
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
+    
+    private var observationErrorsJob: Ktor_ioCloseable?
     
     init(dataRecorder: DataRecorder) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
-        coreModel.onLoadTaskDetails { taskDetails in
-            if let taskDetails {
-                self.taskDetailsModel = taskDetails
+        coreModel.onLoadTaskDetails { [weak self] taskDetails in
+            if let self {
+                if let taskDetails {
+                    self.taskDetailsModel = taskDetails
+                    self.observationErrorsJob = AppDelegate.shared.observationFactory.observationErrorsAsClosure { errors in
+                        self.observationErrors = Array(errors[taskDetails.observationType] ?? [])
+                    }
+                } else {
+                    self.observationErrorsJob?.close()
+                }
             }
         }
         

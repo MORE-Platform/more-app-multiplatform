@@ -29,7 +29,9 @@ struct ContentView: View {
                     } else {
                         MainTabView()
                             .sheet(isPresented: $viewModel.showBleView) {
-                                BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                                MoreMainBackgroundView(contentPadding: 8) {
+                                    BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                                }
                             }
                     }
                 } else {

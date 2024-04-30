@@ -17,7 +17,7 @@ import Foundation
 
 extension Array where Element: Collection {
     func flatten() -> [Element.Element] {
-        return reduce([],+)
+        return reduce([], +)
     }
 }
 
@@ -27,7 +27,7 @@ extension Array where Element: Equatable {
             self.remove(at: i)
         }
     }
-    
+
     mutating func pop(_ elementToPop: Element) -> Int {
         if let index = self.lastIndex(of: elementToPop) {
             self.remove(at: index)

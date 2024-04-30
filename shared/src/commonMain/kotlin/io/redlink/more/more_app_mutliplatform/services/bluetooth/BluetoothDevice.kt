@@ -18,28 +18,30 @@ class BluetoothDevice : RealmObject {
     var deviceId: String? = null
     var deviceName: String? = null
     var address: String? = null
-    var isConnectable: Boolean = true
-    var connected: Boolean = false
-    var shouldAutomaticallyReconnect: Boolean = false
-
     override fun toString(): String {
-        return "BluetoothDevice {deviceId: $deviceId, name: $deviceName, address: $address, connected: $connected}"
+        return "BluetoothDevice {deviceId: $deviceId, name: $deviceName, address: $address}"
     }
 
     override fun hashCode(): Int = address?.hashCode() ?: super.hashCode()
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as BluetoothDevice
+
+        return this.address == other.address
+    }
 
     companion object {
         fun create(
             deviceId: String,
             deviceName: String,
             address: String,
-            isConnectable: Boolean = true
         ): BluetoothDevice {
             return BluetoothDevice().apply {
                 this.deviceId = deviceId
                 this.deviceName = deviceName
                 this.address = address
-                this.isConnectable = isConnectable
             }
         }
     }

@@ -32,7 +32,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -287,7 +287,7 @@ class NetworkService(
         data: DataBulk,
         completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit
     ) {
-        Scope.launch {
+        StudyScope.launch {
             completionHandler(
                 sendData(data)
             )

@@ -21,7 +21,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -47,6 +49,8 @@ fun ScheduleListItem(
     viewModel: ScheduleViewModel,
     showButton: Boolean
 ) {
+    val observationErrors =
+        remember { viewModel.observationErrors[scheduleModel.observationType] ?: emptySet() }
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -68,6 +72,9 @@ fun ScheduleListItem(
                         .height(15.dp)
                         .width(15.dp)
                 )
+            }
+            if (observationErrors.isEmpty()) {
+                Icon(Icons.Default.Warning, contentDescription = null, tint = MoreColors.Primary)
             }
         }
         Row(
@@ -99,6 +106,7 @@ fun ScheduleListItem(
                         )
                     }
                 }
+
                 "lime-survey-observation" -> {
                     SmallTextButton(
                         text = getStringResource(id = R.string.more_limesurvey_start),
@@ -107,6 +115,7 @@ fun ScheduleListItem(
                         navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel.scheduleId))
                     }
                 }
+
                 else -> {
                     SmallTextButton(
                         text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(

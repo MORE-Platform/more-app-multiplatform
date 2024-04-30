@@ -37,7 +37,7 @@ class CoreBluetoothViewModel(
     }
 
     fun disconnectFromDevice(device: BluetoothDevice) {
-        coreBluetooth.disconnectFromDevice(device)
+        coreBluetooth.unpairFromDevice(device)
     }
 
     fun devicesNeededChange(providedState: (Set<String>) -> Unit) =

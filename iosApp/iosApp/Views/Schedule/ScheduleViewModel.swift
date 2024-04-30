@@ -23,6 +23,7 @@ class ScheduleViewModel: ObservableObject {
     let filterViewModel: DashboardFilterViewModel = DashboardFilterViewModel()
     
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
+    @Published var observationErrors: [String: Set<String>] = [:]
 
 
     init(scheduleListType: ScheduleListType) {
@@ -68,6 +69,12 @@ class ScheduleViewModel: ObservableObject {
                         })
                     }
                 }
+            }
+        }
+        
+        AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
+            DispatchQueue.main.async {
+                self?.observationErrors = errors
             }
         }
     }

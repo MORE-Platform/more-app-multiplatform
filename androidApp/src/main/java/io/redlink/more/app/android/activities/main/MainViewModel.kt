@@ -14,6 +14,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,17 +33,18 @@ import io.redlink.more.app.android.activities.studyDetails.StudyDetailsViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsViewModel
+import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
-import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainViewModel(context: Context) : ViewModel() {
-    val tabIndex = mutableStateOf(0)
+    val tabIndex = mutableIntStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
 
@@ -54,26 +56,23 @@ class MainViewModel(context: Context) : ViewModel() {
 
     val notificationViewModel: NotificationViewModel
     val notificationFilterViewModel: NotificationFilterViewModel
-    val manualTasks =
+    val manualTasks: ScheduleViewModel by lazy {
         ScheduleViewModel(
-            CoreDashboardFilterViewModel(),
-            MoreApplication.shared!!.dataRecorder,
             ScheduleListType.MANUALS
         )
+    }
+
     val runningSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
-            CoreDashboardFilterViewModel(),
-            MoreApplication.shared!!.dataRecorder,
             ScheduleListType.RUNNING
         )
     }
     val completedSchedulesViewModel: ScheduleViewModel by lazy {
         ScheduleViewModel(
-            CoreDashboardFilterViewModel(),
-            MoreApplication.shared!!.dataRecorder,
             ScheduleListType.COMPLETED
         )
     }
+
     val dashboardViewModel = DashboardViewModel(manualTasks)
     val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel() }
     val studyDetailsViewModel: StudyDetailsViewModel by lazy { StudyDetailsViewModel() }
@@ -93,18 +92,19 @@ class MainViewModel(context: Context) : ViewModel() {
         TaskDetailsViewModel(MoreApplication.shared!!.dataRecorder)
     }
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
+    private var lastBleViewState = false
 
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+            AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
                     alertDialogOpen.value = it
                 }
             }
         }
         viewModelScope.launch {
-            MoreApplication.shared!!.studyIsUpdating.collect {
+            ViewManager.studyIsUpdating.collect {
                 studyIsUpdating.value = it
             }
         }
@@ -112,33 +112,31 @@ class MainViewModel(context: Context) : ViewModel() {
             MoreApplication.shared!!.currentStudyState.collect {
                 finishText.value = MoreApplication.shared!!.finishText
                 studyState.value = it
-                if (it == StudyState.ACTIVE && initFinished) {
-                    showBLESetup(context)
-                }
             }
         }
+
         val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
         notificationViewModel = NotificationViewModel(coreNotificationFilterViewModel)
         notificationFilterViewModel = NotificationFilterViewModel(coreNotificationFilterViewModel)
-        showBLESetup(context)
-        initFinished = true
-    }
 
-    private fun showBLESetup(context: Context) {
-        MoreApplication.shared!!.showBleSetup().let { (firstTime, hasBLEObservations) ->
-            if (hasBLEObservations) {
-                if (firstTime) {
+        initFinished = true
+
+        viewModelScope.launch {
+            ViewManager.showBluetoothView.collect {
+                if (it && !lastBleViewState) {
                     openBLESetupActivity(context)
                 }
+                lastBleViewState = it
             }
         }
+    }
+
+    private fun showBLESetup() {
+        MoreApplication.shared!!.showBLESetupOnFirstStartup()
     }
 
     fun getTaskDetailsVM(scheduleId: String) =
         taskDetailsViewModel.apply { setSchedule(scheduleId) }
-
-    fun viewDidAppear() {
-    }
 
     fun openLimesurvey(
         context: Context,

@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,10 +18,9 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
-    
+
     @EnvironmentObject var navigationModalState: NavigationModalState
-    
-    
+
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
@@ -41,17 +40,15 @@ struct TaskDetailsView: View {
                         }
                     }
                     .frame(height: 40)
-                    
-                    HStack(
-                    ) {
+
+                    HStack {
                         BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
                         Spacer()
                     }
                 }
-                
-                
+
                 ObservationDetailsData(dateRange: viewModel.getDateRangeString(), timeframe: viewModel.getTimeRangeString())
-                
+
                 HStack {
                     AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
                 }
@@ -61,7 +58,7 @@ struct TaskDetailsView: View {
                         DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
                     }
                     Spacer()
-                    
+
                     if !detailsModel.hidden {
                         if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                             ObservationButton(
@@ -70,6 +67,13 @@ struct TaskDetailsView: View {
                                 observationType: detailsModel.observationType,
                                 state: detailsModel.state,
                                 disabled: !detailsModel.state.active())
+                        }
+                    }
+                    if !viewModel.observationErrors.isEmpty {
+                        ScrollView {
+                            List(viewModel.observationErrors, id: \.self) { error in
+                                BasicText(text: error)
+                            }
                         }
                     }
                 }
@@ -86,8 +90,9 @@ struct TaskDetailsView: View {
     }
 }
 
-extension TaskDetailsView: SimpleQuestionObservationListener {
-    func onQuestionAnswered() {
-        // self.presentationMode.wrappedValue.dismiss()
+struct TaskDetailsViewPreview_Provider: PreviewProvider {
+    static var previews: some View {
+        TaskDetailsView(viewModel: TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder))
+            .environmentObject(NavigationModalState())
     }
 }

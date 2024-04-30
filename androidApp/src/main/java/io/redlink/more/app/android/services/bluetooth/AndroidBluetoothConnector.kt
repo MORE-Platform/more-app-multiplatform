@@ -231,7 +231,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
 
     @SuppressLint("MissingPermission")
     override fun scan() {
-        if (bluetoothState == BluetoothState.ON && observer != null && !scanning && !isConnecting) {
+        if (bluetoothState == BluetoothState.ON && !scanning && !isConnecting) {
             val scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build()
@@ -393,5 +393,5 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
 
 @SuppressLint("MissingPermission")
 fun AndroidBluetoothDevice.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.address, this.name, this.address, true)
+    return BluetoothDevice.create(this.address, this.name, this.address)
 }

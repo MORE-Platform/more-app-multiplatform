@@ -47,8 +47,12 @@ class AccelerometerObservation: Observation_ {
         onCompletion()
     }
     
-    override func observerAccessible() -> Bool {
-        motion.isAccelerometerAvailable
+    override func observerErrors() -> Set<String> {
+        var errors: Set<String> = []
+        if !motion.isAccelerometerAvailable {
+            errors.insert("Accelerometer Sensor not available!")
+        }
+        return errors
     }
     
     override func applyObservationConfig(settings: Dictionary<String, Any>){

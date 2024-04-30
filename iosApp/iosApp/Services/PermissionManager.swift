@@ -82,13 +82,13 @@ class PermissionManager: NSObject, ObservableObject {
                 if notificationStatus == .accepted {
                     AppDelegate.registerForNotifications()
                 } else {
-                    AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Notification Permissions Not Granted", message: "We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks.", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
+                    AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Notification Permissions Not Granted", message: "We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks.", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
                         if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url, options: [:], completionHandler: nil)
                         }
-                        AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
+                        AlertController.shared.closeAlertDialog()
                     }, onNegative: {
-                        AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
+                        AlertController.shared.closeAlertDialog()
                     }))
                 }
                 requestPermission()

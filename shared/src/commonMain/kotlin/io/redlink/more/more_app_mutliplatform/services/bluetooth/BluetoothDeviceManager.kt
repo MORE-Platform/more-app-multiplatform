@@ -5,53 +5,66 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.clear
 import io.redlink.more.more_app_mutliplatform.extensions.removeAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 
 object BluetoothDeviceManager {
-    val connectedDevices: MutableStateFlow<Set<BluetoothDevice>> = MutableStateFlow(emptySet())
-    val discoveredDevices: MutableStateFlow<Set<BluetoothDevice>> = MutableStateFlow(emptySet())
-    val pairedDevices: MutableStateFlow<Set<BluetoothDevice>> = MutableStateFlow(emptySet())
-    val devicesCurrentlyConnecting: MutableStateFlow<Set<BluetoothDevice>> = MutableStateFlow(
-        emptySet()
-    )
+    private val _connectedDevices: MutableStateFlow<Set<BluetoothDevice>> =
+        MutableStateFlow(emptySet())
+    val connectedDevices: StateFlow<Set<BluetoothDevice>> = _connectedDevices
+    private val _discoveredDevices: MutableStateFlow<Set<BluetoothDevice>> =
+        MutableStateFlow(emptySet())
+    val discoveredDevices: StateFlow<Set<BluetoothDevice>> = _discoveredDevices
+    private val _pairedDevices: MutableStateFlow<Set<BluetoothDevice>> =
+        MutableStateFlow(emptySet())
+    val pairedDevices: StateFlow<Set<BluetoothDevice>> = _pairedDevices
+    private val _devicesCurrentlyConnecting: MutableStateFlow<Set<BluetoothDevice>> =
+        MutableStateFlow(
+            emptySet()
+        )
+
+    val devicesCurrentlyConnecting: StateFlow<Set<BluetoothDevice>> = _devicesCurrentlyConnecting
 
     fun addConnectedDevices(devices: Set<BluetoothDevice>) {
-        connectedDevices.appendAll(devices)
+        _connectedDevices.appendAll(devices)
         addPairedDeviceIds(devices)
         removeDiscoveredDevices(devices)
         removeConnectingDevices(devices)
     }
 
     fun removeConnectedDevices(devices: Set<BluetoothDevice>) {
-        connectedDevices.removeAll(devices)
+        _connectedDevices.removeAll(devices)
     }
 
     fun addDiscoveredDevices(devices: Set<BluetoothDevice>) {
-        discoveredDevices.appendAll(devices)
+        _discoveredDevices.appendAll(devices)
     }
 
     fun removeDiscoveredDevices(devices: Set<BluetoothDevice>) {
-        discoveredDevices.removeAll(devices)
+        _discoveredDevices.removeAll(devices)
     }
 
     fun addPairedDeviceIds(deviceIds: Set<BluetoothDevice>) {
-        pairedDevices.appendAll(deviceIds)
+        _pairedDevices.appendAll(deviceIds)
     }
 
     fun removePairedDeviceIds(deviceIds: Set<BluetoothDevice>) {
-        pairedDevices.removeAll(deviceIds)
+        _pairedDevices.removeAll(deviceIds)
     }
 
     fun addConnectingDevices(devices: Set<BluetoothDevice>) {
         val connectedIds = devices.mapNotNull { it.address }.toSet()
-        devicesCurrentlyConnecting.appendAll(devices.filter { it.address !in connectedIds })
+        _devicesCurrentlyConnecting.appendAll(devices.filter { it.address !in connectedIds })
     }
 
     fun removeConnectingDevices(devices: Set<BluetoothDevice>) {
-        devicesCurrentlyConnecting.removeAll(devices)
+        _devicesCurrentlyConnecting.removeAll(devices)
     }
 
     fun connectedDevicesAsClosure(state: (Set<BluetoothDevice>) -> Unit) =
         this.connectedDevices.asClosure(state)
+
+    fun connectedDevicesAsValue(): Set<BluetoothDevice> = connectedDevices.value
 
     fun discoveredDevicesAsClosure(state: (Set<BluetoothDevice>) -> Unit) =
         this.discoveredDevices.asClosure(state)
@@ -71,9 +84,13 @@ object BluetoothDeviceManager {
     }
 
     fun resetAll() {
-        this.connectedDevices.clear()
-        this.discoveredDevices.clear()
-        this.devicesCurrentlyConnecting.clear()
-        this.pairedDevices.clear()
+        this._connectedDevices.clear()
+        this._discoveredDevices.clear()
+        this._devicesCurrentlyConnecting.clear()
+    }
+
+    fun clearCurrent() {
+        this._connectedDevices.clear()
+        this._discoveredDevices.clear()
     }
 }

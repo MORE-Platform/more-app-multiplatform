@@ -22,7 +22,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.util.Scope.launch
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -137,7 +137,7 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
     )
 
     fun updateTaskStates(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
-        launch {
+        StudyScope.launch {
             updateTaskStatesSync(observationFactory, dataRecorder)
         }
     }
@@ -168,6 +168,9 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             }
         }?.toSet() ?: emptySet()
         if (activeIds.isNotEmpty()) {
+            StudyScope.launch {
+                observationFactory.updateObservationErrors()
+            }
             dataRecorder.startMultiple(activeIds)
         }
     }

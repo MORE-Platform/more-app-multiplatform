@@ -17,7 +17,7 @@ import Foundation
 import shared
 
 class BluetoothConnectionViewModel: ObservableObject {
-    private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.coreBluetooth)
+    private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.bluetoothController)
     private let deviceManager = BluetoothDeviceManager.shared
 
     @Published var discoveredDevices: [BluetoothDevice] = []
@@ -28,15 +28,8 @@ class BluetoothConnectionViewModel: ObservableObject {
 
     @Published var neededDevices: [String] = []
 
-    init() {
-        coreViewModel.devicesNeededChange { [weak self] deviceList in
-            DispatchQueue.main.async {
-                self?.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded(types: deviceList))
-            }
-        }
-    }
-
     func viewDidAppear() {
+        self.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
         deviceManager.discoveredDevicesAsClosure { [weak self] deviceSet in
             if let self {
                 DispatchQueue.main.async {

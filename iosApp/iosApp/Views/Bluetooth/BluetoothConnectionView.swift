@@ -89,15 +89,14 @@ struct BluetoothConnectionView: View {
                         }
                     }
                     
-                    // .padding(.bottom, 8)
                     Section(header: SectionHeading(sectionTitle: "Discovered devices")) {
                         if viewModel.discoveredDevices.isEmpty {
                             EmptyListView(text: "\(String.localize(forKey: "No devices found nearby", withComment: "No devices found nearby", inTable: bluetoothStrings))!")
                         } else {
-                            ForEach(viewModel.discoveredDevices, id: \.self.address) { device in
+                            ForEach(viewModel.discoveredDevices, id: \.address) { device in
                                 if let deviceName = device.deviceName {
                                     VStack(alignment: .leading) {
-                                        HStack(alignment: .firstTextBaseline) {
+                                        HStack {
                                             DetailsTitle(text: deviceName)
                                             if let address = device.address, viewModel.connectingDevices.contains(address) {
                                                 Spacer()

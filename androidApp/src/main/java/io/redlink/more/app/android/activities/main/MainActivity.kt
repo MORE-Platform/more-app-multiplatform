@@ -81,7 +81,6 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
-                viewModel.viewDidAppear()
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()

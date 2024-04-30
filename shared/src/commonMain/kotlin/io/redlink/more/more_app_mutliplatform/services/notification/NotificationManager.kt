@@ -22,6 +22,7 @@ import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
@@ -186,7 +187,7 @@ class NotificationManager(
     }
 
     private fun storeAndUploadToken(newToken: String) {
-        Scope.launch(Dispatchers.Default) {
+        Scope.launch(Dispatchers.IO) {
             networkService.sendNotificationToken(newToken)
         }
     }

@@ -44,7 +44,7 @@ class GPSObservation(
 
     override fun start(): Boolean {
         Napier.d { "Trying to start GPS..." }
-        if (this.activate()) {
+        if (this.hasPermission()) {
             val listener = this
             scope.launch {
                 Napier.d { "Registering GPS Service..." }
@@ -61,10 +61,18 @@ class GPSObservation(
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return locationManager != null
-                && locationManager.isLocationEnabled
-                && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    override fun observerErrors(): Set<String> {
+        val errors = mutableSetOf<String>()
+        if (locationManager == null) {
+            errors.add("Location Services return an unknown error!")
+        }
+        if (locationManager.isLocationEnabled) {
+            errors.add("Location Servies are disabled!")
+        }
+        if (!hasPermission()) {
+            errors.add("No Permission were granted to access the location services!")
+        }
+        return errors
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
@@ -93,11 +101,11 @@ class GPSObservation(
         Napier.d { "Location available: $available" }
     }
 
-    private fun activate(): Boolean {
+    private fun hasPermission(): Boolean {
         return this.hasPermissions(MoreApplication.appContext!!)
     }
 
-    private fun hasPermissions(context: Context): Boolean  {
+    private fun hasPermissions(context: Context): Boolean {
         getPermission().forEach { permission ->
             if (ActivityCompat.checkSelfPermission(
                     context,

@@ -93,10 +93,17 @@ class PolarHeartRateObservation :
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return hasPermissions(MoreApplication.appContext!!) && MoreApplication.shared!!.coreBluetooth.observerDeviceAccessible(
-            deviceIdentifier
-        )
+    override fun observerErrors(): Set<String> {
+        val errors = mutableSetOf<String>()
+        if (hasPermissions(MoreApplication.appContext!!)) {
+            errors.add("No permission to access bluetooth!")
+        } else if (MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(
+                deviceIdentifier
+            )
+        ) {
+            errors.add("No viable device connected!")
+        }
+        return errors
     }
 
     override fun bleDevicesNeeded(): Set<String> {
@@ -128,7 +135,7 @@ class PolarHeartRateObservation :
     private fun listenToDeviceConnection(): Job {
         return Scope.launch {
             BluetoothDeviceManager.connectedDevices.collect { devices ->
-                if (deviceIdentifier.anyNameIn(devices)) {
+                if (!deviceIdentifier.anyNameIn(devices)) {
                     pauseObservation(PolarVerityHeartRateType(emptySet()))
                     hrReady.set(false)
                     Napier.d(tag = "PolarHeartRateObservation::Companion::listenToDeviceConnection") { "HR Feature removed!" }

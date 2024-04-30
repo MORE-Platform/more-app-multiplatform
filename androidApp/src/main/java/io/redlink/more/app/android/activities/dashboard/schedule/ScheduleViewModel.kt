@@ -15,39 +15,43 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class ScheduleViewModel(
-    coreFilterModel: CoreDashboardFilterViewModel,
-    dataRecorder: DataRecorder,
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
+    private val coreDashboardFilterViewModel = CoreDashboardFilterViewModel()
 
     private val coreViewModel = CoreScheduleViewModel(
-        dataRecorder,
-        coreFilterModel = coreFilterModel,
+        MoreApplication.shared!!.dataRecorder,
+        coreFilterModel = coreDashboardFilterViewModel,
         scheduleListType = scheduleListType
     )
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     val schedulesByDate = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
+    val observationErrors = mutableStateMapOf<String, Set<String>>()
 
-    val filterModel = DashboardFilterViewModel(coreFilterModel)
+    val filterModel = DashboardFilterViewModel(coreDashboardFilterViewModel)
 
-    init {
-        viewModelScope.launch {
+    private val jobs = mutableListOf<Job>()
+
+    fun viewDidAppear() {
+        coreViewModel.viewDidAppear()
+        jobs.add(viewModelScope.launch {
             coreViewModel.scheduleListState.collect { (added, removed, updated) ->
                 val idsToRemove = removed + updated.map { it.scheduleId }.toSet()
                 schedulesByDate.forEach { (date, schedules) ->
@@ -61,34 +65,28 @@ class ScheduleViewModel(
                     ).sortedBy { it.start }
                 }
             }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
+        })
+        jobs.add(viewModelScope.launch(Dispatchers.IO) {
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
-//                    val polarSchedules = schedulesByDate.values.flatten().filter { it.observationType == "polar-verity-observation" }
-//                    if (!it) {
-//                        polarSchedules.filter { it.scheduleState == ScheduleState.RUNNING }
-//                            .forEach {
-//                                pauseObservation(it.scheduleId)
-//                            }
-//                    } else {
-//                        polarSchedules.filter { it.scheduleState == ScheduleState.PAUSED }
-//                            .forEach {
-//                                startObservation(it.scheduleId)
-//                            }
-//                    }
                 }
             }
-        }
-    }
-
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
+        })
+        jobs.add(viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.observationFactory.observationErrors.collect {
+                withContext(Dispatchers.Main) {
+                    observationErrors.clear()
+                    observationErrors.putAll(it)
+                }
+            }
+        })
     }
 
     fun viewDidDisappear() {
         coreViewModel.viewDidDisappear()
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 
     fun startObservation(scheduleId: String) {
@@ -102,6 +100,7 @@ class ScheduleViewModel(
     fun stopObservation(scheduleId: String) {
         coreViewModel.stop(scheduleId)
     }
+
 
     private fun mergeSchedules(
         first: Set<ScheduleModel>,

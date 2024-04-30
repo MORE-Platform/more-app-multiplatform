@@ -13,38 +13,54 @@ package io.redlink.more.more_app_mutliplatform.observations
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.appendAll
+import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.clear
+import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 
 
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
     val observations = mutableSetOf<Observation>()
 
-    val studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    private val _studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
+    private val _observationErrors: MutableStateFlow<Map<String, Set<String>>> =
+        MutableStateFlow(emptyMap())
+    val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
+
+    private var observationErrorWatcher: Job? = null
 
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
+        updateObservationErrors()
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
-                studyObservationTypes.appendAll(it)
+                _studyObservationTypes.clear()
+                _studyObservationTypes.appendAll(it)
             }
         }
     }
 
     fun addNeededObservationTypes(observationTypes: Set<String>) {
         Napier.i(tag = "ObservationFactory::addNeededObservationTypes") { "Adding observation types to studyObservationTypes: $observationTypes" }
-        studyObservationTypes.appendAll(observationTypes)
+        _studyObservationTypes.appendAll(observationTypes)
     }
 
     fun clearNeededObservationTypes() {
-        studyObservationTypes.clear()
+        _studyObservationTypes.clear()
+        observationErrorWatcher?.cancel()
+        observationErrorWatcher = null
     }
 
     fun studySensorPermissions() =
@@ -76,6 +92,19 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         return autoStartTypes
     }
 
+    fun updateObservationErrors() {
+        val flowList = studyObservations().map { it.observationErrors }
+        val combinedFlow = combine(flowList) { values ->
+            values.toMap()
+        }
+        Scope.launch {
+            combinedFlow.cancellable().collect {
+                _observationErrors.set(it)
+                Napier.d(tag = "ObservationFactory::updateObservationErrors") { observationErrors.value.toString() }
+            }
+        }
+    }
+
     fun observation(type: String): Observation? {
         Napier.i(tag = "ObservationFactory::observation") { "Fetching observation of type: $type" }
         return observations.firstOrNull { it.observationType.observationType == type }?.apply {
@@ -85,4 +114,11 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
             }
         }
     }
+
+    private fun studyObservations() =
+        observations.filter { it.observationType.observationType in studyObservationTypes.value }
+
+    fun observationErrorsAsClosure(state: (Map<String, Set<String>>) -> Unit) =
+        observationErrors.asClosure(state)
+
 }

@@ -237,5 +237,5 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 }
 
 fun PolarDeviceInfo.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.deviceId, this.name, this.address, this.isConnectable)
+    return BluetoothDevice.create(this.deviceId, this.name, this.address)
 }

@@ -17,10 +17,11 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class CoreNotificationFilterViewModel: CoreViewModel() {
+class CoreNotificationFilterViewModel : CoreViewModel() {
     private var highPriority: Long = 2
 
     val filters = MutableStateFlow<Map<NotificationFilterTypeModel, Boolean>>(mapOf())
+
     init {
         val map = getEnumAsList().associateWith { false }.toMutableMap()
         map[NotificationFilterTypeModel.ALL] = true
@@ -32,12 +33,10 @@ class CoreNotificationFilterViewModel: CoreViewModel() {
         if (filter == NotificationFilterTypeModel.ALL) {
             filterMap = filterMap.mapValues { false }.toMutableMap()
             filterMap[NotificationFilterTypeModel.ALL] = true
-        }
-        else if (filterMap[NotificationFilterTypeModel.ALL] == true){
+        } else if (filterMap[NotificationFilterTypeModel.ALL] == true) {
             filterMap[NotificationFilterTypeModel.ALL] = false
             filterMap[filter] = true
-        }
-        else if (filterMap[filter] == true) {
+        } else if (filterMap[filter] == true) {
             if (filterMap.values.filter { it }.size == 1) {
                 filterMap = filterMap.mapValues { false }.toMutableMap()
                 filterMap[NotificationFilterTypeModel.ALL] = true
@@ -61,15 +60,15 @@ class CoreNotificationFilterViewModel: CoreViewModel() {
     fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
         return if (filterActive()) {
             notificationList.filter { notification ->
-                    if (filters.value[NotificationFilterTypeModel.IMPORTANT] == true) {
-                        notification.priority == highPriority
-                    } else {
-                        true
-                    } && if (filters.value[NotificationFilterTypeModel.UNREAD] == true) {
-                        !notification.read
-                    } else {
-                        true
-                    }
+                if (filters.value[NotificationFilterTypeModel.IMPORTANT] == true) {
+                    notification.priority == highPriority
+                } else {
+                    true
+                } && if (filters.value[NotificationFilterTypeModel.UNREAD] == true) {
+                    !notification.read
+                } else {
+                    true
+                }
             }
         } else notificationList
     }
@@ -77,10 +76,11 @@ class CoreNotificationFilterViewModel: CoreViewModel() {
     fun filterActive() = filters.value[NotificationFilterTypeModel.ALL] == false
 
     private fun getEnumAsList(): List<NotificationFilterTypeModel> {
-        return NotificationFilterTypeModel.values().toList()
+        return NotificationFilterTypeModel.entries
     }
 
     fun getActiveTypes() = filters.value.filter { it.value }.map { it.key.type }.toSet()
 
-    fun onFilterChange(provideNewstate: (Map<NotificationFilterTypeModel, Boolean>) -> Unit) = filters.asClosure(provideNewstate)
+    fun onFilterChange(provideNewstate: (Map<NotificationFilterTypeModel, Boolean>) -> Unit) =
+        filters.asClosure(provideNewstate)
 }
