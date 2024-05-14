@@ -27,17 +27,18 @@ object BluetoothDeviceManager {
 
     fun addConnectedDevices(devices: Set<BluetoothDevice>) {
         _connectedDevices.appendAll(devices)
-        addPairedDeviceIds(devices)
+        addPairedDeviceIds(devices.filter { it !in pairedDevices.value }.toSet())
         removeDiscoveredDevices(devices)
         removeConnectingDevices(devices)
     }
 
     fun removeConnectedDevices(devices: Set<BluetoothDevice>) {
         _connectedDevices.removeAll(devices)
+        _discoveredDevices.removeAll(devices)
     }
 
     fun addDiscoveredDevices(devices: Set<BluetoothDevice>) {
-        _discoveredDevices.appendAll(devices)
+        _discoveredDevices.appendAll(devices.filter { !connectedDevices.value.contains(it) })
     }
 
     fun removeDiscoveredDevices(devices: Set<BluetoothDevice>) {
@@ -53,8 +54,7 @@ object BluetoothDeviceManager {
     }
 
     fun addConnectingDevices(devices: Set<BluetoothDevice>) {
-        val connectedIds = devices.mapNotNull { it.address }.toSet()
-        _devicesCurrentlyConnecting.appendAll(devices.filter { it.address !in connectedIds })
+        _devicesCurrentlyConnecting.appendAll(devices.filter { !connectedDevices.value.contains(it) })
     }
 
     fun removeConnectingDevices(devices: Set<BluetoothDevice>) {
@@ -89,8 +89,11 @@ object BluetoothDeviceManager {
         this._devicesCurrentlyConnecting.clear()
     }
 
-    fun clearCurrent() {
-        this._connectedDevices.clear()
+    fun clearDiscovered() {
         this._discoveredDevices.clear()
+    }
+
+    fun clearConnected() {
+        this._connectedDevices.clear()
     }
 }

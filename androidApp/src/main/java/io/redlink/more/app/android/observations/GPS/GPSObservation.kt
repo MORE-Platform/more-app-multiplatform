@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +67,7 @@ class GPSObservation(
         if (locationManager == null) {
             errors.add("Location Services return an unknown error!")
         }
-        if (locationManager.isLocationEnabled) {
+        if (!GPSStateListener.gpsEnabled.value) {
             errors.add("Location Servies are disabled!")
         }
         if (!hasPermission()) {

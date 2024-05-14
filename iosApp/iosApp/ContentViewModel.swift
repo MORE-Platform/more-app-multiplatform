@@ -88,10 +88,6 @@ class ContentViewModel: ObservableObject {
         AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
             self?.alertDialogModel = alertDialogModel
         }
-        
-//        if hasCredentials {
-//            showBLESetup()
-//        }
     }
     
     func showBLESetup() {

@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 
 
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
@@ -42,12 +43,22 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
-        updateObservationErrors()
         Scope.launch {
             ObservationRepository().observationTypes().firstOrNull()?.let {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 _studyObservationTypes.clear()
                 _studyObservationTypes.appendAll(it)
+            }
+        }
+        Scope.launch {
+            studyObservationTypes.collect {
+                if (it.isNotEmpty()) {
+                    updateObservationErrors()
+                } else {
+                    observationErrorWatcher?.cancel()
+                    observationErrorWatcher = null
+                    _observationErrors.update { emptyMap() }
+                }
             }
         }
     }
@@ -61,6 +72,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         _studyObservationTypes.clear()
         observationErrorWatcher?.cancel()
         observationErrorWatcher = null
+        _observationErrors.update { emptyMap() }
     }
 
     fun studySensorPermissions() =
@@ -92,17 +104,17 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         return autoStartTypes
     }
 
-    fun updateObservationErrors() {
+    private fun updateObservationErrors() {
         val flowList = studyObservations().map { it.observationErrors }
         val combinedFlow = combine(flowList) { values ->
             values.toMap()
         }
-        Scope.launch {
+        observationErrorWatcher = Scope.launch {
             combinedFlow.cancellable().collect {
                 _observationErrors.set(it)
                 Napier.d(tag = "ObservationFactory::updateObservationErrors") { observationErrors.value.toString() }
             }
-        }
+        }.second
     }
 
     fun observation(type: String): Observation? {
@@ -120,5 +132,4 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
 
     fun observationErrorsAsClosure(state: (Map<String, Set<String>>) -> Unit) =
         observationErrors.asClosure(state)
-
 }

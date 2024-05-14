@@ -19,6 +19,8 @@ import SwiftUI
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
 
+    @State private var scrollViewContentSize: CGSize = .zero
+
     @EnvironmentObject var navigationModalState: NavigationModalState
 
     private let stringTable = "TaskDetail"
@@ -59,6 +61,31 @@ struct TaskDetailsView: View {
                     }
                     Spacer()
 
+                    if !viewModel.taskObservationErrors.isEmpty {
+                        ScrollView {
+                            VStack {
+                                ForEach(viewModel.taskObservationErrors, id: \.self) { error in
+                                    HStack {
+                                        Image(systemName: "exclamationmark.triangle")
+                                            .font(.more.headline)
+                                            .foregroundColor(.more.important)
+                                            .padding(.trailing, 4)
+                                        BasicText(text: error)
+                                    }
+                                }
+                            }
+                            .background(
+                                GeometryReader { geo -> Color in
+                                    DispatchQueue.main.async {
+                                        scrollViewContentSize = geo.size
+                                    }
+                                    return Color.clear
+                                }
+                            )
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: scrollViewContentSize.height)
+                        Divider()
+                    }
                     if !detailsModel.hidden {
                         if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                             ObservationButton(
@@ -66,14 +93,7 @@ struct TaskDetailsView: View {
                                 scheduleId: scheduleId,
                                 observationType: detailsModel.observationType,
                                 state: detailsModel.state,
-                                disabled: !detailsModel.state.active())
-                        }
-                    }
-                    if !viewModel.observationErrors.isEmpty {
-                        ScrollView {
-                            List(viewModel.observationErrors, id: \.self) { error in
-                                BasicText(text: error)
-                            }
+                                disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
                         }
                     }
                 }

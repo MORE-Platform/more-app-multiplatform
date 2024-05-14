@@ -226,7 +226,7 @@ class Shared(
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
             clearSharedStorage()
-            DatabaseManager.deleteAll()
+            removeStudyData()
             onDeletion()
             observationFactory.clearNeededObservationTypes()
             viewManager.resetAll()

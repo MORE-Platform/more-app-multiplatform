@@ -56,7 +56,7 @@ class GPSObservation: Observation_ {
         } else if manager.authorizationStatus != .authorizedWhenInUse
              && manager.authorizationStatus != .authorizedAlways {
             errors.insert("Permission not granted to access location of the device!")
-            self.showPermissionAlert()
+            PermissionManager.openSensorPermissionDialog()
         }
         return errors
     }

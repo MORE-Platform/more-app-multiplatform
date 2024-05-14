@@ -73,20 +73,28 @@ fun ScheduleListItem(
                         .width(15.dp)
                 )
             }
-            if (observationErrors.isEmpty()) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = MoreColors.Primary)
-            }
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
             BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
-            Icon(
-                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = getStringResource(id = R.string.more_schedule_details),
-                tint = MoreColors.Primary
-            )
+            Row(horizontalArrangement = Arrangement.End) {
+                if (observationErrors.isNotEmpty()) {
+                    BasicText(text = "${observationErrors.count()}")
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MoreColors.Important,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                Icon(
+                    Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = getStringResource(id = R.string.more_schedule_details),
+                    tint = MoreColors.Primary
+                )
+            }
         }
 
         TimeframeHours(

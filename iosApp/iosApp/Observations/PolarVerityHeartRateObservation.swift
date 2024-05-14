@@ -58,6 +58,7 @@ class PolarVerityHeartRateObservation: Observation_ {
                     print(error)
                     if let self {
                         self.pauseObservation(self.observationType)
+                        self.observerAccessible()
                     }
                 })
                 return true
@@ -76,7 +77,7 @@ class PolarVerityHeartRateObservation: Observation_ {
         var errors: Set<String> = []
         if CBManager.authorization != .allowedAlways {
             errors.insert("Access to Bluetooth not granted!")
-            self.showPermissionAlert()
+            PermissionManager.openSensorPermissionDialog()
         }
         if !AppDelegate.shared.bluetoothController.observerDeviceAccessible(bleDevices: deviceIdentificer) {
             errors.insert("No polar device connected!")

@@ -10,9 +10,11 @@
  */
 package io.redlink.more.app.android.activities.tasks
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
@@ -24,7 +26,7 @@ import kotlinx.coroutines.withContext
 
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder
-): ViewModel() {
+) : ViewModel() {
     private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(dataRecorder)
     val isEnabled = mutableStateOf(false)
     val polarHrReady = mutableStateOf(false)
@@ -34,6 +36,9 @@ class TaskDetailsViewModel(
             "", "", "", "", 0, 0, "", false, ScheduleState.DEACTIVATED
         )
     )
+
+    val taskObservationErrors = mutableStateListOf<String>()
+    private var observationErrors: Map<String, Set<String>> = emptyMap()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -49,6 +54,12 @@ class TaskDetailsViewModel(
                     withContext(Dispatchers.Main) {
                         taskDetailsModel.value = it
                         isEnabled.value = it.state.active()
+                        withContext(Dispatchers.Main) {
+                            taskObservationErrors.clear()
+                            observationErrors[taskDetailsModel.value.observationType]?.let {
+                                taskObservationErrors.addAll(it)
+                            }
+                        }
                     }
                 }
             }
@@ -57,6 +68,18 @@ class TaskDetailsViewModel(
             coreViewModel.dataCount.collect {
                 withContext(Dispatchers.Main) {
                     dataPointCount.value = it
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            MoreApplication.shared!!.observationFactory.observationErrors.collect {
+                observationErrors = it
+                if (taskDetailsModel.value.observationType != "") {
+                    taskObservationErrors.clear()
+                    observationErrors[taskDetailsModel.value.observationType]?.let {
+                        taskObservationErrors.addAll(it)
+                    }
                 }
             }
         }

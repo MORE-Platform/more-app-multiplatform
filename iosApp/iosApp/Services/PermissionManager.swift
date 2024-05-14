@@ -47,7 +47,7 @@ protocol PermissionManagerObserver {
 class PermissionManager: NSObject, ObservableObject {
     var observer: PermissionManagerObserver?
     private var permissionsRequested = false
-    
+
     private var authorizationTimer: Timer?
 
     private let locationManager: CLLocationManager = CLLocationManager()
@@ -153,7 +153,7 @@ class PermissionManager: NSObject, ObservableObject {
                         self.authorizationTimer = nil
                     }
                 }
-                
+
                 activityManager.startActivityUpdates(to: OperationQueue.main) { [weak self] _ in
                     print("Starting Activity Updates")
                     self?.cmSensorStatus = .accepted
@@ -172,7 +172,7 @@ class PermissionManager: NSObject, ObservableObject {
     private func checkBluetoothAuthorization(always: Bool = true) -> PermissionStatus {
         print("Checking for Bluetooth authorization")
         if CBManager.authorization == .notDetermined {
-            self.cbManager = CBCentralManager(delegate: self, queue: nil)
+            cbManager = CBCentralManager(delegate: self, queue: nil)
             return .requesting
         } else if CBManager.authorization == .restricted || CBManager.authorization == .denied {
             return .declined
@@ -278,11 +278,29 @@ extension PermissionManager: CLLocationManagerDelegate {
             gpsStatus = .accepted
         }
     }
+    
+    private static var permissionAlertOpenedThisSession = false
+
+    static func openSensorPermissionDialog() {
+        if permissionAlertOpenedThisSession {
+            return
+        }
+        
+        permissionAlertOpenedThisSession = true
+        AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
+            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+            AlertController.shared.closeAlertDialog()
+        }, onNegative: {
+            AlertController.shared.closeAlertDialog()
+        }))
+    }
 }
 
 extension PermissionManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        self.cbManager = nil
-        self.bluetoothStatus = checkBluetoothAuthorization()
+        cbManager = nil
+        bluetoothStatus = checkBluetoothAuthorization()
     }
 }

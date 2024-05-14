@@ -128,7 +128,7 @@ struct NavigationWithDestinations<Content: View>: View {
     
     @ViewBuilder
     private func viewForScreen(_ screen: NavigationScreen) -> some View {
-        MoreMainBackgroundView {
+        MoreMainBackgroundView(contentPadding: navigationModalState.horizontalContentPadding) {
             VStack {
                 switch screen {
                 case .taskDetails:

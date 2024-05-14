@@ -54,7 +54,6 @@ class AccelerometerBackgroundObservation: Observation_ {
             
             return true
         }
-        self.showPermissionAlert()
         return false
     }
     
@@ -94,6 +93,7 @@ class AccelerometerBackgroundObservation: Observation_ {
         }
         if CMSensorRecorder.authorizationStatus() != .authorized {
             errors.insert("Permission not granted to access Sensor recording service!")
+            PermissionManager.openSensorPermissionDialog()
         }
         return errors
     }

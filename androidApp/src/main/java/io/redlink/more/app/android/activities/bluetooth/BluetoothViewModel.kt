@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -40,9 +41,16 @@ class BluetoothViewModel : ViewModel() {
     val neededDevices = mutableStateListOf<String>()
 
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
-
+    val gpsActive = mutableStateOf(false)
 
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            GPSStateListener.gpsEnabled.collect {
+                withContext(Dispatchers.Main) {
+                    gpsActive.value = it
+                }
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
@@ -50,7 +58,7 @@ class BluetoothViewModel : ViewModel() {
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             BluetoothDeviceManager.discoveredDevices.collect {
                 discoveredDevices.clear()
                 discoveredDevices.addAll(it)
@@ -91,18 +99,15 @@ class BluetoothViewModel : ViewModel() {
     }
 
     fun viewDidAppear() {
-        coreBluetoothViewModel.viewDidAppear()
         ViewManager.bleViewOpen(true)
+        coreBluetoothViewModel.viewDidAppear()
     }
 
     fun viewDidDisappear() {
-        ViewManager.bleViewOpen(false)
         coreBluetoothViewModel.viewDidDisappear()
-        connectingDevices.clear()
-        connectedDevices.clear()
-        discoveredDevices.clear()
         isScanning.value = false
         bluetoothPowerState.value = false
+        ViewManager.bleViewOpen(false)
     }
 
     fun connectToDevice(device: BluetoothDevice) {

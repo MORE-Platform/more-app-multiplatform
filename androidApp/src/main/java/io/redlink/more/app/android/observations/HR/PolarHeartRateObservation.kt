@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.observations.HR
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,6 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
@@ -31,14 +33,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         setOf(
-            android.Manifest.permission.BLUETOOTH_SCAN,
-            android.Manifest.permission.BLUETOOTH_CONNECT,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
     } else {
         setOf(
-            android.Manifest.permission.BLUETOOTH,
-            android.Manifest.permission.BLUETOOTH_ADMIN
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN
         )
     }
 
@@ -97,9 +99,10 @@ class PolarHeartRateObservation :
         val errors = mutableSetOf<String>()
         if (hasPermissions(MoreApplication.appContext!!)) {
             errors.add("No permission to access bluetooth!")
-        } else if (MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(
-                deviceIdentifier
-            )
+        } else if (!BluetoothStateListener.bluetoothEnabled.value) {
+            errors.add("Bluetooth disabled!")
+        } else if (
+            MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)
         ) {
             errors.add("No viable device connected!")
         }

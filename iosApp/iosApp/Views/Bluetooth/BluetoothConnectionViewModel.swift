@@ -27,9 +27,45 @@ class BluetoothConnectionViewModel: ObservableObject {
     @Published var bluetoothIsScanning = false
 
     @Published var neededDevices: [String] = []
+    
+    @Published var bluetoothPower: BluetoothState = .off
+
+    init() {
+        deviceManager.connectedDevicesAsClosure { [weak self] deviceSet in
+            if let self {
+                DispatchQueue.main.async {
+                    self.connectedDevices = Array(deviceSet)
+                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
+                        .sorted(by: { d1, d2 in
+                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
+                                return name1 < name2
+                            } else {
+                                return false
+                            }
+                        })
+                }
+            }
+        }
+
+        deviceManager.devicesCurrentlyConnectingAsClosure { [weak self] devices in
+            if let self {
+                DispatchQueue.main.async {
+                    self.connectingDevices = devices.compactMap { $0.address }
+                }
+            }
+        }
+        
+        coreViewModel.coreBluetooth.isScanningAsClosure { [weak self] kBool in
+            self?.bluetoothIsScanning = kBool.boolValue
+        }
+        
+        coreViewModel.coreBluetooth.bluetoothStateAsClosure { [weak self] bluetoothState in
+            self?.bluetoothPower = bluetoothState
+        }
+    }
 
     func viewDidAppear() {
-        self.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
+        neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
         deviceManager.discoveredDevicesAsClosure { [weak self] deviceSet in
             if let self {
                 DispatchQueue.main.async {
@@ -51,28 +87,6 @@ class BluetoothConnectionViewModel: ObservableObject {
                             }
                         })
                 }
-            }
-        }
-        
-        deviceManager.connectedDevicesAsClosure { [weak self] deviceSet in
-            if let self {
-                DispatchQueue.main.async {
-                    self.connectedDevices = Array(deviceSet)
-                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
-                        .sorted(by: { d1, d2 in
-                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
-                                return name1 < name2
-                            } else {
-                                return false
-                            }
-                        })
-                }
-            }
-        }
-        
-        deviceManager.devicesCurrentlyConnectingAsClosure { [weak self] devices in
-            DispatchQueue.main.async {
-                self?.connectingDevices = devices.compactMap{ $0.address }
             }
         }
 

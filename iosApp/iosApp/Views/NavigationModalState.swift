@@ -29,6 +29,8 @@ struct NavigationActions {
 }
 
 class NavigationModalState: ObservableObject {
+    
+    let horizontalContentPadding: CGFloat = 24
 
     @Published var navigationStack: [NavigationScreen] = []
     @Published var navigationStateStack: [NavigationState] = []

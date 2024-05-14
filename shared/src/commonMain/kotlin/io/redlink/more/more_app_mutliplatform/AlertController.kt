@@ -26,7 +26,7 @@ object AlertController {
         }
         if (this.alertDialogQueue.isEmpty() && this.alertDialogModel.value == null) {
             this._alertDialogModel.set(model)
-        } else {
+        } else if (!this.alertDialogQueue.contains(model) && this.alertDialogModel.value != model) {
             this.alertDialogQueue.add(model)
         }
     }

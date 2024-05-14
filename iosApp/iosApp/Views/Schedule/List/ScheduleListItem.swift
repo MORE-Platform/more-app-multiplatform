@@ -33,7 +33,7 @@ struct ScheduleListItem: View {
                 navigationModalState.openView(screen: .taskDetails, scheduleId: scheduleModel.scheduleId)
             } label: {
                 VStack(alignment: .leading) {
-                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType, observerHasErrors: viewModel.observationErrors[scheduleModel.observationType]?.isEmpty ?? false)
+                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType, numberOfObservationErrors: viewModel.observationErrors[scheduleModel.observationType]?.count ?? 0)
                         .padding(.bottom, 4)
                     ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
                 }
@@ -45,7 +45,7 @@ struct ScheduleListItem: View {
                     scheduleId: scheduleModel.scheduleId,
                     observationType: scheduleModel.observationType,
                     state: scheduleModel.scheduleState,
-                    disabled: !scheduleModel.scheduleState.active())
+                    disabled: !scheduleModel.scheduleState.active() || !(viewModel.observationErrors[scheduleModel.observationType]?.isEmpty ?? true))
             }
         }
     }

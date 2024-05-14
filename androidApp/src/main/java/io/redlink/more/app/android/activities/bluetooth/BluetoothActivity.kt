@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.EmptyListView
 import io.redlink.more.app.android.shared_composables.Heading
@@ -51,6 +52,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 class BLEConnectionActivity : ComponentActivity() {
     val viewModel = BluetoothViewModel()
+    private var gpsListenerSelfActivated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +65,19 @@ class BLEConnectionActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.viewDidAppear()
+        if (!GPSStateListener.listenerActive) {
+            gpsListenerSelfActivated = true
+            GPSStateListener.startListening(this)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.viewDidDisappear()
+        if (gpsListenerSelfActivated) {
+            gpsListenerSelfActivated = false
+            GPSStateListener.stopListening(this)
+        }
     }
 
     companion object {
@@ -122,7 +132,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                     Box(modifier = Modifier)
                 }
             }
-            if (viewModel.bluetoothPowerState.value) {
+            if (viewModel.bluetoothPowerState.value && viewModel.gpsActive.value) {
                 if (viewModel.connectedDevices.isEmpty()) {
                     item {
                         EmptyListView(text = getStringResource(id = R.string.more_ble_no_connected))

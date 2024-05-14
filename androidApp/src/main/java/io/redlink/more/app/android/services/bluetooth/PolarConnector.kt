@@ -47,7 +47,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         api.setPolarFilter(true)
         api.setApiCallback(polarObserverCallback)
         api.setAutomaticReconnection(true)
-        api.setApiLogger { str -> Napier.i { str } }
+        api.setApiLogger { str -> Napier.i(tag = "PolarBleApi::Logger") { str } }
         api
     }
 
@@ -82,7 +82,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
                         didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
                     },
                     { error: Throwable ->
-                        Napier.e { error.stackTraceToString() }
+                        Napier.e(tag = "PolarConnector::scan") { error.stackTraceToString() }
                     }
                 )
         }
@@ -115,9 +115,9 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun stopScanning() {
         Napier.i(tag = "PolarConnector::stopScanning") { "Stopping scanning." }
         if (scanning) {
-            isScanning(false)
             scanDisposable?.dispose()
             polarApi.cleanup()
+            isScanning(false)
         }
     }
 

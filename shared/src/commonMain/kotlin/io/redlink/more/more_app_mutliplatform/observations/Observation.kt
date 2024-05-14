@@ -115,6 +115,7 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun observerAccessible(): Boolean {
         val errors = observerErrors()
+        Napier.d(tag = "Observation::observerAccessible") { errors.toString() }
         this._observationErrors.update { Pair(observationType.observationType, errors) }
         return errors.isEmpty()
     }

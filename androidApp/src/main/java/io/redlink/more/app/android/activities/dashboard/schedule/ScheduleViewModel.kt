@@ -49,6 +49,17 @@ class ScheduleViewModel(
 
     private val jobs = mutableListOf<Job>()
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.observationFactory.observationErrors.collect {
+                withContext(Dispatchers.Main) {
+                    observationErrors.clear()
+                    observationErrors.putAll(it)
+                }
+            }
+        }
+    }
+
     fun viewDidAppear() {
         coreViewModel.viewDidAppear()
         jobs.add(viewModelScope.launch {
@@ -70,14 +81,6 @@ class ScheduleViewModel(
             PolarHeartRateObservation.hrReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
-                }
-            }
-        })
-        jobs.add(viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.observationFactory.observationErrors.collect {
-                withContext(Dispatchers.Main) {
-                    observationErrors.clear()
-                    observationErrors.putAll(it)
                 }
             }
         })

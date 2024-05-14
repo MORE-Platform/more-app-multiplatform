@@ -11,14 +11,19 @@
 package io.redlink.more.app.android.activities.tasks
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -56,7 +62,8 @@ fun TaskDetailsView(
     scheduleId: String?
 ) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -65,110 +72,145 @@ fun TaskDetailsView(
             viewModel.viewDidDisappear()
         }
     }
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        item {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                HeaderTitle(
-                    title = viewModel.taskDetailsModel.value.observationTitle,
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(0.65f)
-                        .padding(vertical = 11.dp)
+                        .fillMaxWidth()
+                ) {
+                    HeaderTitle(
+                        title = viewModel.taskDetailsModel.value.observationTitle,
+                        modifier = Modifier
+                            .weight(0.65f)
+                            .padding(vertical = 11.dp)
+                    )
+                    if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING)
+                        SmallTextIconButton(
+                            text = getStringResource(id = R.string.more_abort),
+                            imageText = getStringResource(id = R.string.more_abort),
+                            image = Icons.Rounded.Square,
+                            imageTint = MoreColors.Important,
+                            borderStroke = MoreColors.borderDefault(),
+                            buttonColors = ButtonDefaults.moreSecondary2()
+                        ) {
+                            viewModel.stopObservation()
+                        }
+                }
+                BasicText(
+                    text = viewModel.taskDetailsModel.value.observationType,
+                    color = MoreColors.Secondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 14.dp)
                 )
-                if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING)
-                    SmallTextIconButton(
-                        text = getStringResource(id = R.string.more_abort),
-                        imageText = getStringResource(id = R.string.more_abort),
-                        image = Icons.Rounded.Square,
-                        imageTint = MoreColors.Important,
-                        borderStroke = MoreColors.borderDefault(),
-                        buttonColors = ButtonDefaults.moreSecondary2()
-                    ) {
-                        viewModel.stopObservation()
-                    }
-            }
-            BasicText(
-                text = viewModel.taskDetailsModel.value.observationType,
-                color = MoreColors.Secondary,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 14.dp)
-            )
 
-            TimeframeDays(
-                viewModel.taskDetailsModel.value.start.jvmLocalDate(),
-                viewModel.taskDetailsModel.value.end.jvmLocalDate(),
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp)
-            )
-            TimeframeHours(
-                viewModel.taskDetailsModel.value.start.jvmLocalDateTime(),
-                viewModel.taskDetailsModel.value.end.jvmLocalDateTime(),
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp)
-            )
+                TimeframeDays(
+                    viewModel.taskDetailsModel.value.start.jvmLocalDate(),
+                    viewModel.taskDetailsModel.value.end.jvmLocalDate(),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                )
+                TimeframeHours(
+                    viewModel.taskDetailsModel.value.start.jvmLocalDateTime(),
+                    viewModel.taskDetailsModel.value.end.jvmLocalDateTime(),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Accordion(
-                title = getStringResource(id = R.string.participant_information),
-                description = viewModel.taskDetailsModel.value.participantInformation,
-                hasCheck = false,
-                hasPreview = false
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-
+                Accordion(
+                    title = getStringResource(id = R.string.participant_information),
+                    description = viewModel.taskDetailsModel.value.participantInformation,
+                    hasCheck = false,
+                    hasPreview = false
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 scheduleId?.let {
                     if (!viewModel.taskDetailsModel.value.state.completed()) {
                         DatapointCollectionView(
                             viewModel.dataPointCount.value,
                             viewModel.taskDetailsModel.value.state
                         )
-                        if (!viewModel.taskDetailsModel.value.hidden) {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            SmallTextButton(
-                                text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
-                                    id = R.string.more_observation_pause
-                                )
-                                else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
-                                    id = R.string.more_questionnaire_start
-                                )
-                                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
-                                    id = R.string.more_limesurvey_start
-                                )
-                                else getStringResource(
-                                    id = R.string.more_observation_start
-                                ),
-                                enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
-                                        emptySet()
-                                    ).observationType) viewModel.polarHrReady.value else true
-                            ) {
-                                if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
-                                    navController.navigate(NavigationScreen.SIMPLE_QUESTION.navigationRoute("scheduleId" to scheduleId))
-                                }
-                                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
-                                    navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleId))
-                                } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
-                                    viewModel.pauseObservation()
-                                } else {
-                                    viewModel.startObservation()
-                                }
-                            }
-                        }
                     }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+        if (viewModel.taskObservationErrors.isNotEmpty()) {
+            LazyColumn {
+                items(viewModel.taskObservationErrors.toList()) { error ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = "Error",
+                            tint = MoreColors.Important,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        BasicText(
+                            text = error,
+                            fontSize = 16.sp,
+                            color = MoreColors.Important
+                        )
+                    }
+                }
+            }
+            Divider(thickness = 1.dp)
+        }
+        if (!viewModel.taskDetailsModel.value.hidden) {
+            SmallTextButton(
+                text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
+                    id = R.string.more_observation_pause
+                )
+                else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
+                    id = R.string.more_questionnaire_start
+                )
+                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
+                    id = R.string.more_limesurvey_start
+                )
+                else getStringResource(
+                    id = R.string.more_observation_start
+                ),
+                enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
+                        emptySet()
+                    ).observationType
+                ) viewModel.polarHrReady.value else true
+            ) {
+                if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
+                    navController.navigate(
+                        NavigationScreen.SIMPLE_QUESTION.navigationRoute(
+                            "scheduleId" to scheduleId
+                        )
+                    )
+                } else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
+                    navController.navigate(
+                        NavigationScreen.LIMESURVEY.navigationRoute(
+                            "scheduleId" to scheduleId
+                        )
+                    )
+                } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                    viewModel.pauseObservation()
+                } else {
+                    viewModel.startObservation()
+                }
             }
         }
     }

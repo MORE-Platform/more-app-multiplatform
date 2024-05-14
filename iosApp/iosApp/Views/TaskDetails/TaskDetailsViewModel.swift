@@ -21,17 +21,19 @@ class TaskDetailsViewModel: ObservableObject {
     
     @Published var taskDetailsModel: TaskDetailsModel? {
         didSet {
-            if self.taskDetailsModel == nil {
-                self.observationErrors = []
-            }
+            updateTaskObservationErrors()
         }
     }
     @Published var dataCount: Int64 = 0
-    @Published var observationErrors: [String] = []
+    @Published var taskObservationErrors: [String] = []
+    
+    private var observationErrors: [String : Set<String>] = [:] {
+        didSet {
+            updateTaskObservationErrors()
+        }
+    }
     
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
-    
-    private var observationErrorsJob: Ktor_ioCloseable?
     
     init(dataRecorder: DataRecorder) {
         self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
@@ -40,11 +42,6 @@ class TaskDetailsViewModel: ObservableObject {
             if let self {
                 if let taskDetails {
                     self.taskDetailsModel = taskDetails
-                    self.observationErrorsJob = AppDelegate.shared.observationFactory.observationErrorsAsClosure { errors in
-                        self.observationErrors = Array(errors[taskDetails.observationType] ?? [])
-                    }
-                } else {
-                    self.observationErrorsJob?.close()
                 }
             }
         }
@@ -52,6 +49,12 @@ class TaskDetailsViewModel: ObservableObject {
         coreModel.onNewDataCount { [weak self] count in
             if let self {
                 self.dataCount = count?.int64Value ?? 0
+            }
+        }
+        
+        AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
+            if let self {
+                self.observationErrors = errors
             }
         }
     }
@@ -68,7 +71,6 @@ class TaskDetailsViewModel: ObservableObject {
         coreModel.viewDidDisappear()
     }
 
-    
     func getDateRangeString() -> String {
         let startDate = taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
         let endDate = taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
@@ -80,6 +82,16 @@ class TaskDetailsViewModel: ObservableObject {
     
     func getTimeRangeString() -> String {
         return (taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
+    }
+    
+    private func updateTaskObservationErrors() {
+        print(observationErrors)
+        if let taskDetailsModel {
+            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType] ?? [])
+            print(self.taskObservationErrors)
+        } else {
+            self.taskObservationErrors = []
+        }
     }
 }
 

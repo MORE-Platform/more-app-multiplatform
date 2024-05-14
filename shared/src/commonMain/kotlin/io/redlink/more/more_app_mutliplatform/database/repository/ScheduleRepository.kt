@@ -168,9 +168,6 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             }
         }?.toSet() ?: emptySet()
         if (activeIds.isNotEmpty()) {
-            StudyScope.launch {
-                observationFactory.updateObservationErrors()
-            }
             dataRecorder.startMultiple(activeIds)
         }
     }
