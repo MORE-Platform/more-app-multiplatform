@@ -20,8 +20,10 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
+import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
@@ -38,7 +40,8 @@ interface LocalNotificationListener {
 class NotificationManager(
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService,
-    private val deeplinkManager: DeeplinkManager
+    private val deeplinkManager: DeeplinkManager,
+    private val sharedStorageRepository: SharedStorageRepository
 ) {
     val notificationRepository = NotificationRepository()
 
@@ -179,20 +182,29 @@ class NotificationManager(
     }
 
     fun newFCMToken(token: String? = null) {
+        sharedStorageRepository.remove(FCM_TOKEN_UPLOADED)
         token?.let { storeAndUploadToken(it) }
-            ?: kotlin.run {
+            ?: run {
                 localNotificationListener.createNewFCMToken { storeAndUploadToken(it) }
             }
     }
 
     private fun storeAndUploadToken(newToken: String) {
-        Scope.launch(Dispatchers.Default) {
-            networkService.sendNotificationToken(newToken)
+        Scope.launch(Dispatchers.IO) {
+            val (successful, _) = networkService.sendNotificationToken(newToken)
+            sharedStorageRepository.store(FCM_TOKEN_UPLOADED, successful)
         }
     }
 
     fun deleteFCMToken() {
+        sharedStorageRepository.remove(FCM_TOKEN_UPLOADED)
         localNotificationListener.deleteFCMToken()
+    }
+
+    fun createNewFCMIfNecessary() {
+        if (!sharedStorageRepository.load(FCM_TOKEN_UPLOADED, false)) {
+            newFCMToken()
+        }
     }
 
     fun clearAllNotifications() {
@@ -208,12 +220,14 @@ class NotificationManager(
     }
 
     companion object {
-        private const val FCM_TOKEN = "FCM_TOKEN"
+        const val FCM_TOKEN = "FCM_TOKEN"
 
         private const val MAIN_DATA_KEY = "key"
         private const val STUDY_CHANGED = "STUDY_STATE_CHANGED"
         private const val STUDY_OLD_STATE = "oldState"
         private const val STUDY_NEW_STATE = "newState"
+
+        const val FCM_TOKEN_UPLOADED = "FCM_TOKEN_UPLOADED"
 
         const val DEEP_LINK = "deepLink"
         const val MSG_ID = "MSG_ID"
