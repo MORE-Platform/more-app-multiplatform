@@ -56,7 +56,7 @@ fun ConsentButtons(model: ConsentViewModel) {
 
         notificationPermission?.let {
             if (mutablePermissionMap[it] == false) {
-                model.openNotificationPermissionDeniedAlertDialog()
+                model.openNotificationPermissionDeniedAlertDialog(context)
                 mutablePermissionMap.remove(it)
             }
         }
@@ -83,7 +83,8 @@ fun ConsentButtons(model: ConsentViewModel) {
                     checkAndRequestPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults
-                    .buttonColors(backgroundColor = MoreColors.Primary,
+                    .buttonColors(
+                        backgroundColor = MoreColors.Primary,
                         contentColor = MoreColors.White
                     ),
                 enabled = !model.loading.value,
@@ -100,8 +101,10 @@ fun ConsentButtons(model: ConsentViewModel) {
                     model.decline()
                 },
                 colors = ButtonDefaults
-                    .buttonColors(backgroundColor = MoreColors.Important,
-                        contentColor = MoreColors.White),
+                    .buttonColors(
+                        backgroundColor = MoreColors.Important,
+                        contentColor = MoreColors.White
+                    ),
                 enabled = !model.loading.value,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -112,8 +115,10 @@ fun ConsentButtons(model: ConsentViewModel) {
             }
         }
     } else {
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
                 color = MoreColors.Primary
@@ -134,7 +139,8 @@ fun checkAndRequestPermissions(
     }
     permissions.addAll(extraPermissions)
 
-    val hasBackgroundLocationPermission = permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    val hasBackgroundLocationPermission =
+        permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
@@ -169,15 +175,22 @@ fun checkPermissionForBackgroundLocationAccess(
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
 ) {
-    if (ContextCompat.checkSelfPermission(context,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     ) return
 
     AlertDialog.Builder(context)
         .setTitle(R.string.background_location_permission_title)
         .setMessage(R.string.background_location_permission_message)
         .setPositiveButton("Accept") { dialog, _ ->
-            checkAndRequestPermissions(context, launcher, model, setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            checkAndRequestPermissions(
+                context,
+                launcher,
+                model,
+                setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            )
             dialog.dismiss()
         }
         .setNegativeButton("Decline") { dialog, _ ->

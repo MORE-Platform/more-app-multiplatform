@@ -36,11 +36,19 @@ class ConsentViewModel(
     registrationService: RegistrationService,
     private val consentViewModelListener: ConsentViewModelListener
 ) : ViewModel() {
-    private val coreModel = CorePermissionViewModel(registrationService, stringResource(R.string.consent_information))
+    private val coreModel =
+        CorePermissionViewModel(registrationService, stringResource(R.string.consent_information))
     private var consentInfo: String? = null
 
     val permissionModel =
-        mutableStateOf(PermissionModel("Title", "Participation Info", "Study Consent Info", emptyList()))
+        mutableStateOf(
+            PermissionModel(
+                "Title",
+                "Participation Info",
+                "Study Consent Info",
+                emptyList()
+            )
+        )
     val loading = mutableStateOf(false)
     val error = mutableStateOf<String?>(null)
     val permissions = mutableSetOf<String>()
@@ -99,7 +107,7 @@ class ConsentViewModel(
         ))
     }
 
-    fun openNotificationPermissionDeniedAlertDialog() {
+    fun openNotificationPermissionDeniedAlertDialog(context: Context) {
         MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
             title = stringResource(R.string.notification_permission_not_granted_title),
             message = stringResource(R.string.notification_permission_not_granted_message),
@@ -110,6 +118,7 @@ class ConsentViewModel(
                 MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
             },
             onNegative = {
+                acceptConsent(context)
                 MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
             }
         ))
