@@ -30,6 +30,8 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
+import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
@@ -37,8 +39,6 @@ import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepositor
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreContentViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
-import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -62,7 +62,12 @@ class Shared(
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val coreBluetooth = CoreBluetoothConnectionViewModel(mainBluetoothConnector)
     val notificationManager =
-        NotificationManager(localNotificationListener, networkService, deeplinkManager)
+        NotificationManager(
+            localNotificationListener,
+            networkService,
+            deeplinkManager,
+            sharedStorageRepository
+        )
     val mainContentCoreViewModel = CoreContentViewModel()
 
     var appIsInForeGround = false
@@ -90,6 +95,9 @@ class Shared(
             notificationManager.clearAllNotifications()
             updateTaskStates()
             updateStudyBlocking()
+            if (credentialRepository.hasCredentials()) {
+                notificationManager.createNewFCMIfNecessary()
+            }
         }
     }
 
