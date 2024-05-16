@@ -60,7 +60,12 @@ class Shared(
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val bluetoothController = BluetoothController(mainBluetoothConnector)
     val notificationManager =
-        NotificationManager(localNotificationListener, networkService, deeplinkManager)
+        NotificationManager(
+            localNotificationListener,
+            networkService,
+            deeplinkManager,
+            sharedStorageRepository
+        )
 
     var appIsInForeGround = false
 
@@ -86,6 +91,9 @@ class Shared(
             notificationManager.clearAllNotifications()
             updateTaskStates()
             updateStudyBlocking()
+            if (credentialRepository.hasCredentials()) {
+                notificationManager.createNewFCMIfNecessary()
+            }
         } else {
             ViewManager.showBLEView(false)
         }

@@ -48,6 +48,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug)
         fcmService.register()
+        AppDelegate.registerForNotifications()
 
         registerBackgroundTasks()
 
@@ -58,12 +59,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
     }
-
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Notification Received: \(userInfo)")
         AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
-
-        return .newData
+        
+        completionHandler(.newData)
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -93,7 +94,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     static func registerForNotifications() {
         DispatchQueue.main.async {
-            UIApplication.shared.registerForRemoteNotifications()
+            if !UIApplication.shared.isRegisteredForRemoteNotifications {
+                UIApplication.shared.registerForRemoteNotifications()                
+            }
         }
     }
 }

@@ -108,7 +108,7 @@ class ConsentViewModel(
         ))
     }
 
-    fun openNotificationPermissionDeniedAlertDialog() {
+    fun openNotificationPermissionDeniedAlertDialog(context: Context) {
         AlertController.openAlertDialog(AlertDialogModel(
             title = stringResource(R.string.notification_permission_not_granted_title),
             message = stringResource(R.string.notification_permission_not_granted_message),
@@ -119,6 +119,7 @@ class ConsentViewModel(
                 AlertController.closeAlertDialog()
             },
             onNegative = {
+                acceptConsent(context)
                 AlertController.closeAlertDialog()
             }
         ))

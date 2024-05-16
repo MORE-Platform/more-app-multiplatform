@@ -17,6 +17,7 @@ import Foundation
 import UserNotifications
 import shared
 import FirebaseMessaging
+import UIKit
 
 class LocalPushNotifications: LocalNotificationListener {
     func clearNotifications() {
@@ -28,11 +29,21 @@ class LocalPushNotifications: LocalNotificationListener {
     }
     
     func createNewFCMToken(onCompletion: @escaping (String) -> Void) {
-        Messaging.messaging().token { token, error in
-            if let error {
-                print("Error fetching FCM registration token: \(error)")
-            } else if let token {
-                onCompletion(token)
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                DispatchQueue.main.async {
+                    if !UIApplication.shared.isRegisteredForRemoteNotifications {
+                        AppDelegate.registerForNotifications()
+                    }                    
+                }
+                Messaging.messaging().token { token, error in
+                    if let error {
+                        print("Error fetching FCM registration token: \(error)")
+                    } else if let token {
+                        onCompletion(token)
+                    }
+                }
             }
         }
     }
