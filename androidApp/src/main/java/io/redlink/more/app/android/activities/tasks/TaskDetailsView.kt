@@ -18,12 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,11 +27,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.observationErrors.ObservationErrorListView
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
@@ -64,6 +61,7 @@ fun TaskDetailsView(
     val backStackEntry = remember { navController.currentBackStackEntry }
     val route =
         backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
+    val context = LocalContext.current
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -152,29 +150,12 @@ fun TaskDetailsView(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-        if (viewModel.taskObservationErrors.isNotEmpty()) {
-            LazyColumn {
-                items(viewModel.taskObservationErrors.toList()) { error ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = "Error",
-                            tint = MoreColors.Important,
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        BasicText(
-                            text = error,
-                            fontSize = 16.sp,
-                            color = MoreColors.Important
-                        )
-                    }
-                }
-            }
-            Divider(thickness = 1.dp)
-        }
+
+        ObservationErrorListView(
+            errors = viewModel.taskObservationErrors,
+            errorActions = viewModel.taskObservationErrorActions
+        )
+
         if (!viewModel.taskDetailsModel.value.hidden) {
             SmallTextButton(
                 text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(

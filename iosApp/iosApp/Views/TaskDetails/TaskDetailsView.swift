@@ -26,6 +26,7 @@ struct TaskDetailsView: View {
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
+    private let errorStrings = "Errors"
 
     var body: some View {
         MoreMainBackgroundView(contentPadding: 0) {
@@ -61,31 +62,17 @@ struct TaskDetailsView: View {
                     }
                     Spacer()
 
-                    if !viewModel.taskObservationErrors.isEmpty {
-                        ScrollView {
-                            VStack {
-                                ForEach(viewModel.taskObservationErrors, id: \.self) { error in
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle")
-                                            .font(.more.headline)
-                                            .foregroundColor(.more.important)
-                                            .padding(.trailing, 4)
-                                        BasicText(text: error)
-                                    }
+                    ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
+                        .background(
+                            GeometryReader { geo -> Color in
+                                DispatchQueue.main.async {
+                                    scrollViewContentSize = geo.size
                                 }
+                                return Color.clear
                             }
-                            .background(
-                                GeometryReader { geo -> Color in
-                                    DispatchQueue.main.async {
-                                        scrollViewContentSize = geo.size
-                                    }
-                                    return Color.clear
-                                }
-                            )
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: scrollViewContentSize.height)
-                        Divider()
-                    }
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+
                     if !detailsModel.hidden {
                         if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                             ObservationButton(

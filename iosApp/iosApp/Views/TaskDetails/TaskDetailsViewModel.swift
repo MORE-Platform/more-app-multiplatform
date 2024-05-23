@@ -26,6 +26,7 @@ class TaskDetailsViewModel: ObservableObject {
     }
     @Published var dataCount: Int64 = 0
     @Published var taskObservationErrors: [String] = []
+    @Published var taskObservationErrorAction: [String] = []
     
     private var observationErrors: [String : Set<String>] = [:] {
         didSet {
@@ -85,10 +86,9 @@ class TaskDetailsViewModel: ObservableObject {
     }
     
     private func updateTaskObservationErrors() {
-        print(observationErrors)
         if let taskDetailsModel {
-            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType] ?? [])
-            print(self.taskObservationErrors)
+            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType]?.filter { $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED} ?? [])
+            self.taskObservationErrorAction = Array(observationErrors[taskDetailsModel.observationType]?.filter { $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED} ?? [])
         } else {
             self.taskObservationErrors = []
         }

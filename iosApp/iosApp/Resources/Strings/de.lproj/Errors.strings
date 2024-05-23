@@ -1,0 +1,18 @@
+/* 
+  Errors.strings
+  iosApp
+
+  Created by Jan Cortiel on 22.05.24.
+  Copyright © 2024 Redlink GmbH. All rights reserved.
+*/
+
+"Access to Bluetooth not granted" = "Zugriff auf Bluetooth nicht gewährt";
+"Bluetooth is not enabled" = "Bluetooth ist nicht aktiviert";
+"No polar device connected" = "Kein Polar-Gerät verbunden";
+"Permission request pending until observation is about to start" = "Genehmigungsanfrage ausstehend, bis die Beobachtung beginnt";
+"Accelerometer Sensor not available" = "Beschleunigungssensor nicht verfügbar";
+"Permission not granted to access Sensor recording service" = "Zugriff auf Sensoraufzeichnungsdienst nicht genehmigt";
+"Accelerometer Recording is not available" = "Beschleunigungssensoraufzeichnung ist nicht verfügbar";
+"Location Services not enabled" = "Ortungsdienste sind nicht aktiviert";
+"Permission not granted to access location of the device" = "Zugriff auf den Standort des Geräts nicht genehmigt";
+"errors" = "Fehler";

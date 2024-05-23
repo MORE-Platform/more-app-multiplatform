@@ -155,6 +155,8 @@ struct NavigationWithDestinations<Content: View>: View {
                     if let observationId = navigationModalState.navigationState(for: screen)?.observationId {
                         ObservationDetailsView(viewModel: ObservationDetailsViewModel(observationId: observationId))
                     }
+                case .observationErrors:
+                    ObservationErrorsView()
                 default:
                     EmptyView()
                 }

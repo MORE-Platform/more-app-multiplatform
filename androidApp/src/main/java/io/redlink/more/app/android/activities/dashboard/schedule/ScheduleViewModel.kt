@@ -21,6 +21,7 @@ import io.redlink.more.app.android.extensions.jvmLocalDate
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
+import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ class ScheduleViewModel(
 
     val schedulesByDate = mutableStateMapOf<LocalDate, List<ScheduleModel>>()
     val observationErrors = mutableStateMapOf<String, Set<String>>()
+    val observationErrorActions = mutableStateMapOf<String, Set<String>>()
 
     val filterModel = DashboardFilterViewModel(coreDashboardFilterViewModel)
 
@@ -52,9 +54,17 @@ class ScheduleViewModel(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             MoreApplication.shared!!.observationFactory.observationErrors.collect {
+                val actions = it.mapValues { entry ->
+                    entry.value.filter { it == Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
+                }
+                val errors = it.mapValues { entry ->
+                    entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
+                }
                 withContext(Dispatchers.Main) {
                     observationErrors.clear()
-                    observationErrors.putAll(it)
+                    observationErrors.putAll(errors)
+                    observationErrorActions.clear()
+                    observationErrorActions.putAll(actions)
                 }
             }
         }
@@ -103,6 +113,9 @@ class ScheduleViewModel(
     fun stopObservation(scheduleId: String) {
         coreViewModel.stop(scheduleId)
     }
+
+    fun numberOfObservationErrors(): Int = observationErrors.values.flatten().toSet().count()
+        .let { if (it > 0) it else observationErrorActions.values.flatten().toSet().count() }
 
 
     private fun mergeSchedules(

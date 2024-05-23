@@ -89,10 +89,10 @@ class AccelerometerBackgroundObservation: Observation_ {
     override func observerErrors() -> Set<String> {
         var errors: Set<String> = []
         if !CMSensorRecorder.isAccelerometerRecordingAvailable() {
-            errors.insert("Accelerometer Recording is not available!")
+            errors.insert("Accelerometer Recording is not available")
         }
         if CMSensorRecorder.authorizationStatus() != .authorized {
-            errors.insert("Permission not granted to access Sensor recording service!")
+            errors.insert("Permission not granted to access Sensor recording service")
             PermissionManager.openSensorPermissionDialog()
         }
         return errors

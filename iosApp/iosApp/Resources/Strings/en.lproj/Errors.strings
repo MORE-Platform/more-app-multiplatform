@@ -1,0 +1,18 @@
+/* 
+  Errors.strings
+  iosApp
+
+  Created by Jan Cortiel on 22.05.24.
+  Copyright © 2024 Redlink GmbH. All rights reserved.
+*/
+
+"Access to Bluetooth not granted" = "Access to Bluetooth not granted";
+"Bluetooth is not enabled" = "Bluetooth is not enabled";
+"No polar device connected" = "No polar device connected";
+"Permission request pending until observation is about to start" = "Permission request pending until observation is about to start";
+"Accelerometer Sensor not available" = "Accelerometer Sensor not available";
+"Permission not granted to access Sensor recording service" = "Permission not granted to access Sensor recording service";
+"Accelerometer Recording is not available" = "Accelerometer Recording is not available";
+"Location Services not enabled" = "Location Services not enabled";
+"Permission not granted to access location of the device" = "Permission not granted to access location of the device";
+"errors" = "errors";

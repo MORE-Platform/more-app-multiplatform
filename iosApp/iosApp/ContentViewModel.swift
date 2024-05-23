@@ -77,7 +77,9 @@ class ContentViewModel: ObservableObject {
         }
         
         ViewManager.shared.showBluetoothViewAsClosure { [weak self] kBool in
-            self?.showBleView = kBool.boolValue
+            if kBool.boolValue {
+                self?.showBleView = kBool.boolValue
+            }
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
@@ -88,10 +90,6 @@ class ContentViewModel: ObservableObject {
         AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
             self?.alertDialogModel = alertDialogModel
         }
-    }
-    
-    func showBLESetup() {
-        AppDelegate.shared.showBLESetupOnFirstStartup()
     }
     
     func showLoginView() {
@@ -162,10 +160,7 @@ extension ContentViewModel: ConsentViewModelListener {
     func credentialsStored() {
         reinitAllViewModels()
         DispatchQueue.main.async { [weak self] in
-            if let self {
-                self.hasCredentials = true
-                self.showBLESetup()
-            }
+            self?.hasCredentials = true
         }
         AppDelegate.shared.doNewLogin()
     }

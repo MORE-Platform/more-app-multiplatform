@@ -49,6 +49,7 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     case withdrawStudy
     case withdrawStudyConfirm
     case limeSurvey
+    case observationErrors
 
     var values: NavigationScreenValues {
         switch self {
@@ -88,6 +89,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
             return NavigationScreenValues(screenName: "Confirm to leave the study", navigationLink: "/confirm-leave-study", fullScreen: true)
         case .limeSurvey:
             return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
+        case .observationErrors:
+            return NavigationScreenValues(screenName: "Observation Errors", navigationLink: "/observation-errors")
         }
     }
 

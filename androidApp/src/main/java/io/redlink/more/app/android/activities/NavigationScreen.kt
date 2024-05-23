@@ -81,7 +81,8 @@ enum class NavigationScreen(
                 NavType.StringType, ""
             )
         ), stringResource = R.string.nav_limesurvey
-    );
+    ),
+    OBSERVATION_ERRORS("observation-errors", stringResource = R.string.nav_observation_errors);
 
     private var cachedNavArguments: List<NamedNavArgument>? = null
     private var cachedRoute: String? = null
@@ -172,6 +173,8 @@ enum class NavigationScreen(
 
         fun byRoute(route: String) = entries.firstOrNull { it.route == route }
 
-        fun allDeepLinks(deepLinkHost: String) = entries.flatMap { it.createDeepLinkRoute(deepLinkHost).mapNotNull { it.uriPattern } }.toSet()
+        fun allDeepLinks(deepLinkHost: String) =
+            entries.flatMap { it.createDeepLinkRoute(deepLinkHost).mapNotNull { it.uriPattern } }
+                .toSet()
     }
 }

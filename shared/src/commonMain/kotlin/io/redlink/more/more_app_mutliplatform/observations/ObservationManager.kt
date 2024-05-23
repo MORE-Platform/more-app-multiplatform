@@ -149,7 +149,7 @@ class ObservationManager(
                 setObservationState(it, ScheduleState.PAUSED)
                 Napier.i(tag = "ObservationManager::pause") { "Recording paused of ${it.scheduleId}" }
             }
-        } ?: kotlin.run {
+        } ?: run {
             setObservationState(scheduleId, ScheduleState.PAUSED)
         }
         currentlyRunning.remove(scheduleId)
@@ -158,11 +158,9 @@ class ObservationManager(
     fun pauseObservationType(type: String) {
         Napier.i(tag = "ObservationManager::pauseObservationType") { "Pausing Observation type: $type" }
         runningObservations.filterValues { it.observationType.observationType == type }
-            .forEach { (key, value) ->
+            .keys.forEach { key ->
                 Napier.d(tag = "ObservationManager::pauseObservationType") { "Pausing schedule: $key" }
-                value.stop(key)
-                setObservationState(key, ScheduleState.PAUSED)
-                currentlyRunning.remove(key)
+                dataRecorder.pause(key)
                 Napier.d(tag = "ObservationManager::pauseObservationType") { "Recording paused of $key" }
             }
     }
@@ -208,8 +206,11 @@ class ObservationManager(
     }
 
     fun updateTaskStates() {
-        Napier.d(tag = "ObservationManager::updateTaskStates") { "" }
         scheduleRepository.updateTaskStates(observationFactory, dataRecorder)
+    }
+
+    suspend fun updateTaskStatesWithBLEDevices() {
+        scheduleRepository.updateTaskStatesWithBLEDevices(observationFactory, dataRecorder)
     }
 
     fun hasRunningTasks() = currentlyRunning.isNotEmpty()

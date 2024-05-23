@@ -53,7 +53,6 @@ class GPSObservation(
             }
             return true
         }
-        showPermissionAlertDialog()
         return false
     }
 
@@ -65,13 +64,14 @@ class GPSObservation(
     override fun observerErrors(): Set<String> {
         val errors = mutableSetOf<String>()
         if (locationManager == null) {
-            errors.add("Location Services return an unknown error!")
+            errors.add("error_location_services")
         }
         if (!GPSStateListener.gpsEnabled.value) {
-            errors.add("Location Servies are disabled!")
+            errors.add("location_disabled")
         }
         if (!hasPermission()) {
-            errors.add("No Permission were granted to access the location services!")
+            errors.add("location_permission_not_granted")
+            showPermissionAlertDialog()
         }
         return errors
     }

@@ -22,6 +22,7 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManage
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class AndroidObservationFactory(context: Context, observationDataManager: ObservationDataManager) :
     ObservationFactory(observationDataManager) {
@@ -35,12 +36,29 @@ class AndroidObservationFactory(context: Context, observationDataManager: Observ
         )
 
         Scope.launch(Dispatchers.IO) {
+            GPSStateListener.gpsEnabled.collect {
+                withContext(Dispatchers.Main) {
+                    super.updateObservationErrors()
+                }
+            }
+        }
+
+        Scope.launch(Dispatchers.IO) {
+            BluetoothStateListener.bluetoothEnabled.collect {
+                withContext(Dispatchers.Main) {
+                    super.updateObservationErrors()
+                }
+            }
+        }
+
+        Scope.launch(Dispatchers.IO) {
             super.studyObservationTypes.collect { studyObservationTypes ->
                 val permissions =
                     super.observations.filter { it.observationType.observationType in studyObservationTypes }
                         .flatMap { it.observationType.sensorPermissions }.toSet()
                 if (permissions.contains(Manifest.permission.ACCESS_COARSE_LOCATION)
                     || permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)
+                    || permissions.contains(Manifest.permission.BLUETOOTH_SCAN)
                 ) {
                     GPSStateListener.startListening(context)
                 } else {

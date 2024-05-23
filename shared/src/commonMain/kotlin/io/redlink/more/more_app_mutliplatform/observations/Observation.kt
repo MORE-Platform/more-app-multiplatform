@@ -16,6 +16,9 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSc
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -67,6 +70,7 @@ abstract class Observation(val observationType: ObservationType) {
             stop {
                 saveAndSend()
                 observationShutdown(scheduleId)
+                updateObservationErrors()
             }
         } else {
             saveAndSend()
@@ -120,7 +124,13 @@ abstract class Observation(val observationType: ObservationType) {
         return errors.isEmpty()
     }
 
-    open fun observerErrors(): Set<String> = emptySet()
+    protected open fun observerErrors(): Set<String> = emptySet()
+
+    fun updateObservationErrors() {
+        StudyScope.launch(Dispatchers.IO) {
+            _observationErrors.update { Pair(observationType.observationType, observerErrors()) }
+        }
+    }
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
@@ -130,9 +140,7 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataSchema.fromData(
-            observationIds.toSet(), setOf(
-                ObservationBulkModel(data, timestamp)
-            )
+            observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
         ).map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
@@ -152,6 +160,7 @@ abstract class Observation(val observationType: ObservationType) {
         stop {
             saveAndSend()
             observationShutdown(scheduleId)
+            updateObservationErrors()
         }
     }
 
@@ -163,6 +172,7 @@ abstract class Observation(val observationType: ObservationType) {
             scheduleId?.let {
                 observationShutdown(it)
             }
+            updateObservationErrors()
         }
     }
 
@@ -219,5 +229,7 @@ abstract class Observation(val observationType: ObservationType) {
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"
         const val CONFIG_LAST_COLLECTION_TIMESTAMP = "observation_last_collection_timestamp"
+
+        const val ERROR_DEVICE_NOT_CONNECTED = "error_device_not_connected"
     }
 }

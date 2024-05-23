@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.EmptyListView
@@ -53,6 +54,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 class BLEConnectionActivity : ComponentActivity() {
     val viewModel = BluetoothViewModel()
     private var gpsListenerSelfActivated = false
+    private var bluetoothListenerSelfActivated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +67,10 @@ class BLEConnectionActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.viewDidAppear()
+        if (!BluetoothStateListener.listenerActive) {
+            bluetoothListenerSelfActivated = true
+            BluetoothStateListener.startListening(this)
+        }
         if (!GPSStateListener.listenerActive) {
             gpsListenerSelfActivated = true
             GPSStateListener.startListening(this)
@@ -77,6 +83,10 @@ class BLEConnectionActivity : ComponentActivity() {
         if (gpsListenerSelfActivated) {
             gpsListenerSelfActivated = false
             GPSStateListener.stopListening(this)
+        }
+        if (bluetoothListenerSelfActivated) {
+            bluetoothListenerSelfActivated = false
+            BluetoothStateListener.stopListening(this)
         }
     }
 
@@ -198,11 +208,11 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                 } else {
                     itemsIndexed(viewModel.discoveredDevices) { _, device ->
                         Column(
-                            horizontalAlignment = Alignment.Start,
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(55.dp)
+                                .height(60.dp)
                                 .clickable {
                                     viewModel.connectToDevice(device)
                                 }
@@ -210,7 +220,8 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                             MoreDivider()
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxSize()
                             ) {
                                 SmallTitle(
                                     text = device.deviceName
@@ -218,10 +229,11 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                                 )
                                 if (device.address in viewModel.connectingDevices) {
                                     CircularProgressIndicator(
-                                        strokeWidth = 1.dp,
+                                        strokeWidth = 2.dp,
+                                        color = MoreColors.Primary,
                                         modifier = Modifier
-                                            .width(20.dp)
-                                            .height(20.dp)
+                                            .width(progressSize)
+                                            .height(progressSize)
                                     )
                                 }
                             }

@@ -99,6 +99,7 @@ class BluetoothConnectionViewModel: ObservableObject {
         discoveredDevices.removeAll()
         connectingDevices.removeAll()
         bluetoothIsScanning = false
+        ViewManager.shared.showBLEView(state: false)
     }
 
     func connectToDevice(device: BluetoothDevice) {

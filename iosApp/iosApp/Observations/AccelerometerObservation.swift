@@ -50,7 +50,7 @@ class AccelerometerObservation: Observation_ {
     override func observerErrors() -> Set<String> {
         var errors: Set<String> = []
         if !motion.isAccelerometerAvailable {
-            errors.insert("Accelerometer Sensor not available!")
+            errors.insert("Accelerometer Sensor not available")
         }
         return errors
     }

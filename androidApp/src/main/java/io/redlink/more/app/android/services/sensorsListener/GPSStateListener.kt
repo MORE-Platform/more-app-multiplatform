@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 object GPSStateListener {
-    private val _gpsEnabled = MutableStateFlow<Boolean>(false)
+    private val _gpsEnabled = MutableStateFlow(false)
     val gpsEnabled: StateFlow<Boolean> = _gpsEnabled
     var listenerActive = false
         private set
@@ -26,9 +28,11 @@ object GPSStateListener {
     fun startListening(context: Context) {
         if (!listenerActive) {
             listenerActive = true
-            val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
-            context.registerReceiver(receiver, filter)
-            updateGpsState(context)
+            Scope.launch(Dispatchers.Main) {
+                val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+                context.registerReceiver(receiver, filter)
+                updateGpsState(context)
+            }
         }
     }
 

@@ -47,7 +47,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         api.setPolarFilter(true)
         api.setApiCallback(polarObserverCallback)
         api.setAutomaticReconnection(true)
-        api.setApiLogger { str -> Napier.i(tag = "PolarBleApi::Logger") { str } }
         api
     }
 

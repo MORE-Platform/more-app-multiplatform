@@ -71,6 +71,7 @@ class PolarHeartRateObservation :
                                     message = "HR Recording error: ${error.stackTraceToString()}"
                                 )
                                 pauseObservation(PolarVerityHeartRateType(emptySet()))
+                                updateObservationErrors()
                             })
                     deviceConnectionListener = listenToDeviceConnection()
                     true
@@ -84,7 +85,6 @@ class PolarHeartRateObservation :
             }
         }
         Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
-        showPermissionAlertDialog()
         return false
     }
 
@@ -97,14 +97,16 @@ class PolarHeartRateObservation :
 
     override fun observerErrors(): Set<String> {
         val errors = mutableSetOf<String>()
-        if (hasPermissions(MoreApplication.appContext!!)) {
-            errors.add("No permission to access bluetooth!")
-        } else if (!BluetoothStateListener.bluetoothEnabled.value) {
-            errors.add("Bluetooth disabled!")
-        } else if (
-            MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)
-        ) {
-            errors.add("No viable device connected!")
+        if (!hasPermissions(MoreApplication.appContext!!)) {
+            errors.add("error_access_bluetooth")
+            showPermissionAlertDialog()
+        }
+        if (!BluetoothStateListener.bluetoothEnabled.value) {
+            errors.add("bluetooth_disabled")
+        }
+        if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
+            errors.add("device_not_connected")
+            errors.add(ERROR_DEVICE_NOT_CONNECTED)
         }
         return errors
     }

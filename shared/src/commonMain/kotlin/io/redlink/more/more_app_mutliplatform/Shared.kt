@@ -93,6 +93,13 @@ class Shared(
             updateStudyBlocking()
             if (credentialRepository.hasCredentials()) {
                 notificationManager.createNewFCMIfNecessary()
+                StudyScope.launch {
+                    observationFactory.updateObservationErrors()
+                    bluetoothController.listenToConnectionChanges(
+                        observationFactory,
+                        observationManager
+                    )
+                }
             }
         } else {
             ViewManager.showBLEView(false)
@@ -113,6 +120,7 @@ class Shared(
                 observationDataManager.listenToDatapointCountChanges()
                 updateTaskStates()
                 observationManager.activateScheduleUpdate()
+
             }
         }
     }
@@ -137,14 +145,6 @@ class Shared(
             true
         } else false
     }
-
-    fun showBLESetupOnFirstStartup() {
-        ViewManager.showBLEView(
-            firstStartUp()
-                    && observationFactory.bleDevicesNeeded().isNotEmpty()
-        )
-    }
-
 
     fun updateStudyBlocking(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
         Scope.launch(Dispatchers.IO) {

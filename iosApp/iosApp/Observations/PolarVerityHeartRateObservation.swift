@@ -7,17 +7,17 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
-import PolarBleSdk
 import CoreBluetooth
+import Foundation
+import PolarBleSdk
 import RxSwift
+import shared
 import UIKit
 
 class PolarVerityHeartRateObservation: Observation_ {
@@ -34,7 +34,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     private let polarConnector = AppDelegate.polarConnector
 
     private var connectedDevices: [BluetoothDevice] = []
-    private var hrObservation: Disposable? = nil
+    private var hrObservation: Disposable?
 
     private let deviceManager = BluetoothDeviceManager.shared
 
@@ -45,11 +45,11 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
 
     override func start() -> Bool {
-        if self.observerAccessible() {
+        if observerAccessible() {
             let acceptableDevices = deviceManager.connectedDevicesAsValue().deviceWithNameIn(nameSet: deviceIdentificer)
             if !acceptableDevices.isEmpty, let firstAddres = acceptableDevices[0].address {
                 listenToDeviceConnection()
-                hrObservation = self.polarConnector.polarApi.startHrStreaming(firstAddres).subscribe(onNext: { [weak self] data in
+                hrObservation = polarConnector.polarApi.startHrStreaming(firstAddres).subscribe(onNext: { [weak self] data in
                     if let self, let hrData = data.first {
                         self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
                         }
@@ -58,7 +58,6 @@ class PolarVerityHeartRateObservation: Observation_ {
                     print(error)
                     if let self {
                         self.pauseObservation(self.observationType)
-                        self.observerAccessible()
                     }
                 })
                 return true
@@ -68,25 +67,29 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
-        self.hrObservation?.dispose()
-        self.deviceListener?.close()
+        hrObservation?.dispose()
+        deviceListener?.close()
         onCompletion()
     }
-    
+
     override func observerErrors() -> Set<String> {
         var errors: Set<String> = []
+        let state = AppDelegate.shared.bluetoothController.bluetoothPower.value as? BluetoothState
         if CBManager.authorization != .allowedAlways {
-            errors.insert("Access to Bluetooth not granted!")
+            errors.insert("Access to Bluetooth not granted")
             PermissionManager.openSensorPermissionDialog()
         }
+        if state == nil || state == BluetoothState.off  {
+            errors.insert("Bluetooth is not enabled")
+        }
         if !AppDelegate.shared.bluetoothController.observerDeviceAccessible(bleDevices: deviceIdentificer) {
-            errors.insert("No polar device connected!")
+            errors.insert("No polar device connected")
+            errors.insert(Observation_.companion.ERROR_DEVICE_NOT_CONNECTED)
         }
         return errors
     }
 
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
-
     }
 
     override func bleDevicesNeeded() -> Set<String> {
@@ -99,7 +102,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
 
     private func listenToDeviceConnection() {
-        self.deviceListener = deviceManager.connectedDevicesAsClosure { [weak self] devices in
+        deviceListener = deviceManager.connectedDevicesAsClosure { [weak self] devices in
             if let self, !self.deviceIdentificer.anyNameIn(items: devices) {
                 self.pauseObservation(self.observationType)
                 PolarVerityHeartRateObservation.hrReady = false
@@ -108,4 +111,3 @@ class PolarVerityHeartRateObservation: Observation_ {
         }
     }
 }
-

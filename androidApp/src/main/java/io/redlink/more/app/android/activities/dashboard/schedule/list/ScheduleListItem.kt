@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -49,8 +48,6 @@ fun ScheduleListItem(
     viewModel: ScheduleViewModel,
     showButton: Boolean
 ) {
-    val observationErrors =
-        remember { viewModel.observationErrors[scheduleModel.observationType] ?: emptySet() }
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -80,8 +77,10 @@ fun ScheduleListItem(
         ) {
             BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
             Row(horizontalArrangement = Arrangement.End) {
-                if (observationErrors.isNotEmpty()) {
-                    BasicText(text = "${observationErrors.count()}")
+                if ((viewModel.observationErrors[scheduleModel.observationType]?.count()
+                        ?: 0) > 0
+                ) {
+                    BasicText(text = "${viewModel.observationErrors[scheduleModel.observationType]?.count() ?: 0}")
                     Icon(
                         Icons.Default.Warning,
                         contentDescription = null,

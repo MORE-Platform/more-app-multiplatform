@@ -44,19 +44,18 @@ class GPSObservation: Observation_ {
         running = false
         onCompletion()
     }
-    
+
     override func observerErrors() -> Set<String> {
         var errors: Set<String> = []
-        if !CLLocationManager.locationServicesEnabled() {
-            errors.insert("Location Services not enabled!")
-        }
         if manager.authorizationStatus == .notDetermined {
-            errors.insert("Permission request pending until observation is about to start!")
+            errors.insert("Permission request pending until observation is about to start")
             manager.requestWhenInUseAuthorization()
         } else if manager.authorizationStatus != .authorizedWhenInUse
-             && manager.authorizationStatus != .authorizedAlways {
-            errors.insert("Permission not granted to access location of the device!")
+            && manager.authorizationStatus != .authorizedAlways {
+            errors.insert("Permission not granted to access location of the device")
             PermissionManager.openSensorPermissionDialog()
+        } else if !CLLocationManager.locationServicesEnabled() {
+            errors.insert("Location Services not enabled")
         }
         return errors
     }
@@ -72,6 +71,7 @@ extension GPSObservation: CLLocationManagerDelegate {
         }
         storeData(data: data) {}
     }
+
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
             super.stopAndSetState(state: .active, scheduleId: nil)

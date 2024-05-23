@@ -1,10 +1,14 @@
 package io.redlink.more.app.android.services.sensorsListener
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
+import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -27,9 +31,11 @@ object BluetoothStateListener {
     fun startListening(context: Context) {
         if (!listenerActive) {
             listenerActive = true
-            val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            context.registerReceiver(receiver, filter)
-            updateBluetoothState(context)
+            Scope.launch(Dispatchers.Main) {
+                val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+                context.registerReceiver(receiver, filter)
+                updateBluetoothState(context)
+            }
         }
     }
 
@@ -41,8 +47,18 @@ object BluetoothStateListener {
     }
 
     private fun updateBluetoothState(context: Context?) {
-        val bluetoothAdapter: BluetoothAdapter? =
-            context?.getSystemService(BluetoothAdapter::class.java)
+        if (context == null) {
+            _bluetoothEnabled.update { false }
+            return
+        }
+
+        val bluetoothManager = ContextCompat.getSystemService(context, BluetoothManager::class.java)
+        if (bluetoothManager == null) {
+            _bluetoothEnabled.update { false }
+            return
+        }
+
+        val bluetoothAdapter = bluetoothManager.adapter
         _bluetoothEnabled.update {
             bluetoothAdapter?.isEnabled ?: false
         }

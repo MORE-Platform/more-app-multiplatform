@@ -23,7 +23,7 @@ struct CompletedSchedules: View {
     @State var totalTasks: Double = 0
     var body: some View {
         VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            ScheduleListHeader(scheduleViewModel: scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             ScheduleView(viewModel: scheduleViewModel)
         }
         .customNavigationTitle(with: NavigationScreen.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"),displayMode: .inline)

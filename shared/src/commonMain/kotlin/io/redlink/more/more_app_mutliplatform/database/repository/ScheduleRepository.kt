@@ -16,12 +16,14 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -159,6 +161,9 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                         && scheduleSchema.hidden
                         && newState.active()
                         && scheduleSchema.observationType in autoStartingObservations
+                        && observationFactory.observation(scheduleSchema.observationType)
+                            ?.bleDevicesNeeded()
+                            ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false
                     ) {
                         scheduleSchema.scheduleId.toHexString()
                     } else {
@@ -169,6 +174,40 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }?.toSet() ?: emptySet()
         if (activeIds.isNotEmpty()) {
             dataRecorder.startMultiple(activeIds)
+        }
+    }
+
+    suspend fun updateTaskStatesWithBLEDevices(
+        observationFactory: ObservationFactory,
+        dataRecorder: DataRecorder
+    ) {
+        val autoStartingObservations = observationFactory.autoStartableObservations()
+        if (autoStartingObservations.isNotEmpty()) {
+            Napier.i { "Updating Schedule states using Bluetooth devices..." }
+            val activeIds = realm()?.let {
+                it.write {
+                    query<ScheduleSchema>("done = $0", false).find().filter {
+                        observationFactory.observation(it.observationType)?.bleDevicesNeeded()
+                            ?.isNotEmpty() == true && it.observationType in autoStartingObservations
+                    }.mapNotNull { scheduleSchema ->
+                        val newState = scheduleSchema.updateState()
+                        if (newState.active() && scheduleSchema.hidden && observationFactory.observation(
+                                scheduleSchema.observationType
+                            )
+                                ?.bleDevicesNeeded()
+                                ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false
+
+                        ) {
+                            scheduleSchema.scheduleId.toHexString()
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }?.toSet() ?: emptySet()
+            if (activeIds.isNotEmpty()) {
+                dataRecorder.startMultiple(activeIds)
+            }
         }
     }
 

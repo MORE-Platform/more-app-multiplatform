@@ -131,10 +131,6 @@ class MainViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private fun showBLESetup() {
-        MoreApplication.shared!!.showBLESetupOnFirstStartup()
-    }
-
     fun getTaskDetailsVM(scheduleId: String) =
         taskDetailsViewModel.apply { setSchedule(scheduleId) }
 

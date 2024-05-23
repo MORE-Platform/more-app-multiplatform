@@ -91,6 +91,10 @@
 		1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847EB2992C3240023EF10 /* MoreFrame.swift */; };
 		1F8847EF29938C610023EF10 /* ConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847EE29938C610023EF10 /* ConsentView.swift */; };
 		1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8847F029938C6B0023EF10 /* ConsentViewModel.swift */; };
+		1F8937852BFE31400083D20E /* Errors.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F8937832BFE31400083D20E /* Errors.strings */; };
+		1F8937882BFF0DAB0083D20E /* ObservationErrorListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8937872BFF0DAB0083D20E /* ObservationErrorListView.swift */; };
+		1F89378B2BFF1EBF0083D20E /* ObservationErrorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F89378A2BFF1EBF0083D20E /* ObservationErrorsView.swift */; };
+		1F89378D2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F89378C2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift */; };
 		1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2CC2A0BDF9A00F32602 /* LimeSurveyViewModel.swift */; };
 		1F8EA2CF2A0CC22200F32602 /* LimeSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2CE2A0CC22200F32602 /* LimeSurveyView.swift */; };
 		1F8EA2D12A0CC2EA00F32602 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D02A0CC2EA00F32602 /* WebView.swift */; };
@@ -296,6 +300,11 @@
 		1F8847EB2992C3240023EF10 /* MoreFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFrame.swift; sourceTree = "<group>"; };
 		1F8847EE29938C610023EF10 /* ConsentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentView.swift; sourceTree = "<group>"; };
 		1F8847F029938C6B0023EF10 /* ConsentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentViewModel.swift; sourceTree = "<group>"; };
+		1F8937842BFE31400083D20E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Errors.strings; sourceTree = "<group>"; };
+		1F8937862BFE32890083D20E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Errors.strings; sourceTree = "<group>"; };
+		1F8937872BFF0DAB0083D20E /* ObservationErrorListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationErrorListView.swift; sourceTree = "<group>"; };
+		1F89378A2BFF1EBF0083D20E /* ObservationErrorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationErrorsView.swift; sourceTree = "<group>"; };
+		1F89378C2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationErrorsViewModel.swift; sourceTree = "<group>"; };
 		1F8EA2CC2A0BDF9A00F32602 /* LimeSurveyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimeSurveyViewModel.swift; sourceTree = "<group>"; };
 		1F8EA2CE2A0CC22200F32602 /* LimeSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimeSurveyView.swift; sourceTree = "<group>"; };
 		1F8EA2D02A0CC2EA00F32602 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
@@ -668,6 +677,7 @@
 				1F9C74622A30C779003AE946 /* LimeSurvey.strings */,
 				1F750CAA2A6F9C9B006E455E /* StudyStates.strings */,
 				1FD531B72B693C3400C2D9FB /* AlertDialog.strings */,
+				1F8937832BFE31400083D20E /* Errors.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -706,6 +716,15 @@
 			path = Consent;
 			sourceTree = "<group>";
 		};
+		1F8937892BFF1EB20083D20E /* ObservationErrors */ = {
+			isa = PBXGroup;
+			children = (
+				1F89378A2BFF1EBF0083D20E /* ObservationErrorsView.swift */,
+				1F89378C2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift */,
+			);
+			path = ObservationErrors;
+			sourceTree = "<group>";
+		};
 		1F8EA2CB2A0BDF8D00F32602 /* LimeSurvey */ = {
 			isa = PBXGroup;
 			children = (
@@ -718,6 +737,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F8937892BFF1EB20083D20E /* ObservationErrors */,
 				1F2C4BDB2A6F974900C29888 /* StudyStates */,
 				1F8EA2CB2A0BDF8D00F32602 /* LimeSurvey */,
 				EDB16E2C29F934CE00701C27 /* TaskCompletionBar */,
@@ -742,6 +762,7 @@
 				B77F20102A014C8400C44118 /* NavigationModalState.swift */,
 				1F43998829C0FF3E00687906 /* MainTabView.swift */,
 				1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */,
+				1F8937872BFF0DAB0083D20E /* ObservationErrorListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1047,6 +1068,7 @@
 				1F9C744E2A30C768003AE946 /* NotificationView.strings in Resources */,
 				1F9C74422A30C75D003AE946 /* Navigation.strings in Resources */,
 				1F9C74452A30C75F003AE946 /* StudyDetailsView.strings in Resources */,
+				1F8937852BFE31400083D20E /* Errors.strings in Resources */,
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
@@ -1118,6 +1140,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F89378D2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift in Sources */,
 				1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */,
 				1FF5B28D2A8275790076EF8E /* Bundle.swift in Sources */,
 				1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */,
@@ -1170,6 +1193,7 @@
 				B784169229C9E3F50035D830 /* Title2.swift in Sources */,
 				EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
+				1F8937882BFF0DAB0083D20E /* ObservationErrorListView.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
 				1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
@@ -1247,6 +1271,7 @@
 				B78B4A8429F04BEA00A1BA58 /* ExpandableContentWithLink.swift in Sources */,
 				B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */,
 				1F8847EA2992C0060023EF10 /* MoreContainer.swift in Sources */,
+				1F89378B2BFF1EBF0083D20E /* ObservationErrorsView.swift in Sources */,
 				B74DDB6A29E6AEDE006FEA74 /* NotificationItem.swift in Sources */,
 				1F27536B29CC68FC00324417 /* ObservationExtension.swift in Sources */,
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
@@ -1288,6 +1313,15 @@
 				1F750CAB2A6F9C9E006E455E /* en */,
 			);
 			name = StudyStates.strings;
+			sourceTree = "<group>";
+		};
+		1F8937832BFE31400083D20E /* Errors.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1F8937842BFE31400083D20E /* en */,
+				1F8937862BFE32890083D20E /* de */,
+			);
+			name = Errors.strings;
 			sourceTree = "<group>";
 		};
 		1F9C74322A30C72B003AE946 /* LoginView.strings */ = {

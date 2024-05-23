@@ -24,7 +24,6 @@ struct ScheduleView: View {
     private let stringsTable = "ScheduleListView"
     var body: some View {
         VStack {
-            
             ScrollView(.vertical) {
                 if (viewModel.schedulesByDate.isEmpty) {
                     if viewModel.scheduleListType == ScheduleListType.running {

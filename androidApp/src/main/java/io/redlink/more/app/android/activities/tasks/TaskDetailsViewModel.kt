@@ -19,6 +19,7 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.viewModels.tasks.CoreTaskDetailsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ class TaskDetailsViewModel(
     )
 
     val taskObservationErrors = mutableStateListOf<String>()
+    val taskObservationErrorActions = mutableStateListOf<String>()
     private var observationErrors: Map<String, Set<String>> = emptyMap()
 
     init {
@@ -56,8 +58,11 @@ class TaskDetailsViewModel(
                         isEnabled.value = it.state.active()
                         withContext(Dispatchers.Main) {
                             taskObservationErrors.clear()
+                            taskObservationErrorActions.clear()
                             observationErrors[taskDetailsModel.value.observationType]?.let {
-                                taskObservationErrors.addAll(it)
+                                val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
+                                taskObservationErrors.addAll(messages)
+                                taskObservationErrorActions.addAll(actions)
                             }
                         }
                     }
@@ -77,8 +82,11 @@ class TaskDetailsViewModel(
                 observationErrors = it
                 if (taskDetailsModel.value.observationType != "") {
                     taskObservationErrors.clear()
+                    taskObservationErrorActions.clear()
                     observationErrors[taskDetailsModel.value.observationType]?.let {
-                        taskObservationErrors.addAll(it)
+                        val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
+                        taskObservationErrors.addAll(messages)
+                        taskObservationErrorActions.addAll(actions)
                     }
                 }
             }

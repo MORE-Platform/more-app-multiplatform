@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -21,39 +21,38 @@ class ScheduleViewModel: ObservableObject {
     private let coreModel: CoreScheduleViewModel
 
     let filterViewModel: DashboardFilterViewModel = DashboardFilterViewModel()
-    
+
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
     @Published var observationErrors: [String: Set<String>] = [:]
-
+    @Published var observationErrorActions: [String: Set<String>] = [:]
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        self.coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
-        self.loadSchedules()
+        coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
+        loadSchedules()
     }
 
     func loadSchedules() {
         coreModel.onScheduleStateUpdated { [weak self] triple in
             if let self,
-                let added = triple.first as? Set<ScheduleModel>,
-                let removed = triple.second as? Set<String>,
-                let updated = triple.third as? Set<ScheduleModel> {
-                
+               let added = triple.first as? Set<ScheduleModel>,
+               let removed = triple.second as? Set<String>,
+               let updated = triple.third as? Set<ScheduleModel> {
                 if !removed.isEmpty || !updated.isEmpty {
-                    let idsToRemove = removed.union(updated.map{$0.scheduleId})
-                    let filtered = self.schedulesByDate.filter { (date, list) in
-                        list.contains(where: {idsToRemove.contains($0.scheduleId)})
+                    let idsToRemove = removed.union(updated.map { $0.scheduleId })
+                    let filtered = self.schedulesByDate.filter { _, list in
+                        list.contains(where: { idsToRemove.contains($0.scheduleId) })
                     }
                     for (date, schedules) in filtered {
-                        self.schedulesByDate[date] = schedules.filter { !removed.contains($0.scheduleId)}
+                        self.schedulesByDate[date] = schedules.filter { !removed.contains($0.scheduleId) }
                     }
                 }
-                
+
                 if !added.isEmpty || !updated.isEmpty {
                     let itemsToBeAdded = self.mergeSchedules(Array(added), Array(updated))
-                    
+
                     let groupedSchedulesToAdd = Dictionary(grouping: itemsToBeAdded, by: { $0.start.startOfDate() })
-                    
+
                     for (date, schedules) in groupedSchedulesToAdd {
                         self.schedulesByDate[date] = self.mergeSchedules(schedules, self.schedulesByDate[date, default: []]).sorted(by: {
                             if $0.start == $1.start {
@@ -71,10 +70,13 @@ class ScheduleViewModel: ObservableObject {
                 }
             }
         }
-        
+
         AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
             DispatchQueue.main.async {
-                self?.observationErrors = errors
+                if let self {
+                    self.observationErrors = errors.filterValues { $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }
+                    self.observationErrorActions = errors.filterValues { $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }
+                }
             }
         }
     }
@@ -86,11 +88,16 @@ class ScheduleViewModel: ObservableObject {
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
     }
-    
+
     func mergeSchedules(_ lhs: [ScheduleModel], _ rhs: [ScheduleModel]) -> [ScheduleModel] {
-        let lhsIds = Set(lhs.map{$0.scheduleId})
-        let filteredRhs = rhs.filter{ !lhsIds.contains($0.scheduleId) }
+        let lhsIds = Set(lhs.map { $0.scheduleId })
+        let filteredRhs = rhs.filter { !lhsIds.contains($0.scheduleId) }
         return lhs + filteredRhs
+    }
+
+    func numberOfObservationErrors() -> Int {
+        let errors = Set(observationErrors.values.flatMap { $0 }).count
+        return errors > 0 ? errors : Set(observationErrorActions.values.flatMap { $0 }).count
     }
 }
 

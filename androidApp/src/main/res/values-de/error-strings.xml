@@ -2,4 +2,11 @@
 <resources>
     <string name="error">Fehler</string>
     <string name="data_not_found">Daten konnten nicht geladen werden</string>
+    <string name="error_access_bluetooth">Keine Berechtigung für den Zugriff auf Bluetooth</string>
+    <string name="bluetooth_disabled">Bluetooth ist deaktiviert</string>
+    <string name="device_not_connected">Kein verfügbares Gerät verbunden</string>
+    <string name="error_location_services">Ortungsdienste geben einen unbekannten Fehler zurück</string>
+    <string name="location_disabled">Ortungsdienste sind deaktiviert</string>
+    <string name="location_permission_not_granted">Keine Berechtigung für den Zugriff auf die Ortungsdienste gewährt</string>
+    <string name="accelerometer_sensor_not_available">Kann nicht auf den Beschleunigungssensor zugreifen</string>
 </resources>

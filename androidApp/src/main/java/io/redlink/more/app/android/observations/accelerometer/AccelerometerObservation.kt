@@ -59,7 +59,7 @@ class AccelerometerObservation(
     override fun observerErrors(): Set<String> {
         val errors = mutableSetOf<String>()
         if (this.sensor == null) {
-            errors.add("Cannot access Accelerometer sensor!")
+            errors.add("accelerometer_sensor_not_available")
         }
         return errors
     }

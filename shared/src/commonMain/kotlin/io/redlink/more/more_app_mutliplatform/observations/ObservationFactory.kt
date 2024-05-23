@@ -53,7 +53,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         Scope.launch {
             studyObservationTypes.collect {
                 if (it.isNotEmpty()) {
-                    updateObservationErrors()
+                    listenToObservationErrors()
                 } else {
                     observationErrorWatcher?.cancel()
                     observationErrorWatcher = null
@@ -98,13 +98,13 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     }
 
     fun autoStartableObservations(): Set<String> {
-        val autoStartTypes = observations.filter { it.ableToAutomaticallyStart() }
+        val autoStartTypes = studyObservations().filter { it.ableToAutomaticallyStart() }
             .map { it.observationType.observationType }.toSet()
         Napier.i(tag = "ObservationFactory::autoStartableObservations") { "Auto-startable observations: $autoStartTypes" }
         return autoStartTypes
     }
 
-    private fun updateObservationErrors() {
+    private fun listenToObservationErrors() {
         val flowList = studyObservations().map { it.observationErrors }
         val combinedFlow = combine(flowList) { values ->
             values.toMap()
@@ -115,6 +115,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
                 Napier.d(tag = "ObservationFactory::updateObservationErrors") { observationErrors.value.toString() }
             }
         }.second
+    }
+
+    fun updateObservationErrors() {
+        studyObservations().forEach { it.updateObservationErrors() }
     }
 
     fun observation(type: String): Observation? {
