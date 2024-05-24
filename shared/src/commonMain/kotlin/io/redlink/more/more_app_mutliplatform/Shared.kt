@@ -120,7 +120,6 @@ class Shared(
                 observationDataManager.listenToDatapointCountChanges()
                 updateTaskStates()
                 observationManager.activateScheduleUpdate()
-
             }
         }
     }

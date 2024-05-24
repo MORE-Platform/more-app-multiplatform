@@ -9,4 +9,7 @@
     <string name="location_disabled">Ortungsdienste sind deaktiviert</string>
     <string name="location_permission_not_granted">Keine Berechtigung für den Zugriff auf die Ortungsdienste gewährt</string>
     <string name="accelerometer_sensor_not_available">Kann nicht auf den Beschleunigungssensor zugreifen</string>
+    <string name="observation_error">Aufzeichnungfehler</string>
+    <string name="observation_cannot_start">Beobachtung kann nicht gestartet werden! Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!</string>
+    <string name="observation_bluetooth_error">Fehler beim Fortsetzen der Beobachtung! Es gab ein Verbindungsproblem mit einem Bluetooth-Sensor. Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!</string>
 </resources>

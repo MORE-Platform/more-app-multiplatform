@@ -18,6 +18,8 @@ import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
@@ -71,20 +73,35 @@ class PolarHeartRateObservation :
                                     message = "HR Recording error: ${error.stackTraceToString()}"
                                 )
                                 pauseObservation(PolarVerityHeartRateType(emptySet()))
-                                updateObservationErrors()
+                                showObservationErrorNotification(
+                                    stringResource(R.string.observation_bluetooth_error),
+                                    stringResource(R.string.observation_error)
+                                )
                             })
                     deviceConnectionListener = listenToDeviceConnection()
                     true
                 } catch (exception: Exception) {
                     Napier.e(tag = "PolarHeartRateObservation::start") { exception.stackTraceToString() }
+                    showObservationErrorNotification(
+                        stringResource(R.string.observation_cannot_start),
+                        stringResource(R.string.observation_error)
+                    )
                     false
                 }
             } ?: run {
                 Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
+                showObservationErrorNotification(
+                    stringResource(R.string.observation_cannot_start),
+                    stringResource(R.string.observation_error)
+                )
                 false
             }
         }
         Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
+        showObservationErrorNotification(
+            stringResource(R.string.observation_cannot_start),
+            stringResource(R.string.observation_error)
+        )
         return false
     }
 

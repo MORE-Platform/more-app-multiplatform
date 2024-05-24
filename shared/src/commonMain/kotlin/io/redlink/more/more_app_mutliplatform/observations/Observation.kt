@@ -12,6 +12,7 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
@@ -21,7 +22,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -70,7 +74,6 @@ abstract class Observation(val observationType: ObservationType) {
             stop {
                 saveAndSend()
                 observationShutdown(scheduleId)
-                updateObservationErrors()
             }
         } else {
             saveAndSend()
@@ -78,6 +81,7 @@ abstract class Observation(val observationType: ObservationType) {
         if (removeNotification) {
             handleNotification(scheduleId)
         }
+        updateObservationErrors()
     }
 
     fun observationDataManagerAdded() = dataManager != null
@@ -160,8 +164,8 @@ abstract class Observation(val observationType: ObservationType) {
         stop {
             saveAndSend()
             observationShutdown(scheduleId)
-            updateObservationErrors()
         }
+        updateObservationErrors()
     }
 
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
@@ -172,8 +176,8 @@ abstract class Observation(val observationType: ObservationType) {
             scheduleId?.let {
                 observationShutdown(it)
             }
-            updateObservationErrors()
         }
+        updateObservationErrors()
     }
 
     fun stopAndSetDone(scheduleId: String) {
@@ -184,6 +188,7 @@ abstract class Observation(val observationType: ObservationType) {
             observationShutdown(scheduleId)
             removeDataCount()
             handleNotification(scheduleId)
+            updateObservationErrors()
         }
     }
 
@@ -206,6 +211,34 @@ abstract class Observation(val observationType: ObservationType) {
     private fun handleNotification(scheduleId: String) {
         notificationIds.remove(scheduleId)?.let {
             notificationManager?.markNotificationAsRead(it)
+        }
+    }
+
+    protected fun showNotification(title: String, notificationBody: String) {
+        val notification = NotificationSchema.build(title, notificationBody)
+        Napier.d(tag = "Observation::showNotification") { "Showing notification: $notification" }
+        notificationManager?.storeAndDisplayNotification(notification, true)
+    }
+
+    protected fun showObservationErrorNotification(
+        notificationBody: String,
+        fallbackTitle: String = "Error"
+    ) {
+        val schedulesSchemaFlows = scheduleIds.keys.map {
+            scheduleRepository.scheduleWithId(it)
+        }
+        val combinedFlow = combine(schedulesSchemaFlows) { values ->
+            values.mapNotNull { it }
+        }
+
+        StudyScope.launch {
+            val scheduleSchemas = combinedFlow.first()
+            val title =
+                if (scheduleSchemas.isNotEmpty()) scheduleSchemas.map { it.observationTitle }
+                    .joinToString(", ", limit = 5) else fallbackTitle
+            withContext(Dispatchers.Main) {
+                showNotification(title, notificationBody)
+            }
         }
     }
 

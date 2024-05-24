@@ -72,7 +72,9 @@ class BluetoothController(
             }
         } else {
             if (!bleViewHasBeenOpened) {
-                bleViewHasBeenOpened = ViewManager.showBLEView(true)
+                if (ViewManager.showBLEView(true)) {
+                    bleViewHasBeenOpened = true
+                }
             }
         }
         return false
@@ -89,7 +91,11 @@ class BluetoothController(
                     enableBackgroundScanner()
                 }
             } else {
-                ViewManager.showBLEView(true)
+                if (!bleViewHasBeenOpened) {
+                    if (ViewManager.showBLEView(true)) {
+                        bleViewHasBeenOpened = true
+                    }
+                }
             }
         }
     }

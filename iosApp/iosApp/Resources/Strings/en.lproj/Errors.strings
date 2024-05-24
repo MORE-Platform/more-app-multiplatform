@@ -16,3 +16,6 @@
 "Location Services not enabled" = "Location Services not enabled";
 "Permission not granted to access location of the device" = "Permission not granted to access location of the device";
 "errors" = "errors";
+"Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!" = "Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!";
+"Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!" = "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!";
+"Observation Error" = "Observation Error";

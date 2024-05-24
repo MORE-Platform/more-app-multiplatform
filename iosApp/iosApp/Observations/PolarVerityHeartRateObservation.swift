@@ -39,6 +39,8 @@ class PolarVerityHeartRateObservation: Observation_ {
     private let deviceManager = BluetoothDeviceManager.shared
 
     private var deviceListener: Ktor_ioCloseable?
+    
+    private let errorStringTable = "Errors"
 
     init(sensorPermissions: Set<String>) {
         super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
@@ -57,12 +59,14 @@ class PolarVerityHeartRateObservation: Observation_ {
                 }, onError: { [weak self] error in
                     print(error)
                     if let self {
+                        showObservationErrorNotification(notificationBody: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!".localize(withComment: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!", useTable: errorStringTable), fallbackTitle: "Observation Error".localize(withComment: "Observation Error", useTable: errorStringTable))
                         self.pauseObservation(self.observationType)
                     }
                 })
                 return true
             }
         }
+        showObservationErrorNotification(notificationBody: "Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!".localize(withComment: "Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!", useTable: errorStringTable), fallbackTitle: "Observation Error".localize(withComment: "Observation Error", useTable: errorStringTable))
         return false
     }
 
