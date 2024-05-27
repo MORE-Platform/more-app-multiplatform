@@ -48,14 +48,14 @@ struct BluetoothConnectionView: View {
                     ForEach(viewModel.neededDevices, id: \.self) { device in
                         SectionHeading(sectionTitle: "- \(device)")
                     }
+                    .padding(.bottom, 8)
                     
                     if showAsSeparateView {
                         BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings), color: Color.more.secondary)
                             .padding(.top, 8)
                     }
                     
-                    Divider()
-                        .padding(.bottom, 8)
+
                     if viewModel.bluetoothPower == .on {
                         Section(header: SectionHeading(sectionTitle: "Connected devices".localize(withComment: "Connected device section", useTable: bluetoothStrings))) {
                             if viewModel.connectedDevices.isEmpty {

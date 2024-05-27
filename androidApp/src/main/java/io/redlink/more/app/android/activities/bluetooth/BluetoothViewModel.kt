@@ -117,8 +117,6 @@ class BluetoothViewModel : ViewModel() {
 
     fun viewDidDisappear() {
         coreBluetoothViewModel.viewDidDisappear()
-        isScanning.value = false
-        bluetoothPowerState.value = false
         ViewManager.bleViewOpen(false)
     }
 

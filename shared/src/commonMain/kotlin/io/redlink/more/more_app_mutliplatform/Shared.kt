@@ -89,17 +89,17 @@ class Shared(
         appIsInForeGround = boolean
         if (appIsInForeGround) {
             notificationManager.clearAllNotifications()
-            updateTaskStates()
-            updateStudyBlocking()
             if (credentialRepository.hasCredentials()) {
                 notificationManager.createNewFCMIfNecessary()
+                updateStudyBlocking()
                 StudyScope.launch {
-                    observationFactory.updateObservationErrors()
                     bluetoothController.listenToConnectionChanges(
                         observationFactory,
                         observationManager
                     )
                 }
+                observationFactory.updateObservationErrors()
+                updateTaskStates()
             }
         } else {
             ViewManager.showBLEView(false)

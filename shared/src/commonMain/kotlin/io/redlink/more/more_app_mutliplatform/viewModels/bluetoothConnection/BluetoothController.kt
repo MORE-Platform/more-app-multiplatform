@@ -235,6 +235,7 @@ class BluetoothController(
         if (bluetoothState == BluetoothState.OFF) {
             deviceManager.clearDiscovered()
             deviceManager.clearConnected()
+            deviceManager.clearConnectingDevices()
         }
     }
 

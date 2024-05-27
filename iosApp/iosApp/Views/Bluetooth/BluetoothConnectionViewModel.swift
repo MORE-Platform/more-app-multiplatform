@@ -27,7 +27,7 @@ class BluetoothConnectionViewModel: ObservableObject {
     @Published var bluetoothIsScanning = false
 
     @Published var neededDevices: [String] = []
-    
+
     @Published var bluetoothPower: BluetoothState = .off
 
     init() {
@@ -54,18 +54,7 @@ class BluetoothConnectionViewModel: ObservableObject {
                 }
             }
         }
-        
-        coreViewModel.coreBluetooth.isScanningAsClosure { [weak self] kBool in
-            self?.bluetoothIsScanning = kBool.boolValue
-        }
-        
-        coreViewModel.coreBluetooth.bluetoothStateAsClosure { [weak self] bluetoothState in
-            self?.bluetoothPower = bluetoothState
-        }
-    }
 
-    func viewDidAppear() {
-        neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
         deviceManager.discoveredDevicesAsClosure { [weak self] deviceSet in
             if let self {
                 DispatchQueue.main.async {
@@ -90,15 +79,22 @@ class BluetoothConnectionViewModel: ObservableObject {
             }
         }
 
+        coreViewModel.coreBluetooth.isScanningAsClosure { [weak self] kBool in
+            self?.bluetoothIsScanning = kBool.boolValue
+        }
+
+        coreViewModel.coreBluetooth.bluetoothStateAsClosure { [weak self] bluetoothState in
+            self?.bluetoothPower = bluetoothState
+        }
+    }
+
+    func viewDidAppear() {
         coreViewModel.viewDidAppear()
+        neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
     }
 
     func viewDidDisappear() {
         coreViewModel.viewDidDisappear()
-        connectedDevices.removeAll()
-        discoveredDevices.removeAll()
-        connectingDevices.removeAll()
-        bluetoothIsScanning = false
         ViewManager.shared.showBLEView(state: false)
     }
 

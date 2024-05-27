@@ -84,9 +84,7 @@ object BluetoothDeviceManager {
     }
 
     fun resetAll() {
-        this._connectedDevices.clear()
         this._discoveredDevices.clear()
-        this._devicesCurrentlyConnecting.clear()
     }
 
     fun clearDiscovered() {
@@ -95,5 +93,9 @@ object BluetoothDeviceManager {
 
     fun clearConnected() {
         this._connectedDevices.clear()
+    }
+
+    fun clearConnectingDevices() {
+        this._devicesCurrentlyConnecting.clear()
     }
 }

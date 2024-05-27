@@ -29,7 +29,6 @@ class CoreBluetoothViewModel(
     override fun viewDidDisappear() {
         super.viewDidDisappear()
         coreBluetooth.viewDidDisappear()
-
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {

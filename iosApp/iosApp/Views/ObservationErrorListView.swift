@@ -34,7 +34,6 @@ struct ObservationErrorListView: View {
                 }
                 
             }
-//            .frame(maxWidth: .infinity, maxHeight: scrollViewContentSize.height)
             if taskObservationErrorActions.isEmpty {
                 Divider()
             }
@@ -46,7 +45,12 @@ struct ObservationErrorListView: View {
                 MoreActionButton(disabled: .constant(false)) {
                     ViewManager.shared.showBLEView(state: true)
                 } label: {
-                    Text(String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: navigationStrings))
+                    HStack {
+                        Image(systemName: "applewatch")
+                            .foregroundColor(.more.white)
+                            .padding(.trailing, 4)
+                        Text(String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: navigationStrings))
+                    }
                 }
             }
 
