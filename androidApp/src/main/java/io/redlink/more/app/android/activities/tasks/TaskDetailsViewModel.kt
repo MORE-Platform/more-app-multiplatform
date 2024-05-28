@@ -81,12 +81,14 @@ class TaskDetailsViewModel(
             MoreApplication.shared!!.observationFactory.observationErrors.collect {
                 observationErrors = it
                 if (taskDetailsModel.value.observationType != "") {
-                    taskObservationErrors.clear()
-                    taskObservationErrorActions.clear()
-                    observationErrors[taskDetailsModel.value.observationType]?.let {
-                        val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
-                        taskObservationErrors.addAll(messages)
-                        taskObservationErrorActions.addAll(actions)
+                    withContext(Dispatchers.Main) {
+                        taskObservationErrors.clear()
+                        taskObservationErrorActions.clear()
+                        observationErrors[taskDetailsModel.value.observationType]?.let {
+                            val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
+                            taskObservationErrors.addAll(messages)
+                            taskObservationErrorActions.addAll(actions)
+                        }
                     }
                 }
             }

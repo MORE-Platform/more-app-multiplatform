@@ -55,7 +55,9 @@ class TaskDetailsViewModel: ObservableObject {
         
         AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
             if let self {
-                self.observationErrors = errors
+                DispatchQueue.main.async {
+                    self.observationErrors = errors                    
+                }
             }
         }
     }

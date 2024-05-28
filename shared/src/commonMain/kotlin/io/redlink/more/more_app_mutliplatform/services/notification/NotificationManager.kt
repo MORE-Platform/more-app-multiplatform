@@ -78,7 +78,10 @@ class NotificationManager(
     ) {
         storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
-            handleNotificationDataAsync(shared, notification.notificationData)
+            handleNotificationDataAsync(
+                shared,
+                notification.notificationData
+            )
         }
     }
 
@@ -129,11 +132,17 @@ class NotificationManager(
 
     fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
         Scope.launch {
-            handleNotificationData(shared, data.toRealmDictionary())
+            handleNotificationData(
+                shared,
+                data.toRealmDictionary()
+            )
         }
     }
 
-    suspend fun handleNotificationData(shared: Shared, data: RealmDictionary<String>) {
+    suspend fun handleNotificationData(
+        shared: Shared,
+        data: RealmDictionary<String>
+    ) {
         if (data.isNotEmpty()) {
             if (data[MAIN_DATA_KEY] == STUDY_CHANGED) {
                 updateStudy(shared, data)

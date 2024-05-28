@@ -132,6 +132,7 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun updateObservationErrors() {
         StudyScope.launch(Dispatchers.IO) {
+            Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
             _observationErrors.update { Pair(observationType.observationType, observerErrors()) }
         }
     }

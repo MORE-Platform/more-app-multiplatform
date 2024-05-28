@@ -20,12 +20,13 @@ import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurvey
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 
 
@@ -43,18 +44,21 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     init {
         observations.add(SimpleQuestionObservation())
         observations.add(LimeSurveyObservation())
-        Scope.launch {
-            ObservationRepository().observationTypes().firstOrNull()?.let {
+        Scope.launch(Dispatchers.IO) {
+            ObservationRepository().observationTypes().collect {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 _studyObservationTypes.clear()
                 _studyObservationTypes.appendAll(it)
             }
         }
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             studyObservationTypes.collect {
+                Napier.d(tag = "ObservationFactory::init::StudyObservationTypes") { it.toString() }
                 if (it.isNotEmpty()) {
+                    Napier.d { "Study types not empty" }
                     listenToObservationErrors()
                 } else {
+                    Napier.d { "Study types empty" }
                     observationErrorWatcher?.cancel()
                     observationErrorWatcher = null
                     _observationErrors.update { emptyMap() }
@@ -109,7 +113,9 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         val combinedFlow = combine(flowList) { values ->
             values.toMap()
         }
+        observationErrorWatcher?.cancel()
         observationErrorWatcher = Scope.launch {
+            Napier.d(tag = "ObservationFactory::listenToObservationErrors") { "Listening for observation errors" }
             combinedFlow.cancellable().collect {
                 _observationErrors.set(it)
                 Napier.d(tag = "ObservationFactory::updateObservationErrors") { observationErrors.value.toString() }
