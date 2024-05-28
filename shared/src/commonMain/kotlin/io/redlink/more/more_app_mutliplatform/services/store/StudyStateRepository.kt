@@ -10,30 +10,49 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.store
 
-import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.Clock
 
 class StudyStateRepository(private val sharedStorageRepository: SharedStorageRepository) {
-    private var currentStudyState: MutableStateFlow<StudyState> = MutableStateFlow(StudyState.NONE)
+    private var _currentStudyState: MutableStateFlow<StudyState> = MutableStateFlow(StudyState.NONE)
+    val currentStudyState: StateFlow<StudyState> = _currentStudyState
+
+    private var _lastUpdateTime: MutableStateFlow<Long?> = MutableStateFlow(null)
+    val lastUpdateTime: StateFlow<Long?> = _lastUpdateTime
 
     init {
-        currentStudyState.set(loadState())
+        _currentStudyState.value = loadState()
+        _lastUpdateTime.value = loadUpdateTime()
     }
 
     fun storeState(studyState: StudyState) {
         sharedStorageRepository.store(STUDY_STATE_KEY, studyState.descr)
-        currentStudyState.set(studyState)
+        val currentTime = Clock.System.now().epochSeconds
+        sharedStorageRepository.store(LAST_UPDATE_TIME_KEY, currentTime.toString())
+        _currentStudyState.value = studyState
+        _lastUpdateTime.value = currentTime
     }
+
+    fun studyWasUpdatedBefore(epochSeconds: Long): Boolean =
+        (lastUpdateTime.value ?: 0) <= epochSeconds
 
     private fun loadState(): StudyState {
         return StudyState.getState(sharedStorageRepository.load(STUDY_STATE_KEY, "none"))
     }
 
-    fun currentState() = currentStudyState.asStateFlow()
+    private fun loadUpdateTime(): Long? {
+        val storedValue = sharedStorageRepository.load(LAST_UPDATE_TIME_KEY, "")
+        return if (storedValue.isNotEmpty()) {
+            storedValue.toLongOrNull()
+        } else {
+            null
+        }
+    }
 
     companion object {
-        private val STUDY_STATE_KEY = "studyStateKey"
+        private const val STUDY_STATE_KEY = "studyStateKey"
+        private const val LAST_UPDATE_TIME_KEY = "lastUpdateTimeKey"
     }
 }

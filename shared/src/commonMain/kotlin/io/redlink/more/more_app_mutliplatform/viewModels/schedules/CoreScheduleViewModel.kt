@@ -10,10 +10,10 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
+import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(
@@ -63,6 +64,7 @@ class CoreScheduleViewModel(
                     }
                 }
         }
+
     }
 
     override fun viewDidAppear() {
@@ -70,6 +72,7 @@ class CoreScheduleViewModel(
             scheduleRepository.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
                 .cancellable()
                 .collect {
+                    Napier.d(tag = "CoreScheduleViewModel::viewDidAppear") { it.toString() }
                     val newList = when (scheduleListType) {
                         ScheduleListType.COMPLETED -> createCompletedModels(it)
                         ScheduleListType.RUNNING -> createRunningModels(it)
@@ -124,7 +127,7 @@ class CoreScheduleViewModel(
         }
 
         if (added.isNotEmpty() || removedIds.isNotEmpty() || updated.isNotEmpty()) {
-            _scheduleListState.set(Triple(added, removedIds, updated))
+            _scheduleListState.update { Triple(added, removedIds, updated) }
         }
         originalScheduleList = newList.toSet()
     }

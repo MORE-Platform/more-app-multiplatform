@@ -42,10 +42,12 @@ import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.Blu
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
-    val sharedStorageRepository: SharedStorageRepository,
+    private val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
     val mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
@@ -55,7 +57,8 @@ class Shared(
     val deeplinkManager = DeeplinkManager(observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepository(sharedStorageRepository)
     val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
-    val studyStateRepository: StudyStateRepository = StudyStateRepository(sharedStorageRepository)
+    private val studyStateRepository: StudyStateRepository =
+        StudyStateRepository(sharedStorageRepository)
     val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
     val observationManager = ObservationManager(observationFactory, dataRecorder)
     val bluetoothController = BluetoothController(mainBluetoothConnector)
@@ -69,16 +72,17 @@ class Shared(
 
     var appIsInForeGround = false
 
-
-    val currentStudyState = studyStateRepository.currentState()
+    val currentStudyState = studyStateRepository.currentStudyState
     var finishText: String? = null
+
+    private val mutex = Mutex()
 
     init {
         onApplicationStart()
         observationFactory.setNotificationManager(notificationManager)
     }
 
-    fun onApplicationStart() {
+    private fun onApplicationStart() {
         if (credentialRepository.hasCredentials()) {
             activateObservationWatcher()
         }
@@ -90,8 +94,8 @@ class Shared(
         if (appIsInForeGround) {
             notificationManager.clearAllNotifications()
             if (credentialRepository.hasCredentials()) {
-                notificationManager.createNewFCMIfNecessary()
                 updateStudyBlocking()
+                notificationManager.createNewFCMIfNecessary()
                 StudyScope.launch {
                     bluetoothController.listenToConnectionChanges(
                         observationFactory,
@@ -145,41 +149,55 @@ class Shared(
         } else false
     }
 
-    fun updateStudyBlocking(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
+    private fun updateStudyBlocking(
+        oldStudyState: StudyState? = null,
+        newStudyState: StudyState? = null
+    ) {
         Scope.launch(Dispatchers.IO) {
             updateStudy(oldStudyState, newStudyState)
         }
     }
 
-    suspend fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null) {
-        Napier.d(tag = "Shared::updateStudy") { "Updating study with oldState: $oldStudyState and new state: $newStudyState" }
-        val studyRepository = StudyRepository()
-        val currentStudy = studyRepository.getStudy().firstOrNull()
-        if (currentStudy != null) {
-            Napier.d(tag = "Shared::updateStudy") { "Has current study: $currentStudy with study state: ${currentStudy.getState()} is active: ${currentStudy.active}" }
-            if (currentStudyState.firstOrNull() == StudyState.NONE) {
-                studyStateRepository.storeState(currentStudy.getState())
+    suspend fun updateStudy(
+        oldStudyState: StudyState? = null,
+        newStudyState: StudyState? = null
+    ) {
+        mutex.withLock {
+            if (oldStudyState != null || newStudyState != null) {
+                Napier.d(tag = "Shared::updateStudy") { "Updating study with oldState: $oldStudyState and new state: $newStudyState" }
+            } else {
+                Napier.d(tag = "Shared::updateStudy") { "Updating study..." }
             }
-            currentStudy.finishText?.let {
-                finishText = it
+            val studyRepository = StudyRepository()
+            val currentStudy = studyRepository.getStudy().firstOrNull()
+            if (currentStudy != null) {
+                Napier.d(tag = "Shared::updateStudy") { "Has current study: $currentStudy with study state: ${currentStudy.getState()} is active: ${currentStudy.active}" }
+                if (currentStudyState.firstOrNull() == StudyState.NONE) {
+                    studyStateRepository.storeState(currentStudy.getState())
+                }
+                currentStudy.finishText?.let {
+                    finishText = it
+                }
             }
-        }
-        if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
-            Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
-            studyStateRepository.storeState(newStudyState)
-            viewManager.studyIsUpdating(true)
-            StudyScope.cancel()
-            stopObservations()
-            removeStudyData()
-            notificationManager.clearAllNotifications()
-            viewManager.studyIsUpdating(false)
-        } else {
-            val (study, error) = networkService.getStudyConfig()
-            if (error != null) {
-                Napier.e { error.message }
-                return
-            }
-            study?.let { study ->
+            if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
+                Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
+                studyStateRepository.storeState(newStudyState)
+                viewManager.studyIsUpdating(true)
+                StudyScope.cancel()
+                stopObservations()
+                removeStudyData()
+                notificationManager.clearAllNotifications()
+                viewManager.studyIsUpdating(false)
+            } else {
+                val (study, error) = networkService.getStudyConfig()
+                if (error != null) {
+                    Napier.e { error.message }
+                    return
+                }
+                if (study == null) {
+                    Napier.d { "Study is null" }
+                    return
+                }
                 var studyHasChanged = false
                 currentStudy?.let {
                     if ((study.studyState?.let { StudyState.getState(it) } != it.getState() || it.active != study.active) || it.version != study.version) {
@@ -194,9 +212,7 @@ class Shared(
                     if (study.studyState?.let { StudyState.getState(it) } != StudyState.CLOSED) {
                         studyRepository.storeStudy(study)
                         resetFirstStartUp()
-                        if (study.active == true) {
-                            activateObservationWatcher(true)
-                        }
+                        observationFactory.updateObservationErrors()
                     }
                     if (newStudyState == null) {
                         studyStateRepository.storeState(study.studyState?.let {
@@ -206,11 +222,14 @@ class Shared(
                         }
                             ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
                     }
+                    if (study.active == true) {
+                        activateObservationWatcher(true)
+                    }
                     viewManager.studyIsUpdating(false)
                 }
-            }
-            if (newStudyState != null) {
-                studyStateRepository.storeState(newStudyState)
+                if (newStudyState != null) {
+                    studyStateRepository.storeState(newStudyState)
+                }
             }
         }
     }
@@ -222,6 +241,14 @@ class Shared(
             finishText = StudyRepository().getStudy().firstOrNull()?.finishText
         }
         activateObservationWatcher()
+        StudyScope.launch {
+            bluetoothController.listenToConnectionChanges(
+                observationFactory,
+                observationManager
+            )
+        }
+        observationFactory.updateObservationErrors()
+        updateTaskStates()
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
@@ -252,7 +279,6 @@ class Shared(
     }
 
     private suspend fun removeStudyData() {
-        observationFactory.clearNeededObservationTypes()
         DatabaseManager.deleteAllFromSchema(
             setOf(
                 StudySchema::class,
@@ -263,6 +289,7 @@ class Shared(
                 NotificationSchema::class
             )
         )
+        observationFactory.clearNeededObservationTypes()
     }
 
     fun onStudyStateChange(providedState: (StudyState) -> Unit) =
