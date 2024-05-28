@@ -40,6 +40,7 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
+import io.redlink.more.app.android.activities.observationErrors.ObservationErrorView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -81,7 +82,6 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
-                viewModel.viewDidAppear()
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()
@@ -439,6 +439,19 @@ fun MainView(
                         screen.stringRes()
                     viewModel.showBackButton.value = true
                     LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
+                }
+            }
+
+            NavigationScreen.OBSERVATION_ERRORS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute()
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    ObservationErrorView()
                 }
             }
         }

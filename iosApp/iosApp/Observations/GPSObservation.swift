@@ -35,14 +35,8 @@ class GPSObservation: Observation_ {
             manager.showsBackgroundLocationIndicator = true
             manager.startUpdatingLocation()
             return true
-        } else {
-            if manager.authorizationStatus == .notDetermined {
-                manager.requestWhenInUseAuthorization()
-            } else {
-                self.showPermissionAlert()
-            }
-            return false
         }
+        return false
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
@@ -51,10 +45,19 @@ class GPSObservation: Observation_ {
         onCompletion()
     }
 
-    override func observerAccessible() -> Bool {
-        return CLLocationManager.locationServicesEnabled()
-            && (manager.authorizationStatus == .authorizedWhenInUse
-            || manager.authorizationStatus == .authorizedAlways)
+    override func observerErrors() -> Set<String> {
+        var errors: Set<String> = []
+        if manager.authorizationStatus == .notDetermined {
+            errors.insert("Permission request pending until observation is about to start")
+            manager.requestWhenInUseAuthorization()
+        } else if manager.authorizationStatus != .authorizedWhenInUse
+            && manager.authorizationStatus != .authorizedAlways {
+            errors.insert("Permission not granted to access location of the device")
+            PermissionManager.openSensorPermissionDialog()
+        } else if !CLLocationManager.locationServicesEnabled() {
+            errors.insert("Location Services not enabled")
+        }
+        return errors
     }
 
     override func applyObservationConfig(settings: Dictionary<String, Any>) {}
@@ -68,6 +71,7 @@ extension GPSObservation: CLLocationManagerDelegate {
         }
         storeData(data: data) {}
     }
+
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
             super.stopAndSetState(state: .active, scheduleId: nil)

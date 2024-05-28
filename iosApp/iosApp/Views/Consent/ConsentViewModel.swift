@@ -47,11 +47,15 @@ class ConsentViewModel: NSObject, ObservableObject {
         coreModel = CorePermissionViewModel(registrationService: registrationService, studyConsentTitle: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: stringTable))
         super.init()
         coreModel.onConsentModelChange { model in
-            self.permissionModel = model
+            DispatchQueue.main.async {
+                self.permissionModel = model
+            }
         }
         coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
-                self.isLoading = loading
+                DispatchQueue.main.async {
+                    self.isLoading = loading
+                }
             }
         }
     }
@@ -114,16 +118,16 @@ class ConsentViewModel: NSObject, ObservableObject {
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
         if permissionManager.anyNeededPermissionDeclined() {
-            AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
+            AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
                 if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.shared.closeAlertDialog()
                 self.resetPermissionRequest()
             }, onNegative: {
                 self.acceptConsent()
                 self.requestedPermissions = false
-                AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.shared.closeAlertDialog()
             }))
         } else {
             self.acceptConsent()

@@ -21,6 +21,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,11 +76,24 @@ fun ScheduleListItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             BasicText(text = scheduleModel.observationType, color = MoreColors.Secondary)
-            Icon(
-                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = getStringResource(id = R.string.more_schedule_details),
-                tint = MoreColors.Primary
-            )
+            Row(horizontalArrangement = Arrangement.End) {
+                if ((viewModel.observationErrors[scheduleModel.observationType]?.count()
+                        ?: 0) > 0
+                ) {
+                    BasicText(text = "${viewModel.observationErrors[scheduleModel.observationType]?.count() ?: 0}")
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MoreColors.Important,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+                Icon(
+                    Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = getStringResource(id = R.string.more_schedule_details),
+                    tint = MoreColors.Primary
+                )
+            }
         }
 
         TimeframeHours(
@@ -99,6 +113,7 @@ fun ScheduleListItem(
                         )
                     }
                 }
+
                 "lime-survey-observation" -> {
                     SmallTextButton(
                         text = getStringResource(id = R.string.more_limesurvey_start),
@@ -107,6 +122,7 @@ fun ScheduleListItem(
                         navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel.scheduleId))
                     }
                 }
+
                 else -> {
                     SmallTextButton(
                         text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(

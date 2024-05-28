@@ -18,7 +18,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRep
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
@@ -41,8 +41,8 @@ class ObservationManager(
     private var upToDateTimestamps: Map<String, RealmInstant> = emptyMap()
 
     fun activateScheduleUpdate() {
-        Napier.i(tag = "ObservationManager::activateScheduleUpdate") { "ObservationManager: ScheduleUpdater activating..."}
-        Scope.launch {
+        Napier.i(tag = "ObservationManager::activateScheduleUpdate") { "ObservationManager: ScheduleUpdater activating..." }
+        StudyScope.launch {
             scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
                 if (runningObservations.isNotEmpty()) {
                     list.filter { it.scheduleId.toHexString() in runningObservations.keys }
@@ -54,13 +54,13 @@ class ObservationManager(
             }
         }
         val firstCall = ceil(Clock.System.now().toEpochMilliseconds() / 60_000.0).toLong() * 60_000
-        Scope.launch {
+        StudyScope.launch {
             delay(firstCall - Clock.System.now().toEpochMilliseconds())
-            Scope.repeatedLaunch(30000L) {
+            StudyScope.repeatedLaunch(30000L) {
                 updateTaskStates()
             }
         }
-        Scope.launch {
+        StudyScope.launch {
             observationRepository.collectAllTimestamps().cancellable().collect {
                 upToDateTimestamps = it
             }
@@ -149,7 +149,7 @@ class ObservationManager(
                 setObservationState(it, ScheduleState.PAUSED)
                 Napier.i(tag = "ObservationManager::pause") { "Recording paused of ${it.scheduleId}" }
             }
-        } ?: kotlin.run {
+        } ?: run {
             setObservationState(scheduleId, ScheduleState.PAUSED)
         }
         currentlyRunning.remove(scheduleId)
@@ -158,17 +158,15 @@ class ObservationManager(
     fun pauseObservationType(type: String) {
         Napier.i(tag = "ObservationManager::pauseObservationType") { "Pausing Observation type: $type" }
         runningObservations.filterValues { it.observationType.observationType == type }
-            .forEach { (key, value) ->
+            .keys.forEach { key ->
                 Napier.d(tag = "ObservationManager::pauseObservationType") { "Pausing schedule: $key" }
-                value.stop(key)
-                setObservationState(key, ScheduleState.PAUSED)
-                currentlyRunning.remove(key)
+                dataRecorder.pause(key)
                 Napier.d(tag = "ObservationManager::pauseObservationType") { "Recording paused of $key" }
             }
     }
 
     fun startObservationType(type: String) {
-        Scope.launch {
+        StudyScope.launch {
             Napier.d(tag = "ObservationManager::startObservationType") { "Restarting Observations with type: $type" }
             scheduleRepository.allSchedulesWithStatus(false)
                 .firstOrNull()
@@ -208,8 +206,11 @@ class ObservationManager(
     }
 
     fun updateTaskStates() {
-        Napier.d(tag = "ObservationManager::updateTaskStates") { "" }
         scheduleRepository.updateTaskStates(observationFactory, dataRecorder)
+    }
+
+    suspend fun updateTaskStatesWithBLEDevices() {
+        scheduleRepository.updateTaskStatesWithBLEDevices(observationFactory, dataRecorder)
     }
 
     fun hasRunningTasks() = currentlyRunning.isNotEmpty()
@@ -229,8 +230,8 @@ class ObservationManager(
         }
     }
 
-    fun collectAllData(onCompletion: (Boolean) -> Unit){
-        Scope.launch {
+    fun collectAllData(onCompletion: (Boolean) -> Unit) {
+        StudyScope.launch {
             restartStillRunning()
             if (!hasRunningTasks()) {
                 onCompletion(true)

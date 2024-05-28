@@ -14,7 +14,6 @@ import io.github.aakira.napier.Napier
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.parametersOf
-import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
@@ -30,10 +29,6 @@ class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
     override fun stop(onCompletion: () -> Unit) {
         limeURL.value = null
         onCompletion()
-    }
-
-    override fun observerAccessible(): Boolean {
-        return true
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

@@ -1,17 +1,17 @@
-package io.redlink.more.more_app_mutliplatform.viewModels
+package io.redlink.more.more_app_mutliplatform
 
 import io.redlink.more.more_app_mutliplatform.extensions.asNullableClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class CoreContentViewModel: CoreViewModel() {
-    val alertDialogModel = MutableStateFlow<AlertDialogModel?>(null);
+object AlertController {
+    private val _alertDialogModel = MutableStateFlow<AlertDialogModel?>(null)
+
+    val alertDialogModel: StateFlow<AlertDialogModel?> = _alertDialogModel
     private var alertDialogQueue = mutableListOf<AlertDialogModel>()
-
-    override fun viewDidAppear() {
-    }
 
     fun openAlertDialog(model: AlertDialogModel) {
         if (model.onPositive == {}) {
@@ -25,15 +25,16 @@ class CoreContentViewModel: CoreViewModel() {
             }
         }
         if (this.alertDialogQueue.isEmpty() && this.alertDialogModel.value == null) {
-            this.alertDialogModel.set(model)
-        } else {
+            this._alertDialogModel.set(model)
+        } else if (!this.alertDialogQueue.contains(model) && this.alertDialogModel.value != model) {
             this.alertDialogQueue.add(model)
         }
     }
 
     fun closeAlertDialog() {
-        this.alertDialogModel.setNullable(alertDialogQueue.removeFirstOrNull())
+        this._alertDialogModel.setNullable(alertDialogQueue.removeFirstOrNull())
     }
 
-    fun onNewAlertDialogModel(provideNewState: ((AlertDialogModel?) -> Unit)) = alertDialogModel.asNullableClosure(provideNewState)
+    fun onNewAlertDialogModel(provideNewState: ((AlertDialogModel?) -> Unit)) =
+        alertDialogModel.asNullableClosure(provideNewState)
 }

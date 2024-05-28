@@ -89,6 +89,7 @@ class NotificationManager(
         if (notification.title != null && notification.notificationBody != null) {
             notificationRepository.storeNotification(notification)
             if (displayNotification) {
+                Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
                 localNotificationListener.displayNotification(notification)
             }
         }

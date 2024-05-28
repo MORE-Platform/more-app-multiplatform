@@ -16,14 +16,9 @@ import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import kotlinx.coroutines.flow.Flow
 
-abstract class Repository<T: TypedRealmObject> : Closeable {
+abstract class Repository<T : TypedRealmObject> : Closeable {
     private val database = DatabaseManager
     private var cache: T? = null
-
-
-//    init {
-//        database.open()
-//    }
 
     fun realm() = database.database.realm
 
@@ -40,6 +35,5 @@ abstract class Repository<T: TypedRealmObject> : Closeable {
     }
 
     override fun close() {
-     //   database.close()
     }
 }

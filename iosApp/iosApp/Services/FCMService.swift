@@ -20,8 +20,6 @@ import UserNotifications
 import FirebaseMessaging
 
 class FCMService: NSObject {
-    private let notificationRepository = NotificationRepository()
-
     func register() {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self

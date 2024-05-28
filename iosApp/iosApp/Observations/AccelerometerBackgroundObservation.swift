@@ -54,7 +54,6 @@ class AccelerometerBackgroundObservation: Observation_ {
             
             return true
         }
-        self.showPermissionAlert()
         return false
     }
     
@@ -87,8 +86,16 @@ class AccelerometerBackgroundObservation: Observation_ {
         }
     }
     
-    override func observerAccessible() -> Bool {
-        return CMSensorRecorder.isAccelerometerRecordingAvailable() && CMSensorRecorder.authorizationStatus() == .authorized
+    override func observerErrors() -> Set<String> {
+        var errors: Set<String> = []
+        if !CMSensorRecorder.isAccelerometerRecordingAvailable() {
+            errors.insert("Accelerometer Recording is not available")
+        }
+        if CMSensorRecorder.authorizationStatus() != .authorized {
+            errors.insert("Permission not granted to access Sensor recording service")
+            PermissionManager.openSensorPermissionDialog()
+        }
+        return errors
     }
 }
 

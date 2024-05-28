@@ -20,7 +20,8 @@ import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleReposi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
+class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters) :
+    CoroutineWorker(context, workerParameters) {
 
     private val shared: Shared
 

@@ -32,13 +32,11 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
     override fun displayNotification(notification: NotificationSchema) {
         notification.title?.let { title ->
             notification.notificationBody?.let { message ->
-                val intent = Intent(context, ContentActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent.action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
-                intent.putExtra(MSG_ID, notification.notificationId)
-
-                notification.deepLink()?.let {
-                    intent.data = Uri.parse(it)
+                val intent = Intent(context, ContentActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
+                    putExtra(MSG_ID, notification.notificationId)
+                    notification.deepLink()?.let { data = Uri.parse(it) }
                 }
 
                 val pendingIntent = PendingIntent.getActivity(
@@ -46,7 +44,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                     PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                val channelId: String =
+                val channelId =
                     notification.channelId ?: context.getString(R.string.default_channel_id)
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
@@ -56,21 +54,35 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                     .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                     .setContentIntent(pendingIntent)
 
-                context.getSystemService(NotificationManager::class.java)
-                    ?.let { notificationManager ->
+                val notificationManager = context.getSystemService(NotificationManager::class.java)
+                if (notificationManager != null) {
+                    val channel = notificationManager.getNotificationChannel(channelId)
+                    if (channel == null) {
                         val name = context.getString(R.string.notification_channel_name)
                         val descriptionText =
                             context.getString(R.string.notification_channel_description)
                         val importance = NotificationManager.IMPORTANCE_DEFAULT
-                        val mChannel = NotificationChannel(channelId, name, importance)
-                        mChannel.description = descriptionText
+                        val mChannel = NotificationChannel(channelId, name, importance).apply {
+                            description = descriptionText
+                        }
                         notificationManager.createNotificationChannel(mChannel)
-
-                        notificationManager.notify(notification.notificationId.hashCode(), notificationBuilder.build())
                     }
+
+                    notificationManager.notify(
+                        notification.notificationId.hashCode(),
+                        notificationBuilder.build()
+                    )
+                } else {
+                    Napier.e(tag = "NotificationError") { "Notification Manager is null" }
+                }
+            } ?: run {
+                Napier.e(tag = "NotificationError") { "Notification message is null" }
             }
+        } ?: run {
+            Napier.e(tag = "NotificationError") { "Notification title is null" }
         }
     }
+
 
     override fun deleteNotificationFromSystem(notificationId: String) {
         context.getSystemService(NotificationManager::class.java)?.cancel(notificationId.hashCode())

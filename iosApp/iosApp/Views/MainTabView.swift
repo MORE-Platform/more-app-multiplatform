@@ -24,6 +24,7 @@ struct MainTabView: View {
             Group {
                 NavigationWithDestinations {
                     DashboardView(viewModel: contentViewModel.dashboardViewModel)
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
                     Label(NavigationScreen.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
@@ -31,6 +32,7 @@ struct MainTabView: View {
 
                 NavigationWithDestinations {
                     NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
                     Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
@@ -38,6 +40,7 @@ struct MainTabView: View {
 
                 NavigationWithDestinations {
                     InfoView(viewModel: contentViewModel.infoViewModel)
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
                     Label(NavigationScreen.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")

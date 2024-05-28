@@ -18,6 +18,7 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
@@ -91,35 +92,35 @@ class ConsentViewModel(
     }
 
     fun openPermissionDeniedAlertDialog(context: Context) {
-        MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
+        AlertController.openAlertDialog(AlertDialogModel(
             title = stringResource(R.string.required_permissions_not_granted_title),
             message = stringResource(R.string.required_permission_not_granted_message),
             positiveTitle = stringResource(R.string.proceed_to_settings_button),
             negativeTitle = stringResource(R.string.proceed_without_granting_button),
             onPositive = {
                 MoreApplication.openSettings.value = true
-                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.closeAlertDialog()
             },
             onNegative = {
                 acceptConsent(context)
-                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.closeAlertDialog()
             }
         ))
     }
 
     fun openNotificationPermissionDeniedAlertDialog(context: Context) {
-        MoreApplication.shared!!.mainContentCoreViewModel.openAlertDialog(AlertDialogModel(
+        AlertController.openAlertDialog(AlertDialogModel(
             title = stringResource(R.string.notification_permission_not_granted_title),
             message = stringResource(R.string.notification_permission_not_granted_message),
             positiveTitle = stringResource(R.string.proceed_to_settings_button),
             negativeTitle = stringResource(R.string.proceed_without_granting_button),
             onPositive = {
                 MoreApplication.openSettings.value = true
-                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.closeAlertDialog()
             },
             onNegative = {
                 acceptConsent(context)
-                MoreApplication.shared!!.mainContentCoreViewModel.closeAlertDialog()
+                AlertController.closeAlertDialog()
             }
         ))
     }

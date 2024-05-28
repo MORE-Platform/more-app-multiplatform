@@ -22,14 +22,7 @@ protocol ObservationCollector {
 }
 
 extension Observation_ {
-    func showPermissionAlert() {
-        AppDelegate.shared.mainContentCoreViewModel.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-            AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-        }, onNegative: {
-            AppDelegate.shared.mainContentCoreViewModel.closeAlertDialog()
-        }))
+    func pauseObservation(_ observationType: ObservationType) {
+        AppDelegate.shared.observationManager.pauseObservationType(type: observationType.observationType)
     }
 }

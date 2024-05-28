@@ -52,24 +52,24 @@ class ObservationRepository : Repository<ObservationSchema>() {
                 )
             }
 
-    fun collectAllTimestamps() = observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
+    fun collectAllTimestamps() =
+        observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
 
     fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
         return collectionTimestamp(type).asClosure(newState)
     }
 
     fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
-        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }.asClosure(newState)
+        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }
+            .asClosure(newState)
     }
 
     fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationSchema, List<ScheduleSchema>>) -> Unit): Closeable {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 
-    fun observationTypes(): Flow<Set<String>> {
-        return observations().transform { observationList ->
-            emit(observationList.map { it.observationType }.toSet())
-        }
+    fun observationTypes(): Flow<Set<String>> = observations().transform { observationList ->
+        emit(observationList.map { it.observationType }.toSet())
     }
 
     fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(

@@ -12,7 +12,11 @@ package io.redlink.more.app.android.services.bluetooth
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -33,18 +37,19 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import android.bluetooth.BluetoothDevice as AndroidBluetoothDevice
 
-class AndroidBluetoothConnector(context: Context): BluetoothConnector {
-    private val bluetoothAdapter: BluetoothAdapter? = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
+    private val bluetoothAdapter: BluetoothAdapter? =
+        (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var isConnecting = false
     private val foundBluetoothDevices = mutableSetOf<String>()
 
-    override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> = mutableMapOf()
+    override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> =
+        mutableMapOf()
     override var observer: MutableSet<BluetoothConnectorObserver> = mutableSetOf()
     override var scanning = false
-    override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
-    override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
-    override var bluetoothState: BluetoothState = if (bluetoothAdapter?.isEnabled == true) BluetoothState.ON else BluetoothState.OFF
+    override var bluetoothState: BluetoothState =
+        if (bluetoothAdapter?.isEnabled == true) BluetoothState.ON else BluetoothState.OFF
 
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
@@ -84,19 +89,21 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                     BluetoothProfile.STATE_CONNECTED -> {
                         deviceConnected(device)
                     }
+
                     BluetoothProfile.STATE_CONNECTING -> {
                         isConnectingToDevice(device)
                     }
+
                     BluetoothProfile.STATE_DISCONNECTED -> {
                         if (status == BluetoothProfile.STATE_CONNECTING) {
                             i { "Problem connecting to device: $device" }
                             didFailToConnectToDevice(device)
-                        }
-                        else {
+                        } else {
                             didDisconnectFromDevice(device)
                         }
                         gatt.close()
                     }
+
                     else -> {
 
                     }
@@ -112,12 +119,21 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 AndroidBluetoothDevice.ACTION_BOND_STATE_CHANGED == intent.action -> {
                     i { "Bond State changed" }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        intent.getParcelableExtra(AndroidBluetoothDevice.EXTRA_DEVICE, AndroidBluetoothDevice::class.java)
+                        intent.getParcelableExtra(
+                            AndroidBluetoothDevice.EXTRA_DEVICE,
+                            AndroidBluetoothDevice::class.java
+                        )
                     } else {
                         intent.getParcelableExtra(AndroidBluetoothDevice.EXTRA_DEVICE)
                     }?.let { pairedDevice ->
-                        val bondState: Int = intent.getIntExtra(AndroidBluetoothDevice.EXTRA_BOND_STATE, AndroidBluetoothDevice.ERROR)
-                        val prevBondState: Int = intent.getIntExtra(AndroidBluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, AndroidBluetoothDevice.ERROR)
+                        val bondState: Int = intent.getIntExtra(
+                            AndroidBluetoothDevice.EXTRA_BOND_STATE,
+                            AndroidBluetoothDevice.ERROR
+                        )
+                        val prevBondState: Int = intent.getIntExtra(
+                            AndroidBluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,
+                            AndroidBluetoothDevice.ERROR
+                        )
                         val device = pairedDevice.toBluetoothDevice()
                         i { "Bond state of device $device: $bondState. ${pairedDevice.bondState}" }
                         if (bondState == AndroidBluetoothDevice.BOND_BONDED && prevBondState != AndroidBluetoothDevice.BOND_BONDED) {
@@ -128,14 +144,20 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                             foundBluetoothDevices.remove(device.address)
                         } else if (bondState == AndroidBluetoothDevice.BOND_BONDING) {
                             isConnectingToDevice(device)
-                        } else {}
+                        } else {
+                        }
                     }
                 }
+
                 BluetoothAdapter.ACTION_STATE_CHANGED == intent.action -> {
-                    when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)) {
+                    when (intent.getIntExtra(
+                        BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR
+                    )) {
                         BluetoothAdapter.STATE_OFF -> {
                             onBluetoothStateChange(BluetoothState.OFF)
                         }
+
                         BluetoothAdapter.STATE_ON -> {
                             onBluetoothStateChange(BluetoothState.ON)
                         }
@@ -146,9 +168,19 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     init {
-        if (ContextCompat.checkSelfPermission(MoreApplication.appContext!!, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(MoreApplication.appContext!!, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(MoreApplication.appContext!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                MoreApplication.appContext!!,
+                Manifest.permission.BLUETOOTH
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                MoreApplication.appContext!!,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                MoreApplication.appContext!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             try {
                 specificBluetoothConnectors.values.forEach {
                     it
@@ -157,7 +189,10 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
                 val bondStateChangedFilter = IntentFilter()
                 bondStateChangedFilter.addAction(AndroidBluetoothDevice.ACTION_BOND_STATE_CHANGED)
                 bondStateChangedFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-                MoreApplication.appContext!!.registerReceiver(bondStateReceiver, bondStateChangedFilter)
+                MoreApplication.appContext!!.registerReceiver(
+                    bondStateReceiver,
+                    bondStateChangedFilter
+                )
             } catch (exception: Exception) {
                 Napier.w { exception.stackTraceToString() }
             }
@@ -190,15 +225,13 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     override fun replayStates() {
-        connected.forEach { didConnectToDevice(it) }
-        discovered.forEach { didDiscoverDevice(it) }
         isScanning(this.scanning)
         onBluetoothStateChange(this.bluetoothState)
     }
 
     @SuppressLint("MissingPermission")
     override fun scan() {
-        if (bluetoothState == BluetoothState.ON && observer != null && !scanning && !isConnecting) {
+        if (bluetoothState == BluetoothState.ON && !scanning && !isConnecting) {
             val scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build()
@@ -210,7 +243,7 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
     @SuppressLint("MissingPermission")
     override fun connect(device: BluetoothDevice): Error? {
-        if (bluetoothState == BluetoothState.ON ) {
+        if (bluetoothState == BluetoothState.ON) {
             i { "Connecting to device: $device" }
             isConnecting = true
             stopScanning()
@@ -243,7 +276,11 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
         if (!disconnectFromSpecificConnectors(device)) {
             val androidBluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
             if (androidBluetoothDevice != null) {
-                val gatt = androidBluetoothDevice.connectGatt(MoreApplication.appContext!!, false, gattCallback)
+                val gatt = androidBluetoothDevice.connectGatt(
+                    MoreApplication.appContext!!,
+                    false,
+                    gattCallback
+                )
                 gatt.disconnect()
             }
         } else {
@@ -262,8 +299,6 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     override fun close() {
         stopScanning()
         foundBluetoothDevices.clear()
-        connected.clear()
-        discovered.clear()
         specificBluetoothConnectors.values.forEach { it.close() }
 
         try {
@@ -280,17 +315,12 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
         i { "Connected to $bluetoothDevice!" }
-        if (!connected.mapNotNull { it.address }.contains(bluetoothDevice.address)) {
-            connected.add(bluetoothDevice)
-            removeDiscoveredDevice(bluetoothDevice)
-        }
         updateObserver { it.didConnectToDevice(bluetoothDevice) }
         isConnecting = false
     }
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
         i { "Disconnected from $bluetoothDevice!" }
-        connected.removeAll { it.address == bluetoothDevice.address }
         foundBluetoothDevices.remove(bluetoothDevice.address)
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
@@ -303,15 +333,11 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
         i { "Discovered $device!" }
-        if (!discovered.mapNotNull { it.address }.contains(device.address)) {
-            discovered.add(device)
-        }
         updateObserver { it.didDiscoverDevice(device) }
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
         i { "Removing discovered $device..." }
-        discovered.removeAll { it.address == device.address }
         updateObserver { it.removeDiscoveredDevice(device) }
     }
 
@@ -344,9 +370,11 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
     }
 
     private fun connectToSpecificConnectors(device: BluetoothDevice): Pair<Boolean, Error?> {
-        return specificBluetoothConnectors.keys.firstOrNull { device.deviceName?.lowercase()?.contains(it) ?: false }?.let {
+        return specificBluetoothConnectors.keys.firstOrNull {
+            device.deviceName?.lowercase()?.contains(it) ?: false
+        }?.let {
             i { "Connecting with special connector \"$it\"..." }
-            Pair(true,specificBluetoothConnectors[it]?.connect(device))
+            Pair(true, specificBluetoothConnectors[it]?.connect(device))
         } ?: Pair(false, null)
     }
 
@@ -365,5 +393,5 @@ class AndroidBluetoothConnector(context: Context): BluetoothConnector {
 
 @SuppressLint("MissingPermission")
 fun AndroidBluetoothDevice.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.address, this.name, this.address, true)
+    return BluetoothDevice.create(this.address, this.name, this.address)
 }

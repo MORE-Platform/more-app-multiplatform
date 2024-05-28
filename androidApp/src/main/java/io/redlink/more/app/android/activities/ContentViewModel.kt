@@ -30,6 +30,7 @@ import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
+import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
@@ -59,7 +60,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+            AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
                     alertDialogOpen.value = it
                 }

@@ -37,6 +37,17 @@ fun getStringResource(@StringRes id: Int): String =
 
 @Composable
 @ReadOnlyComposable
+fun getStringResourceByName(name: String): String {
+    val resourceId = LocalContext.current.resources.getIdentifier(
+        name,
+        "string",
+        LocalContext.current.packageName
+    )
+    return getStringResource(resourceId)
+}
+
+@Composable
+@ReadOnlyComposable
 fun color(@ColorRes id: Int) = colorResource(id = id)
 
 @Composable
@@ -59,7 +70,12 @@ fun Image(
         colorFilter
     )
 
-fun showNewActivityAndClearStack(context: Context, cls: Class<*>, forwardExtras: Boolean = false, forwardDeepLink: Boolean = false) {
+fun showNewActivityAndClearStack(
+    context: Context,
+    cls: Class<*>,
+    forwardExtras: Boolean = false,
+    forwardDeepLink: Boolean = false
+) {
     (context as? Activity)?.let {
         val intent = Intent(context, cls)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

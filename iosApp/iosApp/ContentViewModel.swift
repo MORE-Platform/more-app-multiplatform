@@ -72,8 +72,14 @@ class ContentViewModel: ObservableObject {
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
-        AppDelegate.shared.onStudyIsUpdatingChange { kBool in
+        ViewManager.shared.studyIsUpdatingAsClosure { kBool in
             AppDelegate.navigationScreenHandler.studyIsUpdating(kBool.boolValue)
+        }
+        
+        ViewManager.shared.showBluetoothViewAsClosure { [weak self] kBool in
+            if kBool.boolValue {
+                self?.showBleView = kBool.boolValue
+            }
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
@@ -81,24 +87,8 @@ class ContentViewModel: ObservableObject {
             AppDelegate.navigationScreenHandler.setStudyState(studyState)
         }
         
-        AppDelegate.shared.mainContentCoreViewModel.onNewAlertDialogModel { [weak self] alertDialogModel in
+        AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
             self?.alertDialogModel = alertDialogModel
-        }
-        
-        if hasCredentials {
-            scanBluetooth()
-        }
-    }
-    
-    func scanBluetooth() {
-        let pair = AppDelegate.shared.showBleSetup()
-
-        if let hasBleObservations = pair.second, hasBleObservations.boolValue {
-            if let firstStartup = pair.first, firstStartup.boolValue {
-                DispatchQueue.main.async {
-                    self.showBleView = true
-                }
-            }
         }
     }
     
@@ -170,10 +160,7 @@ extension ContentViewModel: ConsentViewModelListener {
     func credentialsStored() {
         reinitAllViewModels()
         DispatchQueue.main.async { [weak self] in
-            if let self {
-                self.hasCredentials = true
-                self.scanBluetooth()
-            }
+            self?.hasCredentials = true
         }
         AppDelegate.shared.doNewLogin()
     }

@@ -12,10 +12,20 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -31,6 +41,14 @@ abstract class Observation(val observationType: ObservationType) {
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
+
+    private val _observationErrors = MutableStateFlow<Pair<String, Set<String>>>(
+        Pair(
+            this.observationType.observationType,
+            emptySet()
+        )
+    )
+    val observationErrors: StateFlow<Pair<String, Set<String>>> = _observationErrors;
 
     fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
@@ -63,6 +81,7 @@ abstract class Observation(val observationType: ObservationType) {
         if (removeNotification) {
             handleNotification(scheduleId)
         }
+        updateObservationErrors()
     }
 
     fun observationDataManagerAdded() = dataManager != null
@@ -102,7 +121,20 @@ abstract class Observation(val observationType: ObservationType) {
 
     protected abstract fun stop(onCompletion: () -> Unit)
 
-    abstract fun observerAccessible(): Boolean
+    fun observerAccessible(): Boolean {
+        val errors = observerErrors()
+        Napier.d(tag = "Observation::observerAccessible") { errors.toString() }
+        this._observationErrors.update { Pair(observationType.observationType, errors) }
+        return errors.isEmpty()
+    }
+
+    protected open fun observerErrors(): Set<String> = emptySet()
+
+    fun updateObservationErrors() {
+        StudyScope.launch(Dispatchers.IO) {
+            _observationErrors.update { Pair(observationType.observationType, observerErrors()) }
+        }
+    }
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
@@ -111,16 +143,17 @@ abstract class Observation(val observationType: ObservationType) {
     open fun ableToAutomaticallyStart() = true
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
-        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), setOf(
-            ObservationBulkModel(data, timestamp)
-        )).map { observationType.addObservationType(it) }
+        val dataSchemas = ObservationDataSchema.fromData(
+            observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
+        ).map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
-        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data).map { observationType.addObservationType(it) }
+        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data)
+            .map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
@@ -132,6 +165,7 @@ abstract class Observation(val observationType: ObservationType) {
             saveAndSend()
             observationShutdown(scheduleId)
         }
+        updateObservationErrors()
     }
 
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
@@ -143,6 +177,7 @@ abstract class Observation(val observationType: ObservationType) {
                 observationShutdown(it)
             }
         }
+        updateObservationErrors()
     }
 
     fun stopAndSetDone(scheduleId: String) {
@@ -153,6 +188,7 @@ abstract class Observation(val observationType: ObservationType) {
             observationShutdown(scheduleId)
             removeDataCount()
             handleNotification(scheduleId)
+            updateObservationErrors()
         }
     }
 
@@ -178,6 +214,34 @@ abstract class Observation(val observationType: ObservationType) {
         }
     }
 
+    protected fun showNotification(title: String, notificationBody: String) {
+        val notification = NotificationSchema.build(title, notificationBody)
+        Napier.d(tag = "Observation::showNotification") { "Showing notification: $notification" }
+        notificationManager?.storeAndDisplayNotification(notification, true)
+    }
+
+    protected fun showObservationErrorNotification(
+        notificationBody: String,
+        fallbackTitle: String = "Error"
+    ) {
+        val schedulesSchemaFlows = scheduleIds.keys.map {
+            scheduleRepository.scheduleWithId(it)
+        }
+        val combinedFlow = combine(schedulesSchemaFlows) { values ->
+            values.mapNotNull { it }
+        }
+
+        StudyScope.launch {
+            val scheduleSchemas = combinedFlow.first()
+            val title =
+                if (scheduleSchemas.isNotEmpty()) scheduleSchemas.map { it.observationTitle }
+                    .joinToString(", ", limit = 5) else fallbackTitle
+            withContext(Dispatchers.Main) {
+                showNotification(title, notificationBody)
+            }
+        }
+    }
+
     protected fun saveAndSend() {
         Napier.d(tag = "Observation::finish") { "Saving and sending data for observation of type ${observationType.observationType}." }
         dataManager?.saveAndSend()
@@ -198,5 +262,7 @@ abstract class Observation(val observationType: ObservationType) {
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"
         const val CONFIG_LAST_COLLECTION_TIMESTAMP = "observation_last_collection_timestamp"
+
+        const val ERROR_DEVICE_NOT_CONNECTED = "error_device_not_connected"
     }
 }

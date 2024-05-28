@@ -35,7 +35,6 @@ data class ScheduleModel(
 
 
     companion object {
-
         fun createModel(schedule: ScheduleSchema): ScheduleModel? {
             val start = schedule.start ?: return null
             val end = schedule.end ?: return null

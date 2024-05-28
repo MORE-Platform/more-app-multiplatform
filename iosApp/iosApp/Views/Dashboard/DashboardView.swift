@@ -26,7 +26,7 @@ struct DashboardView: View {
     private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            ScheduleListHeader(scheduleViewModel: viewModel.scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             if selection == 0 {
                 ScheduleView(viewModel: viewModel.scheduleViewModel)
             } else {

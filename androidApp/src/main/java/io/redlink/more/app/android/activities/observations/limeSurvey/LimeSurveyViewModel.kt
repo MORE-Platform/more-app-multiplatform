@@ -15,8 +15,8 @@ import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +35,7 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.mainContentCoreViewModel.alertDialogModel.collect {
+            AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
                     alertDialogOpen.value = it
                 }
@@ -60,7 +60,11 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
 
     }
 
-    fun setModel(scheduleId: String? = null, observationId: String? = null, notificationId: String? = null) {
+    fun setModel(
+        scheduleId: String? = null,
+        observationId: String? = null,
+        notificationId: String? = null
+    ) {
         if (!scheduleId.isNullOrBlank()) {
             coreViewModel.setScheduleId(scheduleId, notificationId)
         } else if (!observationId.isNullOrBlank()) {

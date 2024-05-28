@@ -65,10 +65,10 @@
             android:name=".activities.observations.limeSurvey.LimeSurveyActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"/>
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".activities.BLESetup.BLEConnectionActivity"
+            android:name=".activities.bluetooth.BLEConnectionActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
@@ -78,8 +78,7 @@
         <service
             android:name=".firebase.FCMService"
             android:exported="false"
-            android:foregroundServiceType=""
-            >
+            android:foregroundServiceType="">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

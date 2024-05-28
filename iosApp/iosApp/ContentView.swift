@@ -10,47 +10,53 @@
 //
 import shared
 import SwiftUI
-
 struct ContentView: View {
     @StateObject var viewModel: ContentViewModel
-    @StateObject var navigationModalState = AppDelegate.navigationScreenHandler
+    @StateObject private var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
-        MoreMainBackgroundView(contentPadding: 8) {
-            ZStack {
-                if viewModel.hasCredentials {
-                    if !navigationModalState.mayChangeViewStructure() {
-                        if navigationModalState.studyIsUpdating {
-                            StudyUpdateView()
-                        } else if navigationModalState.currentStudyState == StudyState.paused {
-                            StudyPausedView()
-                        } else if navigationModalState.currentStudyState == StudyState.closed {
-                            StudyClosedView(viewModel: viewModel)
+        ZStack {
+            MoreMainBackgroundView() {
+                VStack {
+                    if viewModel.hasCredentials {
+                        if !navigationModalState.mayChangeViewStructure() {
+                            if navigationModalState.studyIsUpdating {
+                                StudyUpdateView()
+                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                            } else if navigationModalState.currentStudyState == StudyState.paused {
+                                StudyPausedView()
+                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                            } else if navigationModalState.currentStudyState == StudyState.closed {
+                                StudyClosedView(viewModel: viewModel)
+                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                            }
+                        } else {
+                            MainTabView()
+                                .sheet(isPresented: $viewModel.showBleView) {
+                                    MoreMainBackgroundView(contentPadding: navigationModalState.horizontalContentPadding) {
+                                        BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                                    }
+                                }
                         }
                     } else {
-                        MainTabView()
-                            .sheet(isPresented: $viewModel.showBleView) {
-                                BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                        VStack {
+                            if viewModel.loginViewScreenNr == 0 {
+                                LoginView(model: viewModel.loginViewModel)
+                                    .onAppear {
+                                        navigationModalState.clearViews()
+                                        navigationModalState.tagState = 0
+                                    }
+                            } else {
+                                ConsentView(viewModel: viewModel.consentViewModel)
                             }
-                    }
-                } else {
-                    VStack {
-                        if viewModel.loginViewScreenNr == 0 {
-                            LoginView(model: viewModel.loginViewModel)
-                                .onAppear {
-                                    navigationModalState.clearViews()
-                                    navigationModalState.tagState = 0
-                                }
-                        } else {
-                            ConsentView(viewModel: viewModel.consentViewModel)
                         }
                     }
                 }
-                if let alertDialog = viewModel.alertDialogModel {
-                    MoreAlertDialog(alertDialogModel: alertDialog)
-                }
             }
-            .background(Color.more.mainBackground)
+            if let alertDialog = viewModel.alertDialogModel {
+                MoreAlertDialog(alertDialogModel: alertDialog)
+            }
         }
+        .background(Color.more.mainBackground)
         .environmentObject(navigationModalState)
         .environmentObject(viewModel)
     }

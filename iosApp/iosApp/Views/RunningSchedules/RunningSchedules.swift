@@ -23,7 +23,7 @@ struct RunningSchedules: View {
     private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
-            ScheduleListHeader(totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            ScheduleListHeader(scheduleViewModel: scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             ScheduleView(viewModel: scheduleViewModel)
         }
         .customNavigationTitle(with: NavigationScreen.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"), displayMode: .inline)

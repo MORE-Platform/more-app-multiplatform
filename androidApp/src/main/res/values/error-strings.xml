@@ -2,4 +2,14 @@
 <resources>
     <string name="error">Error</string>
     <string name="data_not_found">Could not load data</string>
+    <string name="error_access_bluetooth">No permission to access bluetooth</string>
+    <string name="bluetooth_disabled">Bluetooth disabled</string>
+    <string name="device_not_connected">No viable device connected</string>
+    <string name="error_location_services">Location Services return an unknown error</string>
+    <string name="location_disabled">Location Servies are disabled</string>
+    <string name="location_permission_not_granted">No Permission were granted to access the location services</string>
+    <string name="accelerometer_sensor_not_available">Cannot access Accelerometer sensor</string>
+    <string name="observation_error">Observation Error</string>
+    <string name="observation_cannot_start">Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!</string>
+    <string name="observation_bluetooth_error">Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!</string>
 </resources>
