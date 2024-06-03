@@ -52,6 +52,8 @@ class MainViewModel(context: Context) : ViewModel() {
     val studyState = mutableStateOf(StudyState.NONE)
     val finishText = mutableStateOf<String?>(null)
 
+    val unreadNotificationCount = mutableIntStateOf(0)
+
     private var initFinished = false
 
     val notificationViewModel: NotificationViewModel
@@ -112,6 +114,14 @@ class MainViewModel(context: Context) : ViewModel() {
             MoreApplication.shared!!.currentStudyState.collect {
                 finishText.value = MoreApplication.shared!!.finishText
                 studyState.value = it
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.unreadNotificationCount.collect {
+                withContext(Dispatchers.Main) {
+                    unreadNotificationCount.intValue = it
+                }
             }
         }
 

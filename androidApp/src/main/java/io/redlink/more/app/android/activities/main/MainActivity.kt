@@ -120,16 +120,17 @@ fun MainView(
         showBackButton = viewModel.showBackButton.value,
         onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
-        tabSelectionIndex = viewModel.tabIndex.value,
+        tabSelectionIndex = viewModel.tabIndex.intValue,
         onTabChange = {
             viewModel.showBackButton.value = false
-            viewModel.tabIndex.value = it
+            viewModel.tabIndex.intValue = it
             when (it) {
                 0 -> navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters())
                 1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.routeWithParameters())
                 2 -> navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
         },
+        unreadNotificationCount = viewModel.unreadNotificationCount.intValue,
         alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         NavHost(
@@ -142,7 +143,7 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.tabIndex.value = 0
+                    viewModel.tabIndex.intValue = 0
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     DashboardView(
@@ -158,7 +159,7 @@ fun MainView(
                     screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.tabIndex.value = 1
+                    viewModel.tabIndex.intValue = 1
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     NotificationView(navController, viewModel = viewModel.notificationViewModel)
@@ -172,7 +173,7 @@ fun MainView(
                     screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.tabIndex.value = 2
+                    viewModel.tabIndex.intValue = 2
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     InfoView(navController, viewModel = viewModel.infoVM)

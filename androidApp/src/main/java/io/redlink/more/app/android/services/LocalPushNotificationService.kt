@@ -29,6 +29,9 @@ import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotific
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager.Companion.MSG_ID
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
+    private val defaultChannelId = context.getString(R.string.default_channel_id)
+    private val unreadChannelId = context.getString(R.string.unread_channel_id)
+    private val unreadNotificationId = 1
     override fun displayNotification(notification: NotificationSchema) {
         notification.title?.let { title ->
             notification.notificationBody?.let { message ->
@@ -45,7 +48,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                 )
 
                 val channelId =
-                    notification.channelId ?: context.getString(R.string.default_channel_id)
+                    notification.channelId ?: defaultChannelId
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
                     .setContentTitle(title)
@@ -106,6 +109,50 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
 
     override fun deleteFCMToken() {
         FirebaseMessaging.getInstance().deleteToken()
+    }
+
+    override fun updateBadgeCount(count: Int) {
+        if (count > 0) {
+            val intent = Intent(context, ContentActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+
+            val pendingIntent = PendingIntent.getActivity(
+                context, 0, intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            )
+            val title = context.getString(R.string.notification_unread_title, count)
+            val message = context.getString(R.string.notification_unread_content, count)
+            val notificationBuilder = NotificationCompat.Builder(context, unreadChannelId)
+                .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(false)
+                .setNumber(count)
+                .setVibrate(longArrayOf(0))
+                .setSound(null)
+                .setContentIntent(pendingIntent)
+
+            context.getSystemService(NotificationManager::class.java)?.let { notificationManager ->
+                val channel = notificationManager.getNotificationChannel(unreadChannelId)
+                if (channel == null) {
+                    val name = context.getString(R.string.unread_channel_id)
+                    val descriptionText =
+                        context.getString(R.string.notification_channel_description)
+                    val importance = NotificationManager.IMPORTANCE_LOW
+                    val mChannel = NotificationChannel(unreadChannelId, name, importance).apply {
+                        description = descriptionText
+                    }
+                    notificationManager.createNotificationChannel(mChannel)
+                }
+                notificationManager.notify(
+                    unreadNotificationId,
+                    notificationBuilder.build()
+                )
+            }
+        } else {
+            context.getSystemService(NotificationManager::class.java)?.cancel(unreadNotificationId)
+        }
     }
 
     companion object {

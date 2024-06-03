@@ -30,6 +30,7 @@ class ContentViewModel: ObservableObject {
     
     @Published var finishText: String? = nil
     @Published var alertDialogModel: AlertDialogModel? = nil
+    @Published var unreadNotificationCount: Int = 0
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -89,6 +90,10 @@ class ContentViewModel: ObservableObject {
         
         AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
             self?.alertDialogModel = alertDialogModel
+        }
+        
+        AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
+            self?.unreadNotificationCount = kInt.intValue
         }
     }
     

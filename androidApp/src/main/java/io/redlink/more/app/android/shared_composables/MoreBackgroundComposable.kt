@@ -29,7 +29,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +55,7 @@ fun MoreBackground(
     onTabChange: (Int) -> Unit = {},
     maxWidth: Float = 0.9F,
     alertDialogModel: AlertDialogModel? = null,
+    unreadNotificationCount: Int = 0,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -67,11 +68,21 @@ fun MoreBackground(
     }
     MorePlatformTheme {
         Scaffold(topBar = {
-            MoreTopAppBar(navigationTitle, showBackButton, onBackButtonClick, leftCornerContent, rightCornerContent)
+            MoreTopAppBar(
+                navigationTitle,
+                showBackButton,
+                onBackButtonClick,
+                leftCornerContent,
+                rightCornerContent
+            )
         },
             bottomBar = {
                 if (showTabRow) {
-                    MoreBottomAppBar(selectedIndex = tabSelectionIndex, onTabChange = onTabChange)
+                    MoreBottomAppBar(
+                        selectedIndex = tabSelectionIndex,
+                        unreadNotificationCount,
+                        onTabChange = onTabChange
+                    )
                 }
             }
         ) {
@@ -82,7 +93,8 @@ fun MoreBackground(
                 color = MoreColors.PrimaryLight
             ) {
                 Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth(maxWidth)
                             .fillMaxHeight()
@@ -132,7 +144,7 @@ fun MoreTopAppBar(
                             enabled = true,
                         ) {
                             Icon(
-                                Icons.Default.ArrowBackIos,
+                                Icons.AutoMirrored.Filled.ArrowBackIos,
                                 contentDescription = "Back",
                             )
                         }
@@ -158,16 +170,20 @@ fun MoreTopAppBar(
 }
 
 @Composable
-fun MoreBottomAppBar(selectedIndex: Int, onTabChange: (Int) -> Unit) {
+fun MoreBottomAppBar(selectedIndex: Int, unreadNotificationCount: Int, onTabChange: (Int) -> Unit) {
     BottomAppBar(elevation = 2.dp, backgroundColor = MoreColors.PrimaryDark) {
-        MainTabView(selectedIndex, onTabChange)
+        MainTabView(selectedIndex, unreadNotificationCount, onTabChange)
     }
 }
 
 @Preview
 @Composable
 fun BackgroundPreview() {
-    MoreBackground(navigationTitle = "Test", true, alertDialogModel = AlertDialogModel("Test", "Message", "Accept", "DEcline", {})) {
+    MoreBackground(
+        navigationTitle = "Test",
+        true,
+        alertDialogModel = AlertDialogModel("Test", "Message", "Accept", "DEcline", {})
+    ) {
         Text("Hello WOrld")
     }
 }

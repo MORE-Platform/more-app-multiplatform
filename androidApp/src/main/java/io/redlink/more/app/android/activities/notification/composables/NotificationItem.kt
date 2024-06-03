@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -96,16 +95,15 @@ fun NotificationItem(
             }
         }
 
-        Divider()
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .defaultMinSize(minHeight = 65.dp)
+                .defaultMinSize(minHeight = 50.dp)
         ) {
             val annotatedNotificationModelBody = remember {
-                notificationModel.notificationBody.toAnnotatedString()
+                notificationModel.notificationBody.trim().toAnnotatedString()
             }
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -133,6 +131,7 @@ fun NotificationItem(
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     color = MoreColors.Secondary,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
             if (notificationModel.deepLink != null) {
