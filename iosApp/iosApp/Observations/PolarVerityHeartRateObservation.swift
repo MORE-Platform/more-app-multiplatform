@@ -23,11 +23,15 @@ import UIKit
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
 
-    static func setHRReady() {
-        if !hrReady {
-            hrReady = true
-            AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: []).observationType)
+    static func setHRFeature(state: Bool) {
+        if state {
+            if !hrReady {
+                AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: []).observationType)
+            }
+        } else {
+            Observation_.pauseObservation(PolarVerityHeartRateType(sensorPermissions: []))
         }
+        hrReady = state
     }
 
     private let deviceIdentificer: Set<String> = ["Polar"]
@@ -60,7 +64,7 @@ class PolarVerityHeartRateObservation: Observation_ {
                     print(error)
                     if let self {
                         showObservationErrorNotification(notificationBody: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!".localize(withComment: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!", useTable: errorStringTable), fallbackTitle: "Observation Error".localize(withComment: "Observation Error", useTable: errorStringTable))
-                        self.pauseObservation(self.observationType)
+                        Observation_.pauseObservation(self.observationType)
                     }
                 })
                 return true
@@ -89,6 +93,8 @@ class PolarVerityHeartRateObservation: Observation_ {
         if !AppDelegate.shared.bluetoothController.observerDeviceAccessible(bleDevices: deviceIdentificer) {
             errors.insert("No polar device connected")
             errors.insert(Observation_.companion.ERROR_DEVICE_NOT_CONNECTED)
+        } else if !PolarVerityHeartRateObservation.hrReady {
+            errors.insert("Heart-rate measurement feature unavailable")
         }
         return errors
     }
@@ -108,8 +114,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     private func listenToDeviceConnection() {
         deviceListener = deviceManager.connectedDevicesAsClosure { [weak self] devices in
             if let self, !self.deviceIdentificer.anyNameIn(items: devices) {
-                self.pauseObservation(self.observationType)
-                PolarVerityHeartRateObservation.hrReady = false
+                PolarVerityHeartRateObservation.setHRFeature(state: false)
                 self.deviceListener?.close()
             }
         }

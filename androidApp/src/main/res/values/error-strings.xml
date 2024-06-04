@@ -12,4 +12,5 @@
     <string name="observation_error">Observation Error</string>
     <string name="observation_cannot_start">Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!</string>
     <string name="observation_bluetooth_error">Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!</string>
+    <string name="hr_unavailable">Heart-rate measurement feature unavailable</string>
 </resources>

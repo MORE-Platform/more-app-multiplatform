@@ -40,6 +40,7 @@ import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -75,11 +76,13 @@ class Shared(
 
     val currentStudyState = studyStateRepository.currentStudyState
     var finishText: String? = null
+    private var bluetoothListener: Job? = null
 
     private val mutex = Mutex()
 
     init {
         onApplicationStart()
+        observationFactory.setCredentialsRepository(credentialRepository)
         observationFactory.setNotificationManager(notificationManager)
     }
 
@@ -97,12 +100,12 @@ class Shared(
             if (credentialRepository.hasCredentials()) {
                 updateStudyBlocking()
                 notificationManager.createNewFCMIfNecessary()
-                StudyScope.launch {
+                bluetoothListener?.cancel()
+                bluetoothListener = StudyScope.launch {
                     bluetoothController.listenToConnectionChanges(
-                        observationFactory,
-                        observationManager
+                        observationFactory
                     )
-                }
+                }.second
                 observationFactory.updateObservationErrors()
                 updateTaskStates()
             }
@@ -242,14 +245,14 @@ class Shared(
             finishText = StudyRepository().getStudy().firstOrNull()?.finishText
         }
         activateObservationWatcher()
-        StudyScope.launch {
-            bluetoothController.listenToConnectionChanges(
-                observationFactory,
-                observationManager
-            )
-        }
-        observationFactory.updateObservationErrors()
         updateTaskStates()
+        observationFactory.updateObservationErrors()
+        bluetoothListener?.cancel()
+        bluetoothListener = StudyScope.launch {
+            bluetoothController.listenToConnectionChanges(
+                observationFactory
+            )
+        }.second
     }
 
     fun exitStudy(onDeletion: () -> Unit) {

@@ -19,3 +19,4 @@
 "Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!" = "Cannot start Observation! Please make sure to enable bluetooth and connect all necessary devices!";
 "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!" = "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!";
 "Observation Error" = "Observation Error";
+"Heart-rate measurement feature unavailable" = "Heart-rate measurement feature unavailable";

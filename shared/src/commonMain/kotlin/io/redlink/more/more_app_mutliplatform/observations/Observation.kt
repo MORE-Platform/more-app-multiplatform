@@ -33,6 +33,7 @@ abstract class Observation(val observationType: ObservationType) {
     private val scheduleRepository = ScheduleRepository()
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
+
     private var running = false
     private val observationIds = mutableSetOf<String>()
     private val scheduleIds = mutableMapOf<String, String>()

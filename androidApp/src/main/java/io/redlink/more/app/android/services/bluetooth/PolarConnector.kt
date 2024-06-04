@@ -124,7 +124,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
             Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "HR ready!" }
-            PolarHeartRateObservation.setHRReady()
+            PolarHeartRateObservation.setHRFeature(false)
         }
     }
 

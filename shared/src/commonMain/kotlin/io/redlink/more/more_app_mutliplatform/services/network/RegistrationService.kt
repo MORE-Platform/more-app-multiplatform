@@ -117,12 +117,11 @@ class RegistrationService(
                         onError(NetworkServiceError(null, "Could not get study: ${error.message}"))
                     } else {
                         study?.let { study ->
-                            Napier.i { study.toString() }
+                            shared.observationFactory.clearNeededObservationTypes()
                             StudyRepository().storeStudy(study)
-                            addObservationPermissions(study)
                             shared.resetFirstStartUp()
                             onSuccess(shared.credentialRepository.hasCredentials())
-                        } ?: kotlin.run {
+                        } ?: run {
                             onError(NetworkServiceError(null, "Could not get study"))
                         }
                     }

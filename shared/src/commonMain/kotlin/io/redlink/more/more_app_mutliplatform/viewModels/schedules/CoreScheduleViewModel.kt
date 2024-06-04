@@ -10,7 +10,6 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -72,7 +71,6 @@ class CoreScheduleViewModel(
             scheduleRepository.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
                 .cancellable()
                 .collect {
-                    Napier.d(tag = "CoreScheduleViewModel::viewDidAppear") { it.toString() }
                     val newList = when (scheduleListType) {
                         ScheduleListType.COMPLETED -> createCompletedModels(it)
                         ScheduleListType.RUNNING -> createRunningModels(it)

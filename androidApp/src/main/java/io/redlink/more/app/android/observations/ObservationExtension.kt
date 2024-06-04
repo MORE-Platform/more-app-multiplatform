@@ -24,7 +24,7 @@ fun Observation.showPermissionAlertDialog() {
     ))
 }
 
-fun Observation.pauseObservation(observationType: ObservationType) {
+fun Observation.Companion.pauseObservation(observationType: ObservationType) {
     MoreApplication.shared!!.observationManager.pauseObservationType(
         observationType.observationType
     )
