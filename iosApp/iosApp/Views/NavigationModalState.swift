@@ -208,6 +208,8 @@ class NavigationModalState: ObservableObject {
 
                     self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                 }
+            } else if modifiedDeepLink == nil, let notificationId {
+                AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: notificationId)
             }
         }
     }

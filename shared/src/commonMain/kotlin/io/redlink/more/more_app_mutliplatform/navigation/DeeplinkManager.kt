@@ -1,5 +1,6 @@
 package io.redlink.more.more_app_mutliplatform.navigation
 
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -14,7 +15,8 @@ import kotlinx.datetime.Clock
 
 class DeeplinkManager(private val observationFactory: ObservationFactory) {
     private val deepLinks = mutableSetOf<String>()
-    private var scheduleRepository = ScheduleRepository()
+    private val scheduleRepository = ScheduleRepository()
+    private val observationRepository = ObservationRepository()
 
     fun addAvailableDeepLinks(deepLinks: Set<String>) {
         this.deepLinks.addAll(deepLinks)
@@ -27,20 +29,19 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
     ): Flow<String?> = flow {
         deepLink?.let { deepLink ->
             val queryParams = deepLink.mapQueryParams()
-            val newDeepLink = queryParams.getOrElse("observationId") { emptySet() }.firstOrNull()
-                ?.let { observationId ->
-                    val schedule =
-                        scheduleRepository.firstScheduleAvailableForObservationId(observationId)
-                            .cancellable().firstOrNull()
-                    deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement)
-                } ?: if (validateRoute(deepLink)) deepLink else replaceRoute(
-                deepLink,
-                DASHBOARD,
-                null,
-                protocolReplacement,
-                hostReplacement
-            )
-            emit(newDeepLink)
+            val observationId = queryParams["observationId"]
+            if (observationId.isNullOrEmpty()
+                || observationRepository.observationById(observationId.first())
+                    .firstOrNull() == null
+            ) {
+                emit(null)
+                return@flow
+            }
+            val schedule =
+                scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                    .cancellable().firstOrNull()
+
+            emit(deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement))
         } ?: run {
             emit(deepLink)
         }

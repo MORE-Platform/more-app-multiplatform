@@ -22,6 +22,8 @@ import FirebaseMessaging
 import FirebaseCrashlyticsSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    static let appGroup = "group.ac.at.lbg.dhp.more.group"
+    static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let navigationScreenHandler = NavigationModalState()
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()

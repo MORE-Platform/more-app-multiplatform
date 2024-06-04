@@ -15,7 +15,6 @@ import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
@@ -71,6 +70,8 @@ class Shared(
         )
 
     var appIsInForeGround = false
+
+    val unreadNotificationCount = notificationManager.unreadUserCount
 
     val currentStudyState = studyStateRepository.currentStudyState
     var finishText: String? = null
@@ -286,7 +287,6 @@ class Shared(
                 ScheduleSchema::class,
                 ObservationDataSchema::class,
                 DataPointCountSchema::class,
-                NotificationSchema::class
             )
         )
         observationFactory.clearNeededObservationTypes()
@@ -295,6 +295,8 @@ class Shared(
     fun onStudyStateChange(providedState: (StudyState) -> Unit) =
         currentStudyState.asClosure(providedState)
 
+    fun unreadNotificationCountAsClosure(state: (Int) -> Unit) =
+        unreadNotificationCount.asClosure(state)
 
     companion object {
         const val FIRST_OPEN_AFTER_LOGIN_KEY = "first_open_after_login_key"

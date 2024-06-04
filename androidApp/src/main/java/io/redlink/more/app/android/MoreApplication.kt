@@ -51,6 +51,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
         shared?.appInForeground(true)
+        shared?.notificationManager?.updateNotificationBadgeCount()
     }
 
     override fun onPause(owner: LifecycleOwner) {

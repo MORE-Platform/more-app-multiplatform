@@ -42,7 +42,6 @@ class ScheduleViewModel: ObservableObject {
 
     func loadSchedules() {
         coreModel.onScheduleStateUpdated { [weak self] triple in
-            print(triple)
             guard let self = self else { return }
 
             let added = triple.first as? Set<ScheduleModel> ?? []

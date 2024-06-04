@@ -7,38 +7,44 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct NotificationView: View {
     @StateObject var notificationViewModel: NotificationViewModel
     @StateObject var filterVM: NotificationFilterViewModel
     private let navigationStrings = "Navigation"
     private let stringTable = "NotificationView"
-    
+
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    
+
     var body: some View {
         VStack {
             MoreFilter(filterText: $notificationViewModel.filterText, destination: .notificationFilter)
-            .padding(.bottom)
-            
+                .padding(.bottom)
+
             if notificationViewModel.notificationList.isEmpty {
                 EmptyListView(text: "There are currently no notficiations to show".localize(withComment: "Empty notification list", useTable: stringTable))
             } else {
                 ScrollView {
-                    ForEach(notificationViewModel.notificationList.sorted{$0.timestamp > $1.timestamp}, id: \.self) { notification in
+                    ForEach(notificationViewModel.notificationList.sorted { $0.timestamp > $1.timestamp }, id: \.self) { notification in
                         VStack {
                             NotificationItem(notificationModel: notification)
+                            Divider()
+                                .padding(.vertical, 4)
                         }
+                        .background(Color.clear)
+                        .contentShape(Rectangle())
                         .onTapGesture {
-                            notificationViewModel.handleNotificationAction(notification: notification, navigationModalState: navigationModalState)
+                            if !notification.read {
+                                notificationViewModel.handleNotificationAction(notification: notification, navigationModalState: navigationModalState)
+                            }
                         }
                     }
                 }
@@ -56,4 +62,3 @@ struct NotificationView: View {
         .customNavigationTitle(with: NavigationScreen.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
     }
 }
-

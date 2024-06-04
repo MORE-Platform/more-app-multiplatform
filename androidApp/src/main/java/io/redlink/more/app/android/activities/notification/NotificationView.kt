@@ -34,6 +34,7 @@ import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.MoreDivider
 
 
 @Composable
@@ -78,13 +79,16 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
             Column(
                 modifier = Modifier
                     .clickable {
-                        viewModel.handleNotificationAction(notification, navController)
+                        if (!notification.read) {
+                            viewModel.handleNotificationAction(notification, navController)
+                        }
                     }
                     .padding(bottom = 10.dp)
             ) {
                 NotificationItem(
                     notification
                 )
+                MoreDivider()
             }
         }
     }

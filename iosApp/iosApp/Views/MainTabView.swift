@@ -28,23 +28,37 @@ struct MainTabView: View {
                 }
                 .tabItem {
                     Label(NavigationScreen.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
-                }.tag(0)
-
-                NavigationWithDestinations {
-                    NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
-                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
-                .tabItem {
-                    Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                }.tag(1)
+                .tag(0)
 
+                if #available(iOS 15.0, *) {
+                    NavigationWithDestinations {
+                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                    }
+                    .tabItem {
+                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                    }
+                    .tag(1)
+                    .badge(contentViewModel.unreadNotificationCount)
+                } else {
+                    NavigationWithDestinations {
+                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                    }
+                    .tabItem {
+                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                    }
+                    .tag(1)
+                }
                 NavigationWithDestinations {
                     InfoView(viewModel: contentViewModel.infoViewModel)
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
                     Label(NavigationScreen.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
-                }.tag(2)
+                }
+                .tag(2)
             }
         }
         .accent(color: .more.primaryDark)
@@ -85,7 +99,6 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {
             LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
         }
-        
     }
 }
 

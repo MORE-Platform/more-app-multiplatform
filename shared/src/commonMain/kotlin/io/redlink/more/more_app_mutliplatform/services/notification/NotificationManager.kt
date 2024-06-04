@@ -24,7 +24,10 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageReposi
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 interface LocalNotificationListener {
@@ -35,6 +38,7 @@ interface LocalNotificationListener {
     fun createNewFCMToken(onCompletion: (String) -> Unit)
     fun clearNotifications()
     fun deleteFCMToken()
+    fun updateBadgeCount(count: Int = 0)
 }
 
 class NotificationManager(
@@ -44,6 +48,19 @@ class NotificationManager(
     private val sharedStorageRepository: SharedStorageRepository
 ) {
     val notificationRepository = NotificationRepository()
+    val _unreadUserCount = MutableStateFlow(0)
+    val unreadUserCount: StateFlow<Int> = _unreadUserCount
+
+    init {
+        Scope.launch(Dispatchers.IO) {
+            notificationRepository.getUnreadUserNotifications().collect { notificationList ->
+                _unreadUserCount.update { notificationList.count() }
+                withContext(Dispatchers.Main) {
+                    localNotificationListener.updateBadgeCount(notificationList.count())
+                }
+            }
+        }
+    }
 
     fun storeAndHandleNotification(
         shared: Shared,
@@ -179,12 +196,18 @@ class NotificationManager(
                                 DeeplinkManager.OBSERVATION_DETAILS
                             )
                         ) {
-                            markNotificationAsRead(notification.notificationId)
+                            withContext(Dispatchers.Main) {
+                                markNotificationAsRead(notification.notificationId)
+                            }
                         }
                         withContext(Dispatchers.Main) {
                             handler(NotificationActionHandler.DEEPLINK, modifiedDeepLink)
                         }
+                    } ?: run {
+                    withContext(Dispatchers.Main) {
+                        markNotificationAsRead(notification.notificationId)
                     }
+                }
             }
         } ?: run {
             markNotificationAsRead(notification.notificationId)
@@ -219,6 +242,16 @@ class NotificationManager(
 
     fun clearAllNotifications() {
         localNotificationListener.clearNotifications()
+    }
+
+    fun updateNotificationBadgeCount() {
+        Scope.launch {
+            notificationRepository.getUnreadUserNotifications().firstOrNull().let {
+                withContext(Dispatchers.Main) {
+                    localNotificationListener.updateBadgeCount(it?.count() ?: 0)
+                }
+            }
+        }
     }
 
     private suspend fun updateStudy(shared: Shared, data: Map<String, String>) {

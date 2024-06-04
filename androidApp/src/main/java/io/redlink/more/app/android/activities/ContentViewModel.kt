@@ -94,13 +94,19 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                             }
                         withContext(Dispatchers.Main) {
                             it.intent.data = link
-                            showNewActivityAndClearStack(
-                                it, MainActivity::class.java,
-                                forwardExtras = true,
-                                forwardDeepLink = true
-                            )
+                            openMain(it)
                         }
 
+                    } ?: run {
+                        withContext(Dispatchers.Main) {
+                            it.intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
+                                val route =
+                                    ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters();
+                                val link = Uri.parse(route)
+                                it.intent.data = link
+                            }
+                            openMain(it)
+                        }
                     }
                 }
             } ?: run {
@@ -110,13 +116,19 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                     val link = Uri.parse(route)
                     it.intent.data = link
                 }
-                showNewActivityAndClearStack(
-                    it, MainActivity::class.java,
-                    forwardExtras = true,
-                    forwardDeepLink = true
-                )
+                openMain(it)
             }
 
+        }
+    }
+
+    private fun openMain(context: Context) {
+        (context as? Activity)?.let {
+            showNewActivityAndClearStack(
+                it, MainActivity::class.java,
+                forwardExtras = true,
+                forwardDeepLink = true
+            )
         }
     }
 
