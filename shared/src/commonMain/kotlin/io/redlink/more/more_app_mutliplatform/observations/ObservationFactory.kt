@@ -19,6 +19,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.update
 
 
 abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
+    private var credentialRepository: CredentialRepository? = null
     val observations = mutableSetOf<Observation>()
 
     private val _studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
@@ -53,12 +55,9 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         }
         Scope.launch(Dispatchers.IO) {
             studyObservationTypes.collect {
-                Napier.d(tag = "ObservationFactory::init::StudyObservationTypes") { it.toString() }
                 if (it.isNotEmpty()) {
-                    Napier.d { "Study types not empty" }
                     listenToObservationErrors()
                 } else {
-                    Napier.d { "Study types empty" }
                     observationErrorWatcher?.cancel()
                     observationErrorWatcher = null
                     _observationErrors.update { emptyMap() }
@@ -77,6 +76,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
         observationErrorWatcher?.cancel()
         observationErrorWatcher = null
         _observationErrors.update { emptyMap() }
+    }
+
+    fun setCredentialsRepository(credentialRepository: CredentialRepository) {
+        this.credentialRepository = credentialRepository
     }
 
     fun studySensorPermissions() =
@@ -124,7 +127,9 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     }
 
     fun updateObservationErrors() {
-        studyObservations().forEach { it.updateObservationErrors() }
+        if (this.credentialRepository?.hasCredentials() == true) {
+            studyObservations().forEach { it.updateObservationErrors() }
+        }
     }
 
     fun observation(type: String): Observation? {

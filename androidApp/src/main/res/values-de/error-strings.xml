@@ -12,4 +12,5 @@
     <string name="observation_error">Aufzeichnungfehler</string>
     <string name="observation_cannot_start">Beobachtung kann nicht gestartet werden! Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!</string>
     <string name="observation_bluetooth_error">Fehler beim Fortsetzen der Beobachtung! Es gab ein Verbindungsproblem mit einem Bluetooth-Sensor. Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!</string>
+    <string name="hr_unavailable">Funktion zur Messung der Herzfrequenz nicht verfügbar</string>
 </resources>

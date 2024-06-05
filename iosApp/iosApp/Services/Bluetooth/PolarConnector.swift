@@ -267,11 +267,9 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         if feature == .feature_hr {
             print("HR ready")
-            PolarVerityHeartRateObservation.setHRReady()
+            PolarVerityHeartRateObservation.setHRFeature(state: true)
         }
     }
-
-
 }
 
 extension PolarConnector: PolarBleApiDeviceInfoObserver {

@@ -18,7 +18,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
@@ -28,8 +27,6 @@ import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -266,14 +263,10 @@ class BluetoothController(
     fun isScanningAsClosure(state: (Boolean) -> Unit) = isScanning.asClosure(state)
 
     suspend fun listenToConnectionChanges(
-        observationFactory: ObservationFactory,
-        observationManager: ObservationManager
+        observationFactory: ObservationFactory
     ) {
         deviceManager.connectedDevices.collect {
             observationFactory.updateObservationErrors()
-            StudyScope.launch(Dispatchers.IO) {
-                observationManager.updateTaskStatesWithBLEDevices()
-            }
         }
     }
 

@@ -50,12 +50,13 @@ extension FCMService: UNUserNotificationCenterDelegate {
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let data = response.notification.request.content.userInfo.notNilStringDictionary()
-        let msgId = data[NotificationManager.companion.MSG_ID]
+        let msgId = data[NotificationManager.companion.MSG_ID] ?? response.notification.request.identifier
         if let deepLinkString = data[NotificationManager.companion.DEEP_LINK] {
             if let deepLink = URL(string: deepLinkString) {
                 AppDelegate.navigationScreenHandler.openWithDeepLink(url: deepLink, notificationId: msgId)
             }
-        } else if let msgId {
+        } else {
+            AppDelegate.navigationScreenHandler.clearViews()
             AppDelegate.navigationScreenHandler.tagState = 1
             AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: msgId)
         }

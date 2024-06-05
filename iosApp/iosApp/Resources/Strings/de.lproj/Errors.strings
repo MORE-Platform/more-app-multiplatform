@@ -19,3 +19,4 @@
 "Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!" = "Beobachtung kann nicht gestartet werden! Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!";
 "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!" = "Fehler beim Fortsetzen der Beobachtung! Es gab ein Verbindungsproblem mit einem Bluetooth-Sensor. Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!";
 "Observation Error" = "Aufzeichnungfehler";
+"Heart-rate measurement feature unavailable" = "Funktion zur Messung der Herzfrequenz nicht verfügbar";

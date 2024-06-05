@@ -152,9 +152,7 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     }
 
     override fun credentialsStored() {
-        viewModelScope.launch(Dispatchers.Main) {
-            hasCredentials.value = true
-        }
+        hasCredentials.value = true
     }
 
     override fun decline() {

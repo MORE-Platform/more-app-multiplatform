@@ -13,8 +13,8 @@ android {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 34
-        versionCode = 8
-        versionName = "4.0.9"
+        versionCode = 9
+        versionName = "4.0.10"
     }
     buildFeatures {
         compose = true

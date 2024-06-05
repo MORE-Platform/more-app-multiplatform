@@ -22,7 +22,7 @@ protocol ObservationCollector {
 }
 
 extension Observation_ {
-    func pauseObservation(_ observationType: ObservationType) {
+    static func pauseObservation(_ observationType: ObservationType) {
         AppDelegate.shared.observationManager.pauseObservationType(type: observationType.observationType)
     }
 }

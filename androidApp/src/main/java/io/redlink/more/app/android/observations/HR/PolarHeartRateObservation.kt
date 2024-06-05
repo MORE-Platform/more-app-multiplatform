@@ -31,6 +31,7 @@ import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -124,6 +125,8 @@ class PolarHeartRateObservation :
         if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
             errors.add("device_not_connected")
             errors.add(ERROR_DEVICE_NOT_CONNECTED)
+        } else if (!hrReady.value) {
+            errors.add("hr_unavailable")
         }
         return errors
     }
@@ -169,16 +172,24 @@ class PolarHeartRateObservation :
     companion object {
         val hrReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-        fun setHRReady() {
-            if (!hrReady.value) {
-                hrReady.set(true)
-                MoreApplication.shared!!.observationManager.startObservationType(
+        fun setHRFeature(state: Boolean) {
+            if (state) {
+                if (!hrReady.value) {
+                    MoreApplication.shared!!.observationManager.startObservationType(
+                        PolarVerityHeartRateType(
+                            emptySet()
+                        ).observationType
+                    )
+                    Napier.d(tag = "PolarHeartRateObservation::Companion::setHRFeature") { "HR Feature Ready!" }
+                }
+            } else {
+                Observation.pauseObservation(
                     PolarVerityHeartRateType(
                         emptySet()
-                    ).observationType
+                    )
                 )
-                Napier.d(tag = "PolarHeartRateObservation::Companion::polarDeviceDisconnected") { "HR Feature Ready!" }
             }
+            hrReady.update { state }
         }
     }
 }
