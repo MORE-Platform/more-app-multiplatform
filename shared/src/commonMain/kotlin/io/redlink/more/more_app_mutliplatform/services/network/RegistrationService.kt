@@ -71,7 +71,6 @@ class RegistrationService(
     ) {
         StudyScope.launch {
             shared.credentialRepository.remove()
-            shared.endpointRepository.removeEndpoint()
             DatabaseManager.deleteAll()
         }
         study?.let { study ->
