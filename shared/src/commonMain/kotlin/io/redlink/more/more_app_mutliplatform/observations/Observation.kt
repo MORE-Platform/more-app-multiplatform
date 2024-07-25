@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -146,7 +147,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun observerAccessible(): Boolean {
         val errors = observerErrors()
         Napier.d(tag = "Observation::observerAccessible") { errors.toString() }
-        this._observationErrors.update { Pair(observationType.observationType, errors) }
+        updateObservationErrors()
         return errors.isEmpty()
     }
 
@@ -154,8 +155,18 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun updateObservationErrors() {
         StudyScope.launch(Dispatchers.IO) {
-            Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
-            _observationErrors.update { Pair(observationType.observationType, observerErrors()) }
+            scheduleRepository.allSchedulesToday(observationType).firstOrNull()?.let {
+                if (it.isNotEmpty()) {
+                    Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
+
+                    _observationErrors.update {
+                        Pair(
+                            observationType.observationType,
+                            observerErrors()
+                        )
+                    }
+                }
+            }
         }
     }
 

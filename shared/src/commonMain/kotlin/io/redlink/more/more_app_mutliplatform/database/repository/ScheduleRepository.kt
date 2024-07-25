@@ -20,14 +20,18 @@ import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
+import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
+import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 import kotlinx.datetime.Clock
 import org.mongodb.kbson.ObjectId
@@ -66,6 +70,19 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             } ?: emptyFlow()
     }
 
+    fun allSchedulesToday(observationType: ObservationType): Flow<List<ScheduleSchema>> {
+        val today = Clock.System.now().localDateTime().date
+        return realm()?.query<ScheduleSchema>(
+            "observationType = $0",
+            observationType.observationType
+        )
+            ?.asMappedFlow()?.transform { list ->
+                emit(list.filter {
+                    !it.getState().completed()
+                            && (it.start?.toLocalDate() == today || it.end?.toLocalDate() == today)
+                })
+            } ?: flow { emit(emptyList()) }
+    }
 
     fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId?.toHexString() }
