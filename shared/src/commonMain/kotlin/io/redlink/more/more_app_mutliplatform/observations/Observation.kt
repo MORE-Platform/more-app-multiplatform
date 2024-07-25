@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
@@ -20,6 +21,7 @@ import io.redlink.more.more_app_mutliplatform.services.notification.Notification
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -33,6 +35,7 @@ abstract class Observation(val observationType: ObservationType) {
     private val scheduleRepository = ScheduleRepository()
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
+    private val observationRepository = ObservationRepository()
 
     private var running = false
     private val observationIds = mutableSetOf<String>()
@@ -42,6 +45,8 @@ abstract class Observation(val observationType: ObservationType) {
     private var configChanged = false
 
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
+
+    var timestampCollectionJob: Job? = null
 
     private val _observationErrors = MutableStateFlow<Pair<String, Set<String>>>(
         Pair(
@@ -53,6 +58,16 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
+        timestampCollectionJob?.cancel()
+        timestampCollectionJob = StudyScope.launch {
+            observationRepository.collectTimestampForObservationIds(observationIds).collect {
+                lastCollectionTimestamp = Instant.fromEpochSeconds(it.epochSeconds)
+                Napier.d(tag = "Observation::start") { "Last collection $lastCollectionTimestamp" }
+            }
+        }.second
+        timestampCollectionJob?.invokeOnCompletion {
+            timestampCollectionJob = null
+        }
         scheduleIds[scheduleId] = observationId
         notificationId?.let {
             notificationIds[scheduleId] = notificationId
@@ -73,6 +88,7 @@ abstract class Observation(val observationType: ObservationType) {
         Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
         if (observationIds.size <= 1) {
             stop {
+                timestampCollectionJob?.cancel()
                 saveAndSend()
                 observationShutdown(scheduleId)
             }
@@ -115,7 +131,12 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     protected fun collectionTimestampToNow() {
-        this.lastCollectionTimestamp = Clock.System.now()
+        Napier.d(tag = "Observation::collectionTimeStampToNow") { "Collecting timestamp" }
+        lastCollectionTimestamp = Clock.System.now()
+        observationRepository.lastCollection(
+            observationIds.toSet(),
+            lastCollectionTimestamp.epochSeconds
+        )
     }
 
     protected abstract fun start(): Boolean
@@ -164,6 +185,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndFinish(scheduleId: String) {
         Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
         stop {
+            timestampCollectionJob?.cancel()
             saveAndSend()
             observationShutdown(scheduleId)
         }
@@ -173,6 +195,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
         Napier.d(tag = "Observation::stopAndSetState") { "Stopping observation of type ${observationType.observationType} and setting state to $state for schedule $scheduleId." }
         stop {
+            timestampCollectionJob?.cancel()
             saveAndSend()
             scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
             scheduleId?.let {
@@ -185,6 +208,7 @@ abstract class Observation(val observationType: ObservationType) {
     fun stopAndSetDone(scheduleId: String) {
         Napier.d(tag = "Observation::stopAndSetDone") { "Stopping observation of type ${observationType.observationType} and setting done for schedule $scheduleId." }
         stop {
+            timestampCollectionJob?.cancel()
             saveAndSend()
             scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
             observationShutdown(scheduleId)

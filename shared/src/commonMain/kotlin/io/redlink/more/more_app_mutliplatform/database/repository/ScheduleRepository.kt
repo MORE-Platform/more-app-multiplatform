@@ -157,13 +157,14 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                     if (scheduleSchema.getState() != newState) {
                         Napier.i { "State update for Schema: $scheduleSchema; ${scheduleSchema.getState()} -> $newState" }
                     }
-                    if (autoStartingObservations.isNotEmpty()
-                        && scheduleSchema.hidden
-                        && newState.active()
-                        && scheduleSchema.observationType in autoStartingObservations
-                        && observationFactory.observation(scheduleSchema.observationType)
+                    if (newState == ScheduleState.RUNNING
+                        || (autoStartingObservations.isNotEmpty()
+                                && scheduleSchema.hidden
+                                && newState.active()
+                                && scheduleSchema.observationType in autoStartingObservations
+                                && observationFactory.observation(scheduleSchema.observationType)
                             ?.bleDevicesNeeded()
-                            ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false
+                            ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false)
                     ) {
                         scheduleSchema.scheduleId.toHexString()
                     } else {

@@ -52,7 +52,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         fcmService.register()
         AppDelegate.registerForNotifications()
 
-        registerBackgroundTasks()
+        DataUploadBackgroundTask.setupBackgroundTasks()
 
         AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreen.allCases.map { $0.values.navigationLink }))
 
@@ -76,14 +76,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     private func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("App did fail to register for remote notifications: \(error)")
-    }
-
-    private func registerBackgroundTasks() {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: DataUploadBackgroundTask.taskID, using: nil) { task in
-            if let task = task as? BGProcessingTask {
-                DataUploadBackgroundTask().handleProcessingTask(task: task)
-            }
-        }
     }
 
     func cancelBackgroundTasks() {

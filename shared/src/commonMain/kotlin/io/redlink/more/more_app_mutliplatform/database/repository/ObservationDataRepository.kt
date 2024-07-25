@@ -16,6 +16,7 @@ import io.realm.kotlin.ext.query
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -28,13 +29,19 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
     private var queue = mutableSetOf<ObservationDataSchema>()
     private val mutex = Mutex()
 
+
+    init {
+        Scope.repeatedLaunch(10000L) {
+            if (queue.isNotEmpty()) {
+                store()
+            }
+        }
+    }
+
     fun addData(dataList: List<ObservationDataSchema>) {
         StudyScope.launch {
             mutex.withLock {
                 queue.addAll(dataList)
-            }
-            if (queue.size > QUEUE_THRESHOLD) {
-                store()
             }
         }
     }
@@ -44,7 +51,7 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
             StudyScope.launch {
                 val queueCopy = mutex.withLock {
                     val queueCopy = queue.toSet()
-                    queue = mutableSetOf()
+                    queue.clear()
                     queueCopy
                 }
                 realmDatabase().store(queueCopy, UpdatePolicy.ERROR)
@@ -54,9 +61,8 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
 
     override fun count() = realmDatabase().count<ObservationDataSchema>()
 
-
     suspend fun allAsBulk(): DataBulk? {
-        return mutex().withLock {
+        return mutex.withLock {
             realmDatabase().query<ObservationDataSchema>(limit = 5000).firstOrNull()
                 ?.mapAsBulkData()
         }
@@ -71,14 +77,13 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
     fun deleteAllWithId(idSet: Set<String>) {
         Napier.i { "Deleting ${idSet.size} elements..." }
         val objectIdSet = idSet.map { ObjectId(it) }.toSet()
-        StudyScope.launch {
-            mutex().withLock {
+        StudyScope.launch(Dispatchers.IO) {
+            mutex.withLock {
                 realm()?.write {
                     this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }
-                        .forEach {
-                            delete(it)
-                        }
+                        .forEach { delete(it) }
                 }
+
             }
         }
     }

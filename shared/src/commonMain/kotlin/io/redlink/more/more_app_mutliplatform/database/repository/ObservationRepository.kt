@@ -16,6 +16,7 @@ import io.realm.kotlin.types.RealmInstant
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
@@ -34,12 +35,21 @@ class ObservationRepository : Repository<ObservationSchema>() {
     }
 
     fun lastCollection(type: String, timestamp: Long) {
+        Scope.launch {
+            realm()?.write {
+                this.query<ObservationSchema>("observationType == $0", type)
+                    .find()
+                    .forEach {
+                        it.collectionTimestamp = RealmInstant.from(timestamp, 0)
+                    }
+            }
+        }
+    }
+
+    fun lastCollection(type: Set<String>, timestamp: Long) {
         realm()?.writeBlocking {
-            this.query<ObservationSchema>("observationType == $0", type)
-                .find()
-                .forEach {
-                    it.collectionTimestamp = RealmInstant.from(timestamp, 0)
-                }
+            this.query<ObservationSchema>("observationType IN $0", type).find()
+                .forEach { it.collectionTimestamp = RealmInstant.from(timestamp, 0) }
         }
     }
 
@@ -54,6 +64,17 @@ class ObservationRepository : Repository<ObservationSchema>() {
 
     fun collectAllTimestamps() =
         observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
+
+    fun collectTimestampForObservationIds(observationIds: Set<String>) =
+        realmDatabase().queryAllWhereFieldInList<ObservationSchema, String>(
+            "observationType",
+            observationIds
+        ).transform {
+            emit(
+                it.maxByOrNull { it.collectionTimestamp }?.collectionTimestamp
+                    ?: RealmInstant.now()
+            )
+        }
 
     fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
         return collectionTimestamp(type).asClosure(newState)

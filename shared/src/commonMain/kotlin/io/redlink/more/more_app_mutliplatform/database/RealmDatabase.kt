@@ -20,12 +20,10 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.TypedRealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
 private const val DB_SCHEMA_VERSION: Long = 4
@@ -54,23 +52,23 @@ object RealmDatabase {
 
     fun store(
         realmObjects: Collection<RealmObject>,
-        updatePolicy: UpdatePolicy = UpdatePolicy.ALL
-    ) {
+        updatePolicy: UpdatePolicy = UpdatePolicy.ALL,
+    ): Int {
         if (realmObjects.isNotEmpty()) {
-            Scope.launch {
-                mutex.withLock {
-                    realm?.write {
-                        realmObjects.forEach {
-                            try {
-                                copyToRealm(it, updatePolicy)
-                            } catch (e: Exception) {
-                                Napier.i { "Copy to Realm exception: $e" }
-                            }
-                        }
+            var storedObjects = realmObjects.size
+            realm?.writeBlocking {
+                realmObjects.forEach {
+                    try {
+                        copyToRealm(it, updatePolicy)
+                    } catch (e: Exception) {
+                        Napier.i { "Copy to Realm exception: $e" }
+                        storedObjects--;
                     }
                 }
             }
+            return storedObjects
         }
+        return 0
     }
 
     inline fun <reified T : TypedRealmObject> count(): Flow<Long> {
