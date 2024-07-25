@@ -17,7 +17,7 @@ val openapiIgnore = "$openApiInputDir/openapi-ignore"
 val coroutinesVersion = "1.8.1"
 val ktorVersion = "2.3.12"
 val napierVersion = "2.7.1"
-val serializationVersion = "1.7.1"
+val serializationVersion = "1.6.0"
 val gsonVersion = "2.10.1"
 
 kotlin {
