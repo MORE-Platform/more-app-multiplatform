@@ -13,8 +13,8 @@ android {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 34
-        versionCode = 10
-        versionName = "4.0.12"
+        versionCode = 12
+        versionName = "4.0.14"
     }
     buildFeatures {
         compose = true
@@ -50,7 +50,7 @@ android {
 val composeVersion = "1.6.8"
 val workVersion = "2.9.0"
 val navVersion = "2.7.7"
-val polarSDKVersion = "5.5.0"
+val polarSDKVersion = "5.6.0"
 
 dependencies {
     implementation(project(":shared"))
@@ -61,8 +61,8 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.fragment:fragment:1.8.1")
-    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.fragment:fragment:1.8.2")
+    implementation("androidx.activity:activity-compose:1.9.1")
     implementation("io.realm.kotlin:library-base:1.13.0")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
@@ -80,5 +80,5 @@ dependencies {
     implementation("com.google.firebase:firebase-inappmessaging-display-ktx")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
-    implementation("androidx.lifecycle:lifecycle-process:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
 }

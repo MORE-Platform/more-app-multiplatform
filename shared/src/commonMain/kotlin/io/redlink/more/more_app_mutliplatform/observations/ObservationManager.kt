@@ -244,7 +244,7 @@ class ObservationManager(
                             onCompletion(true)
                         }
                     }
-                } ?: kotlin.run {
+                } ?: run {
                     if (++counter == runningObservations.size) {
                         onCompletion(true)
                     }
