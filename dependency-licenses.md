@@ -1,5 +1,9 @@
 # More Multiplatform Mobile App Project Dependencies
 
+#### Date: 29.07.2024
+
+#### Author: Jan Cortiel @ Redlink GmbH
+
 This file categorizes the project dependencies by their open source licenses, including versions and
 source code links.
 
