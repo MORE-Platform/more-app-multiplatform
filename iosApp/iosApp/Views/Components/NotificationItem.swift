@@ -37,14 +37,13 @@ struct NotificationItem: View {
                         .font(.system(size: 10))
                 }
             }
-            Divider()
-                .frame(height: 0.5)
-                .padding(.vertical, 4)
+            
             HStack(alignment: .center) {
                 VStack(alignment: .leading) {
-                    BasicText(text: notificationModel.notificationBody, color: .more.secondary)
-                        .padding(.bottom, 2)
+                    BasicText(text: notificationModel.notificationBody.applyHyperlinks().trimmingCharacters(in: .whitespacesAndNewlines), color: .more.secondary)
+                        
                     BasicText(text: (notificationModel.timestamp / 1000).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
+                        .padding(.top, 4)
                 }
                 Spacer()
                 if notificationModel.deepLink != nil {
@@ -53,7 +52,6 @@ struct NotificationItem: View {
                 }
             }
         }
-        .padding(.bottom)
     }
 
     func getFontStyle() -> Font {

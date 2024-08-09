@@ -29,6 +29,8 @@ class ContentViewModel: ObservableObject {
     @Published var mainTabViewSelection = 0
     
     @Published var finishText: String? = nil
+    @Published var alertDialogModel: AlertDialogModel? = nil
+    @Published var unreadNotificationCount: Int = 0
 
     lazy var loginViewModel: LoginViewModel = {
         let viewModel = LoginViewModel(registrationService: registrationService)
@@ -40,6 +42,13 @@ class ContentViewModel: ObservableObject {
         viewModel.delegate = self
         return viewModel
     }()
+    
+    lazy var taskDetailsVM: TaskDetailsViewModel = {
+        TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
+    }()
+    
+    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
+    lazy var limeSurveyVM = LimeSurveyViewModel()
     
     var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
@@ -64,8 +73,14 @@ class ContentViewModel: ObservableObject {
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
         hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
         
-        AppDelegate.shared.onStudyIsUpdatingChange { kBool in
+        ViewManager.shared.studyIsUpdatingAsClosure { kBool in
             AppDelegate.navigationScreenHandler.studyIsUpdating(kBool.boolValue)
+        }
+        
+        ViewManager.shared.showBluetoothViewAsClosure { [weak self] kBool in
+            if kBool.boolValue {
+                self?.showBleView = kBool.boolValue
+            }
         }
         
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
@@ -73,20 +88,12 @@ class ContentViewModel: ObservableObject {
             AppDelegate.navigationScreenHandler.setStudyState(studyState)
         }
         
-        if hasCredentials {
-            scanBluetooth()
+        AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
+            self?.alertDialogModel = alertDialogModel
         }
-    }
-    
-    func scanBluetooth() {
-        let pair = AppDelegate.shared.showBleSetup()
-
-        if let hasBleObservations = pair.second, hasBleObservations.boolValue {
-            if let firstStartup = pair.first, firstStartup.boolValue {
-                DispatchQueue.main.async {
-                    self.showBleView = true
-                }
-            }
+        
+        AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
+            self?.unreadNotificationCount = kInt.intValue
         }
     }
     
@@ -105,9 +112,25 @@ class ContentViewModel: ObservableObject {
         }
     }
     
+    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
+        if let scheduleId = navigationState.scheduleId {
+            taskDetailsVM.setSchedule(scheduleId: scheduleId)
+        }
+        return taskDetailsVM
+    }
+    
+    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
+        simpleQuestionVM.setScheduleId(navigationState: navigationState)
+        return simpleQuestionVM
+    }
+    
+    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
+        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
+        return limeSurveyVM
+    }
+
+    
     private func reinitAllViewModels() {
-        self.isLeaveStudyOpen = false
-        isLeaveStudyConfirmOpen = false
         dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -126,9 +149,11 @@ class ContentViewModel: ObservableObject {
 
 extension ContentViewModel: LoginViewModelListener {
     func tokenValid(study: Study) {
-        self.consentViewModel.consentInfo = study.consentInfo
-        self.consentViewModel.buildConsentModel()
-        showConsentView()
+        DispatchQueue.main.async {
+            self.consentViewModel.consentInfo = study.consentInfo
+            self.consentViewModel.buildConsentModel()
+            self.showConsentView()
+        }
     }
 }
 
@@ -140,10 +165,7 @@ extension ContentViewModel: ConsentViewModelListener {
     func credentialsStored() {
         reinitAllViewModels()
         DispatchQueue.main.async { [weak self] in
-            if let self {
-                self.hasCredentials = true
-                self.scanBluetooth()
-            }
+            self?.hasCredentials = true
         }
         AppDelegate.shared.doNewLogin()
     }

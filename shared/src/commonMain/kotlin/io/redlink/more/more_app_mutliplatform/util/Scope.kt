@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.typeOf
 
 object Scope {
     private val mutex = Mutex()
@@ -71,7 +70,7 @@ object Scope {
                 mutex.withLock {
                     try {
                         it?.let {
-                            Napier.e(throwable = it) { "Coroutine with UUID: $uuid has thrown!" }
+                            Napier.w(throwable = it) { "Coroutine with UUID: $uuid was completed or threw!" }
                         }
                         jobs.remove(uuid)
                     } catch (e: Exception) {

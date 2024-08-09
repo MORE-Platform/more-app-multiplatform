@@ -11,7 +11,6 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

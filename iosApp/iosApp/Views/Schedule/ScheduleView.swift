@@ -24,11 +24,6 @@ struct ScheduleView: View {
     private let stringsTable = "ScheduleListView"
     var body: some View {
         VStack {
-            NavigationLink(isActive: navigationModalState.screenBinding(for: .taskDetails)) {
-                TaskDetailsView(viewModel: viewModel.getTaskDetailsVM(navigationState: navigationModalState.navigationState), scheduleListType: viewModel.scheduleListType)
-            } label: {
-                EmptyView()
-            }.opacity(0)
             ScrollView(.vertical) {
                 if (viewModel.schedulesByDate.isEmpty) {
                     if viewModel.scheduleListType == ScheduleListType.running {
@@ -69,19 +64,10 @@ struct ScheduleView: View {
         }
         .onAppear {
             viewModel.viewDidAppear()
-            navigationModalState.closeView(screen: .taskDetails)
+            //navigationModalState.closeView(screen: .taskDetails)
         }
         .onDisappear {
             viewModel.viewDidDisappear()
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
-            SimpleQuetionObservationView(viewModel: viewModel.getSimpleQuestionObservationVM(navigationState: navigationModalState.navigationState ))
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
-            SimpleQuestionThankYouView()
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
-            LimeSurveyView(viewModel: LimeSurveyViewModel(navigationModalState: navigationModalState))
         }
     }
 }

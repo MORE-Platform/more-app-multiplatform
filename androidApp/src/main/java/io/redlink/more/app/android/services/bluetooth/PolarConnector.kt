@@ -17,7 +17,6 @@ import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.HR.PolarConnectorListener
@@ -45,10 +44,9 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             )
         )
 
-        api.setPolarFilter(false)
+        api.setPolarFilter(true)
         api.setApiCallback(polarObserverCallback)
         api.setAutomaticReconnection(true)
-        api.setApiLogger { str -> Napier.i { str } }
         api
     }
 
@@ -60,9 +58,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override var observer: MutableSet<BluetoothConnectorObserver> = mutableSetOf()
 
     override var bluetoothState: BluetoothState = BluetoothState.OFF
-
-    override val connected: MutableSet<BluetoothDevice> = mutableSetOf()
-    override val discovered: MutableSet<BluetoothDevice> = mutableSetOf()
 
     init {
         polarObserverCallback.connectionListener = this
@@ -86,7 +81,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
                         didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
                     },
                     { error: Throwable ->
-                        Napier.e { error.stackTraceToString() }
+                        Napier.e(tag = "PolarConnector::scan") { error.stackTraceToString() }
                     }
                 )
         }
@@ -119,17 +114,17 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun stopScanning() {
         Napier.i(tag = "PolarConnector::stopScanning") { "Stopping scanning." }
         if (scanning) {
-            isScanning(false)
             scanDisposable?.dispose()
             polarApi.cleanup()
+            isScanning(false)
         }
     }
 
 
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
-            Napier.i(tag = "PolarConnector::onPolarFeatureReady"){ "HR ready!" }
-            PolarHeartRateObservation.setHRReady()
+            Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "HR ready!" }
+            PolarHeartRateObservation.setHRFeature(false)
         }
     }
 
@@ -162,16 +157,10 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
-        if (connected.none { it.address == bluetoothDevice.address }) {
-            connected.add(bluetoothDevice)
-            removeDiscoveredDevice(bluetoothDevice)
-        }
         updateObserver { it.didConnectToDevice(bluetoothDevice) }
     }
 
     override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
-        connected.removeAll { bluetoothDevice.address == it.address }
-        PolarHeartRateObservation.polarDeviceDisconnected()
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
@@ -183,16 +172,12 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun didDiscoverDevice(device: BluetoothDevice) {
         Napier.i { "Device Discovered: $device" }
-        if (discovered.none { it.address == device.address } && connected.none { it.address == device.address }) {
-            discovered.add(device)
-        }
         updateObserver {
             it.didDiscoverDevice(device)
         }
     }
 
     override fun removeDiscoveredDevice(device: BluetoothDevice) {
-        discovered.removeAll { it.address == device.address }
         updateObserver {
             it.removeDiscoveredDevice(device)
         }
@@ -209,12 +194,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             }
         } else {
             stopScanning()
-            connected.forEach {
-                didDisconnectFromDevice(it)
-            }
-            discovered.forEach {
-                removeDiscoveredDevice(it)
-            }
         }
     }
 
@@ -243,8 +222,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun replayStates() {
         onBluetoothStateChange(bluetoothState)
-        connected.forEach { didConnectToDevice(it) }
-        discovered.forEach { didDiscoverDevice(it) }
         isScanning(scanning)
     }
 
@@ -259,5 +236,5 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 }
 
 fun PolarDeviceInfo.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.deviceId, this.name, this.address, this.isConnectable)
+    return BluetoothDevice.create(this.deviceId, this.name, this.address)
 }

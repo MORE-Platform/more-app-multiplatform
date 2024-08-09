@@ -11,11 +11,8 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
 import platform.Foundation.NSUserDefaults
-import platform.Foundation.removeObserver
-import platform.darwin.NSInteger
 
-
-class UserDefaultsRepository: SharedStorageRepository {
+class UserDefaultsRepository : SharedStorageRepository {
     override fun store(key: String, value: String) {
         NSUserDefaults.standardUserDefaults.setObject(value, key)
     }
@@ -25,7 +22,7 @@ class UserDefaultsRepository: SharedStorageRepository {
     }
 
     override fun store(key: String, value: Int) {
-        NSUserDefaults.standardUserDefaults.setInteger(value as NSInteger, key)
+        NSUserDefaults.standardUserDefaults.setInteger(value.toLong(), key)
     }
 
     override fun store(key: String, value: Float) {
@@ -34,6 +31,10 @@ class UserDefaultsRepository: SharedStorageRepository {
 
     override fun store(key: String, value: Double) {
         NSUserDefaults.standardUserDefaults.setDouble(value, key)
+    }
+
+    override fun store(key: String, value: Long) {
+        NSUserDefaults.standardUserDefaults.setInteger(value, key)
     }
 
     override fun load(key: String, default: String): String {
@@ -54,6 +55,10 @@ class UserDefaultsRepository: SharedStorageRepository {
 
     override fun load(key: String, default: Double): Double {
         return NSUserDefaults.standardUserDefaults.doubleForKey(key)
+    }
+
+    override fun load(key: String, default: Long): Long {
+        return NSUserDefaults.standardUserDefaults.integerForKey(key)
     }
 
     override fun remove(key: String) {

@@ -31,9 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -43,6 +40,7 @@ import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterVi
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
+import io.redlink.more.app.android.activities.observationErrors.ObservationErrorView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
@@ -55,13 +53,10 @@ import io.redlink.more.app.android.activities.studyStates.StudyClosedView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
-import io.redlink.more.app.android.extensions.applicationId
-import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
 
 class MainActivity : ComponentActivity() {
     private var loadedNavController = false
@@ -71,11 +66,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
 
-        val activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (::navHostController.isInitialized) {
-                navHostController.popBackStack()
+        val activityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (::navHostController.isInitialized) {
+                    navHostController.popBackStack()
+                }
             }
-        }
 
         val destinationChangeListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -86,7 +82,6 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
-                viewModel.viewDidAppear()
             }
             if (viewModel.studyIsUpdating.value) {
                 StudyUpdateView()
@@ -100,44 +95,43 @@ class MainActivity : ComponentActivity() {
             } else if (viewModel.studyState.value == StudyState.CLOSED) {
                 StudyClosedView(viewModel.finishText.value)
             } else {
-                MainView(viewModel.navigationBarTitle.value, viewModel, navHostController, activityLauncher)
+                MainView(
+                    viewModel.navigationBarTitle.value,
+                    viewModel,
+                    navHostController,
+                    activityLauncher
+                )
                 loadedNavController = true
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        if (intent.getStringExtra(NotificationManager.DEEP_LINK) == null && intent.data == null) {
-            intent.getStringExtra(NotificationManager.MSG_ID)?.let {
-                MoreApplication.shared!!.notificationManager.markNotificationAsRead(it)
-            }
-        }
-    }
-
-    companion object {
-        val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
-    }
 }
 
 @Composable
-fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: NavHostController, activityResultLauncher: ActivityResultLauncher<Intent>) {
+fun MainView(
+    navigationTitle: String,
+    viewModel: MainViewModel,
+    navController: NavHostController,
+    activityResultLauncher: ActivityResultLauncher<Intent>
+) {
     val currentContext = rememberUpdatedState(LocalContext.current)
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
         onBackButtonClick = { navController.navigateUp() },
         showTabRow = true,
-        tabSelectionIndex = viewModel.tabIndex.value,
+        tabSelectionIndex = viewModel.tabIndex.intValue,
         onTabChange = {
             viewModel.showBackButton.value = false
-            viewModel.tabIndex.value = it
+            viewModel.tabIndex.intValue = it
             when (it) {
                 0 -> navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters())
                 1 -> navController.navigate(NavigationScreen.NOTIFICATIONS.routeWithParameters())
                 2 -> navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
-        }
+        },
+        unreadNotificationCount = viewModel.unreadNotificationCount.intValue,
+        alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         NavHost(
             navController = navController,
@@ -147,9 +141,9 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
-                    viewModel.tabIndex.value = 0
+                    viewModel.tabIndex.intValue = 0
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     DashboardView(
@@ -162,10 +156,10 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.tabIndex.value = 1
+                    viewModel.tabIndex.intValue = 1
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     NotificationView(navController, viewModel = viewModel.notificationViewModel)
@@ -176,10 +170,10 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.tabIndex.value = 2
+                    viewModel.tabIndex.intValue = 2
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     InfoView(navController, viewModel = viewModel.infoVM)
@@ -190,7 +184,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
@@ -202,7 +196,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
@@ -210,16 +204,6 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                         mutableStateOf(requireNotNull(arguments.getString("scheduleId")))
                     }
                     val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
-                    val scheduleListType by remember {
-                        mutableStateOf(
-                            ScheduleListType.valueOf(
-                                arguments.getString(
-                                    "scheduleListType",
-                                    "ALL"
-                                )
-                            )
-                        )
-                    }
 
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -227,8 +211,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     TaskDetailsView(
                         navController = navController,
                         viewModel = taskVM,
-                        scheduleId = scheduleId,
-                        scheduleListType = scheduleListType
+                        scheduleId = scheduleId
                     )
                 }
             }
@@ -236,7 +219,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
@@ -261,7 +244,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             NavigationScreen.STUDY_DETAILS.let { screen ->
                 composable(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -277,7 +260,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     viewModel.navigationBarTitle.value =
@@ -310,7 +293,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     val scheduleId by remember {
                         mutableStateOf(it.arguments?.getString("scheduleId"))
@@ -345,7 +328,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
 
                 ) {
                     val scheduleId by remember {
@@ -360,7 +343,13 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (scheduleId != null || observationId != null) {
                             LaunchedEffect(Unit) {
-                                viewModel.openLimesurvey(currentContext.value, activityResultLauncher, scheduleId, observationId, notificationId)
+                                viewModel.openLimesurvey(
+                                    currentContext.value,
+                                    activityResultLauncher,
+                                    scheduleId,
+                                    observationId,
+                                    notificationId
+                                )
                             }
                         }
                     }
@@ -370,7 +359,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
             NavigationScreen.QUESTIONNAIRE_RESPONSE.let { screen ->
                 composable(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -384,7 +373,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -398,7 +387,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -416,7 +405,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
@@ -433,7 +422,7 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
@@ -445,12 +434,25 @@ fun MainView(navigationTitle: String, viewModel: MainViewModel, navController: N
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
-                    screen.createDeepLinkRoute(MainActivity.DEEPLINK)
+                    screen.createDeepLinkRoute()
                 ) {
                     viewModel.navigationBarTitle.value =
                         screen.stringRes()
                     viewModel.showBackButton.value = true
                     LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
+                }
+            }
+
+            NavigationScreen.OBSERVATION_ERRORS.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute()
+                ) {
+                    viewModel.navigationBarTitle.value =
+                        screen.stringRes()
+                    viewModel.showBackButton.value = true
+                    ObservationErrorView()
                 }
             }
         }

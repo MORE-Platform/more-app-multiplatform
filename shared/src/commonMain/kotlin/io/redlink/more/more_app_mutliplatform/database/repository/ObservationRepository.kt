@@ -10,17 +10,16 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.ktor.utils.io.core.*
+import io.ktor.utils.io.core.Closeable
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.RealmDatabase
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationSchedule
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
 
 class ObservationRepository : Repository<ObservationSchema>() {
     override fun count(): Flow<Long> = realmDatabase().count<ObservationSchema>()
@@ -53,24 +52,24 @@ class ObservationRepository : Repository<ObservationSchema>() {
                 )
             }
 
-    fun collectAllTimestamps() = observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
+    fun collectAllTimestamps() =
+        observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
 
     fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
         return collectionTimestamp(type).asClosure(newState)
     }
 
     fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
-        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }.asClosure(newState)
+        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }
+            .asClosure(newState)
     }
 
     fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationSchema, List<ScheduleSchema>>) -> Unit): Closeable {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 
-    fun observationTypes(): Flow<Set<String>> {
-        return observations().transform { observationList ->
-            emit(observationList.map { it.observationType }.toSet())
-        }
+    fun observationTypes(): Flow<Set<String>> = observations().transform { observationList ->
+        emit(observationList.map { it.observationType }.toSet())
     }
 
     fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(

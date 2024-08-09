@@ -12,8 +12,8 @@ package io.redlink.more.more_app_mutliplatform.extensions
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
 import io.redlink.more.more_app_mutliplatform.util.createUUID
 
 fun Collection<ObservationDataSchema>.mapAsBulkData(): DataBulk? {
@@ -28,3 +28,16 @@ fun Collection<ObservationDataSchema>.mapAsBulkData(): DataBulk? {
         dataPoints = dataPoints
     )
 }
+
+fun <T> Collection<T>.isSubsetOf(other: Collection<T>): Boolean = this.all { it in other }
+
+fun Set<String>.areAllNamesIn(items: Set<BluetoothDevice>): Boolean =
+    this.all { name -> items.any { item -> item.deviceName?.contains(name) ?: false } }
+
+fun Set<String>.anyNameIn(items: Set<BluetoothDevice>): Boolean =
+    this.any { name ->
+        items.any { item ->
+            item.deviceName?.lowercase()?.contains(name.lowercase()) == true
+        }
+    }
+

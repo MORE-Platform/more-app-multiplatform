@@ -17,9 +17,9 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationData
-
-import kotlinx.serialization.*
+import kotlinx.serialization.Required
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * A bulk of observation data containing a unique id, the API Key of the participant and the array of observation data

@@ -11,7 +11,6 @@
 package io.redlink.more.more_app_mutliplatform.models
 
 import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
 
 data class ScheduleModel(
     val scheduleId: String,
@@ -36,7 +35,6 @@ data class ScheduleModel(
 
 
     companion object {
-
         fun createModel(schedule: ScheduleSchema): ScheduleModel? {
             val start = schedule.start ?: return null
             val end = schedule.end ?: return null

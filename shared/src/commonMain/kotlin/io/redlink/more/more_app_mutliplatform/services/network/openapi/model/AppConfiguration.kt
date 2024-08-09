@@ -17,9 +17,9 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ApiKey
-
-import kotlinx.serialization.*
+import kotlinx.serialization.Required
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * The configuration settings for the App while participating on a study 

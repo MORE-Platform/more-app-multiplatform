@@ -19,6 +19,6 @@ import PolarBleSdk
 
 extension BluetoothDevice {
     static func fromPolarDevice(polarInfo: PolarDeviceInfo) -> BluetoothDevice {
-        BluetoothDevice.Companion().create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString, isConnectable: polarInfo.connectable)
+        BluetoothDevice.Companion().create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString)
     }
 }

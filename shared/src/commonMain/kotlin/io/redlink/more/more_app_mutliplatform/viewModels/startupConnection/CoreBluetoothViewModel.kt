@@ -10,19 +10,16 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.startupConnection
 
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.CoreBluetoothConnectionViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.firstOrNull
+import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 
-class CoreBLESetupViewModel(observationFactory: ObservationFactory, val coreBluetooth: CoreBluetoothConnectionViewModel): CoreViewModel() {
+class CoreBluetoothViewModel(
+    observationFactory: ObservationFactory,
+    val coreBluetooth: BluetoothController
+) : CoreViewModel() {
     val devicesNeededToConnectTo = observationFactory.studyObservationTypes
 
     override fun viewDidAppear() {
@@ -32,7 +29,6 @@ class CoreBLESetupViewModel(observationFactory: ObservationFactory, val coreBlue
     override fun viewDidDisappear() {
         super.viewDidDisappear()
         coreBluetooth.viewDidDisappear()
-
     }
 
     fun connectToDevice(device: BluetoothDevice): Boolean {
@@ -40,8 +36,9 @@ class CoreBLESetupViewModel(observationFactory: ObservationFactory, val coreBlue
     }
 
     fun disconnectFromDevice(device: BluetoothDevice) {
-        coreBluetooth.disconnectFromDevice(device)
+        coreBluetooth.unpairFromDevice(device)
     }
 
-    fun devicesNeededChange(providedState: (Set<String>) -> Unit) = devicesNeededToConnectTo.asClosure(providedState)
+    fun devicesNeededChange(providedState: (Set<String>) -> Unit) =
+        devicesNeededToConnectTo.asClosure(providedState)
 }

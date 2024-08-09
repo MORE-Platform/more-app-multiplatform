@@ -18,9 +18,8 @@
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
 
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * The study contact object containing all contact information for the study, that can be used when problems occure.

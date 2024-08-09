@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,72 +18,75 @@ import SwiftUI
 
 struct TaskDetailsView: View {
     @StateObject var viewModel: TaskDetailsViewModel
-    var scheduleListType: ScheduleListType
-    
+
+    @State private var scrollViewContentSize: CGSize = .zero
+
     @EnvironmentObject var navigationModalState: NavigationModalState
-    
-    
+
     private let stringTable = "TaskDetail"
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
+    private let errorStrings = "Errors"
 
     var body: some View {
-        Navigation {
-            MoreMainBackgroundView {
-                VStack(
-                    spacing: 20
-                ) {
-                    VStack {
-                        HStack {
-                            Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
-                                .padding(0.5)
-                            Spacer()
-                            if viewModel.taskDetailsModel?.state == ScheduleState.running, let scheduleId = navigationModalState.navigationState.scheduleId {
-                                InlineAbortButton {
-                                    viewModel.stop(scheduleId: scheduleId)
-                                }
+        MoreMainBackgroundView(contentPadding: 0) {
+            VStack(spacing: 20) {
+                VStack {
+                    HStack {
+                        Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
+                            .padding(0.5)
+                        Spacer()
+                        if let detailsModel = viewModel.taskDetailsModel, detailsModel.state == .running, let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
+                            InlineAbortButton {
+                                viewModel.stop(scheduleId: scheduleId)
                             }
                         }
-                        .frame(height: 40)
-                        HStack(
-                        ) {
-                            BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
-                            Spacer()
-                        }
                     }
-
-                    let date: String = viewModel.getDateRangeString()
-                    let time: String = viewModel.getTimeRangeString()
-
-                    ObservationDetailsData(dateRange: date, timeframe: time)
+                    .frame(height: 40)
 
                     HStack {
-                        AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
-                    }
-                    if scheduleListType != .completed {
+                        BasicText(text: viewModel.taskDetailsModel?.observationType ?? "", color: .more.secondary)
                         Spacer()
-                        HStack {
-                            if let task = viewModel.taskDetailsModel {
-                                DatapointsCollection(datapoints: $viewModel.dataCount, running: task.state == .running)
+                    }
+                }
+
+                ObservationDetailsData(dateRange: viewModel.getDateRangeString(), timeframe: viewModel.getTimeRangeString())
+
+                HStack {
+                    AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
+                }
+                if let detailsModel = viewModel.taskDetailsModel, !detailsModel.state.completed() {
+                    Spacer()
+                    HStack {
+                        DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
+                    }
+                    Spacer()
+
+                    ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
+                        .background(
+                            GeometryReader { geo -> Color in
+                                DispatchQueue.main.async {
+                                    scrollViewContentSize = geo.size
+                                }
+                                return Color.clear
                             }
-                        }
-                        Spacer()
-                    }
-                    if scheduleListType != .completed && !(viewModel.taskDetailsModel?.hidden ?? true) {
-                        if let model = viewModel.taskDetailsModel, let scheduleId = navigationModalState.navigationState.scheduleId {
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: 150)
+
+                    if !detailsModel.hidden {
+                        if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                             ObservationButton(
                                 observationActionDelegate: viewModel,
                                 scheduleId: scheduleId,
-                                observationType: model.observationType,
-                                state: model.state,
-                                disabled: !model.state.active())
+                                observationType: detailsModel.observationType,
+                                state: detailsModel.state,
+                                disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
                         }
                     }
-                    Spacer()
                 }
-
+                Spacer()
             }
-            .customNavigationTitle(with: NavigationScreens.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
+            .customNavigationTitle(with: NavigationScreen.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .onAppear {
                 viewModel.viewDidAppear()
             }
@@ -94,8 +97,9 @@ struct TaskDetailsView: View {
     }
 }
 
-extension TaskDetailsView: SimpleQuestionObservationListener {
-    func onQuestionAnswered() {
-        // self.presentationMode.wrappedValue.dismiss()
+struct TaskDetailsViewPreview_Provider: PreviewProvider {
+    static var previews: some View {
+        TaskDetailsView(viewModel: TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder))
+            .environmentObject(NavigationModalState())
     }
 }

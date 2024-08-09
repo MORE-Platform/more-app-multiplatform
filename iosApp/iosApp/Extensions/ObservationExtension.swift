@@ -15,7 +15,14 @@
 
 import Foundation
 import shared
+import UIKit
 
 protocol ObservationCollector {
     func collectData(start: Date, end: Date, completion: @escaping () -> Void)
+}
+
+extension Observation_ {
+    static func pauseObservation(_ observationType: ObservationType) {
+        AppDelegate.shared.observationManager.pauseObservationType(type: observationType.observationType)
+    }
 }

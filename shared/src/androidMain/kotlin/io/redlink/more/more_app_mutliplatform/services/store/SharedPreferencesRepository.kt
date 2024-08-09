@@ -13,7 +13,7 @@ package io.redlink.more.more_app_mutliplatform.services.store
 import android.content.Context
 import android.content.SharedPreferences
 
-class SharedPreferencesRepository(context: Context): SharedStorageRepository {
+class SharedPreferencesRepository(context: Context) : SharedStorageRepository {
     private var sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(context)
 
     override fun store(key: String, value: String) {
@@ -51,6 +51,13 @@ class SharedPreferencesRepository(context: Context): SharedStorageRepository {
             ?.apply()
     }
 
+    override fun store(key: String, value: Long) {
+        sharedPreferences
+            .edit()
+            ?.putLong(key, value)
+            ?.apply()
+    }
+
     override fun load(key: String, default: String): String {
         return sharedPreferences.getString(key, default) ?: default
     }
@@ -69,6 +76,10 @@ class SharedPreferencesRepository(context: Context): SharedStorageRepository {
 
     override fun load(key: String, default: Double): Double {
         return sharedPreferences.getLong(key, default.toRawBits()).toDouble()
+    }
+
+    override fun load(key: String, default: Long): Long {
+        return sharedPreferences.getLong(key, default)
     }
 
     override fun remove(key: String) {

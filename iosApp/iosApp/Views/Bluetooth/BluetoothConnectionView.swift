@@ -14,6 +14,7 @@
 //
 
 import SwiftUI
+import shared
 
 struct BluetoothConnectionView: View {
     @StateObject var viewModel: BluetoothConnectionViewModel
@@ -22,41 +23,40 @@ struct BluetoothConnectionView: View {
 
     private let bluetoothStrings = "BluetoothConnection"
     var body: some View {
-        MoreMainBackgroundView {
-            VStack {
-                if showAsSeparateView {
-                    HStack(alignment: .lastTextBaseline) {
-                        Spacer()
-                        VStack(alignment: .center) {
-                            Button {
-                                viewOpen = false
-                            } label: {
-                                Text("Close")
-                                    .foregroundColor(.more.primary)
-                            }
-                            .padding(.vertical)
+        VStack {
+            if showAsSeparateView {
+                HStack(alignment: .lastTextBaseline) {
+                    Spacer()
+                    VStack(alignment: .center) {
+                        Button {
+                            viewOpen = false
+                        } label: {
+                            Text("Close")
+                                .foregroundColor(.more.primary)
                         }
+                        .padding(.vertical)
                     }
-                    .padding(.horizontal, 8)
                 }
-                ScrollView {
-                    LazyVStack(alignment: .leading) {
-                        Title(titleText: "External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings))
-                        BasicText(text: "\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):", color: Color.more.secondary)
-                            .padding(.vertical, 8)
+                .padding(.horizontal, 8)
+            }
+            ScrollView {
+                LazyVStack(alignment: .leading) {
+                    Title(titleText: "External Device Setup".localize(withComment: "External Device Setup Screen", useTable: bluetoothStrings))
+                    BasicText(text: "\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices".localize(withComment: "Bluetooth necessity description", useTable: bluetoothStrings)):", color: Color.more.secondary)
+                        .padding(.vertical, 8)
+                    
+                    ForEach(viewModel.neededDevices, id: \.self) { device in
+                        SectionHeading(sectionTitle: "- \(device)")
+                    }
+                    .padding(.bottom, 8)
+                    
+                    if showAsSeparateView {
+                        BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings), color: Color.more.secondary)
+                            .padding(.top, 8)
+                    }
+                    
 
-                        ForEach(viewModel.neededDevices, id: \.self) { device in
-                            SectionHeading(sectionTitle: "- \(device)")
-                        }
-
-                        if showAsSeparateView {
-                            BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices".localize(withComment: "Connection tutorial", useTable: bluetoothStrings), color: Color.more.secondary)
-                                .padding(.top, 8)
-                        }
-
-                        Divider()
-                            .padding(.bottom, 8)
-                        
+                    if viewModel.bluetoothPower == .on {
                         Section(header: SectionHeading(sectionTitle: "Connected devices".localize(withComment: "Connected device section", useTable: bluetoothStrings))) {
                             if viewModel.connectedDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices connected", withComment: "No devices connected", inTable: bluetoothStrings))!")
@@ -89,16 +89,15 @@ struct BluetoothConnectionView: View {
                                 }
                             }
                         }
-
-                        // .padding(.bottom, 8)
+                        
                         Section(header: SectionHeading(sectionTitle: "Discovered devices")) {
                             if viewModel.discoveredDevices.isEmpty {
                                 EmptyListView(text: "\(String.localize(forKey: "No devices found nearby", withComment: "No devices found nearby", inTable: bluetoothStrings))!")
                             } else {
-                                ForEach(viewModel.discoveredDevices, id: \.self.address) { device in
+                                ForEach(viewModel.discoveredDevices, id: \.address) { device in
                                     if let deviceName = device.deviceName {
                                         VStack(alignment: .leading) {
-                                            HStack(alignment: .firstTextBaseline) {
+                                            HStack {
                                                 DetailsTitle(text: deviceName)
                                                 if let address = device.address, viewModel.connectingDevices.contains(address) {
                                                     Spacer()
@@ -118,18 +117,20 @@ struct BluetoothConnectionView: View {
                             if viewModel.bluetoothIsScanning {
                                 HStack {
                                     ProgressView()
+                                        .padding(.trailing, 4)
                                     BasicText(text: "\(String.localize(forKey: "Searching for devices", withComment: "Searching for new devices", inTable: bluetoothStrings))...")
                                 }
                             }
                         }
-                        .onAppear {
-                            viewModel.viewDidAppear()
-                        }
-                        .onDisappear {
-                            viewModel.viewDidDisappear()
-                        }
+                    } else {
+                        BasicText(text: "Bluetooth disabled! Please enable to use!".localize(withComment: "Bluetooth disabled! Please enable to use!", useTable: bluetoothStrings))
                     }
-                    .padding(.horizontal, 8)
+                }
+                .onAppear {
+                    viewModel.viewDidAppear()
+                }
+                .onDisappear {
+                    viewModel.viewDidDisappear()
                 }
             }
         }

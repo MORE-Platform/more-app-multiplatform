@@ -18,10 +18,8 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.firstOrNull
 
 class CoreTaskDetailsViewModel(
@@ -60,10 +58,6 @@ class CoreTaskDetailsViewModel(
                 }
             }
         }
-    }
-
-    override fun viewDidDisappear() {
-        super.viewDidDisappear()
     }
 
     fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable =

@@ -11,11 +11,22 @@
 package io.redlink.more.app.android.activities.info
 
 import android.app.Activity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -30,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.BLESetup.BLEConnectionActivity
+import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.AppVersion
@@ -126,7 +137,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            if(it.study.participantId != null ) {
+                            if (it.study.participantId != null) {
                                 SmallTitle(
                                     text = getStringResource(id = R.string.info_participant_credentials),
                                     color = MoreColors.Secondary
@@ -138,8 +149,11 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                                 )
                                 SmallTitle(text = ": ", color = MoreColors.Secondary)
                             }
-                            if(it.study.participantAlias != null) {
-                                BasicText(text = it.study.participantAlias.toString(), color = MoreColors.Secondary)
+                            if (it.study.participantAlias != null) {
+                                BasicText(
+                                    text = it.study.participantAlias.toString(),
+                                    color = MoreColors.Secondary
+                                )
                             }
                         }
                         if (it.study.participantId != null || it.study.participantAlias != null) {
@@ -153,7 +167,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     ) {
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
+                        if (it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             SmallTitle(
                                 text = getStringResource(id = R.string.info_contact_data),
                                 color = MoreColors.PrimaryDark,
@@ -166,7 +180,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                         }
 
 
-                        if(it.study.contactInstitute != null) {
+                        if (it.study.contactInstitute != null) {
                             SmallTitle(
                                 text = it.study.contactInstitute as String,
                                 modifier = Modifier
@@ -176,7 +190,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                             )
                         }
 
-                        if(it.study.contactPerson != null) {
+                        if (it.study.contactPerson != null) {
                             SmallTitle(
                                 text = it.study.contactPerson as String,
                                 modifier = Modifier.fillMaxWidth(),
@@ -205,7 +219,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                                 textAlign = TextAlign.Center
                             )
 
-                        if(it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
+                        if (it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Divider()
 

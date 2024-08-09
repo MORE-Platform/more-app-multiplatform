@@ -16,8 +16,9 @@
 import SwiftUI
 
 struct ObservationDetails: View {
-    @State var observationTitle: String
-    @State var observationType: String
+    let observationTitle: String
+    let observationType: String
+    let numberOfObservationErrors: Int
     var action: () -> Void = {}
     
     var body: some View {
@@ -26,18 +27,29 @@ struct ObservationDetails: View {
                 BasicText(text: observationTitle)
                     .font(Font.more.headline)
                     .foregroundColor(Color.more.primary)
-                    .padding(0.5)
+                    .padding(.bottom, 1)
                 Text(observationType)
                     .foregroundColor(Color.more.secondary)
             }
+            .padding(4)
             Spacer()
+            if numberOfObservationErrors > 0 {
+                HStack(alignment: .center, spacing: 4) {
+                    Text("\(numberOfObservationErrors)")
+                    Image(systemName: "exclamationmark.triangle")
+                }
+                .font(.more.headline)
+                .foregroundColor(.more.important)
+                .padding(.horizontal, 4)
+            }
             Image(systemName: "chevron.forward")
+                .foregroundColor(numberOfObservationErrors > 0 ? .more.important : .more.primary)
         }
     }
 }
 
 struct ObservationDetails_Previews: PreviewProvider {
     static var previews: some View {
-        ObservationDetails(observationTitle:"Observation Title", observationType: "Observation Type")
+        ObservationDetails(observationTitle:"Observation Title", observationType: "Observation Type", numberOfObservationErrors: 1)
     }
 }

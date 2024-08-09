@@ -97,6 +97,9 @@ class NotificationRepository : Repository<NotificationSchema>() {
     fun getAllUserFacingNotifications() =
         realmDatabase().query<NotificationSchema>("userFacing == true")
 
+    fun getUnreadUserNotifications() =
+        realmDatabase().query<NotificationSchema>("userFacing == true AND read == false")
+
     fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
         Scope.launch {
             mutex.withLock {

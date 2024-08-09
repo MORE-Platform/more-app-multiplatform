@@ -15,9 +15,6 @@ import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
@@ -25,7 +22,6 @@ import kotlin.coroutines.CoroutineContext
 abstract class CoreViewModel : Closeable {
     private val mutex = Mutex()
     private var viewJobs = mutableSetOf<String>()
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
     abstract fun viewDidAppear()
 
@@ -38,10 +34,17 @@ abstract class CoreViewModel : Closeable {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
     ) {
-        scope.launch{
-            val uuid = Scope.launch(coroutineContext, start, block).first
+        val result = Scope.launch(coroutineContext, start, block)
+        Scope.launch {
             mutex.withLock {
-                viewJobs.add(uuid)
+                viewJobs.add(result.first)
+            }
+        }
+        result.second.invokeOnCompletion {
+            Scope.launch {
+                mutex.withLock {
+                    viewJobs.remove(result.first)
+                }
             }
         }
     }
