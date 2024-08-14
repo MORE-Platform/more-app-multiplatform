@@ -30,7 +30,7 @@ struct TaskDetailsView: View {
 
     var body: some View {
         MoreMainBackgroundView(contentPadding: 0) {
-            VStack(spacing: 20) {
+            VStack {
                 VStack {
                     HStack {
                         Title2(titleText: viewModel.taskDetailsModel?.observationTitle ?? "")
@@ -61,30 +61,35 @@ struct TaskDetailsView: View {
                         DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
                     }
                     Spacer()
-
-                    ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
-                        .background(
-                            GeometryReader { geo -> Color in
-                                DispatchQueue.main.async {
-                                    scrollViewContentSize = geo.size
+                    
+                    VStack {
+                        ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
+                            .background(
+                                GeometryReader { geo -> Color in
+                                    DispatchQueue.main.async {
+                                        scrollViewContentSize = geo.size
+                                    }
+                                    return Color.clear
                                 }
-                                return Color.clear
+                            )
+                            .frame(maxWidth: .infinity, maxHeight: 100)
+                        
+                        if !detailsModel.hidden {
+                            if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
+                                Divider()
+                                ObservationButton(
+                                    observationActionDelegate: viewModel,
+                                    scheduleId: scheduleId,
+                                    observationType: detailsModel.observationType,
+                                    state: detailsModel.state,
+                                    disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
+                                .padding(.bottom)
                             }
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: 150)
-
-                    if !detailsModel.hidden {
-                        if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
-                            ObservationButton(
-                                observationActionDelegate: viewModel,
-                                scheduleId: scheduleId,
-                                observationType: detailsModel.observationType,
-                                state: detailsModel.state,
-                                disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
                         }
                     }
+
                 }
-                Spacer()
+                
             }
             .customNavigationTitle(with: NavigationScreen.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
             .onAppear {

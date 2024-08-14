@@ -138,61 +138,76 @@ fun TaskDetailsView(
                     hasPreview = false
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                scheduleId?.let {
-                    if (!viewModel.taskDetailsModel.value.state.completed()) {
-                        DatapointCollectionView(
-                            viewModel.dataPointCount.value,
-                            viewModel.taskDetailsModel.value.state
+
+            }
+        }
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            scheduleId?.let {
+                if (!viewModel.taskDetailsModel.value.state.completed()) {
+                    DatapointCollectionView(
+                        viewModel.dataPointCount.value,
+                        viewModel.taskDetailsModel.value.state
+                    )
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+
+            ObservationErrorListView(
+                errors = viewModel.taskObservationErrors,
+                errorActions = viewModel.taskObservationErrorActions
+            )
+
+            if (!viewModel.taskDetailsModel.value.hidden) {
+                SmallTextButton(
+                    text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
+                        id = R.string.more_observation_pause
+                    )
+                    else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
+                        id = R.string.more_questionnaire_start
+                    )
+                    else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
+                        id = R.string.more_limesurvey_start
+                    )
+                    else getStringResource(
+                        id = R.string.more_observation_start
+                    ),
+                    enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
+                            emptySet()
+                        ).observationType
+                    ) viewModel.polarHrReady.value else true
+                ) {
+                    if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
+                        navController.navigate(
+                            NavigationScreen.SIMPLE_QUESTION.navigationRoute(
+                                "scheduleId" to scheduleId
+                            )
                         )
+                    } else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
+                        navController.navigate(
+                            NavigationScreen.LIMESURVEY.navigationRoute(
+                                "scheduleId" to scheduleId
+                            )
+                        )
+                    } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                        viewModel.pauseObservation()
+                    } else {
+                        viewModel.startObservation()
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ObservationErrorListView(
-            errors = viewModel.taskObservationErrors,
-            errorActions = viewModel.taskObservationErrorActions
-        )
-
-        if (!viewModel.taskDetailsModel.value.hidden) {
-            SmallTextButton(
-                text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
-                    id = R.string.more_observation_pause
-                )
-                else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
-                    id = R.string.more_questionnaire_start
-                )
-                else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
-                    id = R.string.more_limesurvey_start
-                )
-                else getStringResource(
-                    id = R.string.more_observation_start
-                ),
-                enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
-                        emptySet()
-                    ).observationType
-                ) viewModel.polarHrReady.value else true
-            ) {
-                if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
-                    navController.navigate(
-                        NavigationScreen.SIMPLE_QUESTION.navigationRoute(
-                            "scheduleId" to scheduleId
-                        )
-                    )
-                } else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
-                    navController.navigate(
-                        NavigationScreen.LIMESURVEY.navigationRoute(
-                            "scheduleId" to scheduleId
-                        )
-                    )
-                } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
-                    viewModel.pauseObservation()
-                } else {
-                    viewModel.startObservation()
-                }
-            }
-        }
     }
 }

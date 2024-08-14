@@ -71,7 +71,6 @@ class RegistrationService(
     ) {
         StudyScope.launch {
             shared.credentialRepository.remove()
-            shared.endpointRepository.removeEndpoint()
             DatabaseManager.deleteAll()
         }
         study?.let { study ->
@@ -87,6 +86,10 @@ class RegistrationService(
                 sendConsent(token, studyConsent, endpoint, onSuccess, onError, onFinish)
             }
         }
+    }
+
+    fun declineConsent() {
+        shared.endpointRepository.removeEndpoint()
     }
 
     private fun sendConsent(

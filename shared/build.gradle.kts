@@ -14,8 +14,8 @@ val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
 val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
-val coroutinesVersion = "1.7.3"
-val ktorVersion = "2.3.10"
+val coroutinesVersion = "1.8.1"
+val ktorVersion = "2.3.12"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.6.0"
 val gsonVersion = "2.10.1"
@@ -52,6 +52,7 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             implementation("io.ktor:ktor-client-auth:$ktorVersion")
             implementation("io.ktor:ktor-client-logging:$ktorVersion")
+            implementation("dev.tmapps:konnection:1.4.1")
         }
 
         commonTest.dependencies {

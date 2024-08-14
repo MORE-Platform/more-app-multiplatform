@@ -10,16 +10,20 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.network
 
-import io.ktor.client.*
-import io.ktor.client.engine.darwin.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.darwin.Darwin
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.basic
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.retry
+import io.ktor.client.request.request
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 
 actual fun getHttpClient(customLogger: Logger): HttpClient = HttpClient(Darwin) {
     install(ContentNegotiation) {
@@ -29,6 +33,9 @@ actual fun getHttpClient(customLogger: Logger): HttpClient = HttpClient(Darwin) 
         }
         request {
             contentType(ContentType.Application.Json)
+            retry {
+                maxRetries = 3
+            }
         }
         Logging {
             logger = customLogger

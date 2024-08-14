@@ -21,8 +21,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class CorePermissionViewModel(
     private val registrationService: RegistrationService,
     private val studyConsentTitle: String
-): CoreViewModel() {
-    val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(PermissionModel("Title", "info", "consent info", consentInfo = emptyList()))
+) : CoreViewModel() {
+    val permissionModel: MutableStateFlow<PermissionModel> = MutableStateFlow(
+        PermissionModel(
+            "Title",
+            "info",
+            "consent info",
+            consentInfo = emptyList()
+        )
+    )
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val observations: MutableStateFlow<List<Observation>> = MutableStateFlow(emptyList())
 
@@ -33,16 +40,27 @@ class CorePermissionViewModel(
         }
     }
 
-    fun acceptConsent(consentInfoMd5: String, uniqueDeviceId: String, onSuccess: (Boolean) -> Unit, onError: (NetworkServiceError?) -> Unit) {
+    fun acceptConsent(
+        consentInfoMd5: String,
+        uniqueDeviceId: String,
+        onSuccess: (Boolean) -> Unit,
+        onError: (NetworkServiceError?) -> Unit
+    ) {
         loadingFlow.value = true
         registrationService.acceptConsent(consentInfoMd5, uniqueDeviceId, onSuccess, onError) {
             loadingFlow.value = false
         }
     }
 
-    fun onConsentModelChange(provideNewState: ((PermissionModel) -> Unit)) = permissionModel.asClosure(provideNewState)
+    fun declineConsent() {
+        registrationService.declineConsent()
+    }
 
-    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)) = loadingFlow.asClosure(provideNewState)
+    fun onConsentModelChange(provideNewState: ((PermissionModel) -> Unit)) =
+        permissionModel.asClosure(provideNewState)
+
+    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)) =
+        loadingFlow.asClosure(provideNewState)
 
     override fun viewDidAppear() {
 
