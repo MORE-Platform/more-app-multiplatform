@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,7 +17,8 @@ import Foundation
 import shared
 
 class BluetoothConnectionViewModel: ObservableObject {
-    private let coreViewModel: CoreBLESetupViewModel = CoreBLESetupViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.coreBluetooth)
+    private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.bluetoothController)
+    private let deviceManager = BluetoothDeviceManager.shared
 
     @Published var discoveredDevices: [BluetoothDevice] = []
     @Published var connectedDevices: [BluetoothDevice] = []
@@ -27,16 +28,34 @@ class BluetoothConnectionViewModel: ObservableObject {
 
     @Published var neededDevices: [String] = []
 
+    @Published var bluetoothPower: BluetoothState = .off
+
     init() {
-        coreViewModel.devicesNeededChange { [weak self] deviceList in
-            DispatchQueue.main.async {
-                self?.neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded(types: deviceList))
+        deviceManager.connectedDevicesAsClosure { [weak self] deviceSet in
+            if let self {
+                DispatchQueue.main.async {
+                    self.connectedDevices = Array(deviceSet)
+                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
+                        .sorted(by: { d1, d2 in
+                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
+                                return name1 < name2
+                            } else {
+                                return false
+                            }
+                        })
+                }
             }
         }
-    }
-    
-    func viewDidAppear() {
-        coreViewModel.coreBluetooth.discoveredDevicesListChanges { [weak self] deviceSet in
+
+        deviceManager.devicesCurrentlyConnectingAsClosure { [weak self] devices in
+            if let self {
+                DispatchQueue.main.async {
+                    self.connectingDevices = devices.compactMap { $0.address }
+                }
+            }
+        }
+
+        deviceManager.discoveredDevicesAsClosure { [weak self] deviceSet in
             if let self {
                 DispatchQueue.main.async {
                     self.discoveredDevices = Array(deviceSet)
@@ -60,42 +79,23 @@ class BluetoothConnectionViewModel: ObservableObject {
             }
         }
 
-        coreViewModel.coreBluetooth.connectedDevicesListChanges { [weak self] deviceSet in
-            if let self {
-                DispatchQueue.main.async {
-                    self.connectedDevices = Array(deviceSet)
-                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
-                        .sorted(by: { d1, d2 in
-                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
-                                return name1 < name2
-                            } else {
-                                return false
-                            }
-                        })
-                }
-            }
+        coreViewModel.coreBluetooth.isScanningAsClosure { [weak self] kBool in
+            self?.bluetoothIsScanning = kBool.boolValue
         }
 
-        coreViewModel.coreBluetooth.scanningIsChanging { [weak self] scanning in
-            DispatchQueue.main.async {
-                self?.bluetoothIsScanning = scanning.boolValue
-            }
+        coreViewModel.coreBluetooth.bluetoothStateAsClosure { [weak self] bluetoothState in
+            self?.bluetoothPower = bluetoothState
         }
+    }
 
-        coreViewModel.coreBluetooth.connectingDevicesListChanges { [weak self] connectingDevices in
-            DispatchQueue.main.async {
-                self?.connectingDevices = Array(connectingDevices)
-            }
-        }
+    func viewDidAppear() {
         coreViewModel.viewDidAppear()
+        neededDevices = Array(AppDelegate.shared.observationFactory.bleDevicesNeeded())
     }
 
     func viewDidDisappear() {
         coreViewModel.viewDidDisappear()
-        self.connectedDevices.removeAll()
-        self.discoveredDevices.removeAll()
-        self.connectingDevices.removeAll()
-        self.bluetoothIsScanning = false
+        ViewManager.shared.showBLEView(state: false)
     }
 
     func connectToDevice(device: BluetoothDevice) {

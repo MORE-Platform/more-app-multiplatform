@@ -10,7 +10,6 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
-import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
 import io.ktor.utils.io.core.use
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
@@ -19,13 +18,9 @@ import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepositor
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 
 class CoreStudyDetailsViewModel: CoreViewModel() {
     val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
@@ -56,7 +51,7 @@ class CoreStudyDetailsViewModel: CoreViewModel() {
                             }.cancellable().collect { (triple, observations) ->
                                 triple.first?.let {studySchema ->
                                     println(studySchema)
-                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations, triple.third,
+                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations.sortedBy { it.observationTitle }, triple.third,
                                         triple.second.toLong()
                                     )
                                 }

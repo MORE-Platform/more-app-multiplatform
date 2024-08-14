@@ -11,7 +11,6 @@
 package io.redlink.more.app.android.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
@@ -20,7 +19,6 @@ import io.github.aakira.napier.Napier
 import io.realm.kotlin.ext.toRealmDictionary
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.Shared
-import io.redlink.more.more_app_mutliplatform.models.StudyState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type

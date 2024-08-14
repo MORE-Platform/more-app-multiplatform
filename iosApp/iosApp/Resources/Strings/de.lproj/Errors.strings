@@ -1,0 +1,22 @@
+/* 
+  Errors.strings
+  iosApp
+
+  Created by Jan Cortiel on 22.05.24.
+  Copyright © 2024 Redlink GmbH. All rights reserved.
+*/
+
+"Access to Bluetooth not granted" = "Zugriff auf Bluetooth nicht gewährt";
+"Bluetooth is not enabled" = "Bluetooth ist nicht aktiviert";
+"No polar device connected" = "Kein Polar-Gerät verbunden";
+"Permission request pending until observation is about to start" = "Genehmigungsanfrage ausstehend, bis die Beobachtung beginnt";
+"Accelerometer Sensor not available" = "Beschleunigungssensor nicht verfügbar";
+"Permission not granted to access Sensor recording service" = "Zugriff auf Sensoraufzeichnungsdienst nicht genehmigt";
+"Accelerometer Recording is not available" = "Beschleunigungssensoraufzeichnung ist nicht verfügbar";
+"Location Services not enabled" = "Ortungsdienste sind nicht aktiviert";
+"Permission not granted to access location of the device" = "Zugriff auf den Standort des Geräts nicht genehmigt";
+"errors" = "Fehler";
+"Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!" = "Beobachtung kann nicht gestartet werden! Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!";
+"Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!" = "Fehler beim Fortsetzen der Beobachtung! Es gab ein Verbindungsproblem mit einem Bluetooth-Sensor. Bitte stellen Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!";
+"Observation Error" = "Aufzeichnungfehler";
+"Heart-rate measurement feature unavailable" = "Funktion zur Messung der Herzfrequenz nicht verfügbar";

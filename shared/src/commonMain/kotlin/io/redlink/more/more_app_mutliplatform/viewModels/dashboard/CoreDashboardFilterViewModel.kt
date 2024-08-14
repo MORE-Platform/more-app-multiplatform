@@ -16,7 +16,6 @@ import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.DateFilter
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +25,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 
-class CoreDashboardFilterViewModel: CoreViewModel() {
+class CoreDashboardFilterViewModel : CoreViewModel() {
     val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
     val currentDateFilter = MutableStateFlow(
-        DateFilterModel.values().associateWith { it == DateFilterModel.ENTIRE_TIME })
+        DateFilterModel.entries.associateWith { it == DateFilterModel.ENTIRE_TIME })
 
     init {
         Scope.launch {
@@ -38,6 +37,7 @@ class CoreDashboardFilterViewModel: CoreViewModel() {
             }
         }
     }
+
     override fun viewDidAppear() {
 
     }
@@ -107,8 +107,11 @@ class CoreDashboardFilterViewModel: CoreViewModel() {
         return schedules
     }
 
-    fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) = currentTypeFilter.asClosure(provideNewState)
+    fun onNewTypeFilter(provideNewState: (Map<String, Boolean>) -> Unit) =
+        currentTypeFilter.asClosure(provideNewState)
 
-    fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) = currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }.asClosure(provideNewState)
+    fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) =
+        currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }
+            .asClosure(provideNewState)
 
 }

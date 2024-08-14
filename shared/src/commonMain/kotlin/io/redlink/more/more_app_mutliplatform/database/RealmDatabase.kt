@@ -20,24 +20,20 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.TypedRealmObject
 import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
 import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
-private const val DB_SCHEMA_VERSION: Long = 3
+private const val DB_SCHEMA_VERSION: Long = 4
 
 object RealmDatabase {
     var realm: Realm? = null
         private set
 
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
     val mutex = Mutex()
 
     fun open(realmObjects: Set<KClass<out TypedRealmObject>>) {
@@ -61,7 +57,7 @@ object RealmDatabase {
         updatePolicy: UpdatePolicy = UpdatePolicy.ALL
     ) {
         if (realmObjects.isNotEmpty()) {
-            scope.launch {
+            Scope.launch {
                 mutex.withLock {
                     realm?.write {
                         realmObjects.forEach {

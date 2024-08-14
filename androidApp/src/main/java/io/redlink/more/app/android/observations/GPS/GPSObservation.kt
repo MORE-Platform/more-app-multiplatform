@@ -19,7 +19,8 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +45,7 @@ class GPSObservation(
 
     override fun start(): Boolean {
         Napier.d { "Trying to start GPS..." }
-        if (this.activate()) {
+        if (this.hasPermission()) {
             val listener = this
             scope.launch {
                 Napier.d { "Registering GPS Service..." }
@@ -60,10 +61,19 @@ class GPSObservation(
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return locationManager != null
-                && locationManager.isLocationEnabled
-                && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    override fun observerErrors(): Set<String> {
+        val errors = mutableSetOf<String>()
+        if (locationManager == null) {
+            errors.add("error_location_services")
+        }
+        if (!GPSStateListener.gpsEnabled.value) {
+            errors.add("location_disabled")
+        }
+        if (!hasPermission()) {
+            errors.add("location_permission_not_granted")
+            showPermissionAlertDialog()
+        }
+        return errors
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
@@ -92,11 +102,11 @@ class GPSObservation(
         Napier.d { "Location available: $available" }
     }
 
-    private fun activate(): Boolean {
+    private fun hasPermission(): Boolean {
         return this.hasPermissions(MoreApplication.appContext!!)
     }
 
-    private fun hasPermissions(context: Context): Boolean  {
+    private fun hasPermissions(context: Context): Boolean {
         getPermission().forEach { permission ->
             if (ActivityCompat.checkSelfPermission(
                     context,

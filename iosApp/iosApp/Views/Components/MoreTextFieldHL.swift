@@ -21,7 +21,7 @@ struct MoreTextFieldHL: View {
     
     @Binding var input: String
     
-    var uppercase: Bool = false
+    var capitalization: Capitalization = .normal
     var autoCorrectDisabled = false
     var textType: UITextContentType? = nil
     var body: some View {
@@ -29,15 +29,15 @@ struct MoreTextFieldHL: View {
             
             HStack{
                 Spacer()
-                SectionHeading(sectionTitle: headerText)
+                SectionHeading(sectionTitle: headerText, showAllText: true)
                 Spacer()
             }
             .padding(3)
             
             if isSmTextfield {
-                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, uppercase: uppercase, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
+                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder),inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             } else {
-                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, uppercase: uppercase, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
+                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             }
             
         }
@@ -48,6 +48,6 @@ struct MoreTextFieldHL: View {
 struct MoreTextFieldHL_Previews: PreviewProvider {
     
     static var previews: some View {
-        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: "Hello World Key", inputPlaceholder: .constant(""), input: .constant("me"), uppercase: false)
+        MoreTextFieldHL(isSmTextfield: .constant(false), headerText: "Hello World Key", inputPlaceholder: .constant(""), input: .constant("me"), capitalization: .normal)
     }
 }

@@ -51,7 +51,7 @@ class SelfLearningMultipleChoiceQuestionCoreViewModel(observationFactory: Observ
 
     fun setScheduleViaObservationId(observationId: String, notificationId: String? = null) {
         launchScope {
-            scheduleRepository.firstScheduleAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it,notificationId)}
+            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId)}
         }
     }
 

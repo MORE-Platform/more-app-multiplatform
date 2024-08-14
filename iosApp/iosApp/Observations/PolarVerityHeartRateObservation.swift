@@ -7,103 +7,116 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
-import PolarBleSdk
 import CoreBluetooth
+import Foundation
+import PolarBleSdk
 import RxSwift
+import shared
+import UIKit
 
 class PolarVerityHeartRateObservation: Observation_ {
     static var hrReady = false
-    
-    static func polarDeviceDisconnected() {
-        let polarDevices = AppDelegate.shared.mainBluetoothConnector.connected.filter{
-            if let deviceName = ($0 as? BluetoothDevice)?.deviceName {
-                return deviceName.lowercased().contains("polar")
+
+    static func setHRFeature(state: Bool) {
+        if state {
+            if !hrReady {
+                AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: []).observationType)
             }
-            return false
+        } else {
+            Observation_.pauseObservation(PolarVerityHeartRateType(sensorPermissions: []))
         }
-        if polarDevices.isEmpty {
-            hrReady = false
-            AppDelegate.shared.observationManager.pauseObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
-        }
+        hrReady = state
     }
-    
-    static func setHRReady() {
-        if !hrReady {
-            hrReady = true
-            AppDelegate.shared.observationManager.startObservationType(type: PolarVerityHeartRateType(sensorPermissions: Set()).observationType)
-        }
-    }
-    
-    private let deviceIdentificer = "Polar"
+
+    private let deviceIdentificer: Set<String> = ["Polar"]
     private let polarConnector = AppDelegate.polarConnector
-    private let bluetoothRepository = BluetoothDeviceRepository(bluetoothConnector: nil)
+
     private var connectedDevices: [BluetoothDevice] = []
-    private var hrObservation: Disposable? = nil
+    private var hrObservation: Disposable?
+
+    private let deviceManager = BluetoothDeviceManager.shared
+
+    private var deviceListener: Ktor_ioCloseable?
+    
+    private let errorStringTable = "Errors"
 
     init(sensorPermissions: Set<String>) {
         super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
-        bluetoothRepository.listenForConnectedDevices()
-        bluetoothRepository.getConnectedDevices { [weak self] deviceList in
-            if let self {
-                self.connectedDevices = deviceList.filter{$0.deviceName?.lowercased().contains(self.deviceIdentificer.lowercased()) ?? false}
-            }
-        }
     }
-    
+
     override func start() -> Bool {
-        if self.observerAccessible(){
-            if let address = (self.polarConnector.connected.allObjects.first as? BluetoothDevice)?.address {
-                hrObservation = self.polarConnector.polarApi.startHrStreaming(address).subscribe(onNext: { [weak self] data in
+        if observerAccessible() {
+            let acceptableDevices = deviceManager.connectedDevicesAsValue().deviceWithNameIn(nameSet: deviceIdentificer)
+            if !acceptableDevices.isEmpty, let firstAddres = acceptableDevices[0].address {
+                listenToDeviceConnection()
+                hrObservation = polarConnector.polarApi.startHrStreaming(firstAddres).subscribe(onNext: { [weak self] data in
                     if let self, let hrData = data.first {
-                        self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
+                        self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
+                        }
                     }
-                }, onError: { error in
+                }, onError: { [weak self] error in
                     print(error)
+                    if let self {
+                        showObservationErrorNotification(notificationBody: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!".localize(withComment: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!", useTable: errorStringTable), fallbackTitle: "Observation Error".localize(withComment: "Observation Error", useTable: errorStringTable))
+                        Observation_.pauseObservation(self.observationType)
+                    }
                 })
                 return true
             }
         }
+        showObservationErrorNotification(notificationBody: "Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!".localize(withComment: "Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!", useTable: errorStringTable), fallbackTitle: "Observation Error".localize(withComment: "Observation Error", useTable: errorStringTable))
         return false
     }
-    
+
     override func stop(onCompletion: @escaping () -> Void) {
         hrObservation?.dispose()
+        deviceListener?.close()
         onCompletion()
     }
-    
-    override func observerAccessible() -> Bool {
-        if let hasBleObservations = AppDelegate.shared.showBleSetup().second?.boolValue, hasBleObservations {
-            if self.polarConnector.connected.count > 0 {
-                AppDelegate.shared.coreBluetooth.disableBackgroundScanner()
-                return true
-            } else {
-                AppDelegate.shared.coreBluetooth.enableBackgroundScanner()
-                return false
-            }
-        } else {
-            return false
+
+    override func observerErrors() -> Set<String> {
+        var errors: Set<String> = []
+        let state = AppDelegate.shared.bluetoothController.bluetoothPower.value as? BluetoothState
+        if CBManager.authorization != .allowedAlways {
+            errors.insert("Access to Bluetooth not granted")
+            PermissionManager.openSensorPermissionDialog()
         }
+        if state == nil || state == BluetoothState.off  {
+            errors.insert("Bluetooth is not enabled")
+        }
+        if !AppDelegate.shared.bluetoothController.observerDeviceAccessible(bleDevices: deviceIdentificer) {
+            errors.insert("No polar device connected")
+            errors.insert(Observation_.companion.ERROR_DEVICE_NOT_CONNECTED)
+        } else if !PolarVerityHeartRateObservation.hrReady {
+            errors.insert("Heart-rate measurement feature unavailable")
+        }
+        return errors
     }
-    
-    override func applyObservationConfig(settings: Dictionary<String, Any>){
-        
+
+    override func applyObservationConfig(settings: Dictionary<String, Any>) {
     }
-    
+
     override func bleDevicesNeeded() -> Set<String> {
-        print("Polar device needed \(Set([deviceIdentificer]))")
-        return Set([deviceIdentificer])
+        print("Polar device needed \(deviceIdentificer)")
+        return deviceIdentificer
     }
-    
+
     override func ableToAutomaticallyStart() -> Bool {
         observerAccessible()
     }
-}
 
+    private func listenToDeviceConnection() {
+        deviceListener = deviceManager.connectedDevicesAsClosure { [weak self] devices in
+            if let self, !self.deviceIdentificer.anyNameIn(items: devices) {
+                PolarVerityHeartRateObservation.setHRFeature(state: false)
+                self.deviceListener?.close()
+            }
+        }
+    }
+}

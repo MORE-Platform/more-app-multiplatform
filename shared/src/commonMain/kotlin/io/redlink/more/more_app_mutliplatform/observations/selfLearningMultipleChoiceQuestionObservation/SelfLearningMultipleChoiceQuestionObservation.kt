@@ -12,10 +12,6 @@ class SelfLearningMultipleChoiceQuestionObservation  : Observation(observationTy
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return true
-    }
-
     override fun ableToAutomaticallyStart(): Boolean {
         return false
     }

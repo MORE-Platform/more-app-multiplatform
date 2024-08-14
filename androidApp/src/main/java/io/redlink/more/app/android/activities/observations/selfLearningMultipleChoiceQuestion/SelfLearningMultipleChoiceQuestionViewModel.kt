@@ -36,6 +36,7 @@ class SelfLearningMultipleChoiceQuestionViewModel  : ViewModel() {
                         answers.clear()
                         answers.addAll(it.answers)
                         observationParticipantInfo.value = it.participantInfo
+                        userTextAnswer.value = ""
                     } ?: kotlin.run {
                         hasData.value = false
                     }

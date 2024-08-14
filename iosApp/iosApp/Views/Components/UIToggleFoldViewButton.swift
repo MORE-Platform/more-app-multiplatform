@@ -21,6 +21,9 @@ struct UIToggleFoldViewButton: View {
     var body: some View {
         Image(systemName: "chevron.up")
             .rotationEffect(Angle(degrees: isOpen ? 0 : 180))
+            .onTapGesture {
+                isOpen = !isOpen
+            }
             .animation(.more.foldingAnimation, value: isOpen)
     }
 }

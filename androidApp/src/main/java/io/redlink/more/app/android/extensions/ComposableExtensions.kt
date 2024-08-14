@@ -29,12 +29,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavDeepLink
 
 @Composable
 @ReadOnlyComposable
 fun getStringResource(@StringRes id: Int): String =
     LocalContext.current.resources.getText(id).toString()
+
+@Composable
+@ReadOnlyComposable
+fun getStringResourceByName(name: String): String {
+    val resourceId = LocalContext.current.resources.getIdentifier(
+        name,
+        "string",
+        LocalContext.current.packageName
+    )
+    return getStringResource(resourceId)
+}
 
 @Composable
 @ReadOnlyComposable
@@ -60,7 +70,12 @@ fun Image(
         colorFilter
     )
 
-fun showNewActivityAndClearStack(context: Context, cls: Class<*>, forwardExtras: Boolean = false, forwardDeepLink: Boolean = false) {
+fun showNewActivityAndClearStack(
+    context: Context,
+    cls: Class<*>,
+    forwardExtras: Boolean = false,
+    forwardDeepLink: Boolean = false
+) {
     (context as? Activity)?.let {
         val intent = Intent(context, cls)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

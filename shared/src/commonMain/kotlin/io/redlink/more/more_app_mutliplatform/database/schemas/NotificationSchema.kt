@@ -16,10 +16,11 @@ import io.realm.kotlin.types.RealmDictionary
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import io.redlink.more.more_app_mutliplatform.extensions.asString
 import io.redlink.more.more_app_mutliplatform.extensions.toRealmInstant
+import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.NotificationManager
+import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.util.createUUID
 import kotlinx.datetime.Instant
 
 class NotificationSchema : RealmObject {
@@ -52,6 +53,14 @@ class NotificationSchema : RealmObject {
     }
 
     companion object {
+        fun build(title: String, notificationBody: String): NotificationSchema =
+            NotificationSchema().apply {
+                this.notificationId = createUUID()
+                this.title = title
+                this.notificationBody = notificationBody
+                this.priority = if (getPlatform().name.contains("Android")) 2 else 1
+            }
+
         fun toSchema(
             notificationId: String,
             channelId: String?,

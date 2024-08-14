@@ -15,5 +15,6 @@
     <string name="nav_leave_study">Studie verlassen</string>
     <string name="nav_leave_study_confirm">Studie verlassen bestätigen</string>
     <string name="nav_limesurvey">Limesurvey</string>
+    <string name="nav_observation_errors">Aufzeichnungsfehler</string>
     <string name="nav_self_learning_multiple_choice_question">Selbststudium Multiple-Choice-Frage</string>
 </resources>

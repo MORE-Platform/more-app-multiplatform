@@ -24,8 +24,12 @@ import io.redlink.more.app.android.activities.main.composables.TabItem
 
 
 @Composable
-fun MainTabView(selectedIndex: Int, onTabChange: (Int) -> Unit) {
-    val nameSet = setOf(NavigationScreen.DASHBOARD.stringRes(), NavigationScreen.NOTIFICATIONS.stringRes(), NavigationScreen.INFO.stringRes())
+fun MainTabView(selectedIndex: Int, unreadNotificationCount: Int = 0, onTabChange: (Int) -> Unit) {
+    val nameSet = setOf(
+        NavigationScreen.DASHBOARD.stringRes(),
+        NavigationScreen.NOTIFICATIONS.stringRes(),
+        NavigationScreen.INFO.stringRes()
+    )
     TabRow(
         selectedTabIndex = 0,
         backgroundColor = Color.Transparent,
@@ -57,7 +61,8 @@ fun MainTabView(selectedIndex: Int, onTabChange: (Int) -> Unit) {
                 text = name,
                 icon = Icons.Default.Notifications,
                 iconDescription = name,
-                selected = selectedIndex == 1
+                selected = selectedIndex == 1,
+                unreadNotificationCount
             )
         }
         Tab(selected = selectedIndex == 2,

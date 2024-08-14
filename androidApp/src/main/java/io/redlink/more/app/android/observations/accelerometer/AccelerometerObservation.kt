@@ -19,10 +19,6 @@ import android.util.Log
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
 import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val TAG = "AccelerometerObservation"
 
@@ -60,8 +56,12 @@ class AccelerometerObservation(
         onCompletion()
     }
 
-    override fun observerAccessible(): Boolean {
-        return this.sensor != null
+    override fun observerErrors(): Set<String> {
+        val errors = mutableSetOf<String>()
+        if (this.sensor == null) {
+            errors.add("accelerometer_sensor_not_available")
+        }
+        return errors
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {

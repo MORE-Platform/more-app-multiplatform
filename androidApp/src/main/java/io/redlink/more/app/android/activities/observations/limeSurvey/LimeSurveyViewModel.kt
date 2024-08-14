@@ -13,11 +13,11 @@ package io.redlink.more.app.android.activities.observations.limeSurvey
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.AlertController
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,8 +31,16 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
     val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)
     val networkLoading = mutableStateOf(false)
+    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
 
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            AlertController.alertDialogModel.collect {
+                withContext(Dispatchers.Main) {
+                    alertDialogOpen.value = it
+                }
+            }
+        }
         viewModelScope.launch {
             coreViewModel.dataLoading.collect {
                 withContext(Dispatchers.Main) {
@@ -40,17 +48,23 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
                 }
             }
         }
-        viewModelScope.launch {
-            coreViewModel.limeSurveyLink.collect {
-                Napier.d { "LimeSurveyLink collected: $it" }
-                withContext(Dispatchers.Main) {
-                    limeSurveyLink.value = it
+        coreViewModel.limeSurveyLink?.let { flow ->
+            viewModelScope.launch {
+                flow.collect {
+                    withContext(Dispatchers.Main) {
+                        limeSurveyLink.value = it
+                    }
                 }
             }
         }
+
     }
 
-    fun setModel(scheduleId: String? = null, observationId: String? = null, notificationId: String? = null) {
+    fun setModel(
+        scheduleId: String? = null,
+        observationId: String? = null,
+        notificationId: String? = null
+    ) {
         if (!scheduleId.isNullOrBlank()) {
             coreViewModel.setScheduleId(scheduleId, notificationId)
         } else if (!observationId.isNullOrBlank()) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="required_permissions_not_granted_title">Erforderliche Berechtigungen wurden nicht erteilt</string>
+    <string name="required_permission_not_granted_message">Diese Studie benötigt eine oder mehrere Sensorenberechtigungen, um ordnungsgemäß zu funktionieren. Sie haben die Möglichkeit, die Sensorenberechtigungen abzulehnen; sollten Sie sich jedoch dafür entscheiden, funktionieren die Anwendung und die Studie möglicherweise nicht vollständig oder wie erwartet. Möchten Sie zu den Einstellungen navigieren und der Anwendung den Zugriff auf diese notwendigen Berechtigungen gestatten?</string>
+    <string name="notification_permission_not_granted_title">Benachrichtigungsberechtigungen nicht erteilt</string>
+    <string name="notification_permission_not_granted_message">Wir bitten um Erlaubnis, Ihnen Push-Benachrichtigungen zu senden. Dies hilft, den aktuellen Status der Studie jederzeit aufrechtzuerhalten und dient als Erinnerung an Ihre Aufgaben.</string>
+    <string name="proceed_to_settings_button">Zu den Einstellungen gehen</string>
+    <string name="proceed_without_granting_button">Ohne Berechtigungen fortfahren</string>
+</resources>

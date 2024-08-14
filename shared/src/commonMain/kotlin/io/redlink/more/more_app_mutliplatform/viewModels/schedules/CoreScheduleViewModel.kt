@@ -21,25 +21,30 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(
     private val dataRecorder: DataRecorder,
     private val scheduleListType: ScheduleListType,
-    private val coreFilterModel: CoreDashboardFilterViewModel
+    private val coreFilterModel: CoreDashboardFilterViewModel,
 ) : CoreViewModel() {
     private val scheduleRepository = ScheduleRepository()
     private var originalScheduleList = emptySet<ScheduleModel>()
 
-    val scheduleListState = MutableStateFlow(
+    private val _scheduleListState = MutableStateFlow(
         Triple(
             emptySet<ScheduleModel>(),
             emptySet<String>(),
             emptySet<ScheduleModel>()
         )
     )
+
+    val scheduleListState: StateFlow<Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>> =
+        _scheduleListState
 
     init {
         launchScope {
@@ -58,6 +63,7 @@ class CoreScheduleViewModel(
                     }
                 }
         }
+
     }
 
     override fun viewDidAppear() {
@@ -81,10 +87,6 @@ class CoreScheduleViewModel(
         }
     }
 
-    override fun viewDidDisappear() {
-        super.viewDidDisappear()
-    }
-
     fun start(scheduleId: String) {
         dataRecorder.start(scheduleId)
     }
@@ -97,7 +99,7 @@ class CoreScheduleViewModel(
         dataRecorder.stop(scheduleId)
     }
 
-    private suspend fun updateList(newList: Set<ScheduleModel>) {
+    private fun updateList(newList: Set<ScheduleModel>) {
         val oldIds = originalScheduleList.map { it.scheduleId }.toSet()
         val newIds = newList.map { it.scheduleId }.toSet()
         val addedIds = newIds - oldIds
@@ -123,7 +125,7 @@ class CoreScheduleViewModel(
         }
 
         if (added.isNotEmpty() || removedIds.isNotEmpty() || updated.isNotEmpty()) {
-            scheduleListState.emit(Triple(added, removedIds, updated))
+            _scheduleListState.update { Triple(added, removedIds, updated) }
         }
         originalScheduleList = newList.toSet()
     }

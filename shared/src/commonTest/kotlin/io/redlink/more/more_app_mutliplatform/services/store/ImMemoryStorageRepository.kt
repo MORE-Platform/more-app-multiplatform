@@ -37,9 +37,8 @@ class ImMemoryStorageRepository : SharedStorageRepository {
         storageMap[key] = value
     }
 
-    override fun load(key: String, default: List<String>): List<String> {
-        return storageMap[key] as? List<String> ?: default
-
+    override fun store(key: String, value: Long) {
+        storageMap[key] = value
     }
 
     override fun load(key: String, default: String): String {
@@ -60,6 +59,10 @@ class ImMemoryStorageRepository : SharedStorageRepository {
 
     override fun load(key: String, default: Double): Double {
         return storageMap[key] as? Double ?: default
+    }
+
+    override fun load(key: String, default: Long): Long {
+        return storageMap[key] as? Long ?: default
     }
 
     override fun remove(key: String) {
