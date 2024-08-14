@@ -107,6 +107,7 @@ class ConsentViewModel: NSObject, ObservableObject {
     }
     
     func decline() {
+        coreModel.declineConsent()
         delegate?.decline()
     }
     

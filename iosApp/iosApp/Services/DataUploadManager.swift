@@ -17,16 +17,16 @@ import Foundation
 import shared
 
 class DataUploadManager {
-    private let observationDataRepository = ObservationDataRepository()
     private let semaphore = Semaphore()
     private var currentlyUploading = false
     
     func uploadData(completion: @escaping (Bool) -> Void) {
         if !currentlyUploading {
             currentlyUploading = true
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global(qos: .background).async { [weak self] in
                 print("Fetching Data Bulk...")
-                self.observationDataRepository.allAsBulk { [weak self] dataBulk in
+                let observationDataRepository = ObservationDataRepository()
+                observationDataRepository.allAsBulk { dataBulk in
                     if let dataBulk, !dataBulk.dataPoints.isEmpty {
                         print("Sending data to backend...")
                         AppDelegate.shared.networkService.iosSendData(data: dataBulk) { pair in
@@ -36,7 +36,7 @@ class DataUploadManager {
                                 completion(false)
                             } else if let self, let idSet = pair.first as? Set<String> {
                                 print("Sent data! Deleting local data...")
-                                self.observationDataRepository.deleteAllWithId(idSet: idSet)
+                                observationDataRepository.deleteAllWithId(idSet: idSet)
                                 print("Deleted data!")
                                 self.currentlyUploading = false
                                 completion(true)

@@ -126,6 +126,7 @@ class ConsentViewModel(
     }
 
     fun decline() {
+        coreModel.declineConsent()
         consentViewModelListener.decline()
     }
 

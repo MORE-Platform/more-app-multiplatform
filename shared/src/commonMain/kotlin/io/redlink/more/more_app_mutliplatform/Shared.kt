@@ -279,7 +279,6 @@ class Shared(
 
     private fun clearSharedStorage() {
         credentialRepository.remove()
-        endpointRepository.removeEndpoint()
     }
 
     private suspend fun removeStudyData() {
