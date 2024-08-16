@@ -14,6 +14,10 @@ package io.redlink.more.more_app_mutliplatform.services.store
 import platform.Foundation.NSUserDefaults
 
 class UserDefaultsRepository : SharedStorageRepository {
+    override fun store(key: String, value: List<String>) {
+        NSUserDefaults.standardUserDefaults.setObject(value, key)
+    }
+    
     override fun store(key: String, value: String) {
         NSUserDefaults.standardUserDefaults.setObject(value, key)
     }
@@ -36,6 +40,11 @@ class UserDefaultsRepository : SharedStorageRepository {
 
     override fun store(key: String, value: Long) {
         NSUserDefaults.standardUserDefaults.setInteger(value, key)
+    }
+
+    override fun load(key: String, default: List<String>): List<String> {
+        val nsArray = NSUserDefaults.standardUserDefaults.objectForKey(key) as? List<String>
+        return nsArray?.toList() ?: default
     }
 
     override fun load(key: String, default: String): String {
