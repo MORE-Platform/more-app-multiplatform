@@ -49,6 +49,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     case withdrawStudy
     case withdrawStudyConfirm
     case limeSurvey
+    case selfLearningQuestionObservation
+    case selfLearningQuestionThankYouOpen
     case observationErrors
 
     var values: NavigationScreenValues {
@@ -73,6 +75,10 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
             return NavigationScreenValues(screenName: "Question Observation", navigationLink: "/question-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
         case .questionObservationThanks:
             return NavigationScreenValues(screenName: "Question Thanks", navigationLink: "/question-thanks", fullScreen: true)
+        case .selfLearningQuestionObservation:
+            return NavigationScreenValues(screenName: "Self Learning Multiple Choice Question Observation", navigationLink: "/self-learning-multiple-choice-question-observation")
+        case .selfLearningQuestionObservationThanks:
+            return NavigationScreenValues(screenName: "Self Learning Multiple Choice Question Thanks", navigationLink: "/self-learning-multiple-choice-question-observation-thanks")
         case .dashboardFilter:
             return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: "/dashboard-filter")
         case .notificationFilter:
