@@ -1309,7 +1309,6 @@
 				1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */,
 				B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */,
 				5A4EBD922ABDE166007869C6 /* SelfLearningMultipleChoiceQuestionView.swift in Sources */,
-				1F2B23152A7D01AC00CFBE02 /* IOSLogHandler.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
 				1F27536629CC3CBB00324417 /* TimeIntervalExtension.swift in Sources */,
@@ -1823,7 +1822,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.14;
+				MARKETING_VERSION = 4.0.15;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1865,7 +1864,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.14;
+				MARKETING_VERSION = 4.0.15;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",

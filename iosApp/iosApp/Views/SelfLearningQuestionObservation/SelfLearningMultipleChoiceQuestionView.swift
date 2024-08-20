@@ -52,7 +52,8 @@ struct SelfLearningMultipleChoiceQuestionView: View {
 
 
                         VStack {
-                            MoreActionButton(disabled: .constant(false)) {
+                                MoreActionButton(disabled: .constant(viewModel.answerSet.isEmpty && userTextAnswer.isEmpty)) {
+
                                 if !self.userTextAnswer.isEmpty
                                 {
                                     viewModel.userTextAnswer = userTextAnswer.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -79,6 +80,16 @@ struct SelfLearningMultipleChoiceQuestionView: View {
                 Spacer()
             }
         }
-        .customNavigationTitle(with: NavigationScreens.selfLearningQuestionObservation.localize(useTable: navigationStrings, withComment: "Answer the Self Learning Question Observation"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.selfLearningQuestionObservation.localize(useTable: navigationStrings, withComment: "Answer the Self Learning Question Observation"), displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    navigationModalState.closeView(screen: .selfLearningQuestionObservation)
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.more.important)
+                }
+            }
+        }
     }
 }

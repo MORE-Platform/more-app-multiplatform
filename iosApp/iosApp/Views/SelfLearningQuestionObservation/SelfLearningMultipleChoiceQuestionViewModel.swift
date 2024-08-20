@@ -45,6 +45,8 @@ class SelfLearningMultipleChoiceQuestionViewModel: ObservableObject {
     
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
+        answerSet = []
+        userTextAnswer = ""
     }
     
     func setAnswer(answer: [String]) {

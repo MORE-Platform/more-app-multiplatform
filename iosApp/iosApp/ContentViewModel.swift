@@ -48,6 +48,7 @@ class ContentViewModel: ObservableObject {
     }()
     
     lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
+    lazy var selfLearningMultipleChoiceQuestionVM = SelfLearningMultipleChoiceQuestionViewModel()
     lazy var limeSurveyVM = LimeSurveyViewModel()
     
     var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
@@ -122,6 +123,11 @@ class ContentViewModel: ObservableObject {
     func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
         simpleQuestionVM.setScheduleId(navigationState: navigationState)
         return simpleQuestionVM
+    }
+    
+    func getSelfLearningMultipleChoiceQuestionVM(navigationState: NavigationState) -> SelfLearningMultipleChoiceQuestionViewModel {
+        selfLearningMultipleChoiceQuestionVM.setScheduleId(navigationState: navigationState)
+        return selfLearningMultipleChoiceQuestionVM
     }
     
     func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {

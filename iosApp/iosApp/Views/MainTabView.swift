@@ -87,6 +87,26 @@ struct MainTabView: View {
                 navigationModalState.removeNavigationAction()
             }
         }
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .selfLearningQuestionObservation)) {
+            if let navigationState = navigationModalState.navigationState(for: .selfLearningQuestionObservation) {
+                Navigation {
+                    SelfLearningMultipleChoiceQuestionView(viewModel: contentViewModel.getSelfLearningMultipleChoiceQuestionVM(navigationState: navigationState))
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .onDisappear {
+                    navigationModalState.removeNavigationAction()
+                }
+            }
+        }
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .selfLearningQuestionObservationThanks)) {
+            Navigation {
+                SelfLearningMultipleChoiceQuestionThankYouView()
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .onDisappear {
+                navigationModalState.removeNavigationAction()
+            }
+        }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
             Navigation {
                 LimeSurveyView(viewModel: contentViewModel.getLimeSurveyVM(navigationModalState: navigationModalState))

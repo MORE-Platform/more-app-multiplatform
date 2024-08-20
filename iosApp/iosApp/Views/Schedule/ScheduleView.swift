@@ -68,12 +68,6 @@ struct ScheduleView: View {
         }
         .onDisappear {
             viewModel.viewDidDisappear()
-        }        
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .selfLearningQuestionObservation)) {
-            SelfLearningMultipleChoiceQuestionView(viewModel: viewModel.getSelfLearningMultipleChoiceQuestionObservationVM(navigationState: navigationModalState.navigationState ))
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .selfLearningQuestionObservationThanks)) {
-            SelfLearningMultipleChoiceQuestionThankYouView()
         }
     }
 }
