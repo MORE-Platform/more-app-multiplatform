@@ -13,6 +13,7 @@ package io.redlink.more.app.android.activities
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,11 +55,12 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     val hasCredentials =
         mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
-    val loginViewScreenNr = mutableStateOf(0)
+    val loginViewScreenNr = mutableIntStateOf(0)
 
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
 
     init {
+        NavigationScreen.createDeepLinksForAllRoutes()
         viewModelScope.launch(Dispatchers.IO) {
             AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
@@ -134,14 +136,14 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
 
     private fun showLoginView() {
         viewModelScope.launch(Dispatchers.Main) {
-            loginViewScreenNr.value = 0
+            loginViewScreenNr.intValue = 0
             registrationService.reset()
         }
     }
 
     private fun showConsentView() {
         viewModelScope.launch(Dispatchers.Main) {
-            loginViewScreenNr.value = 1
+            loginViewScreenNr.intValue = 1
         }
     }
 
