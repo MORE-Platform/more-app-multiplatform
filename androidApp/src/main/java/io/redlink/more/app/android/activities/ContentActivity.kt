@@ -58,7 +58,7 @@ fun ContentView(viewModel: ContentViewModel) {
         viewModel.openMainActivity(LocalContext.current)
     } else {
         MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
-            if (viewModel.loginViewScreenNr.value == 0) {
+            if (viewModel.loginViewScreenNr.intValue == 0) {
                 LoginView(model = viewModel.loginViewModel)
                 AppVersion()
             } else {

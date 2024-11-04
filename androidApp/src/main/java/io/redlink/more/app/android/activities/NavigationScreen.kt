@@ -151,7 +151,6 @@ enum class NavigationScreen(
         return fullRoute
     }
 
-
     fun createListOfNavArguments(): List<NamedNavArgument> {
         if (cachedNavArguments == null) {
             cachedNavArguments = allParam().map {
@@ -188,5 +187,9 @@ enum class NavigationScreen(
         fun allDeepLinks(deepLinkHost: String) =
             entries.flatMap { it.createDeepLinkRoute(deepLinkHost).mapNotNull { it.uriPattern } }
                 .toSet()
+
+        fun createDeepLinksForAllRoutes() {
+            entries.forEach { it.createDeepLinkRoute() }
+        }
     }
 }
