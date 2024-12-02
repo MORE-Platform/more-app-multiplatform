@@ -25,7 +25,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -36,7 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
@@ -48,7 +50,9 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 
 @Composable
 fun NotificationItem(
-    notificationModel: NotificationModel
+    viewModel: NotificationViewModel,
+    notificationModel: NotificationModel,
+    navController: NavController
 ) {
     val context = LocalContext.current
     Column {
@@ -121,7 +125,11 @@ fun NotificationItem(
                             .firstOrNull()?.let { annotation ->
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))
                                 context.startActivity(intent)
+                            } ?: run {
+                            if (!notificationModel.read) {
+                                viewModel.handleNotificationAction(notificationModel, navController)
                             }
+                        }
                     }
                 )
 
@@ -136,7 +144,7 @@ fun NotificationItem(
             }
             if (notificationModel.deepLink != null) {
                 Icon(
-                    if (notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
+                    if (notificationModel.read) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = getStringResource(id = R.string.more_observation_open),
                     tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
                 )
