@@ -12,10 +12,12 @@ package io.redlink.more.app.android.activities.notification
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +37,6 @@ import io.redlink.more.app.android.activities.notification.composables.Notificat
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreDivider
-
 
 @Composable
 fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
@@ -76,8 +77,9 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         items(viewModel.notificationList.sortedByDescending { it.timestamp }) { notification ->
-            Column(
+            Box(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .clickable {
                         if (!notification.read) {
                             viewModel.handleNotificationAction(notification, navController)
@@ -85,10 +87,10 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
                     }
                     .padding(bottom = 10.dp)
             ) {
-                NotificationItem(
-                    notification
-                )
-                MoreDivider()
+                Column {
+                    NotificationItem(viewModel, notification, navController)
+                    MoreDivider()
+                }
             }
         }
     }
