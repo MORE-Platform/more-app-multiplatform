@@ -25,7 +25,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -102,7 +102,7 @@ fun NotificationItem(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 50.dp)
         ) {
-            val annotatedNotificationModelBody = remember {
+            val annotatedNotificationModelBody = remember(notificationModel.notificationBody) {
                 notificationModel.notificationBody.trim().toAnnotatedString()
             }
             Column(
@@ -136,7 +136,7 @@ fun NotificationItem(
             }
             if (notificationModel.deepLink != null) {
                 Icon(
-                    if (notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
+                    if (notificationModel.read) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = getStringResource(id = R.string.more_observation_open),
                     tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
                 )
