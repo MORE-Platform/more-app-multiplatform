@@ -106,7 +106,7 @@ fun NotificationItem(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 50.dp)
         ) {
-            val annotatedNotificationModelBody = remember {
+            val annotatedNotificationModelBody = remember(notificationModel.notificationBody) {
                 notificationModel.notificationBody.trim().toAnnotatedString()
             }
             Column(
