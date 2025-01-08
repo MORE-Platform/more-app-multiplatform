@@ -20,6 +20,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
@@ -36,8 +37,9 @@ import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,56 +73,57 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
     }
 
     fun openMainActivity(context: Context) {
-        (context as? Activity)?.let {
-            val workManager = WorkManager.getInstance(context)
-            val worker =
-                PeriodicWorkRequestBuilder<ScheduleUpdateWorker>(15L, TimeUnit.MINUTES).build()
-            workManager.enqueueUniquePeriodicWork(
-                ScheduleUpdateWorker.WORKER_TAG,
-                ExistingPeriodicWorkPolicy.KEEP,
-                worker
-            )
+        (context as? Activity)?.let { activity ->
+            schedulePeriodicWorker(activity)
+            handleDeepLinkAndOpenMain(activity)
+        }
+    }
 
-            (it.intent.getStringExtra("deepLink") ?: it.intent.data?.toString())?.let { deepLink ->
-                Scope.launch {
-                    MoreApplication.shared!!.deeplinkManager.modifyDeepLink(
-                        deepLink, stringResource(R.string.app_scheme), applicationId
-                    ).firstOrNull()?.let { modifiedDeepLink ->
-                        val link = Uri.parse(modifiedDeepLink)
-                        it.intent.getStringExtra(NotificationManager.MSG_ID)
-                            ?.let { notificationId ->
-                                MoreApplication.shared!!.notificationManager.handleNotificationInteraction(
-                                    notificationId,
-                                    modifiedDeepLink
-                                )
-                            }
-                        withContext(Dispatchers.Main) {
-                            it.intent.data = link
-                            openMain(it)
-                        }
+    private fun schedulePeriodicWorker(activity: Activity) {
+        val workManager = WorkManager.getInstance(activity)
+        val worker = PeriodicWorkRequestBuilder<ScheduleUpdateWorker>(15, TimeUnit.MINUTES).build()
+        workManager.enqueueUniquePeriodicWork(
+            ScheduleUpdateWorker.WORKER_TAG,
+            ExistingPeriodicWorkPolicy.KEEP,
+            worker
+        )
+    }
 
-                    } ?: run {
-                        withContext(Dispatchers.Main) {
-                            it.intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                                val route =
-                                    ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters();
-                                val link = Uri.parse(route)
-                                it.intent.data = link
-                            }
-                            openMain(it)
-                        }
-                    }
-                }
-            } ?: run {
-                it.intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                    val route =
-                        ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters();
-                    val link = Uri.parse(route)
-                    it.intent.data = link
-                }
-                openMain(it)
+    private fun handleDeepLinkAndOpenMain(activity: Activity) {
+        val rawDeepLink =
+            activity.intent.getStringExtra("deepLink") ?: activity.intent.data?.toString()
+        val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            ViewManager.checkingForNewStudyData.first { !it }
+            val modifiedDeepLink = rawDeepLink?.let { link ->
+                MoreApplication.shared!!.deeplinkManager
+                    .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
+                    .firstOrNull()
             }
 
+            val finalUri = when {
+                modifiedDeepLink != null -> {
+                    notificationId?.let {
+                        MoreApplication.shared!!.notificationManager.handleNotificationInteraction(
+                            it, modifiedDeepLink
+                        )
+                    }
+                    Uri.parse(modifiedDeepLink)
+                }
+
+                notificationId != null -> {
+                    Uri.parse(ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters())
+                }
+
+                else -> null
+            }
+
+            Napier.d { finalUri.toString() }
+            withContext(Dispatchers.Main) {
+                activity.intent.data = finalUri
+                openMain(activity)
+            }
         }
     }
 

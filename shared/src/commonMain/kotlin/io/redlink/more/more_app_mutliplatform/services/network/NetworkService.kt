@@ -267,7 +267,7 @@ class NetworkService(
                 dataApiResponse.body().let {
                     Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
                     dataApiResponse.response.cancel()
-                    return Pair(it.toSet() ?: emptySet(), null)
+                    return Pair(it.toSet(), null)
                 }
             }
             dataApiResponse.response.cancel()
@@ -351,9 +351,7 @@ class NetworkService(
     }
 
     private fun getException(exception: Exception): NetworkServiceError {
-        val errorResponse = when (exception) {
-            else -> "System error!"
-        }
+        val errorResponse = "System error!"
         Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
         exception.printStackTrace()
         return NetworkServiceError(null, errorResponse)

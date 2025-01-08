@@ -9,15 +9,19 @@ import kotlinx.coroutines.flow.update
 object ViewManager {
     private val _studyIsUpdating = MutableStateFlow(false)
     private val _showBluetoothView = MutableStateFlow(false)
+    private val _checkingForNewStudyData = MutableStateFlow(false)
     val studyIsUpdating: StateFlow<Boolean> = _studyIsUpdating
-
+    val checkingForNewStudyData: StateFlow<Boolean> = _checkingForNewStudyData
     val showBluetoothView: StateFlow<Boolean> = _showBluetoothView
 
     private var bleViewOpen = false
 
-
     fun studyIsUpdating(state: Boolean) {
         _studyIsUpdating.set(state)
+    }
+
+    fun checkingForUpdate(state: Boolean) {
+        _checkingForNewStudyData.set(state)
     }
 
     fun showBLEView(state: Boolean): Boolean {

@@ -19,6 +19,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
@@ -54,10 +55,11 @@ class ContentActivity : ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
-    if (viewModel.hasCredentials.value) {
-        viewModel.openMainActivity(LocalContext.current)
-    } else {
-        MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
+    MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
+        if (viewModel.hasCredentials.value) {
+            viewModel.openMainActivity(LocalContext.current)
+            StudyUpdateView()
+        } else {
             if (viewModel.loginViewScreenNr.intValue == 0) {
                 LoginView(model = viewModel.loginViewModel)
                 AppVersion()

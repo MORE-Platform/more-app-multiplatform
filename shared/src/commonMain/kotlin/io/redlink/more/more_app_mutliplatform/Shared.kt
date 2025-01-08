@@ -158,7 +158,9 @@ class Shared(
         newStudyState: StudyState? = null
     ) {
         Scope.launch(Dispatchers.IO) {
+            ViewManager.checkingForUpdate(true)
             updateStudy(oldStudyState, newStudyState)
+            ViewManager.checkingForUpdate(false)
         }
     }
 
