@@ -7,17 +7,17 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
-import Realm
-import UserNotifications
 import FirebaseMessaging
+import Foundation
+import Realm
+import shared
+import UserNotifications
 
 class FCMService: NSObject {
     func register() {
@@ -36,7 +36,6 @@ extension FCMService: MessagingDelegate {
 }
 
 extension FCMService: UNUserNotificationCenterDelegate {
-    
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         let content = notification.request.content
@@ -44,11 +43,12 @@ extension FCMService: UNUserNotificationCenterDelegate {
         if let msgId = data[NotificationManager.companion.MSG_ID] {
             AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: msgId, title: content.title, body: content.body, priority: 1, read: false, data: data, displayNotification: false)
         }
-        return [.sound,.badge, .banner]
+        return [.sound, .badge, .banner]
     }
-    
+
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        AppDelegate.shared.appInForeground(boolean: true)
         let data = response.notification.request.content.userInfo.notNilStringDictionary()
         let msgId = data[NotificationManager.companion.MSG_ID] ?? response.notification.request.identifier
         if let deepLinkString = data[NotificationManager.companion.DEEP_LINK] {
@@ -66,7 +66,7 @@ extension FCMService: UNUserNotificationCenterDelegate {
 extension Dictionary where Key == AnyHashable {
     func notNilStringDictionary() -> [String: String] {
         var data = [String: String]()
-        
+
         for (key, value) in self {
             if let value = value as? String {
                 data[String(describing: key)] = value

@@ -40,6 +40,9 @@ object ViewManager {
 
     fun studyIsUpdatingAsClosure(state: (Boolean) -> Unit) = studyIsUpdating.asClosure(state)
 
+    fun checkingForNewStudyDataAsClosure(state: (Boolean) -> Unit) =
+        checkingForNewStudyData.asClosure(state)
+
     fun resetAll() {
         _studyIsUpdating.set(false)
         _showBluetoothView.set(false)
