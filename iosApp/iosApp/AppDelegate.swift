@@ -58,9 +58,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         return true
     }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-    }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Notification Received: \(userInfo)")

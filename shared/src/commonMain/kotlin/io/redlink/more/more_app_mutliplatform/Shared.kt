@@ -39,7 +39,6 @@ import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
@@ -93,10 +92,12 @@ class Shared(
     }
 
     fun appInForeground(boolean: Boolean) {
+        if (appIsInForeGround == boolean) {
+            return
+        }
         Napier.i { "App is in foreground: $boolean" }
         appIsInForeGround = boolean
         if (appIsInForeGround) {
-            notificationManager.clearAllNotifications()
             if (credentialRepository.hasCredentials()) {
                 updateStudyBlocking()
                 notificationManager.createNewFCMIfNecessary()
@@ -109,6 +110,7 @@ class Shared(
                 observationFactory.updateObservationErrors()
                 updateTaskStates()
             }
+            notificationManager.clearAllNotifications()
         } else {
             ViewManager.showBLEView(false)
         }
@@ -157,8 +159,10 @@ class Shared(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
     ) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.Default) {
+            ViewManager.checkingForUpdate(true)
             updateStudy(oldStudyState, newStudyState)
+            ViewManager.checkingForUpdate(false)
         }
     }
 

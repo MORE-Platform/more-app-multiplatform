@@ -23,9 +23,22 @@ struct WebView: View {
     var body: some View {
         VStack {
             if viewModel.progress < 1 {
-                ProgressView(value: viewModel.progress, total: 1)                
+                ProgressView(value: viewModel.progress, total: 1)
             }
-            SwiftUIWebView(viewModel: viewModel, url: url)
+            if #available(iOS 15.0, *) {
+                SwiftUIWebView(viewModel: viewModel, url: url)
+                    .refreshable {
+                        viewModel.webView.reload()
+                    }
+            } else {
+                SwiftUIWebView(viewModel: viewModel, url: url)
+            }
+        }
+    }
+    
+    private func refreshPage() {
+        if let currentURL = viewModel.webView.url {
+            viewModel.webView.load(URLRequest(url: currentURL))
         }
     }
 }
@@ -50,7 +63,7 @@ struct SwiftUIWebView: UIViewRepresentable {
         if let url {
             self.viewModel.webView.load(URLRequest(url: url))
         } else {
-            self.viewModel.webView.load(URLRequest(url: URL(string:"about:blank")!))
+            self.viewModel.webView.load(URLRequest(url: URL(string: "about:blank")!))
         }
     }
 }

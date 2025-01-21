@@ -242,6 +242,7 @@ class NotificationManager(
 
     fun clearAllNotifications() {
         localNotificationListener.clearNotifications()
+        localNotificationListener.updateBadgeCount(0)
     }
 
     fun updateNotificationBadgeCount() {

@@ -27,15 +27,15 @@ struct iOSApp: App {
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .background:
+                        AppDelegate.shared.appInForeground(boolean: false)
                         if AppDelegate.shared.observationManager.hasRunningTasks() {
                             appDelegate.scheduleTasks()
                         }
-                        AppDelegate.shared.appInForeground(boolean: false)
                     case .inactive:
                         break
                     case .active:
-                        appDelegate.cancelBackgroundTasks()
                         AppDelegate.shared.appInForeground(boolean: true)
+                        appDelegate.cancelBackgroundTasks()
                         break
                     default:
                         break

@@ -50,6 +50,8 @@ class NavigationModalState: ObservableObject {
             }
         }
     }
+    
+    private var studyUpdatingClosable: Ktor_ioCloseable?
 
     func screenBinding(for screen: NavigationScreen) -> Binding<Bool> {
         Binding<Bool>(
@@ -184,33 +186,39 @@ class NavigationModalState: ObservableObject {
     }
 
     func openWithDeepLink(url: URL, notificationId: String? = nil) {
-        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: nil, hostReplacement: nil) { modifiedDeepLink in
-            if let modifiedDeepLink,
-               let modifiedURL = URL(string: modifiedDeepLink) {
-                let path = modifiedURL.path
-                if let matchingScreen = NavigationScreen.allCases.first(where: { $0.values.navigationLink == path }) {
-                    var parameters: [NavigationParameter: String] = [:]
-                    let components = URLComponents(url: modifiedURL, resolvingAgainstBaseURL: false)
-
-                    for queryItem in components?.queryItems ?? [] {
-                        if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
-                            parameters[parameter] = value
+        self.studyUpdatingClosable = ViewManager.shared.checkingForNewStudyDataAsClosure { isUpdating in
+            guard !isUpdating.boolValue else { return }
+            AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: nil, hostReplacement: nil) { modifiedDeepLink in
+                if let modifiedDeepLink,
+                   let modifiedURL = URL(string: modifiedDeepLink) {
+                    let path = modifiedURL.path
+                    if let matchingScreen = NavigationScreen.allCases.first(where: { $0.values.navigationLink == path }) {
+                        var parameters: [NavigationParameter: String] = [:]
+                        let components = URLComponents(url: modifiedURL, resolvingAgainstBaseURL: false)
+                        
+                        for queryItem in components?.queryItems ?? [] {
+                            if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
+                                parameters[parameter] = value
+                            }
                         }
+                        
+                        let observationId = parameters[.observationId]
+                        let notificationId = parameters[.notificaitonId] ?? notificationId
+                        let scheduleId = parameters[.scheduleId]
+                        
+                        if let notificationId {
+                            AppDelegate.shared.notificationManager.handleNotificationInteraction(notificationId: notificationId, deeplink: modifiedDeepLink)
+                        }
+                        
+                        self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                     }
-
-                    let observationId = parameters[.observationId]
-                    let notificationId = parameters[.notificaitonId] ?? notificationId
-                    let scheduleId = parameters[.scheduleId]
-
-                    if let notificationId {
-                        AppDelegate.shared.notificationManager.handleNotificationInteraction(notificationId: notificationId, deeplink: modifiedDeepLink)
-                    }
-
-                    self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
+                } else if modifiedDeepLink == nil, let notificationId {
+                    AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: notificationId)
                 }
-            } else if modifiedDeepLink == nil, let notificationId {
-                AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: notificationId)
+                self.studyUpdatingClosable?.close()
+                self.studyUpdatingClosable = nil
             }
         }
+        
     }
 }

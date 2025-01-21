@@ -27,7 +27,6 @@ struct LimeSurveyView: View {
                         Text("Data is loading...")
                     }
                 } else {
-                    
                     WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
                         .ignoresSafeArea(.all, edges: .bottom)
                 }
