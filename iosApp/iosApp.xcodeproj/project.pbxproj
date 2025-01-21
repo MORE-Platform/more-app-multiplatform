@@ -1713,6 +1713,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRIP_STYLE = debugging;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1798,7 +1799,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.19;
+				MARKETING_VERSION = 4.0.20;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1838,7 +1839,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.19;
+				MARKETING_VERSION = 4.0.20;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
