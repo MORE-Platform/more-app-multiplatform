@@ -16,4 +16,5 @@
     <string name="nav_leave_study_confirm">Confirm to leave the study</string>
     <string name="nav_limesurvey">Limesurvey</string>
     <string name="nav_observation_errors">Observation Errors</string>
+    <string name="health_connect">Connect Health</string>
 </resources>

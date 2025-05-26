@@ -22,6 +22,7 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.activities.dashboard.DashboardViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.healthPage.HealthViewModel
 import io.redlink.more.app.android.activities.info.InfoViewModel
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
@@ -79,7 +80,7 @@ class MainViewModel(context: Context) : ViewModel() {
     val settingsViewModel: SettingsViewModel by lazy { SettingsViewModel() }
     val studyDetailsViewModel: StudyDetailsViewModel by lazy { StudyDetailsViewModel() }
     val leaveStudyViewModel: LeaveStudyViewModel by lazy { LeaveStudyViewModel() }
-
+    val healthViewModel : HealthViewModel by lazy { HealthViewModel() }
     val taskCompletionBarViewModel = TaskCompletionBarViewModel()
 
     val infoVM: InfoViewModel by lazy {

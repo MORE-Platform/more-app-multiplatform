@@ -37,6 +37,7 @@ import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedu
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
+import io.redlink.more.app.android.activities.healthPage.HealthView
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
@@ -57,6 +58,8 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.app.android.activities.healthPage.HealthConnectManager
+
 
 class MainActivity : ComponentActivity() {
     private var loadedNavController = false
@@ -77,13 +80,17 @@ class MainActivity : ComponentActivity() {
             NavController.OnDestinationChangedListener { _, destination, _ ->
                 viewModel.navigationBarTitle.value = destination.navigatorName
             }
+        //val healthConnectManager = (application as BaseApplication).healthConnectManager
         setContent {
+
             navHostController = rememberNavController()
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
             }
+            //HealthConnectApp(manager = healthConnectManager)
             if (viewModel.studyIsUpdating.value) {
+
                 StudyUpdateView()
                 if (loadedNavController) {
                     navHostController.navigate(
@@ -106,7 +113,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun MainView(
     navigationTitle: String,
@@ -115,6 +121,7 @@ fun MainView(
     activityResultLauncher: ActivityResultLauncher<Intent>
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
+
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
@@ -163,6 +170,20 @@ fun MainView(
                     viewModel.showBackButton.value = false
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     NotificationView(navController, viewModel = viewModel.notificationViewModel)
+                }
+            }
+            NavigationScreen.HEALTH_DATA.let { screen ->
+                composable(
+                    screen.routeWithParameters(), screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute()
+                ) {
+                    val healthConnectManager by lazy {
+                        HealthConnectManager(context = currentContext.value)
+                    }
+                    viewModel.tabIndex.intValue = 2
+                    viewModel.showBackButton.value = true
+                    viewModel.navigationBarTitle.value = screen.stringRes()
+                    HealthView(navController, viewModel = viewModel.healthViewModel,healthConnectManager )
                 }
             }
 
@@ -248,7 +269,6 @@ fun MainView(
                 ) {
                     viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
-
                     StudyDetailsView(
                         viewModel = viewModel.studyDetailsViewModel, navController = navController,
                         taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel

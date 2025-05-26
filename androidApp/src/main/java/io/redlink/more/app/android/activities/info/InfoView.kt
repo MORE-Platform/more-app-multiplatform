@@ -25,9 +25,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.twotone.MonitorHeart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -79,6 +81,14 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                 contentDescription = getStringResource(id = R.string.info_running_observations_desc),
                 onClick = {
                     navController.navigate(NavigationScreen.RUNNING_SCHEDULES.routeWithParameters())
+                }
+            )
+            InfoItem(
+                title = getStringResource(id = R.string.health_connect),
+                imageVector = Icons.TwoTone.MonitorHeart,
+                contentDescription = "Give Health Permissions",
+                onClick = {
+                    navController.navigate(NavigationScreen.HEALTH_DATA.routeWithParameters())
                 }
             )
             InfoItem(

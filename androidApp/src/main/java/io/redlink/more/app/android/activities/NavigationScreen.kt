@@ -38,6 +38,7 @@ enum class NavigationScreen(
     NOTIFICATIONS("notifications", stringResource = R.string.nav_notifications),
     INFO("information", stringResource = R.string.nav_info),
     SETTINGS("settings", stringResource = R.string.nav_settings),
+    HEALTH_DATA("health", stringResource = R.string.health_connect),
     SCHEDULE_DETAILS(
         "task-details", parameters = mapOf(
             "scheduleId" to NavigationParameter(type = NavType.StringType, "")

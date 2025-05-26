@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "io.redlink.more.app.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
@@ -81,4 +81,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha12")
+    implementation("androidx.compose.material3:material3:1.2.1")
 }
