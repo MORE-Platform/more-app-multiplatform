@@ -76,6 +76,7 @@ class HealthConnectManager(private val context: Context) {
     }
 
     fun requestPermissionsActivityContract(): ActivityResultContract<Set<String>, Set<String>> {
+
         return PermissionController.createRequestPermissionResultContract()
     }
 
