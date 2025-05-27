@@ -1,6 +1,7 @@
 package io.redlink.more.app.android.activities.healthPage
 import android.content.Context
 import android.os.Build
+import android.print.PrintDocumentAdapter.WriteResultCallback
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +17,7 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ChangesTokenRequest
@@ -33,7 +35,11 @@ import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
+
+import java.time.Duration
+
 
 // The minimum android level that can use Health Connect
 const val MIN_SUPPORTED_SDK = Build.VERSION_CODES.O_MR1
@@ -42,7 +48,7 @@ const val MIN_SUPPORTED_SDK = Build.VERSION_CODES.O_MR1
  * Demonstrates reading and writing from Health Connect.
  */
 class HealthConnectManager(private val context: Context) {
-    private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
+    val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
 
     var availability = mutableStateOf(HealthConnectAvailability.NOT_SUPPORTED)
         private set
@@ -152,7 +158,7 @@ class HealthConnectManager(private val context: Context) {
     /**
      * Convenience function to reuse code for reading data.
      */
-    private suspend inline fun <reified T : Record> readData(
+    suspend inline fun <reified T : Record> readData(
         timeRangeFilter: TimeRangeFilter,
         dataOriginFilter: Set<DataOrigin> = setOf(),
     ): List<T> {
@@ -162,6 +168,23 @@ class HealthConnectManager(private val context: Context) {
             timeRangeFilter = timeRangeFilter
         )
         return healthConnectClient.readRecords(request).records
+    }
+
+    suspend fun writeSteps(){
+        val endTime = Instant.now()
+        val startTime = endTime.minus(Duration.ofMinutes(5))
+
+            val stepsRecord = StepsRecord(
+                count = 120,
+                startTime = startTime,
+                endTime = endTime,
+                startZoneOffset = ZoneOffset.UTC,
+                endZoneOffset = ZoneOffset.UTC,
+                metadata = Metadata.autoRecorded(
+                    device = Device(type = Device.TYPE_WATCH)
+                )
+            )
+            healthConnectClient.insertRecords(listOf(stepsRecord))
     }
 
     private fun isSupported() = Build.VERSION.SDK_INT >= MIN_SUPPORTED_SDK

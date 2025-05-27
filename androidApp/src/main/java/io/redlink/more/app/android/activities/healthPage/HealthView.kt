@@ -28,6 +28,13 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.permission.HealthPermission.Companion.PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.health.connect.client.time.TimeRangeFilter
+//import io.redlink.more.app.android.datastreaming.workers.RawDataUploadWorker
+import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
+import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+
 @Composable
 fun HealthView(navController: NavController,viewModel: HealthViewModel,healthConnectManager: HealthConnectManager) {
 
@@ -49,6 +56,7 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
     )
     val  permissionsLauncher = rememberLauncherForActivityResult(healthConnectManager.requestPermissionsActivityContract()) {
     }
+    val scope = rememberCoroutineScope()
     val activity = LocalContext.current
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
@@ -135,8 +143,56 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
                 Text(text = "Allow Background data read")
             }
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+                ){
+            Button(colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                containerColor = Color.Blue,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.LightGray
+            ),
+                onClick = {
+                    scope.launch {
+                        val end = ZonedDateTime.now().withNano(0)
+                        val start = end.minusDays(1)
 
+                        val stepsRecords = healthConnectManager.readData<StepsRecord>(
+                            TimeRangeFilter.between(start.toInstant(), end.toInstant())
+                        )
 
+                        val totalSteps = stepsRecords.sumOf { it.count }
+                        println("ReadData"+ "Total steps in last 24h: $totalSteps")
+                    }
+                },
+            ) {
+                Text(text = "Read Data")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Button(colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                containerColor = Color.Blue,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.LightGray
+            ),
+                onClick = {
+                    scope.launch {
+                       healthConnectManager.writeSteps()
+                    }
+                },
+            ) {
+                Text(text = "Write Data")
+            }
+        }
 
     }
 }
