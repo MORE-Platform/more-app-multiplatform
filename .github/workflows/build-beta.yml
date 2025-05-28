@@ -1,0 +1,53 @@
+name: Build and publish beta release
+on:
+  push:
+    branches:
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  ios:
+    name: iOS ✅
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: iosApp
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set FASTLANE_BUILD_NUMBER from tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Build iOS app
+        run: fastlane build
+
+      - name: Deploy to TestFlight
+        if: startsWith(github.ref, 'refs/tags/')
+        run: fastlane deploy_beta
+
+  android:
+    name: Android 🤖
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: androidApp
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set FASTLANE_BUILD_NUMBER from tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Build Android app
+        run: fastlane build
+
+      - name: Deploy to Google Play Beta
+        if: startsWith(github.ref, 'refs/tags/')
+        run: fastlane deploy_beta

@@ -1,0 +1,53 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+default_platform(:android)
+
+platform :android do
+  desc "Run all tests"
+  lane :test do
+    gradle(task: "test", project_dir: "..")
+  end
+
+  desc "Build the Android app (debug)"
+  lane :build do
+    gradle(
+      task: "assemble",
+      build_type: "Debug",
+      project_dir: ".."
+    )
+  end
+
+  desc "Deploy to Google Play Beta"
+  lane :deploy_beta do
+    build
+    name = ENV.fetch("FASTLANE_BUILD_NUMBER")
+    major, minor, patch = name.split('.').map(&:to_i)
+
+    # Build a 5-digit code: MMmmpp
+    #   major × 10⁴ + minor × 10² + patch
+    #  → 4.0.22  becomes 4*10000 + 0*100 + 22 = 40022
+    code = major * 10_000 + minor * 100 + patch
+
+    gradle(
+      task: "assemble",
+      build_type: "Release",
+      project_dir: "..",
+      properties: {
+        "VERSION_CODE" => code,             # passes to Gradle if you still need it
+        "VERSION_NAME" => name
+      }
+    )
+    upload_to_play_store(track: "beta", skip_upload_metadata: true)
+  end
+end

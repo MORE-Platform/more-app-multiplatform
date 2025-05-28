@@ -1,0 +1,9 @@
+ app_identifier "ac.at.lbg.dhp.more"
+ apple_id "jan.cortiel@icloud.com"
+ username "jan.cortiel@icloud.com"
+ team_id "VX2DSGURUH"
+ scheme "iosApp"
+
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
