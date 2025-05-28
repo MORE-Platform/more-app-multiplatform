@@ -11,8 +11,9 @@ on:
 
 jobs:
   ios:
-    name: iOS ✅
+    name: iOS
     runs-on: macos-latest
+    environment: AppStore
     defaults:
       run:
         working-directory: iosApp
@@ -32,8 +33,9 @@ jobs:
         run: fastlane deploy_beta
 
   android:
-    name: Android 🤖
+    name: Android
     runs-on: macos-latest
+    environment: PlayStore
     defaults:
       run:
         working-directory: androidApp
