@@ -17,7 +17,7 @@ jobs:
     env:
       FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
       FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
-      FASTLANE_USER: ${{ FASTLANE_USER }}
+      FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
     defaults:
       run:
         working-directory: iosApp
