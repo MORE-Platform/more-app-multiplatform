@@ -206,9 +206,6 @@ class NotificationManager(
                         ) {
                             // element should only be deselected, if it is not actively collecting data
                             deeplinkManager.checkIfCompletedOrRead(modifiedDeepLink).firstOrNull()?.let {isCompletedOrRead ->
-                                println("isCompletedOrRead---------------")
-                                println(isCompletedOrRead)
-                                println("isCompletedOrRead---------------")
                                 if (isCompletedOrRead === NotificationStatusType.READ) {
                                     withContext(Dispatchers.Main) {
                                         markNotificationAsRead(notification.notificationId)
