@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
@@ -142,12 +143,17 @@ fun NotificationItem(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+
             if (notificationModel.deepLink != null) {
-                Icon(
-                    if (notificationModel.read) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = getStringResource(id = R.string.more_observation_open),
-                    tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
-                )
+                if (!notificationModel.read || notificationModel.completed) {
+                        Icon(
+                            if (notificationModel.completed) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = getStringResource(id = R.string.more_observation_open),
+                            tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary,
+                            modifier = Modifier
+                                .requiredSize(20.dp)
+                        )
+                }
             }
         }
     }

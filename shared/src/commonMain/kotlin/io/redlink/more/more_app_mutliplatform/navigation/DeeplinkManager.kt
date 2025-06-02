@@ -6,6 +6,7 @@ import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.extractRouteFromDeepLink
 import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
+import io.redlink.more.more_app_mutliplatform.models.NotificationStatusType
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
@@ -20,6 +21,37 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
 
     fun addAvailableDeepLinks(deepLinks: Set<String>) {
         this.deepLinks.addAll(deepLinks)
+    }
+
+    fun checkIfCompletedOrRead(
+        deepLink: String?
+    ): Flow<NotificationStatusType?> = flow {
+        deepLink?.let { deepLink ->
+            val queryParams = deepLink.mapQueryParams()
+            val observationId = queryParams["observationId"]
+            if (observationId.isNullOrEmpty()
+                || observationRepository.observationById(observationId.first())
+                    .firstOrNull() == null
+            ) {
+                emit(null)
+                return@flow
+            }
+            val schedule =
+                scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                    .cancellable().firstOrNull()
+            val state = schedule?.state
+            val isRead = state == NotificationStatusType.COMPLETED.toString()
+            val isCompleted = state == null;
+            // only not done modules have a schedule. if it has a schedule, the state will show if the element is actively collecting data
+            // which means: if the state is null, the module is already completed, otherwise check if element is Deactivated to check if the message can be deselected
+            when {
+                isRead -> emit(NotificationStatusType.READ)
+                isCompleted -> emit(NotificationStatusType.COMPLETED)
+                else -> emit(NotificationStatusType.READ)
+            }
+        } ?: run {
+            emit(NotificationStatusType.READ)
+        }
     }
 
     fun modifyDeepLink(

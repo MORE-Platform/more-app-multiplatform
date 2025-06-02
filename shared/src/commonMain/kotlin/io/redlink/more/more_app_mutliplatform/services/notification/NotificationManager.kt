@@ -17,6 +17,7 @@ import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.models.NotificationStatusType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
@@ -69,6 +70,7 @@ class NotificationManager(
         body: String?,
         priority: Long = 1,
         read: Boolean = false,
+        completed: Boolean = false,
         data: Map<String, String>? = null,
         displayNotification: Boolean
     ) {
@@ -81,6 +83,7 @@ class NotificationManager(
                 notificationBody = body,
                 priority = priority,
                 read = read,
+                completed = completed,
                 userFacing = title != null,
                 notificationData = data
             ),
@@ -147,6 +150,11 @@ class NotificationManager(
         deleteNotificationFromSystemTray(notificationId)
     }
 
+    fun markNotificationAsCompleted(notificationId: String) {
+        notificationRepository.setNotificationCompletedStatus(notificationId, true)
+        deleteNotificationFromSystemTray(notificationId)
+    }
+
     fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
         Scope.launch {
             handleNotificationData(
@@ -196,8 +204,20 @@ class NotificationManager(
                                 DeeplinkManager.OBSERVATION_DETAILS
                             )
                         ) {
-                            withContext(Dispatchers.Main) {
-                                markNotificationAsRead(notification.notificationId)
+                            // element should only be deselected, if it is not actively collecting data
+                            deeplinkManager.checkIfCompletedOrRead(modifiedDeepLink).firstOrNull()?.let {isCompletedOrRead ->
+                                println("isCompletedOrRead---------------")
+                                println(isCompletedOrRead)
+                                println("isCompletedOrRead---------------")
+                                if (isCompletedOrRead === NotificationStatusType.READ) {
+                                    withContext(Dispatchers.Main) {
+                                        markNotificationAsRead(notification.notificationId)
+                                    }
+                                } else if (isCompletedOrRead === NotificationStatusType.COMPLETED) {
+                                    withContext(Dispatchers.Main) {
+                                        markNotificationAsCompleted(notification.notificationId)
+                                    }
+                                }
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -205,12 +225,12 @@ class NotificationManager(
                         }
                     } ?: run {
                     withContext(Dispatchers.Main) {
-                        markNotificationAsRead(notification.notificationId)
+                        markNotificationAsCompleted(notification.notificationId)
                     }
                 }
             }
         } ?: run {
-            markNotificationAsRead(notification.notificationId)
+            markNotificationAsCompleted(notification.notificationId)
         }
     }
 
