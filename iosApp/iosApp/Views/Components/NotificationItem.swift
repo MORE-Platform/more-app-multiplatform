@@ -47,8 +47,10 @@ struct NotificationItem: View {
                 }
                 Spacer()
                 if notificationModel.deepLink != nil {
-                    Image(systemName: notificationModel.read ? "checkmark.circle" : "chevron.right")
-                        .foregroundColor(notificationModel.read ? .more.approved : .more.secondary)
+                    if (!notificationModel.read || notificationModel.completed) {
+                        Image(systemName: notificationModel.completed ? "checkmark.circle" : "chevron.right")
+                            .foregroundColor(notificationModel.completed ? .more.approved : .more.secondary)
+                    }
                 }
             }
         }
@@ -64,6 +66,6 @@ struct NotificationItem: View {
 
 struct NotificationItem_Preview: PreviewProvider {
     static var previews: some View {
-        NotificationItem(notificationModel: NotificationModel(notificationId: "abc2", channelId: nil, title: "Title", notificationBody: "Message", timestamp: Int64(Date().timeIntervalSince1970), priority: 2, read: true, userFacing: true, deepLink: "app://", notificationData: [:]))
+        NotificationItem(notificationModel: NotificationModel(notificationId: "abc2", channelId: nil, title: "Title", notificationBody: "Message", timestamp: Int64(Date().timeIntervalSince1970), priority: 2, read: true, completed: true, userFacing: true, deepLink: "app://", notificationData: [:]))
     }
 }
