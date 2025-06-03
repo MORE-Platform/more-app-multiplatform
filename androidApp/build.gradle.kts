@@ -81,4 +81,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
+    //Google ML Kit for QR Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
 }

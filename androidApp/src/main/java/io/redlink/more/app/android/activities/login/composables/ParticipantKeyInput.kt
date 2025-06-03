@@ -121,6 +121,13 @@ fun ParticipationKeyInput(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text=getStringResource(id = R.string.more_or_text),
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            QRCodeButton(model = model)
+            Spacer(modifier = Modifier.height(16.dp))
             ValidationButton(model = model, focusManager = focusManager)
         }
 

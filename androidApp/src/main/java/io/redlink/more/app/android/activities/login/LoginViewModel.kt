@@ -70,4 +70,8 @@ class LoginViewModel(registrationService: RegistrationService, private val login
             })
     }
 
+    fun extractValuesFromQRCode(qrCodeUrl: String) {
+        defaultEndpoint.value = qrCodeUrl.substringBefore("signup?")
+        participantKey.value = qrCodeUrl.substringAfter("token=", "").takeIf { it.isNotEmpty() } ?: ""
+    }
 }
