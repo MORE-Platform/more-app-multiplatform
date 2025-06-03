@@ -83,4 +83,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
     implementation("androidx.health.connect:connect-client:1.1.0-alpha12")
     implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
