@@ -15,27 +15,13 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
-### ios load_api_key
-
-```sh
-[bundle exec] fastlane ios load_api_key
-```
-
-Loads App Store Connect API Key
-
-### ios test
-
-```sh
-[bundle exec] fastlane ios test
-```
-
-Run all tests
-
 ### ios increment_build
 
 ```sh
 [bundle exec] fastlane ios increment_build
 ```
+
+Loads App Store Connect API Key
 
 Bump build number to FASTLANE_BUILD_NUMBER
 
@@ -45,7 +31,7 @@ Bump build number to FASTLANE_BUILD_NUMBER
 [bundle exec] fastlane ios build
 ```
 
-Build the app (incl. bumping build number)
+Build the app
 
 ### ios deploy_beta
 

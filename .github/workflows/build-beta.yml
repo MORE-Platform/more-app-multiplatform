@@ -15,10 +15,10 @@ jobs:
     runs-on: macos-latest
     environment: AppStore
     env:
-      FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
       FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
-      FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-      FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+      APPLE_CONNECT_KEY_ID: ${{ secrets.APPLE_CONNECT_KEY_ID }}
+      APPLE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_CONNECT_ISSUER_ID }}
+      APPLE_CONNECT_KEY_CONTENT: ${{ secrets.APPLE_CONNECT_KEY_CONTENT }}
     defaults:
       run:
         working-directory: iosApp

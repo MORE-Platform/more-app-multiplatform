@@ -26,6 +26,7 @@ platform :android do
       build_type: "Debug",
       project_dir: ".."
     )
+    crashlytics
   end
 
   desc "Deploy to Google Play Beta"
