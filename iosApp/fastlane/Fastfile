@@ -22,7 +22,8 @@ platform :ios do
         name: "fastlane_keychain",
         password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
         default_keychain: true,
-        unlock: true
+        unlock: true,
+        require_create: ENV['CI']
         )
       puts "Loading AppStore Connect Key"
 
