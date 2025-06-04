@@ -20,6 +20,12 @@ platform :ios do
   before_all do
       create_keychain(name: "fastlane_keychain", password: "", default_keychain: true, unlock: true)
       puts "Loading AppStore Connect Key"
+
+  puts "APPLE_CONNECT_KEY_ID = #{ENV['APPLE_CONNECT_KEY_ID']}"
+  puts "APPLE_CONNECT_ISSUER_ID = #{ENV['APPLE_CONNECT_ISSUER_ID']}"
+  puts "APPLE_CONNECT_KEY_CONTENT set?  #{!ENV['APPLE_CONNECT_KEY_CONTENT'].to_s.empty?}"
+  puts "APPLE_CONNECT_KEY_IS_BASE64 = #{ENV['APPLE_CONNECT_KEY_IS_BASE64']}"
+
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
       key_id: ENV["APPLE_CONNECT_KEY_ID"],
       issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
@@ -27,7 +33,12 @@ platform :ios do
       is_key_content_base64: ENV["APPLE_CONNECT_KEY_IS_BASE64"]
     )
     # lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    puts "Successfully loaded AppStore Connect Key"
+
+  if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
+    UI.user_error!("Failed to load App Store Connect API key. Check your ENV variables.")
+  else
+    puts "✅  Loaded App Store Connect API Key."
+  end
   end
 
   desc "Bump build number to FASTLANE_BUILD_NUMBER"
@@ -37,6 +48,12 @@ platform :ios do
 
   desc "Build the app"
   lane :build do
+      lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
+            key_id: ENV["APPLE_CONNECT_KEY_ID"],
+            issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
+            key_content: ENV["APPLE_CONNECT_KEY_CONTENT"],
+            is_key_content_base64: ENV["APPLE_CONNECT_KEY_IS_BASE64"]
+          )
     ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
         sigh(
             adhoc: true,
