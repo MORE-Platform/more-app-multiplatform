@@ -32,7 +32,6 @@ platform :ios do
       key_content: ENV["APPLE_CONNECT_KEY_CONTENT"],
       is_key_content_base64: ENV["APPLE_CONNECT_KEY_IS_BASE64"]
     )
-    # lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
   if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
     UI.user_error!("Failed to load App Store Connect API key. Check your ENV variables.")
@@ -50,7 +49,6 @@ platform :ios do
   lane :build do
     ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
         sigh(
-            adhoc: true,
             app_identifier: app_id,
             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
             team_id: ENV["FASTLANE_TEAM_ID"]
