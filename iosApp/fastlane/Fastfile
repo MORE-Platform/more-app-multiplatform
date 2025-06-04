@@ -47,13 +47,22 @@ platform :ios do
 
   desc "Build the app"
   lane :build do
-    ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
-        sigh(
-            app_identifier: app_id,
+      get_certificates(
             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-            team_id: ENV["FASTLANE_TEAM_ID"],
-            skip_install: true
-        )
+            team_id:  ENV["FASTLANE_TEAM_ID"]
+          )
+    ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
+        get_provisioning_profile(
+            api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+                app_identifier: app_id,
+                team_id: ENV["FASTLANE_TEAM_ID"]
+              )
+#         sigh(
+#             app_identifier: app_id,
+#             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+#             team_id: ENV["FASTLANE_TEAM_ID"],
+#             skip_install: true
+#         )
         puts "Created profile for " + app_id
     end
     build_app(scheme: ENV["FASTLANE_IOS_SCHEME"])
