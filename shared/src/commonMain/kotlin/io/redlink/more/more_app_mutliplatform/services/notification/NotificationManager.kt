@@ -15,9 +15,13 @@ import io.realm.kotlin.ext.toRealmDictionary
 import io.realm.kotlin.types.RealmDictionary
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationStatusType
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
@@ -25,9 +29,12 @@ import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageReposi
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
@@ -51,6 +58,8 @@ class NotificationManager(
     val notificationRepository = NotificationRepository()
     val _unreadUserCount = MutableStateFlow(0)
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
+    private val scheduleRepository = ScheduleRepository()
+    private val observationRepository = ObservationRepository()
 
     init {
         Scope.launch(Dispatchers.IO) {
@@ -190,6 +199,7 @@ class NotificationManager(
         }
     }
 
+    // To-Do: here check completed or only ended
     fun handleNotificationInteraction(
         notification: NotificationModel,
         protocolReplacement: String? = null,
@@ -198,23 +208,24 @@ class NotificationManager(
     ) {
         notification.deepLink?.let { deepLink ->
             Scope.launch {
+
+                // first check status of notification
+                val state = checkIfCompletedOrRead(deepLink).cancellable().firstOrNull()
+
+                if (state != null) {
+                    if (NotificationStatusType.READ == state) notificationRepository.setNotificationReadStatus(notification.notificationId, true)
+                    if (NotificationStatusType.COMPLETED == state) notificationRepository.setNotificationCompletedStatus(notification.notificationId, true)
+                }
+
+                // then modify deeplink
                 deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
                     .firstOrNull()?.let { modifiedDeepLink ->
                         if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
                                 DeeplinkManager.OBSERVATION_DETAILS
                             )
                         ) {
-                            // element should only be deselected, if it is not actively collecting data
-                            deeplinkManager.checkIfCompletedOrRead(modifiedDeepLink).firstOrNull()?.let {isCompletedOrRead ->
-                                if (isCompletedOrRead === NotificationStatusType.READ) {
-                                    withContext(Dispatchers.Main) {
-                                        markNotificationAsRead(notification.notificationId)
-                                    }
-                                } else if (isCompletedOrRead === NotificationStatusType.COMPLETED) {
-                                    withContext(Dispatchers.Main) {
-                                        markNotificationAsCompleted(notification.notificationId)
-                                    }
-                                }
+                            withContext(Dispatchers.Main) {
+                                markNotificationAsRead(notification.notificationId)
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -222,13 +233,48 @@ class NotificationManager(
                         }
                     } ?: run {
                     withContext(Dispatchers.Main) {
-                        markNotificationAsCompleted(notification.notificationId)
+                        markNotificationAsRead(notification.notificationId)
                     }
                 }
             }
         } ?: run {
-            markNotificationAsCompleted(notification.notificationId)
+            markNotificationAsRead(notification.notificationId)
         }
+    }
+
+    fun checkIfCompletedOrRead(
+        notificationDeeplink: String,
+    ): Flow<NotificationStatusType?> = flow {
+
+        var state: NotificationStatusType? = null
+
+        val queryParams = notificationDeeplink.mapQueryParams()
+        val observationId = queryParams["observationId"]
+        if (observationId.isNullOrEmpty()
+            || observationRepository.observationById(observationId.first())
+                .firstOrNull() == null
+        ) {
+            emit(null)
+            return@flow
+        }
+        var schedule =
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                .cancellable().firstOrNull()
+
+        val allSchedules = scheduleRepository.queryAllSchedulesForObservationId(observationId.first())
+
+        // ScheduleState.DEACTIVATED -> ACTIVE -> PAUSE/RUNNING -> ENDED/COMPLETED
+        // if the ScheduleState is DEACTIVATED and it has a repeat, the Notification will go to the next Instance of Observation
+        // ACTIVE, PAUSED, RUNNING, ENDED -> is only read
+        // COMPLETED gets a check
+        // after Observation has ended, we don't have any means to determine anything anymore, because the Scheduler is deleted (null) from the object, so it will be set to comppleted
+
+        if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
+            state = NotificationStatusType.COMPLETED
+        } else {
+            state = NotificationStatusType.READ
+        }
+        emit(state)
     }
 
     fun newFCMToken(token: String? = null) {

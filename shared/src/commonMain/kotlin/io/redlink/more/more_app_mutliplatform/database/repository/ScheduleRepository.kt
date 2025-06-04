@@ -137,6 +137,27 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }
     }
 
+    suspend fun getPreviousSchedule(observationId: String, currScheduleId: ObjectId): ScheduleSchema? {
+        val scheduleList = queryAllSchedulesForObservationId(observationId)
+        var previousSchedule: ScheduleSchema? = null
+
+        scheduleList.collect { list ->
+            val index = list.indexOfFirst { it.scheduleId == currScheduleId }
+
+            if (index > 0) {
+                previousSchedule = list[index - 1]
+            }
+        }
+
+        return previousSchedule
+    }
+
+    fun queryAllSchedulesForObservationId(observationId: String): Flow<List<ScheduleSchema>> {
+        return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()
+            ?.transform { emit(it.sortedBy { it.start }) }
+            ?: emptyFlow()
+    }
+
     suspend fun getNextSchedule() = nextSchedule().firstOrNull()
 
     fun nextScheduleStart(): Flow<Long?> {
@@ -228,6 +249,4 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
             }
         }
     }
-
-
 }
