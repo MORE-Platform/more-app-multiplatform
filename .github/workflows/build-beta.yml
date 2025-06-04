@@ -19,6 +19,11 @@ jobs:
       APPLE_CONNECT_KEY_ID: ${{ secrets.APPLE_CONNECT_KEY_ID }}
       APPLE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_CONNECT_ISSUER_ID }}
       APPLE_CONNECT_KEY_CONTENT: ${{ secrets.APPLE_CONNECT_KEY_CONTENT }}
+
+      APP_IDENTIFIERS: ${{ vars.APP_IDENTIFIERS }}
+      FASTLANE_IOS_BUILD_SCHEMA: ${{ vars.FASTLANE_IOS_BUILD_SCHEMA }}
+      FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
+      APPLE_CONNECT_KEY_IS_BASE64: ${{ vars.APPLE_CONNECT_KEY_IS_BASE64 }}
     defaults:
       run:
         working-directory: iosApp
