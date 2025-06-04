@@ -22,6 +22,7 @@
 "enter_study_url" = "Enter study URL";
 
 "scan_qr_code" = "Scan QR Code";
+"scan_start_automatic" = "Scanning will start automatically.";
 "camera_to_scan_qr_code" = "Open camera to scan a QR Code";
 
 

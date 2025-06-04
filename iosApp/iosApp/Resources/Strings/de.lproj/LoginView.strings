@@ -21,5 +21,6 @@
 
 "enter_study_url" = "URL der Studie eigeben";
 
-"scan_qr_code" = "Scannen Sie bitte Ihren QR Code";
+"scan_qr_code" = "QR Code Scannen";
+"scan_start_automatic" = "QR Code wird automatisch gescannt.";
 "camera_to_scan_qr_code" = "Öffnen Sie die Kamera um den QR code zu scannen";

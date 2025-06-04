@@ -33,6 +33,7 @@ class LoginViewModel: ObservableObject {
     @Published var token: String = ""
     @Published var error: String = ""
     
+    @Published var showQRCodeView: Bool = false
     
     init(registrationService: RegistrationService) {
         print("LoginViewModel allocated!")
@@ -45,6 +46,15 @@ class LoginViewModel: ObservableObject {
             }
         }
     }
+    
+    func extractValuesFromQRCode(qrCodeUrl: String) {
+         defaultEndpoint = qrCodeUrl.components(separatedBy: "signup?").first ?? ""
+         
+         if let tokenPart = qrCodeUrl.components(separatedBy: "token=").last,
+               tokenPart != qrCodeUrl {
+                token = tokenPart.components(separatedBy: "&").first ?? ""
+         }
+     }
     
     func validate() {
         self.error = ""

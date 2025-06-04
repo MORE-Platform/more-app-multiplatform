@@ -22,6 +22,7 @@ struct LoginView: View {
 
     @State private var showTokenInput = true
     @State private var showEndpoint = false
+    @State private var disabledQRCodeButton = false
 
     private let stringTable = "LoginView"
 
@@ -47,11 +48,29 @@ struct LoginView: View {
                 )
                 .padding(.bottom, 12)
                 
+                Text(verbatim:.localize(forKey: "or", withComment: "Choose options between manually inputing Participant Key or Scanning QR Code", inTable: stringTable))
+                    .padding(.bottom, 12)
+                
+                MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabledQRCodeButton) {
+                    model.showQRCodeView = true
+                } label: {
+                    HStack {
+                        Text(verbatim:.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable))
+                        Spacer()
+                        Image(systemName: "qrcode")
+                            .foregroundColor(.more.primaryLight200)
+                    }
+                }
+                .sheet(isPresented: $model.showQRCodeView) {
+                    ScanQRCodeView(model: model)
+                }
+                .padding(.bottom, 12)
+                
                 if showTokenInput {
                     ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
                         .environmentObject(model)
                 }
-                
+
                 Spacer()
                     .frame(maxHeight: .infinity)
                 

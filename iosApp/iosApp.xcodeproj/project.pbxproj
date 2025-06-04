@@ -148,6 +148,9 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */; };
 		B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */; };
+		B746706D2DF03FE800676D79 /* ScanQRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B746706C2DF03FC100676D79 /* ScanQRCodeView.swift */; };
+		B746706F2DF04BE200676D79 /* QRCodeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B746706E2DF04BDD00676D79 /* QRCodeCameraView.swift */; };
+		B74670712DF0515100676D79 /* CameraPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74670702DF0514500676D79 /* CameraPermissionManager.swift */; };
 		B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3529CC43990026C348 /* ExpandableText.swift */; };
 		B748DF3C29CC6B380026C348 /* ObservatinoDetailsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */; };
 		B748DF4829D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */; };
@@ -400,6 +403,9 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldHL.swift; sourceTree = "<group>"; };
 		B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldSmBottom.swift; sourceTree = "<group>"; };
+		B746706C2DF03FC100676D79 /* ScanQRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeView.swift; sourceTree = "<group>"; };
+		B746706E2DF04BDD00676D79 /* QRCodeCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeCameraView.swift; sourceTree = "<group>"; };
+		B74670702DF0514500676D79 /* CameraPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionManager.swift; sourceTree = "<group>"; };
 		B748DF3529CC43990026C348 /* ExpandableText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableText.swift; sourceTree = "<group>"; };
 		B748DF3B29CC6B380026C348 /* ObservatinoDetailsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservatinoDetailsData.swift; sourceTree = "<group>"; };
 		B748DF4729D1C07F0026C348 /* SimpleQuestionObservationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionObservationViewModel.swift; sourceTree = "<group>"; };
@@ -532,6 +538,7 @@
 		1F27536229CC39CA00324417 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B74670702DF0514500676D79 /* CameraPermissionManager.swift */,
 				1F6A4E3A29F6C94B00F0247F /* Bluetooth */,
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
@@ -923,6 +930,8 @@
 		B79DBA4C29D3161600A1F547 /* LoginQRCode */ = {
 			isa = PBXGroup;
 			children = (
+				B746706E2DF04BDD00676D79 /* QRCodeCameraView.swift */,
+				B746706C2DF03FC100676D79 /* ScanQRCodeView.swift */,
 				B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */,
 			);
 			name = LoginQRCode;
@@ -1253,6 +1262,7 @@
 				1F43998529C0FE2200687906 /* Navigation.swift in Sources */,
 				1F43998129B8EA5100687906 /* DictionaryExtension.swift in Sources */,
 				1FE4447029C849DC006AA11C /* Semaphore.swift in Sources */,
+				B74670712DF0515100676D79 /* CameraPermissionManager.swift in Sources */,
 				1F8847CE299155F50023EF10 /* SectionHeading.swift in Sources */,
 				1F80EC4529C2524F004667B1 /* NavigationScreen.swift in Sources */,
 				1F750CAD2A6FA771006E455E /* StudyPausedView.swift in Sources */,
@@ -1279,6 +1289,7 @@
 				1F8937882BFF0DAB0083D20E /* ObservationErrorListView.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
 				1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */,
+				B746706F2DF04BE200676D79 /* QRCodeCameraView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */,
 				1F69081329D44D900079C219 /* DateExtension.swift in Sources */,
@@ -1360,6 +1371,7 @@
 				1F8847EC2992C3240023EF10 /* MoreFrame.swift in Sources */,
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
 				1F750CAF2A6FA8AE006E455E /* StudyClosedView.swift in Sources */,
+				B746706D2DF03FE800676D79 /* ScanQRCodeView.swift in Sources */,
 				B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
 				1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */,
