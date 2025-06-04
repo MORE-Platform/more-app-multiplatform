@@ -20,7 +20,6 @@ platform :ios do
   before_all do
       create_keychain(name: "fastlane_keychain", password: "", default_keychain: true, unlock: true)
       puts "Loading AppStore Connect Key"
-      puts ENV["APPLE_CONNECT_KEY_IS_BASE64"]
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
       key_id: ENV["APPLE_CONNECT_KEY_ID"],
       issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
@@ -39,7 +38,12 @@ platform :ios do
   desc "Build the app"
   lane :build do
     ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
-        sigh(app_identifier: app_id, team_id: ENV["FASTLANE_TEAM_ID"], api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY])
+        sigh(
+            app_identifier: app_id,
+            api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+            team_id: ENV["FASTLANE_TEAM_ID"]
+        )
+        puts "Created profile for " + app_id
     end
     build_app(scheme: ENV["FASTLANE_IOS_SCHEME"])
   end
@@ -50,8 +54,8 @@ platform :ios do
         build
         upload_to_testflight(
           app_identifier: ENV['APP_IDENTIFIERS'].split(',').first,
-          skip_waiting_for_build_processing: true,
-          api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+          api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+          skip_waiting_for_build_processing: true
         )
   end
 
