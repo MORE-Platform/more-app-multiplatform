@@ -5,32 +5,7 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000241">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="1: create_keychain" time="0.116842">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.003818">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="3: sigh" time="2.662359">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: sigh" time="1.386326">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="5: build_app" time="8.342199">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000246">
         
       </testcase>
     
