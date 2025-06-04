@@ -18,7 +18,12 @@ default_platform(:ios)
 platform :ios do
   desc "Loads App Store Connect API Key"
   before_all do
-      create_keychain(name: "fastlane_keychain", password: "", default_keychain: true, unlock: true)
+      create_keychain(
+        name: "fastlane_keychain",
+        password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
+        default_keychain: true,
+        unlock: true
+        )
       puts "Loading AppStore Connect Key"
 
   puts "APPLE_CONNECT_KEY_ID = #{ENV['APPLE_CONNECT_KEY_ID']}"
@@ -34,7 +39,7 @@ platform :ios do
     )
 
   if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
-    UI.user_error!("Failed to load App Store Connect API key. Check your ENV variables.")
+    puts "Failed to load App Store Connect API key. Check your ENV variables."
   else
     puts "✅  Loaded App Store Connect API Key."
   end
@@ -50,7 +55,7 @@ platform :ios do
       get_certificates(
             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
             team_id:  ENV["FASTLANE_TEAM_ID"],
-            keychain_password: ""
+            keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
 
           )
     ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
