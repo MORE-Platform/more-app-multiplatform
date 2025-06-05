@@ -22,6 +22,7 @@ import kotlinx.coroutines.sync.withLock
 
 class NotificationRepository : Repository<NotificationSchema>() {
     private val readNotificationIds = mutableSetOf<String>()
+    private val completedNotificationIds = mutableSetOf<String>()
     private val deletedNotificationIds = mutableSetOf<String>()
     private val mutex = Mutex()
     fun storeNotification(
@@ -32,6 +33,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
         timestamp: Long,
         priority: Long = 1,
         read: Boolean = false,
+        completed: Boolean = false,
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
     ) {
@@ -47,6 +49,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
                             timestamp,
                             priority,
                             read,
+                            completed,
                             userFacing,
                             additionalData
                         )
@@ -67,6 +70,10 @@ class NotificationRepository : Repository<NotificationSchema>() {
                         notification.read = true
                         readNotificationIds.remove(notification.notificationId)
                     }
+                    if (notification.notificationId in completedNotificationIds) {
+                        notification.completed = true
+                        completedNotificationIds.remove(notification.notificationId)
+                    }
                     realmDatabase().store(setOf(notification), UpdatePolicy.ERROR)
                 } else {
                     deletedNotificationIds.remove(notification.notificationId)
@@ -83,6 +90,7 @@ class NotificationRepository : Repository<NotificationSchema>() {
                 realmDatabase().store(notificationsToStore.map {
                     it.apply {
                         read = it.notificationId in readNotificationIds
+                        completed = it.notificationId in completedNotificationIds
                     }
                 }, UpdatePolicy.ERROR)
                 notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
@@ -148,6 +156,30 @@ class NotificationRepository : Repository<NotificationSchema>() {
                     notification?.let {
                         it.read = read
                         readNotificationIds.remove(key)
+                    }
+                }
+            }
+        }
+    }
+
+    fun setNotificationCompletedStatus(key: String, completed: Boolean = true) {
+        if (completed) {
+            readNotificationIds.add(key)
+            completedNotificationIds.add(key)
+        } else {
+            readNotificationIds.remove(key)
+            completedNotificationIds.remove(key)
+        }
+
+        Scope.launch {
+            mutex.withLock {
+                realm()?.write {
+                    val notification =
+                        this.query<NotificationSchema>("notificationId == $0", key).first().find()
+                    notification?.let {
+                        it.completed = completed
+                        it.read = true
+                        completedNotificationIds.remove(key)
                     }
                 }
             }

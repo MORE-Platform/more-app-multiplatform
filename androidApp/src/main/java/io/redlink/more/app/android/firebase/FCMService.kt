@@ -42,6 +42,7 @@ fun RemoteMessage.daoFromRemoteMessage(): NotificationSchema {
         title = this.notification?.title,
         notificationBody = this.notification?.body,
         read = false,
+        completed = false,
         userFacing = this.notification != null,
         priority = 1,
         notificationData = this.data,

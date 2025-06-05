@@ -21,6 +21,7 @@ data class NotificationModel(
     var timestamp: Long,
     var priority: Long,
     var read: Boolean,
+    var completed: Boolean,
     var userFacing: Boolean,
     var deepLink: String?,
     var notificationData: Map<String, String>
@@ -43,6 +44,7 @@ data class NotificationModel(
                         timestamp = timestamp.toInstant().toEpochMilliseconds(),
                         priority = it.priority,
                         read = it.read,
+                        completed = it.completed,
                         userFacing = it.userFacing,
                         deepLink = it.deepLink(),
                         notificationData = notificationData
