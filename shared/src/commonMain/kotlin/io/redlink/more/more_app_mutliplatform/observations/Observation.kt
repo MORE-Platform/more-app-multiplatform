@@ -247,7 +247,7 @@ abstract class Observation(val observationType: ObservationType) {
 
     private fun handleNotification(scheduleId: String) {
         notificationIds.remove(scheduleId)?.let {
-            notificationManager?.markNotificationAsRead(it)
+            notificationManager?.markNotificationAsCompleted(it)
         }
     }
 
