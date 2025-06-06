@@ -25,4 +25,6 @@
 "scan_start_automatic" = "Scanning will start automatically.";
 "camera_to_scan_qr_code" = "Open camera to scan a QR Code";
 
-
+"permission_needed" = "Permission needed";
+"open_settings" = "Open settings";
+"cancel" = "Cancel";

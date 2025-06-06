@@ -26,10 +26,15 @@ struct QRCodeCameraView: UIViewRepresentable {
     }
 }
 
-/*
+
 struct QRCodeCameraView_Previews: PreviewProvider {
+    @State static var previewSession = AVCaptureSession()
+
     static var previews: some View {
-        QRCodeCameraView(frameSize: CGSize(width: 300, height: 300), session: AVCaptureSession())
+        QRCodeCameraView(
+            frameSize: CGSize(width: 300, height: 300),
+            cameraSession: $previewSession
+        )
     }
 }
-*/
+

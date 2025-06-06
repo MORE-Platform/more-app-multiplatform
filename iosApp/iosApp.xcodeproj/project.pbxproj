@@ -146,7 +146,7 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		3007C4E152846B66C9FD5A69 /* SetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3007C5E9B53BC561D105D2B3 /* SetExtension.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		B70888492DF2D4290048A4AC /* QRCodeScanDeligate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70888482DF2D4220048A4AC /* QRCodeScanDeligate.swift */; };
+		B70888492DF2D4290048A4AC /* QRCodeScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */; };
 		B708884B2DF2E6730048A4AC /* ScanQrCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */; };
 		B708884D2DF2EE600048A4AC /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */; };
 		B72C646029DC812900F5A7C6 /* MoreTextFieldHL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */; };
@@ -177,7 +177,6 @@
 		B79DBA3B29D3135E00A1F547 /* ForwardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */; };
 		B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */; };
 		B79DBA4929D3144500A1F547 /* UIToggleButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */; };
-		B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */; };
 		B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5029D3431100A1F547 /* DashboardFilterView.swift */; };
 		B79DBA5329D3431B00A1F547 /* DashboardFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5229D3431B00A1F547 /* DashboardFilterViewModel.swift */; };
 		B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */; };
@@ -403,7 +402,7 @@
 		7555FF7B242A565900829871 /* More.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = More.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B70888482DF2D4220048A4AC /* QRCodeScanDeligate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanDeligate.swift; sourceTree = "<group>"; };
+		B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanDelegate.swift; sourceTree = "<group>"; };
 		B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQrCodeViewModel.swift; sourceTree = "<group>"; };
 		B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldHL.swift; sourceTree = "<group>"; };
@@ -437,7 +436,6 @@
 		B79DBA4029D313E400A1F547 /* MoreTextFieldSmBottom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreTextFieldSmBottom.swift; sourceTree = "<group>"; };
 		B79DBA4529D3141400A1F547 /* NavigationLinkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationLinkButton.swift; sourceTree = "<group>"; };
 		B79DBA4829D3144400A1F547 /* UIToggleButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIToggleButtonView.swift; sourceTree = "<group>"; };
-		B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginQRCodeView.swift; path = LoginQRCode/LoginQRCodeView.swift; sourceTree = "<group>"; };
 		B79DBA5029D3431100A1F547 /* DashboardFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardFilterView.swift; sourceTree = "<group>"; };
 		B79DBA5229D3431B00A1F547 /* DashboardFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardFilterViewModel.swift; sourceTree = "<group>"; };
 		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
@@ -935,10 +933,9 @@
 			children = (
 				B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */,
 				B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */,
-				B70888482DF2D4220048A4AC /* QRCodeScanDeligate.swift */,
+				B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */,
 				B746706E2DF04BDD00676D79 /* QRCodeCameraView.swift */,
 				B746706C2DF03FC100676D79 /* ScanQRCodeView.swift */,
-				B79DBA4D29D3162700A1F547 /* LoginQRCodeView.swift */,
 			);
 			name = LoginQRCode;
 			sourceTree = "<group>";
@@ -1364,7 +1361,6 @@
 				07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */,
 				B78B4A7C29F041F900A1BA58 /* ObservationDetailsView.swift in Sources */,
 				1F43997029B8D6FB00687906 /* ScheduleView.swift in Sources */,
-				B79DBA4E29D3162700A1F547 /* LoginQRCodeView.swift in Sources */,
 				1F60C58629951A5F00858581 /* ErrorText.swift in Sources */,
 				07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */,
 				1F43997929B8D70800687906 /* ScheduleList.swift in Sources */,
@@ -1391,7 +1387,7 @@
 				EDB16E2B29F933EF00701C27 /* TaskCompletionBarViewModel.swift in Sources */,
 				07FD293C29D57F0300853108 /* ModuleListItem.swift in Sources */,
 				1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */,
-				B70888492DF2D4290048A4AC /* QRCodeScanDeligate.swift in Sources */,
+				B70888492DF2D4290048A4AC /* QRCodeScanDelegate.swift in Sources */,
 				B79DBA4729D3141400A1F547 /* NavigationLinkButton.swift in Sources */,
 				07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
