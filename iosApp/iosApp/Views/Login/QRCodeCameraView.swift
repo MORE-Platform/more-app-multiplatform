@@ -12,24 +12,17 @@ import AVKit
 // Camera View using built in AVCaptureVideoPreviewLayer
 struct QRCodeCameraView: UIViewRepresentable {
     var frameSize: CGSize
-    
-    @Binding var session: AVCaptureSession
+    @Binding var cameraSession: AVCaptureSession
     
     func makeUIView(context: Context) -> UIView {
-        let view = UIViewType(frame: CGRect(origin: .zero, size: frameSize))
-        view.backgroundColor = .clear
-        
-        let cameraLayer = AVCaptureVideoPreviewLayer(session: session)
-        cameraLayer.frame = .init(origin: .zero, size: frameSize)
-        cameraLayer.videoGravity = .resizeAspectFill
-        cameraLayer.masksToBounds = true
-        view.layer.addSublayer(cameraLayer)
+      let view = CameraPreviewView()
+        view.configure(session: cameraSession)
         
         return view
     }
     
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        
+        uiView.setNeedsLayout()
     }
 }
 
