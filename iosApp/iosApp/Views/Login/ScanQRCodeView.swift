@@ -18,7 +18,7 @@ struct ScanQRCodeView: View {
     private let stringTable = "LoginView"
     
     // Error Properties
-    @State private var errorMessage: String = ""*/
+    @State private var errorMessage: String = ""
     @Environment(\.openURL) private var openURL
     
     var body: some View {
