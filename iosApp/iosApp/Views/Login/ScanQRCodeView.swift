@@ -12,33 +12,14 @@ import SwiftUI
 import AVFoundation
 
 struct ScanQRCodeView: View {
-    @StateObject var model: LoginViewModel
-    
-    init(model: LoginViewModel) {
-            _model = StateObject(wrappedValue: model)
-        }
-    
+    @StateObject private var viewModel = ScanQRCodeViewModel()
+    @ObservedObject var model: LoginViewModel
+     
     private let stringTable = "LoginView"
     
-    // QR Code Scanner Properties
-    @State private var isScanning: Bool = false
-    @State private var cameraSession: AVCaptureSession = .init()
-    @State private var cameraPermission: CameraPermissionStatus = .idle
-       
-    // QR Code Scanner Output
-    @State private var qrOutput: AVCaptureMetadataOutput = .init()
-    @State private var videoPreviewLayer: AVCaptureVideoPreviewLayer = .init()
-    @State private var showError: Bool = false
-    
     // Error Properties
-    @State private var errorMessage: String = ""
+    @State private var errorMessage: String = ""*/
     @Environment(\.openURL) private var openURL
-    
-    // Camera QR Code Output Delegate
-    @StateObject private var qrDelegate = QRScannerDelegate()
-    
-    // Scanned Code
-    @State private var scannedCode: String = ""
     
     var body: some View {
         VStack(spacing: 8) {
@@ -69,9 +50,9 @@ struct ScanQRCodeView: View {
             GeometryReader {
                 let size = $0.size
                 
-                QRCodeCameraView(frameSize: CGSize(width: size.width, height: size.height), cameraSession: $cameraSession)
+                QRCodeCameraView(frameSize: CGSize(width: size.width, height: size.height), cameraSession: $viewModel.cameraSession)
                     .onAppear() {
-                        setupCamera()
+                        viewModel.setupCamera()
                     }
                 
                 ZStack {
@@ -91,11 +72,11 @@ struct ScanQRCodeView: View {
         }
         .padding(15)
         // check camera permission
-        .onAppear(perform: checkCameraPermission)
-        .alert(isPresented: $showError) {
+        .onAppear(perform: viewModel.checkCameraPermission)
+        .alert(isPresented: $viewModel.showError) {
             Alert(
                 title: Text("Permission needed"),
-                message: Text(errorMessage),
+                message: Text(viewModel.errorMessage),
                 primaryButton: .default(Text("Open Settings"), action: {
                     let settingsString = UIApplication.openSettingsURLString
                     if let settingsURL = URL(string: settingsString) {
@@ -106,83 +87,10 @@ struct ScanQRCodeView: View {
                 secondaryButton: .cancel(Text("Cancel"))
             )
         }
-        .onChange(of: qrDelegate.scannedCode) { newValue in
-            if let code = newValue {
-                scannedCode = code
-                cameraSession.stopRunning()
-                
-                // send code to model to put it into Token and url & close view
-                
-                model.extractValuesFromQRCode(qrCodeUrl: scannedCode)
-                print(model.token)
-                print(model.defaultEndpoint)
-                
-                model.showQRCodeView = false
-            }
-        }
-    }
-    
-    /// Checking Camera Permissions
-    func checkCameraPermission() {
-        Task {
-            switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized:
-                cameraPermission = .approved
-            case .notDetermined:
-                if await AVCaptureDevice.requestAccess(for: .video) {
-                    cameraPermission = .approved
-                } else {
-                    cameraPermission = .denied
-                    presentError("Please Provide Access to your Camera for scanning codes")
-                }
-            case .denied, .restricted:
-                cameraPermission = .denied
-                presentError("Please Provide Access to your Camera for scanning codes")
-            default: break
-            }
-        }
-    }
-    
-    func presentError(_ message: String) {
-        errorMessage = message
-        showError.toggle()
-    }
-    
-    
-    func setupCamera() {
-        do {
-            guard let device = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .back).devices.first else {
-                presentError("UNKNOWN DEVICE ERROR")
-                return
-            }
-            
-            do {
-            // Camera input
-                let input = try AVCaptureDeviceInput(device: device)
-                
-                guard cameraSession.canAddInput(input), cameraSession.canAddOutput(qrOutput) else {
-                    presentError("UNKNOWN INPUT/OUTPUT ERROR")
-                    return
-                }
-                
-                // add input & output to camera session
-                cameraSession.beginConfiguration()
-                cameraSession.addInput(input)
-                cameraSession.addOutput(qrOutput)
-                
-                // setting outputconfig to reaed qr code
-                qrOutput.metadataObjectTypes = [.qr]
-                // adding delegate to retrieve the fetched qr code from camera
-                qrOutput.setMetadataObjectsDelegate(qrDelegate, queue: .main)
-               
-                cameraSession.commitConfiguration()
-                
-                DispatchQueue.global(qos: .background).async {
-                    cameraSession.startRunning()
-                }
-                 
-            } catch {
-                presentError(error.localizedDescription)
+        .onChange(of: viewModel.scannedCode) { code in
+            if let code {
+                model.extractValuesFromQRCode(qrCodeUrl: code)
+                model.showQRCodeView = false // View schließen
             }
         }
     }

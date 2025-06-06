@@ -10,14 +10,14 @@ import SwiftUI
 import AVFoundation
 import AVKit
 
-class QRScannerDelegate: NSObject, ObservableObject, AVCaptureMetadataOutputObjectsDelegate {
-    @Published var scannedCode: String?
+class QRScannerDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate {
+    var onCodeScanned: ((String) -> Void)?
+
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        if let metaObject = metadataObjects.first {
-            guard let readableObject = metaObject as? AVMetadataMachineReadableCodeObject else { return }
-            guard let code = readableObject.stringValue else { return }
-            print(code)
-            scannedCode = code
+        if let metaObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+           let code = metaObject.stringValue {
+            onCodeScanned?(code)
         }
     }
 }
+
