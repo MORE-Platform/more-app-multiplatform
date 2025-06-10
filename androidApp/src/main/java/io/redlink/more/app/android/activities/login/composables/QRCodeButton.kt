@@ -25,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,18 +41,19 @@ import io.redlink.more.app.android.ui.theme.moreSecondary
 @Composable
 fun QRCodeButton(model: LoginViewModel) {
 
-    val context = LocalContext.current
+    val context = rememberUpdatedState(LocalContext.current)
     val qrScannerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         val data = result.data
-        val scanned = data?.getStringExtra("qrResult") ?: return@rememberLauncherForActivityResult
+        val scanned = result.data?.getStringExtra("qrResult") ?:
+            return@rememberLauncherForActivityResult
         model.extractValuesFromQRCode(scanned)
     }
 
     OutlinedButton(
         onClick = {
-            val intent = Intent(context, QRScannerActivity::class.java)
+            val intent = Intent(context.value, QRScannerActivity::class.java)
             qrScannerLauncher.launch(intent)
         },
         modifier = Modifier

@@ -21,9 +21,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -43,7 +42,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -51,6 +53,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,15 +63,34 @@ import com.google.mlkit.vision.common.InputImage
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary
+
 
 // Infos to Barcodes mit ML Kit: https://developers.google.com/ml-kit/vision/barcode-scanning/android?hl=de
 
 class QRScannerActivity: ComponentActivity() {
+    var permissionGiven = false
+
+    var permissions = arrayOf(
+        Manifest.permission.CAMERA,
+    )
+
     // preview view for the camera qr code scanner
     private lateinit var previewView: PreviewView
     private val scanner = BarcodeScanning.getClient()
+
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                startCamera()
+            } else {
+               permissionGiven = false
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,28 +109,18 @@ class QRScannerActivity: ComponentActivity() {
     }
 
     private fun requestCameraPermissionIfNeeded() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 123)
-        } else {
-            // Start camera only when permission granted and view is ready
-            // (delay to let Compose inflate first)
-            Handler(Looper.getMainLooper()).postDelayed({ startCamera() }, 200)
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+                startCamera()
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) -> {
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         }
     }
 
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 123 && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        } else {
-            finish()
-        }
-    }
 
     // function converts camera image into an inputimage
     @OptIn(ExperimentalGetImage::class)
@@ -161,6 +173,9 @@ fun QrScannerScreen(
     modifier: Modifier = Modifier,
     previewViewProvider: (Context) -> PreviewView,
 ) {
+    val currentContext = rememberUpdatedState(LocalContext.current)
+    var permissionGiven = rememberUpdatedState(currentContext.value.checkSelfPermission(Manifest.permission.CAMERA) )
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -179,11 +194,11 @@ fun QrScannerScreen(
                 .drawWithContent {
                     drawContent()
 
-                    val cutoutSize = Size(300.dp.toPx(), 300.dp.toPx())
+                    val cutoutSize = Size(size.width - 140, size.height / 2)
                     val canvasWidth = size.width
                     val canvasHeight = size.height
                     val left = (canvasWidth - cutoutSize.width) / 2
-                    val top = (canvasHeight - cutoutSize.height) / 2
+                    val top = (canvasHeight - cutoutSize.height) / 3 *2
 
                     // background color
                     drawRect(color = MoreColors.PrimaryLight)
@@ -201,7 +216,7 @@ fun QrScannerScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 8.dp),
             contentAlignment = Alignment.TopEnd
         ) {
             Button(
@@ -214,11 +229,10 @@ fun QrScannerScreen(
                 ),
                 elevation = null
             ) {
-                Text(
-                    text = "✕",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                IconInline(
+                    icon = Icons.Rounded.Close,
+                    color = MoreColors.Secondary,
+                    contentDescription = getStringResource(id = R.string.more_close_icon)
                 )
             }
         }
@@ -240,7 +254,7 @@ fun QrScannerScreen(
             )
 
             Box(
-                modifier = Modifier.fillMaxWidth(0.95f),
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(
@@ -253,7 +267,7 @@ fun QrScannerScreen(
             }
 
             Box(
-                modifier = Modifier.fillMaxWidth(0.95f),
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(
@@ -263,6 +277,23 @@ fun QrScannerScreen(
                     color = MoreColors.Secondary,
                     textAlign = TextAlign.Center
                 )
+            }
+
+            if (permissionGiven.value == -1) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(vertical = 30.dp)
+                        .padding(horizontal = 30.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Text(
+                        text = getStringResource(id = R.string.more_qr_camera_needed),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        color = MoreColors.PrimaryLight200,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 

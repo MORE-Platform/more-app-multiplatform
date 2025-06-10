@@ -28,3 +28,4 @@
 "permission_needed" = "Kamerazugriff erforderlich";
 "open_settings" = "Einstellungen öffnen";
 "cancel" = "Abbrechen";
+"provide_camera_access" = "Um den QR Code zu scannen benötigen wir Zugriff zu deiner Kamera.";

@@ -24,7 +24,7 @@ struct MoreTextFieldHL: View {
     var capitalization: Capitalization = .normal
     var autoCorrectDisabled = false
     var textType: UITextContentType? = nil
-    var hlAlignment = TextAlignment.leading
+    var hlAlignment: TextAlignment = .leading
     
     var body: some View {
         VStack(alignment: .leading) {

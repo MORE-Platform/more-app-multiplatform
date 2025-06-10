@@ -56,12 +56,13 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
                     if granted {
                         self.cameraPermission = .approved
                         self.setupCamera()
+                        self.showError = false
                     } else {
-                        self.presentError("Please Provide Access to your Camera")
+                        self.showError = true
                     }
                 }
             case .denied, .restricted:
-                presentError("Please Provide Access to your Camera")
+                self.showError = true
             default:
                 break
             }
@@ -70,7 +71,7 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
 
     func setupCamera() {
         guard let device = AVCaptureDevice.default(for: .video) else {
-            presentError("No camera available.")
+            self.showError = true
             return
         }
 
@@ -89,14 +90,19 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
 
             cameraSession.startRunning()
         } catch {
-            presentError(error.localizedDescription)
+            presentError(errorDescription: error.localizedDescription)
         }
     }
 
-    func presentError(_ message: String) {
+    func presentError(errorDescription: String?) {
+        if (errorDescription != nil) {
+            print("Error when setting up camera: ")
+            print(errorDescription! as String)
+        }
+    
         DispatchQueue.main.async {
-            self.errorMessage = message
             self.showError = true
+            
         }
     }
 }

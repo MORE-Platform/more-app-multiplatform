@@ -47,27 +47,39 @@ struct ScanQRCodeView: View {
             Spacer(minLength: 0)
             
             /// Scanner Frame
-            GeometryReader {
-                let size = $0.size
-                
-                QRCodeCameraView(frameSize: CGSize(width: size.width, height: size.height), cameraSession: $viewModel.cameraSession)
-                    .onAppear() {
-                        viewModel.setupCamera()
+            ZStack {
+                GeometryReader {
+                    let size = $0.size
+                    
+                    QRCodeCameraView(frameSize: CGSize(width: size.width, height: size.height), cameraSession: $viewModel.cameraSession)
+                        .onAppear() {
+                            viewModel.setupCamera()
+                        }
+                    
+                    ZStack {
+                        ForEach(0...4, id: \.self) { index in
+                            let rotation = Double(index) * 90
+                            RoundedRectangle(cornerRadius: 2, style: .circular)
+                                .trim(from: 0.61, to: 0.64)
+                                .stroke(Color("Secondary"), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                .rotationEffect(.init(degrees: rotation))
+                        }
                     }
+                    .frame(width: size.width, height: size.width)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
                 
-                ZStack {
-                    ForEach(0...4, id: \.self) { index in
-                        let rotation = Double(index) * 90
-                        RoundedRectangle(cornerRadius: 2, style: .circular)
-                            .trim(from: 0.61, to: 0.64)
-                            .stroke(Color("Secondary"), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                            .rotationEffect(.init(degrees: rotation))
+                if(!viewModel.showError) {
+                    HStack(spacing: 8) {
+                        Text(verbatim:.localize(forKey: "provide_camera_access", withComment: "Access to camera wasn't granted to scan QR Code.", inTable: stringTable))
+                            .foregroundColor(.more.important)
+                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .multilineTextAlignment(.center)
                     }
                 }
-                .frame(width: size.width, height: size.width)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            
+           
             Spacer(minLength: 45)
         }
         .padding(15)
