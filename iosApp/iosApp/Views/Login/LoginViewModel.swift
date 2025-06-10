@@ -48,7 +48,7 @@ class LoginViewModel: ObservableObject {
     }
     
     func extractValuesFromQRCode(qrCodeUrl: String) {
-         defaultEndpoint = qrCodeUrl.components(separatedBy: "signup?").first ?? ""
+        endpoint = qrCodeUrl.components(separatedBy: "signup?").first ?? ""
          
          if let tokenPart = qrCodeUrl.components(separatedBy: "token=").last,
                tokenPart != qrCodeUrl {

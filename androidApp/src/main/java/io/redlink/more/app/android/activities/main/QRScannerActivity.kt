@@ -32,11 +32,14 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -48,14 +51,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.mlkit.vision.common.InputImage
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.app.android.ui.theme.moreSecondary
 
 // Infos to Barcodes mit ML Kit: https://developers.google.com/ml-kit/vision/barcode-scanning/android?hl=de
 
@@ -163,7 +169,7 @@ fun QrScannerScreen(
         // Camera Preview (full screen)
         AndroidView(
             factory = previewViewProvider,
-            modifier = Modifier.fillMaxSize()
+            Modifier.fillMaxSize(0.95f)
         )
 
         // Overlay with center cutout (placed directly after camera view so it doesn’t cover text/buttons)
@@ -179,9 +185,10 @@ fun QrScannerScreen(
                     val left = (canvasWidth - cutoutSize.width) / 2
                     val top = (canvasHeight - cutoutSize.height) / 2
 
-                    // Dim everything
-                    drawRect(color = Color(0xAA000000))
+                    // background color
+                    drawRect(color = MoreColors.PrimaryLight)
 
+                    // camera area
                     drawRect(
                         color = Color.Transparent,
                         topLeft = Offset(left, top),
@@ -194,21 +201,76 @@ fun QrScannerScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp)
-                .align(Alignment.TopCenter),
-            contentAlignment = Alignment.TopCenter
+                .padding(horizontal = 24.dp),
+            contentAlignment = Alignment.TopEnd
         ) {
-            Text(
-                text = getStringResource(id = R.string.more_qr_code_button),
-                color = MoreColors.PrimaryLight200,
-                fontSize = 20.sp
+            Button(
+                onClick = onClose,
+                modifier = Modifier
+                    .height(60.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Transparent,
+                    contentColor = MoreColors.Secondary
+                ),
+                elevation = null
+            ) {
+                Text(
+                    text = "✕",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(top = 64.dp)
+                .padding(horizontal = 24.dp)
+                .align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            // Welcome Image
+            Image(
+                id = R.drawable.welcome_to_more,
+                contentDescription = getStringResource(id = R.string.more_welcome_title)
             )
+
+            Box(
+                modifier = Modifier.fillMaxWidth(0.95f),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(
+                    text = getStringResource(id = R.string.more_qr_code_button),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = MoreColors.Primary,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Box(
+                modifier = Modifier.fillMaxWidth(0.95f),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(
+                    text = getStringResource(id = R.string.more_qr_code_scan_automatically),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    color = MoreColors.Secondary,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 48.dp)
+                .padding(horizontal = 24.dp)
                 .align(Alignment.BottomCenter),
             contentAlignment = Alignment.BottomCenter
         ) {
@@ -216,8 +278,9 @@ fun QrScannerScreen(
                 onClick = onClose,
                 modifier = Modifier
                     .padding(vertical = 8.dp)
-                    .height(60.dp),
-                colors = ButtonDefaults.morePrimary(),
+                    .height(60.dp)
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.moreSecondary(),
                 border = MoreColors.borderPrimary(true)
             ) {
                 Text(getStringResource(id = R.string.more_close))

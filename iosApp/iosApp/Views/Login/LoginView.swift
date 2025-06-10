@@ -44,14 +44,12 @@ struct LoginView: View {
                                 input: $model.token,
                                 capitalization: .uppercase,
                                 autoCorrectDisabled: true,
-                                textType: .oneTimeCode
+                                textType: .oneTimeCode,
+                                hlAlignment: TextAlignment.center
                 )
                 .padding(.bottom, 12)
                 
-                Text(verbatim:.localize(forKey: "or", withComment: "Choose options between manually inputing Participant Key or Scanning QR Code", inTable: stringTable))
-                    .padding(.bottom, 12)
-                
-                MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabledQRCodeButton) {
+                MoreActionButton(backgroundColor: Color.more.secondary, disabled: $disabledQRCodeButton) {
                     model.showQRCodeView = true
                 } label: {
                     HStack {
@@ -66,11 +64,14 @@ struct LoginView: View {
                 }
                 .padding(.bottom, 12)
                 
+                
+                Divider()
+                
                 if showTokenInput {
                     ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
                         .environmentObject(model)
                 }
-
+                
                 Spacer()
                     .frame(maxHeight: .infinity)
                 

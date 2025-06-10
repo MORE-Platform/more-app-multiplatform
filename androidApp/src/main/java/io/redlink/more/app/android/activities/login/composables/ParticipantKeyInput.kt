@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
@@ -121,13 +122,10 @@ fun ParticipationKeyInput(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text=getStringResource(id = R.string.more_or_text),
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             QRCodeButton(model = model)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+            MoreDivider()
+            Spacer(modifier = Modifier.height(32.dp))
             ValidationButton(model = model, focusManager = focusManager)
         }
 

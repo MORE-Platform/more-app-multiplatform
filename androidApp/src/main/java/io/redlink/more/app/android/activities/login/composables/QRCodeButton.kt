@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
@@ -35,7 +34,7 @@ import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.activities.qrScanner.QRScannerActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.app.android.ui.theme.moreSecondary
 
 
 @Composable
@@ -57,9 +56,8 @@ fun QRCodeButton(model: LoginViewModel) {
         },
         modifier = Modifier
             .fillMaxWidth(1f)
-            .padding(vertical = 8.dp)
             .height(60.dp),
-        colors = ButtonDefaults.morePrimary(),
+        colors = ButtonDefaults.moreSecondary(),
         border = MoreColors.borderPrimary(true)
     ) {
         Row(

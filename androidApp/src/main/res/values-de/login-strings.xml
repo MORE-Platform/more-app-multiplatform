@@ -11,6 +11,5 @@
     <string name="more_qr_code_button">Scannen Sie bitte Ihren QR Code</string>
     <string name="more_qr_code_button_description">Öffnen Sie die Kamera um den QR code zu scannen</string>
     <string name="more_or_text">oder</string>
-
-
+    <string name="more_qr_code_scan_automatically">QR Code wird automatisch gescannt.</string>
 </resources>
