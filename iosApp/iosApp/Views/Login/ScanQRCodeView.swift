@@ -69,7 +69,7 @@ struct ScanQRCodeView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 
-                if(!viewModel.showError) {
+                if(viewModel.showError) {
                     HStack(spacing: 8) {
                         Text(verbatim:.localize(forKey: "provide_camera_access", withComment: "Access to camera wasn't granted to scan QR Code.", inTable: stringTable))
                             .foregroundColor(.more.important)
