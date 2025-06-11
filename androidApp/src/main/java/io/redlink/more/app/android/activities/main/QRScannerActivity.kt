@@ -73,10 +73,6 @@ import io.redlink.more.app.android.ui.theme.moreSecondary
 class QRScannerActivity: ComponentActivity() {
     var permissionGiven = false
 
-    var permissions = arrayOf(
-        Manifest.permission.CAMERA,
-    )
-
     // preview view for the camera qr code scanner
     private lateinit var previewView: PreviewView
     private val scanner = BarcodeScanning.getClient()
@@ -174,7 +170,7 @@ fun QrScannerScreen(
     previewViewProvider: (Context) -> PreviewView,
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
-    var permissionGiven = rememberUpdatedState(currentContext.value.checkSelfPermission(Manifest.permission.CAMERA) )
+    val permissionGiven = rememberUpdatedState(currentContext.value.checkSelfPermission(Manifest.permission.CAMERA) )
 
     Box(
         modifier = modifier
@@ -198,7 +194,7 @@ fun QrScannerScreen(
                     val canvasWidth = size.width
                     val canvasHeight = size.height
                     val left = (canvasWidth - cutoutSize.width) / 2
-                    val top = (canvasHeight - cutoutSize.height) / 3 *2
+                    val top = ((canvasHeight - cutoutSize.height) / 3) * 2
 
                     // background color
                     drawRect(color = MoreColors.PrimaryLight)
