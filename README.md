@@ -105,6 +105,29 @@ Because **More App Multiplatform** supports iOS and Android, you can choose whic
 1. In the **Run Configurations** choose **ios App**.
 2. Press **Run** arrow.
 
+#### Local development with app, studymanager and gateway
+Local setup together with [more-studymanager-backend](https://github.com/MORE-Platform/more-studymanager-backend), [more-studymanager-frontend](https://github.com/MORE-Platform/more-studymanager-frontend) and [more-datag-ateway](https://github.com/MORE-Platform/more-data-gateway).
+
+##### Android App
+
+The APK from the App Store isn't able to run against your local setup, because it doesn't support it. To be able to run it with your local setup follow this step-by-step guide:
+
+1. Open Android Studio
+
+2. Go to AndroidManifest and add following line to <application .MoreApplication… (between line 36 & 37) 
+```sh
+    android:usesCleartextTraffic="true"
+```
+
+3. Run app from your AndroidStudio on your device or inside AndroidStudio with an Emulator.
+
+4. Open your MoreApp on Device or Emulator and add following into your Endpoint (the pc and device have to be in the same WLAN), and you are good to go.
+```sh
+    http://<macadresse>:<gateway-port>/api/v1
+```
+
+##### iOS App
+The IOS-App can be basically runs with any image, since it supports clear traffic. If you doesn't have changes in the app, you could even run it directly against your local setup with the App-Store Version.
 
 ## Project Architecture
 
