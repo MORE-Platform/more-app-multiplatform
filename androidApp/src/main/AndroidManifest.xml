@@ -20,7 +20,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!-- use of camera for qr code scan in login -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -40,6 +40,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_more_logo_blue_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="false"
         android:theme="@style/Theme.MorePlatform">
         <activity
             android:name=".activities.ContentActivity"
