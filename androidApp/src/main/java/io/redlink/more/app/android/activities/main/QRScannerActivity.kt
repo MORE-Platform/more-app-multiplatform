@@ -45,7 +45,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -53,7 +54,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,20 +71,19 @@ import io.redlink.more.app.android.ui.theme.moreSecondary
 // Infos to Barcodes mit ML Kit: https://developers.google.com/ml-kit/vision/barcode-scanning/android?hl=de
 
 class QRScannerActivity: ComponentActivity() {
-    var permissionGiven = false
-
     // preview view for the camera qr code scanner
     private lateinit var previewView: PreviewView
     private val scanner = BarcodeScanning.getClient()
+
+    private val permissionGiven: MutableState<Boolean> = mutableStateOf(false)
 
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
+            permissionGiven.value = isGranted
             if (isGranted) {
                 startCamera()
-            } else {
-               permissionGiven = false
             }
         }
 
@@ -99,6 +98,7 @@ class QRScannerActivity: ComponentActivity() {
                     previewView = PreviewView(it)
                     previewView
                 },
+                permissionGiven = permissionGiven,
                 onClose = { finish() }
             )
         }
@@ -168,10 +168,8 @@ fun QrScannerScreen(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
     previewViewProvider: (Context) -> PreviewView,
+    permissionGiven: MutableState<Boolean>
 ) {
-    val currentContext = rememberUpdatedState(LocalContext.current)
-    val permissionGiven = rememberUpdatedState(currentContext.value.checkSelfPermission(Manifest.permission.CAMERA) )
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -275,7 +273,7 @@ fun QrScannerScreen(
                 )
             }
 
-            if (permissionGiven.value == -1) {
+            if (!permissionGiven.value) {
                 Box(
                     modifier = Modifier.fillMaxWidth()
                         .padding(vertical = 30.dp)
