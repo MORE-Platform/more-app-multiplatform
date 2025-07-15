@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace = "io.redlink.more.app.android"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 26
         versionName = "4.0.26"
     }
