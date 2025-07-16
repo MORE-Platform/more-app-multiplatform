@@ -1562,7 +1562,7 @@
 				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4.1.0;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = VX2DSGURUH;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1600,7 +1600,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4.1.0;
 				DEVELOPMENT_TEAM = VX2DSGURUH;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;

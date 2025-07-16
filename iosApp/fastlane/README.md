@@ -23,7 +23,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Loads App Store Connect API Key
 
-Bump build number to FASTLANE_BUILD_NUMBER
+Bump build number and version to FASTLANE_BUILD_NUMBER
 
 ### ios build
 

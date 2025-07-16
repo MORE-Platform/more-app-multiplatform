@@ -18,82 +18,206 @@ default_platform(:ios)
 platform :ios do
   desc "Loads App Store Connect API Key"
   before_all do
-      create_keychain(
-        name: "fastlane_keychain",
-        password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
-        default_keychain: true,
-        unlock: true,
-        require_create: ENV['CI']
+    if ENV['CI'] || !File.exist?(File.expand_path("~/Library/Keychains/fastlane_keychain-db"))
+      begin
+        create_keychain(
+          name: "fastlane_keychain",
+          password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
+          default_keychain: true,
+          unlock: true,
+          require_create: ENV['CI'] ? true : false
         )
-      puts "Loading AppStore Connect Key"
+        lane_context[:keychain_created] = true
+        puts "Created and unlocked keychain"
+      rescue => e
+        puts "Error creating keychain: #{e.message}"
+        raise e if ENV['CI']
+      end
+    else
+      begin
+        unlock_keychain(
+          path: "fastlane_keychain",
+          password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
+        )
+        puts "Unlocked existing keychain"
+      rescue => e
+        puts "Error unlocking keychain: #{e.message}"
+      end
+    end
 
-  puts "APPLE_CONNECT_KEY_ID = #{ENV['APPLE_CONNECT_KEY_ID']}"
-  puts "APPLE_CONNECT_ISSUER_ID = #{ENV['APPLE_CONNECT_ISSUER_ID']}"
-  puts "APPLE_CONNECT_KEY_CONTENT set?  #{!ENV['APPLE_CONNECT_KEY_CONTENT'].to_s.empty?}"
-  puts "APPLE_CONNECT_KEY_IS_BASE64 = #{ENV['APPLE_CONNECT_KEY_IS_BASE64']}"
+    puts "Loading AppStore Connect Key"
+    puts "APPLE_CONNECT_KEY_ID = #{ENV['APPLE_CONNECT_KEY_ID']}"
+    puts "APPLE_CONNECT_ISSUER_ID = #{ENV['APPLE_CONNECT_ISSUER_ID']}"
+    puts "APPLE_CONNECT_KEY_FILE set? #{!ENV['APPLE_CONNECT_KEY_FILE'].to_s.empty?}"
+    puts "APPLE_CONNECT_KEY_CONTENT set? #{!ENV['APPLE_CONNECT_KEY_CONTENT'].to_s.empty?}"
+    puts "APPLE_CONNECT_KEY_IS_BASE64 = #{ENV['APPLE_CONNECT_KEY_IS_BASE64']}"
 
-    lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
-      key_id: ENV["APPLE_CONNECT_KEY_ID"],
-      issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
-      key_content: ENV["APPLE_CONNECT_KEY_CONTENT"],
-      is_key_content_base64: ENV["APPLE_CONNECT_KEY_IS_BASE64"]
-    )
+    begin
+      key_file_path = ENV["APPLE_CONNECT_KEY_FILE"]
 
-  if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
-    puts "Failed to load App Store Connect API key. Check your ENV variables."
-  else
-    puts "✅  Loaded App Store Connect API Key."
+      if !key_file_path.to_s.empty? && ENV["APPLE_CONNECT_KEY_IS_BASE64"] == "true"
+        require 'base64'
+        require 'tempfile'
+
+        if File.exist?(File.expand_path(key_file_path))
+          puts "Reading base64 content from file: #{key_file_path}"
+          file_content = File.read(File.expand_path(key_file_path))
+          decoded_content = Base64.decode64(file_content)
+
+          # Create a temporary file with the decoded content
+          temp_file = Tempfile.new(['apple_connect_key', '.p8'])
+          temp_file.write(decoded_content)
+          temp_file.close
+
+          key_file_path = temp_file.path
+          puts "Created temporary file with decoded content at: #{key_file_path}"
+        else
+          puts "Apple Connect key file not found at: #{key_file_path}"
+          # We'll fall back to APPLE_CONNECT_KEY_CONTENT if available
+        end
+      end
+
+      key_file_exists = !key_file_path.to_s.empty? && File.exist?(File.expand_path(key_file_path))
+
+      if key_file_exists
+        puts "Using key file: #{key_file_path}"
+        lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
+          key_id: ENV["APPLE_CONNECT_KEY_ID"],
+          issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
+          key_filepath: File.expand_path(key_file_path)
+        )
+      else
+        # Fall back to key content if file doesn't exist
+        if ENV["APPLE_CONNECT_KEY_CONTENT"].to_s.empty?
+          UI.error("Neither APPLE_CONNECT_KEY_FILE nor APPLE_CONNECT_KEY_CONTENT is available")
+          raise "App Store Connect API key not available. Please set either APPLE_CONNECT_KEY_FILE or APPLE_CONNECT_KEY_CONTENT"
+        end
+
+        puts "Key file not found, using key content instead"
+        lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = app_store_connect_api_key(
+          key_id: ENV["APPLE_CONNECT_KEY_ID"],
+          issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
+          key_content: ENV["APPLE_CONNECT_KEY_CONTENT"],
+          is_key_content_base64: ENV["APPLE_CONNECT_KEY_IS_BASE64"] == "true"
+        )
+      end
+
+      if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
+        puts "Failed to load App Store Connect API key. Check your ENV variables."
+      else
+        puts "✅  Loaded App Store Connect API Key."
+      end
+    rescue => e
+      puts "Error loading App Store Connect API key: #{e.message}"
+      raise e if ENV['CI'] # Fail in CI, but allow to continue locally
+    end
   end
-  end
 
-  desc "Bump build number to FASTLANE_BUILD_NUMBER"
+  desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
   lane :increment_build do
-    increment_build_number(build_number: ENV["FASTLANE_BUILD_NUMBER"])
+    # Set both build number and version string to the tag value
+    version = ENV["FASTLANE_BUILD_NUMBER"]
+    if version.nil? || version.empty?
+      UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
+      raise "FASTLANE_BUILD_NUMBER environment variable is required"
+    end
+
+    UI.message("Setting version to #{version}")
+    increment_build_number(build_number: version)
+    increment_version_number(version_number: version)
   end
 
   desc "Build the app"
   lane :build do
+    begin
       get_certificates(
-            api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-            team_id:  ENV["FASTLANE_TEAM_ID"],
-            keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
-            username: ENV["FASTLANE_USER"]
-          )
-#       cert(
-#         api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-#         team_id: ENV["FASTLANE_TEAM_ID"],
-#         keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
-#       )
-    ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
-#         get_provisioning_profile(
-#             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-#                 app_identifier: app_id,
-#                 team_id: ENV["FASTLANE_TEAM_ID"]
-#               )
-        sigh(
+        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+        team_id: ENV["FASTLANE_TEAM_ID"],
+        keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
+        username: ENV["FASTLANE_USER"]
+      )
+
+      if ENV['APP_IDENTIFIERS'].nil? || ENV['APP_IDENTIFIERS'].empty?
+        UI.error("APP_IDENTIFIERS environment variable is not set or is empty")
+        raise "APP_IDENTIFIERS environment variable is required"
+      end
+
+      ENV['APP_IDENTIFIERS'].split(',').map(&:strip).each do |app_id|
+        begin
+          sigh(
             app_identifier: app_id,
             api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
             team_id: ENV["FASTLANE_TEAM_ID"],
             skip_install: true
-        )
-        puts "Created profile for " + app_id
+          )
+          puts "Created profile for #{app_id}"
+        rescue => e
+          UI.error("Error getting provisioning profile for #{app_id}: #{e.message}")
+          raise e if ENV['CI'] # Fail in CI, but allow to continue locally
+        end
+      end
+
+      # Build the app
+      if ENV["FASTLANE_IOS_SCHEME"].nil? || ENV["FASTLANE_IOS_SCHEME"].empty?
+        UI.error("FASTLANE_IOS_SCHEME environment variable is not set or is empty")
+        raise "FASTLANE_IOS_SCHEME environment variable is required"
+      end
+
+      build_app(
+        scheme: ENV["FASTLANE_IOS_SCHEME"],
+        clean: true,
+        output_directory: "build",
+        export_method: "app-store"
+      )
+    rescue => e
+      UI.error("Error building app: #{e.message}")
+      raise e if ENV['CI'] # Fail in CI, but allow to continue locally
     end
-    build_app(scheme: ENV["FASTLANE_IOS_SCHEME"])
   end
 
   desc "Deploy a new beta to TestFlight"
   lane :deploy_beta do
+    begin
+      if ENV['APP_IDENTIFIERS'].nil? || ENV['APP_IDENTIFIERS'].empty?
+        UI.error("APP_IDENTIFIERS environment variable is not set or is empty")
+        raise "APP_IDENTIFIERS environment variable is required"
+      end
+
+      if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
+        UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
+        raise "FASTLANE_BUILD_NUMBER environment variable is required"
+      end
+
       increment_build
-        build
-        upload_to_testflight(
-          app_identifier: ENV['APP_IDENTIFIERS'].split(',').first,
-          api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-          skip_waiting_for_build_processing: true
-        )
+
+      build
+
+      upload_to_testflight(
+        app_identifier: ENV['APP_IDENTIFIERS'].split(',').first,
+        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+        skip_waiting_for_build_processing: true
+      )
+
+      UI.success("Successfully deployed to TestFlight")
+    rescue => e
+      UI.error("Error deploying to TestFlight: #{e.message}")
+      raise e # Always raise in deploy_beta as this is a critical operation
+    end
   end
 
   after_all do
-      delete_keychain(name: "fastlane_keychain")
+    begin
+      # Only delete the keychain if we're in CI or if it was created in this run
+      if ENV['CI'] || lane_context[:keychain_created]
+        delete_keychain(name: "fastlane_keychain")
+        puts "Deleted keychain"
+      else
+        puts "Keeping keychain for local development"
+      end
+    rescue => e
+      puts "Error deleting keychain: #{e.message}"
+      # Don't raise the error as this is cleanup code
+    end
   end
 
 end

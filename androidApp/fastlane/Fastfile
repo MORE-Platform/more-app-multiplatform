@@ -14,6 +14,49 @@
 default_platform(:android)
 
 platform :android do
+  # Helper method to decode base64 content and create a temporary file
+  def decode_base64_to_temp_file(base64_content, file_extension = '.json', prefix = 'temp_file', is_file_path = false)
+    require 'base64'
+    require 'tempfile'
+
+    if is_file_path && File.exist?(File.expand_path(base64_content))
+      UI.message("Reading base64 content from file: #{base64_content}")
+      base64_content = File.read(File.expand_path(base64_content))
+    end
+
+    decoded_content = Base64.decode64(base64_content)
+    temp_file = Tempfile.new([prefix, file_extension])
+    temp_file.write(decoded_content)
+    temp_file.close
+
+    UI.success("Created temporary file with decoded content at: #{temp_file.path}")
+    return temp_file.path
+  end
+
+  # Helper method to setup Android signing environment variables
+  def setup_android_signing
+    # Check if we have a keystore in base64 format in environment variables
+    if ENV["ANDROID_KEYSTORE_BASE64"] && !ENV["ANDROID_KEYSTORE_BASE64"].empty?
+      UI.message("Setting up Android signing with keystore from environment variable")
+
+      # Decode the keystore and save to a temporary file
+      keystore_path = decode_base64_to_temp_file(
+        ENV["ANDROID_KEYSTORE_BASE64"], 
+        '.jks', 
+        'android_keystore'
+      )
+
+      # Set environment variables for the Gradle build
+      ENV["ANDROID_KEYSTORE_PATH"] = keystore_path
+
+      UI.success("Android signing environment set up successfully")
+      return true
+    else
+      UI.important("ANDROID_KEYSTORE_BASE64 not provided, skipping signing setup")
+      return false
+    end
+  end
+
   desc "Run all tests"
   lane :test do
     gradle(task: "test", project_dir: "..")
@@ -21,34 +64,166 @@ platform :android do
 
   desc "Build the Android app (debug)"
   lane :build do
-    gradle(
-      task: "assemble",
-      build_type: "Debug",
-      project_dir: ".."
-    )
-    crashlytics
+    begin
+      # Setup signing if credentials are available
+      setup_android_signing
+
+      gradle(
+        task: "assemble",
+        build_type: "Debug",
+        project_dir: ".."
+      )
+
+      # Only upload to Crashlytics if we're not in CI
+      # This is because CI builds are not meant to be distributed via Crashlytics
+      if !ENV['CI']
+        begin
+          # Check if Firebase Crashlytics plugin is available and FIREBASE_APP_ID is set
+          if Gem::Specification.find_all_by_name('fastlane-plugin-firebase_app_distribution').any? && 
+             ENV["FIREBASE_APP_ID"] && !ENV["FIREBASE_APP_ID"].empty?
+            firebase_app_distribution(
+              app: ENV["FIREBASE_APP_ID"],
+              groups: "testers",
+              release_notes: "Debug build",
+              apk_path: "../build/outputs/apk/debug/androidApp-debug.apk"
+            )
+          else
+            if !Gem::Specification.find_all_by_name('fastlane-plugin-firebase_app_distribution').any?
+              UI.important("Firebase App Distribution plugin not available. Skipping Crashlytics upload.")
+            elsif !ENV["FIREBASE_APP_ID"] || ENV["FIREBASE_APP_ID"].empty?
+              UI.important("FIREBASE_APP_ID not set. Skipping Crashlytics upload.")
+            end
+          end
+        rescue => e
+          UI.error("Error uploading to Crashlytics: #{e.message}")
+          # Don't fail the build if Crashlytics upload fails
+        end
+      end
+
+      UI.success("Android build completed successfully")
+    rescue => e
+      UI.error("Error building Android app: #{e.message}")
+      raise e if ENV['CI'] # Fail in CI, but allow to continue locally
+    end
   end
 
   desc "Deploy to Google Play Beta"
   lane :deploy_beta do
-    build
-    name = ENV.fetch("FASTLANE_BUILD_NUMBER")
-    major, minor, patch = name.split('.').map(&:to_i)
+    begin
+      # Validate required environment variables
+      if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
+        UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
+        raise "FASTLANE_BUILD_NUMBER environment variable is required"
+      end
 
-    # Build a 5-digit code: MMmmpp
-    #   major × 10⁴ + minor × 10² + patch
-    #  → 4.0.22  becomes 4*10000 + 0*100 + 22 = 40022
-    code = major * 10_000 + minor * 100 + patch
+      # We don't need to call build here as we're building a release version directly
+      name = ENV.fetch("FASTLANE_BUILD_NUMBER")
+      UI.message("Building version #{name}")
 
-    gradle(
-      task: "assemble",
-      build_type: "Release",
-      project_dir: "..",
-      properties: {
-        "VERSION_CODE" => code,             # passes to Gradle if you still need it
-        "VERSION_NAME" => name
-      }
-    )
-    upload_to_play_store(track: "beta", skip_upload_metadata: true)
+      # Parse version components
+      begin
+        major, minor, patch = name.split('.').map(&:to_i)
+
+        # Build a 5-digit code: MMmmpp
+        #   major × 10⁴ + minor × 10² + patch
+        #  → 4.0.22  becomes 4*10000 + 0*100 + 22 = 40022
+        base_code = major * 10_000 + minor * 100 + patch
+
+        if ENV["GOOGLE_PLAY_KEY_IN_BASE64"].nil? || ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
+          UI.important("GOOGLE_PLAY_KEY_IN_BASE64 environment variable is not set or is empty")
+          UI.important("Will attempt to use default authentication method for version code retrieval")
+          latest_version_code = google_play_track_version_codes(
+            track: "beta"
+          ).max || base_code
+        else
+          # Check if the key file content is base64 encoded
+          key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
+          key_file_path = ""
+          if !key_base64.nil? && !key_base64.empty?
+            key_file_path = decode_base64_to_temp_file(key_base64)
+          end
+
+          if File.exist?(File.expand_path(key_file_path))
+            UI.success("Using Google Play key file for version code retrieval: #{key_file_path}")
+            latest_version_code = google_play_track_version_codes(
+              track: "beta",
+              json_key: File.expand_path(key_file_path)
+            ).max || base_code
+          else
+            UI.error("Google Play key file not found at: #{key_file_path}")
+            raise "Google Play key file not found. Please check the GOOGLE_PLAY_KEY_IN_BASE64 environment variable."
+          end
+        end
+
+        code = [base_code, latest_version_code + 1].max
+        UI.message("Base version code: #{base_code}")
+        UI.message("Latest version code from Google Play: #{latest_version_code}")
+        UI.message("Using incremented version code: #{code}")
+      rescue => e
+        UI.error("Error processing version number: #{e.message}")
+        UI.important("Falling back to calculated version code without increment")
+        code = major * 10_000 + minor * 100 + patch
+        UI.message("Fallback version code: #{code}")
+      end
+
+      # Setup signing if credentials are available
+      signing_configured = setup_android_signing
+
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: "..",
+        properties: {
+          "VERSION_CODE" => code,
+          "VERSION_NAME" => name
+        }
+      )
+
+      # If signing wasn't configured, warn the user
+      if !signing_configured
+        UI.important("Release build was created without signing configuration. This may cause issues when uploading to Google Play.")
+      end
+
+        if ENV["GOOGLE_PLAY_KEY_IN_BASE64"].nil? || ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
+          UI.important("GOOGLE_PLAY_KEY_IN_BASE64 environment variable is not set or is empty")
+          UI.important("Will attempt to use default authentication method for version code retrieval")
+          latest_version_code = google_play_track_version_codes(
+            track: "beta"
+          ).max || base_code
+        else
+          # Check if the key file content is base64 encoded
+          key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
+          key_file_path = ""
+          if !key_base64.nil? && !key_base64.empty?
+            key_file_path = decode_base64_to_temp_file(key_base64)
+          end
+
+          if File.exist?(File.expand_path(key_file_path))
+            UI.success("Using Google Play key file for version code retrieval: #{key_file_path}")
+            latest_version_code = google_play_track_version_codes(
+              track: "beta",
+              json_key: File.expand_path(key_file_path)
+            ).max || base_code
+          else
+            UI.error("Google Play key file not found at: #{key_file_path}")
+            raise "Google Play key file not found. Please check the GOOGLE_PLAY_KEY_IN_BASE64 environment variable."
+          end
+        end
+
+      begin
+        if ENV["GOOGLE_PLAY_KEY_IN_BASE64"] && !ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
+          key_file_path = decode_base64_to_temp_file(ENV["GOOGLE_PLAY_KEY_IN_BASE64"])
+           upload_to_play_store(track: "beta", skip_upload_metadata: true, release_status: "completed", aab: "/Users/jancortiel/Documents/More/LBI/more-multiplatform-app/androidApp/build/outputs/bundle/release/androidApp-release.aab", skip_upload_apk: true, json_key: File.expand_path(key_file_path))
+           UI.success("Successfully deployed to Google Play Beta")
+         end
+          rescue => e
+            UI.error("Error uploading to Google Play: #{e.message}")
+            raise e # Always raise in deploy_beta as this is a critical operation
+
+      end
+    rescue => e
+      UI.error("Error in deploy_beta: #{e.message}")
+      raise e # Always raise in deploy_beta as this is a critical operation
+    end
   end
 end

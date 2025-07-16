@@ -1,2 +1,1 @@
-json_key_file "~/Documents/More/more-adad0-35a57622cd23.json" # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
-package_name "ac.at.lbg.dhp.more" # e.g. com.krausefx.app
+package_name "ac.at.lbg.dhp.more"

@@ -16,3 +16,4 @@ shared/src/commonMain/kotlin/generated
 *.cer*
 *.p12
 *.zip
+*.p8
