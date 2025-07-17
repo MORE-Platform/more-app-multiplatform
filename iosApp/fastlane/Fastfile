@@ -39,6 +39,19 @@ platform :ios do
   desc "Build the app for App Store"
   lane :build do
     if ENV["APPLE_CERTIFICATE"] && !ENV["APPLE_CERTIFICATE"].empty?
+      # Create temporary keychain for CI
+      keychain_name = "fastlane_tmp_keychain"
+      keychain_password = "temp_password"
+    
+      create_keychain(
+        name: keychain_name,
+        password: keychain_password,
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        add_to_search_list: true
+      )
+
       # Decode base64 certificate and save to .cer file
       cert_data = Base64.decode64(ENV["APPLE_CERTIFICATE"])
       cert_path = "#{Dir.tmpdir}/apple_certificate.cer"
@@ -47,7 +60,8 @@ platform :ios do
       import_certificate(
         certificate_path: cert_path,
         certificate_password: ENV["APPLE_CERTIFICATE_PASSWORD"] || "",
-        keychain_name: "login.keychain"
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
       )
     else
       cert(
