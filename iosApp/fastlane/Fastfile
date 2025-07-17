@@ -38,13 +38,23 @@ platform :ios do
 
   desc "Build the app for App Store"
   lane :build do
-#     get_certificates(
-#       api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-#       team_id: ENV["FASTLANE_TEAM_ID"],
-#       generate_apple_certs: false
-# #       keychain_path: File.expand_path("~/Library/Keychains/fastlane_keychain-db"),
-# #       keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
-#     )
+    if ENV["APPLE_CERTIFICATE"] && !ENV["APPLE_CERTIFICATE"].empty?
+      cert_data = Base64.decode64(ENV["APPLE_CERTIFICATE"])
+      cert_path = "#{Dir.tmpdir}/apple_certificate.cer"
+      File.write(cert_path, cert_data)
+      
+      import_certificate(
+        certificate_path: cert_path,
+        certificate_password: ENV["APPLE_CERTIFICATE_PASSWORD"] || "",
+        keychain_name: "login.keychain"
+      )
+    else
+      cert(
+        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+        team_id: ENV["FASTLANE_TEAM_ID"],
+        generate_apple_certs: false
+      )
+    end
 
     ENV["APP_IDENTIFIERS"].to_s.split(',').map(&:strip).each do |app_id|
       sigh(
