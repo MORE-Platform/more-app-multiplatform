@@ -11,7 +11,9 @@
 #
 
 # Uncomment the line if you want fastlane to automatically update itself
-update_fastlane
+if ENV["CI"]
+    update_fastlane
+end
 
 default_platform(:ios)
 
@@ -71,7 +73,13 @@ platform :ios do
         scheme: ENV["FASTLANE_IOS_SCHEME"],
         clean: true,
         output_directory: "build",
-        export_method: "app-store"
+        export_method: "app-store",
+        export_options: {
+            provisioningProfiles: {
+                "ac.at.lbg.dhp.more" => "match AppStore ac.at.lbg.dhp.more",
+                "ac.at.lbg.dhp.more.More-Notification-Service-Extension" => "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension"
+            }
+        }
       )
   end
 
