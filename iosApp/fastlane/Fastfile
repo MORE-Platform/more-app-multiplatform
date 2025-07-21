@@ -36,9 +36,7 @@ platform :ios do
       duration: 1000
     )
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
-    if ENV["CI"]
-        xcodes(version: "16.4", select_for_current_build_only: true)
-    end
+
     if ENV["FASTLANE_MATCH_SECRET"] && !ENV["FASTLANE_MATCH_SECRET"].empty?
         ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
     end
@@ -70,7 +68,10 @@ platform :ios do
         keychain_name: "temp_keychain",
         keychain_password: "temp_password"
       )
-
+        if ENV["CI"]
+            xcodes(version: "16.4", select_for_current_build_only: true)
+            xcversion("16.4")
+        end
       build_app(
         scheme: ENV["FASTLANE_IOS_SCHEME"],
         clean: true,
