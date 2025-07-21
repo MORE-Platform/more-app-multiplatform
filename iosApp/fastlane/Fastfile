@@ -67,14 +67,18 @@ platform :ios do
         verbose: true
       )
 
-      update_code_signing_settings(
-        use_automatic_signing: false,
-        team_id: ENV["FASTLANE_TEAM_ID"],
-        targets: ["More", "More-Notification-Service-Extension"],
-        profile_name: identifiers.map { |id|
-          "match AppStore #{id}"
-        }
-      )
+  update_code_signing_settings(
+    use_automatic_signing: false,
+    team_id: ENV["FASTLANE_TEAM_ID"],
+    targets: ["More"],
+    profile_name: "match AppStore ac.at.lbg.dhp.more"
+  )
+  update_code_signing_settings(
+    use_automatic_signing: false,
+    team_id: ENV["FASTLANE_TEAM_ID"],
+    targets: ["More-Notification-Service-Extension"],
+    profile_name: "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension"
+  )
 
       build_app(
         scheme: ENV["FASTLANE_IOS_SCHEME"],
