@@ -70,7 +70,7 @@ platform :ios do
       )
         if ENV["CI"]
             xcodes(version: "16.4", select_for_current_build_only: true)
-            xcversion("16.4")
+            xcversion(version: "16.4")
         end
       build_app(
         scheme: ENV["FASTLANE_IOS_SCHEME"],
