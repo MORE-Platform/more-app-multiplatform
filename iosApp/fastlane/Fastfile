@@ -11,7 +11,7 @@
 #
 
 # Uncomment the line if you want fastlane to automatically update itself
-#update_fastlane
+update_fastlane
 
 default_platform(:ios)
 
@@ -66,19 +66,6 @@ platform :ios do
         git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
         verbose: true
       )
-
-  update_code_signing_settings(
-    use_automatic_signing: false,
-    team_id: ENV["FASTLANE_TEAM_ID"],
-    targets: ["More"],
-    profile_name: "match AppStore ac.at.lbg.dhp.more"
-  )
-  update_code_signing_settings(
-    use_automatic_signing: false,
-    team_id: ENV["FASTLANE_TEAM_ID"],
-    targets: ["More-Notification-Service-Extension"],
-    profile_name: "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension"
-  )
 
       build_app(
         scheme: ENV["FASTLANE_IOS_SCHEME"],
