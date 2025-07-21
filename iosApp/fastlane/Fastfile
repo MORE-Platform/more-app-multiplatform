@@ -33,9 +33,9 @@ platform :ios do
       is_key_content_base64: true,
       duration: 1000
     )
-#     if ENV["FASTLANE_MATCH_SECRET"]?.empty
-#         ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
-#     end
+    if ENV["FASTLANE_MATCH_SECRET"] && !ENV["FASTLANE_MATCH_SECRET"].empty?
+        ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
+    end
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
     end
 
