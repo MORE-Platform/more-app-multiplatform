@@ -60,6 +60,10 @@ jobs:
       - name: Build iOS app
         run: fastlane build
 
+      - name: Log File
+        run: |
+          cat /Users/runner/Library/Logs/gym/More-iosApp.log
+
       - name: Deploy to TestFlight
         if: startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true'
         run: fastlane deploy_beta
