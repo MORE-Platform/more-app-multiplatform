@@ -16,7 +16,15 @@
 default_platform(:ios)
 
 platform :ios do
-  before_all do
+    before_all do
+        create_keychain(
+          name: "temp_keychain",
+          password: "temp_password",
+          default_keychain: true,
+          unlock: true,
+          timeout: 3600,
+          lock_when_sleeps: false
+        )
 
     api_key = app_store_connect_api_key(
       key_id: ENV['APPLE_CONNECT_KEY_ID'],
@@ -25,8 +33,16 @@ platform :ios do
       is_key_content_base64: true,
       duration: 1000
     )
+#     if ENV["FASTLANE_MATCH_SECRET"]?.empty
+#         ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
+#     end
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
-  end
+    end
+
+    after_all do |lane|
+        delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
+    end
+
 
   desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
   lane :increment_build do
@@ -38,48 +54,15 @@ platform :ios do
 
   desc "Build the app for App Store"
   lane :build do
-    if ENV["APPLE_CERTIFICATE"] && !ENV["APPLE_CERTIFICATE"].empty?
-      # Create temporary keychain for CI
-      keychain_name = "fastlane_tmp_keychain"
-      keychain_password = "temp_password"
-    
-      create_keychain(
-        name: keychain_name,
-        password: keychain_password,
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        add_to_search_list: true
-      )
-
-      # Decode base64 certificate and save to .cer file
-      cert_data = Base64.decode64(ENV["APPLE_CERTIFICATE"])
-      cert_path = "#{Dir.tmpdir}/apple_certificate.cer"
-      File.write(cert_path, cert_data)
-
-      import_certificate(
-        certificate_path: cert_path,
-        certificate_password: ENV["APPLE_CERTIFICATE_PASSWORD"] || "",
-        keychain_name: keychain_name,
-        keychain_password: keychain_password
-      )
-    else
-      cert(
-        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-        team_id: ENV["FASTLANE_TEAM_ID"],
-        generate_apple_certs: false
-      )
-    end
-
-    ENV["APP_IDENTIFIERS"].to_s.split(',').map(&:strip).each do |app_id|
-      sigh(
-        app_identifier: app_id,
-        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-        team_id: ENV["FASTLANE_TEAM_ID"],
-        skip_install: true,
-        adhoc: true
-      )
-    end
+        match(
+          type: "appstore",
+          app_identifier: ENV["APP_IDENTIFIERS"].to_s.split(',').map(&:strip),
+          api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+          team_id: ENV["FASTLANE_TEAM_ID"],
+          readonly: ENV["CI"],
+          git_basic_authorization: ENV["MATCH_AUTH"],
+          generate_apple_certs: false
+        )
 
     build_app(
       scheme: ENV["FASTLANE_IOS_SCHEME"],
