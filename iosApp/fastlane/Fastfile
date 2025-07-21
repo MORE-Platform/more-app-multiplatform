@@ -65,6 +65,7 @@ platform :ios do
           verbose: true
         )
 
+    xcodes(version: "16.4", select_for_current_build_only: true)
     build_app(
       scheme: ENV["FASTLANE_IOS_SCHEME"],
       clean: true,
