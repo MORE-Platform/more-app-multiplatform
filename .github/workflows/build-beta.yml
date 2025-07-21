@@ -61,8 +61,17 @@ jobs:
         run: fastlane build
 
       - name: Log File
+        if: always()
         run: |
-          cat /Users/runner/Library/Logs/gym/More-iosApp.log
+          if [ -f "/Users/runner/Library/Logs/gym/More-iosApp.log" ]; then
+            echo "=== Gym Log File Content ==="
+            cat /Users/runner/Library/Logs/gym/More-iosApp.log
+          else
+            echo "Log file not found at /Users/runner/Library/Logs/gym/More-iosApp.log"
+            echo "Available logs in gym directory:"
+            ls -la /Users/runner/Library/Logs/gym/ || echo "Gym logs directory not found"
+          fi
+
 
       - name: Deploy to TestFlight
         if: startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true'
