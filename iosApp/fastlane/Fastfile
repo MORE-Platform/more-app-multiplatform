@@ -77,7 +77,7 @@ platform :ios do
         clean: true,
         output_directory: "build",
         export_method: "app-store",
-        codesigning_identity: "Apple Distribution",
+        codesigning_identity: "Ludwig Boltzmann Gesellschaft GmbH",
         export_options: {
             provisioningProfiles: {
                 "ac.at.lbg.dhp.more" => "match AppStore ac.at.lbg.dhp.more",
