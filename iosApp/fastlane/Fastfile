@@ -65,7 +65,6 @@ platform :ios do
           readonly: false,
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
           generate_apple_certs: false,
-          force_for_new_devices: true,
           verbose: true
         )
 
@@ -74,7 +73,6 @@ platform :ios do
       clean: true,
       output_directory: "build",
       export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates"
     )
   end
 
