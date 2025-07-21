@@ -64,20 +64,28 @@ platform :ios do
         api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
         team_id: ENV["FASTLANE_TEAM_ID"],
         git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
-        verbose: true,
+#         verbose: true,
 #         keychain_name: "temp_keychain",
 #         keychain_password: "temp_password"
       )
+#             update_code_signing_settings(
+#                 use_automatic_signing: false,
+#                 team_id: ENV["FASTLANE_TEAM_ID"],
+# #                 code_sign_identity: "Apple Distribution"
+#             )
+
+
         if ENV["CI"]
             xcodes(version: "16.4", select_for_current_build_only: true)
-            xcversion(version: "16.4")
+#             xcversion(version: "16.4")
         end
       build_app(
         scheme: ENV["FASTLANE_IOS_SCHEME"],
         clean: true,
+        silent: true,
         output_directory: "build",
         export_method: "app-store",
-#         codesigning_identity: "Apple Distribution",
+        codesigning_identity: "Apple Distribution",
         export_options: {
             provisioningProfiles: {
                 "ac.at.lbg.dhp.more" => "match AppStore ac.at.lbg.dhp.more",
