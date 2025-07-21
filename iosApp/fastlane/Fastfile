@@ -62,7 +62,7 @@ platform :ios do
           app_identifier: ENV["APP_IDENTIFIERS"].to_s.split(',').map(&:strip),
           api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
           team_id: ENV["FASTLANE_TEAM_ID"],
-          readonly: true,
+          readonly: false,
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
           generate_apple_certs: false,
           force_for_new_devices: true,
