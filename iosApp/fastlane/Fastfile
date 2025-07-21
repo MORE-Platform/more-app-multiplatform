@@ -68,14 +68,12 @@ platform :ios do
           verbose: true
         )
 
-    update_code_signing_settings(
-        use_automatic_signing: true
-    )
     build_app(
       scheme: ENV["FASTLANE_IOS_SCHEME"],
       clean: true,
       output_directory: "build",
-      export_method: "app-store"
+      export_method: "app-store",
+      xcargs: "-allowProvisioningUpdates"
     )
   end
 
