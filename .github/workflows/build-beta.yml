@@ -44,18 +44,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Check if tag is on develop or main
-        if: startsWith(github.ref, 'refs/tags/')
-        id: check_branch
-        run: |
-          git fetch --all
-          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
-            echo "DEPLOY=true" >> $GITHUB_ENV
-            echo "Tag is on develop or main branch, will deploy"
-          else
-            echo "DEPLOY=false" >> $GITHUB_ENV
-            echo "Tag is not on develop or main branch, will not deploy"
-          fi
+      #      - name: Check if tag is on develop or main
+      #        if: startsWith(github.ref, 'refs/tags/')
+      #        id: check_branch
+      #        run: |
+      #          git fetch --all
+      #          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
+      #            echo "DEPLOY=true" >> $GITHUB_ENV
+      #            echo "Tag is on develop or main branch, will deploy"
+      #          else
+      #            echo "DEPLOY=false" >> $GITHUB_ENV
+      #            echo "Tag is not on develop or main branch, will not deploy"
+      #          fi
 
       - name: Build iOS app
         if: ${{ !(startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true') }}
@@ -89,18 +89,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Check if tag is on develop or main
-        if: startsWith(github.ref, 'refs/tags/')
-        id: check_branch
-        run: |
-          git fetch --all
-          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
-            echo "DEPLOY=true" >> $GITHUB_ENV
-            echo "Tag is on develop or main branch, will deploy"
-          else
-            echo "DEPLOY=false" >> $GITHUB_ENV
-            echo "Tag is not on develop or main branch, will not deploy"
-          fi
+      #      - name: Check if tag is on develop or main
+      #        if: startsWith(github.ref, 'refs/tags/')
+      #        id: check_branch
+      #        run: |
+      #          git fetch --all
+      #          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
+      #            echo "DEPLOY=true" >> $GITHUB_ENV
+      #            echo "Tag is on develop or main branch, will deploy"
+      #          else
+      #            echo "DEPLOY=false" >> $GITHUB_ENV
+      #            echo "Tag is not on develop or main branch, will not deploy"
+      #          fi
 
       - name: Build Android app
         run: fastlane build
