@@ -71,13 +71,10 @@ platform :android do
   end
 
   def get_apk_path(project_dir = "..", build_type = "debug")
-    # Get the absolute path to the project directory
     project_root = File.expand_path(project_dir)
     
-    # Construct the APK path dynamically
     apk_path = File.join(project_root, "build", "outputs", "apk", build_type, "androidApp-#{build_type}.apk")
     
-    # Verify the file exists
     unless File.exist?(apk_path)
       UI.error("APK file not found at: #{apk_path}")
       raise "APK file not found. Make sure the #{build_type} build has been created."
@@ -207,7 +204,6 @@ platform :android do
         UI.important("Release build was created without signing configuration. This may cause issues when uploading to Google Play.")
       end
 
-      # Get dynamic AAB path
       aab_path = get_aab_path("..")
 
       begin

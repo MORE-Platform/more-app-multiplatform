@@ -40,9 +40,6 @@ jobs:
       - name: Set FASTLANE_BUILD_NUMBER from tag
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Build iOS app
-        run: fastlane build
-
       - name: Deploy to TestFlight
         run: fastlane deploy_beta
 
@@ -68,9 +65,6 @@ jobs:
 
       - name: Set FASTLANE_BUILD_NUMBER from tag
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-      - name: Build Android app
-        run: fastlane build
 
       - name: Deploy to Google Play Beta
         run: fastlane deploy_beta
