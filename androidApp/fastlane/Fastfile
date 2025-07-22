@@ -13,8 +13,11 @@
 # Uncomment the line if you want fastlane to automatically update itself
 default_platform(:android)
 
+if ENV["CI"]
+    update_fastlane
+end
+
 platform :android do
-  # Helper method to decode base64 content and create a temporary file
   def decode_base64_to_temp_file(base64_content, file_extension = '.json', prefix = 'temp_file', is_file_path = false)
     require 'base64'
     require 'tempfile'
@@ -33,20 +36,16 @@ platform :android do
     return temp_file.path
   end
 
-  # Helper method to setup Android signing environment variables
   def setup_android_signing
-    # Check if we have a keystore in base64 format in environment variables
     if ENV["ANDROID_KEYSTORE_BASE64"] && !ENV["ANDROID_KEYSTORE_BASE64"].empty?
       UI.message("Setting up Android signing with keystore from environment variable")
 
-      # Decode the keystore and save to a temporary file
       keystore_path = decode_base64_to_temp_file(
         ENV["ANDROID_KEYSTORE_BASE64"], 
         '.jks', 
         'android_keystore'
       )
 
-      # Set environment variables for the Gradle build
       ENV["ANDROID_KEYSTORE_PATH"] = keystore_path
 
       UI.success("Android signing environment set up successfully")
@@ -65,7 +64,6 @@ platform :android do
   desc "Build the Android app (debug)"
   lane :build do
     begin
-      # Setup signing if credentials are available
       setup_android_signing
 
       gradle(
@@ -74,12 +72,9 @@ platform :android do
         project_dir: ".."
       )
 
-      # Only upload to Crashlytics if we're not in CI
-      # This is because CI builds are not meant to be distributed via Crashlytics
       if !ENV['CI']
         begin
-          # Check if Firebase Crashlytics plugin is available and FIREBASE_APP_ID is set
-          if Gem::Specification.find_all_by_name('fastlane-plugin-firebase_app_distribution').any? && 
+          if Gem::Specification.find_all_by_name('fastlane-plugin-firebase_app_distribution').any? &&
              ENV["FIREBASE_APP_ID"] && !ENV["FIREBASE_APP_ID"].empty?
             firebase_app_distribution(
               app: ENV["FIREBASE_APP_ID"],
@@ -96,31 +91,27 @@ platform :android do
           end
         rescue => e
           UI.error("Error uploading to Crashlytics: #{e.message}")
-          # Don't fail the build if Crashlytics upload fails
         end
       end
 
       UI.success("Android build completed successfully")
     rescue => e
       UI.error("Error building Android app: #{e.message}")
-      raise e if ENV['CI'] # Fail in CI, but allow to continue locally
+      raise e if ENV['CI']
     end
   end
 
   desc "Deploy to Google Play Beta"
   lane :deploy_beta do
     begin
-      # Validate required environment variables
       if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
         UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
         raise "FASTLANE_BUILD_NUMBER environment variable is required"
       end
 
-      # We don't need to call build here as we're building a release version directly
       name = ENV.fetch("FASTLANE_BUILD_NUMBER")
       UI.message("Building version #{name}")
 
-      # Parse version components
       begin
         major, minor, patch = name.split('.').map(&:to_i)
 
@@ -136,7 +127,6 @@ platform :android do
             track: "beta"
           ).max || base_code
         else
-          # Check if the key file content is base64 encoded
           key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
           key_file_path = ""
           if !key_base64.nil? && !key_base64.empty?
@@ -166,7 +156,6 @@ platform :android do
         UI.message("Fallback version code: #{code}")
       end
 
-      # Setup signing if credentials are available
       signing_configured = setup_android_signing
 
       gradle(
@@ -179,7 +168,6 @@ platform :android do
         }
       )
 
-      # If signing wasn't configured, warn the user
       if !signing_configured
         UI.important("Release build was created without signing configuration. This may cause issues when uploading to Google Play.")
       end
@@ -191,7 +179,6 @@ platform :android do
             track: "beta"
           ).max || base_code
         else
-          # Check if the key file content is base64 encoded
           key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
           key_file_path = ""
           if !key_base64.nil? && !key_base64.empty?
@@ -218,12 +205,12 @@ platform :android do
          end
           rescue => e
             UI.error("Error uploading to Google Play: #{e.message}")
-            raise e # Always raise in deploy_beta as this is a critical operation
+            raise e
 
       end
     rescue => e
       UI.error("Error in deploy_beta: #{e.message}")
-      raise e # Always raise in deploy_beta as this is a critical operation
+      raise e
     end
   end
 end
