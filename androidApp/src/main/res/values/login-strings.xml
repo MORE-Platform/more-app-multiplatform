@@ -11,6 +11,7 @@
     <string name="more_qr_code_button">Scan QR Code</string>
     <string name="more_qr_code_button_description">Open camera to scan a QR code</string>
     <string name="more_or_text">or</string>
-
-
+    <string name="more_qr_code_scan_automatically">QR Code will be scanned automatically.</string>
+    <string name="more_qr_camera_needed">Camera permissions needed to scan QR code.</string>
+    <string name="more_close_icon">Close QR Code Scanner.</string>
 </resources>

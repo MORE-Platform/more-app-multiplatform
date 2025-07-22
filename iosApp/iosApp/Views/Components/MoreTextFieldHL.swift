@@ -24,12 +24,15 @@ struct MoreTextFieldHL: View {
     var capitalization: Capitalization = .normal
     var autoCorrectDisabled = false
     var textType: UITextContentType? = nil
+    var hlAlignment: TextAlignment = .leading
+    
     var body: some View {
         VStack(alignment: .leading) {
             
             HStack{
                 Spacer()
                 SectionHeading(sectionTitle: headerText, showAllText: true)
+                    .multilineTextAlignment(hlAlignment)
                 Spacer()
             }
             .padding(3)

@@ -145,6 +145,41 @@ the corresponding emulator you want to run.
 1. In the **Run Configurations** choose **ios App**.
 2. Press **Run** arrow.
 
+#### Local development with app, studymanager and gateway
+
+Local setup together
+with [more-studymanager-backend](https://github.com/MORE-Platform/more-studymanager-backend), [more-studymanager-frontend](https://github.com/MORE-Platform/more-studymanager-frontend)
+and [more-datag-ateway](https://github.com/MORE-Platform/more-data-gateway).
+
+##### Android App
+
+The APK from the App Store isn't able to run against your local setup, because it doesn't support
+it. To be able to run it with your local setup follow this step-by-step guide:
+
+1. Open Android Studio
+
+2. Go to AndroidManifest and add following line to <application .MoreApplication… (between line 36 &
+    37)
+
+```sh
+    android:usesCleartextTraffic="true"
+```
+
+3. Run app from your AndroidStudio on your device or inside AndroidStudio with an Emulator.
+
+4. Open your MoreApp on Device or Emulator and add following into your Endpoint (the pc and device
+   have to be in the same WLAN), and you are good to go.
+
+```sh
+    http://<macadresse>:<gateway-port>/api/v1
+```
+
+##### iOS App
+
+The IOS-App can be basically runs with any image, since it supports clear traffic. If you doesn't
+have changes in the app, you could even run it directly against your local setup with the App-Store
+Version.
+
 ## Project Architecture
 
 The purpose of the Kotlin Multiplatform Mobile technology is unifying the development of
@@ -205,6 +240,26 @@ The source code of the shared module is organized in three source sets according
 * `commonMain` stores the code that works on both platforms, including the `expect` declarations
 * `androidMain` stores Android-specific parts, including `actual` implementations
 * `iosMain` stores iOS-specific parts, including `actual` implementations
+
+#### Database changes
+
+When making changes to the Database Schemas, please *make sure to increase the Database Schema
+Version* in the `RealmDatabase.kt` file located unter
+`shared/src/commonMain/kotlin/io/redlink/more/more_app_mutliplatform/database`.
+
+*If this version is not upgraded after a schema change, the app will crash on already deployed
+systems!*
+
+#### Deployment
+
+Currently there is not automatic deployment. This should be implemented in near future, but until
+then, these are the steps to ensure a proper deployment of new app versions:
+
+1. Update the Version name and code of the Android App under `androidApp/build.gradle.kts`. The
+   version code just needs to be incremented by 1, while the name is x.x.x (e.g. 4.0.26)
+2. Update the Version in iOS under the `Target` `More` -> General
+3. Update the `Bundle version` and `Bundle version string` under Info with the same system x.x.x (
+   e.g. 4.0.26)
 
 ## Troubleshooting
 

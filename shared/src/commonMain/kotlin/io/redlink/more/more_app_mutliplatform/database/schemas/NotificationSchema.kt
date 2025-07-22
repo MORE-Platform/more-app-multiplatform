@@ -32,6 +32,7 @@ class NotificationSchema : RealmObject {
     var timestamp: RealmInstant? = RealmInstant.now()
     var priority: Long = 0
     var read: Boolean = false
+    var completed: Boolean = false
     var userFacing: Boolean = true
     var deepLink: String? = null
     var notificationData: RealmDictionary<String> = realmDictionaryOf()
@@ -69,6 +70,7 @@ class NotificationSchema : RealmObject {
             timestamp: Long? = null,
             priority: Long,
             read: Boolean,
+            completed: Boolean,
             userFacing: Boolean,
             notificationData: Map<String, String>?,
             deepLink: String? = null
@@ -79,6 +81,7 @@ class NotificationSchema : RealmObject {
                 this.title = title
                 this.notificationBody = notificationBody
                 this.read = read
+                this.completed = completed
                 this.userFacing = userFacing
                 this.notificationData =
                     notificationData?.mapKeys { it.key.replace(".", "_") }?.toRealmDictionary()
@@ -100,6 +103,7 @@ class NotificationSchema : RealmObject {
                 timestamp = notification.timestamp?.toEpochMilliseconds(),
                 priority = 1,
                 read = false,
+                completed = false,
                 userFacing = notification.type == "text",
                 notificationData = notification.data?.mapValues { it.value.toString() },
                 deepLink = notification.deepLink
