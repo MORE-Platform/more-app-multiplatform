@@ -1,13 +1,9 @@
 name: Build apps
 on:
-  push:
-    branches:
-      - '**'
-    tags-ignore:
-      - '**'
   pull_request:
     branches:
-      - '**'
+      - main
+      - develop
 
 jobs:
   ios:
