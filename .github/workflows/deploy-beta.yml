@@ -23,6 +23,8 @@ jobs:
       FASTLANE_IOS_SCHEME: ${{ vars.FASTLANE_IOS_BUILD_SCHEME }}
       FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
       APPLE_CONNECT_KEY_IS_BASE64: ${{ vars.APPLE_CONNECT_KEY_IS_BASE64 }}
+      CODE_SIGN_IDENTITY: ${{ vars.CODE_SIGN_IDENTITY }}
+      TARGETS: ${{ vars.TARGETS }}
     defaults:
       run:
         working-directory: iosApp

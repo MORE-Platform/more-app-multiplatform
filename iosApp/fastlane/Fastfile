@@ -76,8 +76,7 @@ platform :ios do
                 )
 
             identifiers.each do |identifier|
-                target_name = identifier.split('.').last
-
+                target_name = ENV["TARGETS"].to_s.split(",").map(&:strip)
                update_code_signing_settings(
                     use_automatic_signing: false,
                     targets: target_name,
@@ -85,7 +84,6 @@ platform :ios do
                     code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
                     profile_name: "match AppStore #{identifier}",
                     bundle_identifier: identifier
-
                )
             end
 
