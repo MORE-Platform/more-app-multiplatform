@@ -88,22 +88,6 @@ platform :ios do
                )
             end
 
-#             update_code_signing_settings(
-#                 use_automatic_signing: false,
-#                 targets: ["More"],
-#                 team_id: ENV["FASTLANE_TEAM_ID"],
-# #                 code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
-#                 profile_name: "match AppStore ac.at.lbg.dhp.more",
-#                 bundle_identifier: "ac.at.lbg.dhp.more"
-#             )
-#             update_code_signing_settings(
-#                 use_automatic_signing: false,
-#                 targets: ["More-Notification-Service-Extension"],
-#                 team_id: ENV["FASTLANE_TEAM_ID"],
-# #                 code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
-#                 profile_name: "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension",
-#                 bundle_identifier: "ac.at.lbg.dhp.more.More-Notification-Service-Extension"
-#             )
             xcodes(version: "16.4", select_for_current_build_only: true)
        end
 

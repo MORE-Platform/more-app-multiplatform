@@ -162,6 +162,8 @@ The iOS fastlane configuration includes the following lanes:
 - `deploy_beta`: Deploys a new beta to TestFlight (calls `increment_build` and `build`, then uploads
   to TestFlight)
 
+The iOS build process uses Xcode 16.4 and creates a temporary keychain for secure code signing. It supports multiple app targets, including notification service extensions.
+
 #### Android Fastlane
 
 The Android fastlane configuration includes the following lanes:
@@ -169,6 +171,14 @@ The Android fastlane configuration includes the following lanes:
 - `test`: Runs all tests
 - `build`: Builds the Android app (debug version)
 - `deploy_beta`: Builds a release version and deploys it to Google Play Beta
+
+The Android build process has several important features:
+
+- **Version Code Calculation**: For release builds, the version code is calculated using a formula that converts semantic versioning (e.g., 4.0.22) to a 5-digit code: `major × 10⁴ + minor × 10² + patch`. For example, version 4.0.22 becomes 40022. The system also checks the latest version code from Google Play and increments it by 1, using the maximum of these two values to ensure the version code is always increasing.
+
+- **AAB Format**: The Android app is built as an Android App Bundle (AAB) for release, not an APK.
+
+- **Firebase Integration**: When not running in CI mode, the build process supports optional Firebase App Distribution for testing.
 
 ### Environment Variables
 
@@ -188,11 +198,12 @@ To run the pipeline, you need to set up the following environment variables:
 
 **Variables:**
 
-- `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers
+- `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers (e.g., "ac.at.lbg.dhp.more,ac.at.lbg.dhp.more.More-Notification-Service-Extension")
+- `TARGETS`: Comma-separated list of Xcode targets corresponding to the app identifiers (e.g., "More,More-Notification-Service-Extension")
 - `FASTLANE_IOS_BUILD_SCHEME`: Xcode scheme to build
 - `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
-- `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (
-  true/false)
+- `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (true/false)
+- `CODE_SIGN_IDENTITY`: The code signing identity to use (e.g., "iPhone Distribution")
 
 #### Android Environment Variables
 
@@ -204,10 +215,12 @@ To run the pipeline, you need to set up the following environment variables:
 - `ANDROID_KEYSTORE_PASSWORD`: Password for the Android keystore
 - `ANDROID_KEY_ALIAS`: Alias for the Android signing key
 - `ANDROID_KEY_PASSWORD`: Password for the Android signing key
+- `FIREBASE_APP_ID`: (Optional) Firebase App ID for Firebase App Distribution
 
 **Variables:**
 
 - `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
+- `PACKAGE`: Android package name (e.g., "ac.at.lbg.dhp.more")
 
 ### Running the Pipeline Under Other Accounts
 
@@ -238,11 +251,12 @@ To run the pipeline under your own account, follow these steps:
 ### Troubleshooting
 
 - **iOS build fails**: Check that all iOS-related environment variables are set correctly and that
-  your Apple Developer account has the necessary permissions.
+  your Apple Developer account has the necessary permissions. Ensure that the `APPLE_CONNECT_KEY_CONTENT` is properly base64 encoded and that the `APPLE_CONNECT_KEY_IS_BASE64` is set to true.
 - **Android build fails**: Verify that the Android keystore and Google Play key are correctly
-  encoded in base64.
+  encoded in base64. The Android build process expects both `ANDROID_KEYSTORE_BASE64` and `GOOGLE_PLAY_KEY_IN_BASE64` to be properly base64 encoded.
 - **Deployment fails**: Ensure that the app identifiers match the ones in your Apple Developer
-  account or Google Play Console.
+  account or Google Play Console. For iOS, make sure the `TARGETS` variable matches the app identifiers in the same order.
+- **Version code issues**: If you encounter version code conflicts in Google Play, the system will automatically try to increment the version code based on the latest version in Google Play. If this fails, it will fall back to the calculated version code based on the semantic version.
 
 ## Usage
 
