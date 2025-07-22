@@ -85,7 +85,7 @@ platform :ios do
         silent: true,
         output_directory: "build",
         export_method: "app-store",
-        codesigning_identity: "Apple Distribution",
+        codesigning_identity: "iPhone Distribution: Ludwig Boltzmann Gesellschaft GmbH (VX2DSGURUH)",
         export_team_id: ENV["FASTLANE_TEAM_ID"],
         export_options: {
             provisioningProfiles: {
