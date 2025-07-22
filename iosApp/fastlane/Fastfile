@@ -76,7 +76,7 @@ platform :ios do
                 )
 
             identifiers.each do |identifier|
-                target_name = identifier.split('.').last.capitalize
+                target_name = identifier.split('.').last
 
                update_code_signing_settings(
                     use_automatic_signing: false,
@@ -112,7 +112,8 @@ platform :ios do
         scheme: ENV["FASTLANE_IOS_SCHEME"],
         clean: true,
         output_directory: "build",
-        export_method: "app-store"
+        export_method: "app-store",
+        export_team_id: ENV["FASTLANE_TEAM_ID"]
       )
   end
 
