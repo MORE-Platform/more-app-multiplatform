@@ -1,3 +1,6 @@
+import java.util.Base64
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -5,6 +8,37 @@ plugins {
     id("io.realm.kotlin") version "1.14.1"
     id("com.google.firebase.crashlytics")
 }
+
+fun loadEnvFromFile(): Properties {
+    val envProps = Properties()
+    val envFiles = listOf(
+        File(rootProject.rootDir, ".env"),
+        File(rootProject.rootDir, "local.properties"),
+        File(project.projectDir, ".env"),
+        File(project.projectDir, "signing.properties")
+    )
+
+    envFiles.forEach { envFile ->
+        if (envFile.exists()) {
+            println("Loading environment variables from: ${envFile.absolutePath}")
+            try {
+                envFile.inputStream().use { input ->
+                    envProps.load(input)
+                }
+            } catch (e: Exception) {
+                println("Failed to load ${envFile.name}: ${e.message}")
+            }
+        }
+    }
+
+    return envProps
+}
+
+fun getEnvOrProperty(key: String, envProps: Properties): String? {
+    return System.getenv(key) ?: envProps.getProperty(key)
+}
+
+val envProps = loadEnvFromFile()
 
 android {
     namespace = "io.redlink.more.app.android"
@@ -28,6 +62,54 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    signingConfigs {
+        create("release") {
+            val keystorePath = getEnvOrProperty("ANDROID_KEYSTORE_PATH", envProps) ?: ""
+            val keystoreBase64 = getEnvOrProperty("ANDROID_KEYSTORE_BASE64", envProps) ?: ""
+            this.storePassword = getEnvOrProperty("ANDROID_KEYSTORE_PASSWORD", envProps) ?: ""
+            this.keyAlias = getEnvOrProperty("ANDROID_KEY_ALIAS", envProps) ?: ""
+            this.keyPassword = getEnvOrProperty("ANDROID_KEY_PASSWORD", envProps) ?: ""
+
+            println("Keystore path: ${keystorePath.length}\n keystoreBase64: ${keystoreBase64.length}\n keystorePassword: ${this.storePassword?.length}\n keyAlias: ${this.keyAlias?.length}\n keyPassword: ${this.keyPassword?.length}")
+
+            val storeFile: File? = if (keystorePath.isNotEmpty()) {
+                val keystoreFile = File(keystorePath)
+                if (keystoreFile.exists()) {
+                    println("Using keystore path from configuration: $keystorePath")
+                    keystoreFile
+                } else {
+                    println("Keystore file does not exist at: $keystorePath")
+                    null
+                }
+            } else if (keystoreBase64.isNotEmpty()) {
+                try {
+                    println("Using keystore from base64 configuration")
+                    val decodedBytes = Base64.getDecoder().decode(keystoreBase64)
+                    val file = File.createTempFile("keystore", ".jks")
+                    file.deleteOnExit()
+                    file.writeBytes(decodedBytes)
+
+                    file
+                } catch (e: Exception) {
+                    println("Failed to decode base64 keystore: ${e.message}")
+                    null
+                }
+            } else {
+                null
+            }
+            storeFile?.let {
+                this.storeFile = it
+            } ?: run {
+                println("Keystore file not found, falling back to debug keystore")
+                this.storeFile = File(System.getProperty("user.home"), ".android/debug.keystore")
+                this.storePassword = "android"
+                this.keyAlias = "androiddebugkey"
+                this.keyPassword = "android"
+            }
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
@@ -36,6 +118,19 @@ android {
         release {
             buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
             buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
+
+            val releaseSigningConfig = signingConfigs.getByName("release")
+            if (releaseSigningConfig.storeFile != null) {
+                signingConfig = releaseSigningConfig
+            } else {
+                println("Warning: No signing configuration available. Using debug signing.")
+            }
+
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -46,6 +141,8 @@ android {
         jvmTarget = "11"
     }
 }
+
+// ... rest of your dependencies ...
 
 val composeVersion = "1.6.8"
 val workVersion = "2.9.0"

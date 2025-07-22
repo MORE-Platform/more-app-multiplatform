@@ -1,0 +1,64 @@
+name: Build apps
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  ios:
+    name: iOS
+    runs-on: macos-15
+    environment: AppStore
+    env:
+      FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
+      APPLE_CONNECT_KEY_ID: ${{ secrets.APPLE_CONNECT_KEY_ID }}
+      APPLE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_CONNECT_ISSUER_ID }}
+      APPLE_CONNECT_KEY_CONTENT: ${{ secrets.APPLE_CONNECT_KEY_CONTENT }}
+      FASTLANE_KEYCHAIN_PASSWORD: ${{ secrets.FASTLANE_KEYCHAIN_PASSWORD }}
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      FASTLANE_MATCH_SECRET: ${{ secrets.FASTLANE_MATCH_SECRET }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_AUTH }}
+
+      APP_IDENTIFIERS: ${{ vars.APP_IDENTIFIERS }}
+      FASTLANE_IOS_SCHEME: ${{ vars.FASTLANE_IOS_BUILD_SCHEME }}
+      FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
+      APPLE_CONNECT_KEY_IS_BASE64: ${{ vars.APPLE_CONNECT_KEY_IS_BASE64 }}
+      CODE_SIGN_IDENTITY: ${{ vars.CODE_SIGN_IDENTITY }}
+      TARGETS: ${{ vars.TARGETS }}
+    defaults:
+      run:
+        working-directory: iosApp
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set Xcode Version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 16.4
+
+      - name: Build iOS app
+        run: fastlane build
+
+  android:
+    name: Android
+    runs-on: macos-latest
+    environment: PlayStore
+    env:
+      GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
+      GOOGLE_PLAY_KEY_IN_BASE64: ${{ secrets.GOOGLE_PLAY_KEY_IN_BASE64 }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
+    defaults:
+      run:
+        working-directory: androidApp
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Build Android app
+        run: fastlane build

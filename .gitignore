@@ -10,3 +10,10 @@ local.properties
 xcuserdata
 shared/src/commonMain/kotlin/generated
 /androidApp/release/
+*.ipa
+.env
+*.mobileprovision
+*.cer*
+*.p12
+*.zip
+*.p8
