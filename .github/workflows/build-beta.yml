@@ -58,12 +58,13 @@ jobs:
           fi
 
       - name: Build iOS app
+        if: !(startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true')
         run: fastlane build
-
 
       - name: Deploy to TestFlight
         if: startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true'
         run: fastlane deploy_beta
+
 
   android:
     name: Android
