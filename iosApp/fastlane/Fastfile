@@ -19,14 +19,14 @@ default_platform(:ios)
 
 platform :ios do
     before_all do
-#         create_keychain(
-#           name: "temp_keychain",
-#           password: "temp_password",
-#           default_keychain: true,
-#           unlock: true,
-#           timeout: 3600,
-#           lock_when_sleeps: false
-#         )
+        create_keychain(
+          name: "temp_keychain",
+          password: "temp_password",
+          default_keychain: true,
+          unlock: true,
+          timeout: 3600,
+          lock_when_sleeps: false
+        )
 
     api_key = app_store_connect_api_key(
       key_id: ENV['APPLE_CONNECT_KEY_ID'],
@@ -42,9 +42,9 @@ platform :ios do
     end
     end
 
-#     after_all do |lane|
-#         delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
-#     end
+    after_all do |lane|
+        delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
+    end
 
 
   desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
@@ -58,6 +58,7 @@ platform :ios do
   desc "Build the app for App Store"
   lane :build do
       identifiers = ENV["APP_IDENTIFIERS"].to_s.split(",").map(&:strip)
+
       match(
         type: "appstore",
         app_identifier: identifiers,
@@ -65,8 +66,14 @@ platform :ios do
         team_id: ENV["FASTLANE_TEAM_ID"],
         git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
         verbose: true,
+        keychain_name: "temp_keychain",
+        keychain_password: "temp_password"
       )
       if ENV["CI"]
+          unlock_keychain(
+                  path: "~/Library/Keychains/temp_keychain-db",
+                  password: "temp_password"
+                )
             update_code_signing_settings(
                 use_automatic_signing: false,
                 targets: ["More"],
