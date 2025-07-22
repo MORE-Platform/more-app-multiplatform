@@ -75,11 +75,12 @@ platform :ios do
                   password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
                 )
 
-            identifiers.each do |identifier|
-                target_name = ENV["TARGETS"].to_s.split(",").map(&:strip)
+
+            target_name = ENV["TARGETS"].to_s.split(",").map(&:strip)
+            identifiers.each_with_index do |identifier, index|
                update_code_signing_settings(
                     use_automatic_signing: false,
-                    targets: target_name,
+                    targets: [target_name[index]],
                     team_id: ENV["FASTLANE_TEAM_ID"],
                     code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
                     profile_name: "match AppStore #{identifier}",
