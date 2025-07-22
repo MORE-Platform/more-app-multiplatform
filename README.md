@@ -109,6 +109,141 @@ Swift Package Manager and not CocoaPods._
 
 <!-- USAGE EXAMPLES -->
 
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and continuous deployment. The pipeline
+is split into two workflows:
+
+### Build Workflow
+
+The build workflow (`build.yml`) runs on every push to any branch and on pull requests. It only
+builds the apps without deploying them.
+
+**Trigger:**
+
+- Push to any branch (excluding tags)
+- Pull requests
+
+**Jobs:**
+
+- iOS: Builds the iOS app using fastlane
+- Android: Builds the Android app using fastlane
+
+### Deploy Beta Workflow
+
+The deploy beta workflow (`deploy-beta.yml`) runs only when a tag with the format `x.x.x` (semantic
+versioning) is pushed. It builds the apps and deploys them to TestFlight (iOS) and Google Play
+Beta (Android).
+
+**Trigger:**
+
+- Push of a tag matching the pattern `[0-9]+.[0-9]+.[0-9]+` (e.g., `1.2.3`)
+
+The tag pattern (e.g., `1.2.3`) directly represents the new app deployment version. The workflow
+extracts this version from the tag and sets it as the `FASTLANE_BUILD_NUMBER` environment variable,
+which is then used by fastlane to set the build number and version in both iOS and Android apps.
+
+**Jobs:**
+
+- iOS: Builds the iOS app and deploys it to TestFlight
+- Android: Builds the Android app and deploys it to Google Play Beta
+
+### Fastlane Integration
+
+This project uses fastlane for automating the build and deployment processes for both iOS and
+Android apps.
+
+#### iOS Fastlane
+
+The iOS fastlane configuration includes the following lanes:
+
+- `increment_build`: Bumps build number and version to `FASTLANE_BUILD_NUMBER`
+- `build`: Builds the app for App Store, including code signing setup
+- `deploy_beta`: Deploys a new beta to TestFlight (calls `increment_build` and `build`, then uploads
+  to TestFlight)
+
+#### Android Fastlane
+
+The Android fastlane configuration includes the following lanes:
+
+- `test`: Runs all tests
+- `build`: Builds the Android app (debug version)
+- `deploy_beta`: Builds a release version and deploys it to Google Play Beta
+
+### Environment Variables
+
+To run the pipeline, you need to set up the following environment variables:
+
+#### iOS Environment Variables
+
+**Secrets:**
+
+- `FASTLANE_TEAM_ID`: Your Apple Developer Team ID
+- `APPLE_CONNECT_KEY_ID`: App Store Connect API Key ID
+- `APPLE_CONNECT_ISSUER_ID`: App Store Connect API Issuer ID
+- `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
+- `APPLE_CERTIFICATE`: Apple certificate for signing
+- `FASTLANE_MATCH_SECRET`: Password for match repository
+- `MATCH_AUTH`: Basic authorization for match Git repository
+
+**Variables:**
+
+- `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers
+- `FASTLANE_IOS_BUILD_SCHEME`: Xcode scheme to build
+- `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
+- `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (
+  true/false)
+
+#### Android Environment Variables
+
+**Secrets:**
+
+- `GOOGLE_PLAY_KEY_FILE`: Path to Google Play key file
+- `GOOGLE_PLAY_KEY_IN_BASE64`: Google Play key file content (base64 encoded)
+- `ANDROID_KEYSTORE_BASE64`: Android keystore file (base64 encoded)
+- `ANDROID_KEYSTORE_PASSWORD`: Password for the Android keystore
+- `ANDROID_KEY_ALIAS`: Alias for the Android signing key
+- `ANDROID_KEY_PASSWORD`: Password for the Android signing key
+
+**Variables:**
+
+- `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
+
+### Running the Pipeline Under Other Accounts
+
+To run the pipeline under your own account, follow these steps:
+
+1. **Fork the repository** to your GitHub account.
+
+2. **Set up the required secrets and variables** in your GitHub repository:
+    - Go to your repository settings
+    - Navigate to "Secrets and variables" > "Actions"
+    - Add all the required secrets and variables listed above
+
+3. **iOS-specific setup:**
+    - Create an App Store Connect API key in your Apple Developer account
+    - Set up a match repository for code signing
+    - Update the bundle identifiers in the project to match your own
+
+4. **Android-specific setup:**
+    - Create a Google Play service account and download the key file
+    - Create a keystore for signing your Android app
+    - Update the package name in the project to match your own
+
+5. **Trigger the workflows:**
+    - For the build workflow: Push to any branch or create a pull request
+    - For the deploy workflow: Create and push a tag with the format `x.x.x` (e.g.,
+      `git tag 1.0.0 && git push origin 1.0.0`)
+
+### Troubleshooting
+
+- **iOS build fails**: Check that all iOS-related environment variables are set correctly and that
+  your Apple Developer account has the necessary permissions.
+- **Android build fails**: Verify that the Android keystore and Google Play key are correctly
+  encoded in base64.
+- **Deployment fails**: Ensure that the app identifiers match the ones in your Apple Developer
+  account or Google Play Console.
+
 ## Usage
 
 ### Emulator Configuration
@@ -299,4 +434,3 @@ Apache 2.0 with Commons Clause; see LICENSE.txt for further details
 
 Ludwig Boltzmann Institute for Digital Health and
 Prevention - [more-health.at](https://more-health.at/) - more@dhp.lbg.ac.at
-

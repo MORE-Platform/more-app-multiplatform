@@ -21,7 +21,7 @@ platform :ios do
     before_all do
         create_keychain(
           name: "temp_keychain",
-          password: "temp_password",
+          password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
           default_keychain: true,
           unlock: true,
           timeout: 3600,
@@ -67,29 +67,44 @@ platform :ios do
         git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
         verbose: true,
         keychain_name: "temp_keychain",
-        keychain_password: "temp_password"
+        keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
       )
       if ENV["CI"]
           unlock_keychain(
                   path: "~/Library/Keychains/temp_keychain-db",
-                  password: "temp_password"
+                  password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
                 )
-            update_code_signing_settings(
-                use_automatic_signing: false,
-                targets: ["More"],
-                team_id: ENV["FASTLANE_TEAM_ID"],
-                code_sign_identity: "iPhone Distribution",
-                profile_name: "match AppStore ac.at.lbg.dhp.more",
-                bundle_identifier: "ac.at.lbg.dhp.more"
-            )
-            update_code_signing_settings(
-                use_automatic_signing: false,
-                targets: ["More-Notification-Service-Extension"],
-                team_id: ENV["FASTLANE_TEAM_ID"],
-                code_sign_identity: "iPhone Distribution",
-                profile_name: "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension",
-                bundle_identifier: "ac.at.lbg.dhp.more.More-Notification-Service-Extension"
-            )
+
+            identifiers.each do |identifier|
+                target_name = identifier.split('.').last.capitalize
+
+               update_code_signing_settings(
+                    use_automatic_signing: false,
+                    targets: target_name
+                    team_id: ENV["FASTLANE_TEAM_ID"],
+                    #code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+                    profile_name: "match AppStore #{identifier}",
+                    bundle_identifier: identifier
+
+               )
+            end
+
+#             update_code_signing_settings(
+#                 use_automatic_signing: false,
+#                 targets: ["More"],
+#                 team_id: ENV["FASTLANE_TEAM_ID"],
+# #                 code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+#                 profile_name: "match AppStore ac.at.lbg.dhp.more",
+#                 bundle_identifier: "ac.at.lbg.dhp.more"
+#             )
+#             update_code_signing_settings(
+#                 use_automatic_signing: false,
+#                 targets: ["More-Notification-Service-Extension"],
+#                 team_id: ENV["FASTLANE_TEAM_ID"],
+# #                 code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+#                 profile_name: "match AppStore ac.at.lbg.dhp.more.More-Notification-Service-Extension",
+#                 bundle_identifier: "ac.at.lbg.dhp.more.More-Notification-Service-Extension"
+#             )
             xcodes(version: "16.4", select_for_current_build_only: true)
        end
 

@@ -1,13 +1,8 @@
-name: Build and publish beta release
+name: Deploy beta release
 on:
   push:
-    branches:
-      - '**'
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
-  pull_request:
-    branches:
-      - '**'
 
 jobs:
   ios:
@@ -41,28 +36,12 @@ jobs:
           xcode-version: 16.4
 
       - name: Set FASTLANE_BUILD_NUMBER from tag
-        if: startsWith(github.ref, 'refs/tags/')
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      #      - name: Check if tag is on develop or main
-      #        if: startsWith(github.ref, 'refs/tags/')
-      #        id: check_branch
-      #        run: |
-      #          git fetch --all
-      #          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
-      #            echo "DEPLOY=true" >> $GITHUB_ENV
-      #            echo "Tag is on develop or main branch, will deploy"
-      #          else
-      #            echo "DEPLOY=false" >> $GITHUB_ENV
-      #            echo "Tag is not on develop or main branch, will not deploy"
-      #          fi
-
       - name: Build iOS app
-        if: ${{ !(startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true') }}
         run: fastlane build
 
       - name: Deploy to TestFlight
-        if: ${{ startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true' }}
         run: fastlane deploy_beta
 
 
@@ -86,25 +65,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set FASTLANE_BUILD_NUMBER from tag
-        if: startsWith(github.ref, 'refs/tags/')
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-      #      - name: Check if tag is on develop or main
-      #        if: startsWith(github.ref, 'refs/tags/')
-      #        id: check_branch
-      #        run: |
-      #          git fetch --all
-      #          if git branch -a --contains ${{ github.sha }} | grep -q "develop\|main"; then
-      #            echo "DEPLOY=true" >> $GITHUB_ENV
-      #            echo "Tag is on develop or main branch, will deploy"
-      #          else
-      #            echo "DEPLOY=false" >> $GITHUB_ENV
-      #            echo "Tag is not on develop or main branch, will not deploy"
-      #          fi
 
       - name: Build Android app
         run: fastlane build
 
       - name: Deploy to Google Play Beta
-        if: startsWith(github.ref, 'refs/tags/') && env.DEPLOY == 'true'
         run: fastlane deploy_beta
