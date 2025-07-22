@@ -25,10 +25,16 @@ It's recommended that you install the latest stable versions for compatibility a
 performance. In order to build the iOS application the version of **iOS** should be at least 14.
 
 * [Android Studio](https://developer.android.com/studio)
-* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 14.0 or higher)
+* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 15.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
-* [JDK 19](https://www.oracle.com/java/technologies/downloads/)
+* [JDK 21](https://www.oracle.com/java/technologies/downloads/)
 * [Gradle 8.2+](https://gradle.org)
+
+It's recommended to install Xcode via `xcodes` and `aria2` as this is faster and more flexible in
+downloading specific versions of Xcode, including beta releases.
+To download the latest Xcode version simply enter `xcodes install --latest --experimental-unxip` or
+`xcodes install --latest-prerelease --experimental-unxip` for a beta version.
+Both `xcodes` and `aria2` are available via Homebrew `brew install xcodes aria2`.
 
 Also, it's recommended to install the following plugins in the Android Studio directly:
 
@@ -102,6 +108,155 @@ Swift Package Manager and not CocoaPods._
 
 
 <!-- USAGE EXAMPLES -->
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and continuous deployment. The pipeline
+is split into two workflows:
+
+### Build Workflow
+
+The build workflow (`build.yml`) runs on every push to any branch and on pull requests. It only
+builds the apps without deploying them.
+
+**Trigger:**
+
+- Push to any branch (excluding tags)
+- Pull requests
+
+**Jobs:**
+
+- iOS: Builds the iOS app using fastlane
+- Android: Builds the Android app using fastlane
+
+### Deploy Beta Workflow
+
+The deploy beta workflow (`deploy-beta.yml`) runs only when a tag with the format `x.x.x` (semantic
+versioning) is pushed. It builds the apps and deploys them to TestFlight (iOS) and Google Play
+Beta (Android).
+
+**Trigger:**
+
+- Push of a tag matching the pattern `[0-9]+.[0-9]+.[0-9]+` (e.g., `1.2.3`)
+
+The tag pattern (e.g., `1.2.3`) directly represents the new app deployment version. The workflow
+extracts this version from the tag and sets it as the `FASTLANE_BUILD_NUMBER` environment variable,
+which is then used by fastlane to set the build number and version in both iOS and Android apps.
+
+**Jobs:**
+
+- iOS: Builds the iOS app and deploys it to TestFlight
+- Android: Builds the Android app and deploys it to Google Play Beta
+
+### Fastlane Integration
+
+This project uses fastlane for automating the build and deployment processes for both iOS and
+Android apps.
+
+#### iOS Fastlane
+
+The iOS fastlane configuration includes the following lanes:
+
+- `increment_build`: Bumps build number and version to `FASTLANE_BUILD_NUMBER`
+- `build`: Builds the app for App Store, including code signing setup
+- `deploy_beta`: Deploys a new beta to TestFlight (calls `increment_build` and `build`, then uploads
+  to TestFlight)
+
+The iOS build process uses Xcode 16.4 and creates a temporary keychain for secure code signing. It supports multiple app targets, including notification service extensions.
+
+#### Android Fastlane
+
+The Android fastlane configuration includes the following lanes:
+
+- `test`: Runs all tests
+- `build`: Builds the Android app (debug version)
+- `deploy_beta`: Builds a release version and deploys it to Google Play Beta
+
+The Android build process has several important features:
+
+- **Version Code Calculation**: For release builds, the version code is calculated using a formula that converts semantic versioning (e.g., 4.0.22) to a 5-digit code: `major × 10⁴ + minor × 10² + patch`. For example, version 4.0.22 becomes 40022. The system also checks the latest version code from Google Play and increments it by 1, using the maximum of these two values to ensure the version code is always increasing.
+
+- **AAB Format**: The Android app is built as an Android App Bundle (AAB) for release, not an APK.
+
+- **Firebase Integration**: When not running in CI mode, the build process supports optional Firebase App Distribution for testing.
+
+### Environment Variables
+
+To run the pipeline, you need to set up the following environment variables:
+
+#### iOS Environment Variables
+
+**Secrets:**
+
+- `FASTLANE_TEAM_ID`: Your Apple Developer Team ID
+- `APPLE_CONNECT_KEY_ID`: App Store Connect API Key ID
+- `APPLE_CONNECT_ISSUER_ID`: App Store Connect API Issuer ID
+- `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
+- `APPLE_CERTIFICATE`: Apple certificate for signing
+- `FASTLANE_MATCH_SECRET`: Password for match repository
+- `MATCH_AUTH`: Basic authorization for match Git repository
+
+**Variables:**
+
+- `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers (e.g., "ac.at.lbg.dhp.more,ac.at.lbg.dhp.more.More-Notification-Service-Extension")
+- `TARGETS`: Comma-separated list of Xcode targets corresponding to the app identifiers (e.g., "More,More-Notification-Service-Extension")
+- `FASTLANE_IOS_BUILD_SCHEME`: Xcode scheme to build
+- `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
+- `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (true/false)
+- `CODE_SIGN_IDENTITY`: The code signing identity to use (e.g., "iPhone Distribution")
+
+#### Android Environment Variables
+
+**Secrets:**
+
+- `GOOGLE_PLAY_KEY_FILE`: Path to Google Play key file
+- `GOOGLE_PLAY_KEY_IN_BASE64`: Google Play key file content (base64 encoded)
+- `ANDROID_KEYSTORE_BASE64`: Android keystore file (base64 encoded)
+- `ANDROID_KEYSTORE_PASSWORD`: Password for the Android keystore
+- `ANDROID_KEY_ALIAS`: Alias for the Android signing key
+- `ANDROID_KEY_PASSWORD`: Password for the Android signing key
+- `FIREBASE_APP_ID`: (Optional) Firebase App ID for Firebase App Distribution
+
+**Variables:**
+
+- `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
+- `PACKAGE`: Android package name (e.g., "ac.at.lbg.dhp.more")
+
+### Running the Pipeline Under Other Accounts
+
+To run the pipeline under your own account, follow these steps:
+
+1. **Fork the repository** to your GitHub account.
+
+2. **Set up the required secrets and variables** in your GitHub repository:
+    - Go to your repository settings
+    - Navigate to "Secrets and variables" > "Actions"
+    - Add all the required secrets and variables listed above
+
+3. **iOS-specific setup:**
+    - Create an App Store Connect API key in your Apple Developer account
+    - Set up a match repository for code signing
+    - Update the bundle identifiers in the project to match your own
+
+4. **Android-specific setup:**
+    - Create a Google Play service account and download the key file
+    - Create a keystore for signing your Android app
+    - Update the package name in the project to match your own
+
+5. **Trigger the workflows:**
+    - For the build workflow: Push to any branch or create a pull request
+    - For the deploy workflow: Create and push a tag with the format `x.x.x` (e.g.,
+      `git tag 1.0.0 && git push origin 1.0.0`)
+
+### Troubleshooting
+
+- **iOS build fails**: Check that all iOS-related environment variables are set correctly and that
+  your Apple Developer account has the necessary permissions. Ensure that the `APPLE_CONNECT_KEY_CONTENT` is properly base64 encoded and that the `APPLE_CONNECT_KEY_IS_BASE64` is set to true.
+- **Android build fails**: Verify that the Android keystore and Google Play key are correctly
+  encoded in base64. The Android build process expects both `ANDROID_KEYSTORE_BASE64` and `GOOGLE_PLAY_KEY_IN_BASE64` to be properly base64 encoded.
+- **Deployment fails**: Ensure that the app identifiers match the ones in your Apple Developer
+  account or Google Play Console. For iOS, make sure the `TARGETS` variable matches the app identifiers in the same order.
+- **Version code issues**: If you encounter version code conflicts in Google Play, the system will automatically try to increment the version code based on the latest version in Google Play. If this fails, it will fall back to the calculated version code based on the semantic version.
 
 ## Usage
 
@@ -293,4 +448,3 @@ Apache 2.0 with Commons Clause; see LICENSE.txt for further details
 
 Ludwig Boltzmann Institute for Digital Health and
 Prevention - [more-health.at](https://more-health.at/) - more@dhp.lbg.ac.at
-
