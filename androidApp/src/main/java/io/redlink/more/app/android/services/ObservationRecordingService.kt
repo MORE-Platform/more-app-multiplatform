@@ -10,21 +10,26 @@
  */
 package io.redlink.more.app.android.services
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.AndroidDataRecorder
+import io.redlink.more.app.android.observations.PermissionUtils
+import io.redlink.more.app.android.observations.showPermissionAlertDialog
+import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
@@ -33,7 +38,6 @@ import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -70,23 +74,23 @@ class ObservationRecordingService : Service() {
                 SERVICE_RECEIVER_START_ACTION -> {
                     intent.getStringArrayListExtra(SCHEDULE_ID)?.let {
                         startObservation(it.toSet())
-                        return super.onStartCommand(intent, flags, startId)
+                        return START_REDELIVER_INTENT
                     }
-                    START_NOT_STICKY
+                    START_STICKY
                 }
 
                 SERVICE_RECEIVER_PAUSE_ACTION -> {
                     intent.getStringExtra(SCHEDULE_ID)?.let {
                         pauseObservation(it)
                     }
-                    START_NOT_STICKY
+                    START_STICKY
                 }
 
                 SERVICE_RECEIVER_STOP_ACTION -> {
                     intent.getStringExtra(SCHEDULE_ID)?.let {
                         stopObservation(it)
                     }
-                    START_NOT_STICKY
+                    START_STICKY
                 }
 
                 SERVICE_RECEIVER_STOP_ALL_ACTION -> {
@@ -96,29 +100,92 @@ class ObservationRecordingService : Service() {
 
                 SERVICE_RECEIVER_RESTART_ALL_STATES -> {
                     restartAll()
-                    return super.onStartCommand(intent, flags, startId)
+                    return START_REDELIVER_INTENT
                 }
 
                 else -> {
-                    START_NOT_STICKY
+                    START_STICKY
                 }
             }
-        } ?: START_NOT_STICKY
+        } ?: START_STICKY
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         Napier.i { "ObservationRecordingService taskRemove!" }
+
+        // Restart the service if it's killed when the app is removed from recent apps
+        if (runningSchedules.isNotEmpty()) {
+            val restartServiceIntent =
+                Intent(applicationContext, ObservationRecordingService::class.java)
+            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+
+            val pendingIntent = PendingIntent.getService(
+                applicationContext, 1, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val alarmManager =
+                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                pendingIntent
+            )
+
+            Napier.i { "Scheduled service restart after task removal" }
+        }
     }
 
     override fun onDestroy() {
         Napier.i { "ObservationRecordingService is destroyed!" }
         running = false
+
+        // Attempt to restart the service if it's destroyed but has running schedules
+        if (runningSchedules.isNotEmpty()) {
+            Napier.i { "Service destroyed with running schedules, attempting to restart" }
+            val restartServiceIntent =
+                Intent(applicationContext, ObservationRecordingService::class.java)
+            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+
+            val pendingIntent = PendingIntent.getService(
+                applicationContext, 2, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val alarmManager =
+                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                pendingIntent
+            )
+        }
+
         super.onDestroy()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         running = false
+
+        // Attempt to restart the service if it's unbound but has running schedules
+        if (runningSchedules.isNotEmpty()) {
+            Napier.i { "Service unbound with running schedules, attempting to restart" }
+            val restartServiceIntent =
+                Intent(applicationContext, ObservationRecordingService::class.java)
+            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+
+            val pendingIntent = PendingIntent.getService(
+                applicationContext, 3, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val alarmManager =
+                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                pendingIntent
+            )
+        }
+
         return super.onUnbind(intent)
     }
 
@@ -165,16 +232,39 @@ class ObservationRecordingService : Service() {
     }
 
     private fun stopService() {
-        Napier.i { "Stopping ObservationRecordingService..." }
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        running = false
-        stopSelf()
-        Napier.i { "Stopped ObservationRecordingService!" }
+        if (runningSchedules.isEmpty()) {
+            Napier.i { "Stopping ObservationRecordingService..." }
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            running = false
+            stopSelf()
+            Napier.i { "Stopped ObservationRecordingService!" }
+        } else {
+            Napier.i { "Not stopping ObservationRecordingService because there are still running schedules" }
+        }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         Napier.i { "ObservationRecording Service has low memory!" }
+
+        if (runningSchedules.isNotEmpty()) {
+            Napier.i { "Service low on memory with running schedules, attempting to restart" }
+            val restartServiceIntent =
+                Intent(applicationContext, ObservationRecordingService::class.java)
+            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+
+            val pendingIntent = PendingIntent.getService(
+                applicationContext, 4, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val alarmManager =
+                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                pendingIntent
+            )
+        }
     }
 
     private fun restartAll() {
@@ -246,28 +336,81 @@ class ObservationRecordingService : Service() {
 
         private val runningSchedules = mutableSetOf<String>()
 
+        private val pendingScheduleIds = mutableSetOf<String>()
 
         fun start(
             scheduleIds: Set<String>,
         ) {
             val validToStart = scheduleIds.filter { it !in runningSchedules }
-            Scope.launch(Dispatchers.IO) {
-                if (!running) {
-                    var counter = 0
-                    while (MoreApplication.shared?.appIsInForeGround == false) {
-                        if (counter++ >= MAX_RETRIES) {
-                            log { "Stopping retries for launching observations" }
-                            return@launch
-                        }
-                        log { "Waiting till app goes into foreground to start observations..." }
-                        delay(1000)
-                    }
+
+            val activity = ActivityProvider.getCurrentActivity()
+            if (activity != null && validToStart.isNotEmpty()) {
+                checkPermissionsAndStart(validToStart.toSet(), activity)
+            } else {
+                startWithoutPermissionCheck(validToStart.toSet())
+            }
+        }
+
+        /**
+         * Checks permissions before starting observations
+         * @param scheduleIds The schedule IDs to start
+         * @param activity The activity to request permissions in
+         */
+        private fun checkPermissionsAndStart(
+            scheduleIds: Set<String>,
+            activity: android.app.Activity
+        ) {
+            val observations =
+                MoreApplication.shared?.observationFactory?.observations ?: emptySet()
+
+            if (observations.isEmpty()) {
+                startWithoutPermissionCheck(scheduleIds)
+                return
+            }
+
+            val allPermissionsGranted = observations.all { observation ->
+                PermissionUtils.hasAllPermissions(observation, activity)
+            }
+
+            if (allPermissionsGranted) {
+                startWithoutPermissionCheck(scheduleIds)
+            } else {
+                val observationNeedingPermissions = observations.firstOrNull { observation ->
+                    !PermissionUtils.hasAllPermissions(observation, activity)
                 }
-                if (validToStart.isNotEmpty() && MoreApplication.shared?.appIsInForeGround == true || running) {
+
+                if (observationNeedingPermissions != null) {
+                    pendingScheduleIds.addAll(scheduleIds)
+
+                    PermissionUtils.requestPermissions(
+                        observationNeedingPermissions,
+                        activity
+                    ) { granted ->
+                        if (granted) {
+                            checkPermissionsAndStart(scheduleIds, activity)
+                        } else {
+                            observationNeedingPermissions.showPermissionAlertDialog()
+                            pendingScheduleIds.removeAll(scheduleIds)
+                        }
+                    }
+                } else {
+                    startWithoutPermissionCheck(scheduleIds)
+                }
+            }
+        }
+
+        /**
+         * Starts observations without permission check
+         * @param scheduleIds The schedule IDs to start
+         */
+        private fun startWithoutPermissionCheck(scheduleIds: Set<String>) {
+            Scope.launch(Dispatchers.IO) {
+                // Always start observations regardless of foreground/background state
+                if (scheduleIds.isNotEmpty()) {
                     val serviceIntent =
                         Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
                     serviceIntent.action = SERVICE_RECEIVER_START_ACTION
-                    serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(validToStart))
+                    serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(scheduleIds))
                     try {
                         Handler(Looper.getMainLooper()).post {
                             if (running) {
@@ -279,8 +422,6 @@ class ObservationRecordingService : Service() {
                     } catch (e: Exception) {
                         Napier.e(e.stackTraceToString())
                     }
-                } else {
-                    Napier.w { "Application not in foreground" }
                 }
             }
         }

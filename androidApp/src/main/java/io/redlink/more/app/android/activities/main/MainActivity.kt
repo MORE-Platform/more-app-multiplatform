@@ -53,7 +53,9 @@ import io.redlink.more.app.android.activities.studyStates.StudyClosedView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
@@ -62,9 +64,27 @@ class MainActivity : ComponentActivity() {
     private var loadedNavController = false
 
     private lateinit var navHostController: NavHostController
+
+    override fun onResume() {
+        super.onResume()
+        ActivityProvider.setCurrentActivity(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ActivityProvider.clearCurrentActivity()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PermissionUtils.cleanupPermissionLauncher(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
+
+        PermissionUtils.initializePermissionLauncher(this)
 
         val activityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

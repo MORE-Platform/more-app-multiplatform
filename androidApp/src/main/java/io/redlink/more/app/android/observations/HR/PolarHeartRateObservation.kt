@@ -35,11 +35,20 @@ import kotlinx.coroutines.flow.update
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        setOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
+        if (Build.VERSION.SDK_INT >= 34) {
+            setOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
+            )
+        } else {
+            setOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
     } else {
         setOf(
             Manifest.permission.BLUETOOTH,
