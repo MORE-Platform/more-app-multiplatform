@@ -13,7 +13,6 @@ package io.redlink.more.app.android.activities.consent.composables
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,12 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.ui.theme.MoreColors
-
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
@@ -133,17 +132,24 @@ fun checkAndRequestPermissions(
     model: ConsentViewModel,
     extraPermissions: Set<String> = emptySet()
 ) {
-    val permissions = model.permissions
+    val permissions = model.permissions.toMutableSet()
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         permissions.add(Manifest.permission.POST_NOTIFICATIONS)
     }
+
     permissions.addAll(extraPermissions)
+
+    permissions.addAll(
+        MoreApplication.shared?.observationFactory?.studySensorPermissions() ?: emptySet()
+    )
 
     val hasBackgroundLocationPermission =
         permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
+
     if (hasBackgroundLocationPermission) {
         checkPermissionForBackgroundLocationAccess(context, launcher, model)
     } else {
@@ -157,11 +163,7 @@ fun checkPermissions(
     permissions: Set<String>,
     model: ConsentViewModel,
 ): Boolean {
-    return if (
-        !permissions.all {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-    ) {
+    return if (!PermissionUtils.hasAllPermissions(permissions, context)) {
         launcher.launch(permissions.toTypedArray())
         false
     } else {
@@ -175,10 +177,10 @@ fun checkPermissionForBackgroundLocationAccess(
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
 ) {
-    if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+    if (PermissionUtils.hasAllPermissions(
+            setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+            context
+        )
     ) return
 
     AlertDialog.Builder(context)

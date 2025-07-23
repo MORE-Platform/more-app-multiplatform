@@ -73,7 +73,7 @@ kotlin {
 
 android {
     namespace = "io.redlink.more.more_app_multiplatform"
-    compileSdk = 34
+    compileSdk = 36
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 29

@@ -22,6 +22,7 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import io.redlink.more.more_app_mutliplatform.util.validateAndNormalizeUrl
 
 class RegistrationService(
     private val shared: Shared
@@ -45,7 +46,7 @@ class RegistrationService(
             StudyScope.launch {
                 val (result, networkError) = shared.networkService.validateRegistrationToken(
                     token.uppercase(),
-                    manualEndpoint
+                    manualEndpoint?.validateAndNormalizeUrl()
                 )
                 result?.let {
                     endpoint = manualEndpoint
@@ -143,7 +144,6 @@ class RegistrationService(
         shared.observationFactory
             .addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
     }
-
 
     fun reset() {
         study = null

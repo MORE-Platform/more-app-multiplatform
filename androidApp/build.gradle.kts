@@ -42,11 +42,11 @@ val envProps = loadEnvFromFile()
 
 android {
     namespace = "io.redlink.more.app.android"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 26
         versionName = "4.0.26"
     }
@@ -148,9 +148,11 @@ val composeVersion = "1.6.8"
 val workVersion = "2.9.0"
 val navVersion = "2.7.7"
 val polarSDKVersion = "5.6.0"
+val ktorVersion = "2.3.12"
 
 dependencies {
     implementation(project(":shared"))
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")

@@ -14,6 +14,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
@@ -29,10 +30,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 private const val TAG = "GPSObservation"
-private val permissions = setOf(
-    Manifest.permission.ACCESS_COARSE_LOCATION,
-    Manifest.permission.ACCESS_FINE_LOCATION
-)
+private val permissions = if (Build.VERSION.SDK_INT >= 34) {
+    setOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.FOREGROUND_SERVICE_LOCATION
+    )
+} else {
+    setOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+}
 
 class GPSObservation(
     context: Context,
