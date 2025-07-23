@@ -5,10 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.R
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 
 /**
@@ -22,7 +18,6 @@ object PermissionUtils {
     private var pendingCallback: ((Boolean) -> Unit)? = null
     private var pendingPermissions: Set<String>? = null
 
-    // Store the permission launcher for each activity
     private val permissionLaunchers =
         mutableMapOf<Activity, androidx.activity.result.ActivityResultLauncher<Array<String>>>()
 
@@ -38,7 +33,6 @@ object PermissionUtils {
             val allGranted = permissions.values.all { it }
             pendingCallback?.invoke(allGranted)
 
-            // Clear pending data
             pendingObservation = null
             pendingObservationId = null
             pendingScheduleId = null
@@ -95,71 +89,6 @@ object PermissionUtils {
     }
 
     /**
-     * Requests all required permissions
-     * @param permissions The permissions to request
-     * @param activity The activity to request permissions in
-     * @param callback Callback for the permission result
-     * @return True if all permissions are already granted, false if permissions need to be requested
-     */
-    fun requestPermissions(
-        permissions: Set<String>,
-        activity: Activity,
-        callback: ((Boolean) -> Unit)? = null
-    ): Boolean {
-        if (permissions.isEmpty()) {
-            callback?.invoke(true)
-            return true
-        }
-
-        val permissionsToRequest = permissions.filter {
-            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
-        }.toTypedArray()
-
-        if (permissionsToRequest.isEmpty()) {
-            callback?.invoke(true)
-            return true
-        }
-
-        // Store the pending permissions and callback for later use
-        pendingPermissions = permissions
-        pendingCallback = callback
-
-        // Get the permission launcher for this activity
-        val permissionLauncher = permissionLaunchers[activity]
-        if (permissionLauncher != null) {
-            // Launch the permission request
-            permissionLauncher.launch(permissionsToRequest)
-        } else {
-            // If no permission launcher is found, show a generic permission dialog
-            showGenericPermissionDialog(activity)
-            callback?.invoke(false)
-        }
-
-        return false
-    }
-
-    /**
-     * Shows a generic permission dialog
-     * @param activity The activity to show the dialog in
-     */
-    private fun showGenericPermissionDialog(activity: Activity) {
-        AlertController.openAlertDialog(
-            AlertDialogModel(
-            title = activity.getString(R.string.required_permissions_not_granted_title),
-            message = activity.getString(R.string.required_permission_not_granted_message),
-            positiveTitle = activity.getString(R.string.proceed_to_settings_button),
-            negativeTitle = activity.getString(R.string.proceed_without_granting_button),
-            onPositive = {
-                MoreApplication.openSettings.value = true
-                AlertController.closeAlertDialog()
-            },
-            onNegative = {
-                AlertController.closeAlertDialog()
-            }
-        ))
-    }
-
-    /**
      * Requests all required permissions for the observation
      * @param observation The observation to request permissions for
      * @param activity The activity to request permissions in
@@ -188,20 +117,16 @@ object PermissionUtils {
             return true
         }
 
-        // Store the pending observation and parameters for later use
         pendingObservation = observation
         pendingObservationId = observationId
         pendingScheduleId = scheduleId
         pendingNotificationId = notificationId
         pendingCallback = callback
 
-        // Get the permission launcher for this activity
         val permissionLauncher = permissionLaunchers[activity]
         if (permissionLauncher != null) {
-            // Launch the permission request
             permissionLauncher.launch(permissionsToRequest)
         } else {
-            // If no permission launcher is found, fall back to showing the permission dialog
             observation.showPermissionAlertDialog()
             callback?.invoke(false)
         }
@@ -210,67 +135,3 @@ object PermissionUtils {
     }
 }
 
-/**
- * Extension function for Observation to check and request permissions before starting
- * @param observationId The observation ID
- * @param scheduleId The schedule ID
- * @param notificationId The notification ID
- * @param activity The activity to request permissions in
- * @param onPermissionResult Callback for the permission result
- */
-fun Observation.checkAndRequestPermissionsBeforeStart(
-    observationId: String,
-    scheduleId: String,
-    notificationId: String? = null,
-    activity: Activity,
-    onPermissionResult: (Boolean) -> Unit
-) {
-    if (PermissionUtils.hasAllPermissions(this, activity)) {
-        // Permissions already granted, start the observation
-        onPermissionResult(true)
-    } else {
-        // Request permissions
-        PermissionUtils.requestPermissions(
-            this,
-            activity,
-            observationId,
-            scheduleId,
-            notificationId
-        ) { granted ->
-            if (granted) {
-                onPermissionResult(true)
-            } else {
-                showPermissionAlertDialog()
-                onPermissionResult(false)
-            }
-        }
-    }
-}
-
-/**
- * Extension function for Observation to start with permission check
- * @param observationId The observation ID
- * @param scheduleId The schedule ID
- * @param notificationId The notification ID
- * @param activity The activity to request permissions in
- * @return True if the observation was started or permissions were requested, false otherwise
- */
-fun Observation.startWithPermissionCheck(
-    observationId: String,
-    scheduleId: String,
-    notificationId: String? = null,
-    activity: Activity
-): Boolean {
-    checkAndRequestPermissionsBeforeStart(
-        observationId,
-        scheduleId,
-        notificationId,
-        activity
-    ) { granted ->
-        if (granted) {
-            // Start the observation with the original parameters
-            this.start(observationId, scheduleId, notificationId)
-        }
-    }
-    return true
-}
