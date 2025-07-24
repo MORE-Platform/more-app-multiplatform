@@ -44,7 +44,7 @@ jobs:
 
       - name: Download iOS 26.0 Platform
         run: |
-          xcodebuild -downloadPlatform iOS -buildVersion 26.0 -architectureVariant universal
+          xcodebuild -downloadPlatform iOS
         working-directory: .
 
       - name: Set FASTLANE_BUILD_NUMBER from tag
