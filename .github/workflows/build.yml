@@ -41,7 +41,10 @@ jobs:
 
       - name: Download iOS 26.0 Platform
         run: |
-          xcodebuild -downloadPlatform iOS -buildVersion 26.0-beta -architectureVariant universal
+          echo "Available SDKs:"
+          xcodebuild -showsdks
+          echo "Attempting platform download..."
+          xcodebuild -downloadPlatform iOS -architectureVariant arm64
         working-directory: .
 
       - name: Build iOS app
