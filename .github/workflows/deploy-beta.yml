@@ -42,6 +42,11 @@ jobs:
         with:
           xcode-version: '26.0-beta'
 
+      - name: Download iOS 26.0 Platform
+        run: |
+          xcodebuild -downloadPlatform iOS -buildVersion 26.0 -architectureVariant arm64
+        working-directory: .
+
       - name: Set FASTLANE_BUILD_NUMBER from tag
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 

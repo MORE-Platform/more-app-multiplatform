@@ -39,6 +39,11 @@ jobs:
         with:
           xcode-version: '26.0-beta'
 
+      - name: Download iOS 26.0 Platform
+        run: |
+          xcodebuild -downloadPlatform iOS -buildVersion 26.0 -architectureVariant arm64
+        working-directory: .
+
       - name: Build iOS app
         run: fastlane build
 
