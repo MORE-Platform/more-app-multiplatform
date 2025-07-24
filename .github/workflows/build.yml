@@ -41,7 +41,7 @@ jobs:
 
       - name: Download iOS 26.0 Platform
         run: |
-          xcodebuild -downloadPlatform iOS -buildVersion 26.0 -architectureVariant arm64
+          xcodebuild -downloadPlatform iOS -buildVersion 26.0 -architectureVariant universal
         working-directory: .
 
       - name: Build iOS app
