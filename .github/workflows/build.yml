@@ -41,10 +41,7 @@ jobs:
 
       - name: Download iOS 26.0 Platform
         run: |
-          echo "Available SDKs:"
-          xcodebuild -showsdks
-          echo "Attempting platform download..."
-          xcodebuild -downloadPlatform iOS -architectureVariant arm64
+          xcodebuild -downloadPlatform iOS
         working-directory: .
 
       - name: Build iOS app
