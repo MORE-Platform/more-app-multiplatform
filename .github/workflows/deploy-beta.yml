@@ -43,6 +43,7 @@ jobs:
         with:
           xcode-version: '26.0-beta'
 
+      # Needs to be removed, after github fixed an issue with the Xcode 26 beta version
       - name: Download iOS 26.0 Platform
         run: |
           xcodebuild -downloadPlatform iOS
