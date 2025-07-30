@@ -160,7 +160,6 @@ extension View {
     }
 }
 
-@available(iOS 15, *)
 struct TextFieldViewModifier: ViewModifier {
     var capitalization: TextInputAutocapitalization = .words
     func body(content: Content) -> some View {
