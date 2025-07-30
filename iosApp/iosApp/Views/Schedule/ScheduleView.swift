@@ -64,7 +64,6 @@ struct ScheduleView: View {
         }
         .onAppear {
             viewModel.viewDidAppear()
-            //navigationModalState.closeView(screen: .taskDetails)
         }
         .onDisappear {
             viewModel.viewDidDisappear()

@@ -33,7 +33,7 @@ struct InlineAbortButton: View {
             .padding(5)
             
         }
-        .accent(color: .more.primaryLight)
+        .tint(.more.primaryLight)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
                 .stroke(Color.more.secondaryMedium, lineWidth: 1)
