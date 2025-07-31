@@ -11,8 +11,6 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		07190FEA29E80A7C00A8CB1F /* LeaveStudyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FE929E80A7C00A8CB1F /* LeaveStudyView.swift */; };
 		07190FEC29E834E800A8CB1F /* LeaveStudyConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07190FEB29E834E800A8CB1F /* LeaveStudyConfirmationView.swift */; };
-		071ABEF529ED8C440013C1CF /* TriggerSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071ABEF429ED8C440013C1CF /* TriggerSlider.swift */; };
-		071ABEF729ED8C660013C1CF /* TriggerSliderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */; };
 		07BC54AC29CB2F3C00459267 /* StudyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */; };
 		07BC54AE29CB2F4F00459267 /* StudyDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */; };
 		07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BC54B129CB47C400459267 /* DetailsTitle.swift */; };
@@ -64,7 +62,6 @@
 		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
 		1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C31502A121EA500EED533 /* WebViewViewModel.swift */; };
 		1F6C31532A13EB7F00EED533 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */; };
-		1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */; };
 		1F709AF32C0D8FB700FC6F5A /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1F709AF22C0D8FB700FC6F5A /* RealmSwift */; };
 		1F709AF42C0D8FB700FC6F5A /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 1F709AF22C0D8FB700FC6F5A /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1F750CA82A6F9C9B006E455E /* StudyStates.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F750CAA2A6F9C9B006E455E /* StudyStates.strings */; };
@@ -102,7 +99,6 @@
 		1F8EA2D12A0CC2EA00F32602 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D02A0CC2EA00F32602 /* WebView.swift */; };
 		1F8EA2D32A0CC7D600F32602 /* ObservationActionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */; };
 		1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */; };
-		1F9B81BD2A28CBF70013738A /* KotlinMutableSetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9B81BC2A28CBF70013738A /* KotlinMutableSetExtension.swift */; };
 		1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */; };
 		1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */; };
 		1F9C74302A30C72B003AE946 /* LoginView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1F9C74322A30C72B003AE946 /* LoginView.strings */; };
@@ -133,7 +129,6 @@
 		1FC9574E2C072B7900EB92D6 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC9574D2C072B7900EB92D6 /* NotificationService.swift */; };
 		1FC957522C072B7900EB92D6 /* More-Notification-Service-Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1FC9574B2C072B7900EB92D6 /* More-Notification-Service-Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FD531B52B693C3400C2D9FB /* AlertDialog.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1FD531B72B693C3400C2D9FB /* AlertDialog.strings */; };
-		1FDC264629C1C60F0011D8A4 /* ListViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */; };
 		1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264729C1CEF40011D8A4 /* InfoListItem.swift */; };
 		1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264929C1CFE80011D8A4 /* NavigationText.swift */; };
 		1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDC264B29C1D1660011D8A4 /* InfoList.swift */; };
@@ -200,7 +195,6 @@
 		EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB2B4929B8CFF000CA973E /* SettingsView.swift */; };
 		EDCCC31229DAC3D6006D252F /* ObservationTimeDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */; };
 		EDD1DEFF29F7B595009BC8FB /* ScheduleListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1DEFE29F7B595009BC8FB /* ScheduleListHeader.swift */; };
-		EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD808D629BF4C3A005779DC /* MoreBackButton.swift */; };
 		EDDAEDB029B5DAD700141491 /* UISegmentedControlExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */; };
 		EDEBA13329B0D2EE00533F79 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */; };
 		EDEBA13529B0D30200533F79 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEBA13429B0D30200533F79 /* DashboardView.swift */; };
@@ -247,8 +241,6 @@
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		07190FE929E80A7C00A8CB1F /* LeaveStudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveStudyView.swift; sourceTree = "<group>"; };
 		07190FEB29E834E800A8CB1F /* LeaveStudyConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveStudyConfirmationView.swift; sourceTree = "<group>"; };
-		071ABEF429ED8C440013C1CF /* TriggerSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerSlider.swift; sourceTree = "<group>"; };
-		071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriggerSliderSettings.swift; sourceTree = "<group>"; };
 		07BC54AB29CB2F3C00459267 /* StudyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsView.swift; sourceTree = "<group>"; };
 		07BC54AD29CB2F4F00459267 /* StudyDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyDetailsViewModel.swift; sourceTree = "<group>"; };
 		07BC54B129CB47C400459267 /* DetailsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTitle.swift; sourceTree = "<group>"; };
@@ -300,7 +292,6 @@
 		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
 		1F6C31502A121EA500EED533 /* WebViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewModel.swift; sourceTree = "<group>"; };
 		1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExtension.swift; sourceTree = "<group>"; };
 		1F750CA92A6F9C9B006E455E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/StudyStates.strings; sourceTree = "<group>"; };
 		1F750CAB2A6F9C9E006E455E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/StudyStates.strings; sourceTree = "<group>"; };
 		1F750CAC2A6FA771006E455E /* StudyPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyPausedView.swift; sourceTree = "<group>"; };
@@ -339,7 +330,6 @@
 		1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationActionDelegate.swift; sourceTree = "<group>"; };
 		1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
 		1F9283C02BC512E500D459A7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		1F9B81BC2A28CBF70013738A /* KotlinMutableSetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinMutableSetExtension.swift; sourceTree = "<group>"; };
 		1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMainBackgroundView.swift; sourceTree = "<group>"; };
 		1F9C74312A30C72B003AE946 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LoginView.strings; sourceTree = "<group>"; };
@@ -388,7 +378,6 @@
 		1FC957572C072C1F00EB92D6 /* More-Notification-Service-Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "More-Notification-Service-Extension.entitlements"; sourceTree = "<group>"; };
 		1FD531B62B693C3400C2D9FB /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AlertDialog.strings; sourceTree = "<group>"; };
 		1FD531B82B693C3900C2D9FB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AlertDialog.strings; sourceTree = "<group>"; };
-		1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewExtension.swift; sourceTree = "<group>"; };
 		1FDC264729C1CEF40011D8A4 /* InfoListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoListItem.swift; sourceTree = "<group>"; };
 		1FDC264929C1CFE80011D8A4 /* NavigationText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationText.swift; sourceTree = "<group>"; };
 		1FDC264B29C1D1660011D8A4 /* InfoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoList.swift; sourceTree = "<group>"; };
@@ -457,7 +446,6 @@
 		EDBB2B4929B8CFF000CA973E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EDCCC31129DAC3D6006D252F /* ObservationTimeDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationTimeDetails.swift; sourceTree = "<group>"; };
 		EDD1DEFE29F7B595009BC8FB /* ScheduleListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListHeader.swift; sourceTree = "<group>"; };
-		EDD808D629BF4C3A005779DC /* MoreBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreBackButton.swift; sourceTree = "<group>"; };
 		EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISegmentedControlExtension.swift; sourceTree = "<group>"; };
 		EDEBA13229B0D2EE00533F79 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		EDEBA13429B0D30200533F79 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -618,7 +606,6 @@
 				B79DBA3A29D3135E00A1F547 /* ForwardButton.swift */,
 				1F13BA482993985800938C1E /* InactiveText.swift */,
 				1F8847E129917F5D0023EF10 /* MoreActionButton.swift */,
-				EDD808D629BF4C3A005779DC /* MoreBackButton.swift */,
 				1F8847D729915C030023EF10 /* MoreTextField.swift */,
 				B72C645E29DC812900F5A7C6 /* MoreTextFieldHL.swift */,
 				B72C645F29DC812900F5A7C6 /* MoreTextFieldSmBottom.swift */,
@@ -643,8 +630,6 @@
 				07FD293D29D58F7C00853108 /* ExpandableContent.swift */,
 				B78B4A8329F04BEA00A1BA58 /* ExpandableContentWithLink.swift */,
 				EDD1DEFE29F7B595009BC8FB /* ScheduleListHeader.swift */,
-				071ABEF429ED8C440013C1CF /* TriggerSlider.swift */,
-				071ABEF629ED8C660013C1CF /* TriggerSliderSettings.swift */,
 				07F67D8929EECF1A006DCFB5 /* BasicNavLinkButton.swift */,
 				1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */,
 				1FF5B28A2A8274C10076EF8E /* AppVersion.swift */,
@@ -702,12 +687,10 @@
 		1F8847CB299154650023EF10 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				1FDC264529C1C60F0011D8A4 /* ListViewExtension.swift */,
 				1F8847C029914FD60023EF10 /* StringExtension.swift */,
 				EDDAEDAF29B5DAD700141491 /* UISegmentedControlExtension.swift */,
 				EDBB2B4329B8B2A100CA973E /* Int64Extension.swift */,
 				1F43998029B8EA5100687906 /* DictionaryExtension.swift */,
-				1F6D338029C1D2C70036532B /* ViewModifierExtension.swift */,
 				1F80EC4429C2524F004667B1 /* NavigationScreen.swift */,
 				1F27536329CC3B8500324417 /* CMSensorDataListExtension.swift */,
 				1F27536529CC3CBB00324417 /* TimeIntervalExtension.swift */,
@@ -717,7 +700,6 @@
 				1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */,
 				ED74FF4529DEC73600BAA1EF /* KotlinLongExtension.swift */,
 				1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */,
-				1F9B81BC2A28CBF70013738A /* KotlinMutableSetExtension.swift */,
 				1FF5B28C2A8275790076EF8E /* Bundle.swift */,
 				3007C5E9B53BC561D105D2B3 /* SetExtension.swift */,
 			);
@@ -1257,10 +1239,8 @@
 				1F43998F29C1010400687906 /* InfoView.swift in Sources */,
 				B748DF4A29D1C08D0026C348 /* SimpleQuetionObservationView.swift in Sources */,
 				EDBB2B4A29B8CFF000CA973E /* SettingsView.swift in Sources */,
-				071ABEF529ED8C440013C1CF /* TriggerSlider.swift in Sources */,
 				1FDC264C29C1D1660011D8A4 /* InfoList.swift in Sources */,
 				B784169229C9E3F50035D830 /* Title2.swift in Sources */,
-				EDD808D729BF4C3A005779DC /* MoreBackButton.swift in Sources */,
 				1F8847BA29914C8D0023EF10 /* Title.swift in Sources */,
 				1F8937882BFF0DAB0083D20E /* ObservationErrorListView.swift in Sources */,
 				1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */,
@@ -1283,12 +1263,10 @@
 				1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
-				1FDC264629C1C60F0011D8A4 /* ListViewExtension.swift in Sources */,
 				1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */,
 				1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */,
 				B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */,
 				B748DF3C29CC6B380026C348 /* ObservatinoDetailsData.swift in Sources */,
-				071ABEF729ED8C660013C1CF /* TriggerSliderSettings.swift in Sources */,
 				1FDC264829C1CEF40011D8A4 /* InfoListItem.swift in Sources */,
 				ED16C5EB29B7380300DA8AFE /* DashboardPicker.swift in Sources */,
 				1FE4447229C85D94006AA11C /* IOSDataRecorder.swift in Sources */,
@@ -1317,7 +1295,6 @@
 				B74DDB6629E69F44006FEA74 /* NotificationViewModel.swift in Sources */,
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
-				1F9B81BD2A28CBF70013738A /* KotlinMutableSetExtension.swift in Sources */,
 				07190FEC29E834E800A8CB1F /* LeaveStudyConfirmationView.swift in Sources */,
 				1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
@@ -1366,7 +1343,6 @@
 				07BC54B229CB47C400459267 /* DetailsTitle.swift in Sources */,
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				B79BECC129F1811000966AD1 /* ContactInfo.swift in Sources */,
-				1F6D338129C1D2C70036532B /* ViewModifierExtension.swift in Sources */,
 				EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
@@ -1578,7 +1554,7 @@
 				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4.1.0;
+				CURRENT_PROJECT_VERSION = 4.0.26;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = VX2DSGURUH;
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -1588,7 +1564,7 @@
 				INFOPLIST_FILE = "More-Notification-Service-Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "More-Notification-Service-Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Redlink GmbH. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1596,7 +1572,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ac.at.lbg.dhp.more.More-Notification-Service-Extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "ac.at.lbg.dhp.more.More-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1619,7 +1595,7 @@
 				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4.1.0;
+				CURRENT_PROJECT_VERSION = 4.0.26;
 				DEVELOPMENT_TEAM = VX2DSGURUH;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1628,7 +1604,7 @@
 				INFOPLIST_FILE = "More-Notification-Service-Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "More-Notification-Service-Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Redlink GmbH. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1636,7 +1612,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ac.at.lbg.dhp.more.More-Notification-Service-Extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "ac.at.lbg.dhp.more.More-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1704,7 +1680,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1763,7 +1739,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1792,6 +1768,7 @@
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = More;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1810,6 +1787,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1834,6 +1812,7 @@
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = More;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1852,6 +1831,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_STRICT_MEMORY_SAFETY = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

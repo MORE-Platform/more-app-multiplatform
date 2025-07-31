@@ -61,7 +61,7 @@ struct MainTabView: View {
                 .tag(2)
             }
         }
-        .accent(color: .more.primaryDark)
+        .tint(.more.primaryDark)
         .onAppear {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)

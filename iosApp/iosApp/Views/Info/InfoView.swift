@@ -26,14 +26,14 @@ struct InfoView: View {
             Divider()
             VStack {
                 InfoList()
-                    .hideListRowSeparator()
+                    .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.more.primaryLight)
                     .padding(.top, 7)
                 Spacer()
             }
             .listStyle(.plain)
-            .clearListBackground()
+            .scrollContentBackground(.hidden)
             
             Spacer()
             

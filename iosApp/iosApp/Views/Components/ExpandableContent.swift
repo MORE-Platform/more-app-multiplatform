@@ -28,15 +28,31 @@ struct ExpandableContent<Content: View>: View {
                 UIToggleFoldViewButton(isOpen: $expanded)
             }
             
-            Divider().padding(.bottom)
+            Divider()
             
-            VStack {
-                self.content()
-            }.padding(0)
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: !expanded ? 0 : .none)
-                .clipped()
-                .animation(.easeOut)
-                .transition(.slide)
+            if expanded {
+                VStack {
+                    self.content()
+                }
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+                .transition(.opacity.combined(with: .scale))
+                .padding(.top, 8)
+            }
+
+        }
+        .padding(.bottom)
+        .animation(.easeOut(duration: 0.3), value: expanded)
+    }
+}
+
+
+struct ExpandableContent_Preview: PreviewProvider {
+    static var previews: some View {
+        ExpandableContent(content: {
+            Text("Hello, World!")
+        }) {
+            "Hello"
         }
     }
 }
