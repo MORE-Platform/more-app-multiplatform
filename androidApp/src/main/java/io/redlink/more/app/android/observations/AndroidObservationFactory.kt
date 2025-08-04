@@ -23,6 +23,11 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import io.redlink.more.app.android.observations.HealthKit.HealthKitObservation
+import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_HR
+import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_Sleep
+import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_exercise
+import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_steps
 
 class AndroidObservationFactory(context: Context, observationDataManager: ObservationDataManager) :
     ObservationFactory(observationDataManager) {
@@ -31,7 +36,11 @@ class AndroidObservationFactory(context: Context, observationDataManager: Observ
             setOf(
                 AccelerometerObservation(context),
                 GPSObservation(context, gpsService = GPSService(context)),
-                PolarHeartRateObservation()
+                PolarHeartRateObservation(),
+                HealthkitObservation_HR(context),
+                HealthkitObservation_exercise(context),
+                HealthkitObservation_Sleep(context),
+                HealthkitObservation_steps(context),
             )
         )
 

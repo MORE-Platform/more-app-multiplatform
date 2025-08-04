@@ -26,6 +26,7 @@ struct InfoList: View {
             InfoListItem(title: String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: stringTable), icon: "applewatch", destination: .bluetoothConnections)
             InfoListItem(title: String.localize(forKey: "Settings", withComment: "Shows the settings for the study.", inTable: stringTable), icon: "gearshape.fill", destination: .settings)
             InfoListItem(title: String.localize(forKey: "Leave Study", withComment: "Leave the study for good.", inTable: stringTable), icon: "rectangle.portrait.and.arrow.right", destination: .withdrawStudy)
+            InfoListItem(title: String.localize(forKey: "Connect Health kit", withComment: "Allow data sync from Apple Health"), icon: "heart.fill", destination: .healthConnectSettings)
         }
     }
 }

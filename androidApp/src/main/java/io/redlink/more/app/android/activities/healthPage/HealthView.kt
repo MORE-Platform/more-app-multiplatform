@@ -69,14 +69,23 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+
+
     ) {
         Text(
             text = "Health Permissions",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).align(Alignment.CenterHorizontally)
 
+        )
+        Text(
+            text = "Please allow us   health data access, we wont share your data with anybody  "
+            ,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,12 +103,13 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ){
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White,
-                    containerColor = Color.Blue,
+                    contentColor = Color.Black,
+                    containerColor = Color.Green,
                     disabledContentColor = Color.Gray,
                     disabledContainerColor = Color.LightGray
                 ),
@@ -118,20 +128,19 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
-            Text(text = "Please when allowing acess go into Additional Acess " +
-                    "and allow background data tracking " +
-                    "this allows us for more accurate tracking of data for the studies")
+            Text(text = "Please allow us to read data in the background so we can send real time adaptive intervetions")
 
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ){
             Button(colors = ButtonDefaults.buttonColors(
-                contentColor = Color.White,
-                containerColor = Color.Blue,
+                contentColor = Color.Black,
+                containerColor = Color.Green,
                 disabledContentColor = Color.Gray,
                 disabledContainerColor = Color.LightGray
             ),

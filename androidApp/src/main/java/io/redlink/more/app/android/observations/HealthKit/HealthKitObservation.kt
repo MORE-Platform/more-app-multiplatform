@@ -15,7 +15,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.healthPage.HealthConnectManager
 import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.StepsType
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,7 +43,7 @@ private val permissionMapping : Map <String, KClass<out Record>> = mapOf(
     HealthPermissions.READ_SLEEP to SleepSessionRecord::class
 )
 
-class HealthKitObservation(context: Context ):Observation(observationType =StepsType(healthPermissions = permissions) ) {
+class HealthKitObservation(context: Context ):Observation(observationType =HealthKitType_HR(healthPermissions = permissions) ) {
 
 
     private val healthConnectManager = HealthConnectManager(context)
@@ -84,11 +84,12 @@ class HealthKitObservation(context: Context ):Observation(observationType =Steps
     }
 
     override fun stop(onCompletion: () -> Unit) {
-        TODO("Not yet implemented")
+        onCompletion()
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
-        TODO("Not yet implemented")
+        //todo filtering what data do we want
+
     }
 
     private fun hasPermission():Boolean{
@@ -101,7 +102,7 @@ class HealthKitObservation(context: Context ):Observation(observationType =Steps
             permission -> if(
                 ActivityCompat.checkSelfPermission(context,permission)== PackageManager.PERMISSION_DENIED
             ){
-                Napier.d{ " Has no HealthKit permissions for reading steps data "}
+                Napier.d{ " Has no HealthKit permissions for reading  data "}
                 return false
             }
         }

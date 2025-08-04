@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -433,6 +433,7 @@
 		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
 		B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterText.swift; sourceTree = "<group>"; };
 		B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAdaptsToOpenKeyboard.swift; sourceTree = "<group>"; };
+		C50CA4232E3BBA31002464E0 /* HealthKitObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitObservation.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED16C5E829B7309F00DA8AFE /* StudyTitleForwardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyTitleForwardButton.swift; sourceTree = "<group>"; };
 		ED16C5EA29B7380300DA8AFE /* DashboardPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardPicker.swift; sourceTree = "<group>"; };
@@ -464,6 +465,10 @@
 		EDEBA13429B0D30200533F79 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		EDEF4C8229EFD4CA00E830DA /* RunningSchedules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningSchedules.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C5DD368E2E000D9F00134431 /* HealthConnect */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HealthConnect; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		1FC957482C072B7900EB92D6 /* Frameworks */ = {
@@ -534,6 +539,7 @@
 			children = (
 				1F6A4E3A29F6C94B00F0247F /* Bluetooth */,
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
+				1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
 				1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */,
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
@@ -574,6 +580,7 @@
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
+				C50CA4232E3BBA31002464E0 /* HealthKitObservation.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -771,6 +778,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C5DD368E2E000D9F00134431 /* HealthConnect */,
 				1F8937892BFF1EB20083D20E /* ObservationErrors */,
 				1F2C4BDB2A6F974900C29888 /* StudyStates */,
 				1F8EA2CB2A0BDF8D00F32602 /* LimeSurvey */,
@@ -873,7 +881,6 @@
 			isa = PBXGroup;
 			children = (
 				1F9283C02BC512E500D459A7 /* PrivacyInfo.xcprivacy */,
-				1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */,
 				EDAC149529DEF2010084CE1C /* iosApp.entitlements */,
 				1F27536929CC53FE00324417 /* BackgroundTasks */,
 				1F27536229CC39CA00324417 /* Services */,
@@ -1069,6 +1076,9 @@
 			);
 			dependencies = (
 				1FC957512C072B7900EB92D6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C5DD368E2E000D9F00134431 /* HealthConnect */,
 			);
 			name = More;
 			packageProductDependencies = (
@@ -1783,9 +1793,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = VX2DSGURUH;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1808,6 +1818,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ac.at.lbg.dhp.more;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1823,9 +1834,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = VX2DSGURUH;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1848,6 +1859,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ac.at.lbg.dhp.more;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

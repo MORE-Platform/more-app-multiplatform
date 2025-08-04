@@ -86,6 +86,14 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>NSHealthClinicalHealthRecordsShareUsageDescription</key>
+	<string>We use health data for intervention and study reasons</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>If needed we need to update some health data</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Its important for us to give you a seemless experience while using our application</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
