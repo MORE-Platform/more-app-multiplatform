@@ -11,6 +11,10 @@ import io.redlink.more.app.android.activities.healthPage.HealthConnectManager
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import java.time.ZonedDateTime
 
 
 abstract  class BaseHealthKitObservation <T : Record> (
@@ -21,6 +25,10 @@ abstract  class BaseHealthKitObservation <T : Record> (
         HealthConnectClient.getOrCreate(context)
     }
     protected  val healthConnectManager = HealthConnectManager(context)
+
+    protected val now = ZonedDateTime.now()
+    protected val start_time = now.minusDays(1)
+    protected val scope = CoroutineScope(Job()+ Dispatchers.IO)
 
     // Each subclass defines the record type it handles
     abstract val recordClass: Class<T>

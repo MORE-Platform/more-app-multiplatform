@@ -8,7 +8,9 @@ import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.time.TimeRangeFilter
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_exercise
+import kotlinx.coroutines.launch
 
 import kotlin.reflect.KClass
 
@@ -40,7 +42,23 @@ class HealthkitObservation_exercise(context: Context): BaseHealthKitObservation<
 
     override fun start(): Boolean {
         if (this.hasPermission()){
-            //TODO implement start
+            val listener = this
+            scope.launch {
+                if(!healthConnectManager.hasAllPermissions(permissions)) throw Error(
+                    "Permissions not granted for ${recordClass}"
+                )
+                else{
+                    for (recordKClass in permissionMapping.values) {
+                        if (recordKClass.java == recordClass) {
+                            val records = healthConnectManager.readData<ExerciseSessionRecord>(TimeRangeFilter.between(start_time.toInstant(),now.toInstant()))
+                            for(record in records){
+                                storeData(record)
+                            }
+
+                        }
+                    }
+                }
+            }
             return true
         }
         return false
