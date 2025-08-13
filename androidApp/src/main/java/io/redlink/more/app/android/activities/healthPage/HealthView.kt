@@ -195,11 +195,74 @@ fun HealthView(navController: NavController,viewModel: HealthViewModel,healthCon
             ),
                 onClick = {
                     scope.launch {
-                       healthConnectManager.writeSteps()
+                       healthConnectManager.insertSleepData()
                     }
                 },
             ) {
-                Text(text = "Write Data")
+                Text(text = "Write Sleep Data")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Button(colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                containerColor = Color.Blue,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.LightGray
+            ),
+                onClick = {
+                    scope.launch {
+                        healthConnectManager.insertExerciseSession()
+                    }
+                },
+            ) {
+                Text(text = "Write exercise Data")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Button(colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                containerColor = Color.Blue,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.LightGray
+            ),
+                onClick = {
+                    scope.launch {
+                        healthConnectManager.insertHeartRate()
+                    }
+                },
+            ) {
+                Text(text = "Write hr Data")
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Button(colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                containerColor = Color.Blue,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.LightGray
+            ),
+                onClick = {
+                    scope.launch {
+                        healthConnectManager.writeSteps()
+                    }
+                },
+            ) {
+                Text(text = "Write steps Data")
             }
         }
 

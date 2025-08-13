@@ -13,6 +13,7 @@ import androidx.health.connect.client.changes.Change
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.Record
+
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -28,8 +29,16 @@ import java.io.IOException
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.time.ZoneOffset
+
 import java.time.Duration
+
+import androidx.health.connect.client.records.SleepSessionRecord
+
+
+import java.time.ZonedDateTime
+import java.time.ZoneOffset
+
+
 
 
 // The minimum android level that can use Health Connect
@@ -177,6 +186,78 @@ class HealthConnectManager(private val context: Context) {
             )
             healthConnectClient.insertRecords(listOf(stepsRecord))
     }
+
+    suspend fun insertSleepData() {
+        val sleepStart = ZonedDateTime.now().minusHours(8)
+        val sleepEnd = ZonedDateTime.now()
+
+        val sleepSession = SleepSessionRecord(
+            startTime = sleepStart.toInstant(),
+            startZoneOffset = ZoneOffset.UTC,
+            endTime = sleepEnd.toInstant(),
+            endZoneOffset = ZoneOffset.UTC,
+            title = "Test Sleep Session",
+            notes = "Added via emulator",
+            metadata = Metadata.autoRecorded(
+                device = Device(type = Device.TYPE_WATCH)
+            )
+        )
+
+        healthConnectClient.insertRecords(listOf(sleepSession))
+    }
+
+
+    suspend fun insertHeartRate(){
+        val now = Instant.now()
+        val startTime = now.minusSeconds(60) // 1 minute ago
+        val endTime = now
+
+        // Create dummy samples, e.g., heart rate every 15 seconds
+        val samples = listOf(
+            HeartRateRecord.Sample(time = startTime.plusSeconds(0), beatsPerMinute = 72),
+            HeartRateRecord.Sample(time = startTime.plusSeconds(15), beatsPerMinute = 75),
+            HeartRateRecord.Sample(time = startTime.plusSeconds(30), beatsPerMinute = 73),
+            HeartRateRecord.Sample(time = startTime.plusSeconds(45), beatsPerMinute = 74),
+            HeartRateRecord.Sample(time = endTime, beatsPerMinute = 76),
+        )
+
+        // Metadata - use default or create new metadata
+        val metadata = Metadata.autoRecorded(
+            device = Device(type = Device.TYPE_WATCH)
+        )
+        val heartRateRecord = HeartRateRecord(
+            startTime = startTime,
+            startZoneOffset = ZoneOffset.UTC,
+            endTime = endTime,
+            endZoneOffset = ZoneOffset.UTC,
+            samples = samples,
+            metadata = metadata
+        )
+
+        healthConnectClient.insertRecords(listOf(heartRateRecord))
+    }
+
+    // Insert Exercise Session data
+    suspend fun insertExerciseSession(){
+        val now = Instant.now()
+        val startTime = now.minusSeconds(30 * 60) // 30 minutes ago
+        val endTime = now
+
+        val exerciseSessionRecord = ExerciseSessionRecord(
+            startTime = startTime,
+            startZoneOffset = ZoneOffset.UTC,
+            endTime = endTime,
+            endZoneOffset = ZoneOffset.UTC,
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING, // example type
+            title = "Morning Run",
+            metadata = Metadata.autoRecorded(
+                device = Device(type = Device.TYPE_WATCH)
+            )
+        )
+
+        healthConnectClient.insertRecords(listOf(exerciseSessionRecord))
+    }
+
 
     private fun isSupported() = Build.VERSION.SDK_INT >= MIN_SUPPORTED_SDK
 

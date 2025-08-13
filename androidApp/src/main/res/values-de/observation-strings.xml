@@ -7,6 +7,7 @@
     <string name="more_questionnaire_start">Starte den Fragebogen</string>
     <string name="more_questionnaire_select">Bitte beantworten Sie die Frage</string>
     <string name="more_questionnaire_type">Simpler Fragebogen</string>
+    <string name="more_healthkit_type">Send data from Healthkit</string>
 
     <string name="more_observation_notification_explanation">Es werden aktuell  Daten  aufgezeichnet</string>
 

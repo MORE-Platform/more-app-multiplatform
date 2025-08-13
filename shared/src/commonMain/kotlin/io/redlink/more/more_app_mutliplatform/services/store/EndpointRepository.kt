@@ -35,7 +35,7 @@ class EndpointRepository(private val sharedStorageRepository: SharedStorageRepos
 
     companion object {
         private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
-        private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://b8680f433be5.ngrok-free.app/api/v1"
+        private val DATA_BASE_PATH_ENDPOINT: String =
+            "https://c9a7a8f07e4c.ngrok-free.app/api/v1"
     }
 }

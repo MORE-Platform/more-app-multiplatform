@@ -467,6 +467,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		C53D83952E4C93F70019C894 /* HealthKitObservation_Subclasses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HealthKitObservation_Subclasses; sourceTree = "<group>"; };
 		C5DD368E2E000D9F00134431 /* HealthConnect */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HealthConnect; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -571,6 +572,7 @@
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
 			isa = PBXGroup;
 			children = (
+				C53D83952E4C93F70019C894 /* HealthKitObservation_Subclasses */,
 				1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */,
 				1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */,
 				1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */,
@@ -1078,6 +1080,7 @@
 				1FC957512C072B7900EB92D6 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				C53D83952E4C93F70019C894 /* HealthKitObservation_Subclasses */,
 				C5DD368E2E000D9F00134431 /* HealthConnect */,
 			);
 			name = More;

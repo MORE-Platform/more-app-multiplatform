@@ -25,18 +25,12 @@ private val permissions = setOf(
     HealthPermissions.READ_HEALTH_DATA_IN_BACKGROUND
 )
 
-private val permissionMapping : Map <String, KClass<out Record>> = mapOf(
-    HealthPermissions.READ_HEART_RATE to HeartRateRecord::class
-)
-
-
 
 class HealthkitObservation_HR(context: Context) :
     BaseHealthKitObservation<HeartRateRecord>(
         context,
         HealthKitType_HR(
-            healthPermissions = permissions
-        )
+       )
     ){
 
     override val recordClass: Class<HeartRateRecord>
@@ -44,36 +38,35 @@ class HealthkitObservation_HR(context: Context) :
 
     override  fun getPermission(): Set<String> = permissions
 
-
     override fun start(): Boolean {
-        if (this.hasPermission()){
-            val listener = this
-            scope.launch {
-                if(!healthConnectManager.hasAllPermissions(permissions)) throw Error(
-                    "Permissions not granted for ${recordClass}"
-                )
-                else{
-                    for (recordKClass in permissionMapping.values) {
-                        if (recordKClass.java == recordClass) {
-                            val records = healthConnectManager.readData<HeartRateRecord>(
-                                TimeRangeFilter.between(start_time.toInstant(),now.toInstant()))
-                            for(record in records){
-                                println(record)
-                                storeData(record)
-                            }
-
-                        }
-                    }
+        println("HR reading from Healthkit")
+        observationJob = scope.launch {
+            try {
+                if (!hasPermissions()) {
+                    println("Missing Health Connect permissions")
+                    stop { println("Stopped: No permissions") }
+                    return@launch
                 }
+                val records = healthConnectManager.readData<HeartRateRecord>(
+                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                )
+                for (record in records) {
+                    println(record)
+                    println("!!s!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    storeData(record)
+                }
+                stop { println("records sent") }
             }
-            return true
+            catch (e:Exception){
+                println("Error: ${e.message}")
+                stop { println("Stopped after error") }
+            }
         }
-        return false
+        return true
+
     }
 
-    override fun stop(onCompletion: () -> Unit) {
-        super.stop(onCompletion)
-    }
+
 
 
 

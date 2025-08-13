@@ -43,7 +43,7 @@ private val permissionMapping : Map <String, KClass<out Record>> = mapOf(
     HealthPermissions.READ_SLEEP to SleepSessionRecord::class
 )
 
-class HealthKitObservation(context: Context ):Observation(observationType =HealthKitType_HR(healthPermissions = permissions) ) {
+class HealthKitObservation(context: Context ):Observation(observationType =HealthKitType_HR() ) {
 
 
     private val healthConnectManager = HealthConnectManager(context)

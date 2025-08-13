@@ -23,7 +23,6 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import io.redlink.more.app.android.observations.HealthKit.HealthKitObservation
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_HR
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_Sleep
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_exercise

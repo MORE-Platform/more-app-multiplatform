@@ -3,16 +3,10 @@ package io.redlink.more.app.android.observations.HealthKit
 import android.content.Context
 import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_exercise
 import kotlinx.coroutines.launch
 
-import kotlin.reflect.KClass
 
 
 private const val TAG = "healthkit-mobile-observation:Exercise_observation"
@@ -24,15 +18,15 @@ private val permissions = setOf(
     HealthPermissions.READ_HEALTH_DATA_IN_BACKGROUND
 )
 
-private val permissionMapping : Map <String, KClass<out Record>> = mapOf(
-    HealthPermissions.READ_EXERCISE to ExerciseSessionRecord::class,
-)
+
 
 
 class HealthkitObservation_exercise(context: Context): BaseHealthKitObservation<ExerciseSessionRecord>(context,
     HealthkitType_exercise(
-        healthPermissions= permissions
+
     )) {
+
+
 
     override val recordClass: Class<ExerciseSessionRecord>
         get() = ExerciseSessionRecord::class.java
@@ -40,31 +34,41 @@ class HealthkitObservation_exercise(context: Context): BaseHealthKitObservation<
 
     override fun getPermission(): Set<String> = permissions
 
+
     override fun start(): Boolean {
-        if (this.hasPermission()){
-            val listener = this
-            scope.launch {
-                if(!healthConnectManager.hasAllPermissions(permissions)) throw Error(
-                    "Permissions not granted for ${recordClass}"
-                )
-                else{
-                    for (recordKClass in permissionMapping.values) {
-                        if (recordKClass.java == recordClass) {
-                            val records = healthConnectManager.readData<ExerciseSessionRecord>(TimeRangeFilter.between(start_time.toInstant(),now.toInstant()))
-                            for(record in records){
-                                storeData(record)
-                            }
+        println("Exercise observation called")
 
-                        }
-                    }
+        observationJob = scope.launch {
+            try {
+                if (!hasPermissions()) {
+                    println("Missing Health Connect permissions")
+                    stop { println("Stopped: No permissions") }
+                    return@launch
                 }
+
+                val records = healthConnectManager.readData<ExerciseSessionRecord>(
+                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                )
+
+                for (record in records) {
+                    println(record)
+                    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    storeData(record)
+                }
+
+                stop { println("Stopped after data collection") }
+
+
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+                stop { println("Stopped after error") }
             }
-            return true
         }
-        return false
+
+        return true
     }
 
-    override fun stop(onCompletion: () -> Unit) {
-        super.stop(onCompletion)
-    }
+
+
+
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.records.Record
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
@@ -25,14 +26,14 @@ abstract  class BaseHealthKitObservation <T : Record> (
         HealthConnectClient.getOrCreate(context)
     }
     protected  val healthConnectManager = HealthConnectManager(context)
-
+    protected val healthConnectClient = HealthConnectClient.getOrCreate(context)
     protected val now = ZonedDateTime.now()
     protected val start_time = now.minusDays(1)
     protected val scope = CoroutineScope(Job()+ Dispatchers.IO)
 
     // Each subclass defines the record type it handles
     abstract val recordClass: Class<T>
-
+    protected var observationJob: Job? = null
 
     override fun start(): Boolean {
         TODO("Not yet implemented")
@@ -40,6 +41,9 @@ abstract  class BaseHealthKitObservation <T : Record> (
 
 
     override fun stop(onCompletion: () -> Unit) {
+        observationJob?.cancel()
+        observationJob = null
+        println("Coroutine cancelled")
         onCompletion()
     }
 
@@ -51,19 +55,22 @@ abstract  class BaseHealthKitObservation <T : Record> (
 
     abstract fun getPermission(): Set<String>
 
-    fun hasPermission(): Boolean {
-        return this.hasPermissions(MoreApplication.appContext!!)
+    override fun ableToAutomaticallyStart(): Boolean {
+        return false
     }
 
-    fun hasPermissions(context: Context): Boolean {
-        getPermission().forEach{
-                permission -> if(
-            ActivityCompat.checkSelfPermission(context,permission)== PackageManager.PERMISSION_DENIED
-        ){
-            Napier.d{ " Has no HealthKit permissions for reading  data "}
-            return false
+    suspend fun hasPermissions(): Boolean {
+        println("fetching permissions")
+        println(getPermission())
+        val permissions = getPermission()
+        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+        println("GRANTED PERMISSIONS: $grantedPermissions")
+        val hasPermission = healthConnectManager.hasAllPermissions(permissions)
+        println(hasPermission)
+        println("!!!!!!!!!!!!!!!!!")
+        if (!hasPermission) {
+            Napier.d { "Missing HealthKit permissions for reading data" }
         }
-        }
-        return true
+        return hasPermission
     }
 }
