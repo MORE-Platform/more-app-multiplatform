@@ -68,22 +68,6 @@ class HealthkitObservation_Sleep(context: Context):BaseHealthKitObservation<Slee
     }
 
 
-    /*
-    override suspend fun hasPermissions(): Boolean {
-        println("fetching permissions")
-        println(getPermission())
-        val permissions = getPermission()
-        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-        println("GRANTED PERMISSIONS: $grantedPermissions")
-        val hasPermission = healthConnectManager.hasAllPermissions(permissions)
-        println(hasPermission)
-        println("!!!!!!!!!!!!!!!!!")
-        if (!hasPermission) {
-            Napier.d { "Missing HealthKit permissions for reading data" }
-        }
-        return hasPermission
-    }*/
-
 
 
 }
