@@ -5,6 +5,7 @@ import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.SleepSessionData
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealtkitType_Sleep
 import kotlinx.coroutines.Job
@@ -67,8 +68,21 @@ class HealthkitObservation_Sleep(context: Context):BaseHealthKitObservation<Slee
     }
 
 
-
-
+    /*
+    override suspend fun hasPermissions(): Boolean {
+        println("fetching permissions")
+        println(getPermission())
+        val permissions = getPermission()
+        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+        println("GRANTED PERMISSIONS: $grantedPermissions")
+        val hasPermission = healthConnectManager.hasAllPermissions(permissions)
+        println(hasPermission)
+        println("!!!!!!!!!!!!!!!!!")
+        if (!hasPermission) {
+            Napier.d { "Missing HealthKit permissions for reading data" }
+        }
+        return hasPermission
+    }*/
 
 
 

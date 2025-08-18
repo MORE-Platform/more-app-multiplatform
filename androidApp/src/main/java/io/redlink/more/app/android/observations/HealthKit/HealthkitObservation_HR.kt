@@ -13,6 +13,7 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.HealthKit.DataFormatter.HrSessionData
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import kotlinx.coroutines.launch
@@ -53,7 +54,7 @@ class HealthkitObservation_HR(context: Context) :
                 for (record in records) {
                     println(record)
                     println("!!s!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    storeData(record)
+                    storeData(HrSessionData(record))
                 }
                 stop { println("records sent") }
             }
@@ -66,8 +67,21 @@ class HealthkitObservation_HR(context: Context) :
 
     }
 
-
-
+    /*
+    override suspend fun hasPermissions(): Boolean {
+        println("fetching permissions")
+        println(getPermission())
+        val permissions = getPermission()
+        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+        println("GRANTED PERMISSIONS: $grantedPermissions")
+        val hasPermission = healthConnectManager.hasAllPermissions(permissions)
+        println(hasPermission)
+        println("!!!!!!!!!!!!!!!!!")
+        if (!hasPermission) {
+            Napier.d { "Missing HealthKit permissions for reading data" }
+        }
+        return hasPermission
+    }*/
 
 
 

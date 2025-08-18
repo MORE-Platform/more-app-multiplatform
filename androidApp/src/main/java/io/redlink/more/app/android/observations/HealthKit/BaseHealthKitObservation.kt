@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectFeatures
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.records.Record
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
@@ -25,12 +26,13 @@ abstract  class BaseHealthKitObservation <T : Record> (
     protected val client: HealthConnectClient by lazy {
         HealthConnectClient.getOrCreate(context)
     }
+
     protected  val healthConnectManager = HealthConnectManager(context)
     protected val healthConnectClient = HealthConnectClient.getOrCreate(context)
     protected val now = ZonedDateTime.now()
     protected val start_time = now.minusDays(1)
     protected val scope = CoroutineScope(Job()+ Dispatchers.IO)
-
+    protected val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
     // Each subclass defines the record type it handles
     abstract val recordClass: Class<T>
     protected var observationJob: Job? = null
@@ -59,18 +61,19 @@ abstract  class BaseHealthKitObservation <T : Record> (
         return false
     }
 
-    suspend fun hasPermissions(): Boolean {
-        println("fetching permissions")
-        println(getPermission())
-        val permissions = getPermission()
+    protected  suspend fun hasPermissions(): Boolean {
+        val requiredPermissions = getPermission()
         val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-        println("GRANTED PERMISSIONS: $grantedPermissions")
-        val hasPermission = healthConnectManager.hasAllPermissions(permissions)
-        println(hasPermission)
-        println("!!!!!!!!!!!!!!!!!")
-        if (!hasPermission) {
-            Napier.d { "Missing HealthKit permissions for reading data" }
+
+        val missingPermissions = requiredPermissions - grantedPermissions
+
+        return if (missingPermissions.isEmpty()) {
+            Napier.d { "✅ All Health Connect permissions granted" }
+            true
+        } else {
+            Napier.w { "⚠️ Missing permissions: $missingPermissions" }
+            false
         }
-        return hasPermission
+        return false
     }
 }

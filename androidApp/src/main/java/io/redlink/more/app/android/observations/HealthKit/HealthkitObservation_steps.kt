@@ -2,40 +2,35 @@ package io.redlink.more.app.android.observations.HealthKit
 
 import android.content.Context
 import android.health.connect.HealthPermissions
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.time.TimeRangeFilter
-import io.redlink.more.app.android.observations.HealthKit.DataFormatter.SleepSessionData
-import    io.redlink.more.app.android.observations.HealthKit.HealthKitObservation
+import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_steps
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
+import androidx.health.connect.client.permission.HealthPermission
+import io.redlink.more.app.android.observations.HealthKit.DataFormatter.StepSessionData
 
+// Step permissions for Health Connect
+val PERMISSIONS =
+    setOf(
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getWritePermission(StepsRecord::class)
+    )
 private const val TAG = "healthkit-mobile-observation:Steps_observation"
 
+// Define permissions as HealthPermissions.Permission
 
-
-private val permissions = setOf(
-    HealthPermissions.READ_STEPS,
-    HealthPermissions.READ_HEALTH_DATA_IN_BACKGROUND
-)
-
-
-
-class HealthkitObservation_steps(context: Context): BaseHealthKitObservation<StepsRecord>(context,
-    HealthkitType_steps(
-
-    )) {
+class HealthkitObservation_steps(context: Context) :
+    BaseHealthKitObservation<StepsRecord>(
+        context,
+        HealthkitType_steps()
+    ) {
 
     override val recordClass: Class<StepsRecord>
         get() = StepsRecord::class.java
 
-    override fun getPermission(): Set<String> = permissions
+    // Return HealthPermissions.Permission instead of String
+    override fun getPermission(): Set<String> = PERMISSIONS
 
     override fun start(): Boolean {
         println("Steps reading from Healthkit")
@@ -46,25 +41,26 @@ class HealthkitObservation_steps(context: Context): BaseHealthKitObservation<Ste
                     stop { println("Stopped: No permissions") }
                     return@launch
                 }
+
                 val records = healthConnectManager.readData<StepsRecord>(
                     TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
                 )
+
                 for (record in records) {
                     println(record)
                     println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    storeData(record)
+                    storeData(StepSessionData(record))
+                    println("RECORD OF THIS SENT TO THE BACKEND")
                 }
+
                 stop { println("records sent") }
-            }
-            catch (e:Exception){
+            } catch (e: Exception) {
                 println("Error: ${e.message}")
                 stop { println("Stopped after error") }
             }
         }
         return true
-
     }
-
 
 
 }
