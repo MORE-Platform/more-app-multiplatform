@@ -103,7 +103,40 @@ class HealthKitHelper:ObservableObject{
             print("error fetching data")
             return  0.0
         }
-        
-        
     }
+    
+    func saveSteps(count: Double, date: Date) async throws {
+            let type = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+            let quantity = HKQuantity(unit: HKUnit.count(), doubleValue: count)
+            let sample = HKQuantitySample(type: type, quantity: quantity, start: date, end: date)
+            try await healthStore.save(sample)
+        }
+
+        func saveHeartRate(bpm: Double, date: Date) async throws {
+            let type = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+            let quantity = HKQuantity(unit: HKUnit.count().unitDivided(by: .minute()), doubleValue: bpm)
+            let sample = HKQuantitySample(type: type, quantity: quantity, start: date, end: date)
+            try await healthStore.save(sample)
+        }
+
+        func saveSleep(start: Date, end: Date) async throws {
+            let type = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!
+            let sample = HKCategorySample(type: type,
+                                          value: HKCategoryValueSleepAnalysis.asleep.rawValue,
+                                          start: start,
+                                          end: end)
+            try await healthStore.save(sample)
+        }
+
+        func saveWorkout(start: Date, end: Date, calories: Double = 200) async throws {
+            let workout = HKWorkout(activityType: .running,
+                                    start: start,
+                                    end: end,
+                                    workoutEvents: nil,
+                                    totalEnergyBurned: HKQuantity(unit: .kilocalorie(), doubleValue: calories),
+                                    totalDistance: HKQuantity(unit: .meter(), doubleValue: 3000),
+                                    device: .local(),
+                                    metadata: nil)
+            try await healthStore.save(workout)
+        }
 }

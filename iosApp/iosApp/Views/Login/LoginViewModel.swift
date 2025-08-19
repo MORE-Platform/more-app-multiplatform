@@ -39,6 +39,7 @@ class LoginViewModel: ObservableObject {
         coreModel = CoreLoginViewModel(registrationService: registrationService)
         defaultEndpoint = registrationService.getEndpointRepository().endpoint()
         
+
         coreModel.onLoadingChange { loading in
             if let loading = loading as? Bool {
                 self.isLoading = loading

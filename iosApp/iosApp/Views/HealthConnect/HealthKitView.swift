@@ -44,6 +44,7 @@ struct HealthKitView: View {
                 .cornerRadius(12)
                 .padding(.horizontal)
                 
+                
                 if authenticated {
                     Text("HealthKit authorized ✅")
                     Button("Get Data") {
@@ -62,6 +63,45 @@ struct HealthKitView: View {
                             }
                         }
                     }
+                    if #available(iOS 15.4, *){
+                        
+                        Button("Write Steps Sample") {
+                            Task {
+                                try? await healthHelper.saveSteps(count: 1000, date: Date())
+                                print("✅ Steps sample saved")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Write Heart Rate Sample") {
+                            Task {
+                                try? await healthHelper.saveHeartRate(bpm: 72, date: Date())
+                                print("✅ Heart rate sample saved")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Write Sleep Sample") {
+                            Task {
+                                let start = Calendar.current.date(byAdding: .hour, value: -8, to: Date())!
+                                let end = Date()
+                                try? await healthHelper.saveSleep(start: start, end: end)
+                                print("✅ Sleep sample saved")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Write Workout Sample") {
+                            Task {
+                                let start = Calendar.current.date(byAdding: .minute, value: -30, to: Date())!
+                                let end = Date()
+                                try? await healthHelper.saveWorkout(start: start, end: end)
+                                print("✅ Workout sample saved")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    
                 } else {
                     Text("Not authorized yet ❌")
                 }
