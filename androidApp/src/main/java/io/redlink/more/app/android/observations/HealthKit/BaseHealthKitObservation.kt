@@ -64,7 +64,7 @@ abstract  class BaseHealthKitObservation <T : Record> (
     protected  suspend fun hasPermissions(): Boolean {
         val requiredPermissions = getPermission()
         val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-
+        println(grantedPermissions)
         val missingPermissions = requiredPermissions - grantedPermissions
 
         return if (missingPermissions.isEmpty()) {
@@ -74,6 +74,6 @@ abstract  class BaseHealthKitObservation <T : Record> (
             Napier.w { "⚠️ Missing permissions: $missingPermissions" }
             false
         }
-        return false
+
     }
 }

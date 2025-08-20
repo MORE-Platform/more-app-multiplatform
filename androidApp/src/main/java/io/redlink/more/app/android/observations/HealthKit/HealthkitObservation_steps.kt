@@ -9,6 +9,12 @@ import io.redlink.more.more_app_mutliplatform.observations.observationTypes.Heal
 import kotlinx.coroutines.launch
 import androidx.health.connect.client.permission.HealthPermission
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.StepSessionData
+import okhttp3.internal.format
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.time.ZoneOffset
+
+
 
 // Step permissions for Health Connect
 val PERMISSIONS =
@@ -41,18 +47,21 @@ class HealthkitObservation_steps(context: Context) :
                     stop { println("Stopped: No permissions") }
                     return@launch
                 }
-
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
+                    .withLocale(Locale.GERMANY)
+                    .withZone(ZoneOffset.UTC)
                 val records = healthConnectManager.readData<StepsRecord>(
                     TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
                 )
-
+                var stepcount = 0L
                 for (record in records) {
                     println(record)
                     println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    storeData(StepSessionData(record))
+                    stepcount +=  record.count
+
                     println("RECORD OF THIS SENT TO THE BACKEND")
                 }
-
+                storeData(mapOf("steps" to stepcount, "start" to formatter.format(start_time), "end" to formatter.format(now)))
                 stop { println("records sent") }
             } catch (e: Exception) {
                 println("Error: ${e.message}")
@@ -61,6 +70,7 @@ class HealthkitObservation_steps(context: Context) :
         }
         return true
     }
+
 
 
 }

@@ -55,8 +55,8 @@ class Hk_StepsObservation: HealthkitBase {
             }
             
             for sample in results {
-                let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
-                let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
+                let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let steps = sample.quantity.doubleValue(for: HKUnit.count())
                 print("Steps: \(steps) from \(start) to \(end)")
             }

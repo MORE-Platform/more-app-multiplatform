@@ -54,7 +54,6 @@ class Hk_SleepObservation: HealthkitBase {
                 print("No sleep samples found")
                 return
             }
-
             var sleepData: [[String: Any]] = []
 
             for sample in results {
@@ -69,8 +68,8 @@ class Hk_SleepObservation: HealthkitBase {
                 }
                 
                 // Convert dates to string
-                let startString = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
-                let endString = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
+                let startString = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                let endString = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 
                 // Create dictionary for this sample
                 let sampleData: [String: Any] = [
@@ -78,7 +77,6 @@ class Hk_SleepObservation: HealthkitBase {
                     "start": startString,
                     "end": endString
                 ]
-                
                 sleepData.append(sampleData)
             
             }
@@ -89,3 +87,5 @@ class Hk_SleepObservation: HealthkitBase {
         healthStore.execute(query)
     }
 }
+
+

@@ -53,8 +53,8 @@ class Hk_HRObservation: HealthkitBase {
             }
             var hrrecords = []
             for sample in results {
-                            let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
-                            let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd-HH-mm")
+                            let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                            let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                             let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
 
                             let item: [String: Any] = [
@@ -65,7 +65,7 @@ class Hk_HRObservation: HealthkitBase {
                             print("Heart Rate: \(bpm) bpm from \(start) to \(end)")
                             hrrecords.append(item)
                     }
-            let data : [String: Any ] = ["hr" : hrrecords]
+            let data : [String: Any ] = ["hr_records" : hrrecords]
             self.storeData(data: data, timestamp: -1){}
         }
 

@@ -10,12 +10,7 @@ class SleepSessionData(record: SleepSessionRecord) {
 
     val startTimestamp: String
     val endTimestamp: String
-    val startZoneOffsetSeconds: Int?
-    val endZoneOffsetSeconds: Int?
-    val title: String?
-    val notes: String?
-    val metadataId: String?
-
+    val type : String
     init {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm")
             .withLocale(Locale.US)
@@ -23,11 +18,7 @@ class SleepSessionData(record: SleepSessionRecord) {
 
         startTimestamp = formatter.format(record.startTime)
         endTimestamp = formatter.format(record.endTime)
+        type = record.stages.toString()
 
-        startZoneOffsetSeconds = record.startZoneOffset?.totalSeconds
-        endZoneOffsetSeconds = record.endZoneOffset?.totalSeconds
-        title = record.title
-        notes = record.notes
-        metadataId = record.metadata.id
     }
 }
