@@ -45,7 +45,6 @@ abstract  class BaseHealthKitObservation <T : Record> (
     override fun stop(onCompletion: () -> Unit) {
         observationJob?.cancel()
         observationJob = null
-        println("Coroutine cancelled")
         onCompletion()
     }
 

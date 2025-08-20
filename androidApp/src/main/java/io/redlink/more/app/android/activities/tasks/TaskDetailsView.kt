@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -47,9 +48,15 @@ import io.redlink.more.app.android.shared_composables.TimeframeHours
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary2
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_exercise
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_steps
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealtkitType_Sleep
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -180,6 +187,10 @@ fun TaskDetailsView(
                     else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
                         id = R.string.more_limesurvey_start
                     )
+                    else if (viewModel.taskDetailsModel.value.observationType == HealtkitType_Sleep().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthkitType_steps().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthkitType_exercise().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthKitType_HR().observationType ) "Get Healthkit Data"
                     else getStringResource(
                         id = R.string.more_observation_start
                     ),
@@ -200,7 +211,22 @@ fun TaskDetailsView(
                                 "scheduleId" to scheduleId
                             )
                         )
-                    } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
+                    } else if (viewModel.taskDetailsModel.value.observationType == HealtkitType_Sleep().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthkitType_steps().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthkitType_exercise().observationType ||
+                        viewModel.taskDetailsModel.value.observationType == HealthKitType_HR().observationType
+                    )
+                    {
+                        viewModel.viewModelScope.launch {
+                            viewModel.startObservation()
+                            delay(3000) // wait 3 seconds
+                            viewModel.stopObservation()
+                            navController.navigate(
+                                NavigationScreen.DASHBOARD.navigationRoute()
+                            )
+                        }
+                    }
+                    else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
                         viewModel.pauseObservation()
                     } else {
                         viewModel.startObservation()
