@@ -48,7 +48,28 @@ struct ObservationButton: View {
                         )
                     }
                 }
-            } else {
+            } else if observationType == "healthkit-mobile-observation:HR_observation" ||
+                        observationType == "healthkit-mobile-observation:Sleep_observation" ||
+                        observationType == "healthkit-mobile-observation:Steps_observation" ||
+                        observationType == "healthkit-mobile-observation:Exercise_observation"
+            {
+                MoreActionButton(disabled: .constant(disabled), action: {
+                    
+                        observationActionDelegate.start(scheduleId: scheduleId)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                               observationActionDelegate.stop(scheduleId: scheduleId)
+                           }
+                           
+                }) {
+                    VStack {
+                        Text(
+                            "Fetch Healthkit data"
+                                .localize(withComment: "Button to get data from healthkit", useTable: stringTable)
+                        )
+                    }}
+            }
+            
+            else {
                 MoreActionButton(disabled: .constant(disabled), action: {
                     if state == .running {
                         observationActionDelegate.pause(scheduleId: scheduleId)
