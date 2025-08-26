@@ -8,6 +8,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_steps
 import kotlinx.coroutines.launch
 import androidx.health.connect.client.permission.HealthPermission
+import com.google.gson.JsonPrimitive
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.StepSessionData
 import okhttp3.internal.format
 import java.time.format.DateTimeFormatter
@@ -70,6 +71,7 @@ class HealthkitObservation_steps(context: Context) :
         }
         return true
     }
+
 
 
 

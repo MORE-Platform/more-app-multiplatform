@@ -4,7 +4,7 @@ import androidx.health.connect.client.records.SleepSessionRecord
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
+import org.json.JSONObject
 
 class SleepSessionData(record: SleepSessionRecord) {
 
@@ -20,5 +20,13 @@ class SleepSessionData(record: SleepSessionRecord) {
         endTimestamp = formatter.format(record.endTime)
         type = record.stages.toString()
 
+    }
+
+    fun toJson(): JSONObject {
+        val json = JSONObject()
+        json.put("startTimestamp", startTimestamp)
+        json.put("endTimestamp", endTimestamp)
+        json.put("type", type)
+        return json
     }
 }

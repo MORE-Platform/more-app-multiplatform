@@ -53,8 +53,8 @@ struct ObservationButton: View {
                         observationType == "healthkit-mobile-observation:Steps_observation" ||
                         observationType == "healthkit-mobile-observation:Exercise_observation"
             {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    
+                MoreActionButton(disabled: .constant(false), action: {
+                        print(scheduleId)
                         observationActionDelegate.start(scheduleId: scheduleId)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                observationActionDelegate.stop(scheduleId: scheduleId)

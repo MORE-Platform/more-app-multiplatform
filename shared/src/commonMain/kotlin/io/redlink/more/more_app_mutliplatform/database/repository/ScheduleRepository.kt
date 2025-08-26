@@ -25,6 +25,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
@@ -184,7 +185,14 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
                             ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false)
                     ) {
                         scheduleSchema.scheduleId.toHexString()
-                    } else {
+                    }
+                    else if (newState == ScheduleState.RUNNING ||
+                        (autoStartingObservations.isNotEmpty()
+                                && newState.active()
+                                && scheduleSchema.observationType in autoStartingObservations)&& newState != ScheduleState.DONE ){
+                        scheduleSchema.scheduleId.toHexString()
+                    }
+                    else {
                         null
                     }
                 }

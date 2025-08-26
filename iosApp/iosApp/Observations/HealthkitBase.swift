@@ -41,6 +41,10 @@ class HealthkitBase : Observation_{
         fatalError("fetchData must be overridden")
     }
     
+    override func ableToAutomaticallyStart() -> Bool {
+        return false
+    }
+    
     override func stop(onCompletion: @escaping () -> Void) {
         onCompletion()
     }

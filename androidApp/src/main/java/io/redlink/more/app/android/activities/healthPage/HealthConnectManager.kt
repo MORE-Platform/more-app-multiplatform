@@ -202,8 +202,13 @@ class HealthConnectManager(private val context: Context) {
                 device = Device(type = Device.TYPE_WATCH)
             )
         )
-
-        healthConnectClient.insertRecords(listOf(sleepSession))
+        try {
+            healthConnectClient.insertRecords(listOf(sleepSession))
+            println("Sleep data inserted successfully")
+        } catch (e: Exception) {
+            println("ERROR inserting sleep data: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
 

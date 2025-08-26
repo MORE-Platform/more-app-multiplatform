@@ -60,8 +60,7 @@ class GPSObservation: Observation_ {
         return errors
     }
 
-    override func applyObservationConfig(settings: Dictionary<String, Any>) {}
-}
+    }
 
 extension GPSObservation: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

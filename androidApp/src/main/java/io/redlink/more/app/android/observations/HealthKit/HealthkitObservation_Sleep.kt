@@ -52,7 +52,7 @@ class HealthkitObservation_Sleep(context: Context):BaseHealthKitObservation<Slee
                 for (record in records) {
                     println(record)
                     println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    storeData(SleepSessionData(record))
+                    storeData(SleepSessionData(record).toJson())
                 }
 
                 stop { println("Stopped after data collection") }

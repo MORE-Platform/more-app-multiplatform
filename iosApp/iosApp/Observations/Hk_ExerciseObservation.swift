@@ -14,7 +14,7 @@ class Hk_ExerciseObservation: HealthkitBase {
     let healthStore: HKHealthStore
     
     let now: Date
-    let startDate: Date
+    var startDate: Date
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
@@ -27,6 +27,28 @@ class Hk_ExerciseObservation: HealthkitBase {
         //must init with the observation type set
         super.init(observationType: HealthkitType_exercise())
     }
+    
+    override func applyObservationConfig(settings: Dictionary<String, Any>) {
+        do {
+            print("observation config failed")
+                if let daysBackValue = settings["daysback"] {
+                    // Convert value to String, strip quotes, then to Int
+                    let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                    print(strValue)
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                    if let daysBack = Int(strValue) {
+                        print(daysBack)
+                        
+                        // Subtract days from current date
+                        if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
+                            self.startDate = newDate
+                        }
+                    }
+                }
+            } catch {
+                print(error.localizedDescription)
+            }    }
+    
     
     override func fetchData() {
         print("!!!!!!!!! CALLING WORKOUT FETCH !!!!!")
@@ -47,13 +69,14 @@ class Hk_ExerciseObservation: HealthkitBase {
                 print("No workouts found")
                 return
             }
-
+            
             for workout in workouts {
                 let start = workout.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")   // convert Date to timestamp
                 let end = workout.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let calories = workout.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
                 let distance = workout.totalDistance?.doubleValue(for: HKUnit.meter()) ?? 0
-                let type = workout.workoutActivityType   // HKWorkoutActivityType
+                let type = workout.workoutActivityType
+                // HKWorkoutActivityType
                 let workoutName = WorkoutType(type).rawValue
                 let data: [String: Any] = [
                     "WorkoutType": workoutName,
@@ -64,6 +87,8 @@ class Hk_ExerciseObservation: HealthkitBase {
                     "End": end
                 ]
                 print(data)
+                print(workout)
+                print("@@@@@")
                 self.storeData(data: data, timestamp: -1) {}
                 //print("Workout: \(type) from \(start) to \(end), Calories: \(calories), Distance: \(distance)m")
             }

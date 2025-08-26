@@ -18,7 +18,7 @@ class Hk_SleepObservation: HealthkitBase {
     let healthStore: HKHealthStore
     
     let now: Date
-    let startDate: Date
+    var startDate: Date
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
@@ -31,6 +31,27 @@ class Hk_SleepObservation: HealthkitBase {
         //must init with the observation type set
         super.init(observationType: HealtkitType_Sleep())
     }
+    
+    override func applyObservationConfig(settings: Dictionary<String, Any>) {
+        do {
+                print("observation config failed")
+                if let daysBackValue = settings["daysback"] {
+                    // Convert value to String, strip quotes, then to Int
+                    let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                    print(strValue)
+                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                    if let daysBack = Int(strValue) {
+                        print(daysBack)
+                        
+                        // Subtract days from current date
+                        if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
+                            self.startDate = newDate
+                        }
+                    }
+                }
+            } catch {
+                print(error.localizedDescription)
+            }    }
     
     override func fetchData() {
         print("!!!!!!!!! CALLING Sleep FETCH !!!!!")

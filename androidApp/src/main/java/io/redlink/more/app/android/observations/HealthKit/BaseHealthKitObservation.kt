@@ -2,6 +2,7 @@ package io.redlink.more.app.android.observations.HealthKit
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectFeatures
@@ -10,6 +11,7 @@ import androidx.health.connect.client.records.Record
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.healthPage.HealthConnectManager
+import io.redlink.more.app.android.observations.GPS.GPSObservation.Companion.LOCATION_INTERVAL_MILLIS_KEY
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
@@ -30,7 +32,7 @@ abstract  class BaseHealthKitObservation <T : Record> (
     protected  val healthConnectManager = HealthConnectManager(context)
     protected val healthConnectClient = HealthConnectClient.getOrCreate(context)
     protected val now = ZonedDateTime.now()
-    protected val start_time = now.minusDays(1)
+    var start_time = now.minusDays(1)
     protected val scope = CoroutineScope(Job()+ Dispatchers.IO)
     protected val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
     // Each subclass defines the record type it handles
@@ -49,7 +51,15 @@ abstract  class BaseHealthKitObservation <T : Record> (
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
-        //todo filtering what data do we want
+        println("observation config called")
+        try {
+            settings["daysback"]?.toString()?.trim('\"')?.toLong()?.let {
+               println(it)
+                start_time = now.minusDays(it)
+            }
+        } catch (e: java.lang.Exception) {
+            println( e.stackTraceToString())
+        }
 
     }
 
@@ -57,7 +67,7 @@ abstract  class BaseHealthKitObservation <T : Record> (
     abstract fun getPermission(): Set<String>
 
     override fun ableToAutomaticallyStart(): Boolean {
-        return false
+        return true
     }
 
     protected  suspend fun hasPermissions(): Boolean {
