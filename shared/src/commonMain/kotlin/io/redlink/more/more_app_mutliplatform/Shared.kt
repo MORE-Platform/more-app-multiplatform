@@ -88,6 +88,8 @@ class Shared(
     private fun onApplicationStart() {
         if (credentialRepository.hasCredentials()) {
             activateObservationWatcher()
+        } else {
+            clearRemainingData()
         }
     }
 
@@ -272,6 +274,19 @@ class Shared(
             onDeletion()
             observationFactory.clearNeededObservationTypes()
             viewManager.resetAll()
+            studyStateRepository.storeState(StudyState.NONE)
+        }
+    }
+
+    private fun clearRemainingData() {
+        Napier.i { "Clearing remaining data..." }
+        stopObservations()
+        bluetoothController.resetAll()
+        Scope.launch {
+            removeStudyData()
+            observationFactory.clearNeededObservationTypes()
+            clearSharedStorage()
+            notificationManager.clearAllNotifications()
             studyStateRepository.storeState(StudyState.NONE)
         }
     }
