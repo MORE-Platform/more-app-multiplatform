@@ -124,7 +124,7 @@ fun ScheduleListItem(
                     ) {
                         navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel.scheduleId))
                     }
-                }
+                }/*
                 "healthkit-mobile-observation:HR_observation",
                 "healthkit-mobile-observation:Sleep_observation",
                 "healthkit-mobile-observation:Steps_observation",
@@ -140,7 +140,7 @@ fun ScheduleListItem(
                             viewModel.stopObservation(scheduleModel.scheduleId)
                         }
                     }
-                }
+                }*/
                 else -> {
                     SmallTextButton(
                         text = if (scheduleModel.scheduleState == ScheduleState.RUNNING) getStringResource(
