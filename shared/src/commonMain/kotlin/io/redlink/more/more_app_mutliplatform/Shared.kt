@@ -269,7 +269,7 @@ class Shared(
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
-            clearSharedStorage()
+            clearSharedStorage() 
             removeStudyData()
             onDeletion()
             observationFactory.clearNeededObservationTypes()
@@ -280,7 +280,6 @@ class Shared(
 
     private fun clearRemainingData() {
         Napier.i { "Clearing remaining data..." }
-        stopObservations()
         bluetoothController.resetAll()
         Scope.launch {
             removeStudyData()
