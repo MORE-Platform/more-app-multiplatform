@@ -38,8 +38,8 @@ import kotlinx.coroutines.flow.firstOrNull
 class BluetoothController(
     database: AppDatabase,
     private val bluetoothConnector: BluetoothConnector,
-    private val scanDuration: Long = 10000,
-    private val scanInterval: Long = 5000
+    private val scanDuration: Long = 5000,
+    private val scanInterval: Long = 10000
 ) : CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val deviceManager = BluetoothDeviceManager
     private val bluetoothDeviceRepository = BluetoothDeviceRepository(database.bluetoothDeviceDao())

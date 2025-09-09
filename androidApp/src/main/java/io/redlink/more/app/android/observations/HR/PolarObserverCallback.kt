@@ -10,11 +10,11 @@
  */
 package io.redlink.more.app.android.observations.HR
 
-
 import com.polar.androidcommunications.api.ble.model.DisInfo
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
+import com.polar.sdk.api.model.PolarHealthThermometerData
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import java.util.UUID
@@ -86,6 +86,13 @@ class PolarObserverCallback : PolarBleApiCallback() {
             "Disinformation: $identifier, UUID: $uuid, Value: $value",
             tag = "PolarObserverCallback::disInformationReceived"
         )
+    }
+
+    override fun htsNotificationReceived(
+        identifier: String,
+        data: PolarHealthThermometerData
+    ) {
+        Napier.i(">$identifier, $data", tag = "PolarObserverCallback::htsNotificationReceived")
     }
 
     override fun disInformationReceived(identifier: String, disInfo: DisInfo) {

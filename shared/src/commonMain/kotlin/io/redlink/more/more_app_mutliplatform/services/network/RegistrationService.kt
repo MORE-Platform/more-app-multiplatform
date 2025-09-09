@@ -44,12 +44,13 @@ class RegistrationService(
     ) {
         if (token.isNotEmpty()) {
             StudyScope.launch {
+                val normalizedEndpoint = manualEndpoint?.validateAndNormalizeUrl()
                 val (result, networkError) = shared.networkService.validateRegistrationToken(
                     token.uppercase(),
-                    manualEndpoint?.validateAndNormalizeUrl()
+                    normalizedEndpoint
                 )
                 result?.let {
-                    endpoint = manualEndpoint
+                    endpoint = normalizedEndpoint
                     study = it
                     participationToken = token
                     addObservationPermissions(it)

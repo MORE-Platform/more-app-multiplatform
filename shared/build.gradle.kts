@@ -3,7 +3,6 @@ plugins {
     kotlin("plugin.serialization")
 
     id("com.android.library")
-//    id("io.realm.kotlin") version "3.0.0"
     id("androidx.room")
     id("com.google.devtools.ksp")
 //    id("org.openapi.generator") version "7.15.0"
@@ -21,7 +20,7 @@ val coroutinesVersion = "1.10.2"
 val ktorVersion = "3.2.3"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
-val gsonVersion = "2.10.1"
+val gsonVersion = "2.13.1"
 val roomVersion = "2.7.2"
 val sqliteVersion = "2.5.2"
 
@@ -135,12 +134,11 @@ kotlin {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-//            implementation("io.realm.kotlin:library-base:3.0.0")
             implementation("io.github.aakira:napier:$napierVersion")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             implementation("io.ktor:ktor-client-auth:$ktorVersion")
             implementation("io.ktor:ktor-client-logging:$ktorVersion")
-            implementation("dev.tmapps:konnection:1.4.1")
+            implementation("dev.tmapps:konnection:1.4.5")
 
             // Room common dependencies
             implementation("androidx.room:room-runtime:$roomVersion")
@@ -152,7 +150,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+            implementation("androidx.security:security-crypto-ktx:1.1.0")
             implementation("io.ktor:ktor-client-android:$ktorVersion")
             implementation("com.google.code.gson:gson:$gsonVersion")
         }

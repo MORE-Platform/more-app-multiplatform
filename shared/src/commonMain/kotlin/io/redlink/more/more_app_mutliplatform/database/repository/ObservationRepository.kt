@@ -70,7 +70,7 @@ class ObservationRepository(private val appDatabase: AppDatabase) {
                 observationList.filter { it.observationType in observationIds }
             val maxTimestamp =
                 filteredObservations.maxByOrNull { it.collectionTimestamp }?.collectionTimestamp
-                    ?: Clock.System.now().epochSeconds
+                    ?: Clock.System.now().toEpochMilliseconds()
             emit(maxTimestamp)
         }
 

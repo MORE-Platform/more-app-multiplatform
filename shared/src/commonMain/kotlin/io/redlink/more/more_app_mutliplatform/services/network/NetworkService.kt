@@ -42,7 +42,6 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
@@ -261,17 +260,6 @@ class NetworkService(
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendData") { e.stackTraceToString() }
             return Pair(emptySet(), getException(e))
-        }
-    }
-
-    fun iosSendData(
-        data: DataBulk,
-        completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit
-    ) {
-        StudyScope.launch {
-            completionHandler(
-                sendData(data)
-            )
         }
     }
 

@@ -204,7 +204,6 @@ class NotificationManager(
         }
     }
 
-    // To-Do: here check completed or only ended
     fun handleNotificationInteraction(
         notification: NotificationModel,
         protocolReplacement: String? = null,
@@ -214,7 +213,6 @@ class NotificationManager(
         notification.deepLink?.let { deepLink ->
             Scope.launch {
 
-                // first check status of notification
                 val state = checkIfCompletedOrRead(deepLink).cancellable().firstOrNull()
 
                 if (state != null) {
@@ -267,12 +265,9 @@ class NotificationManager(
             emit(null)
             return@flow
         }
-        var schedule =
+        val schedule =
             scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
                 .cancellable().firstOrNull()
-
-        val allSchedules =
-            scheduleRepository.queryAllSchedulesForObservationId(observationId.first())
 
         // ScheduleState.DEACTIVATED -> ACTIVE -> PAUSE/RUNNING -> ENDED/COMPLETED
         // if the ScheduleState is DEACTIVATED and it has a repeat, the Notification will go to the next Instance of Observation
@@ -280,10 +275,10 @@ class NotificationManager(
         // COMPLETED gets a check
         // after Observation has ended, we don't have any means to determine anything anymore, because the Scheduler is deleted (null) from the object, so it will be set to comppleted
 
-        if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
-            state = NotificationStatusType.COMPLETED
+        state = if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
+            NotificationStatusType.COMPLETED
         } else {
-            state = NotificationStatusType.READ
+            NotificationStatusType.READ
         }
         emit(state)
     }

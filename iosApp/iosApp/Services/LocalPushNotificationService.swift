@@ -57,7 +57,7 @@ class LocalPushNotifications: LocalNotificationListener {
         }
     }
 
-    func displayNotification(notification: NotificationSchema) {
+    func displayNotification(notification: NotificationEntity) {
         if let title = notification.title, let body = notification.notificationBody {
             requestLocalNotification(identifier: notification.notificationId, title: title, subtitle: body)
         }

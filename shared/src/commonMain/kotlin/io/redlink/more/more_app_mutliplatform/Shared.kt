@@ -290,7 +290,6 @@ class Shared(
             finishText = studyRepository.getStudy().firstOrNull()?.finishText
         }
         activateObservationWatcher()
-        updateTaskStates()
         observationFactory.updateObservationErrors()
         bluetoothListener?.cancel()
         bluetoothListener = StudyScope.launch {

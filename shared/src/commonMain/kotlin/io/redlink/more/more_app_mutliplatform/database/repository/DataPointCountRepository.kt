@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -82,7 +83,7 @@ class DataPointCountRepository(private val appDatabase: AppDatabase) {
     }
 
     fun get(scheduleId: String): Flow<DataPointEntity?> {
-        return appDatabase.dataPointDao().getByScheduleId(scheduleId)
+        return appDatabase.dataPointDao().getByScheduleId(scheduleId).conflate()
     }
 
     fun delete(scheduleId: String) {

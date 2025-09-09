@@ -66,11 +66,11 @@ class ObservationDataRepository(private val appDatabase: AppDatabase) {
         }
     }
 
-    fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
-        StudyScope.launch(Dispatchers.IO) {
-            allAsBulk()?.let { completionHandler(it) }
-        }
-    }
+//    fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
+//        StudyScope.launch(Dispatchers.IO) {
+//            allAsBulk()?.let { completionHandler(it) }
+//        }
+//    }
 
     suspend fun deleteAllWithId(idSet: Set<String>) {
         Napier.i { "Deleting ${idSet.size} elements..." }

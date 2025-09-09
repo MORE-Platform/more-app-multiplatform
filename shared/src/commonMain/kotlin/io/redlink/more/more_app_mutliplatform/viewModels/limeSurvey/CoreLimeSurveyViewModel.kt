@@ -54,13 +54,13 @@ class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: Observa
                                         .cancellable().firstOrNull()
                                 })
                             }.cancellable().firstOrNull().let { observationSchema ->
-                            observationSchema?.let {
-                                observationId = it.observationId
-                                observation.observationConfig(it.configAsMap())
-                                observation.start(it.observationId, scheduleId, notificationId)
+                                observationSchema?.let {
+                                    observationId = it.observationId
+                                    observation.observationConfig(it.configAsMap())
+                                    observation.start(it.observationId, scheduleId, notificationId)
+                                }
+                                dataLoading.set(false)
                             }
-                            dataLoading.set(false)
-                        }
                     }
                 }
 

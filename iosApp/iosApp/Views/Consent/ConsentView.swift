@@ -92,7 +92,8 @@ struct ConsentView: View {
 }
 
 struct ConsentView_Previews: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(database: database, dataManager: ObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
     }
 }

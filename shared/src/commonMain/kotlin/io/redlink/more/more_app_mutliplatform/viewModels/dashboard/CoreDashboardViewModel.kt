@@ -15,6 +15,8 @@ import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 
@@ -23,7 +25,7 @@ class CoreDashboardViewModel(database: AppDatabase) : CoreViewModel() {
     val study: MutableStateFlow<StudyEntity?> = MutableStateFlow(null)
 
     override fun viewDidAppear() {
-        launchScope {
+        launchScope(Dispatchers.IO) {
             studyRepository.getStudy().cancellable().collect {
                 study.value = it
             }

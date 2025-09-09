@@ -15,7 +15,6 @@
 
 import FirebaseMessaging
 import Foundation
-import Realm
 import shared
 import UserNotifications
 
