@@ -35,6 +35,7 @@ import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepositor
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,7 +44,8 @@ import kotlinx.coroutines.launch
 
 class ObservationRecordingService : Service() {
     private var observationManager: ObservationManager? = null
-    private val scheduleRepository = ScheduleRepository()
+    private val scheduleRepository = ScheduleRepository(MoreApplication.shared!!.database)
+    private val studyRepository = StudyRepository(MoreApplication.shared!!.database)
     private var observationFactory: ObservationFactory? = null
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
@@ -63,6 +65,7 @@ class ObservationRecordingService : Service() {
             if (observationManager == null) {
                 observationManager =
                     MoreApplication.shared?.observationManager ?: ObservationManager(
+                        MoreApplication.shared!!.database,
                         it,
                         AndroidDataRecorder()
                     )
@@ -193,7 +196,7 @@ class ObservationRecordingService : Service() {
         Napier.i { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
-            if (StudyRepository().getStudy().firstOrNull()?.active == true) {
+            if (studyRepository.getStudy().firstOrNull()?.active == true) {
                 scheduleId.forEach {
                     if (observationManager?.start(it) == true) {
                         runningSchedules.add(it)
@@ -217,7 +220,9 @@ class ObservationRecordingService : Service() {
     private fun stopObservation(scheduleId: String) {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
-        scheduleRepository.setCompletionStateFor(scheduleId, true)
+        StudyScope.launch(Dispatchers.IO) {
+            scheduleRepository.setCompletionStateFor(scheduleId, true)
+        }
         if (observationManager?.hasRunningTasks() == false) {
             stopService()
         }

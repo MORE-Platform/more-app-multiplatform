@@ -11,34 +11,30 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.query
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.mongodb.kbson.ObjectId
 
-class ObservationDataRepository : Repository<ObservationDataSchema>() {
-    private var queue = mutableSetOf<ObservationDataSchema>()
+class ObservationDataRepository(private val appDatabase: AppDatabase) {
+    private var queue = mutableSetOf<ObservationDataEntity>()
     private val mutex = Mutex()
 
-
     init {
-        Scope.repeatedLaunch(10000L) {
+        Scope.repeatedLaunch(10000L, Dispatchers.IO) {
             if (queue.isNotEmpty()) {
                 store()
             }
         }
     }
 
-    fun addData(dataList: List<ObservationDataSchema>) {
+    fun addData(dataList: List<ObservationDataEntity>) {
         StudyScope.launch {
             mutex.withLock {
                 queue.addAll(dataList)
@@ -46,25 +42,27 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
         }
     }
 
-    fun store() {
+    suspend fun store() {
         if (queue.isNotEmpty()) {
-            StudyScope.launch {
-                val queueCopy = mutex.withLock {
-                    val queueCopy = queue.toSet()
-                    queue.clear()
-                    queueCopy
-                }
-                realmDatabase().store(queueCopy, UpdatePolicy.ERROR)
+            val queueCopy = mutex.withLock {
+                val queueCopy = queue.toSet()
+                queue.clear()
+                queueCopy
             }
+            appDatabase.observationDataDao().insertAll(queueCopy.toList())
         }
     }
 
-    override fun count() = realmDatabase().count<ObservationDataSchema>()
+    suspend fun getCount(): Int = appDatabase.observationDataDao().getCount()
 
     suspend fun allAsBulk(): DataBulk? {
         return mutex.withLock {
-            realmDatabase().query<ObservationDataSchema>(limit = 5000).firstOrNull()
-                ?.mapAsBulkData()
+            val observationDataEntities = appDatabase.observationDataDao().getLatest(5000)
+            if (observationDataEntities.isNotEmpty()) {
+                observationDataEntities.mapAsBulkData()
+            } else {
+                null
+            }
         }
     }
 
@@ -74,16 +72,11 @@ class ObservationDataRepository : Repository<ObservationDataSchema>() {
         }
     }
 
-    fun deleteAllWithId(idSet: Set<String>) {
+    suspend fun deleteAllWithId(idSet: Set<String>) {
         Napier.i { "Deleting ${idSet.size} elements..." }
-        val objectIdSet = idSet.map { ObjectId(it) }.toSet()
-        StudyScope.launch(Dispatchers.IO) {
-            mutex.withLock {
-                realm()?.write {
-                    this.query<ObservationDataSchema>().find().filter { it.dataId in objectIdSet }
-                        .forEach { delete(it) }
-                }
-
+        mutex.withLock {
+            idSet.forEach { dataId ->
+                appDatabase.observationDataDao().deleteById(dataId)
             }
         }
     }

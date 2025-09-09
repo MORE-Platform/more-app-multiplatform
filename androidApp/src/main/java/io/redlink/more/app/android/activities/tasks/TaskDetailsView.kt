@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
@@ -51,7 +50,6 @@ import io.redlink.more.more_app_mutliplatform.observations.observationTypes.Lime
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 
-
 @Composable
 fun TaskDetailsView(
     navController: NavController,
@@ -61,7 +59,6 @@ fun TaskDetailsView(
     val backStackEntry = remember { navController.currentBackStackEntry }
     val route =
         backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
-    val context = LocalContext.current
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -162,7 +159,6 @@ fun TaskDetailsView(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
 
             ObservationErrorListView(
                 errors = viewModel.taskObservationErrors,

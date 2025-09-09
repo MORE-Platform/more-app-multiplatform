@@ -36,10 +36,14 @@ import androidx.navigation.NavController
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 
 @Composable
-fun AccordionWithList(navController: NavController, title: String, observations: List<ObservationSchema>) {
+fun AccordionWithList(
+    navController: NavController,
+    title: String,
+    observations: List<ObservationEntity>
+) {
     val open = remember {
         mutableStateOf(false)
     }
@@ -83,7 +87,6 @@ fun AccordionWithList(navController: NavController, title: String, observations:
         if (open.value) {
             ObservationList(observations = observations, navController = navController)
         }
-
 
     }
 }

@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -300,7 +301,7 @@ fun MainView(
                                 ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
                                 ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
                                 ScheduleListType.ALL -> DashboardFilterViewModel(
-                                    CoreDashboardFilterViewModel()
+                                    CoreDashboardFilterViewModel(MoreApplication.shared!!.database)
                                 )
                             }
                         )

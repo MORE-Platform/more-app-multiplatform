@@ -10,9 +10,9 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.startupConnection
 
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 
@@ -31,11 +31,11 @@ class CoreBluetoothViewModel(
         coreBluetooth.viewDidDisappear()
     }
 
-    fun connectToDevice(device: BluetoothDevice): Boolean {
+    fun connectToDevice(device: BluetoothDeviceEntity): Boolean {
         return coreBluetooth.connectToDevice(device)
     }
 
-    fun disconnectFromDevice(device: BluetoothDevice) {
+    fun disconnectFromDevice(device: BluetoothDeviceEntity) {
         coreBluetooth.unpairFromDevice(device)
     }
 

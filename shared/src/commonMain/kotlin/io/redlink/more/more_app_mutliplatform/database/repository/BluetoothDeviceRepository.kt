@@ -10,59 +10,71 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.query
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
+import io.redlink.more.more_app_mutliplatform.database.dao.BluetoothDeviceDao
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.map
 
-class BluetoothDeviceRepository :
-    Repository<BluetoothDevice>() {
+class BluetoothDeviceRepository(
+    private val bluetoothDeviceDao: BluetoothDeviceDao
+) {
 
     private val deviceManager = BluetoothDeviceManager
 
     init {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             pairedDevices().cancellable().collect {
                 deviceManager.addPairedDeviceIds(it.toSet())
             }
         }
     }
 
-    override fun count(): Flow<Long> = realmDatabase().count<BluetoothDevice>()
+    fun count(): Flow<Long> = bluetoothDeviceDao.getAllFlow().map { it.size.toLong() }
 
-    fun storePairedDevice(bluetoothDevice: BluetoothDevice) {
+    fun storePairedDevice(bluetoothDevice: BluetoothDeviceEntity) {
         if (bluetoothDevice.address != null) {
             StudyScope.launch {
-                realm()?.write {
-                    val device =
-                        this.query<BluetoothDevice>("address = $0", bluetoothDevice.address).first()
-                            .find()
-                    if (device == null) {
-                        this.copyToRealm(bluetoothDevice, updatePolicy = UpdatePolicy.ALL)
-                    }
+                val existingDevice = bluetoothDeviceDao.getByAddress(bluetoothDevice.address!!)
+                if (existingDevice == null) {
+                    val entity = bluetoothDevice.toEntity()
+                    bluetoothDeviceDao.insert(entity)
                 }
             }
         }
     }
 
-    fun unpairDevice(bluetoothDevice: BluetoothDevice) {
-        if (bluetoothDevice.address != null) {
-            StudyScope.launch {
-                realm()?.write {
-                    val device =
-                        this.query<BluetoothDevice>("address = $0", bluetoothDevice.address).first()
-                            .find()
-                    if (device != null) {
-                        this.delete(device)
-                    }
-                }
+    fun unpairDevice(bluetoothDevice: BluetoothDeviceEntity) {
+        bluetoothDevice.address?.let {
+            StudyScope.launch(Dispatchers.IO) {
+                bluetoothDeviceDao.deleteByAddress(it)
             }
         }
     }
 
-    fun pairedDevices() = realmDatabase().query<BluetoothDevice>()
+    fun pairedDevices(): Flow<List<BluetoothDeviceEntity>> =
+        bluetoothDeviceDao.getAllFlow().map { entities ->
+            entities.map { it.toBluetoothDevice() }
+        }
+
+    private fun BluetoothDeviceEntity.toEntity(): BluetoothDeviceEntity {
+        return BluetoothDeviceEntity(
+            deviceId = this.deviceId,
+            deviceName = this.deviceName,
+            address = this.address
+        )
+    }
+
+    private fun BluetoothDeviceEntity.toBluetoothDevice(): BluetoothDeviceEntity {
+        return BluetoothDeviceEntity(
+            this@toBluetoothDevice.deviceId,
+            this@toBluetoothDevice.deviceName,
+            this@toBluetoothDevice.address
+        )
+    }
 }

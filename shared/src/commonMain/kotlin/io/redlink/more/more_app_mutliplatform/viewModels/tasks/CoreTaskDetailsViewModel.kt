@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
@@ -23,13 +24,15 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
 class CoreTaskDetailsViewModel(
+    database: AppDatabase,
     private val dataRecorder: DataRecorder
-): CoreViewModel() {
+) : CoreViewModel() {
     private var scheduleId: String? = null
 
-    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
-    private val observationRepository: ObservationRepository = ObservationRepository()
-    private val scheduleRepository: ScheduleRepository = ScheduleRepository()
+    private val dataPointCountRepository: DataPointCountRepository =
+        DataPointCountRepository(database)
+    private val observationRepository: ObservationRepository = ObservationRepository(database)
+    private val scheduleRepository: ScheduleRepository = ScheduleRepository(database)
     val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
     val dataCount = MutableStateFlow<Long>(0)
 
@@ -44,7 +47,8 @@ class CoreTaskDetailsViewModel(
             launchScope {
                 scheduleRepository.scheduleWithId(it).cancellable().collect { schedule ->
                     schedule?.let { schedule ->
-                        observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
+                        observationRepository.observationById(schedule.observationId).cancellable()
+                            .firstOrNull()?.let {
                             taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
                         }
                     }

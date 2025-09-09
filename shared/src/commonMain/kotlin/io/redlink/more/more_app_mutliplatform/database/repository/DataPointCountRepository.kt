@@ -10,8 +10,8 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.realm.kotlin.ext.query
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.DataPointEntity
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -20,13 +20,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class DataPointCountRepository : Repository<DataPointCountSchema>() {
+class DataPointCountRepository(private val appDatabase: AppDatabase) {
     private val mutex = Mutex()
     private val countQueue = mutableMapOf<String, Long>()
     private var storeJob: Job? = null
 
-    override fun count(): Flow<Long> {
-        return realmDatabase().count<DataPointCountSchema>()
+    fun count(): Flow<Long> {
+        return appDatabase.dataPointDao().getCountFlow()
     }
 
     fun incrementCount(scheduleIdSet: Set<String>, addCount: Long = 1) {
@@ -38,7 +38,7 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
                     }
                 }
                 if (storeJob == null || storeJob?.isActive == false) {
-                    storeJob = StudyScope.repeatedLaunch(5000L) {
+                    storeJob = StudyScope.repeatedLaunch(5000L, Dispatchers.IO) {
                         storeCounts()
                     }.second
                     storeJob?.invokeOnCompletion {
@@ -56,42 +56,38 @@ class DataPointCountRepository : Repository<DataPointCountSchema>() {
             countQueue.clear()
         }
         if (countsToStore.isNotEmpty()) {
-            StudyScope.launch {
-                realm()?.write {
-                    val dataPointCounts = this.query<DataPointCountSchema>().find()
-                    val dataPointScheduleIds = dataPointCounts.map { it.scheduleId }.toSet()
-                    val (existing, nonExisting) = countsToStore.keys.partition { it in dataPointScheduleIds }
-                    existing.forEach { id ->
-                        dataPointCounts.firstOrNull { it.scheduleId == id }?.let {
-                            it.count += countsToStore[id] ?: 0
-                        }
+            StudyScope.launch(Dispatchers.IO) {
+                val allDataPoints = appDatabase.dataPointDao().getAll()
+                val dataPointScheduleIds = allDataPoints.map { it.scheduleId }.toSet()
+                val (existing, nonExisting) = countsToStore.keys.partition { it in dataPointScheduleIds }
+
+                existing.forEach { id ->
+                    val existingEntity = allDataPoints.firstOrNull { it.scheduleId == id }
+                    existingEntity?.let { entity ->
+                        val updatedEntity =
+                            entity.copy(count = entity.count + (countsToStore[id] ?: 0))
+                        appDatabase.dataPointDao().update(updatedEntity)
                     }
-                    nonExisting.forEach { id ->
-                        this.copyToRealm(DataPointCountSchema().apply {
-                            count = countsToStore[id] ?: 0
-                            this.scheduleId = id
-                        })
-                    }
+                }
+
+                nonExisting.forEach { id ->
+                    val newEntity = DataPointEntity(
+                        scheduleId = id,
+                        count = countsToStore[id] ?: 0
+                    )
+                    appDatabase.dataPointDao().insert(newEntity)
                 }
             }
         }
     }
 
-    fun get(scheduleId: String): Flow<DataPointCountSchema?> {
-        return realmDatabase().queryFirst(
-            query = "scheduleId == $0",
-            queryArgs = arrayOf(scheduleId)
-        )
+    fun get(scheduleId: String): Flow<DataPointEntity?> {
+        return appDatabase.dataPointDao().getByScheduleId(scheduleId)
     }
 
     fun delete(scheduleId: String) {
-        realm()?.writeBlocking {
-            val existingObject: DataPointCountSchema? = this.query<DataPointCountSchema>(
-                query = "scheduleId == $0", scheduleId
-            ).first().find()
-            existingObject?.let {
-                this.delete(it)
-            }
+        StudyScope.launch {
+            appDatabase.dataPointDao().deleteByScheduleId(scheduleId)
         }
     }
 }

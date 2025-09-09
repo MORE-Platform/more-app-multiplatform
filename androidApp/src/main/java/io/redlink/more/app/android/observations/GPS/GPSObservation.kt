@@ -22,6 +22,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
@@ -45,8 +46,10 @@ private val permissions = if (Build.VERSION.SDK_INT >= 34) {
 
 class GPSObservation(
     context: Context,
+    database: AppDatabase,
     private val gpsService: GPSService
-) : Observation(observationType = GPSType(permissions)), GPSListener {
+) : Observation(database, observationType = GPSType(permissions)),
+    GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 

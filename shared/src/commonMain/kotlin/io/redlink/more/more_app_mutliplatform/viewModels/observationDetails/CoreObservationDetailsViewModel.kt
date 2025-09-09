@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.observationDetails
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -21,10 +22,11 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 
 class CoreObservationDetailsViewModel(
+    database: AppDatabase,
     private val observationId: String
 ) : CoreViewModel() {
-    private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    private val observationRepository: ObservationRepository = ObservationRepository()
+    private val scheduleRepository: ScheduleRepository = ScheduleRepository(database)
+    private val observationRepository: ObservationRepository = ObservationRepository(database)
 
     val observationDetailsModel = MutableStateFlow<ObservationDetailsModel?>(null)
 

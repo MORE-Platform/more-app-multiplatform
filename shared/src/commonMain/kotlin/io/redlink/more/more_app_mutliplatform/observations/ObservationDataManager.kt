@@ -12,18 +12,19 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
 
-abstract class ObservationDataManager {
-    private val observationDataRepository = ObservationDataRepository()
-    private val dataPointCountRepository = DataPointCountRepository()
+abstract class ObservationDataManager(database: AppDatabase) {
+    private val observationDataRepository = ObservationDataRepository(database)
+    private val dataPointCountRepository = DataPointCountRepository(database)
     private var countJob: Job? = null
 
     private var scheduleCount = mutableMapOf<String, Long>()
@@ -35,7 +36,7 @@ abstract class ObservationDataManager {
         Napier.i(tag = "ObservationDataManager::init") { "ObservationDataManager init!" }
     }
 
-    fun add(dataList: List<ObservationDataSchema>, scheduleIdList: Set<String>) {
+    fun add(dataList: List<ObservationDataEntity>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
             Napier.i(tag = "ObservationDataManager::add") { "Adding ${dataList.size} observations for schedule IDs: $scheduleIdList" }
             observationDataRepository.addData(dataList)
@@ -45,12 +46,16 @@ abstract class ObservationDataManager {
 
     fun saveAndSend() {
         Napier.i(tag = "ObservationDataManager::saveAndSend") { "Saving and sending observations" }
-        observationDataRepository.store()
+        StudyScope.launch(Dispatchers.IO) {
+            observationDataRepository.store()
+        }
     }
 
     fun store() {
         Napier.i(tag = "ObservationDataManager::store") { "Storing observations" }
-        observationDataRepository.store()
+        StudyScope.launch(Dispatchers.IO) {
+            observationDataRepository.store()
+        }
     }
 
     fun removeDataPointCount(scheduleId: String) {
@@ -63,21 +68,20 @@ abstract class ObservationDataManager {
     fun listenToDatapointCountChanges() {
         if (countJob == null) {
             Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Starting to listen for changes in datapoint counts" }
-            countJob = Scope.repeatedLaunch(10000) {
+            countJob = Scope.repeatedLaunch(60000, Dispatchers.IO) {
                 if (konnection.isConnected() && (uploadJob == null || uploadJob?.isActive == false)) {
-                    observationDataRepository.count().firstOrNull()?.let {
-                        if (it > 0) {
-                            Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Observation data count: $it! Sending data..." }
-                            uploadJob = Scope.launch(Dispatchers.IO) {
-                                sendData()
-                            }.second
-                            uploadJob?.invokeOnCompletion {
-                                uploadJob = null
-                            }
+                    val count = observationDataRepository.getCount()
+                    if (count > 0) {
+                        Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Observation data count: $count! Sending data..." }
+                        uploadJob = Scope.launch(Dispatchers.IO) {
+                            sendData()
+                        }.second
+                        uploadJob?.invokeOnCompletion {
+                            uploadJob = null
                         }
                     }
                 } else {
-                    Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "No conncetion" }
+                    Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "No connection" }
                     uploadJob?.cancel()
                 }
             }.second
@@ -94,6 +98,8 @@ abstract class ObservationDataManager {
     }
 
     private fun deleteAll(idSet: Set<String>) {
-        observationDataRepository.deleteAllWithId(idSet)
+        Scope.launch(Dispatchers.IO) {
+            observationDataRepository.deleteAllWithId(idSet)
+        }
     }
 }

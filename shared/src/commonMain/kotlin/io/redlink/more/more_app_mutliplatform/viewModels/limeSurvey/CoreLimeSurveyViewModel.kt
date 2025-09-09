@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -26,15 +27,17 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 
-class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewModel() {
-    private var observation: LimeSurveyObservation? = observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
+class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: ObservationFactory) :
+    CoreViewModel() {
+    private var observation: LimeSurveyObservation? =
+        observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
     private var scheduleId: String? = null
     private var observationId: String? = null
     val limeSurveyLink: StateFlow<String?>? = observation?.limeURL
     val dataLoading = MutableStateFlow(false)
 
-    private val scheduleRepository = ScheduleRepository()
-    private val observationRepository = ObservationRepository()
+    private val scheduleRepository = ScheduleRepository(database)
+    private val observationRepository = ObservationRepository(database)
 
     fun setScheduleId(scheduleId: String, notificationId: String?) {
         if (scheduleId != this.scheduleId) {
@@ -44,11 +47,13 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
                     this.scheduleId = scheduleId
                     launchScope(Dispatchers.Main) {
                         dataLoading.set(true)
-                        scheduleRepository.scheduleWithId(scheduleId).cancellable().transform { scheduleSchema ->
-                            emit(scheduleSchema?.let {
-                                observationRepository.observationById(it.observationId).cancellable().firstOrNull()
-                            })
-                        }.cancellable().firstOrNull().let { observationSchema ->
+                        scheduleRepository.scheduleWithId(scheduleId).cancellable()
+                            .transform { scheduleSchema ->
+                                emit(scheduleSchema?.let {
+                                    observationRepository.observationById(it.observationId)
+                                        .cancellable().firstOrNull()
+                                })
+                            }.cancellable().firstOrNull().let { observationSchema ->
                             observationSchema?.let {
                                 observationId = it.observationId
                                 observation.observationConfig(it.configAsMap())
@@ -65,11 +70,13 @@ class CoreLimeSurveyViewModel(observationFactory: ObservationFactory): CoreViewM
 
     fun setObservationId(observationId: String, notificationId: String?) {
         launchScope {
-            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId) }
+            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable()
+                .firstOrNull()?.let { setScheduleId(it, notificationId) }
         }
     }
 
-    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) = limeSurveyLink?.asNullableClosure(providedState)
+    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) =
+        limeSurveyLink?.asNullableClosure(providedState)
 
     fun onDataLoadingChange(providedState: (Boolean) -> Unit) = dataLoading.asClosure(providedState)
 
