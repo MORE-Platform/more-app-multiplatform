@@ -28,7 +28,7 @@ performance. In order to build the iOS application the version of **iOS** should
 * [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 16.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK 21](https://www.oracle.com/java/technologies/downloads/)
-* [Gradle 8.6](https://gradle.org)
+* [Gradle 8.13](https://gradle.org)
 
 It's recommended to install Xcode via `xcodes` and `aria2` as this is faster and more flexible in
 downloading specific versions of Xcode, including beta releases.
