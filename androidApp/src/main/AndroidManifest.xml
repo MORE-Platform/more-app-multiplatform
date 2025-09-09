@@ -20,6 +20,7 @@
     <!--        android:maxSdkVersion="30" />-->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <!-- use of camera for qr code scan in login -->
     <uses-permission android:name="android.permission.CAMERA" />
 

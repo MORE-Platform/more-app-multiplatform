@@ -210,7 +210,7 @@ platform :android do
         if ENV["GOOGLE_PLAY_KEY_IN_BASE64"] && !ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
           key_file_path = decode_base64_to_temp_file(ENV["GOOGLE_PLAY_KEY_IN_BASE64"])
           upload_to_play_store(
-            track: "alpha",
+            track: "internal",
             skip_upload_metadata: true,
             release_status: "completed",
             aab: aab_path,

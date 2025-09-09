@@ -40,6 +40,7 @@ private val permissions =
             setOf(
                 Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
             )
