@@ -88,8 +88,6 @@ class Shared(
     private fun onApplicationStart() {
         if (credentialRepository.hasCredentials()) {
             activateObservationWatcher()
-        } else {
-            clearRemainingData()
         }
     }
 
@@ -162,9 +160,7 @@ class Shared(
         newStudyState: StudyState? = null
     ) {
         Scope.launch(Dispatchers.Default) {
-            ViewManager.checkingForUpdate(true)
             updateStudy(oldStudyState, newStudyState)
-            ViewManager.checkingForUpdate(false)
         }
     }
 
@@ -269,8 +265,8 @@ class Shared(
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
-            clearSharedStorage() 
             removeStudyData()
+            clearSharedStorage()
             onDeletion()
             observationFactory.clearNeededObservationTypes()
             viewManager.resetAll()
@@ -278,7 +274,7 @@ class Shared(
         }
     }
 
-    private fun clearRemainingData() {
+    fun clearRemainingData() {
         Napier.i { "Clearing remaining data..." }
         bluetoothController.resetAll()
         Scope.launch {
