@@ -21,6 +21,7 @@ jobs:
       FASTLANE_MATCH_SECRET: ${{ secrets.FASTLANE_MATCH_SECRET }}
       MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_AUTH }}
 
+      FASTLANE_XCODEBUILD_SETTINGS_RETRIES: ${{ vars.FASTLANE_XCODEBUILD_SETTINGS_RETRIES }}
       APP_IDENTIFIERS: ${{ vars.APP_IDENTIFIERS }}
       FASTLANE_IOS_SCHEME: ${{ vars.FASTLANE_IOS_BUILD_SCHEME }}
       FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
@@ -37,7 +38,13 @@ jobs:
       - name: Set Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 16.4
+          xcode-version: '26.0.0'
+
+      # Needs to be removed, after github fixed an issue with the Xcode 26 beta version
+      - name: Download iOS 26.0 Platform
+        run: |
+          xcodebuild -downloadPlatform iOS
+        working-directory: .
 
       - name: Build iOS app
         run: fastlane build
