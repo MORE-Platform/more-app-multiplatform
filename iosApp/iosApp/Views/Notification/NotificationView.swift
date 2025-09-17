@@ -32,18 +32,22 @@ struct NotificationView: View {
             if notificationViewModel.notificationList.isEmpty {
                 EmptyListView(text: "There are currently no notficiations to show".localize(withComment: "Empty notification list", useTable: stringTable))
             } else {
-                ScrollView {
-                    ForEach(notificationViewModel.notificationList.sorted { $0.timestamp > $1.timestamp }, id: \.self) { notification in
-                        VStack {
-                            NotificationItem(notificationModel: notification)
-                            Divider()
-                                .padding(.vertical, 4)
-                        }
-                        .background(Color.clear)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if !notification.read {
-                                notificationViewModel.handleNotificationAction(notification: notification, navigationModalState: navigationModalState)
+                ScrollViewReader { _ in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(notificationViewModel.notificationList.sorted { $0.timestamp > $1.timestamp }, id: \.self) { notification in
+                                VStack {
+                                    NotificationItem(notificationModel: notification)
+                                    Divider()
+                                        .padding(.vertical, 4)
+                                }
+                                .background(Color.clear)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if !notification.read {
+                                        notificationViewModel.handleNotificationAction(notification: notification, navigationModalState: navigationModalState)
+                                    }
+                                }
                             }
                         }
                     }

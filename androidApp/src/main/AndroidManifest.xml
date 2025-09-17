@@ -20,6 +20,7 @@
     <!--        android:maxSdkVersion="30" />-->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <!-- use of camera for qr code scan in login -->
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -94,6 +95,8 @@
 
         <service
             android:name=".services.ObservationRecordingService"
+            android:enabled="true"
+            android:exported="false"
             android:foregroundServiceType="location|connectedDevice" />
         <service
             android:name=".firebase.FCMService"

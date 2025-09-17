@@ -14,7 +14,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class SharedPreferencesRepository(context: Context) : SharedStorageRepository {
-    private var sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(context)
+    private var sharedPreferences: SharedPreferences = PrivateSharedPreferences.create(context)
 
     override fun store(key: String, value: String) {
         sharedPreferences

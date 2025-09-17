@@ -102,6 +102,7 @@ class RegistrationService(
         onFinish: () -> Unit
     ) {
         StudyScope.launch {
+            shared.clearRemainingData()
             val (config, networkError) = shared.networkService.sendConsent(
                 token,
                 studyConsent,

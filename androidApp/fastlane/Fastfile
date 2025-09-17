@@ -157,7 +157,7 @@ platform :android do
           UI.important("GOOGLE_PLAY_KEY_IN_BASE64 environment variable is not set or is empty")
           UI.important("Will attempt to use default authentication method for version code retrieval")
           latest_version_code = google_play_track_version_codes(
-            track: "beta"
+            track: "internal"
           ).max || base_code
         else
           key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
@@ -169,7 +169,7 @@ platform :android do
           if File.exist?(File.expand_path(key_file_path))
             UI.success("Using Google Play key file for version code retrieval: #{key_file_path}")
             latest_version_code = google_play_track_version_codes(
-              track: "beta",
+              track: "internal",
               json_key: File.expand_path(key_file_path)
             ).max || base_code
           else
@@ -210,14 +210,14 @@ platform :android do
         if ENV["GOOGLE_PLAY_KEY_IN_BASE64"] && !ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
           key_file_path = decode_base64_to_temp_file(ENV["GOOGLE_PLAY_KEY_IN_BASE64"])
           upload_to_play_store(
-            track: "beta",
+            track: "internal",
             skip_upload_metadata: true,
             release_status: "completed",
             aab: aab_path,
             skip_upload_apk: true,
             json_key: File.expand_path(key_file_path)
           )
-          UI.success("Successfully deployed to Google Play Beta")
+          UI.success("Successfully deployed to Google Play Internal")
         end
       rescue => e
         UI.error("Error uploading to Google Play: #{e.message}")
