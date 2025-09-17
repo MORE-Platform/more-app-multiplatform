@@ -19,15 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -42,22 +41,12 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 @Composable
 fun StudyDetailsView(
     navController: NavController,
-    viewModel: StudyDetailsViewModel,
     taskCompletionBarViewModel: TaskCompletionBarViewModel
 ) {
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route =
-        backStackEntry?.arguments?.getString(NavigationScreen.STUDY_DETAILS.routeWithParameters())
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
+    val viewModel = remember { StudyDetailsViewModel() }
+    val studyInfo by viewModel.coreViewModel.studyModel.collectAsStateWithLifecycle()
 
-    viewModel.model.value?.let {
+    studyInfo?.let {
         Column(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier

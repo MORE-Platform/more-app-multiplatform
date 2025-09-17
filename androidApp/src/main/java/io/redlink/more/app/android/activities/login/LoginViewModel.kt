@@ -12,66 +12,58 @@ package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.viewModels.login.CoreLoginViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.more_app_mutliplatform.AlertController
+import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
+import io.redlink.more.more_app_mutliplatform.models.LoginModel
+import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
+import io.redlink.more.more_app_mutliplatform.util.validateAndNormalizeUrl
 
-interface LoginViewModelListener {
-    fun tokenIsValid(study: Study)
-}
-
-class LoginViewModel(registrationService: RegistrationService, private val loginViewModelListener: LoginViewModelListener) : ViewModel() {
-    private val coreLoginViewModel = CoreLoginViewModel(registrationService)
-
-    private val tokenValid = mutableStateOf(false)
+class LoginViewModel(
+    val registrationService: RegistrationService
+) : ViewModel() {
     val participantKey = mutableStateOf("")
-    val loadingState = mutableStateOf(false)
-    val error = mutableStateOf<String?>(null)
+    val isLoading = registrationService.isLoading
+    val error = registrationService.error
 
     val dataEndpoint = mutableStateOf("");
     val defaultEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
     val endpointError = mutableStateOf<String?>(null)
 
     fun participationKeyNotBlank(): Boolean = this.participantKey.value.isNotBlank()
-    fun isTokenError(): Boolean = !this.error.value.isNullOrBlank()
-    fun isEndpointError(): Boolean = !this.endpointError.value.isNullOrBlank()
-    fun tokenIsValid() = this.tokenValid.value
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreLoginViewModel.loadingFlow.collect {
-                withContext(Dispatchers.Main) {
-                    loadingState.value = it
-                }
-            }
-        }
-    }
-
-    fun viewDidAppear() {
-        coreLoginViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreLoginViewModel.viewDidDisappear()
-    }
+    fun isEndpointError(): Boolean =
+        !this.endpointError.value.validateAndNormalizeUrl().isNullOrBlank()
 
     fun currentEndpoint() = dataEndpoint.value.ifEmpty { defaultEndpoint.value }
 
     fun validateKey() {
-        coreLoginViewModel.sendRegistrationToken(participantKey.value, dataEndpoint.value.ifEmpty { null },
-            onSuccess = {
-                        loginViewModelListener.tokenIsValid(it)
-            }, onError = {
-                error.value = it?.message
-            })
+        if (registrationService.connected.value) {
+            val loginModel = LoginModel(participantKey.value, currentEndpoint())
+            if (loginModel.valid()) {
+                registrationService.sendRegistrationToken(loginModel)
+            } else {
+                AlertController.openAlertDialog(
+                    AlertDialogModel(
+                        stringResource(R.string.more_token_error),
+                        stringResource(R.string.more_404),
+                        positiveTitle = "Ok"
+                    )
+                )
+            }
+        } else {
+            val dialogModel = AlertDialogModel(
+                title = stringResource(R.string.no_internet_connection_title),
+                message = stringResource(R.string.no_internet_connection_body),
+                positiveTitle = "Ok"
+            )
+            AlertController.openAlertDialog(dialogModel)
+        }
     }
 
     fun extractValuesFromQRCode(qrCodeUrl: String) {
         dataEndpoint.value = qrCodeUrl.substringBefore("signup?")
-        participantKey.value = qrCodeUrl.substringAfter("token=", "").takeIf { it.isNotEmpty() } ?: ""
+        participantKey.value =
+            qrCodeUrl.substringAfter("token=", "").takeIf { it.isNotEmpty() } ?: ""
     }
 }

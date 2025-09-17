@@ -22,7 +22,7 @@ struct BasicText: View {
     var lineLimit: Int? = nil
     var textAlign: TextAlignment = .leading
     var body: some View {
-        Text(.init(text))
+        Text(text)
             .foregroundColor(color)
             .multilineTextAlignment(textAlign)
             .fixedSize(horizontal: false, vertical: true)

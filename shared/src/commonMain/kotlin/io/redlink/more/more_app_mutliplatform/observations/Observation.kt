@@ -11,15 +11,13 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -33,11 +31,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
-abstract class Observation(database: AppDatabase, val observationType: ObservationType) {
-    private val scheduleRepository = ScheduleRepository(database)
+abstract class Observation(
+    private val repos: MainRepository,
+    val observationType: ObservationType
+) {
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
-    private val observationRepository = ObservationRepository(database)
 
     private var running = false
     private val observationIds = mutableSetOf<String>()
@@ -62,7 +61,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
         observationIds.add(observationId)
         timestampCollectionJob?.cancel()
         timestampCollectionJob = StudyScope.launch {
-            observationRepository.collectTimestampForObservationIds(observationIds).collect {
+            repos.observation.collectTimestampForObservationIds(observationIds).collect {
                 lastCollectionTimestamp = Instant.fromEpochMilliseconds(it)
                 Napier.d(tag = "Observation::start") { "Last collection $lastCollectionTimestamp" }
             }
@@ -136,7 +135,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
         Napier.d(tag = "Observation::collectionTimeStampToNow") { "Collecting timestamp" }
         lastCollectionTimestamp = Clock.System.now()
         StudyScope.launch(Dispatchers.IO) {
-            observationRepository.updateLastCollection(
+            repos.observation.updateLastCollection(
                 observationIds.toSet(),
                 lastCollectionTimestamp.toEpochMilliseconds()
             )
@@ -158,7 +157,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
 
     fun updateObservationErrors() {
         StudyScope.launch(Dispatchers.IO) {
-            scheduleRepository.allSchedulesToday(observationType).firstOrNull()?.let {
+            repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
                 if (it.isNotEmpty()) {
                     Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
 
@@ -213,7 +212,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
             saveAndSend()
             scheduleIds.keys.forEach {
                 StudyScope.launch(Dispatchers.IO) {
-                    scheduleRepository.setRunningStateFor(it, state)
+                    repos.schedule.setRunningStateFor(it, state)
                 }
             }
             scheduleId?.let {
@@ -230,7 +229,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
             saveAndSend()
             scheduleIds.keys.forEach {
                 StudyScope.launch(Dispatchers.IO) {
-                    scheduleRepository.setCompletionStateFor(it, true)
+                    repos.schedule.setCompletionStateFor(it, true)
                 }
             }
             observationShutdown(scheduleId)
@@ -273,7 +272,7 @@ abstract class Observation(database: AppDatabase, val observationType: Observati
         fallbackTitle: String = "Error"
     ) {
         val schedulesSchemaFlows = scheduleIds.keys.map {
-            scheduleRepository.scheduleWithId(it)
+            repos.schedule.scheduleWithId(it)
         }
         val combinedFlow = combine(schedulesSchemaFlows) { values ->
             values.mapNotNull { it }

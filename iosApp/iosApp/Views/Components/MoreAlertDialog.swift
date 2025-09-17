@@ -10,15 +10,14 @@ import shared
 import SwiftUI
 
 struct MoreAlertDialog: View {
-    var alertDialogModel: AlertDialogModel
-
-    private let stringTable = "AlertDialog"
+    let alertDialogModel: AlertDialogModel
+    
     var body: some View {
         ZStack {
             Color.black.opacity(0.5)
                 .ignoresSafeArea(edges: .all)
             VStack(spacing: 20) {
-                Text(String.localize(forKey: alertDialogModel.title, withComment: "alert dialog title", inTable: stringTable))
+                Text(alertDialogModel.title)
                     .foregroundColor(.more.primary)
                     .font(.headline)
                     .multilineTextAlignment(.center)
@@ -28,7 +27,7 @@ struct MoreAlertDialog: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading) {
-                        Text(String.localize(forKey: alertDialogModel.message, withComment: "alert dialog message", inTable: stringTable))
+                        Text(alertDialogModel.message)
                             .foregroundColor(.more.primary)
                             .font(.subheadline)
                             .multilineTextAlignment(.leading)
@@ -40,20 +39,24 @@ struct MoreAlertDialog: View {
 
                 VStack {
                     MoreActionButton(disabled: .constant(false)) {
-                        alertDialogModel.onPositive()
+                        if let onPositive = alertDialogModel.onPositive {
+                            onPositive()
+                        }
                     } label: {
-                        Text(String.localize(forKey: alertDialogModel.positiveTitle, withComment: "positive button", inTable: stringTable))
+                        Text(alertDialogModel.positiveTitle)
                     }
 
                     if let negativeTitle = alertDialogModel.negativeTitle {
                         MoreActionButton(backgroundColor: .more.secondaryLight, disabled: .constant(false)) {
-                            alertDialogModel.onNegative()
+                            if let onNegative = alertDialogModel.onNegative {
+                                onNegative()
+                            }
                         } label: {
                             if #available(iOS 17.0, *) {
-                                Text(String.localize(forKey: negativeTitle, withComment: "negative button", inTable: stringTable))
+                                Text(negativeTitle)
                                     .foregroundStyle(Color.more.primary)
                             } else {
-                                Text(String.localize(forKey: negativeTitle, withComment: "negative button", inTable: stringTable))
+                                Text(negativeTitle)
                                     .foregroundColor(.more.primary)
                             }
                         }

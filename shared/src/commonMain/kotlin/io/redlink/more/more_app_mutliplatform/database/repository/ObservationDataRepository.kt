@@ -14,9 +14,9 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.extensions.mapAsBulkData
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex

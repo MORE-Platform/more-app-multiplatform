@@ -18,18 +18,18 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.util.Log
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 
 private const val TAG = "AccelerometerObservation"
 
 class AccelerometerObservation(
     context: Context,
-    database: AppDatabase
+    repos: MainRepository
 ) : Observation(
-    database = database,
+    repos,
     observationType = AccelerometerType(
         if (Build.VERSION.SDK_INT >= 34) {
             setOf(

@@ -13,7 +13,7 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow

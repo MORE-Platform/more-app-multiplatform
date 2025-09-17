@@ -16,58 +16,46 @@
 import shared
 import UIKit
 import AVFoundation
+import KMPNativeCoroutinesCombine
+import Combine
 
-protocol ConsentViewModelListener {
-    func credentialsStored()
-    func decline()
-    func credentialsDeleted()
-}
-
-class ConsentViewModel: NSObject, ObservableObject {
-    private let coreModel: CorePermissionViewModel
+class ConsentViewModel: ObservableObject {
+    private let coreModel: CoreConsentViewModel
+    private let registration: RegistrationService
     var consentInfo: String? = nil
-    var delegate: ConsentViewModelListener? = nil
     private let stringTable = "SettingsView"
     
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingsView"), consentInfo: []) {
-        didSet {
-            self.permissionManager.setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
-        }
-    }
-    @Published var isLoading = false
-    @Published var error: String = ""
+    @Published var permissionModel: PermissionModel? = nil
     @Published var showErrorAlert: Bool = false
     @Published var requestedPermissions = false
+    
+    private var cancellables = Set<AnyCancellable>()
 
     lazy var permissionManager = PermissionManager()
     var permissionGranted = false
     
     init(registrationService: RegistrationService) {
-        print("ConsentViewModel allocated!")
-        coreModel = CorePermissionViewModel(registrationService: registrationService, studyConsentTitle: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: stringTable))
-        super.init()
-        coreModel.onConsentModelChange { model in
-            DispatchQueue.main.async {
-                self.permissionModel = model
-            }
-        }
-        coreModel.onLoadingChange { loading in
-            if let loading = loading as? Bool {
-                DispatchQueue.main.async {
-                    self.isLoading = loading
-                }
-            }
-        }
+        self.registration = registrationService
+        coreModel = CoreConsentViewModel(registrationService: registrationService, studyConsentTitle: String(localized: "study_consent"))
+ 
     }
     
     func onAppear() {
-        coreModel.viewDidAppear()
         permissionManager.observer = self
+        
+        createPublisher(for: coreModel.permissions)
+            .sink { completed in
+                print("Permissions sink completed: \(completed)")
+            } receiveValue: { [weak self] model in
+                self?.permissionModel = model
+            }
+            .store(in: &cancellables)
     }
 
     func onDisappear() {
-        coreModel.viewDidDisappear()
         permissionManager.observer = nil
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
     }
     
     func resetPermissionRequest() {
@@ -79,40 +67,15 @@ class ConsentViewModel: NSObject, ObservableObject {
         self.requestedPermissions = true
         permissionManager.requestPermission(permissionRequest: true)
     }
-
-    func reloadPermissions() {
-        coreModel.onConsentModelChange { model in
-            self.permissionModel = model
-        }
-    }
     
     private func acceptConsent() {
-        if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
-            coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
-                DispatchQueue.main.async {
-                    self.delegate?.credentialsStored()
-                }
-            } onError: { error in
-                if let error {
-                    DispatchQueue.main.async {
-                        self.error = error.message
-                    }
-                }
-            }
+        if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+            self.registration.acceptConsent(uniqueDeviceId: uniqueId)
         }
-    }
-    
-    func buildConsentModel() {
-        coreModel.buildConsentModel()
     }
     
     func decline() {
-        coreModel.declineConsent()
-        delegate?.decline()
-    }
-    
-    deinit {
-        print("ConsentViewModel deallocated!")
+        registration.declineConsent()
     }
 }
 

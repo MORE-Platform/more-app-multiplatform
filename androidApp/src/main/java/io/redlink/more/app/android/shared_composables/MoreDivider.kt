@@ -19,6 +19,10 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun MoreDivider(modifier: Modifier = Modifier, thickness: Dp = 1.dp, color: Color = MoreColors.Divider) {
+fun MoreDivider(
+    modifier: Modifier = Modifier,
+    thickness: Dp = 1.dp,
+    color: Color = MoreColors.Divider
+) {
     Divider(modifier = modifier, thickness = thickness, color = color)
 }

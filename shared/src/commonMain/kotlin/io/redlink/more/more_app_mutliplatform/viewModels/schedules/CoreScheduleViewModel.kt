@@ -10,81 +10,98 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
+import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Clock
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class CoreScheduleViewModel(
-    database: AppDatabase,
+    private val repos: MainRepository,
     private val dataRecorder: DataRecorder,
     private val scheduleListType: ScheduleListType,
-    private val coreFilterModel: CoreDashboardFilterViewModel,
+    val coreFilterModel: CoreDashboardFilterViewModel,
+    private val observationFactory: ObservationFactory,
 ) : CoreViewModel() {
-    private val scheduleRepository = ScheduleRepository(database)
     private var originalScheduleList = emptySet<ScheduleModel>()
 
-    private val _scheduleListState = MutableStateFlow(
-        Triple(
-            emptySet<ScheduleModel>(),
-            emptySet<String>(),
-            emptySet<ScheduleModel>()
-        )
-    )
+    private val _schedulesByDate = MutableStateFlow<Map<Long, List<ScheduleModel>>>(emptyMap())
+    val schedulesByDate: StateFlow<Map<Long, List<ScheduleModel>>> = _schedulesByDate
 
-    val scheduleListState: StateFlow<Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>> =
-        _scheduleListState
+    private val _observationErrors = MutableStateFlow<Map<String, Set<String>>>(emptyMap())
+    val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
+
+    private val sortedSchedulesCache = mutableMapOf<LocalDate, List<ScheduleModel>>()
+    private var cacheVersion = 0L
 
     init {
         launchScope {
+            observationFactory.observationErrors.collect {
+                val actions = it.mapValues { entry ->
+                    entry.value.filter { it == Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
+                }
+                val errors = it.mapValues { entry ->
+                    entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
+                }
+                withContext(Dispatchers.Main) {
+                    _observationErrors.update { errors }
+                }
+            }
+        }
+
+        launchScope {
             coreFilterModel.currentTypeFilter
                 .combine(coreFilterModel.currentDateFilter) { typeFilter, dateFilter ->
-                    typeFilter.values.any()
-                            && dateFilter[DateFilterModel.ENTIRE_TIME] == false && dateFilter.any { it.value }
+                    typeFilter.any { it.value }
+                            || (dateFilter[DateFilterModel.ENTIRE_TIME] == false && dateFilter.any { it.value })
                 }
-                .cancellable().collect {
-                    if (it) {
-                        updateList(coreFilterModel.applyFilter(originalScheduleList).toSet())
+                .cancellable().collect { applyFilter ->
+                    if (applyFilter) {
+                        updateSchedulesFromSnapshot(
+                            coreFilterModel.applyFilter(originalScheduleList).toSet()
+                        )
                     } else {
-                        val copy = originalScheduleList.toSet()
-                        originalScheduleList = emptySet()
-                        updateList(copy)
+                        updateSchedulesFromSnapshot(originalScheduleList)
                     }
                 }
         }
 
-    }
-
-    override fun viewDidAppear() {
         launchScope {
-            scheduleRepository.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
+            repos.schedule.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
                 .cancellable()
-                .collect {
+                .collect { schedules ->
                     val newList = when (scheduleListType) {
-                        ScheduleListType.COMPLETED -> createCompletedModels(it)
-                        ScheduleListType.RUNNING -> createRunningModels(it)
-                        ScheduleListType.MANUALS -> createManualTasks(it)
-                        else -> createModels(it)
+                        ScheduleListType.COMPLETED -> createCompletedModels(schedules)
+                        ScheduleListType.RUNNING -> createRunningModels(schedules)
+                        ScheduleListType.MANUALS -> createManualTasks(schedules)
+                        else -> createModels(schedules)
                     }
+
+                    originalScheduleList = newList.toSet()
+
                     val modified = if (coreFilterModel.filterActive()) {
                         coreFilterModel.applyFilter(newList)
                     } else {
                         newList
                     }.toSet()
-                    updateList(modified)
+                    updateSchedulesFromSnapshot(modified)
                 }
         }
     }
@@ -99,37 +116,6 @@ class CoreScheduleViewModel(
 
     fun stop(scheduleId: String) {
         dataRecorder.stop(scheduleId)
-    }
-
-    private fun updateList(newList: Set<ScheduleModel>) {
-        val oldIds = originalScheduleList.map { it.scheduleId }.toSet()
-        val newIds = newList.map { it.scheduleId }.toSet()
-        val addedIds = newIds - oldIds
-        val removedIds = (oldIds - newIds).toMutableSet()
-        var added = newList.filter { it.scheduleId in addedIds }.toSet()
-        var updated = newList.filter { old ->
-            originalScheduleList.any { new -> old.isSameAs(new) && !old.hasSameContentAs(new) }
-        }.toSet()
-
-        if (scheduleListType != ScheduleListType.COMPLETED) {
-            added = added.filter {
-                it.end > Clock.System.now().epochSeconds
-                        && it.scheduleState.active()
-                        || it.scheduleState == ScheduleState.DEACTIVATED
-            }.toSet()
-            val (update, remove) = updated.partition {
-                it.end > Clock.System.now().epochSeconds
-                        && it.scheduleState.active()
-                        || it.scheduleState == ScheduleState.DEACTIVATED
-            }
-            removedIds.addAll(remove.map { it.scheduleId }.toSet())
-            updated = update.toSet()
-        }
-
-        if (added.isNotEmpty() || removedIds.isNotEmpty() || updated.isNotEmpty()) {
-            _scheduleListState.update { Triple(added, removedIds, updated) }
-        }
-        originalScheduleList = newList.toSet()
     }
 
     private fun createModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
@@ -149,7 +135,92 @@ class CoreScheduleViewModel(
         return createModels(scheduleList.filter { !it.hidden })
     }
 
-    fun onScheduleStateUpdated(providedState: (Triple<Set<ScheduleModel>, Set<String>, Set<ScheduleModel>>) -> Unit) =
-        scheduleListState.asClosure(providedState)
+    fun numberOfObservationErrors(): Int = _observationErrors.value.values.flatten().toSet().count()
+
+    fun getSortedSchedulesForDate(date: LocalDate): List<ScheduleModel> {
+        return sortedSchedulesCache.getOrPut(date) {
+            _schedulesByDate.value[date.time()]?.sortedWith(
+                compareBy(
+                    { it.start },
+                    { it.end },
+                    { it.observationTitle },
+                    { it.scheduleId }
+                )
+            ) ?: emptyList()
+        }
+    }
+
+    private fun updateSchedulesFromSnapshot(newSchedules: Collection<ScheduleModel>) {
+        val newMap: Map<Long, List<ScheduleModel>> =
+            newSchedules
+                .groupBy { schedule ->
+                    Instant.fromEpochSeconds(schedule.start)
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                        .date
+                        .time()
+                }
+                .mapValues { (_, schedules) ->
+                    schedules
+                        .distinctBy { it.scheduleId }
+                        .sortedWith(compareBy<ScheduleModel> { it.start }.thenBy { it.scheduleId })
+                }
+
+        if (newMap != _schedulesByDate.value) {
+            _schedulesByDate.update { newMap }
+            invalidateCache()
+        }
+    }
+
+    private fun updateSchedulesEfficiently(
+        added: Set<ScheduleModel>,
+        removed: Set<String>,
+        updated: Set<ScheduleModel>
+    ) {
+        val currentSchedules = _schedulesByDate.value.toMutableMap()
+
+        if (removed.isNotEmpty() || updated.isNotEmpty()) {
+            val idsToRemove = removed + updated.map { it.scheduleId }
+            val updatedSchedules = mutableMapOf<Long, List<ScheduleModel>>()
+            for ((date, schedules) in currentSchedules) {
+                val filteredSchedules = schedules.filterNot { it.scheduleId in idsToRemove }
+                if (filteredSchedules.isNotEmpty()) {
+                    updatedSchedules[date] = filteredSchedules
+                }
+            }
+            currentSchedules.clear()
+            currentSchedules.putAll(updatedSchedules)
+        }
+
+        val schedulesToAdd = added + updated
+        if (schedulesToAdd.isNotEmpty()) {
+            schedulesToAdd.groupBy { schedule ->
+                Instant.fromEpochSeconds(schedule.start)
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            }.forEach { (date, schedules) ->
+                currentSchedules[date.time()] = mergeAndSortSchedules(
+                    schedules,
+                    currentSchedules[date.time()] ?: emptyList()
+                )
+            }
+        }
+
+        _schedulesByDate.update { currentSchedules.toMap() }
+        invalidateCache()
+    }
+
+    private fun mergeAndSortSchedules(
+        newSchedules: List<ScheduleModel>,
+        existingSchedules: List<ScheduleModel>
+    ): List<ScheduleModel> {
+        val existingMap = existingSchedules.associateBy { it.scheduleId }
+        val newMap = newSchedules.associateBy { it.scheduleId }
+
+        return (existingMap + newMap).values.sortedBy { it.start }
+    }
+
+    private fun invalidateCache() {
+        sortedSchedulesCache.clear()
+        cacheVersion++
+    }
 }
 

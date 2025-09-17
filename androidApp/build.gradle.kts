@@ -143,12 +143,14 @@ android {
 
 // ... rest of your dependencies ...
 
-val composeVersion = "1.6.8"
-val workVersion = "2.9.0"
-val navVersion = "2.7.7"
+val composeVersion = "1.6.0"
+val workVersion = "2.10.3"
+val navVersion = "2.9.3"
 val polarSDKVersion = "6.6.0"
 val ktorVersion = "3.2.3"
-val roomVersion = "2.7.2"
+val roomVersion = "2.8.0"
+val koinVersion = "4.1.1"
+val cameraVersion = "1.4.2"
 
 dependencies {
     implementation(project(":shared"))
@@ -169,23 +171,28 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
     implementation("io.github.aakira:napier:2.7.1")
     implementation("com.github.polarofficial:polar-ble-sdk:${polarSDKVersion}")
-    implementation("io.reactivex.rxjava3:rxjava:3.1.8")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.11")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-inappmessaging-ktx")
     implementation("com.google.firebase:firebase-inappmessaging-display-ktx")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.13.2")
     implementation("com.github.acsbendi:Android-Request-Inspector-WebView:1.0.3")
-    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-process:2.9.3")
     //Google ML Kit for QR Scanning
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
-    implementation("androidx.camera:camera-camera2:1.3.0")
-    implementation("androidx.camera:camera-lifecycle:1.3.0")
-    implementation("androidx.camera:camera-view:1.3.0")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
 
     implementation("androidx.room:room-runtime:$roomVersion")
 
     ksp("androidx.room:room-compiler:$roomVersion")
+
+    implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+
 }

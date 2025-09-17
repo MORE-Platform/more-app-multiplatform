@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,14 +17,19 @@ import shared
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject var model: LoginViewModel
+    @ObservedObject private var registration: RegistrationObservable
+    @StateObject private var model: LoginViewModel
     @State private var rotationAngle = 0.0
 
     @State private var showTokenInput = true
     @State private var showEndpoint = false
     @State private var disabledQRCodeButton = false
 
-    private let stringTable = "LoginView"
+
+    init(registration: RegistrationObservable) {
+        _registration = ObservedObject(wrappedValue: registration)
+        _model = StateObject(wrappedValue: LoginViewModel(registration: registration.service))
+    }
 
     var body: some View {
         ZStack {
@@ -33,27 +38,27 @@ struct LoginView: View {
                 .onTapGesture {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 }
-            
+
             VStack(alignment: .center) {
                 Image("more_welcome")
                     .padding(.vertical, 40)
-                
+
                 MoreTextFieldHL(isSmTextfield: .constant(false),
-                                headerText: String.localize(forKey: "participation_key_entry", withComment: "headline for participation token entry field", inTable: stringTable),
-                                inputPlaceholder: .constant(String.localize(forKey: "participation_key_entry", withComment: "headline for participation token entry field", inTable: stringTable)),
+                                headerText: "participation_key_entry",
+                                inputPlaceholder: .constant("participation_key_entry"),
                                 input: $model.token,
                                 capitalization: .uppercase,
                                 autoCorrectDisabled: true,
                                 textType: .oneTimeCode,
-                                hlAlignment: TextAlignment.center
+                                hlAlignment: .center
                 )
                 .padding(.bottom, 12)
-                
-                MoreActionButton(backgroundColor: Color.more.secondary, disabled: $disabledQRCodeButton) {
+
+                MoreActionButton(backgroundColor: .more.secondary, disabled: $disabledQRCodeButton) {
                     model.showQRCodeView = true
                 } label: {
                     HStack {
-                        Text(verbatim:.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable))
+                        Text("scan_qr_code")
                         Spacer()
                         Image(systemName: "qrcode")
                             .foregroundColor(.more.primaryLight200)
@@ -63,29 +68,60 @@ struct LoginView: View {
                     ScanQRCodeView(model: model)
                 }
                 .padding(.bottom, 12)
-                
-                
+
                 Divider()
-                
+
                 if showTokenInput {
+                    VStack {
+                        if let error = registration.error {
+                            let errorMessage = if error.code == 404 {
+                                "Token or Endpoint invalid"
+                            } else if let code = error.code?.intValue, code >= 500 && code < 600 {
+                                "System Error! Please try again later or contact your Study Administrator!"
+                            } else if error.message.count > 0 {
+                                error.message
+                            } else {
+                                "token_error"
+                            }
+                            ErrorText(message: errorMessage)
+                                .padding(.bottom, 5)
+                        }
+
+                        VStack(alignment: .center) {
+                            if registration.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                            } else {
+                                LoginButton(stringTable: .constant(stringTable), disabled: .constant(model.token.count == 0)) {
+                                    if registration.connected {
+                                        model.validate()
+                                    } else {
+                                        AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "no_internet_title", message: "no_internet_message", positiveTitle: "Ok", negativeTitle: nil) { AlertController.shared.closeAlertDialog()
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .frame(minHeight: 75)
                     ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
                         .environmentObject(model)
                 }
-                
+
                 Spacer()
                     .frame(maxHeight: .infinity)
-                
+
                 VStack {
                     ExpandableInput(
                         expanded: $showEndpoint,
                         isSmTextfield: .constant(true),
-                        headerText: .constant(String.localize(forKey: "study_endpoint_headling", withComment: "headling for endpoint entryfield", inTable: stringTable)),
-                        inputPlaceholder: .constant(String.localize(forKey: "enter_study_endpoint", withComment: "Text input field for the study endpoint", inTable: stringTable)),
+                        headerText: .constant("study_endpoint_headling"),
+                        inputPlaceholder: .constant("enter_study_endpoint"),
                         input: $model.endpoint,
-                        capitalization: .lowercase, 
+                        capitalization: .lowercase,
                         textType: .URL
                     )
-                    
+
                     if !showEndpoint {
                         BasicText(text: "\(model.currentStudyEndpoint())", font: .footnote, lineLimit: 1, textAlign: .center)
                     }
@@ -95,12 +131,19 @@ struct LoginView: View {
             }
             .padding(.horizontal, 60)
         }
+        .onAppear {
+            registration.onAppear()
+        }
+        .onDisappear {
+            registration.onDisappear()
+        }
     }
 }
 
 struct LoginView_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    static let repos = MainRepository(appDatabase: database)
     static var previews: some View {
-        LoginView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
+        LoginView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
     }
 }

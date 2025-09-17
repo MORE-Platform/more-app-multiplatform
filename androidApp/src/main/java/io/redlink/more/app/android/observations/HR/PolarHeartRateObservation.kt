@@ -23,13 +23,13 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -58,9 +58,9 @@ private val permissions =
         )
     }
 
-class PolarHeartRateObservation(database: AppDatabase) :
+class PolarHeartRateObservation(repos: MainRepository) :
     Observation(
-        database,
+        repos,
         observationType = PolarVerityHeartRateType(permissions)
     ) {
     private val deviceManager = BluetoothDeviceManager

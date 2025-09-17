@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
@@ -47,9 +48,10 @@ import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun StudyClosedView(closedMessage: String?) {
+fun StudyClosedView() {
     val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
+    val finishText by MoreApplication.shared!!.repositories.study.finishText.collectAsStateWithLifecycle()
     MoreBackground {
         Box(
             modifier = Modifier
@@ -77,10 +79,13 @@ fun StudyClosedView(closedMessage: String?) {
                 }
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
-                    if ( closedMessage != null ) {
-                        BasicText(text = closedMessage as String, color = MoreColors.Secondary)
-                    } else {
-                        BasicText(text = getStringResource(id = R.string.study_closed), color = MoreColors.Secondary)
+                    finishText?.let {
+                        BasicText(text = it, color = MoreColors.Secondary)
+                    } ?: run {
+                        BasicText(
+                            text = getStringResource(id = R.string.study_closed),
+                            color = MoreColors.Secondary
+                        )
                     }
                 }
             }
@@ -115,5 +120,5 @@ fun StudyClosedView(closedMessage: String?) {
 @Preview
 @Composable
 fun StudyClosedPreview() {
-    StudyClosedView(null)
+    StudyClosedView()
 }

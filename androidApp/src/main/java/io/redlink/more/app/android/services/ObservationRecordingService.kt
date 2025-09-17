@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.services
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
@@ -26,28 +27,22 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
-import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.util.ActivityProvider
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class ObservationRecordingService : Service() {
     private var observationManager: ObservationManager? = null
-    private val scheduleRepository = ScheduleRepository(MoreApplication.shared!!.database)
-    private val studyRepository = StudyRepository(MoreApplication.shared!!.database)
     private var observationFactory: ObservationFactory? = null
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -63,12 +58,7 @@ class ObservationRecordingService : Service() {
         }
         observationFactory?.let {
             if (observationManager == null) {
-                observationManager =
-                    MoreApplication.shared?.observationManager ?: ObservationManager(
-                        MoreApplication.shared!!.database,
-                        it,
-                        AndroidDataRecorder()
-                    )
+                observationManager = MoreApplication.shared!!.observationManager
             }
         }
         return intent?.action?.let { action ->
@@ -196,7 +186,7 @@ class ObservationRecordingService : Service() {
         Napier.i { "Starting the foreground service for scheduleId: $scheduleId..." }
         startForegroundService()
         scope.launch {
-            if (studyRepository.getStudy().firstOrNull()?.active == true) {
+            if (MoreApplication.shared!!.repositories.study.study.value?.active == true) {
                 scheduleId.forEach {
                     if (observationManager?.start(it) == true) {
                         runningSchedules.add(it)
@@ -221,7 +211,7 @@ class ObservationRecordingService : Service() {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
         StudyScope.launch(Dispatchers.IO) {
-            scheduleRepository.setCompletionStateFor(scheduleId, true)
+            MoreApplication.shared!!.repositories.schedule.setCompletionStateFor(scheduleId, true)
         }
         if (observationManager?.hasRunningTasks() == false) {
             stopService()
@@ -363,7 +353,7 @@ class ObservationRecordingService : Service() {
          */
         private fun checkPermissionsAndStart(
             scheduleIds: Set<String>,
-            activity: android.app.Activity
+            activity: Activity
         ) {
             val observations =
                 MoreApplication.shared?.observationFactory?.observations ?: emptySet()

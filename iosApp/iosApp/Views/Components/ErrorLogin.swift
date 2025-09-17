@@ -22,21 +22,6 @@ struct ErrorLogin: View {
     @Binding var disabled: Bool
     
     var body: some View {
-        VStack {
-            if !model.error.isEmpty {
-                ErrorText(message: model.error)
-                    .padding(.bottom, 5)
-            }
-            
-            VStack(alignment: .center) {
-                if model.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
-                LoginButton(stringTable: .constant(stringTable), disabled: $disabled)
-                    .environmentObject(model)
-            }
-        }
-        .frame(minHeight: 75)
+        
     }
 }

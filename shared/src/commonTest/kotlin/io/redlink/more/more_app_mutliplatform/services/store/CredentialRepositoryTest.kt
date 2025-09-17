@@ -11,27 +11,29 @@
 package io.redlink.more.more_app_mutliplatform.services.store
 
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class CredentialRepositoryTest {
-
 
     @Test
     fun testStore() {
         val storage = ImMemoryStorageRepository()
 
         val repo = CredentialRepository(storage)
-        assertFalse("Empty Start") { repo.hasCredentials() }
-        assertNull(repo.credentials())
+        assertFalse("Empty Start") { repo.hasCredentials.value }
+        assertNull(repo.credentials.value)
 
         val credentials = CredentialModel("secretApiId", "secretApiKey")
         assertTrue { repo.store(credentials) }
-        assertEquals(credentials, repo.credentials())
+        assertEquals(credentials, repo.credentials.value)
 
         val newRepo = CredentialRepository(storage)
-        assertTrue { newRepo.hasCredentials() }
-        assertEquals(credentials, newRepo.credentials())
+        assertTrue { newRepo.hasCredentials.value }
+        assertEquals(credentials, newRepo.credentials.value)
 
     }
 

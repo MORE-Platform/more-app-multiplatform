@@ -32,14 +32,14 @@ import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.ui.theme.MoreColors
 
-
 @Composable
 fun SettingsView(
-    model: SettingsViewModel,
     navController: NavController
 ) {
+    val model = remember { SettingsViewModel() }
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.routeWithParameters())
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.routeWithParameters())
     LaunchedEffect(route) {
         model.viewDidAppear()
     }
@@ -81,7 +81,6 @@ fun SettingsView(
                     )
                 }
                 */
-
 
             }
 

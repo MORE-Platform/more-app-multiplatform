@@ -16,7 +16,6 @@ import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.Shared
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -24,19 +23,20 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
     CoroutineWorker(context, workerParameters) {
 
     private val shared: Shared
-    private val scheduleRepository: ScheduleRepository
 
     init {
         if (MoreApplication.shared == null) {
             MoreApplication.initShared(applicationContext)
         }
         shared = MoreApplication.shared!!
-        scheduleRepository = ScheduleRepository(shared.database)
     }
 
     override suspend fun doWork() = withContext(Dispatchers.IO) {
         Napier.i { "Running $WORKER_TAG! Updating Schedule..." }
-        scheduleRepository.updateTaskStatesSync(shared.observationFactory, shared.dataRecorder)
+        shared.repositories.schedule.updateTaskStatesSync(
+            shared.observationFactory,
+            shared.dataRecorder
+        )
         return@withContext Result.success()
     }
 

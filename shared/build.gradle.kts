@@ -6,6 +6,7 @@ plugins {
     id("androidx.room")
     id("com.google.devtools.ksp")
 //    id("org.openapi.generator") version "7.15.0"
+    id("com.rickclephas.kmp.nativecoroutines")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -20,91 +21,9 @@ val coroutinesVersion = "1.10.2"
 val ktorVersion = "3.2.3"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
-val gsonVersion = "2.13.1"
-val roomVersion = "2.7.2"
-val sqliteVersion = "2.5.2"
-
-//openApiGenerate {
-//    generatorName.set("kotlin")
-//    inputSpec.set(mobileAppApiInput)
-//    outputDir.set(mobileAppApiOutputDir)
-//    packageName.set(mobileAppApiPackage)
-//    ignoreFileOverride.set(openapiIgnore)
-//
-//    configOptions.set(
-//        mapOf(
-//            "library" to "multiplatform",
-//            "serializationLibrary" to "kotlinx_serialization",
-//            "dateLibrary" to "kotlinx-datetime",
-//            "enumPropertyNaming" to "UPPERCASE",
-//            "omitGradleWrapper" to "true",
-//            "omitGradlePlugin" to "true",
-//            "sourceFolder" to "", // This might help with package structure
-//            "modelPackage" to "${mobileAppApiPackage}.models",
-//            "apiPackage" to "${mobileAppApiPackage}.apis"
-//        )
-//    )
-//
-//    typeMappings.set(
-//        mapOf(
-//            "object" to "JsonObject"
-//        )
-//    )
-//
-//    importMappings.set(
-//        mapOf(
-//            "JsonObject" to "kotlinx.serialization.json.JsonObject"
-//        )
-//    )
-//}
-
-//tasks.register("fixDuplicateSerializable") {
-//    dependsOn("openApiGenerate")
-//    doLast {
-//        fileTree("$mobileAppApiOutputDir/src/main/kotlin").matching {
-//            include("**/*.kt")
-//        }.forEach { file ->
-//            var content = file.readText()
-//            // Fix double @Serializable annotations
-//            content = content
-//                .replace("@Serializable@Serializable", "@Serializable")
-////                .replace("sealed sealed", "sealed")
-//                .replace(
-//                    "kotlin.collections.Map<kotlin.String, kotlin.Any>,",
-//                    "kotlinx.serialization.json.JsonObject,"
-//                )
-//
-//            // Fix ObservationData.kt serialization issue
-////            if (file.name == "ObservationData.kt") {
-////                content = content.replace(
-////                    "@SerialName(value = \"dataValue\") @Required val dataValue: kotlin.collections.Map<kotlin.String, kotlin.Any>,",
-////                    "@SerialName(value = \"dataValue\") @Required val dataValue: kotlinx.serialization.json.JsonObject,"
-////                )
-////            }
-//
-//            // Fix PushNotificationConfig.kt interface issue
-//            if (file.name == "PushNotificationConfig.kt") {
-//                content = content.replace(
-//                    "interface PushNotificationConfig {",
-//                    "sealed interface PushNotificationConfig {"
-//                )
-//            }
-//
-//            file.writeText(content)
-//        }
-//    }
-//}
-//
-//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//    dependsOn("fixDuplicateSerializable")
-//}
-//
-//// Ensure KSP tasks depend on OpenAPI generation
-//tasks.withType<com.google.devtools.ksp.gradle.KspTask> {
-//    dependsOn("fixDuplicateSerializable")
-//}
-
-// Add this after your existing configurations
+val gsonVersion = "2.13.2"
+val roomVersion = "2.8.0"
+val sqliteVersion = "2.6.0"
 
 kotlin {
     androidTarget {
@@ -125,9 +44,6 @@ kotlin {
     }
 
     sourceSets {
-//        commonMain {
-//            kotlin.srcDir("$mobileAppApiOutputDir/src/main/kotlin")
-//        }
         commonMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
@@ -143,6 +59,9 @@ kotlin {
             // Room common dependencies
             implementation("androidx.room:room-runtime:$roomVersion")
             implementation("androidx.sqlite:sqlite-bundled:$sqliteVersion")
+
+            implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.7.1"))
+            implementation("org.kotlincrypto.hash:md")
         }
 
         commonTest.dependencies {
@@ -157,6 +76,10 @@ kotlin {
 
         iosMain.dependencies {
             implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+        }
+
+        all {
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
     }
 }

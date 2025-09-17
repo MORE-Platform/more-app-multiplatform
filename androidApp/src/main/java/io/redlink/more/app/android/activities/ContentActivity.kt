@@ -14,17 +14,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
-import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class ContentActivity : ComponentActivity() {
     private val viewModel = ContentViewModel()
@@ -43,6 +48,21 @@ class ContentActivity : ComponentActivity() {
             }
             intent.putExtra(NotificationManager.DEEP_LINK, deepLink)
         }
+
+        lifecycleScope.launch {
+            combine(
+                MoreApplication.shared!!.credentialRepository.hasCredentials,
+                viewModel.registrationService.isLoading
+            ) { hasCredentials, isLoading ->
+                hasCredentials && !isLoading
+            }.collect { shouldNavigateToMain ->
+                if (shouldNavigateToMain) {
+                    viewModel.openMainActivity(this@ContentActivity)
+                }
+            }
+        }
+
+
         setContent {
             ContentView(viewModel = viewModel)
         }
@@ -55,17 +75,19 @@ class ContentActivity : ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
+    val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
+    val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
+    val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
     MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
-        if (viewModel.hasCredentials.value) {
-            viewModel.openMainActivity(LocalContext.current)
-            StudyUpdateView()
-        } else {
-            if (viewModel.loginViewScreenNr.intValue == 0) {
-                LoginView(model = viewModel.loginViewModel)
-                AppVersion()
+        if (credentialsLoaded && !hasCredentials) {
+            if (validLogin != null) {
+                ConsentView(viewModel.registrationService)
             } else {
-                ConsentView(model = viewModel.consentViewModel)
+                LoginView(viewModel.registrationService)
+                AppVersion()
             }
+        } else {
+            StudyLoadingView()
         }
     }
 }

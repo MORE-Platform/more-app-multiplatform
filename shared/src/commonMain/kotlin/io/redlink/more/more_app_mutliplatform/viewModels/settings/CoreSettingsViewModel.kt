@@ -14,7 +14,6 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
@@ -26,7 +25,6 @@ class CoreSettingsViewModel(
     private val shared: Shared
 ) : CoreViewModel() {
     val dataDeleted = MutableStateFlow(false)
-    private val observationRepository = ObservationRepository(shared.database)
 
     val study = MutableStateFlow<StudyEntity?>(null)
     val observations = MutableStateFlow(emptyList<ObservationEntity>())
@@ -35,21 +33,20 @@ class CoreSettingsViewModel(
 
     override fun viewDidAppear() {
         launchScope {
-            shared.studyRepository.getStudy().cancellable()
-                .combine(observationRepository.observations()) { study, observations ->
-                    Pair(study, observations)
-                }.cancellable().collect {
-                    if (it.first?.active == true) {
-                        study.value = it.first
-                        it.first?.let { study ->
-                            permissionModel.value =
-                                PermissionModel.createFromSchema(study, it.second)
-                        }
+            shared.repositories.study.study.combine(shared.repositories.observation.observations()) { study, observations ->
+                Pair(study, observations)
+            }.cancellable().collect {
+                if (it.first?.active == true) {
+                    study.value = it.first
+                    it.first?.let { study ->
+                        permissionModel.value =
+                            PermissionModel.createFromSchema(study, it.second)
                     }
                 }
+            }
         }
         launchScope {
-            observationRepository.observations().cancellable().collect {
+            shared.repositories.observation.observations().cancellable().collect {
                 observations.value = it
             }
         }

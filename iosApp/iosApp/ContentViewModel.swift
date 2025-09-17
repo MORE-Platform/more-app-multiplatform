@@ -16,32 +16,21 @@
 import Foundation
 import shared
 import BackgroundTasks
+import KMPNativeCoroutinesCombine
+import Combine
 
 class ContentViewModel: ObservableObject {
-    private let registrationService = RegistrationService(shared: AppDelegate.shared)
-
     @Published var hasCredentials = false
-    @Published var loginViewScreenNr = 0
+    @Published var credentialsLoaded = false
     @Published var isLeaveStudyOpen: Bool = false
     @Published var isLeaveStudyConfirmOpen: Bool = false
     @Published var showBleView = false
 
     @Published var mainTabViewSelection = 0
 
-    @Published var finishText: String? = nil
+    
     @Published var alertDialogModel: AlertDialogModel? = nil
     @Published var unreadNotificationCount: Int = 0
-
-    lazy var loginViewModel: LoginViewModel = {
-        let viewModel = LoginViewModel(registrationService: registrationService)
-        viewModel.delegate = self
-        return viewModel
-    }()
-    lazy var consentViewModel: ConsentViewModel = {
-        let viewModel = ConsentViewModel(registrationService: registrationService)
-        viewModel.delegate = self
-        return viewModel
-    }()
 
     lazy var taskDetailsVM: TaskDetailsViewModel = {
         TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
@@ -64,51 +53,56 @@ class ContentViewModel: ObservableObject {
     var notificationFilterViewModel: NotificationFilterViewModel
 
     lazy var infoViewModel = InfoViewModel()
-
-    lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
+    
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
+        createPublisher(for: AppDelegate.shared.credentialRepository.credentials)
+            .sink(receiveCompletion: { _ in }) { [weak self] credentials in
+                self?.hasCredentials = credentials != nil
+            }
+            .store(in: &cancellables)
+        
+        createPublisher(for: AppDelegate.shared.credentialRepository.credentialsLoaded)
+            .map { $0.boolValue }
+            .first(where: {$0 == true})
+            .sink { completion in
+                print("Credentials have loaded with completion: \(completion)")
+            } receiveValue: { [weak self] loaded in
+                self?.credentialsLoaded = loaded
+            }
+            .store(in: &cancellables)
+
         let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
         notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
         notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
-        hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
-
-        ViewManager.shared.studyIsUpdatingAsClosure { kBool in
-            AppDelegate.navigationScreenHandler.studyIsUpdating(kBool.boolValue)
-        }
-
-        ViewManager.shared.showBluetoothViewAsClosure { [weak self] kBool in
-            if kBool.boolValue {
-                self?.showBleView = kBool.boolValue
+        
+        createPublisher(for: ViewManager.shared.studyIsUpdating)
+            .sink(receiveCompletion: { _ in}) { updating in
+                AppDelegate.navigationScreenHandler.studyIsUpdating(updating.boolValue)
             }
-        }
+            .store(in: &cancellables)
+        
+        createPublisher(for: ViewManager.shared.showBluetoothView)
+            .sink(receiveCompletion: { _ in }) { [weak self] show in
+                self?.showBleView = show.boolValue
+            }
+            .store(in: &cancellables)
 
         AppDelegate.shared.onStudyStateChange { [weak self] studyState in
-            self?.finishText = AppDelegate.shared.finishText
             AppDelegate.navigationScreenHandler.setStudyState(studyState)
         }
-
-        AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
-            self?.alertDialogModel = alertDialogModel
-        }
+        
+        createPublisher(for: AlertController.shared.alertDialogModel)
+            .sink(receiveCompletion: {_ in }) { [weak self] alertDialogModel in
+                self?.alertDialogModel = alertDialogModel
+            }
+            .store(in: &cancellables)
+        
+  
 
         AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
             self?.unreadNotificationCount = kInt.intValue
-        }
-    }
-
-    func showLoginView() {
-        DispatchQueue.main.async {
-            self.registrationService.reset()
-            self.loginViewScreenNr = 0
-            self.hasCredentials = false
-        }
-    }
-
-    func showConsentView() {
-        DispatchQueue.main.async {
-            self.loginViewScreenNr = 1
-            self.consentViewModel.onAppear()
         }
     }
 
@@ -147,35 +141,3 @@ class ContentViewModel: ObservableObject {
     }
 }
 
-extension ContentViewModel: LoginViewModelListener {
-    func tokenValid(study: Study) {
-        DispatchQueue.main.async {
-            self.consentViewModel.consentInfo = study.consentInfo
-            self.consentViewModel.buildConsentModel()
-            self.showConsentView()
-        }
-    }
-}
-
-extension ContentViewModel: ConsentViewModelListener {
-    func decline() {
-        showLoginView()
-    }
-
-    func credentialsStored() {
-        reinitAllViewModels()
-        DispatchQueue.main.async { [weak self] in
-            self?.hasCredentials = true
-        }
-        AppDelegate.shared.doNewLogin()
-    }
-
-    func credentialsDeleted() {
-        DispatchQueue.main.async { [weak self] in
-            if let self {
-                self.hasCredentials = false
-            }
-        }
-        showLoginView()
-    }
-}

@@ -19,6 +19,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.composables.FilterView
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -39,6 +41,8 @@ fun ScheduleListHeader(
     navController: NavController,
     taskCompletionBarViewModel: TaskCompletionBarViewModel
 ) {
+    val filterViewModel =
+        remember { DashboardFilterViewModel(viewModel.coreViewModel.coreFilterModel) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.height(IntrinsicSize.Min)
@@ -60,7 +64,7 @@ fun ScheduleListHeader(
         }
         FilterView(
             navController,
-            model = viewModel.filterModel,
+            model = filterViewModel,
             scheduleListType = viewModel.scheduleListType
         )
     }
