@@ -9,7 +9,7 @@ on:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-latest
+    runs-on: macos-15
     environment: AppStore
     env:
       FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}

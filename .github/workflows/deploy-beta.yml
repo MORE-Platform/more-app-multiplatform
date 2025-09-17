@@ -11,7 +11,7 @@ on:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-latest
+    runs-on: macos-15
     environment: AppStore
     if: startsWith(github.ref, 'refs/tags/')
     env:
