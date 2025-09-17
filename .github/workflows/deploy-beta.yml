@@ -43,6 +43,12 @@ jobs:
         with:
           xcode-version: '26.0.0'
 
+      # Needs to be removed, after github fixed an issue with the Xcode 26 beta version
+      - name: Download iOS 26.0 Platform
+        run: |
+          xcodebuild -downloadPlatform iOS
+        working-directory: .
+
       - name: Set FASTLANE_BUILD_NUMBER from tag
         run: echo "FASTLANE_BUILD_NUMBER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
