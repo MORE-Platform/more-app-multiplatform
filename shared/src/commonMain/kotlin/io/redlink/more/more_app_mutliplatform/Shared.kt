@@ -290,7 +290,7 @@ class Shared(
         }
     }
 
-    private fun clearRemainingData() {
+    fun clearRemainingData() {
         Napier.i { "Clearing remaining data..." }
         bluetoothController.resetAll()
         Scope.launch {

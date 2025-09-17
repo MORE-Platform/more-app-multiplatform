@@ -50,6 +50,30 @@ class ObservationRecordingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Napier.i { "ObservationRecordingService called..." }
+
+        // Critical: Start foreground service immediately to prevent ANR crashes
+        // This must happen within 5 seconds when startForegroundService() is called
+        try {
+            if (!running) {
+                startForegroundService()
+            }
+        } catch (e: Exception) {
+            Napier.e("Failed to start foreground service: ${e.message}")
+            try {
+                val basicNotification = Notification.Builder(this, "default")
+                    .setContentTitle("More Observation Service")
+                    .setContentText("Service is running")
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .build()
+                startForeground(1001, basicNotification)
+                running = true
+            } catch (fallbackException: Exception) {
+                Napier.e("Failed to start foreground service with fallback notification: ${fallbackException.message}")
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        }
+
         if (observationFactory == null) {
             if (MoreApplication.shared == null) {
                 MoreApplication.initShared(applicationContext)
@@ -107,25 +131,36 @@ class ObservationRecordingService : Service() {
         super.onTaskRemoved(rootIntent)
         Napier.i { "ObservationRecordingService taskRemove!" }
 
-        // Restart the service if it's killed when the app is removed from recent apps
-        if (runningSchedules.isNotEmpty()) {
-            val restartServiceIntent =
-                Intent(applicationContext, ObservationRecordingService::class.java)
-            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+        try {
+            if (runningSchedules.isNotEmpty()) {
+                val restartServiceIntent =
+                    Intent(applicationContext, ObservationRecordingService::class.java)
+                restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
 
-            val pendingIntent = PendingIntent.getService(
-                applicationContext, 1, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
-            )
+                val pendingIntent = PendingIntent.getService(
+                    applicationContext, 1, restartServiceIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
 
-            val alarmManager =
-                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.set(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 1000,
-                pendingIntent
-            )
-
-            Napier.i { "Scheduled service restart after task removal" }
+                val alarmManager =
+                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                alarmManager?.let {
+                    try {
+                        it.set(
+                            AlarmManager.ELAPSED_REALTIME,
+                            SystemClock.elapsedRealtime() + 1000,
+                            pendingIntent
+                        )
+                        Napier.i { "Scheduled service restart after task removal" }
+                    } catch (e: SecurityException) {
+                        Napier.e("Failed to schedule restart due to security restriction: ${e.message}")
+                    } catch (e: Exception) {
+                        Napier.e("Failed to schedule service restart: ${e.message}")
+                    }
+                } ?: Napier.e("AlarmManager not available for service restart")
+            }
+        } catch (e: Exception) {
+            Napier.e("Error in onTaskRemoved: ${e.message}")
         }
     }
 
@@ -133,68 +168,136 @@ class ObservationRecordingService : Service() {
         Napier.i { "ObservationRecordingService is destroyed!" }
         running = false
 
-        // Attempt to restart the service if it's destroyed but has running schedules
-        if (runningSchedules.isNotEmpty()) {
-            Napier.i { "Service destroyed with running schedules, attempting to restart" }
-            val restartServiceIntent =
-                Intent(applicationContext, ObservationRecordingService::class.java)
-            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+        try {
+            try {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+            } catch (e: Exception) {
+                Napier.e("Failed to stop foreground service: ${e.message}")
+            }
 
-            val pendingIntent = PendingIntent.getService(
-                applicationContext, 2, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
-            )
+            if (runningSchedules.isNotEmpty()) {
+                Napier.i { "Service destroyed with running schedules, attempting to restart" }
+                val restartServiceIntent =
+                    Intent(applicationContext, ObservationRecordingService::class.java)
+                restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
 
-            val alarmManager =
-                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.set(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 1000,
-                pendingIntent
-            )
+                val pendingIntent = PendingIntent.getService(
+                    applicationContext, 2, restartServiceIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                val alarmManager =
+                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                alarmManager?.let {
+                    try {
+                        it.set(
+                            AlarmManager.ELAPSED_REALTIME,
+                            SystemClock.elapsedRealtime() + 1000,
+                            pendingIntent
+                        )
+                        Napier.i { "Scheduled service restart from onDestroy" }
+                    } catch (e: SecurityException) {
+                        Napier.e("Failed to schedule restart due to security restriction: ${e.message}")
+                    } catch (e: Exception) {
+                        Napier.e("Failed to schedule service restart from onDestroy: ${e.message}")
+                    }
+                } ?: Napier.e("AlarmManager not available for service restart from onDestroy")
+            }
+        } catch (e: Exception) {
+            Napier.e("Error in onDestroy: ${e.message}")
+        } finally {
+            try {
+                super.onDestroy()
+            } catch (e: Exception) {
+                Napier.e("Error in super.onDestroy(): ${e.message}")
+            }
         }
-
-        super.onDestroy()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         running = false
 
-        // Attempt to restart the service if it's unbound but has running schedules
-        if (runningSchedules.isNotEmpty()) {
-            Napier.i { "Service unbound with running schedules, attempting to restart" }
-            val restartServiceIntent =
-                Intent(applicationContext, ObservationRecordingService::class.java)
-            restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
+        try {
+            if (runningSchedules.isNotEmpty()) {
+                Napier.i { "Service unbound with running schedules, attempting to restart" }
+                val restartServiceIntent =
+                    Intent(applicationContext, ObservationRecordingService::class.java)
+                restartServiceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
 
-            val pendingIntent = PendingIntent.getService(
-                applicationContext, 3, restartServiceIntent, PendingIntent.FLAG_IMMUTABLE
-            )
+                val pendingIntent = PendingIntent.getService(
+                    applicationContext, 3, restartServiceIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
 
-            val alarmManager =
-                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.set(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 1000,
-                pendingIntent
-            )
+                val alarmManager =
+                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                alarmManager?.let {
+                    try {
+                        it.set(
+                            AlarmManager.ELAPSED_REALTIME,
+                            SystemClock.elapsedRealtime() + 1000,
+                            pendingIntent
+                        )
+                        Napier.i { "Scheduled service restart from onUnbind" }
+                    } catch (e: SecurityException) {
+                        Napier.e("Failed to schedule restart due to security restriction: ${e.message}")
+                    } catch (e: Exception) {
+                        Napier.e("Failed to schedule service restart from onUnbind: ${e.message}")
+                    }
+                } ?: Napier.e("AlarmManager not available for service restart from onUnbind")
+            }
+        } catch (e: Exception) {
+            Napier.e("Error in onUnbind: ${e.message}")
         }
 
-        return super.onUnbind(intent)
+        return try {
+            super.onUnbind(intent)
+        } catch (e: Exception) {
+            Napier.e("Error in super.onUnbind(): ${e.message}")
+            false
+        }
     }
 
     private fun startObservation(scheduleId: Set<String>) {
         Napier.i { "Starting the foreground service for scheduleId: $scheduleId..." }
-        startForegroundService()
-        scope.launch {
-            if (MoreApplication.shared!!.repositories.study.study.value?.active == true) {
-                scheduleId.forEach {
-                    if (observationManager?.start(it) == true) {
-                        runningSchedules.add(it)
+        try {
+            startForegroundService()
+            scope.launch {
+                try {
+                    if (MoreApplication.shared!!.repositories.study.study.value?.active == true) {
+                        scheduleId.forEach { id ->
+                            try {
+                                if (observationManager?.start(id) == true) {
+                                    runningSchedules.add(id)
+                                    Napier.d { "Successfully started observation for schedule: $id" }
+                                } else {
+                                    Napier.w { "Failed to start observation for schedule: $id" }
+                                }
+                            } catch (e: Exception) {
+                                Napier.e("Error starting observation for schedule $id: ${e.message}")
+                            }
+                        }
+                    } else {
+                        Napier.w { "Study is not active, skipping observation start" }
+                    }
+
+                    if (runningSchedules.isEmpty()) {
+                        Napier.i { "No observations started, stopping service" }
+                        stopService()
+                    }
+                } catch (e: Exception) {
+                    Napier.e("Error in startObservation coroutine: ${e.message}")
+                    if (runningSchedules.isEmpty()) {
+                        stopService()
                     }
                 }
             }
-            if (runningSchedules.isEmpty()) {
+        } catch (e: Exception) {
+            Napier.e("Error starting observation: ${e.message}")
+            try {
                 stopService()
+            } catch (stopError: Exception) {
+                Napier.e("Error stopping service after startup failure: ${stopError.message}")
             }
         }
     }
@@ -263,26 +366,87 @@ class ObservationRecordingService : Service() {
     }
 
     private fun restartAll() {
-        startForegroundService()
-        scope.launch {
-            val startedObservations = observationManager?.restartStillRunning() ?: emptySet()
-            if (startedObservations.isEmpty()) {
-                if (observationManager?.hasRunningTasks() == false) {
-                    stopAll()
+        try {
+            startForegroundService()
+            scope.launch {
+                try {
+                    Napier.i { "Restarting all running observations..." }
+                    val startedObservations =
+                        observationManager?.restartStillRunning() ?: emptySet()
+
+                    if (startedObservations.isNotEmpty()) {
+                        runningSchedules.clear()
+                        runningSchedules.addAll(startedObservations)
+                        Napier.i { "Restarted ${startedObservations.size} observations: $startedObservations" }
+                    } else {
+                        Napier.i { "No observations to restart" }
+                        val hasRunningTasks = try {
+                            observationManager?.hasRunningTasks() == true
+                        } catch (e: Exception) {
+                            Napier.e("Error checking running tasks: ${e.message}")
+                            false
+                        }
+
+                        if (!hasRunningTasks) {
+                            Napier.i { "No running tasks found, stopping service" }
+                            stopAll()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Napier.e("Error in restartAll coroutine: ${e.message}")
+                    try {
+                        if (runningSchedules.isEmpty() && observationManager?.hasRunningTasks() != true) {
+                            Napier.i { "No active observations after restart error, stopping service" }
+                            stopAll()
+                        }
+                    } catch (stopError: Exception) {
+                        Napier.e("Error handling restart failure: ${stopError.message}")
+                    }
                 }
+            }
+        } catch (e: Exception) {
+            Napier.e("Error starting foreground service in restartAll: ${e.message}")
+            try {
+                stopAll()
+            } catch (stopError: Exception) {
+                Napier.e("Error stopping service after restartAll failure: ${stopError.message}")
             }
         }
     }
 
     private fun startForegroundService() {
         Napier.d { "Starting the foreground service..." }
-        val notification = buildNotification(
-            channelId = getString(R.string.default_channel_id),
-            notificationTitle = getString(R.string.more_observation_running),
-            notificationText = getString(R.string.more_observation_notification_explanation)
-        )
-        startForeground(1001, notification)
-        running = true
+        try {
+            val channelId = try {
+                getString(R.string.default_channel_id)
+            } catch (e: Exception) {
+                "default"
+            }
+
+            val notificationTitle = try {
+                getString(R.string.more_observation_running)
+            } catch (e: Exception) {
+                "More Observation Service"
+            }
+
+            val notificationText = try {
+                getString(R.string.more_observation_notification_explanation)
+            } catch (e: Exception) {
+                "Service is running"
+            }
+
+            val notification = buildNotification(
+                channelId = channelId,
+                notificationTitle = notificationTitle,
+                notificationText = notificationText
+            )
+            startForeground(1001, notification)
+            running = true
+            Napier.d { "Foreground service started successfully" }
+        } catch (e: Exception) {
+            Napier.e("Failed to start foreground service: ${e.message}")
+            throw e
+        }
     }
 
     private fun buildNotification(
@@ -290,26 +454,47 @@ class ObservationRecordingService : Service() {
         notificationTitle: String,
         notificationText: String,
     ): Notification {
-        val channel = NotificationChannel(
-            channelId,
-            channelId,
-            NotificationManager.IMPORTANCE_LOW
-        )
+        try {
+            val channel = NotificationChannel(
+                channelId,
+                channelId,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "More observation service notifications"
+                enableLights(false)
+                enableVibration(false)
+            }
 
-        val intent = Intent(this, ContentActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        applicationContext.getSystemService(NotificationManager::class.java)
-            .createNotificationChannel(channel)
-        return Notification.Builder(applicationContext, channelId)
-            .setContentText(notificationText)
-            .setContentTitle(notificationTitle)
-            .setSmallIcon(R.mipmap.ic_more_logo_hf_v2)
-            .setContentIntent(pendingIntent)
-            .build()
+            val intent = Intent(this, ContentActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+
+            val pendingIntent = PendingIntent.getActivity(
+                this, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val notificationManager =
+                applicationContext.getSystemService(NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(channel)
+
+            return Notification.Builder(applicationContext, channelId)
+                .setContentText(notificationText)
+                .setContentTitle(notificationTitle)
+                .setSmallIcon(R.mipmap.ic_more_logo_hf_v2)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .setAutoCancel(false)
+                .build()
+        } catch (e: Exception) {
+            Napier.e("Failed to build notification: ${e.message}")
+            return Notification.Builder(applicationContext, "default")
+                .setContentTitle("More Service")
+                .setContentText("Running")
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setOngoing(true)
+                .build()
+        }
     }
 
     companion object {
@@ -400,7 +585,6 @@ class ObservationRecordingService : Service() {
          */
         private fun startWithoutPermissionCheck(scheduleIds: Set<String>) {
             Scope.launch(Dispatchers.IO) {
-                // Always start observations regardless of foreground/background state
                 if (scheduleIds.isNotEmpty()) {
                     val serviceIntent =
                         Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
