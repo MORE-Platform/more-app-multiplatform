@@ -90,8 +90,6 @@ class Shared(
     private fun onApplicationStart() {
         if (credentialRepository.hasCredentials()) {
             activateObservationWatcher()
-        } else {
-            clearRemainingData()
         }
     }
 
@@ -316,7 +314,7 @@ class Shared(
         }
     }
 
-    private fun clearRemainingData() {
+    fun clearRemainingData() {
         Napier.i { "Clearing remaining data..." }
         bluetoothController.resetAll()
         Scope.launch {
