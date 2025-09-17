@@ -10,8 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
-import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
@@ -30,6 +29,8 @@ class CoreNotificationViewModel(
     private val originalNotificationList = mutableListOf<NotificationModel>()
     private val _notificationList: MutableStateFlow<List<NotificationModel>> =
         MutableStateFlow(listOf())
+
+    @NativeCoroutines
     val notificationList: StateFlow<List<NotificationModel>> = _notificationList
 
     init {
@@ -57,10 +58,6 @@ class CoreNotificationViewModel(
                     }
                 }
         }
-    }
-    
-    fun onNotificationLoad(provideNewState: ((List<NotificationModel>) -> Unit)): Closeable {
-        return _notificationList.asClosure(provideNewState)
     }
 
     fun handleNotificationAction(

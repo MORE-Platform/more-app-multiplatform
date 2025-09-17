@@ -91,8 +91,9 @@ struct LoginView: View {
                             if registration.isLoading {
                                 ProgressView()
                                     .progressViewStyle(.circular)
+                                    .tint(.more.primary)
                             } else {
-                                LoginButton(stringTable: .constant(stringTable), disabled: .constant(model.token.count == 0)) {
+                                LoginButton(disabled: .constant(model.token.count == 0)) {
                                     if registration.connected {
                                         model.validate()
                                     } else {
@@ -104,8 +105,6 @@ struct LoginView: View {
                         }
                     }
                     .frame(minHeight: 75)
-                    ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
-                        .environmentObject(model)
                 }
 
                 Spacer()
@@ -131,12 +130,6 @@ struct LoginView: View {
             }
             .padding(.horizontal, 60)
         }
-        .onAppear {
-            registration.onAppear()
-        }
-        .onDisappear {
-            registration.onDisappear()
-        }
     }
 }
 
@@ -144,6 +137,6 @@ struct LoginView_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repos = MainRepository(appDatabase: database)
     static var previews: some View {
-        LoginView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
+        LoginView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
     }
 }

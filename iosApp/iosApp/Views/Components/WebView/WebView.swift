@@ -24,6 +24,7 @@ struct WebView: View {
         VStack {
             if viewModel.progress < 1 {
                 ProgressView(value: viewModel.progress, total: 1)
+                    .tint(.more.primary)
             }
             SwiftUIWebView(viewModel: viewModel, url: url)
                 .refreshable {

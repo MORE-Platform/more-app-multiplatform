@@ -14,25 +14,31 @@
 //
 
 import shared
+import Combine
+import KMPNativeCoroutinesCombine
 
 class StudyDetailsViewModel: ObservableObject {
-    private let coreModel = CoreStudyDetailsViewModel(appDatabase: AppDelegate.database)
+    private let coreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared)
     @Published var studyDetailsModel: StudyDetailsModel?
     var studyStart: Date = Date()
     var studyEnd: Date = Date()
     
+    private var cancellables = Set<AnyCancellable>()
     init() {
-        coreModel.onLoadStudyDetails() {[weak self] studyDetails in
-            if let self, let studyDetails {
-                self.studyDetailsModel = studyDetails
-                if let start = studyDetails.study.start {
-                    self.studyStart = start.toInt64().toDate()
-                }
-                if let end = studyDetails.study.end {
-                    self.studyEnd = end.toInt64().toDate()
+        createPublisher(for: coreModel.studyModel)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] studyDetails in
+                self?.studyDetailsModel = studyDetails
+                if let studyDetailsModel = studyDetails {
+                    if let start = studyDetails?.study.start?.toInt64().toDate() {
+                        self?.studyStart = start
+                    }
+                    if let end = studyDetails?.study.end?.toInt64().toDate() {
+                        self?.studyEnd = end
+                    }
                 }
             }
-        }
+            .store(in: &cancellables)
     }
     
     func viewDidAppear() {

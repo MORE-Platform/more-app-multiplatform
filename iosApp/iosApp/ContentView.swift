@@ -70,7 +70,7 @@ struct RegistrationView: View {
     @StateObject private var registration = RegistrationObservable(service: RegistrationService(shared: AppDelegate.shared))
     var body: some View {
         VStack {
-            if registration.validLoginModel != nil {
+            if registration.study != nil {
                 ConsentView(registration: registration)
             } else {
                 LoginView(registration: registration)

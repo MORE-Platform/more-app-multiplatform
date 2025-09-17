@@ -14,22 +14,23 @@
 //
 
 import shared
+import Combine
+import KMPNativeCoroutinesCombine
 
 class TaskCompletionBarViewModel: ObservableObject {
     @Published var taskCompletion: TaskCompletion = TaskCompletion(finishedTasks: 0, totalTasks: 0)
     @Published var taskCompletionPercentage: Double = 0
-    var coreViewModel = CoreTaskCompletionBarViewModel(database: AppDelegate.database)
+    var coreViewModel = CoreTaskCompletionBarViewModel(repository: AppDelegate.shared.repositories)
+    
+    private var cancellables: Set<AnyCancellable> = []
     
     init() {
-        loadTaskCompletion()
-    }
-    
-    func loadTaskCompletion() {
-        self.coreViewModel.onLoadTaskCompletion { taskCompletion in
-            self.taskCompletion = taskCompletion
-            if taskCompletion.totalTasks != 0 {
-                self.taskCompletionPercentage = (Double(taskCompletion.finishedTasks)/Double(taskCompletion.totalTasks)) * 100
+        createPublisher(for: coreViewModel.taskCompletion)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] completion in
+                self?.taskCompletion = completion
+                self?.taskCompletionPercentage = (Double(completion.finishedTasks)/Double(completion.totalTasks)) * 100
             }
-        }
+            .store(in: &cancellables)
     }
 }

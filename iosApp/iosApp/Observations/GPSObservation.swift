@@ -23,8 +23,8 @@ class GPSObservation: Observation_ {
     public var currentLocation = CLLocation()
     private var running = false
 
-    init(database: AppDatabase, sensorPermissions: Set<String>) {
-        super.init(database: database, observationType: GPSType(sensorPermissions: sensorPermissions))
+    init(repos: MainRepository, sensorPermissions: Set<String>) {
+        super.init(repos: repos, observationType: GPSType(sensorPermissions: sensorPermissions))
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }

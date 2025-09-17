@@ -38,24 +38,20 @@ class ConsentViewModel: ObservableObject {
         self.registration = registrationService
         coreModel = CoreConsentViewModel(registrationService: registrationService, studyConsentTitle: String(localized: "study_consent"))
  
-    }
-    
-    func onAppear() {
-        permissionManager.observer = self
-        
         createPublisher(for: coreModel.permissions)
-            .sink { completed in
-                print("Permissions sink completed: \(completed)")
-            } receiveValue: { [weak self] model in
+            .receive(on: DispatchQueue.main)
+            .sink { _ in} receiveValue: { [weak self] model in
                 self?.permissionModel = model
             }
             .store(in: &cancellables)
     }
+    
+    func onAppear() {
+        permissionManager.observer = self
+    }
 
     func onDisappear() {
         permissionManager.observer = nil
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
     }
     
     func resetPermissionRequest() {
@@ -81,22 +77,23 @@ class ConsentViewModel: ObservableObject {
 
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
-        if permissionManager.anyNeededPermissionDeclined() {
-            AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-                AlertController.shared.closeAlertDialog()
-                self.resetPermissionRequest()
-            }, onNegative: {
+        Task { @MainActor in
+            if permissionManager.anyNeededPermissionDeclined() {
+                AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
+                    if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                    AlertController.shared.closeAlertDialog()
+                    self.resetPermissionRequest()
+                }, onNegative: {
+                    self.acceptConsent()
+                    self.requestedPermissions = false
+                    AlertController.shared.closeAlertDialog()
+                }))
+            } else {
                 self.acceptConsent()
                 self.requestedPermissions = false
-                AlertController.shared.closeAlertDialog()
-            }))
-        } else {
-            self.acceptConsent()
-            self.requestedPermissions = false
+            }
         }
-        
     }
 }

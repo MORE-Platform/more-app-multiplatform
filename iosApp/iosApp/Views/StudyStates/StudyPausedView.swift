@@ -19,9 +19,9 @@ struct StudyPausedView: View {
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            Title(titleText: "\("Study currently paused")!", textAlignment: .center)
+            Title(titleText: "\(String(localized: "Study currently paused"))!", textAlignment: .center)
                 .padding(.bottom, 8)
-            Title2(titleText: "\("This study is currently paused by the Study Operator and will be resumed shortly")!", textAlignment: .center)
+            Title2(titleText: "\(String(localized: "This study is currently paused by the Study Operator and will be resumed shortly"))!", textAlignment: .center)
             Spacer()
         }
     }

@@ -18,13 +18,12 @@ import SwiftUI
 struct DatapointsCollection: View {
     @Binding var datapoints: Int64
     var running: Bool
-    private let stringTable = "TaskDetail"
     var body: some View {
         VStack {
             if running {
                 CircleActivityIndicator()
             }
-            Title2(titleText: String.localize(forKey: "Collected Datapoints", withComment: "Shows collected Datapoints beneath", inTable: stringTable))
+            Title2(titleText: "Collected Datapoints")
             
             Text(String(datapoints))
                 .font(.more.title2)

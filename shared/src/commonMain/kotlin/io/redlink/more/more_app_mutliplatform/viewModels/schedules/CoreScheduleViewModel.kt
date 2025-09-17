@@ -10,6 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.time
@@ -43,9 +44,13 @@ class CoreScheduleViewModel(
     private var originalScheduleList = emptySet<ScheduleModel>()
 
     private val _schedulesByDate = MutableStateFlow<Map<Long, List<ScheduleModel>>>(emptyMap())
+
+    @NativeCoroutines
     val schedulesByDate: StateFlow<Map<Long, List<ScheduleModel>>> = _schedulesByDate
 
     private val _observationErrors = MutableStateFlow<Map<String, Set<String>>>(emptyMap())
+
+    @NativeCoroutines
     val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
 
     private val sortedSchedulesCache = mutableMapOf<LocalDate, List<ScheduleModel>>()
@@ -54,9 +59,6 @@ class CoreScheduleViewModel(
     init {
         launchScope {
             observationFactory.observationErrors.collect {
-                val actions = it.mapValues { entry ->
-                    entry.value.filter { it == Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
-                }
                 val errors = it.mapValues { entry ->
                     entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
                 }
@@ -137,19 +139,6 @@ class CoreScheduleViewModel(
 
     fun numberOfObservationErrors(): Int = _observationErrors.value.values.flatten().toSet().count()
 
-    fun getSortedSchedulesForDate(date: LocalDate): List<ScheduleModel> {
-        return sortedSchedulesCache.getOrPut(date) {
-            _schedulesByDate.value[date.time()]?.sortedWith(
-                compareBy(
-                    { it.start },
-                    { it.end },
-                    { it.observationTitle },
-                    { it.scheduleId }
-                )
-            ) ?: emptyList()
-        }
-    }
-
     private fun updateSchedulesFromSnapshot(newSchedules: Collection<ScheduleModel>) {
         val newMap: Map<Long, List<ScheduleModel>> =
             newSchedules
@@ -169,53 +158,6 @@ class CoreScheduleViewModel(
             _schedulesByDate.update { newMap }
             invalidateCache()
         }
-    }
-
-    private fun updateSchedulesEfficiently(
-        added: Set<ScheduleModel>,
-        removed: Set<String>,
-        updated: Set<ScheduleModel>
-    ) {
-        val currentSchedules = _schedulesByDate.value.toMutableMap()
-
-        if (removed.isNotEmpty() || updated.isNotEmpty()) {
-            val idsToRemove = removed + updated.map { it.scheduleId }
-            val updatedSchedules = mutableMapOf<Long, List<ScheduleModel>>()
-            for ((date, schedules) in currentSchedules) {
-                val filteredSchedules = schedules.filterNot { it.scheduleId in idsToRemove }
-                if (filteredSchedules.isNotEmpty()) {
-                    updatedSchedules[date] = filteredSchedules
-                }
-            }
-            currentSchedules.clear()
-            currentSchedules.putAll(updatedSchedules)
-        }
-
-        val schedulesToAdd = added + updated
-        if (schedulesToAdd.isNotEmpty()) {
-            schedulesToAdd.groupBy { schedule ->
-                Instant.fromEpochSeconds(schedule.start)
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
-            }.forEach { (date, schedules) ->
-                currentSchedules[date.time()] = mergeAndSortSchedules(
-                    schedules,
-                    currentSchedules[date.time()] ?: emptyList()
-                )
-            }
-        }
-
-        _schedulesByDate.update { currentSchedules.toMap() }
-        invalidateCache()
-    }
-
-    private fun mergeAndSortSchedules(
-        newSchedules: List<ScheduleModel>,
-        existingSchedules: List<ScheduleModel>
-    ): List<ScheduleModel> {
-        val existingMap = existingSchedules.associateBy { it.scheduleId }
-        val newMap = newSchedules.associateBy { it.scheduleId }
-
-        return (existingMap + newMap).values.sortedBy { it.start }
     }
 
     private fun invalidateCache() {

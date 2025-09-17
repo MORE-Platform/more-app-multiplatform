@@ -86,7 +86,7 @@ struct ExpandableText: View {
                     self.expanded.toggle()
                     rotateFold.toggle()
                 }) {
-                    Text(self.expanded ? "Read Less" : "Read More")
+                    Text(LocalizedStringKey(self.expanded ? "Read Less" : "Read More"))
                         .font(.system(size: 16))
                         
                 }

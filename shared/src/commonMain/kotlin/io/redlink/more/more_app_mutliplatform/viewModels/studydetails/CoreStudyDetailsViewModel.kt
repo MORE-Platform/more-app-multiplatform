@@ -10,9 +10,8 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
-import io.ktor.utils.io.core.Closeable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.Shared
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +22,8 @@ import kotlinx.coroutines.flow.firstOrNull
 
 class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
     private val _studyModel = MutableStateFlow<StudyDetailsModel?>(null)
+
+    @NativeCoroutines
     val studyModel: StateFlow<StudyDetailsModel?> = _studyModel
 
     init {
@@ -47,9 +48,5 @@ class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
                     _studyModel.value = studyDetailsModel
                 }
         }
-    }
-
-    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
-        return studyModel.asClosure(provideNewState)
     }
 }

@@ -14,6 +14,7 @@ struct StudyLoadingView: View {
             Spacer()
             Title(titleText: "Study loading…", textAlignment: .center)
             ProgressView()
+                .tint(.more.primary)
                 .scaleEffect(1.5)
                 .padding(.vertical, 8)
             Spacer()

@@ -41,7 +41,7 @@ struct BluetoothConnectionView: View {
             ScrollView {
                 LazyVStack(alignment: .leading) {
                     Title(titleText: "External Device Setup")
-                    BasicText(text: "\("Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices"):", color: Color.more.secondary)
+                    BasicText(text: "\(String(localized: "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices")):", color: Color.more.secondary)
                         .padding(.vertical, 8)
                     
                     ForEach(viewModel.neededDevices, id: \.self) { device in
@@ -101,6 +101,7 @@ struct BluetoothConnectionView: View {
                                                 if let address = device.address, viewModel.connectingDevices.contains(address) {
                                                     Spacer()
                                                     ProgressView()
+                                                        .tint(.more.primary)
                                                 }
                                             }
                                             Divider()
@@ -116,6 +117,7 @@ struct BluetoothConnectionView: View {
                             if viewModel.bluetoothIsScanning {
                                 HStack {
                                     ProgressView()
+                                        .tint(.more.primary)
                                         .padding(.trailing, 4)
                                     BasicText(text: "\("Searching for devices")...")
                                 }
@@ -138,6 +140,8 @@ struct BluetoothConnectionView: View {
 
 struct BluetoothConnectionView_Previews: PreviewProvider {
     static var previews: some View {
-        BluetoothConnectionView(viewOpen: .constant(false))
+        MoreMainBackgroundView(contentPadding: 8) {
+            BluetoothConnectionView(viewOpen: .constant(false))
+        }
     }
 }

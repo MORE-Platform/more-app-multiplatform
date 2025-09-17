@@ -22,7 +22,7 @@ val ktorVersion = "3.2.3"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
 val gsonVersion = "2.13.2"
-val roomVersion = "2.8.0"
+val roomVersion = "2.7.2"
 val sqliteVersion = "2.6.0"
 
 kotlin {
@@ -95,6 +95,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 room {
@@ -106,12 +111,6 @@ dependencies {
     add("kspIosArm64", "androidx.room:room-compiler:$roomVersion")
     add("kspIosSimulatorArm64", "androidx.room:room-compiler:$roomVersion")
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
-}
-
-tasks.register("testClasses") {
-    doLast {
-        println("This is a dummy testClasses task")
-    }
 }
 
 // Add this after your existing KSP configuration

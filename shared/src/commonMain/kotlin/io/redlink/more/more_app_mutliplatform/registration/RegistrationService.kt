@@ -2,6 +2,7 @@ package io.redlink.more.more_app_mutliplatform.registration
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import dev.tmapps.konnection.Konnection
+import io.github.aakira.napier.Napier
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
@@ -15,7 +16,6 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Obs
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +54,7 @@ class RegistrationService(
         Scope.launch(Dispatchers.IO) {
             konnection.observeHasConnection().collect {
                 _connected.value = it
+                Napier.i("Device connected: $it")
             }
         }
     }
@@ -67,6 +68,7 @@ class RegistrationService(
     fun sendRegistrationToken(
         loginModel: LoginModel
     ) {
+        clearError()
         _isLoading.value = true
         Scope.launch {
             val (result, networkError) = shared.networkService.validateRegistrationToken(loginModel)
@@ -84,6 +86,7 @@ class RegistrationService(
     fun acceptConsent(
         uniqueDeviceId: String,
     ) {
+        clearError()
         validLoginModel.value?.let { loginModel ->
             study.value?.let { study ->
                 val studyConsent = StudyConsent(
@@ -119,8 +122,7 @@ class RegistrationService(
                 }
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
-                if (shared.credentialRepository.store(credentialModel) && shared.credentialRepository.hasCredentials.value) {
-                    ViewManager.studyIsUpdating(true)
+                if (shared.credentialRepository.store(credentialModel)) {
                     val (study, error) = shared.networkService.getStudyConfig()
                     _error.value = error
                     study?.let { study ->
@@ -133,7 +135,6 @@ class RegistrationService(
                             _error.value = NetworkServiceError(null, "Could not get study")
                         }
                     }
-                    ViewManager.studyIsUpdating(false)
                 } else {
                     _error.value = NetworkServiceError(null, "Could not store credentials")
                 }

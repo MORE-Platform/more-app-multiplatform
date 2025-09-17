@@ -10,7 +10,7 @@
  */
 package io.redlink.more.app.android.activities.notification
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
@@ -35,7 +35,7 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
         coreViewModel.handleNotificationAction(notification) { actionType, data ->
             when (actionType) {
-                NotificationActionHandler.DEEPLINK -> navController.navigate(Uri.parse(data))
+                NotificationActionHandler.DEEPLINK -> navController.navigate(data.toUri())
             }
         }
     }
@@ -44,6 +44,6 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         if (!coreFilterViewModel.filterActive()) {
             return stringResource(R.string.more_filter_notification_all)
         }
-        return coreFilterViewModel.getActiveTypes().joinToString(", ")
+        return coreFilterViewModel.activeTypes.value.joinToString(", ")
     }
 }

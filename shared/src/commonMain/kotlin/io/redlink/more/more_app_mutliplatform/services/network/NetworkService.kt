@@ -36,7 +36,6 @@ import io.redlink.more.more_app_mutliplatform.models.LoginModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
@@ -312,25 +311,31 @@ class NetworkService(
         }
     }
 
-    private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
+    private suspend fun createErrorBody(
+        code: Int,
+        responseBody: HttpResponse?
+    ): NetworkServiceError {
         return try {
             if (responseBody == null) {
                 return NetworkServiceError(code = code, message = "Error")
             }
-            val error = Json.decodeFromString<Error>(
-                responseBody.toString()
-            )
-            NetworkServiceError(code = code, message = error.msg ?: "Error")
+            val error: Error? = try {
+                responseBody.body<Error>()
+            } catch (_: Exception) {
+                null
+            }
+
+            NetworkServiceError(code = code, message = error?.msg ?: "Error")
         } catch (e: Exception) {
-            getException(e)
+            getException(e, code)
         }
     }
 
-    private fun getException(exception: Exception): NetworkServiceError {
+    private fun getException(exception: Exception, code: Int? = null): NetworkServiceError {
         val errorResponse = "System error!"
         Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
         exception.printStackTrace()
-        return NetworkServiceError(null, errorResponse)
+        return NetworkServiceError(code, errorResponse)
     }
 
     override fun close() {
@@ -340,13 +345,4 @@ class NetworkService(
         httpClient = null
     }
 
-    private fun serializeToNDJson(logs: List<Log>): String {
-        return buildString {
-            logs.forEach { log ->
-                appendLine("{\"index\":{}}")
-                appendLine(Json.encodeToString(log))
-            }
-        }
-    }
 }
-

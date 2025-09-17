@@ -17,12 +17,13 @@ import shared
 import SwiftUI
 
 struct NotificationView: View {
-    @StateObject var notificationViewModel: NotificationViewModel
-    @StateObject var filterVM: NotificationFilterViewModel
-    private let navigationStrings = "Navigation"
-    private let stringTable = "NotificationView"
+    @StateObject private var notificationViewModel: NotificationViewModel
 
     @EnvironmentObject private var navigationModalState: NavigationModalState
+    
+    init(coreFilterVM: CoreNotificationFilterViewModel) {
+        _notificationViewModel = StateObject(wrappedValue: NotificationViewModel(filterViewModel: coreFilterVM))
+    }
 
     var body: some View {
         VStack {
@@ -30,7 +31,7 @@ struct NotificationView: View {
                 .padding(.bottom)
 
             if notificationViewModel.notificationList.isEmpty {
-                EmptyListView(text: "There are currently no notficiations to show".localize(withComment: "Empty notification list", useTable: stringTable))
+                EmptyListView(text: "There are currently no notficiations to show")
             } else {
                 ScrollViewReader { _ in
                     ScrollView {
@@ -53,16 +54,8 @@ struct NotificationView: View {
                     }
                 }
             }
-            Spacer()
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            notificationViewModel.getFilterText(stringTable: stringTable)
-            notificationViewModel.viewDidAppear()
-        }
-        .onDisappear {
-            notificationViewModel.viewDidDisappear()
-        }
-        .customNavigationTitle(with: NavigationScreen.notifications.localize(useTable: navigationStrings, withComment: "Navigation title"))
+        .customNavigationTitle(with: NavigationScreen.notifications.localize())
     }
 }

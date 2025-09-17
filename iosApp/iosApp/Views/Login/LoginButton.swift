@@ -17,7 +17,6 @@ import SwiftUI
 import shared
 
 struct LoginButton: View {
-    @Binding var stringTable: String
     @Binding var disabled: Bool
     let action: () -> Void
 
@@ -33,7 +32,7 @@ struct LoginButton: View {
 struct LoginButton_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
-        LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false)) {
+        LoginButton(disabled: .constant(false)) {
             print("Hello World")
         }
     }

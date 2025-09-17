@@ -17,9 +17,12 @@ import shared
 import SwiftUI
 
 struct ObservationDetailsView: View {
-    @StateObject var viewModel: ObservationDetailsViewModel
-    private let stringTable = "ObservationDetails"
-    private let navigationStrings = "Navigation"
+    @StateObject private var viewModel: ObservationDetailsViewModel
+    
+    init(observationId: String) {
+        _viewModel = StateObject(wrappedValue: ObservationDetailsViewModel(observationId: observationId))
+    }
+    
     
     var body: some View {
         VStack(
@@ -48,13 +51,13 @@ struct ObservationDetailsView: View {
             ObservationDetailsData(dateRange: date, timeframe: time)
             
             HStack {
-                AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.observationDetailModel?.participantInformation ?? "", isOpen: true)
+                AccordionItem(title: "Participant Information", info: viewModel.observationDetailModel?.participantInformation ?? "", isOpen: true)
             }
             .padding(.top, 10)
             
             Spacer()
         }
-        .customNavigationTitle(with: NavigationScreen.observationDetails.localize(useTable: navigationStrings, withComment: "Observation Detail"))
+        .customNavigationTitle(with: NavigationScreen.observationDetails.localize())
         .onAppear {
             viewModel.viewDidAppear()
         }

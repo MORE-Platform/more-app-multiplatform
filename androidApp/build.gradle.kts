@@ -62,6 +62,12 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     signingConfigs {
         create("release") {
             val keystorePath = getEnvOrProperty("ANDROID_KEYSTORE_PATH", envProps) ?: ""
@@ -148,7 +154,7 @@ val workVersion = "2.10.3"
 val navVersion = "2.9.3"
 val polarSDKVersion = "6.6.0"
 val ktorVersion = "3.2.3"
-val roomVersion = "2.8.0"
+val roomVersion = "2.7.2"
 val koinVersion = "4.1.1"
 val cameraVersion = "1.4.2"
 

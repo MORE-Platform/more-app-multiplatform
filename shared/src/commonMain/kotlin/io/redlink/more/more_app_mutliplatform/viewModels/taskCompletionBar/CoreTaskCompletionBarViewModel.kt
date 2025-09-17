@@ -10,17 +10,21 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar
 
-import io.ktor.utils.io.core.Closeable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskCompletion
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 
 class CoreTaskCompletionBarViewModel(private val repository: MainRepository) : CoreViewModel() {
-    val taskCompletion: MutableStateFlow<TaskCompletion> = MutableStateFlow(TaskCompletion())
+    private val _taskCompletion: MutableStateFlow<TaskCompletion> =
+        MutableStateFlow(TaskCompletion())
+
+    @NativeCoroutines
+    val taskCompletion: StateFlow<TaskCompletion> = _taskCompletion
 
     init {
         launchScope {
@@ -33,16 +37,8 @@ class CoreTaskCompletionBarViewModel(private val repository: MainRepository) : C
                         scheduleCount
                     )
                 }.cancellable().collect {
-                    taskCompletion.emit(it)
+                    _taskCompletion.value = it
                 }
         }
-    }
-
-    override fun viewDidAppear() {
-
-    }
-
-    fun onLoadTaskCompletion(provideNewState: ((taskCompletion: TaskCompletion) -> Unit)): Closeable {
-        return taskCompletion.asClosure(provideNewState)
     }
 }

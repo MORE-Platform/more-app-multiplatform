@@ -17,7 +17,7 @@ struct MoreAlertDialog: View {
             Color.black.opacity(0.5)
                 .ignoresSafeArea(edges: .all)
             VStack(spacing: 20) {
-                Text(alertDialogModel.title)
+                Text(LocalizedStringKey(alertDialogModel.title))
                     .foregroundColor(.more.primary)
                     .font(.headline)
                     .multilineTextAlignment(.center)
@@ -27,7 +27,7 @@ struct MoreAlertDialog: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading) {
-                        Text(alertDialogModel.message)
+                        Text(LocalizedStringKey(alertDialogModel.message))
                             .foregroundColor(.more.primary)
                             .font(.subheadline)
                             .multilineTextAlignment(.leading)
@@ -43,7 +43,7 @@ struct MoreAlertDialog: View {
                             onPositive()
                         }
                     } label: {
-                        Text(alertDialogModel.positiveTitle)
+                        Text(LocalizedStringKey(alertDialogModel.positiveTitle))
                     }
 
                     if let negativeTitle = alertDialogModel.negativeTitle {
@@ -53,10 +53,10 @@ struct MoreAlertDialog: View {
                             }
                         } label: {
                             if #available(iOS 17.0, *) {
-                                Text(negativeTitle)
+                                Text(LocalizedStringKey(negativeTitle))
                                     .foregroundStyle(Color.more.primary)
                             } else {
-                                Text(negativeTitle)
+                                Text(LocalizedStringKey(negativeTitle))
                                     .foregroundColor(.more.primary)
                             }
                         }

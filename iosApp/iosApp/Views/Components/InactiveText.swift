@@ -18,7 +18,7 @@ import SwiftUI
 struct InactiveText: View {
     var text: String
     var body: some View {
-        Text(text)
+        Text(LocalizedStringKey(text))
             .font(.moreFont.inactiveText)
             .foregroundColor(.more.textInactive)
             .lineLimit(1)

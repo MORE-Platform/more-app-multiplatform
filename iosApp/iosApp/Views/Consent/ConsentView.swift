@@ -20,9 +20,6 @@ struct ConsentView: View {
     @StateObject private var viewModel: ConsentViewModel
     @ObservedObject private var registration: RegistrationObservable
     
-    private let stringsTable = "ConsentView"
-    private let taskStringTable = "TaskDetail"
-    
     init(registration: RegistrationObservable) {
         _registration = ObservedObject(wrappedValue: registration)
         _viewModel = StateObject(wrappedValue: ConsentViewModel(registrationService: registration.service))
@@ -45,6 +42,7 @@ struct ConsentView: View {
                 if registration.isLoading {
                     ProgressView()
                         .progressViewStyle(.circular)
+                        .tint(.more.primary)
                 } else {
                     
                     MoreActionButton(disabled: .constant(viewModel.requestedPermissions || registration.isLoading), alertOpen: $viewModel.showErrorAlert) {
@@ -54,6 +52,7 @@ struct ConsentView: View {
                             if viewModel.requestedPermissions {
                                 ProgressView()
                                     .progressViewStyle(.circular)
+                                    .tint(.more.primary)
                             } else {
                                 Text("accept_button")
                             }
@@ -69,13 +68,13 @@ struct ConsentView: View {
             }
             .padding(24)
             .onAppear {
-                registration.onAppear()
                 viewModel.onAppear()
             }
             .onDisappear {
-                registration.onDisappear()
                 viewModel.onDisappear()
             }
+        } else {
+            StudyLoadingView()
         }
     }
 }

@@ -21,8 +21,6 @@ struct SimpleQuetionObservationView: View {
 
     @EnvironmentObject var navigationModalState: NavigationModalState
 
-    private let navigationStrings = "Navigation"
-    private let simpleQuestionStrings = "SimpleQuestinoObservation"
 
     var body: some View {
         MoreMainBackgroundView {
@@ -48,7 +46,7 @@ struct SimpleQuetionObservationView: View {
                                     navigationModalState.closeView(screen: .questionObservation)
                                 }
                             } label: {
-                                Text(String.localize(forKey: "Answer", withComment: "Click answer button to send your answer.", inTable: simpleQuestionStrings))
+                                Text("Answer")
                             }
                             .padding(.top, 30)
                         }
@@ -63,7 +61,7 @@ struct SimpleQuetionObservationView: View {
                 Spacer()
             }
         }
-        .customNavigationTitle(with: NavigationScreen.questionObservation.localize(useTable: navigationStrings, withComment: "Answer the Question Observation"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.questionObservation.localize(), displayMode: .inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {

@@ -36,6 +36,7 @@ class LoginViewModel: ObservableObject {
         Publishers.CombineLatest($endpoint, $token)
             .map { !$0.isEmpty || !$1.isEmpty }
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] hasInput in
                 self?.registrationService.clearError()
             }

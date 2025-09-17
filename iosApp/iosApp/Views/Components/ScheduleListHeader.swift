@@ -25,7 +25,7 @@ struct ScheduleListHeader: View {
 
     var body: some View {
         VStack {
-            TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: String.localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: "DashboardView"))
+            TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: "tasks_completed")
                 .padding(.bottom)
             if scheduleViewModel.numberOfObservationErrors() > 0 {
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
@@ -34,7 +34,8 @@ struct ScheduleListHeader: View {
                     HStack {
                         Image(systemName: "exclamationmark.triangle")
                             .padding(.trailing, 2)
-                        Text("\(scheduleViewModel.numberOfObservationErrors()) \("errors".localize(withComment: "Errors", useTable: "Errors"))")
+                        Text(verbatim: String(scheduleViewModel.numberOfObservationErrors()))
+                        Text("Error")
                     }
                 }
                 .padding(.bottom)
@@ -44,3 +45,4 @@ struct ScheduleListHeader: View {
         }
     }
 }
+

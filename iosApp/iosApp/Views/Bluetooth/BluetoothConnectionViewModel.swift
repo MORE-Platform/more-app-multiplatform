@@ -45,6 +45,7 @@ class BluetoothConnectionViewModel: ObservableObject {
                     }
                     .sorted { ($0.deviceName ?? "") < ($1.deviceName ?? "") }
             }
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] devices in
                 self?.connectedDevices = devices
             }
@@ -53,6 +54,7 @@ class BluetoothConnectionViewModel: ObservableObject {
         createPublisher(for: deviceManager.devicesCurrentlyConnecting)
             .map { devices in devices.compactMap { $0.address } }
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] addresses in
                 self?.connectingDevices = addresses
             }
@@ -72,6 +74,7 @@ class BluetoothConnectionViewModel: ObservableObject {
                 }
                 return sorted.map { $0.0 }
             }
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] devices in
                 self?.discoveredDevices = devices
             }
@@ -79,6 +82,7 @@ class BluetoothConnectionViewModel: ObservableObject {
         
         createPublisher(for: coreViewModel.coreBluetooth.isScanning)
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in}) { [weak self] scanning in
                 self?.bluetoothIsScanning = scanning.boolValue
             }
@@ -86,6 +90,7 @@ class BluetoothConnectionViewModel: ObservableObject {
         
         createPublisher(for: coreViewModel.coreBluetooth.bluetoothPower)
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in}) { [weak self] power in
                 self?.bluetoothPower = power
             }
