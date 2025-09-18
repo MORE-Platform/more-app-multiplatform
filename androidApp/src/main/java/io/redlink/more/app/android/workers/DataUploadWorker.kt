@@ -30,16 +30,20 @@ private const val TAG = "DataUploadWorker"
 /**
  * The Worker, which tries to upload given databulks. It receives a bulk of data ids, queries them from the SQLite and sends them to the DSB. Then it deletes those ids on a successful return.
  */
-class DataUploadWorker (
+class DataUploadWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
-    private val credentialRepository: CredentialRepository = MoreApplication.shared?.credentialRepository ?: CredentialRepository(sharedPreferences)
-    private val networkService = MoreApplication.shared?.networkService ?: NetworkService(EndpointRepository(sharedPreferences), credentialRepository)
+    private val credentialRepository: CredentialRepository =
+        MoreApplication.shared?.credentialRepository ?: CredentialRepository(sharedPreferences)
+    private val networkService = MoreApplication.shared?.networkService ?: NetworkService(
+        EndpointRepository(sharedPreferences), credentialRepository
+    )
     private var stopped = false
-    private val observationDataRepository = ObservationDataRepository()
+    private val observationDataRepository =
+        ObservationDataRepository(MoreApplication.shared!!.database)
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Napier.i { "Starting DataUploadWorker doWork()" }
@@ -53,15 +57,13 @@ class DataUploadWorker (
             Napier.i { "Worker started!" }
             return@withContext observationDataRepository.allAsBulk()?.let { bulk ->
                 if (bulk.dataPoints.isNotEmpty()) {
-                    return@withContext uploadDataBulk(bulk).apply {
-                        observationDataRepository.close()
-                    }
+                    return@withContext uploadDataBulk(bulk)
                 }
                 Napier.i { "No data points found, DataUploadWorker success" }
                 Result.success()
             } ?: Result.failure()
         } catch (err: Exception) {
-            Napier.e(throwable = err, message =  "Exception in DataUploadWorker")
+            Napier.e(throwable = err, message = "Exception in DataUploadWorker")
             if (isStopped) {
                 stopped = isStopped
                 workManager.cancelAllWork()

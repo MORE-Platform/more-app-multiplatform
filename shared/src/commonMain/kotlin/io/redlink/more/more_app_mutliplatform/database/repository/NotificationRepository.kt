@@ -11,20 +11,21 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.query
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class NotificationRepository : Repository<NotificationSchema>() {
+class NotificationRepository(private val appDatabase: AppDatabase) {
     private val readNotificationIds = mutableSetOf<String>()
     private val completedNotificationIds = mutableSetOf<String>()
     private val deletedNotificationIds = mutableSetOf<String>()
     private val mutex = Mutex()
+
     fun storeNotification(
         key: String,
         channelId: String?,
@@ -37,11 +38,11 @@ class NotificationRepository : Repository<NotificationSchema>() {
         userFacing: Boolean = true,
         additionalData: Map<String, String>? = null
     ) {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             mutex.withLock {
                 if (key !in deletedNotificationIds) {
                     storeNotification(
-                        NotificationSchema.toSchema(
+                        NotificationEntity.toEntity(
                             key,
                             channelId,
                             title,
@@ -61,85 +62,68 @@ class NotificationRepository : Repository<NotificationSchema>() {
         }
     }
 
-    fun storeNotification(notification: NotificationSchema) {
-        Scope.launch {
-            mutex.withLock {
-                Napier.i { "Delete Notification: $deletedNotificationIds. Notification to store: $notification" }
-                if (notification.notificationId !in deletedNotificationIds) {
-                    if (notification.notificationId in readNotificationIds) {
-                        notification.read = true
+    suspend fun storeNotification(notification: NotificationEntity) {
+        mutex.withLock {
+            Napier.i { "Delete Notification: $deletedNotificationIds. Notification to store: $notification" }
+            if (notification.notificationId !in deletedNotificationIds) {
+                val updatedNotification = notification.copy(
+                    read = if (notification.notificationId in readNotificationIds) {
                         readNotificationIds.remove(notification.notificationId)
-                    }
-                    if (notification.notificationId in completedNotificationIds) {
-                        notification.completed = true
+                        true
+                    } else notification.read,
+                    completed = if (notification.notificationId in completedNotificationIds) {
                         completedNotificationIds.remove(notification.notificationId)
-                    }
-                    realmDatabase().store(setOf(notification), UpdatePolicy.ERROR)
-                } else {
-                    deletedNotificationIds.remove(notification.notificationId)
-                }
+                        true
+                    } else notification.completed
+                )
+                appDatabase.notificationDao().insert(updatedNotification)
+            } else {
+                deletedNotificationIds.remove(notification.notificationId)
             }
         }
     }
 
-    fun storeNotifications(notifications: List<NotificationSchema>) {
-        Scope.launch {
-            mutex.withLock {
-                val (notificationsToStore, notificationsToDelete) = notifications.partition { it.notificationId !in deletedNotificationIds }
-                Napier.i { "Delete Notification: $deletedNotificationIds. Storing notifications: $notificationsToStore. Notifications to delete: $notificationsToDelete" }
-                realmDatabase().store(notificationsToStore.map {
-                    it.apply {
-                        read = it.notificationId in readNotificationIds
-                        completed = it.notificationId in completedNotificationIds
-                    }
-                }, UpdatePolicy.ERROR)
-                notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
+    suspend fun storeNotifications(notifications: List<NotificationEntity>) {
+        mutex.withLock {
+            val (notificationsToStore, notificationsToDelete) = notifications.partition { it.notificationId !in deletedNotificationIds }
+            Napier.i { "Delete Notification: $deletedNotificationIds. Storing notifications: $notificationsToStore. Notifications to delete: $notificationsToDelete" }
+
+            val updatedNotifications = notificationsToStore.map { notification ->
+                notification.copy(
+                    read = notification.notificationId in readNotificationIds,
+                    completed = notification.notificationId in completedNotificationIds
+                )
+            }
+            appDatabase.notificationDao().insertAll(updatedNotifications)
+            notificationsToDelete.forEach { deletedNotificationIds.remove(it.notificationId) }
+        }
+    }
+
+    fun getCount(): Flow<Long> = appDatabase.notificationDao().getCount()
+
+    fun getAllNotifications() = appDatabase.notificationDao().getAllFlow()
+
+    fun getAllUserFacingNotifications() = appDatabase.notificationDao().getByUserFacingFlow(true)
+
+    fun getUnreadUserNotifications() = appDatabase.notificationDao().getUnreadUserFacingFlow()
+
+    suspend fun update(notificationId: String, read: Boolean? = null, priority: Long? = null) {
+        mutex.withLock {
+            val notification = appDatabase.notificationDao().getById(notificationId)
+            notification?.let {
+                val updatedNotification = it.copy(
+                    read = read ?: it.read,
+                    priority = priority ?: it.priority
+                )
+                appDatabase.notificationDao().update(updatedNotification)
             }
         }
     }
 
-    override fun count(): Flow<Long> = realmDatabase().count<NotificationSchema>()
+    fun allUserFacingNotifications() = appDatabase.notificationDao().getByUserFacingFlow(true)
 
-    fun getAllNotifications() = realmDatabase().query<NotificationSchema>()
-
-    fun getAllUserFacingNotifications() =
-        realmDatabase().query<NotificationSchema>("userFacing == true")
-
-    fun getUnreadUserNotifications() =
-        realmDatabase().query<NotificationSchema>("userFacing == true AND read == false")
-
-    fun update(notificationId: String, read: Boolean? = false, priority: Long? = null) {
-        Scope.launch {
-            mutex.withLock {
-                realm()?.write {
-                    this.query<NotificationSchema>("notificationId == $0", notificationId).first()
-                        .find()
-                        ?.let {
-                            if (read != null) {
-                                it.read = read
-                            }
-                            if (priority != null) {
-                                it.priority = priority
-                            }
-                        }
-                }
-            }
-        }
-    }
-
-    fun downloadMissedNotifications(networkService: NetworkService) {
-        Scope.launch {
-            storeNotifications(NotificationSchema.toSchemaList(networkService.downloadMissedNotifications()))
-        }
-    }
-
-    fun allUserFacingNotifications() {
-        realmDatabase().query<NotificationSchema>("userFacing == true")
-    }
-
-    fun countUserFacingNotifications() {
-        realm()?.query<NotificationSchema>("userFacing == true")?.count()
-    }
+    fun countUserFacingNotifications(): Flow<Long> =
+        appDatabase.notificationDao().getCountByUserFacing(true)
 
     fun setNotificationReadStatus(key: String, read: Boolean = true) {
         if (read) {
@@ -148,16 +132,10 @@ class NotificationRepository : Repository<NotificationSchema>() {
             readNotificationIds.remove(key)
         }
 
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             mutex.withLock {
-                realm()?.write {
-                    val notification =
-                        this.query<NotificationSchema>("notificationId == $0", key).first().find()
-                    notification?.let {
-                        it.read = read
-                        readNotificationIds.remove(key)
-                    }
-                }
+                appDatabase.notificationDao().updateReadStatus(key, read)
+                readNotificationIds.remove(key)
             }
         }
     }
@@ -171,41 +149,30 @@ class NotificationRepository : Repository<NotificationSchema>() {
             completedNotificationIds.remove(key)
         }
 
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             mutex.withLock {
-                realm()?.write {
-                    val notification =
-                        this.query<NotificationSchema>("notificationId == $0", key).first().find()
-                    notification?.let {
-                        it.completed = completed
-                        it.read = true
-                        completedNotificationIds.remove(key)
-                    }
+                appDatabase.notificationDao().updateCompletedStatus(key, completed)
+                if (completed) {
+                    appDatabase.notificationDao().updateReadStatus(key, true)
                 }
+                completedNotificationIds.remove(key)
             }
         }
     }
 
     fun deleteNotification(notificationId: String) {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             deletedNotificationIds.add(notificationId)
             mutex.withLock {
                 Napier.i { "Delete Notification: $deletedNotificationIds" }
-                realm()?.write {
-                    val notification =
-                        this.query<NotificationSchema>("notificationId == $0", notificationId)
-                            .first().find()
-                    notification?.let {
-                        delete(notification)
-                        deletedNotificationIds.remove(notificationId)
-                        Napier.i { "Deleted Notification: $deletedNotificationIds" }
-                    }
-                }
+                appDatabase.notificationDao().deleteById(notificationId)
+                deletedNotificationIds.remove(notificationId)
+                Napier.i { "Deleted Notification: $deletedNotificationIds" }
             }
         }
     }
 
-    fun deleteAll() {
-        realmDatabase().deleteAll()
+    suspend fun deleteAll() {
+        appDatabase.notificationDao().deleteAll()
     }
 }

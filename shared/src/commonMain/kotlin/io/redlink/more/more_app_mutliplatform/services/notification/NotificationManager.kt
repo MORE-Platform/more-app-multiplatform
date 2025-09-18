@@ -11,13 +11,12 @@
 package io.redlink.more.more_app_mutliplatform.services.notification
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.ext.toRealmDictionary
-import io.realm.kotlin.types.RealmDictionary
 import io.redlink.more.more_app_mutliplatform.Shared
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
 import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.models.NotificationStatusType
@@ -27,6 +26,7 @@ import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 interface LocalNotificationListener {
-    fun displayNotification(notification: NotificationSchema)
+    fun displayNotification(notification: NotificationEntity)
 
     fun deleteNotificationFromSystem(notificationId: String)
 
@@ -50,16 +50,17 @@ interface LocalNotificationListener {
 }
 
 class NotificationManager(
+    database: AppDatabase,
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService,
     private val deeplinkManager: DeeplinkManager,
     private val sharedStorageRepository: SharedStorageRepository
 ) {
-    val notificationRepository = NotificationRepository()
+    val notificationRepository = NotificationRepository(database)
     val _unreadUserCount = MutableStateFlow(0)
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
-    private val scheduleRepository = ScheduleRepository()
-    private val observationRepository = ObservationRepository()
+    private val scheduleRepository = ScheduleRepository(database)
+    private val observationRepository = ObservationRepository(database)
 
     init {
         Scope.launch(Dispatchers.IO) {
@@ -85,7 +86,7 @@ class NotificationManager(
     ) {
         storeAndHandleNotification(
             shared,
-            NotificationSchema.toSchema(
+            NotificationEntity.toEntity(
                 notificationId = key,
                 channelId = null,
                 title = title,
@@ -102,24 +103,26 @@ class NotificationManager(
 
     fun storeAndHandleNotification(
         shared: Shared,
-        notification: NotificationSchema,
+        notification: NotificationEntity,
         displayNotification: Boolean
     ) {
         storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
             handleNotificationDataAsync(
                 shared,
-                notification.notificationData
+                notification.getNotificationDataMap()
             )
         }
     }
 
     fun storeAndDisplayNotification(
-        notification: NotificationSchema,
+        notification: NotificationEntity,
         displayNotification: Boolean
     ) {
         if (notification.title != null && notification.notificationBody != null) {
-            notificationRepository.storeNotification(notification)
+            StudyScope.launch(Dispatchers.IO) {
+                notificationRepository.storeNotification(notification)
+            }
             if (displayNotification) {
                 Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
                 localNotificationListener.displayNotification(notification)
@@ -127,14 +130,16 @@ class NotificationManager(
         }
     }
 
-    fun storeNotifications(notifications: List<NotificationSchema>) {
-        notificationRepository.storeNotifications(notifications)
+    fun storeNotifications(notifications: List<NotificationEntity>) {
+        StudyScope.launch(Dispatchers.IO) {
+            notificationRepository.storeNotifications(notifications)
+        }
     }
 
     fun downloadMissedNotifications() {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             Napier.d { "Updating notifications" }
-            storeNotifications(NotificationSchema.toSchemaList(networkService.downloadMissedNotifications()))
+            storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
         }
     }
 
@@ -145,7 +150,7 @@ class NotificationManager(
 
     fun deleteNotificationFromServer(msgID: String) {
         Napier.i { "Deleting notification with msgID $msgID from server..." }
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             networkService.deletePushNotification(msgID)
         }
     }
@@ -165,17 +170,17 @@ class NotificationManager(
     }
 
     fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             handleNotificationData(
                 shared,
-                data.toRealmDictionary()
+                data
             )
         }
     }
 
     suspend fun handleNotificationData(
         shared: Shared,
-        data: RealmDictionary<String>
+        data: Map<String, String>
     ) {
         if (data.isNotEmpty()) {
             if (data[MAIN_DATA_KEY] == STUDY_CHANGED) {
@@ -199,7 +204,6 @@ class NotificationManager(
         }
     }
 
-    // To-Do: here check completed or only ended
     fun handleNotificationInteraction(
         notification: NotificationModel,
         protocolReplacement: String? = null,
@@ -209,15 +213,19 @@ class NotificationManager(
         notification.deepLink?.let { deepLink ->
             Scope.launch {
 
-                // first check status of notification
                 val state = checkIfCompletedOrRead(deepLink).cancellable().firstOrNull()
 
                 if (state != null) {
-                    if (NotificationStatusType.READ == state) notificationRepository.setNotificationReadStatus(notification.notificationId, true)
-                    if (NotificationStatusType.COMPLETED == state) notificationRepository.setNotificationCompletedStatus(notification.notificationId, true)
+                    if (NotificationStatusType.READ == state) notificationRepository.setNotificationReadStatus(
+                        notification.notificationId,
+                        true
+                    )
+                    if (NotificationStatusType.COMPLETED == state) notificationRepository.setNotificationCompletedStatus(
+                        notification.notificationId,
+                        true
+                    )
                 }
 
-                // then modify deeplink
                 deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
                     .firstOrNull()?.let { modifiedDeepLink ->
                         if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
@@ -257,11 +265,9 @@ class NotificationManager(
             emit(null)
             return@flow
         }
-        var schedule =
+        val schedule =
             scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
                 .cancellable().firstOrNull()
-
-        val allSchedules = scheduleRepository.queryAllSchedulesForObservationId(observationId.first())
 
         // ScheduleState.DEACTIVATED -> ACTIVE -> PAUSE/RUNNING -> ENDED/COMPLETED
         // if the ScheduleState is DEACTIVATED and it has a repeat, the Notification will go to the next Instance of Observation
@@ -269,10 +275,10 @@ class NotificationManager(
         // COMPLETED gets a check
         // after Observation has ended, we don't have any means to determine anything anymore, because the Scheduler is deleted (null) from the object, so it will be set to comppleted
 
-        if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
-            state = NotificationStatusType.COMPLETED
+        state = if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
+            NotificationStatusType.COMPLETED
         } else {
-            state = NotificationStatusType.READ
+            NotificationStatusType.READ
         }
         emit(state)
     }

@@ -17,6 +17,6 @@ enum class StudyState(val descr: String) {
     CLOSED("closed");
 
     companion object {
-        fun getState(name: String) = StudyState.values().firstOrNull { it.descr == name } ?: NONE
+        fun getState(name: String) = entries.firstOrNull { it.descr == name } ?: NONE
     }
 }

@@ -47,7 +47,7 @@ import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun StudyClosedView(closedMessage: kotlin.String?) {
+fun StudyClosedView(closedMessage: String?) {
     val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
     MoreBackground {

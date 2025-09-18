@@ -13,19 +13,20 @@ package io.redlink.more.app.android.activities.info
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class InfoViewModel: ViewModel() {
-    private val coreViewModel = CoreStudyDetailsViewModel()
+class InfoViewModel : ViewModel() {
+    private val coreViewModel = CoreStudyDetailsViewModel(MoreApplication.shared!!.database)
     val model = mutableStateOf<StudyDetailsModel?>(null)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.studyModel.collect{
+            coreViewModel.studyModel.collect {
                 withContext(Dispatchers.Main) {
                     model.value = it
                 }

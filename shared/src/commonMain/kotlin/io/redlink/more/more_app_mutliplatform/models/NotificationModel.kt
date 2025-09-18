@@ -10,8 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.extensions.toInstant
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 
 data class NotificationModel(
     var notificationId: String,
@@ -28,7 +27,7 @@ data class NotificationModel(
 ) {
 
     companion object {
-        fun createModelsFrom(notifications: List<NotificationSchema?>): List<NotificationModel> {
+        fun createModelsFrom(notifications: List<NotificationEntity?>): List<NotificationModel> {
             return notifications.mapNotNull {
                 it?.let {
                     val channelId = it.channelId
@@ -41,13 +40,13 @@ data class NotificationModel(
                         channelId = channelId,
                         title = title,
                         notificationBody = notificationBody,
-                        timestamp = timestamp.toInstant().toEpochMilliseconds(),
+                        timestamp = timestamp,
                         priority = it.priority,
                         read = it.read,
                         completed = it.completed,
                         userFacing = it.userFacing,
                         deepLink = it.deepLink(),
-                        notificationData = notificationData
+                        notificationData = it.getNotificationDataMap()
                     )
                 }
             }

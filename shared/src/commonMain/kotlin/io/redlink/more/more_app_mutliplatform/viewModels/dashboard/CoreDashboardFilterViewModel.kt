@@ -10,6 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
@@ -25,14 +26,14 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 
-class CoreDashboardFilterViewModel : CoreViewModel() {
+class CoreDashboardFilterViewModel(database: AppDatabase) : CoreViewModel() {
     val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
     val currentDateFilter = MutableStateFlow(
         DateFilterModel.entries.associateWith { it == DateFilterModel.ENTIRE_TIME })
 
     init {
         Scope.launch {
-            ObservationRepository().observationTypes().firstOrNull()?.let {
+            ObservationRepository(database).observationTypes().firstOrNull()?.let {
                 currentTypeFilter.set(it.associateWith { false })
             }
         }

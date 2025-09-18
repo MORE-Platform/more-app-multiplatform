@@ -10,24 +10,27 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.dashboard
 
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 
-class CoreDashboardViewModel: CoreViewModel() {
-    private val studyRepository: StudyRepository = StudyRepository()
-    val study: MutableStateFlow<StudySchema?> = MutableStateFlow(null)
+class CoreDashboardViewModel(database: AppDatabase) : CoreViewModel() {
+    private val studyRepository: StudyRepository = StudyRepository(database)
+    val study: MutableStateFlow<StudyEntity?> = MutableStateFlow(null)
 
     override fun viewDidAppear() {
-        launchScope {
+        launchScope(Dispatchers.IO) {
             studyRepository.getStudy().cancellable().collect {
                 study.value = it
             }
         }
     }
 
-    fun onLoadStudy(provideNewState: ((StudySchema?) -> Unit)) = study.asClosure(provideNewState)
+    fun onLoadStudy(provideNewState: ((StudyEntity?) -> Unit)) = study.asClosure(provideNewState)
 }

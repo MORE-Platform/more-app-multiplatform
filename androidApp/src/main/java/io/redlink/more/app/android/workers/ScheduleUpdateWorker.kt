@@ -24,17 +24,19 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
     CoroutineWorker(context, workerParameters) {
 
     private val shared: Shared
+    private val scheduleRepository: ScheduleRepository
 
     init {
         if (MoreApplication.shared == null) {
             MoreApplication.initShared(applicationContext)
         }
         shared = MoreApplication.shared!!
+        scheduleRepository = ScheduleRepository(shared.database)
     }
 
     override suspend fun doWork() = withContext(Dispatchers.IO) {
         Napier.i { "Running $WORKER_TAG! Updating Schedule..." }
-        ScheduleRepository().updateTaskStatesSync(shared.observationFactory, shared.dataRecorder)
+        scheduleRepository.updateTaskStatesSync(shared.observationFactory, shared.dataRecorder)
         return@withContext Result.success()
     }
 

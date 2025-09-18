@@ -17,7 +17,7 @@ import Foundation
 import shared
 
 class TaskScheduleService {
-    private let scheduleRepository = ScheduleRepository()
+    private let scheduleRepository = ScheduleRepository(appDatabase: AppDelegate.database)
     private var timer: Timer?
     
     func startUpdateTimer() {

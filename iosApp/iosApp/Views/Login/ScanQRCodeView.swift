@@ -109,8 +109,9 @@ struct ScanQRCodeView: View {
 }
 
 struct ScanQRCodeView_Previews: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
-        ScanQRCodeView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(dataManager: iOSObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        ScanQRCodeView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
     }
 }
 
