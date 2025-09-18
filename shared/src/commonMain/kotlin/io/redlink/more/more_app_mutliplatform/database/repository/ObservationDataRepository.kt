@@ -66,12 +66,6 @@ class ObservationDataRepository(private val appDatabase: AppDatabase) {
         }
     }
 
-//    fun allAsBulk(completionHandler: (DataBulk?) -> Unit) {
-//        StudyScope.launch(Dispatchers.IO) {
-//            allAsBulk()?.let { completionHandler(it) }
-//        }
-//    }
-
     suspend fun deleteAllWithId(idSet: Set<String>) {
         Napier.i { "Deleting ${idSet.size} elements..." }
         mutex.withLock {
@@ -79,9 +73,5 @@ class ObservationDataRepository(private val appDatabase: AppDatabase) {
                 appDatabase.observationDataDao().deleteById(dataId)
             }
         }
-    }
-
-    companion object {
-        private const val QUEUE_THRESHOLD = 10
     }
 }

@@ -94,5 +94,5 @@ interface ObservationDao : BaseDao<ObservationEntity> {
     suspend fun updateVersion(observationId: String, version: Long)
 
     @Query("UPDATE observations SET hidden = :hidden WHERE observationId = :observationId")
-    suspend fun updateHidden(observationId: String, hidden: Boolean?)
+    suspend fun updateHidden(observationId: String, hidden: Boolean)
 }
