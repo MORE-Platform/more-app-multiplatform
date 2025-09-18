@@ -42,7 +42,7 @@ class BluetoothController(
     private val scanInterval: Long = 10000
 ) : CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val deviceManager = BluetoothDeviceManager
-    private val bluetoothDeviceRepository = BluetoothDeviceRepository(database.bluetoothDeviceDao())
+    private val bluetoothDeviceRepository = BluetoothDeviceRepository(database)
 
     private val _isScanning = MutableStateFlow(false)
     val isScanning: StateFlow<Boolean> = _isScanning

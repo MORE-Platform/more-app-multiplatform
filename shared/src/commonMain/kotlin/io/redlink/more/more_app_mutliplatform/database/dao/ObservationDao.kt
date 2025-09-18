@@ -26,7 +26,7 @@ interface ObservationDao : BaseDao<ObservationEntity> {
 
     @Query("DELETE FROM observations")
     suspend fun deleteAll()
-    
+
     @Query("SELECT * FROM observations WHERE observationId = :observationId")
     suspend fun getByObservationId(observationId: String): ObservationEntity?
 
@@ -46,10 +46,10 @@ interface ObservationDao : BaseDao<ObservationEntity> {
     fun getByObservationTypeFlow(observationType: String): Flow<List<ObservationEntity>>
 
     @Query("SELECT * FROM observations WHERE hidden = :hidden")
-    suspend fun getByHidden(hidden: Boolean?): List<ObservationEntity>
+    suspend fun getByHidden(hidden: Boolean): List<ObservationEntity>
 
     @Query("SELECT * FROM observations WHERE hidden = :hidden")
-    fun getByHiddenFlow(hidden: Boolean?): Flow<List<ObservationEntity>>
+    fun getByHiddenFlow(hidden: Boolean): Flow<List<ObservationEntity>>
 
     @Query("SELECT * FROM observations WHERE scheduleLess = :scheduleLess")
     suspend fun getByScheduleLess(scheduleLess: Boolean): List<ObservationEntity>
