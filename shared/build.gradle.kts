@@ -5,7 +5,6 @@ plugins {
     id("com.android.library")
     id("androidx.room")
     id("com.google.devtools.ksp")
-//    id("org.openapi.generator") version "7.15.0"
     id("com.rickclephas.kmp.nativecoroutines")
 }
 
@@ -23,7 +22,7 @@ val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
 val gsonVersion = "2.13.2"
 val roomVersion = "2.7.2"
-val sqliteVersion = "2.6.0"
+val sqliteVersion = "2.5.2"
 
 kotlin {
     androidTarget {
