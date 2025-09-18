@@ -120,6 +120,8 @@ class MainActivity : ComponentActivity() {
                 StudyPausedView()
             } else if (studyState == StudyState.CLOSED) {
                 StudyClosedView()
+            } else if (studyState == StudyState.NONE) {
+                StudyUpdateView()
             } else {
                 MainView(
                     viewModel.navigationBarTitle.value,
@@ -212,7 +214,7 @@ fun MainView(
 
                 ) {
                     viewModel.showBackButton.value = true
-                    SettingsView(navController = navController)
+                    SettingsView()
                 }
             }
             NavigationScreen.SCHEDULE_DETAILS.let { screen ->

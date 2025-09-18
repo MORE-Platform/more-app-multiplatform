@@ -15,6 +15,7 @@ import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEnti
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -161,10 +161,15 @@ abstract class Observation(
                 if (it.isNotEmpty()) {
                     Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
 
-                    _observationErrors.update {
-                        Pair(
+                    if (repos.study.studyState.value == StudyState.ACTIVE) {
+                        _observationErrors.value = Pair(
                             observationType.observationType,
                             observerErrors()
+                        )
+                    } else {
+                        _observationErrors.value = Pair(
+                            observationType.observationType,
+                            emptySet()
                         )
                     }
                 }

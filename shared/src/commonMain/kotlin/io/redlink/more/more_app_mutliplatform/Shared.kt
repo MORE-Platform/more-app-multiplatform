@@ -101,13 +101,16 @@ class Shared(
                 updateStudyBlocking()
                 notificationManager.createNewFCMIfNecessary()
                 bluetoothListener?.cancel()
+
                 bluetoothListener = StudyScope.launch(Dispatchers.IO) {
                     bluetoothController.listenToConnectionChanges(
                         observationFactory
                     )
                 }.second
-                observationFactory.updateObservationErrors()
-                updateTaskStates()
+                if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    observationFactory.updateObservationErrors()
+                    updateTaskStates()
+                }
             }
             notificationManager.clearAllNotifications()
         } else {
@@ -116,7 +119,7 @@ class Shared(
     }
 
     fun updateTaskStates() {
-        if (appIsInForeGround && credentialRepository.hasCredentials.value) {
+        if (appIsInForeGround && credentialRepository.hasCredentials.value && repositories.study.studyState.value == StudyState.ACTIVE) {
             observationManager.updateTaskStates()
             notificationManager.downloadMissedNotifications()
             bluetoothController.startScanningForDevices(observationFactory.bleDevicesNeeded())
@@ -124,7 +127,7 @@ class Shared(
     }
 
     private fun activateObservationWatcher() {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             repositories.study.studyState.collect { state ->
                 if (state == StudyState.ACTIVE) {
                     observationDataManager.listenToDatapointCountChanges()
@@ -162,7 +165,7 @@ class Shared(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
     ) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.Main) {
             updateStudy(oldStudyState, newStudyState)
         }
     }
@@ -251,7 +254,7 @@ class Shared(
                     notificationManager.clearAllNotifications()
                     repositories.notification.deleteAll()
                     repositories.study.upsert(study)
-                    if (study.studyState?.let { StudyState.getState(it) } != StudyState.CLOSED) {
+                    if (study.studyState?.let { StudyState.getState(it) } == StudyState.ACTIVE) {
                         resetFirstStartUp()
                         observationFactory.updateObservationErrors()
                     }

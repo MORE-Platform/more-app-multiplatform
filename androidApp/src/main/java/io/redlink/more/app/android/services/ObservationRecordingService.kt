@@ -606,26 +606,38 @@ class ObservationRecordingService : Service() {
         }
 
         fun pause(scheduleId: String) {
-            val serviceIntent =
-                Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-            serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
-            serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-            MoreApplication.appContext?.startService(serviceIntent)
+            if (MoreApplication.shared?.appIsInForeGround == true) {
+                val serviceIntent =
+                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
+                serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
+                MoreApplication.appContext?.startService(serviceIntent)
+            } else {
+                MoreApplication.shared?.observationManager?.pause(scheduleId)
+            }
         }
 
         fun stop(scheduleId: String) {
-            val serviceIntent =
-                Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-            serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
-            serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-            MoreApplication.appContext?.startService(serviceIntent)
+            if (MoreApplication.shared?.appIsInForeGround == true) {
+                val serviceIntent =
+                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
+                serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
+                MoreApplication.appContext?.startService(serviceIntent)
+            } else {
+                MoreApplication.shared?.observationManager?.stop(scheduleId)
+            }
         }
 
         fun stopAll() {
-            val serviceIntent =
-                Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-            serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
-            MoreApplication.appContext?.startService(serviceIntent)
+            if (MoreApplication.shared?.appIsInForeGround == true) {
+                val serviceIntent =
+                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
+                MoreApplication.appContext?.startService(serviceIntent)
+            } else {
+                MoreApplication.shared?.observationManager?.stopAll()
+            }
         }
 
         fun restartAll() {

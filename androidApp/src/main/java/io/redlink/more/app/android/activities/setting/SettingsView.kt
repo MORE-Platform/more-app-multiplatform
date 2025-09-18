@@ -19,35 +19,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun SettingsView(
-    navController: NavController
-) {
+fun SettingsView() {
     val model = remember { SettingsViewModel() }
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route =
-        backStackEntry?.arguments?.getString(NavigationScreen.SETTINGS.routeWithParameters())
-    LaunchedEffect(route) {
-        model.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            model.viewDidDisappear()
-        }
-    }
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -67,21 +50,6 @@ fun SettingsView(
                 )
 
                 Spacer(Modifier.height(24.dp))
-
-                /*
-                model.permissionModel.value?.let {
-                    Spacer(Modifier.height(24.dp))
-
-                    Accordion(
-                        title = getStringResource(id = R.string.more_study_consent),
-                        description = it.studyConsentInfo,
-                        hasCheck = true,
-                        hasSmallTitle = true,
-                        hasPreview = false
-                    )
-                }
-                */
-
             }
 
             items(model.permissionModel.value?.consentInfo ?: emptyList()) { consentInfo ->

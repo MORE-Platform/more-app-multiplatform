@@ -4,7 +4,6 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 
 object ViewManager {
     private val _studyIsUpdating = MutableStateFlow(false)
@@ -24,6 +23,7 @@ object ViewManager {
 
     fun studyIsUpdating(state: Boolean) {
         _studyIsUpdating.value = state
+        _showBluetoothView.value = false
     }
 
     fun checkingForUpdate(state: Boolean) {
@@ -31,8 +31,8 @@ object ViewManager {
     }
 
     fun showBLEView(state: Boolean): Boolean {
-        if (!state || !bleViewOpen) {
-            _showBluetoothView.update { state }
+        if (!state || !_showBluetoothView.value || !bleViewOpen || !_studyIsUpdating.value) {
+            _showBluetoothView.value = state
             return state
         }
         return false

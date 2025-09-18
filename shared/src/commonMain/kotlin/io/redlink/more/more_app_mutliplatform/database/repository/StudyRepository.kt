@@ -15,12 +15,15 @@ import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
+import io.redlink.more.more_app_mutliplatform.extensions.mapState
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,10 +34,12 @@ class StudyRepository(private val appDatabase: AppDatabase) {
 
     @NativeCoroutines
     val study: StateFlow<StudyEntity?> = _study
-    private val _studyState = MutableStateFlow(StudyState.NONE)
 
     @NativeCoroutines
-    val studyState: StateFlow<StudyState> = _studyState
+    val studyState: StateFlow<StudyState> =
+        study.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)) {
+            it?.let { StudyState.getState(it.state) } ?: StudyState.NONE
+        }
     private val _finishText = MutableStateFlow<String?>(null)
 
     @NativeCoroutines
@@ -44,7 +49,6 @@ class StudyRepository(private val appDatabase: AppDatabase) {
         Scope.launch(Dispatchers.IO) {
             getStudy().collect {
                 _study.value = it
-                _studyState.value = it?.let { StudyState.getState(it.state) } ?: StudyState.NONE
                 it?.let {
                     _finishText.value = it.finishText
                 }

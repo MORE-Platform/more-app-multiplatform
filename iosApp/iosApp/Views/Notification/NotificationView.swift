@@ -32,6 +32,7 @@ struct NotificationView: View {
 
             if notificationViewModel.notificationList.isEmpty {
                 EmptyListView(text: "There are currently no notficiations to show")
+                Spacer()
             } else {
                 ScrollViewReader { _ in
                     ScrollView {

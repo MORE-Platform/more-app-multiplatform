@@ -19,7 +19,7 @@ struct ContentView: View {
                 VStack {
                     if viewModel.hasCredentials {
                        CredentialsView(navigationModalState: navigationModalState, viewModel: viewModel)
-                    } else if !viewModel.credentialsLoaded {
+                    } else if !viewModel.credentialsLoaded || (viewModel.hasCredentials && navigationModalState.currentStudyState == .none) {
                         StudyLoadingView()
                             .padding(.horizontal, navigationModalState.horizontalContentPadding)
                     } else {
