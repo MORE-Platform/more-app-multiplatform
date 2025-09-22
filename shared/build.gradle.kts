@@ -112,11 +112,3 @@ dependencies {
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
 }
 
-// Add this after your existing KSP configuration
-//afterEvaluate {
-//    tasks.matching { task ->
-//        task.name.startsWith("ksp") && task.name.contains("Kotlin")
-//    }.configureEach {
-//        dependsOn("fixDuplicateSerializable")
-//    }
-//}

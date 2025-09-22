@@ -26,10 +26,4 @@ class CoreConsentViewModel(
         registrationService.study.mapState(viewModelScope, null) { study ->
             study?.let { PermissionModel.create(it, studyConsentTitle) }
         }
-
-//    @NativeCoroutines
-//    val observations: StateFlow<List<Observation>> =
-//        registrationService.study.mapState(viewModelScope, emptyList()) { study ->
-//            study?.observations ?: emptyList()
-//        }
 }

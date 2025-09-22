@@ -22,8 +22,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -70,17 +68,6 @@ fun TaskDetailsView(
     val dataPoints by viewModel.coreViewModel.dataCount.collectAsStateWithLifecycle()
     val taskErrors by viewModel.coreViewModel.taskObservationErrors.collectAsStateWithLifecycle()
     val taskErrorActions by viewModel.coreViewModel.taskObservationErrorActions.collectAsStateWithLifecycle()
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route =
-        backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,

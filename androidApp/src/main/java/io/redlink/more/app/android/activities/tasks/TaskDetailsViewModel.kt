@@ -35,18 +35,7 @@ class TaskDetailsViewModel(
             scheduleId
         )
 
-    //    val isEnabled = mutableStateOf(false)
     val polarHrReady = mutableStateOf(false)
-//    val dataPointCount = mutableStateOf(0L)
-//    val taskDetailsModel = mutableStateOf(
-//        TaskDetailsModel(
-//            "", "", "", "", 0, 0, "", false, ScheduleState.DEACTIVATED
-//        )
-//    )
-
-//    val taskObservationErrors = mutableStateListOf<String>()
-//    val taskObservationErrorActions = mutableStateListOf<String>()
-//    private var observationErrors: Map<String, Set<String>> = emptyMap()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,61 +45,6 @@ class TaskDetailsViewModel(
                 }
             }
         }
-//        viewModelScope.launch {
-//            coreViewModel.taskDetailsModel.collect { details ->
-//                details?.let {
-//                    withContext(Dispatchers.Main) {
-//                        taskDetailsModel.value = it
-//                        isEnabled.value = it.state.active()
-//                        withContext(Dispatchers.Main) {
-//                            taskObservationErrors.clear()
-//                            taskObservationErrorActions.clear()
-//                            observationErrors[taskDetailsModel.value.observationType]?.let {
-//                                val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
-//                                taskObservationErrors.addAll(messages)
-//                                taskObservationErrorActions.addAll(actions)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        viewModelScope.launch {
-//            coreViewModel.dataCount.collect {
-//                withContext(Dispatchers.Main) {
-//                    dataPointCount.value = it
-//                }
-//            }
-//        }
-
-//        viewModelScope.launch {
-//            MoreApplication.shared!!.observationFactory.observationErrors.collect {
-//                observationErrors = it
-//                if (taskDetailsModel.value.observationType != "") {
-//                    withContext(Dispatchers.Main) {
-//                        taskObservationErrors.clear()
-//                        taskObservationErrorActions.clear()
-//                        observationErrors[taskDetailsModel.value.observationType]?.let {
-//                            val (actions, messages) = it.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
-//                            taskObservationErrors.addAll(messages)
-//                            taskObservationErrorActions.addAll(actions)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-    }
-
-//    fun setSchedule(scheduleId: String) {
-//        coreViewModel.setSchedule(scheduleId)
-//    }
-
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreViewModel.viewDidDisappear()
     }
 
     fun startObservation() {
