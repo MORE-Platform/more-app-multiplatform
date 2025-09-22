@@ -25,7 +25,7 @@ struct InfoList: View {
             InfoListItem(title: "Devices", icon: "applewatch", destination: .bluetoothConnections)
             InfoListItem(title: "Settings", icon: "gearshape.fill", destination: .settings)
             InfoListItem(title: "Leave Study", icon: "rectangle.portrait.and.arrow.right", destination: .withdrawStudy)
-            InfoListItem(title: String.localize(forKey: "Connect Health kit", withComment: "Allow data sync from Apple Health"), icon: "heart.fill", destination: .healthConnectSettings)
+            InfoListItem(title: "Connect Health kit", icon: "heart.fill", destination: .healthConnectSettings)
         }
     }
 }

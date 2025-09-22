@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.time.TimeRangeFilter
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_steps
 import kotlinx.coroutines.launch
 import java.time.ZoneOffset
@@ -23,11 +23,11 @@ private const val TAG = "healthkit-mobile-observation:Steps_observation"
 
 class HealthkitObservation_steps(
     context: Context,
-    database: AppDatabase,
+    repository: MainRepository,
 ) :
     BaseHealthKitObservation<StepsRecord>(
         context,
-        database,
+        repository,
         HealthkitType_steps()
     ) {
 

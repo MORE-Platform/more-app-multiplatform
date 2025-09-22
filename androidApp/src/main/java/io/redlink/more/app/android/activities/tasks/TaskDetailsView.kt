@@ -183,10 +183,11 @@ fun TaskDetailsView(
                         else if (taskDetails.observationType == LimeSurveyType().observationType) getStringResource(
                             id = R.string.more_limesurvey_start
                         )
-                        else if (viewModel.taskDetailsModel.value.observationType == HealtkitType_Sleep().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthkitType_steps().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthkitType_exercise().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthKitType_HR().observationType ) "Get Healthkit Data"
+                        else if (taskDetails.observationType == HealtkitType_Sleep().observationType ||
+                            taskDetails.observationType == HealthkitType_steps().observationType ||
+                            taskDetails.observationType == HealthkitType_exercise().observationType ||
+                            taskDetails.observationType == HealthKitType_HR().observationType
+                        ) "Get Healthkit Data"
                         else getStringResource(
                             id = R.string.more_observation_start
                         ),
@@ -207,12 +208,11 @@ fun TaskDetailsView(
                                     "scheduleId" to scheduleId
                                 )
                             )
-                        } else if (viewModel.taskDetailsModel.value.observationType == HealtkitType_Sleep().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthkitType_steps().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthkitType_exercise().observationType ||
-                            viewModel.taskDetailsModel.value.observationType == HealthKitType_HR().observationType
-                        )
-                        {
+                        } else if (taskDetails.observationType == HealtkitType_Sleep().observationType ||
+                            taskDetails.observationType == HealthkitType_steps().observationType ||
+                            taskDetails.observationType == HealthkitType_exercise().observationType ||
+                            taskDetails.observationType == HealthKitType_HR().observationType
+                        ) {
                             viewModel.viewModelScope.launch {
                                 viewModel.startObservation()
                                 delay(3000) // wait 3 seconds

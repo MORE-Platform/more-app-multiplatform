@@ -6,7 +6,7 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.records.Record
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.activities.healthPage.HealthConnectManager
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import kotlinx.coroutines.CoroutineScope
@@ -16,9 +16,9 @@ import java.time.ZonedDateTime
 
 abstract class BaseHealthKitObservation<T : Record>(
     private val context: Context,
-    database: AppDatabase,
+    repository: MainRepository,
     observationType: ObservationType
-) : Observation(database, observationType) {
+) : Observation(repository, observationType) {
     protected val client: HealthConnectClient by lazy {
         HealthConnectClient.getOrCreate(context)
     }

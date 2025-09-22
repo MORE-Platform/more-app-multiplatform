@@ -26,7 +26,6 @@ import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

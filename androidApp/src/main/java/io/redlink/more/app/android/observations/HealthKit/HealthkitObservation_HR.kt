@@ -5,7 +5,7 @@ import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.HrSessionData
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
 import kotlinx.coroutines.launch
 
@@ -18,13 +18,12 @@ private val permissions = setOf(
 
 class HealthkitObservation_HR(
     context: Context,
-    database: AppDatabase,
+    repo: MainRepository,
 ) :
     BaseHealthKitObservation<HeartRateRecord>(
         context,
-        database,
-        HealthKitType_HR(
-        )
+        repo as MainRepository,
+        HealthKitType_HR()
     ) {
 
     override val recordClass: Class<HeartRateRecord>

@@ -5,7 +5,7 @@ import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.SleepSessionData
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealtkitType_Sleep
 import kotlinx.coroutines.launch
 
@@ -18,13 +18,11 @@ private val permissions = setOf(
 
 class HealthkitObservation_Sleep(
     context: Context,
-    database: AppDatabase,
+    repository: MainRepository,
 ) : BaseHealthKitObservation<SleepSessionRecord>(
     context,
-    database,
-    HealtkitType_Sleep(
-
-    )
+    repository,
+    HealtkitType_Sleep()
 ) {
 
     override val recordClass: Class<SleepSessionRecord>

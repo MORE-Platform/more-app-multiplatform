@@ -8,7 +8,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.ExerciseSessionData
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_exercise
 import kotlinx.coroutines.launch
 
@@ -23,12 +23,10 @@ private val permissions = setOf(
 
 class HealthkitObservation_exercise(
     context: Context,
-    database: AppDatabase,
+    repository: MainRepository,
 ) : BaseHealthKitObservation<ExerciseSessionRecord>(
-    context, database,
-    HealthkitType_exercise(
-
-    )
+    context, repository,
+    HealthkitType_exercise()
 ) {
 
     override val recordClass: Class<ExerciseSessionRecord>

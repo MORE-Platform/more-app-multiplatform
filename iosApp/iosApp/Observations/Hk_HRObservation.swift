@@ -20,13 +20,13 @@ class Hk_HRObservation: HealthkitBase {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
 
-    init(database: AppDatabase) {
+    init(repository: MainRepository) {
         healthStore = HKHealthStore()
         now = Date()
         startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
         print("Observation initialized")
         // must init with the observation type set
-        super.init(database: database, observationType: HealthKitType_HR())
+        super.init(repos: repository, observationType: HealthKitType_HR())
     }
 
     override func applyObservationConfig(settings: Dictionary<String, Any>) {

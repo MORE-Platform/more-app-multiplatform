@@ -59,7 +59,6 @@ struct ObservationButton: View {
                     VStack {
                         Text(
                             "Fetch Healthkit data"
-                                .localize(withComment: "Button to get data from healthkit", useTable: stringTable)
                         )
                     }}
             }
