@@ -81,7 +81,7 @@ class PolarConnector: NSObject, BluetoothConnector {
         } catch {
             print(error)
         }
-        
+
     }
 
     func scan() {
@@ -272,11 +272,11 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func batteryChargingStatusReceived(_ identifier: String, chargingStatus: PolarBleSdk.BleBasClient.ChargeState) {
         print("Battery charging status received by \(identifier): \(chargingStatus)")
     }
-    
+
     func disInformationReceivedWithKeysAsStrings(_ identifier: String, key: String, value: String) {
         print("DisinformationReceivedWithKeysAsString by \(identifier): \(key); \(value)")
     }
-    
+
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
         print("Battery level for \(identifier): \(batteryLevel)")
     }
@@ -284,6 +284,7 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
         print("Disinformation received by \(identifier): \(uuid); \(value)")
     }
+
 
 }
 
