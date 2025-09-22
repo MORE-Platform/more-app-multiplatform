@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.extensions.appendAll
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
@@ -30,8 +31,10 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
-
-abstract class ObservationFactory(private val dataManager: ObservationDataManager) {
+abstract class ObservationFactory(
+    database: AppDatabase,
+    private val dataManager: ObservationDataManager
+) {
     private var credentialRepository: CredentialRepository? = null
     val observations = mutableSetOf<Observation>()
 
@@ -44,10 +47,10 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
     private var observationErrorWatcher: Job? = null
 
     init {
-        observations.add(SimpleQuestionObservation())
-        observations.add(LimeSurveyObservation())
+        observations.add(SimpleQuestionObservation(database))
+        observations.add(LimeSurveyObservation(database))
         Scope.launch(Dispatchers.IO) {
-            ObservationRepository().observationTypes().collect {
+            ObservationRepository(database).observationTypes().collect {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 _studyObservationTypes.clear()
                 _studyObservationTypes.appendAll(it)
@@ -117,7 +120,7 @@ abstract class ObservationFactory(private val dataManager: ObservationDataManage
             values.toMap()
         }
         observationErrorWatcher?.cancel()
-        observationErrorWatcher = Scope.launch {
+        observationErrorWatcher = Scope.launch(Dispatchers.IO) {
             Napier.d(tag = "ObservationFactory::listenToObservationErrors") { "Listening for observation errors" }
             combinedFlow.cancellable().collect {
                 _observationErrors.set(it)

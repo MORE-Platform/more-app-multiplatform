@@ -22,9 +22,9 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.HR.PolarConnectorListener
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.HR.PolarObserverCallback
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.delay
@@ -87,7 +87,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         }
     }
 
-    override fun connect(device: BluetoothDevice): Error? {
+    override fun connect(device: BluetoothDeviceEntity): Error? {
         Napier.i(tag = "PolarConnector::connect") { "Connecting to device: $device" }
         return try {
             device.address?.let {
@@ -100,7 +100,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         }
     }
 
-    override fun disconnect(device: BluetoothDevice) {
+    override fun disconnect(device: BluetoothDeviceEntity) {
         Napier.i(tag = "PolarConnector::disconnect") { "Disconnecting from device: $device" }
         try {
             device.address?.let {
@@ -119,7 +119,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             isScanning(false)
         }
     }
-
 
     override fun onPolarFeatureReady(feature: PolarBleApi.PolarBleSdkFeature) {
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
@@ -152,32 +151,32 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         stopScanning()
     }
 
-    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver { it.isConnectingToDevice(bluetoothDevice) }
     }
 
-    override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver { it.didConnectToDevice(bluetoothDevice) }
     }
 
-    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
-    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             it.didFailToConnectToDevice(bluetoothDevice)
         }
     }
 
-    override fun didDiscoverDevice(device: BluetoothDevice) {
+    override fun didDiscoverDevice(device: BluetoothDeviceEntity) {
         Napier.i { "Device Discovered: $device" }
         updateObserver {
             it.didDiscoverDevice(device)
         }
     }
 
-    override fun removeDiscoveredDevice(device: BluetoothDevice) {
+    override fun removeDiscoveredDevice(device: BluetoothDeviceEntity) {
         updateObserver {
             it.removeDiscoveredDevice(device)
         }
@@ -235,6 +234,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 }
 
-fun PolarDeviceInfo.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.deviceId, this.name, this.address)
+fun PolarDeviceInfo.toBluetoothDevice(): BluetoothDeviceEntity {
+    return BluetoothDeviceEntity.create(this.deviceId, this.name, this.address)
 }

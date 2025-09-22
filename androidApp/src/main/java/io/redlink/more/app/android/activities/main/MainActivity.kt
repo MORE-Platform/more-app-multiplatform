@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -54,7 +55,9 @@ import io.redlink.more.app.android.activities.studyStates.StudyClosedView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
@@ -65,9 +68,27 @@ class MainActivity : ComponentActivity() {
     private var loadedNavController = false
 
     private lateinit var navHostController: NavHostController
+
+    override fun onResume() {
+        super.onResume()
+        ActivityProvider.setCurrentActivity(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ActivityProvider.clearCurrentActivity()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PermissionUtils.cleanupPermissionLauncher(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
+
+        PermissionUtils.initializePermissionLauncher(this)
 
         val activityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -300,7 +321,7 @@ fun MainView(
                                 ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
                                 ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
                                 ScheduleListType.ALL -> DashboardFilterViewModel(
-                                    CoreDashboardFilterViewModel()
+                                    CoreDashboardFilterViewModel(MoreApplication.shared!!.database)
                                 )
                             }
                         )

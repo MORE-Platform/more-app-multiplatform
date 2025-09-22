@@ -31,8 +31,9 @@ struct LoginButton: View {
 }
 
 struct LoginButton_Previews: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
         LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false))
-            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(database: database, dataManager: ObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
     }
 }

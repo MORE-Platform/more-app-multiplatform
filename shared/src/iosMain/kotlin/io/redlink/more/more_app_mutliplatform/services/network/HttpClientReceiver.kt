@@ -13,42 +13,41 @@ package io.redlink.more.more_app_mutliplatform.services.network
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.retry
-import io.ktor.client.request.request
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 
 actual fun getHttpClient(customLogger: Logger): HttpClient = HttpClient(Darwin) {
     install(ContentNegotiation) {
         json()
-        defaultRequest {
-            contentType(ContentType.Application.Json)
-        }
-        request {
-            contentType(ContentType.Application.Json)
-            retry {
-                maxRetries = 3
-            }
-        }
-        Logging {
-            logger = customLogger
-            level = LogLevel.ALL
-        }
-        Auth {
-            basic {
-            }
-        }
     }
+
+    defaultRequest {
+        contentType(ContentType.Application.Json)
+        headers.append("Accept", "application/json")
+    }
+
+    install(Logging) {
+        logger = customLogger
+        level = LogLevel.INFO
+        sanitizeHeader { header -> header == HttpHeaders.Authorization }
+    }
+
+    install(Auth)
+
     engine {
         configureRequest {
             setAllowsCellularAccess(true)
+        }
+        configureSession {
+            timeoutIntervalForRequest = 30.0
+            timeoutIntervalForResource = 60.0
         }
     }
 }

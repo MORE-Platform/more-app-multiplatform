@@ -10,7 +10,7 @@ import kotlin.coroutines.CoroutineContext
 
 object StudyScope {
     private val mutex = Mutex()
-    private val jobs = mutableSetOf<String>()
+    private val studyJobs = mutableSetOf<String>()
 
     fun launch(
         coroutineContext: CoroutineContext = Dispatchers.Default,
@@ -18,39 +18,45 @@ object StudyScope {
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val result = Scope.launch(coroutineContext, start, block)
+
         Scope.launch {
             mutex.withLock {
-                jobs.add(result.first)
-
+                studyJobs.add(result.first)
             }
         }
+
         result.second.invokeOnCompletion {
             Scope.launch {
                 mutex.withLock {
-                    jobs.remove(result.first)
+                    studyJobs.remove(result.first)
                 }
             }
         }
+
         return result
     }
 
     fun repeatedLaunch(
         intervalMillis: Long,
+        coroutineContext: CoroutineContext = Dispatchers.Default,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
-        val result = Scope.repeatedLaunch(intervalMillis, block)
+        val result = Scope.repeatedLaunch(intervalMillis, coroutineContext, block)
+
         Scope.launch {
             mutex.withLock {
-                jobs.add(result.first)
+                studyJobs.add(result.first)
             }
         }
+
         result.second.invokeOnCompletion {
             Scope.launch {
                 mutex.withLock {
-                    jobs.remove(result.first)
+                    studyJobs.remove(result.first)
                 }
             }
         }
+
         return result
     }
 
@@ -63,6 +69,28 @@ object StudyScope {
     }
 
     fun cancel() {
-        Scope.cancel(this.jobs)
+        val jobsToCancel = mutex.tryLock().let { acquired ->
+            if (acquired) {
+                try {
+                    studyJobs.toList()
+                } finally {
+                    mutex.unlock()
+                }
+            } else {
+                Scope.launch {
+                    mutex.withLock {
+                        val snapshot = studyJobs.toList()
+                        if (snapshot.isNotEmpty()) {
+                            Scope.cancel(snapshot)
+                        }
+                    }
+                }
+                return
+            }
+        }
+
+        if (jobsToCancel.isNotEmpty()) {
+            Scope.cancel(jobsToCancel)
+        }
     }
 }

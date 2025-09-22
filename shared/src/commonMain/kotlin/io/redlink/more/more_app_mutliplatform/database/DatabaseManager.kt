@@ -10,50 +10,19 @@
  */
 package io.redlink.more.more_app_mutliplatform.database
 
-import io.github.aakira.napier.Napier
-import io.ktor.utils.io.core.Closeable
-import io.realm.kotlin.types.RealmObject
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import kotlin.reflect.KClass
+import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
-object DatabaseManager: Closeable {
-    val database = RealmDatabase
-    private val schemas = setOf(
-        StudySchema::class,
-        ObservationSchema::class,
-        ScheduleSchema::class,
-        ObservationDataSchema::class,
-        DataPointCountSchema::class,
-        NotificationSchema::class,
-        BluetoothDevice::class
-    )
-
-    init {
-        open()
-        Napier.i { "Opened Database!" }
-    }
-
-    fun open() {
-        database.open(this.schemas)
-    }
-
-    suspend fun deleteAllFromSchema(classes: Set<KClass<out RealmObject>>) {
-        classes.forEach {
-            database.deleteAlOfSchema(it)
-        }
-    }
-
-    fun deleteAll() {
-        database.deleteAll()
-    }
-
-    override fun close() {
-        database.close()
-    }
+@Suppress("KotlinNoActualForExpect")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
+    override fun initialize(): AppDatabase
 }
+
+fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase =
+    builder
+        .setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .build()

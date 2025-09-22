@@ -22,6 +22,7 @@ struct LoginView: View {
 
     @State private var showTokenInput = true
     @State private var showEndpoint = false
+    @State private var disabledQRCodeButton = false
 
     private let stringTable = "LoginView"
 
@@ -43,9 +44,28 @@ struct LoginView: View {
                                 input: $model.token,
                                 capitalization: .uppercase,
                                 autoCorrectDisabled: true,
-                                textType: .oneTimeCode
+                                textType: .oneTimeCode,
+                                hlAlignment: TextAlignment.center
                 )
                 .padding(.bottom, 12)
+                
+                MoreActionButton(backgroundColor: Color.more.secondary, disabled: $disabledQRCodeButton) {
+                    model.showQRCodeView = true
+                } label: {
+                    HStack {
+                        Text(verbatim:.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable))
+                        Spacer()
+                        Image(systemName: "qrcode")
+                            .foregroundColor(.more.primaryLight200)
+                    }
+                }
+                .sheet(isPresented: $model.showQRCodeView) {
+                    ScanQRCodeView(model: model)
+                }
+                .padding(.bottom, 12)
+                
+                
+                Divider()
                 
                 if showTokenInput {
                     ErrorLogin(stringTable: .constant(stringTable), disabled: .constant(model.checkTokenCount()))
@@ -79,7 +99,8 @@ struct LoginView: View {
 }
 
 struct LoginView_Previews: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
-        LoginView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(dataManager: iOSObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        LoginView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
     }
 }

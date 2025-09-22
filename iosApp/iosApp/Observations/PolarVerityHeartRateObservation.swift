@@ -37,7 +37,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     private let deviceIdentificer: Set<String> = ["Polar"]
     private let polarConnector = AppDelegate.polarConnector
 
-    private var connectedDevices: [BluetoothDevice] = []
+    private var connectedDevices: [BluetoothDeviceEntity] = []
     private var hrObservation: Disposable?
 
     private let deviceManager = BluetoothDeviceManager.shared
@@ -46,8 +46,8 @@ class PolarVerityHeartRateObservation: Observation_ {
     
     private let errorStringTable = "Errors"
 
-    init(sensorPermissions: Set<String>) {
-        super.init(observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
+    init(database: AppDatabase, sensorPermissions: Set<String>) {
+        super.init(database: database, observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
     }
 
     override func start() -> Bool {

@@ -23,6 +23,7 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
@@ -35,11 +36,21 @@ import kotlinx.coroutines.flow.update
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        setOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
+        if (Build.VERSION.SDK_INT >= 34) {
+            setOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
+            )
+        } else {
+            setOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
     } else {
         setOf(
             Manifest.permission.BLUETOOTH,
@@ -47,8 +58,11 @@ private val permissions =
         )
     }
 
-class PolarHeartRateObservation :
-    Observation(observationType = PolarVerityHeartRateType(permissions)) {
+class PolarHeartRateObservation(database: AppDatabase) :
+    Observation(
+        database,
+        observationType = PolarVerityHeartRateType(permissions)
+    ) {
     private val deviceManager = BluetoothDeviceManager
     private val deviceIdentifier = setOf("Polar")
     private val polarConnector = MoreApplication.polarConnector!!

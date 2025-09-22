@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -19,6 +20,9 @@
     <!--        android:maxSdkVersion="30" />-->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!-- use of camera for qr code scan in login -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
 
     <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
@@ -44,6 +48,10 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.any" />
 
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -83,6 +91,19 @@
 
                 <data android:scheme="@string/app_scheme" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.qrScanner.QRScannerActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <data android:scheme="@string/app_scheme" />
+            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
@@ -103,7 +124,9 @@
 
         <service
             android:name=".services.ObservationRecordingService"
-            android:foregroundServiceType="location" />
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location|connectedDevice" />
         <service
             android:name=".firebase.FCMService"
             android:exported="false"
@@ -131,4 +154,4 @@
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
     </queries>
-</manifest> 
+</manifest>

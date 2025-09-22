@@ -16,11 +16,11 @@
 import shared
 
 class DashboardViewModel: ObservableObject {
-    private let coreViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
+    private let coreViewModel: CoreDashboardViewModel = CoreDashboardViewModel(database: AppDelegate.database)
     let scheduleViewModel: ScheduleViewModel
     
     @Published var studyTitle: String = ""
-    @Published var study: StudySchema? = StudySchema()
+    @Published var study: StudyEntity?
     @Published var filterText: String = ""
     
     init(scheduleViewModel: ScheduleViewModel) {

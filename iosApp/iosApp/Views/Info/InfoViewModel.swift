@@ -17,7 +17,7 @@ import shared
 
 class InfoViewModel: ObservableObject {
     
-    private let studyCoreModel = CoreStudyDetailsViewModel()
+    private let studyCoreModel = CoreStudyDetailsViewModel(appDatabase: AppDelegate.database)
     @Published var studyTitle: String?
     @Published var contactInstitute: String?
     @Published var contactPerson: String?

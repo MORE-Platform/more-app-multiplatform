@@ -17,20 +17,31 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class CoreLoginViewModel(private val registrationService: RegistrationService): CoreViewModel() {
+class CoreLoginViewModel(private val registrationService: RegistrationService) : CoreViewModel() {
 
     val loadingFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    fun sendRegistrationToken(token: String, endpoint: String? = null, onSuccess: (Study) -> Unit, onError: (NetworkServiceError?) -> Unit) {
+    fun sendRegistrationToken(
+        token: String,
+        endpoint: String? = null,
+        onSuccess: (Study) -> Unit,
+        onError: (NetworkServiceError?) -> Unit
+    ) {
         if (token.isNotEmpty()) {
             loadingFlow.value = true
-            registrationService.sendRegistrationToken(token.uppercase(), endpoint, onSuccess, onError) {
+            registrationService.sendRegistrationToken(
+                token.uppercase(),
+                endpoint,
+                onSuccess,
+                onError
+            ) {
                 loadingFlow.value = false
             }
         }
     }
 
-    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)) = loadingFlow.asClosure(provideNewState)
+    fun onLoadingChange(provideNewState: ((Boolean) -> Unit)) =
+        loadingFlow.asClosure(provideNewState)
 
     override fun viewDidAppear() {
 

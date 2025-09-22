@@ -18,6 +18,7 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.util.Scope
@@ -28,14 +29,18 @@ import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_S
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_exercise
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_steps
 
-class AndroidObservationFactory(context: Context, observationDataManager: ObservationDataManager) :
-    ObservationFactory(observationDataManager) {
+class AndroidObservationFactory(
+    context: Context,
+    observationDataManager: ObservationDataManager,
+    database: AppDatabase
+) :
+    ObservationFactory(database, observationDataManager) {
     init {
         observations.addAll(
             setOf(
-                AccelerometerObservation(context),
-                GPSObservation(context, gpsService = GPSService(context)),
-                PolarHeartRateObservation(),
+                AccelerometerObservation(context, database),
+                GPSObservation(context, database, gpsService = GPSService(context)),
+                PolarHeartRateObservation(database)
                 HealthkitObservation_HR(context),
                 HealthkitObservation_exercise(context),
                 HealthkitObservation_Sleep(context),

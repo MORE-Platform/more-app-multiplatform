@@ -10,7 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -25,7 +25,10 @@ class SimpleQuestionModel(
     var scheduleId: String = ""
 ) {
     companion object {
-        fun createModelFrom(observationSchema: ObservationSchema, scheduleId: String): SimpleQuestionModel {
+        fun createModelFrom(
+            observationSchema: ObservationEntity,
+            scheduleId: String
+        ): SimpleQuestionModel {
             val config: Map<String, JsonElement> =
                 observationSchema.configuration?.let { config ->
                     Json.decodeFromString<JsonObject>(config).toMap()

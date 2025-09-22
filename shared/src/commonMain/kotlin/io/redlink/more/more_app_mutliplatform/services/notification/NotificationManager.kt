@@ -11,27 +11,35 @@
 package io.redlink.more.more_app_mutliplatform.services.notification
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.ext.toRealmDictionary
-import io.realm.kotlin.types.RealmDictionary
 import io.redlink.more.more_app_mutliplatform.Shared
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.NotificationRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.more_app_mutliplatform.models.NotificationStatusType
+import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 interface LocalNotificationListener {
-    fun displayNotification(notification: NotificationSchema)
+    fun displayNotification(notification: NotificationEntity)
 
     fun deleteNotificationFromSystem(notificationId: String)
 
@@ -42,14 +50,17 @@ interface LocalNotificationListener {
 }
 
 class NotificationManager(
+    database: AppDatabase,
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService,
     private val deeplinkManager: DeeplinkManager,
     private val sharedStorageRepository: SharedStorageRepository
 ) {
-    val notificationRepository = NotificationRepository()
+    val notificationRepository = NotificationRepository(database)
     val _unreadUserCount = MutableStateFlow(0)
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
+    private val scheduleRepository = ScheduleRepository(database)
+    private val observationRepository = ObservationRepository(database)
 
     init {
         Scope.launch(Dispatchers.IO) {
@@ -69,18 +80,20 @@ class NotificationManager(
         body: String?,
         priority: Long = 1,
         read: Boolean = false,
+        completed: Boolean = false,
         data: Map<String, String>? = null,
         displayNotification: Boolean
     ) {
         storeAndHandleNotification(
             shared,
-            NotificationSchema.toSchema(
+            NotificationEntity.toEntity(
                 notificationId = key,
                 channelId = null,
                 title = title,
                 notificationBody = body,
                 priority = priority,
                 read = read,
+                completed = completed,
                 userFacing = title != null,
                 notificationData = data
             ),
@@ -90,24 +103,26 @@ class NotificationManager(
 
     fun storeAndHandleNotification(
         shared: Shared,
-        notification: NotificationSchema,
+        notification: NotificationEntity,
         displayNotification: Boolean
     ) {
         storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
             handleNotificationDataAsync(
                 shared,
-                notification.notificationData
+                notification.getNotificationDataMap()
             )
         }
     }
 
     fun storeAndDisplayNotification(
-        notification: NotificationSchema,
+        notification: NotificationEntity,
         displayNotification: Boolean
     ) {
         if (notification.title != null && notification.notificationBody != null) {
-            notificationRepository.storeNotification(notification)
+            StudyScope.launch(Dispatchers.IO) {
+                notificationRepository.storeNotification(notification)
+            }
             if (displayNotification) {
                 Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
                 localNotificationListener.displayNotification(notification)
@@ -115,14 +130,16 @@ class NotificationManager(
         }
     }
 
-    fun storeNotifications(notifications: List<NotificationSchema>) {
-        notificationRepository.storeNotifications(notifications)
+    fun storeNotifications(notifications: List<NotificationEntity>) {
+        StudyScope.launch(Dispatchers.IO) {
+            notificationRepository.storeNotifications(notifications)
+        }
     }
 
     fun downloadMissedNotifications() {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             Napier.d { "Updating notifications" }
-            storeNotifications(NotificationSchema.toSchemaList(networkService.downloadMissedNotifications()))
+            storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
         }
     }
 
@@ -133,7 +150,7 @@ class NotificationManager(
 
     fun deleteNotificationFromServer(msgID: String) {
         Napier.i { "Deleting notification with msgID $msgID from server..." }
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             networkService.deletePushNotification(msgID)
         }
     }
@@ -147,18 +164,23 @@ class NotificationManager(
         deleteNotificationFromSystemTray(notificationId)
     }
 
+    fun markNotificationAsCompleted(notificationId: String) {
+        notificationRepository.setNotificationCompletedStatus(notificationId, true)
+        deleteNotificationFromSystemTray(notificationId)
+    }
+
     fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
-        Scope.launch {
+        Scope.launch(Dispatchers.IO) {
             handleNotificationData(
                 shared,
-                data.toRealmDictionary()
+                data
             )
         }
     }
 
     suspend fun handleNotificationData(
         shared: Shared,
-        data: RealmDictionary<String>
+        data: Map<String, String>
     ) {
         if (data.isNotEmpty()) {
             if (data[MAIN_DATA_KEY] == STUDY_CHANGED) {
@@ -190,6 +212,20 @@ class NotificationManager(
     ) {
         notification.deepLink?.let { deepLink ->
             Scope.launch {
+
+                val state = checkIfCompletedOrRead(deepLink).cancellable().firstOrNull()
+
+                if (state != null) {
+                    if (NotificationStatusType.READ == state) notificationRepository.setNotificationReadStatus(
+                        notification.notificationId,
+                        true
+                    )
+                    if (NotificationStatusType.COMPLETED == state) notificationRepository.setNotificationCompletedStatus(
+                        notification.notificationId,
+                        true
+                    )
+                }
+
                 deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
                     .firstOrNull()?.let { modifiedDeepLink ->
                         if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
@@ -212,6 +248,39 @@ class NotificationManager(
         } ?: run {
             markNotificationAsRead(notification.notificationId)
         }
+    }
+
+    fun checkIfCompletedOrRead(
+        notificationDeeplink: String,
+    ): Flow<NotificationStatusType?> = flow {
+
+        var state: NotificationStatusType? = null
+
+        val queryParams = notificationDeeplink.mapQueryParams()
+        val observationId = queryParams["observationId"]
+        if (observationId.isNullOrEmpty()
+            || observationRepository.observationById(observationId.first())
+                .firstOrNull() == null
+        ) {
+            emit(null)
+            return@flow
+        }
+        val schedule =
+            scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                .cancellable().firstOrNull()
+
+        // ScheduleState.DEACTIVATED -> ACTIVE -> PAUSE/RUNNING -> ENDED/COMPLETED
+        // if the ScheduleState is DEACTIVATED and it has a repeat, the Notification will go to the next Instance of Observation
+        // ACTIVE, PAUSED, RUNNING, ENDED -> is only read
+        // COMPLETED gets a check
+        // after Observation has ended, we don't have any means to determine anything anymore, because the Scheduler is deleted (null) from the object, so it will be set to comppleted
+
+        state = if (schedule?.state == ScheduleState.DONE.toString() || schedule?.state == null) {
+            NotificationStatusType.COMPLETED
+        } else {
+            NotificationStatusType.READ
+        }
+        emit(state)
     }
 
     fun newFCMToken(token: String? = null) {

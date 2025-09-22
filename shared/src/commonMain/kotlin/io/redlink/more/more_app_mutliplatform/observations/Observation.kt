@@ -11,10 +11,11 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
@@ -32,11 +33,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
-abstract class Observation(val observationType: ObservationType) {
-    private val scheduleRepository = ScheduleRepository()
+abstract class Observation(database: AppDatabase, val observationType: ObservationType) {
+    private val scheduleRepository = ScheduleRepository(database)
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
-    private val observationRepository = ObservationRepository()
+    private val observationRepository = ObservationRepository(database)
 
     private var running = false
     private val observationIds = mutableSetOf<String>()
@@ -62,7 +63,7 @@ abstract class Observation(val observationType: ObservationType) {
         timestampCollectionJob?.cancel()
         timestampCollectionJob = StudyScope.launch {
             observationRepository.collectTimestampForObservationIds(observationIds).collect {
-                lastCollectionTimestamp = Instant.fromEpochSeconds(it.epochSeconds)
+                lastCollectionTimestamp = Instant.fromEpochMilliseconds(it)
                 Napier.d(tag = "Observation::start") { "Last collection $lastCollectionTimestamp" }
             }
         }.second
@@ -119,7 +120,7 @@ abstract class Observation(val observationType: ObservationType) {
 
     fun observationConfig(settings: Map<String, Any>) {
         this.lastCollectionTimestamp = (settings[CONFIG_LAST_COLLECTION_TIMESTAMP] as? Long)?.let {
-            Instant.fromEpochSeconds(it, 0)
+            Instant.fromEpochMilliseconds(it)
         } ?: Clock.System.now()
         if (settings.isNotEmpty()) {
             Napier.i(tag = "Observation::observationConfig") { "Applying new observation settings for ${observationType.observationType}: $settings" }
@@ -134,10 +135,12 @@ abstract class Observation(val observationType: ObservationType) {
     protected fun collectionTimestampToNow() {
         Napier.d(tag = "Observation::collectionTimeStampToNow") { "Collecting timestamp" }
         lastCollectionTimestamp = Clock.System.now()
-        observationRepository.lastCollection(
-            observationIds.toSet(),
-            lastCollectionTimestamp.epochSeconds
-        )
+        StudyScope.launch(Dispatchers.IO) {
+            observationRepository.updateLastCollection(
+                observationIds.toSet(),
+                lastCollectionTimestamp.toEpochMilliseconds()
+            )
+        }
     }
 
     protected abstract fun start(): Boolean
@@ -177,7 +180,7 @@ abstract class Observation(val observationType: ObservationType) {
     open fun ableToAutomaticallyStart() = true
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
-        val dataSchemas = ObservationDataSchema.fromData(
+        val dataSchemas = ObservationDataEntity.fromData(
             observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
         ).map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
@@ -186,7 +189,7 @@ abstract class Observation(val observationType: ObservationType) {
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
-        val dataSchemas = ObservationDataSchema.fromData(observationIds.toSet(), data)
+        val dataSchemas = ObservationDataEntity.fromData(observationIds.toSet(), data)
             .map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
@@ -208,7 +211,11 @@ abstract class Observation(val observationType: ObservationType) {
         stop {
             timestampCollectionJob?.cancel()
             saveAndSend()
-            scheduleIds.keys.forEach { scheduleRepository.setRunningStateFor(it, state) }
+            scheduleIds.keys.forEach {
+                StudyScope.launch(Dispatchers.IO) {
+                    scheduleRepository.setRunningStateFor(it, state)
+                }
+            }
             scheduleId?.let {
                 observationShutdown(it)
             }
@@ -221,7 +228,11 @@ abstract class Observation(val observationType: ObservationType) {
         stop {
             timestampCollectionJob?.cancel()
             saveAndSend()
-            scheduleIds.keys.forEach { scheduleRepository.setCompletionStateFor(it, true) }
+            scheduleIds.keys.forEach {
+                StudyScope.launch(Dispatchers.IO) {
+                    scheduleRepository.setCompletionStateFor(it, true)
+                }
+            }
             observationShutdown(scheduleId)
             removeDataCount()
             handleNotification(scheduleId)
@@ -247,12 +258,12 @@ abstract class Observation(val observationType: ObservationType) {
 
     private fun handleNotification(scheduleId: String) {
         notificationIds.remove(scheduleId)?.let {
-            notificationManager?.markNotificationAsRead(it)
+            notificationManager?.markNotificationAsCompleted(it)
         }
     }
 
     protected fun showNotification(title: String, notificationBody: String) {
-        val notification = NotificationSchema.build(title, notificationBody)
+        val notification = NotificationEntity.build(title, notificationBody)
         Napier.d(tag = "Observation::showNotification") { "Showing notification: $notification" }
         notificationManager?.storeAndDisplayNotification(notification, true)
     }
@@ -271,8 +282,10 @@ abstract class Observation(val observationType: ObservationType) {
         StudyScope.launch {
             val scheduleSchemas = combinedFlow.first()
             val title =
-                if (scheduleSchemas.isNotEmpty()) scheduleSchemas.map { it.observationTitle }
-                    .joinToString(", ", limit = 5) else fallbackTitle
+                if (scheduleSchemas.isNotEmpty()) scheduleSchemas.joinToString(
+                    ", ",
+                    limit = 5
+                ) { it.observationTitle } else fallbackTitle
             withContext(Dispatchers.Main) {
                 showNotification(title, notificationBody)
             }

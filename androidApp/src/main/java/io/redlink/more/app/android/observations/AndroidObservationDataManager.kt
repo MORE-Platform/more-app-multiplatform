@@ -17,9 +17,11 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import io.redlink.more.app.android.workers.DataUploadWorker
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 
-class AndroidObservationDataManager(context: Context) : ObservationDataManager() {
+class AndroidObservationDataManager(context: Context, database: AppDatabase) :
+    ObservationDataManager(database) {
     private val workManager = WorkManager.getInstance(context)
     private val workerConstraints =
         Constraints.Builder()
@@ -33,7 +35,8 @@ class AndroidObservationDataManager(context: Context) : ObservationDataManager()
         workManager.enqueueUniqueWork(
             DataUploadWorker.WORKER_TAG,
             ExistingWorkPolicy.KEEP,
-            dataWorker)
+            dataWorker
+        )
         onCompletion(true)
     }
 

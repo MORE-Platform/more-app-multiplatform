@@ -97,7 +97,6 @@ class MainViewModel(context: Context) : ViewModel() {
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
     private var lastBleViewState = false
 
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             AlertController.alertDialogModel.collect {
@@ -106,12 +105,12 @@ class MainViewModel(context: Context) : ViewModel() {
                 }
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             ViewManager.studyIsUpdating.collect {
                 studyIsUpdating.value = it
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             MoreApplication.shared!!.currentStudyState.collect {
                 finishText.value = MoreApplication.shared!!.finishText
                 studyState.value = it

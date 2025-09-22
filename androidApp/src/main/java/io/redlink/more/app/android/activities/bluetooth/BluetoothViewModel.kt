@@ -18,8 +18,8 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.more_app_mutliplatform.AlertController
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreBluetoothViewModel
@@ -32,8 +32,8 @@ class BluetoothViewModel : ViewModel() {
         MoreApplication.shared!!.observationFactory,
         MoreApplication.shared!!.bluetoothController
     )
-    val discoveredDevices = mutableStateListOf<BluetoothDevice>()
-    val connectedDevices = mutableStateListOf<BluetoothDevice>()
+    val discoveredDevices = mutableStateListOf<BluetoothDeviceEntity>()
+    val connectedDevices = mutableStateListOf<BluetoothDeviceEntity>()
     val connectingDevices = mutableStateListOf<String>()
     val isScanning = mutableStateOf(false)
     val bluetoothPowerState = mutableStateOf(BluetoothStateListener.bluetoothEnabled.value)
@@ -120,11 +120,11 @@ class BluetoothViewModel : ViewModel() {
         ViewManager.bleViewOpen(false)
     }
 
-    fun connectToDevice(device: BluetoothDevice) {
+    fun connectToDevice(device: BluetoothDeviceEntity) {
         coreBluetoothViewModel.connectToDevice(device)
     }
 
-    fun disconnectFromDevice(device: BluetoothDevice) {
+    fun disconnectFromDevice(device: BluetoothDeviceEntity) {
         coreBluetoothViewModel.disconnectFromDevice(device)
     }
 }

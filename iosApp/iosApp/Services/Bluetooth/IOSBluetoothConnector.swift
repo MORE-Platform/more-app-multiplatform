@@ -18,13 +18,12 @@ import Foundation
 import PolarBleSdk
 import RxSwift
 import shared
-import RealmSwift
 
 protocol BLEConnectorDelegate {
     func bleHasPower()
 }
 
-typealias BluetoothDeviceList = [BluetoothDevice: CBPeripheral]
+typealias BluetoothDeviceList = [BluetoothDeviceEntity: CBPeripheral]
 
 class IOSBluetoothConnector: NSObject, BluetoothConnector {
     let specificBluetoothConnectors: KotlinMutableDictionary<NSString, BluetoothConnector> = KotlinMutableDictionary<NSString, BluetoothConnector>()
@@ -52,7 +51,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         specificBluetoothConnectors[key] = connector
     }
 
-    func connect(device: BluetoothDevice) -> KotlinError? {
+    func connect(device: BluetoothDeviceEntity) -> KotlinError? {
         print("Connecting to device: \(device)")
         let (hasConnected, error) = connectToSpecificDevice(device: device)
         if (hasConnected) {
@@ -70,7 +69,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         }
     }
     
-    func disconnect(device: BluetoothDevice) {
+    func disconnect(device: BluetoothDeviceEntity) {
         if let cbPeripheral = discoveredDevices[device] {
             centralManager.cancelPeripheralConnection(cbPeripheral)
         }
@@ -132,37 +131,37 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         centralManager.stopScan()
     }
     
-    func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    func isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.isConnectingToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
     
-    func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    func didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didConnectToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
     
-    func didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+    func didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)
         }
     }
     
-    func didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    func didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
     
-    func didDiscoverDevice(device: BluetoothDevice) {
+    func didDiscoverDevice(device: BluetoothDeviceEntity) {
         updateObserver {
             $0.didDiscoverDevice(device: device)
         }
     }
     
-    func removeDiscoveredDevice(device: BluetoothDevice) {
+    func removeDiscoveredDevice(device: BluetoothDeviceEntity) {
         updateObserver {
             $0.removeDiscoveredDevice(device: device)
         }
@@ -173,7 +172,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         updateObserver{ $0.onBluetoothStateChange(bluetoothState: bluetoothState)}
     }
     
-    private func connectToSpecificDevice(device: BluetoothDevice) -> (Bool, KotlinError?) {
+    private func connectToSpecificDevice(device: BluetoothDeviceEntity) -> (Bool, KotlinError?) {
         if let connector = specificBluetoothConnectors
             .first(where: {device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false})?.value as? BluetoothConnector {
             return (true, connector.connect(device: device))
@@ -181,7 +180,7 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         return (false, nil)
     }
     
-    private func disconnectFromSpecificDevice(device: BluetoothDevice) -> Bool {
+    private func disconnectFromSpecificDevice(device: BluetoothDeviceEntity) -> Bool {
         if let connector = specificBluetoothConnectors
             .first(where: {device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false})?.value as? BluetoothConnector {
             connector.disconnect(device: device)
@@ -259,8 +258,8 @@ extension IOSBluetoothConnector: CBPeripheralDelegate {
 }
 
 extension CBPeripheral {
-    func toBluetoothDevice() -> BluetoothDevice {
-        BluetoothDevice.Companion().create(
+    func toBluetoothDevice() -> BluetoothDeviceEntity {
+        BluetoothDeviceEntity.Companion().create(
             deviceId: self.identifier.uuidString,
             deviceName: self.name ?? "Unknown",
             address: self.identifier.uuidString

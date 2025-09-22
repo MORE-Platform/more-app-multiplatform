@@ -10,35 +10,55 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.realm.kotlin.types.RealmObject
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transform
 
-class StudyRepository : Repository<StudySchema>() {
+class StudyRepository(private val appDatabase: AppDatabase) {
+
     fun storeStudy(study: Study) {
-        val realmObjects = mutableListOf<RealmObject>()
-        realmObjects.add(StudySchema.toSchema(study))
-        realmObjects.addAll(study.observations.map { ObservationSchema.toSchema(it) })
-        realmObjects.addAll(study.observations.map { observation ->
-            observation.schedule.mapNotNull {
-                ScheduleSchema.toSchema(
-                    it,
-                    observation.observationId,
-                    observation.observationType,
-                    observation.observationTitle,
-                    observation.hidden ?: observation.noSchedule
-                )
+        StudyScope.launch(Dispatchers.IO) {
+            val studyEntity = StudyEntity.fromStudy(study)
+            appDatabase.studyDao().insert(studyEntity)
+        }
+
+        StudyScope.launch(Dispatchers.IO) {
+            val observationEntities = study.observations.map { ObservationEntity.toEntity(it) }
+            appDatabase.observationDao().insertAll(observationEntities)
+        }
+
+        StudyScope.launch(Dispatchers.IO) {
+            val scheduleEntities = study.observations.flatMap { observation ->
+                observation.schedule.mapNotNull {
+                    ScheduleEntity.fromObservationSchedule(
+                        it,
+                        observation.observationId,
+                        observation.observationType,
+                        observation.observationTitle,
+                        observation.hidden ?: observation.noSchedule
+                    )
+                }
             }
-        }.flatten())
-        realmDatabase().store(realmObjects)
+            appDatabase.scheduleDao().insertAll(scheduleEntities)
+        }
     }
 
-    fun getStudy(): Flow<StudySchema?> {
-        return realmDatabase().queryFirst()
+    fun getStudy(): Flow<StudyEntity?> {
+        return appDatabase.studyDao().getAllFlow().transform { emit(it.firstOrNull()) }
     }
 
-    override fun count(): Flow<Long> = realmDatabase().count<StudySchema>()
+    fun getStudyById(studyId: String): Flow<StudyEntity?> {
+        return appDatabase.studyDao().getByIdFlow(studyId)
+    }
+
+    fun getStudyCount(): Flow<Int> {
+        return appDatabase.studyDao().getCount()
+    }
 }

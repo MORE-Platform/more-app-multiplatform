@@ -37,7 +37,7 @@ class TaskDetailsViewModel: ObservableObject {
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
     init(dataRecorder: DataRecorder) {
-        self.coreModel = CoreTaskDetailsViewModel(dataRecorder: dataRecorder)
+        self.coreModel = CoreTaskDetailsViewModel(database: AppDelegate.database, dataRecorder: dataRecorder)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { [weak self] taskDetails in
             if let self {

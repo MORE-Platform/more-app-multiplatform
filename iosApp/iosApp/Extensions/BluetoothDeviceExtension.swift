@@ -17,8 +17,8 @@ import Foundation
 import shared
 import PolarBleSdk
 
-extension BluetoothDevice {
-    static func fromPolarDevice(polarInfo: PolarDeviceInfo) -> BluetoothDevice {
-        BluetoothDevice.Companion().create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString)
+extension BluetoothDeviceEntity {
+    static func fromPolarDevice(polarInfo: PolarDeviceInfo) -> BluetoothDeviceEntity {
+        BluetoothDeviceEntity.Companion().create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString)
     }
 }

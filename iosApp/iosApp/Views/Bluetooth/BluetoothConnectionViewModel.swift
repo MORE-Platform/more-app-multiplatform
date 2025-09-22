@@ -20,8 +20,8 @@ class BluetoothConnectionViewModel: ObservableObject {
     private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.bluetoothController)
     private let deviceManager = BluetoothDeviceManager.shared
 
-    @Published var discoveredDevices: [BluetoothDevice] = []
-    @Published var connectedDevices: [BluetoothDevice] = []
+    @Published var discoveredDevices: [BluetoothDeviceEntity] = []
+    @Published var connectedDevices: [BluetoothDeviceEntity] = []
     @Published var connectingDevices: [String] = []
 
     @Published var bluetoothIsScanning = false
@@ -98,11 +98,11 @@ class BluetoothConnectionViewModel: ObservableObject {
         ViewManager.shared.showBLEView(state: false)
     }
 
-    func connectToDevice(device: BluetoothDevice) {
+    func connectToDevice(device: BluetoothDeviceEntity) {
         coreViewModel.connectToDevice(device: device)
     }
 
-    func disconnectFromDevice(device: BluetoothDevice) {
+    func disconnectFromDevice(device: BluetoothDeviceEntity) {
         coreViewModel.disconnectFromDevice(device: device)
     }
 }

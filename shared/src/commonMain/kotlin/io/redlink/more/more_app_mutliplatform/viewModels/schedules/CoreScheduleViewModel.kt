@@ -10,8 +10,9 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
@@ -28,11 +29,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Clock
 
 class CoreScheduleViewModel(
+    database: AppDatabase,
     private val dataRecorder: DataRecorder,
     private val scheduleListType: ScheduleListType,
     private val coreFilterModel: CoreDashboardFilterViewModel,
 ) : CoreViewModel() {
-    private val scheduleRepository = ScheduleRepository()
+    private val scheduleRepository = ScheduleRepository(database)
     private var originalScheduleList = emptySet<ScheduleModel>()
 
     private val _scheduleListState = MutableStateFlow(
@@ -130,20 +132,20 @@ class CoreScheduleViewModel(
         originalScheduleList = newList.toSet()
     }
 
-    private fun createModels(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
+    private fun createModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return scheduleList
             .mapNotNull { ScheduleModel.createModel(it) }
     }
 
-    private fun createCompletedModels(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
+    private fun createCompletedModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return createModels(scheduleList.filter { it.getState().completed() })
     }
 
-    private fun createRunningModels(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
+    private fun createRunningModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return createModels(scheduleList.filter { it.getState().running() })
     }
 
-    private fun createManualTasks(scheduleList: List<ScheduleSchema>): List<ScheduleModel> {
+    private fun createManualTasks(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return createModels(scheduleList.filter { !it.hidden })
     }
 
