@@ -28,7 +28,7 @@ class ScheduleViewModel: ObservableObject {
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
+        coreModel = CoreScheduleViewModel(database: AppDelegate.database, dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
         loadSchedules()
 
         ViewManager.shared.studyIsUpdatingAsClosure { [weak self] kBool in

@@ -13,8 +13,9 @@ package io.redlink.more.app.android.activities.dashboard
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +24,11 @@ import kotlinx.coroutines.launch
 
 class DashboardViewModel(
     val scheduleViewModel: ScheduleViewModel
-): ViewModel() {
-    private val coreDashboardViewModel: CoreDashboardViewModel = CoreDashboardViewModel()
+) : ViewModel() {
+    private val coreDashboardViewModel: CoreDashboardViewModel =
+        CoreDashboardViewModel(MoreApplication.shared!!.database)
 
-    var study: MutableState<StudySchema?> = mutableStateOf(StudySchema())
+    var study: MutableState<StudyEntity?> = mutableStateOf(StudyEntity())
     val studyTitle = mutableStateOf("Study Title")
     val studyActive = mutableStateOf(true)
 

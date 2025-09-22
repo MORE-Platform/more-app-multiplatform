@@ -28,7 +28,8 @@ import kotlinx.coroutines.withContext
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder
 ) : ViewModel() {
-    private val coreViewModel: CoreTaskDetailsViewModel = CoreTaskDetailsViewModel(dataRecorder)
+    private val coreViewModel: CoreTaskDetailsViewModel =
+        CoreTaskDetailsViewModel(MoreApplication.shared!!.database, dataRecorder)
     val isEnabled = mutableStateOf(false)
     val polarHrReady = mutableStateOf(false)
     val dataPointCount = mutableStateOf(0L)

@@ -60,7 +60,6 @@ extension WebViewViewModel: WKNavigationDelegate {
         print("WebView didStartProviisonalNavigation")
     }
 
-    @available(iOS 14.5, *)
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
         print("WebView didBecome download")
     }

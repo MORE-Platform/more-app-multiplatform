@@ -31,9 +31,9 @@ import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.Napier.i
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
 import android.bluetooth.BluetoothDevice as AndroidBluetoothDevice
 
@@ -242,7 +242,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
     }
 
     @SuppressLint("MissingPermission")
-    override fun connect(device: BluetoothDevice): Error? {
+    override fun connect(device: BluetoothDeviceEntity): Error? {
         if (bluetoothState == BluetoothState.ON) {
             i { "Connecting to device: $device" }
             isConnecting = true
@@ -272,7 +272,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
     }
 
     @SuppressLint("MissingPermission")
-    override fun disconnect(device: BluetoothDevice) {
+    override fun disconnect(device: BluetoothDeviceEntity) {
         if (!disconnectFromSpecificConnectors(device)) {
             val androidBluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
             if (androidBluetoothDevice != null) {
@@ -308,35 +308,35 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
         }
     }
 
-    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         i { "Connecting to $bluetoothDevice..." }
         updateObserver { it.isConnectingToDevice(bluetoothDevice) }
     }
 
-    override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         i { "Connected to $bluetoothDevice!" }
         updateObserver { it.didConnectToDevice(bluetoothDevice) }
         isConnecting = false
     }
 
-    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity) {
         i { "Disconnected from $bluetoothDevice!" }
         foundBluetoothDevices.remove(bluetoothDevice.address)
         updateObserver { it.didDisconnectFromDevice(bluetoothDevice) }
     }
 
-    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         i { "Failed to connect to $bluetoothDevice!" }
         updateObserver { didFailToConnectToDevice(bluetoothDevice) }
         isConnecting = false
     }
 
-    override fun didDiscoverDevice(device: BluetoothDevice) {
+    override fun didDiscoverDevice(device: BluetoothDeviceEntity) {
         i { "Discovered $device!" }
         updateObserver { it.didDiscoverDevice(device) }
     }
 
-    override fun removeDiscoveredDevice(device: BluetoothDevice) {
+    override fun removeDiscoveredDevice(device: BluetoothDeviceEntity) {
         i { "Removing discovered $device..." }
         updateObserver { it.removeDiscoveredDevice(device) }
     }
@@ -359,7 +359,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
         updateObserver { it.isScanning(boolean) }
     }
 
-    private fun deviceConnected(bluetoothDevice: BluetoothDevice) {
+    private fun deviceConnected(bluetoothDevice: BluetoothDeviceEntity) {
         val (hasSpecialConnector, error) = connectToSpecificConnectors(bluetoothDevice)
         if (hasSpecialConnector) {
             if (error != null) {
@@ -369,7 +369,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
         didConnectToDevice(bluetoothDevice)
     }
 
-    private fun connectToSpecificConnectors(device: BluetoothDevice): Pair<Boolean, Error?> {
+    private fun connectToSpecificConnectors(device: BluetoothDeviceEntity): Pair<Boolean, Error?> {
         return specificBluetoothConnectors.keys.firstOrNull {
             device.deviceName?.lowercase()?.contains(it) ?: false
         }?.let {
@@ -378,7 +378,7 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
         } ?: Pair(false, null)
     }
 
-    private fun disconnectFromSpecificConnectors(device: BluetoothDevice): Boolean {
+    private fun disconnectFromSpecificConnectors(device: BluetoothDeviceEntity): Boolean {
         return specificBluetoothConnectors.keys.firstOrNull {
             i { "Disconnecting with special connector \"$it\"..." }
             device.deviceName?.lowercase()?.contains(it) ?: false
@@ -388,10 +388,9 @@ class AndroidBluetoothConnector(context: Context) : BluetoothConnector {
         } ?: false
     }
 
-
 }
 
 @SuppressLint("MissingPermission")
-fun AndroidBluetoothDevice.toBluetoothDevice(): BluetoothDevice {
-    return BluetoothDevice.create(this.address, this.name, this.address)
+fun AndroidBluetoothDevice.toBluetoothDevice(): BluetoothDeviceEntity {
+    return BluetoothDeviceEntity.create(this.address, this.name, this.address)
 }

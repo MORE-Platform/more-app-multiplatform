@@ -33,9 +33,11 @@ import java.time.LocalDate
 class ScheduleViewModel(
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
-    private val coreDashboardFilterViewModel = CoreDashboardFilterViewModel()
+    private val coreDashboardFilterViewModel =
+        CoreDashboardFilterViewModel(MoreApplication.shared!!.database)
 
     private val coreViewModel = CoreScheduleViewModel(
+        MoreApplication.shared!!.database,
         MoreApplication.shared!!.dataRecorder,
         coreFilterModel = coreDashboardFilterViewModel,
         scheduleListType = scheduleListType
@@ -116,7 +118,6 @@ class ScheduleViewModel(
 
     fun numberOfObservationErrors(): Int = observationErrors.values.flatten().toSet().count()
         .let { if (it > 0) it else observationErrorActions.values.flatten().toSet().count() }
-
 
     private fun mergeSchedules(
         first: Set<ScheduleModel>,

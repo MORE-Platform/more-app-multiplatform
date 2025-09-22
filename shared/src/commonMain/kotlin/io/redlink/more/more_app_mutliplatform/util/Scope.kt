@@ -41,76 +41,102 @@ object Scope {
     ): Pair<String, Job> {
         val uuid = createUUID()
         val job = scope.launch(coroutineContext + exceptionHandler, start, block)
+
         scope.launch {
             mutex.withLock {
                 jobs[uuid] = job
-                job.invokeOnCompletion {
-                    scope.launch {
-                        mutex.withLock {
-                            try {
-                                jobs.remove(uuid)
-                            }  catch (e: Exception) {
-                                if (e !is CancellationException) {
-                                    Napier.e(tag = "Scope::launch::invokeOnCompletion") { e.stackTraceToString() }
-                                }
+            }
+        }
+
+        job.invokeOnCompletion { cause ->
+            scope.launch {
+                mutex.withLock {
+                    try {
+                        jobs.remove(uuid)
+                        cause?.let {
+                            if (it !is CancellationException) {
+                                Napier.w(throwable = it) { "Job with UUID: $uuid completed with exception" }
                             }
+                        }
+                    } catch (e: Exception) {
+                        if (e !is CancellationException) {
+                            Napier.e(tag = "Scope::launch::cleanup") { e.stackTraceToString() }
                         }
                     }
                 }
             }
         }
+
         return Pair(uuid, job)
     }
 
     fun create(): Pair<String, Job> {
-        val job = Job(rootJob)
         val uuid = createUUID()
-        job.invokeOnCompletion {
-            scope.launch {
-                mutex.withLock {
-                    try {
-                        it?.let {
-                            Napier.w(throwable = it) { "Coroutine with UUID: $uuid was completed or threw!" }
-                        }
-                        jobs.remove(uuid)
-                    } catch (e: Exception) {
-                        Napier.e { e.stackTraceToString() }
-                    }
-                }
-            }
-        }
+        val job = Job(rootJob)
+
         scope.launch {
             mutex.withLock {
                 jobs[uuid] = job
             }
         }
+
+        job.invokeOnCompletion { cause ->
+            scope.launch {
+                mutex.withLock {
+                    try {
+                        jobs.remove(uuid)
+                        cause?.let {
+                            if (it !is CancellationException) {
+                                Napier.w(throwable = it) { "Job with UUID: $uuid was completed with exception" }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        if (e !is CancellationException) {
+                            Napier.e(tag = "Scope::create::cleanup") { e.stackTraceToString() }
+                        }
+                    }
+                }
+            }
+        }
+
         return Pair(uuid, job)
     }
 
     fun isActive(uuid: String) = jobs[uuid]?.isActive ?: false
 
-    fun repeatedLaunch(intervalMillis: Long, block: suspend CoroutineScope.() -> Unit): Pair<String, Job> {
+    fun repeatedLaunch(
+        intervalMillis: Long,
+        coroutineContext: CoroutineContext = Dispatchers.Default,
+        block: suspend CoroutineScope.() -> Unit
+    ): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.repeatEveryFewSeconds(intervalMillis, block)
+        val job = scope.repeatEveryFewSeconds(intervalMillis, coroutineContext, block)
+
         scope.launch {
             mutex.withLock {
                 jobs[uuid] = job
-                job.invokeOnCompletion {
-                    scope.launch {
-                        mutex.withLock {
-                            try {
-                                it?.let {
-                                    Napier.e(throwable = it) { "Coroutine with UUID: $uuid has thrown!" }
-                                }
-                                jobs.remove(uuid)
-                            } catch (e: Exception) {
-                                Napier.e { e.stackTraceToString() }
+            }
+        }
+
+        job.invokeOnCompletion { cause ->
+            scope.launch {
+                mutex.withLock {
+                    try {
+                        jobs.remove(uuid)
+                        cause?.let {
+                            if (it !is CancellationException) {
+                                Napier.w(throwable = it) { "Repeated job with UUID: $uuid completed with exception" }
                             }
+                        }
+                    } catch (e: Exception) {
+                        if (e !is CancellationException) {
+                            Napier.e(tag = "Scope::repeatedLaunch::cleanup") { e.stackTraceToString() }
                         }
                     }
                 }
             }
         }
+
         return Pair(uuid, job)
     }
 
@@ -123,14 +149,18 @@ object Scope {
     }
 
     fun cancel(uuids: Collection<String>) {
-        val set = uuids.toSet()
+        if (uuids.isEmpty()) return
+
         scope.launch {
             mutex.withLock {
-                val jobsToCancel = jobs.filter { it.key in set }.toList()
                 try {
-                    jobsToCancel.forEach { it.second.cancel() }
+                    uuids.forEach { uuid ->
+                        jobs[uuid]?.cancel()
+                    }
                 } catch (exception: Exception) {
-                    Napier.e { exception.stackTraceToString() }
+                    if (exception !is CancellationException) {
+                        Napier.e(tag = "Scope::cancel::batch") { exception.stackTraceToString() }
+                    }
                 }
             }
         }
@@ -139,7 +169,13 @@ object Scope {
     fun cancel() {
         scope.launch {
             mutex.withLock {
-                rootJob.cancelChildren()
+                try {
+                    rootJob.cancelChildren()
+                } catch (exception: Exception) {
+                    if (exception !is CancellationException) {
+                        Napier.e(tag = "Scope::cancel::all") { exception.stackTraceToString() }
+                    }
+                }
             }
         }
     }

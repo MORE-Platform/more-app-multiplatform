@@ -30,10 +30,10 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 
 @Composable
-fun ObservationList(navController: NavController, observations: List<ObservationSchema>) {
+fun ObservationList(navController: NavController, observations: List<ObservationEntity>) {
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxWidth()

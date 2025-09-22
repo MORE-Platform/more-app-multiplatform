@@ -22,7 +22,7 @@ class ObservationDetailsViewModel: ObservableObject {
     
     
     init(observationId: String) {
-        self.coreModel = CoreObservationDetailsViewModel(observationId: observationId)
+        self.coreModel = CoreObservationDetailsViewModel(database: AppDelegate.database, observationId: observationId)
         coreModel.onLoadObservationDetails { observationDetails in
             if let observationDetails {
                 self.observationDetailModel = observationDetails

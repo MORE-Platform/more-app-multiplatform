@@ -22,7 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class QuestionnaireViewModel : ViewModel() {
-    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(MoreApplication.shared!!.observationFactory)
+    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(
+        MoreApplication.shared!!.database,
+        MoreApplication.shared!!.observationFactory
+    )
 
     val hasData = mutableStateOf(false)
     val observationTitle = mutableStateOf("")

@@ -17,3 +17,5 @@ shared/src/commonMain/kotlin/generated
 *.p12
 *.zip
 *.p8
+.kotlin
+*.db

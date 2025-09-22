@@ -14,7 +14,7 @@ protocol DashboardFilterObserver {
 }
 
 class DashboardFilterViewModel: ObservableObject {
-    let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel()
+    let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel(database: AppDelegate.database)
     private let stringTable = "DashboardFilter"
     
     var delegate: DashboardFilterObserver? = nil

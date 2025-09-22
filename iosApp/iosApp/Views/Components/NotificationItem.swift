@@ -42,7 +42,7 @@ struct NotificationItem: View {
                 VStack(alignment: .leading) {
                     BasicText(text: notificationModel.notificationBody.applyHyperlinks().trimmingCharacters(in: .whitespacesAndNewlines), color: .more.secondary)
                         
-                    BasicText(text: (notificationModel.timestamp / 1000).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
+                    BasicText(text: (notificationModel.timestamp).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
                         .padding(.top, 4)
                 }
                 Spacer()

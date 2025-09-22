@@ -5,8 +5,10 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("android")
-    id("io.realm.kotlin") version "1.14.1"
+    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.firebase.crashlytics")
+    id("com.google.devtools.ksp")
+
 }
 
 fun loadEnvFromFile(): Properties {
@@ -47,15 +49,12 @@ android {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 36
-        versionCode = 26
-        versionName = "4.0.26"
+        versionCode = 30
+        versionName = "4.1.2"
     }
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
@@ -147,8 +146,9 @@ android {
 val composeVersion = "1.6.8"
 val workVersion = "2.9.0"
 val navVersion = "2.7.7"
-val polarSDKVersion = "5.6.0"
-val ktorVersion = "2.3.12"
+val polarSDKVersion = "6.6.0"
+val ktorVersion = "3.2.3"
+val roomVersion = "2.7.2"
 
 dependencies {
     implementation(project(":shared"))
@@ -162,7 +162,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.fragment:fragment:1.8.2")
     implementation("androidx.activity:activity-compose:1.9.1")
-    implementation("io.realm.kotlin:library-base:1.13.0")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     implementation("com.google.android.gms:play-services-location:21.3.0")
@@ -185,4 +184,8 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.3.0")
     implementation("androidx.camera:camera-lifecycle:1.3.0")
     implementation("androidx.camera:camera-view:1.3.0")
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+    ksp("androidx.room:room-compiler:$roomVersion")
 }

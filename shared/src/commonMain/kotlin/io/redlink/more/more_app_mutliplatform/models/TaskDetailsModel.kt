@@ -10,8 +10,8 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 
 data class TaskDetailsModel(
     val observationTitle: String,
@@ -25,14 +25,17 @@ data class TaskDetailsModel(
     val state: ScheduleState,
 ) {
     companion object {
-        fun createModelFrom(observation: ObservationSchema, schedule: ScheduleSchema): TaskDetailsModel {
+        fun createModelFrom(
+            observation: ObservationEntity,
+            schedule: ScheduleEntity
+        ): TaskDetailsModel {
             return TaskDetailsModel(
                 observationTitle = observation.observationTitle,
                 observationType = observation.observationType,
                 observationId = observation.observationId,
-                scheduleId = schedule.scheduleId.toHexString(),
-                start = schedule.start?.epochSeconds ?: 0,
-                end = schedule.end?.epochSeconds ?: 0,
+                scheduleId = schedule.scheduleId,
+                start = schedule.start ?: 0,
+                end = schedule.end ?: 0,
                 participantInformation = observation.participantInfo,
                 hidden = schedule.hidden,
                 state = schedule.getState()

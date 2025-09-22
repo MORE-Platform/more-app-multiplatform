@@ -13,8 +13,6 @@ package io.redlink.more.more_app_mutliplatform.services.network
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.more_app_mutliplatform.Shared
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
 import io.redlink.more.more_app_mutliplatform.getPlatform
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.ObservationConsent
@@ -23,6 +21,8 @@ import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Stu
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.util.validateAndNormalizeUrl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 class RegistrationService(
     private val shared: Shared
@@ -44,12 +44,13 @@ class RegistrationService(
     ) {
         if (token.isNotEmpty()) {
             StudyScope.launch {
+                val normalizedEndpoint = manualEndpoint?.validateAndNormalizeUrl()
                 val (result, networkError) = shared.networkService.validateRegistrationToken(
                     token.uppercase(),
-                    manualEndpoint?.validateAndNormalizeUrl()
+                    normalizedEndpoint
                 )
                 result?.let {
-                    endpoint = manualEndpoint
+                    endpoint = normalizedEndpoint
                     study = it
                     participationToken = token
                     addObservationPermissions(it)
@@ -72,7 +73,7 @@ class RegistrationService(
     ) {
         StudyScope.launch {
             shared.credentialRepository.remove()
-            DatabaseManager.deleteAll()
+            shared.removeStudyData()
         }
         study?.let { study ->
             participationToken?.let { token ->
@@ -101,7 +102,7 @@ class RegistrationService(
         onError: ((NetworkServiceError?) -> Unit),
         onFinish: () -> Unit
     ) {
-        StudyScope.launch {
+        StudyScope.launch(Dispatchers.IO) {
             val (config, networkError) = shared.networkService.sendConsent(
                 token,
                 studyConsent,
@@ -122,7 +123,7 @@ class RegistrationService(
                     } else {
                         study?.let { study ->
                             shared.observationFactory.clearNeededObservationTypes()
-                            StudyRepository().storeStudy(study)
+                            shared.studyRepository.storeStudy(study)
                             shared.resetFirstStartUp()
                             onSuccess(shared.credentialRepository.hasCredentials())
                         } ?: run {

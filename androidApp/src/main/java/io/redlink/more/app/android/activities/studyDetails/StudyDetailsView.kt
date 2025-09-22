@@ -39,11 +39,15 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
 
-
 @Composable
-fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewModel, taskCompletionBarViewModel: TaskCompletionBarViewModel) {
+fun StudyDetailsView(
+    navController: NavController,
+    viewModel: StudyDetailsViewModel,
+    taskCompletionBarViewModel: TaskCompletionBarViewModel
+) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.STUDY_DETAILS.routeWithParameters())
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.STUDY_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -70,11 +74,13 @@ fun StudyDetailsView(navController: NavController, viewModel: StudyDetailsViewMo
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        if (it.study.start?.epochSeconds != null && it.study.end?.epochSeconds != null) {
+                        if (it.study.start != null && it.study.end != null) {
                             BasicText(text = "${getStringResource(R.string.study_duration)}: ")
                             BasicText(
-                                text = "${it.study.start!!.epochSeconds.jvmLocalDateTime().formattedString()} - ${
-                                    it.study.end!!.epochSeconds.jvmLocalDateTime().formattedString()
+                                text = "${
+                                    it.study.start!!.jvmLocalDateTime().formattedString()
+                                } - ${
+                                    it.study.end!!.jvmLocalDateTime().formattedString()
                                 }",
                                 color = MoreColors.Secondary
                             )

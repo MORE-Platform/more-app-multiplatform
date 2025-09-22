@@ -18,7 +18,7 @@ import shared
 class TaskCompletionBarViewModel: ObservableObject {
     @Published var taskCompletion: TaskCompletion = TaskCompletion(finishedTasks: 0, totalTasks: 0)
     @Published var taskCompletionPercentage: Double = 0
-    var coreViewModel = CoreTaskCompletionBarViewModel()
+    var coreViewModel = CoreTaskCompletionBarViewModel(database: AppDelegate.database)
     
     init() {
         loadTaskCompletion()
