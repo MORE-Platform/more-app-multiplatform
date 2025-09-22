@@ -273,6 +273,14 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
 }
 
 extension PolarConnector: PolarBleApiDeviceInfoObserver {
+    func batteryChargingStatusReceived(_ identifier: String, chargingStatus: PolarBleSdk.BleBasClient.ChargeState) {
+        print("Todo")
+    }
+    
+    func disInformationReceivedWithKeysAsStrings(_ identifier: String, key: String, value: String) {
+        print("Todo")
+    }
+    
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
         print("Battery level for \(identifier): \(batteryLevel)")
     }
@@ -280,6 +288,7 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
         print("Disinformation received by \(identifier): \(uuid); \(value)")
     }
+   
 
 }
 
