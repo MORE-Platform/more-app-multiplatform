@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.activities.observations.questionnaire
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -51,7 +52,9 @@ fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
                     .selectable(
                         selected = isSelectedItem(item),
                         onClick = { onChangeState(item) },
-                        role = Role.RadioButton
+                        role = Role.RadioButton,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
                     )
                     .padding(vertical = 8.dp)
             ) {

@@ -1,8 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.navigation
 
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.extractRouteFromDeepLink
 import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
@@ -13,10 +12,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
 
-class DeeplinkManager(private val observationFactory: ObservationFactory) {
+class DeeplinkManager(
+    private val repos: MainRepository,
+    val observationFactory: ObservationFactory
+) {
     private val deepLinks = mutableSetOf<String>()
-    private val scheduleRepository = ScheduleRepository()
-    private val observationRepository = ObservationRepository()
 
     fun addAvailableDeepLinks(deepLinks: Set<String>) {
         this.deepLinks.addAll(deepLinks)
@@ -31,14 +31,14 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
             val queryParams = deepLink.mapQueryParams()
             val observationId = queryParams["observationId"]
             if (observationId.isNullOrEmpty()
-                || observationRepository.observationById(observationId.first())
+                || repos.observation.observationById(observationId.first())
                     .firstOrNull() == null
             ) {
                 emit(null)
                 return@flow
             }
             val schedule =
-                scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                repos.schedule.firstScheduleAvailableForObservationId(observationId.first())
                     .cancellable().firstOrNull()
 
             emit(deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement))
@@ -49,7 +49,7 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
 
     private fun deepLinkModifier(
         deepLink: String,
-        schedule: ScheduleSchema?,
+        schedule: ScheduleEntity?,
         protocolReplacement: String?,
         hostReplacement: String?
     ): String {
@@ -73,11 +73,11 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
         }
     }
 
-    private fun selectRoute(deepLink: String, schedule: ScheduleSchema?): String {
+    private fun selectRoute(deepLink: String, schedule: ScheduleEntity?): String {
         val now = Clock.System.now()
 
         return schedule?.let { scheduleSchema ->
-            if ((scheduleSchema.start?.epochSeconds ?: 0) <= now.epochSeconds) {
+            if ((scheduleSchema.start ?: 0) <= now.epochSeconds) {
                 routeForObservation(deepLink)
             } else {
                 TASK_DETAILS
@@ -88,7 +88,7 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
     private fun replaceRoute(
         deepLink: String,
         routeToReplace: String,
-        schedule: ScheduleSchema? = null,
+        schedule: ScheduleEntity? = null,
         protocolReplacement: String? = null,
         hostReplacement: String? = null
     ): String {
@@ -109,7 +109,7 @@ class DeeplinkManager(private val observationFactory: ObservationFactory) {
         schedule?.let {
             val scheduleIdKeySet =
                 paramsMap.getOrElse("scheduleId") { mutableSetOf() }.toMutableSet()
-            scheduleIdKeySet.add(it.scheduleId.toHexString())
+            scheduleIdKeySet.add(it.scheduleId)
             paramsMap["scheduleId"] = scheduleIdKeySet
         }
 

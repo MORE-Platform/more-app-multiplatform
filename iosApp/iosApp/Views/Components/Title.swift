@@ -19,7 +19,7 @@ struct Title: View {
     var titleText: String
     var textAlignment: TextAlignment = .leading
     var body: some View {
-        Text(titleText)
+        Text(LocalizedStringKey(titleText))
             .font(.more.title)
             .foregroundColor(.more.primary)
             .fontWeight(.more.title)

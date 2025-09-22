@@ -2,4 +2,5 @@
 <resources>
     <string name="more_schedule_timeframe">Zeitraum: </string>
     <string name="more_schedule_details">Mehr Details</string>
+    <string name="more_schedule_empty_list">Keine Aufgaben gefunden</string>
 </resources>

@@ -10,37 +10,41 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
 class BluetoothController(
+    private val bluetoothDeviceRepository: BluetoothDeviceRepository,
     private val bluetoothConnector: BluetoothConnector,
-    private val scanDuration: Long = 10000,
-    private val scanInterval: Long = 5000
+    private val scanDuration: Long = 5000,
+    private val scanInterval: Long = 10000
 ) : CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val deviceManager = BluetoothDeviceManager
-    private val bluetoothDeviceRepository = BluetoothDeviceRepository()
 
     private val _isScanning = MutableStateFlow(false)
+
+    @NativeCoroutines
     val isScanning: StateFlow<Boolean> = _isScanning
 
     private var backgroundScanningEnabled = false
@@ -48,7 +52,10 @@ class BluetoothController(
 
     private var scanJob: String? = null
 
-    val bluetoothPower = MutableStateFlow(BluetoothState.ON)
+    private val _bluetoothPower = MutableStateFlow(BluetoothState.ON)
+
+    @NativeCoroutines
+    val bluetoothPower: StateFlow<BluetoothState> = _bluetoothPower
 
     private var bleViewHasBeenOpened = false
 
@@ -132,7 +139,7 @@ class BluetoothController(
         customScanInterval: Long = scanInterval
     ) {
         launchScope {
-            bluetoothPower.collect {
+            _bluetoothPower.collect {
                 if (it == BluetoothState.ON) {
                     startPeriodicScan(customScanDuration, customScanInterval)
                 } else {
@@ -166,7 +173,7 @@ class BluetoothController(
     ) {
         if (scanJob == null) {
             Napier.i(tag = "BluetoothController::startPeriodicScan") { "Starting period scanner with Duration= $customScanDuration; Interval= $customScanInterval" }
-            scanJob = StudyScope.repeatedLaunch(customScanInterval) {
+            scanJob = StudyScope.repeatedLaunch(customScanInterval, Dispatchers.IO) {
                 Napier.i(tag = "BluetoothController::startPeriodicScan") { "Scanning..." }
                 scanForDevices()
                 delay(customScanDuration)
@@ -191,7 +198,7 @@ class BluetoothController(
         bluetoothConnector.stopScanning()
     }
 
-    fun connectToDevice(device: BluetoothDevice): Boolean {
+    fun connectToDevice(device: BluetoothDeviceEntity): Boolean {
         if (!deviceManager.connectedDevices.value.contains(device)) {
             Napier.i(tag = "BluetoothController::connectToDevice") { "Connecting to $device" }
             deviceManager.addConnectingDevices(setOf(device))
@@ -200,35 +207,35 @@ class BluetoothController(
         return true
     }
 
-    fun unpairFromDevice(device: BluetoothDevice) {
+    fun unpairFromDevice(device: BluetoothDeviceEntity) {
         Napier.i(tag = "BluetoothController::disconnectFromDevice") { "Disconnecting from $device" }
         bluetoothConnector.disconnect(device)
         bluetoothDeviceRepository.unpairDevice(device)
         deviceManager.removePairedDeviceIds(setOf(device))
     }
 
-    override fun isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         deviceManager.addConnectingDevices(setOf(bluetoothDevice))
     }
 
-    override fun didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         deviceManager.addConnectedDevices(setOf(bluetoothDevice))
         bluetoothDeviceRepository.storePairedDevice(bluetoothDevice)
     }
 
-    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity) {
         Napier.i(tag = "BluetoothController::didDisconnectFromDevice") { "Disconnected from $bluetoothDevice" }
         deviceManager.removeConnectedDevices(setOf(bluetoothDevice))
     }
 
-    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    override fun didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         Napier.e(tag = "BluetoothController::didFailToConnectToDevice") { "Failed to connect to $bluetoothDevice" }
         deviceManager.removeConnectingDevices(setOf(bluetoothDevice))
     }
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
         Napier.i(tag = "BluetoothController::onBluetoothStateChange") { "Bluetooth state changed to $bluetoothState" }
-        bluetoothPower.set(bluetoothState)
+        _bluetoothPower.set(bluetoothState)
         if (bluetoothState == BluetoothState.OFF) {
             deviceManager.clearDiscovered()
             deviceManager.clearConnected()
@@ -236,7 +243,7 @@ class BluetoothController(
         }
     }
 
-    override fun didDiscoverDevice(device: BluetoothDevice) {
+    override fun didDiscoverDevice(device: BluetoothDeviceEntity) {
         if (!deviceManager.connectedDevices.value.contains(device)) {
             Napier.i(tag = "BluetoothController::didDiscoverDevice") { "Discovered device: $device" }
             deviceManager.addDiscoveredDevices(setOf(device))
@@ -246,7 +253,7 @@ class BluetoothController(
         }
     }
 
-    override fun removeDiscoveredDevice(device: BluetoothDevice) {
+    override fun removeDiscoveredDevice(device: BluetoothDeviceEntity) {
         Napier.i(tag = "BluetoothController::removeDiscoveredDevice") { "Removed discovered device: $device" }
         deviceManager.removeDiscoveredDevices(setOf(device))
     }
@@ -255,12 +262,6 @@ class BluetoothController(
         Napier.i(tag = "BluetoothController::isScanning") { "Scanning status changed to: $boolean" }
         this._isScanning.set(boolean)
     }
-
-
-    fun bluetoothStateAsClosure(providedState: (BluetoothState) -> Unit) =
-        bluetoothPower.asClosure(providedState)
-
-    fun isScanningAsClosure(state: (Boolean) -> Unit) = isScanning.asClosure(state)
 
     suspend fun listenToConnectionChanges(
         observationFactory: ObservationFactory
@@ -288,7 +289,10 @@ class BluetoothController(
     }
 
     companion object {
-        private const val BACKGROUND_SCAN_DURATION = 2000L
-        private const val BACKGROUND_SCAN_INTERVAL = 10000L
+        // Energy-optimized scanning intervals
+        private const val BACKGROUND_SCAN_DURATION = 1000L  // Reduced from 2s to 1s
+        private const val BACKGROUND_SCAN_INTERVAL =
+            30000L // Increased from 10s to 30s for better battery life
+        private const val MAX_BACKGROUND_SCAN_INTERVAL = 300000L // Max 5 minutes between scans
     }
 }

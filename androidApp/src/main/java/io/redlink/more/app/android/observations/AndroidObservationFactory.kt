@@ -15,31 +15,36 @@ import android.content.Context
 import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
-import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
-import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
-import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
-import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_HR
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_Sleep
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_exercise
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_steps
+import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
+import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
+import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
+import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
+import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class AndroidObservationFactory(context: Context, observationDataManager: ObservationDataManager) :
-    ObservationFactory(observationDataManager) {
+class AndroidObservationFactory(
+    context: Context,
+    observationDataManager: ObservationDataManager,
+    repository: MainRepository
+) :
+    ObservationFactory(repository, observationDataManager) {
     init {
         observations.addAll(
             setOf(
-                AccelerometerObservation(context),
-                GPSObservation(context, gpsService = GPSService(context)),
-                PolarHeartRateObservation(),
-                HealthkitObservation_HR(context),
-                HealthkitObservation_exercise(context),
-                HealthkitObservation_Sleep(context),
-                HealthkitObservation_steps(context),
+                AccelerometerObservation(context, repository),
+                GPSObservation(context, repository, gpsService = GPSService(context)),
+                PolarHeartRateObservation(repository),
+                HealthkitObservation_HR(context, repository),
+                HealthkitObservation_exercise(context, repository),
+                HealthkitObservation_Sleep(context, repository),
+                HealthkitObservation_steps(context, repository),
             )
         )
 

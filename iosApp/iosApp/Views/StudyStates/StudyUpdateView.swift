@@ -16,15 +16,14 @@
 import SwiftUI
 
 struct StudyUpdateView: View {
-    
-    private let stringTable = "StudyStates"
     var body: some View {
         VStack(alignment: .center) {
             Spacer()
-            Title(titleText: "The study configuration is currently updating".localize(withComment: "Study is currently updating", useTable: stringTable), textAlignment: .center)
+            Title(titleText: "study_update_title", textAlignment: .center)
                 .padding(.bottom, 8)
-            Title2(titleText: "Please wait until this process is finished".localize(withComment: "Please wait until this process finishes", useTable: stringTable), textAlignment: .center)
+            Title2(titleText: "study_updating_message", textAlignment: .center)
             ProgressView()
+                .tint(.more.primary)
                 .scaleEffect(1.5)
                 .padding(.vertical, 8)
             Spacer()

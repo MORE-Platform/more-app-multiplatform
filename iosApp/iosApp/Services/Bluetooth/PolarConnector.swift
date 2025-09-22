@@ -65,27 +65,23 @@ class PolarConnector: NSObject, BluetoothConnector {
         specificBluetoothConnectors[key] = connector
     }
 
-    func connect(device: BluetoothDevice) -> KotlinError? {
-        if let deviceId = device.deviceId {
-            do {
-                try polarApi.connectToDevice(deviceId)
-                return nil
-            } catch {
-                print(error)
-                return KotlinError(message: error.localizedDescription)
-            }
+    func connect(device: BluetoothDeviceEntity) -> KotlinError? {
+        do {
+            try polarApi.connectToDevice(device.deviceId)
+            return nil
+        } catch {
+            print(error)
+            return KotlinError(message: error.localizedDescription)
         }
-        return KotlinError(message: "No valid device ID")
     }
 
-    func disconnect(device: BluetoothDevice) {
-        if let deviceId = device.deviceId {
-            do {
-                try polarApi.disconnectFromDevice(deviceId)
-            } catch {
-                print(error)
-            }
+    func disconnect(device: BluetoothDeviceEntity) {
+        do {
+            try polarApi.disconnectFromDevice(device.deviceId)
+        } catch {
+            print(error)
         }
+
     }
 
     func scan() {
@@ -97,7 +93,7 @@ class PolarConnector: NSObject, BluetoothConnector {
                 if let self {
                     self.scanning = true
                     self.devicesSubscription = self.polarApi.searchForDevice().subscribe(onNext: { device in
-                        self.didDiscoverDevice(device: BluetoothDevice.fromPolarDevice(polarInfo: device))
+                        self.didDiscoverDevice(device: BluetoothDeviceEntity.fromPolarDevice(polarInfo: device))
                     }, onError: { error in
                         print(error)
                         self.scanning = false
@@ -124,37 +120,37 @@ class PolarConnector: NSObject, BluetoothConnector {
 
     }
 
-    func isConnectingToDevice(bluetoothDevice: BluetoothDevice) {
+    func isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.isConnectingToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
 
-    func didConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    func didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didConnectToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
 
-    func didDisconnectFromDevice(bluetoothDevice: BluetoothDevice) {
+    func didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didDisconnectFromDevice(bluetoothDevice: bluetoothDevice)
         }
     }
 
-    func didFailToConnectToDevice(bluetoothDevice: BluetoothDevice) {
+    func didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity) {
         updateObserver {
             $0.didFailToConnectToDevice(bluetoothDevice: bluetoothDevice)
         }
     }
 
-    func removeDiscoveredDevice(device: BluetoothDevice) {
+    func removeDiscoveredDevice(device: BluetoothDeviceEntity) {
         updateObserver {
             $0.removeDiscoveredDevice(device: device)
         }
     }
 
-    func didDiscoverDevice(device: BluetoothDevice) {
+    func didDiscoverDevice(device: BluetoothDeviceEntity) {
         updateObserver {
             $0.didDiscoverDevice(device: device)
         }
@@ -209,17 +205,17 @@ class PolarConnector: NSObject, BluetoothConnector {
 extension PolarConnector: PolarBleApiObserver {
     func deviceDisconnected(_ identifier: PolarBleSdk.PolarDeviceInfo, pairingError: Bool) {
         print("Polar disconnected: \(identifier.name). Had paring error: \(pairingError)")
-        self.didDisconnectFromDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
+        self.didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
         print("Polar connecting: \(identifier.name)")
-        self.isConnectingToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
+        self.isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 
     func deviceConnected(_ identifier: PolarDeviceInfo) {
         print("Polar connected: \(identifier.name)")
-        self.didConnectToDevice(bluetoothDevice: BluetoothDevice.fromPolarDevice(polarInfo: identifier))
+        self.didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 }
 
@@ -274,13 +270,13 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
 
 extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func batteryChargingStatusReceived(_ identifier: String, chargingStatus: PolarBleSdk.BleBasClient.ChargeState) {
-        print("Todo")
+        print("Battery charging status received by \(identifier): \(chargingStatus)")
     }
-    
+
     func disInformationReceivedWithKeysAsStrings(_ identifier: String, key: String, value: String) {
-        print("Todo")
+        print("DisinformationReceivedWithKeysAsString by \(identifier): \(key); \(value)")
     }
-    
+
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
         print("Battery level for \(identifier): \(batteryLevel)")
     }
@@ -288,7 +284,7 @@ extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
         print("Disinformation received by \(identifier): \(uuid); \(value)")
     }
-   
+
 
 }
 

@@ -10,6 +10,8 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.store
 
+import io.redlink.more.more_app_mutliplatform.util.validateAndNormalizeUrl
+
 class EndpointRepository(private val sharedStorageRepository: SharedStorageRepository) {
     private var cache: String = ""
 
@@ -18,8 +20,10 @@ class EndpointRepository(private val sharedStorageRepository: SharedStorageRepos
     }
 
     fun storeEndpoint(endpoint: String) {
-        sharedStorageRepository.store(ENDPOINT_KEY, endpoint)
-        cache = endpoint
+        val validEndpoint = endpoint.validateAndNormalizeUrl()?.ifBlank { DATA_BASE_PATH_ENDPOINT }
+            ?: DATA_BASE_PATH_ENDPOINT
+        sharedStorageRepository.store(ENDPOINT_KEY, validEndpoint)
+        cache = validEndpoint
     }
 
     private fun loadEndpoint(): String {

@@ -67,15 +67,16 @@ fun MoreBackground(
         MoreApplication.openSettings.value = false
     }
     MorePlatformTheme {
-        Scaffold(topBar = {
-            MoreTopAppBar(
-                navigationTitle,
-                showBackButton,
-                onBackButtonClick,
-                leftCornerContent,
-                rightCornerContent
-            )
-        },
+        Scaffold(
+            topBar = {
+                MoreTopAppBar(
+                    navigationTitle,
+                    showBackButton,
+                    onBackButtonClick,
+                    leftCornerContent,
+                    rightCornerContent
+                )
+            },
             bottomBar = {
                 if (showTabRow) {
                     MoreBottomAppBar(

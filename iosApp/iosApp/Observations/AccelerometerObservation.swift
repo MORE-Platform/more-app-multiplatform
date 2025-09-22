@@ -23,8 +23,8 @@ class AccelerometerObservation: Observation_ {
     
     private var timer: Timer? = nil
     
-    init(sensorPermission: Set<String>) {
-        super.init(observationType: AccelerometerType(sensorPermissions: sensorPermission))
+    init(repos: MainRepository, sensorPermission: Set<String>) {
+        super.init(repos: repos, observationType: AccelerometerType(sensorPermissions: sensorPermission))
     }
     
     override func start() -> Bool {

@@ -14,10 +14,12 @@
 //
 
 import shared
+import Combine
+import KMPNativeCoroutinesCombine
 
 class InfoViewModel: ObservableObject {
     
-    private let studyCoreModel = CoreStudyDetailsViewModel()
+    private let studyCoreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared)
     @Published var studyTitle: String?
     @Published var contactInstitute: String?
     @Published var contactPerson: String?
@@ -26,26 +28,22 @@ class InfoViewModel: ObservableObject {
     @Published var participantId: Int?
     @Published var participantAlias: String?
     
+    private var cancellables = Set<AnyCancellable>()
+    
     init() {
-        studyCoreModel.onLoadStudyDetails() {
-            studyDetails in
-            if let studyDetails {
-                self.studyTitle = studyDetails.study.studyTitle
-                self.contactInstitute = studyDetails.study.contactInstitute
-                self.contactPerson = studyDetails.study.contactPerson
-                self.contactEmail = studyDetails.study.contactEmail
-                self.contactPhoneNumber = studyDetails.study.contactPhoneNumber
-                self.participantId = studyDetails.study.participantId?.intValue
-                self.participantAlias = studyDetails.study.participantAlias
+        createPublisher(for: studyCoreModel.studyModel)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] studyDetails in
+                if let self, let studyDetails {
+                    self.studyTitle = studyDetails.study.studyTitle
+                    self.contactInstitute = studyDetails.study.contactInstitute
+                    self.contactPerson = studyDetails.study.contactPerson
+                    self.contactEmail = studyDetails.study.contactEmail
+                    self.contactPhoneNumber = studyDetails.study.contactPhoneNumber
+                    self.participantId = studyDetails.study.participantId?.intValue
+                    self.participantAlias = studyDetails.study.participantAlias
+                }
             }
-        }
-    }
-    
-    func viewDidAppear() {
-        studyCoreModel.viewDidAppear()
-    }
-    
-    func viewDidDisappear() {
-        studyCoreModel.viewDidDisappear()
+            .store(in: &cancellables)
     }
 }

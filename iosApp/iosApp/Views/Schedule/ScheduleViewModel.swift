@@ -14,6 +14,8 @@
 //
 
 import shared
+import Combine
+import KMPNativeCoroutinesCombine
 
 class ScheduleViewModel: ObservableObject {
     let recorder = AppDelegate.shared.dataRecorder
@@ -24,111 +26,30 @@ class ScheduleViewModel: ObservableObject {
 
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
     @Published var observationErrors: [String: Set<String>] = [:]
-    @Published var observationErrorActions: [String: Set<String>] = [:]
+    
+    private var cancellables = Set<AnyCancellable>()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        coreModel = CoreScheduleViewModel(dataRecorder: recorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
-        loadSchedules()
-
-        ViewManager.shared.studyIsUpdatingAsClosure { [weak self] kBool in
-            if kBool.boolValue {
-                DispatchQueue.main.async {
-                    self?.schedulesByDate.removeAll()
-                }
+        coreModel = CoreScheduleViewModel(repos: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel, observationFactory: AppDelegate.shared.observationFactory)
+        
+        createPublisher(for: coreModel.schedulesByDate)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] schedules in
+                self?.schedulesByDate = schedules.mapKeys { $0.toInt64().toDate() }
             }
-        }
-    }
-
-    func loadSchedules() {
-        coreModel.onScheduleStateUpdated { [weak self] triple in
-            guard let self = self else { return }
-
-            let added = triple.first as? Set<ScheduleModel> ?? []
-            let removed = triple.second as? Set<String> ?? []
-            let updated = triple.third as? Set<ScheduleModel> ?? []
-
-            let idsToRemove = removed.union(updated.map { $0.scheduleId })
-
-            if !removed.isEmpty || !updated.isEmpty {
-                for (date, schedules) in schedulesByDate {
-                    let filteredSchedules = schedules.filter { !idsToRemove.contains($0.scheduleId) }
-                    if filteredSchedules.isEmpty {
-                        DispatchQueue.main.async {
-                            self.schedulesByDate.removeValue(forKey: date)
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            self.schedulesByDate[date] = filteredSchedules
-                        }
-                    }
-                }
+            .store(in: &cancellables)
+        
+        createPublisher(for: coreModel.observationErrors)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] errors in
+                self?.observationErrors = errors
             }
-
-            if !added.isEmpty || !updated.isEmpty {
-                let itemsToBeAdded = self.mergeSchedules(Array(added), Array(updated))
-                let groupedSchedulesToAdd = Dictionary(grouping: itemsToBeAdded, by: { $0.start.startOfDate() })
-
-                for (date, schedules) in groupedSchedulesToAdd {
-                    var existingSchedules = self.schedulesByDate[date] ?? []
-                    existingSchedules.append(contentsOf: schedules)
-                    let uniqueSchedules = self.removeDuplicates(from: existingSchedules)
-
-                    let sortedSchedules = uniqueSchedules.sorted(by: {
-                        if $0.start == $1.start {
-                            if $0.end == $1.end {
-                                if $0.observationTitle == $1.observationTitle {
-                                    return $0.scheduleId < $1.scheduleId
-                                }
-                                return $0.observationTitle < $1.observationTitle
-                            }
-                            return $0.end < $1.end
-                        }
-                        return $0.start < $1.start
-                    })
-
-                    DispatchQueue.main.async {
-                        self.schedulesByDate[date] = sortedSchedules
-                    }
-                }
-            }
-        }
-
-        AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
-            DispatchQueue.main.async {
-                if let self = self {
-                    self.observationErrors = errors.filterValues { $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }
-                    self.observationErrorActions = errors.filterValues { $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }
-                }
-            }
-        }
-    }
-
-    func removeDuplicates(from schedules: [ScheduleModel]) -> [ScheduleModel] {
-        var uniqueSchedules = [String: ScheduleModel]()
-        for schedule in schedules {
-            uniqueSchedules[schedule.scheduleId] = schedule
-        }
-        return Array(uniqueSchedules.values)
-    }
-
-    func viewDidAppear() {
-        coreModel.viewDidAppear()
-    }
-
-    func viewDidDisappear() {
-        coreModel.viewDidDisappear()
-    }
-
-    func mergeSchedules(_ lhs: [ScheduleModel], _ rhs: [ScheduleModel]) -> [ScheduleModel] {
-        let lhsIds = Set(lhs.map { $0.scheduleId })
-        let filteredRhs = rhs.filter { !lhsIds.contains($0.scheduleId) }
-        return lhs + filteredRhs
+            .store(in: &cancellables)
     }
 
     func numberOfObservationErrors() -> Int {
-        let errors = Set(observationErrors.values.flatMap { $0 }).count
-        return errors > 0 ? errors : Set(observationErrorActions.values.flatMap { $0 }).count
+        Set(observationErrors.values.flatMap { $0 }).count
     }
 }
 
@@ -145,3 +66,4 @@ extension ScheduleViewModel: ObservationActionDelegate {
         coreModel.stop(scheduleId: scheduleId)
     }
 }
+

@@ -32,7 +32,7 @@ struct LimeSurveyView: View {
                 }
             }
         }
-        .customNavigationTitle(with: NavigationScreen.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.limeSurvey.localize(), displayMode: .inline)
         .toolbar {
             if viewModel.wasAnswered {
                 Button {

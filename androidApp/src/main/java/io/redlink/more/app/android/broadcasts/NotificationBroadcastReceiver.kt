@@ -21,8 +21,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
-    private var notificationRepository = MoreApplication.shared!!.notificationManager.notificationRepository
-
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -30,7 +28,10 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             if (intent.action == NOTIFICATION_SET_ON_READ_ACTION) {
                 intent.getStringExtra(NotificationManager.MSG_ID)?.let { key ->
                     scope.launch {
-                        notificationRepository.setNotificationReadStatus(key, true)
+                        MoreApplication.shared!!.repositories.notification.setNotificationReadStatus(
+                            key,
+                            true
+                        )
                     }
                 }
             }
@@ -38,6 +39,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val NOTIFICATION_SET_ON_READ_ACTION = "io.redlink.more.app.android.NOTIFICATION_ACTION_READ"
+        const val NOTIFICATION_SET_ON_READ_ACTION =
+            "io.redlink.more.app.android.NOTIFICATION_ACTION_READ"
     }
 }

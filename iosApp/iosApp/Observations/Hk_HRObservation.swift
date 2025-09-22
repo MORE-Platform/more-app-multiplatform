@@ -8,48 +8,49 @@
 
 import Foundation
 import HealthKit
-import UIKit
 import shared
+import UIKit
 
 class Hk_HRObservation: HealthkitBase {
     let healthStore: HKHealthStore
-    
+
     let now: Date
     var startDate: Date
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-    
-    init() {
-        self.healthStore = HKHealthStore()
-        self.now = Date()
-        self.startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+
+    init(repository: MainRepository) {
+        healthStore = HKHealthStore()
+        now = Date()
+        startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
         print("Observation initialized")
-        //must init with the observation type set
-        super.init(observationType: HealthKitType_HR())
+        // must init with the observation type set
+        super.init(repos: repository, observationType: HealthKitType_HR())
     }
-    
+
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         do {
             print("observation config failed")
-                if let daysBackValue = settings["daysback"] {
-                    // Convert value to String, strip quotes, then to Int
-                    let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                    print(strValue)
-                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                    if let daysBack = Int(strValue) {
-                        print(daysBack)
-                        
-                        // Subtract days from current date
-                        if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
-                            self.startDate = newDate
-                        }
+            if let daysBackValue = settings["daysback"] {
+                // Convert value to String, strip quotes, then to Int
+                let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                print(strValue)
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                if let daysBack = Int(strValue) {
+                    print(daysBack)
+
+                    // Subtract days from current date
+                    if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
+                        startDate = newDate
                     }
                 }
-            } catch {
-                print(error.localizedDescription)
-            }    }
-    
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
     override func fetchData() {
         print("!!!!!!!!! CALLING HR FETCH !!!!!")
         guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
@@ -62,7 +63,7 @@ class Hk_HRObservation: HealthkitBase {
             predicate: predicate,
             limit: HKObjectQueryNoLimit,
             sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
-        ) { query, results, error in
+        ) { _, results, error in
             if let error = error {
                 print("Error fetching HR samples: \(error.localizedDescription)")
                 return
@@ -74,27 +75,26 @@ class Hk_HRObservation: HealthkitBase {
             }
             var hrrecords = []
             for sample in results {
-                            let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                            let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                            let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
 
-                            let item: [String: Any] = [
-                                "start": start,
-                                "end": end,
-                                "bpm": bpm
-                            ]
-                            print("Heart Rate: \(bpm) bpm from \(start) to \(end)")
-                            hrrecords.append(item)
-                    }
-            let data : [String: Any ] = ["hr_records" : hrrecords]
-            self.storeData(data: data, timestamp: -1){}
+                let item: [String: Any] = [
+                    "start": start,
+                    "end": end,
+                    "bpm": bpm,
+                ]
+                print("Heart Rate: \(bpm) bpm from \(start) to \(end)")
+                hrrecords.append(item)
+            }
+            let data: [String: Any] = ["hr_records": hrrecords]
+            self.storeData(data: data, timestamp: -1) {}
         }
 
         healthStore.execute(query)
     }
-    
+
     override func ableToAutomaticallyStart() -> Bool {
         return true
     }
-    
 }

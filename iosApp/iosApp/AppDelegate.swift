@@ -24,18 +24,21 @@ import FirebaseCrashlyticsSwift
 class AppDelegate: NSObject, UIApplicationDelegate {
     static let appGroup = "group.ac.at.lbg.dhp.more.group"
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
-    static let navigationScreenHandler = NavigationModalState()
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    static let repositories = MainRepository(appDatabase: database)
+    static let navigationScreenHandler = NavigationModalState(repos: repositories)
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()
     static let shared: Shared = {
-        let dataManager = iOSObservationDataManager()
+        let dataManager = iOSObservationDataManager(repository: repositories)
 
         return Shared(
             localNotificationListener: LocalPushNotifications(),
+            repositories: repositories,
             sharedStorageRepository: UserDefaultsRepository(),
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
-            observationFactory: IOSObservationFactory(dataManager: dataManager),
+            observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
             dataRecorder: IOSDataRecorder()
         )
     }()

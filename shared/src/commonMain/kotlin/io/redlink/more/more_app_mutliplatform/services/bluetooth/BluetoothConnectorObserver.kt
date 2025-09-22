@@ -10,19 +10,21 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.bluetooth
 
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
+
 interface BluetoothConnectorObserver {
 
-    fun isConnectingToDevice(bluetoothDevice: BluetoothDevice)
+    fun isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun didConnectToDevice(bluetoothDevice: BluetoothDevice)
+    fun didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun didDisconnectFromDevice(bluetoothDevice: BluetoothDevice)
+    fun didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun didFailToConnectToDevice(bluetoothDevice: BluetoothDevice)
+    fun didFailToConnectToDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun didDiscoverDevice(device: BluetoothDevice)
+    fun didDiscoverDevice(device: BluetoothDeviceEntity)
 
-    fun removeDiscoveredDevice(device: BluetoothDevice)
+    fun removeDiscoveredDevice(device: BluetoothDeviceEntity)
 
     fun isScanning(boolean: Boolean)
 

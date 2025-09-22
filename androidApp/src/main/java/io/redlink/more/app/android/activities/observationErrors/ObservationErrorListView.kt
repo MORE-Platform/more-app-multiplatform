@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,8 +31,8 @@ import io.redlink.more.more_app_mutliplatform.observations.Observation
 
 @Composable
 fun ObservationErrorListView(
-    errors: SnapshotStateList<String>,
-    errorActions: SnapshotStateList<String>
+    errors: List<String>,
+    errorActions: List<String>
 ) {
     val context = LocalContext.current
     if (errors.isNotEmpty()) {

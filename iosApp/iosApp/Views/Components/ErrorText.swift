@@ -18,7 +18,7 @@ import SwiftUI
 struct ErrorText: View {
     var message: String
     var body: some View {
-        Text(message)
+        Text(LocalizedStringKey(message))
             .foregroundColor(.more.important)
             .fontWeight(.more.error)
             

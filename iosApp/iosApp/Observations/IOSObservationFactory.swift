@@ -17,14 +17,14 @@ import Foundation
 import shared
 
 class IOSObservationFactory: ObservationFactory {
-    override init(dataManager: ObservationDataManager) {
-        super.init(dataManager: dataManager)
-        observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
-        observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))
-        observations.add(PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"]))
-        observations.add(Hk_HRObservation())
-        observations.add(Hk_SleepObservation())
-        observations.add(Hk_ExerciseObservation())
-        observations.add(Hk_StepsObservation())
+    override init(repository: MainRepository,dataManager: ObservationDataManager) {
+        super.init(repository: repository, dataManager: dataManager)
+        observations.add(GPSObservation(repos: repository, sensorPermissions: ["gpsAlways"]))
+        observations.add(AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"]))
+        observations.add(PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"]))
+        observations.add(Hk_HRObservation(repository: repository))
+        observations.add(Hk_SleepObservation(repository: repository))
+        observations.add(Hk_ExerciseObservation(repostiory: repository))
+        observations.add(Hk_StepsObservation(repository: repository))
     }
 }

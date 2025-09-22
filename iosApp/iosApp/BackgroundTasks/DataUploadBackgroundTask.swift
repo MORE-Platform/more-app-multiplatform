@@ -40,7 +40,7 @@ class DataUploadBackgroundTask {
     }
 }
 
-extension DataUploadBackgroundTask: BackgroundTaskHandler {
+extension DataUploadBackgroundTask: @preconcurrency BackgroundTaskHandler {
     @MainActor
     func handleProcessingTask(task: BGProcessingTask) {
         print("DataUploadBackgroundTask::handleProcessingTask - Starting Background Processing Task")

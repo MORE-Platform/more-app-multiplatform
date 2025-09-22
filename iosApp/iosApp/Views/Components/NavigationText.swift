@@ -18,7 +18,7 @@ import SwiftUI
 struct NavigationText: View {
     var text: String
     var body: some View {
-        Text(text)
+        Text(LocalizedStringKey(text))
             .font(.headline)
             .foregroundColor(.more.secondary)
     }

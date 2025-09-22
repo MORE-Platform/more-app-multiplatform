@@ -17,24 +17,26 @@ import SwiftUI
 import shared
 
 struct NotificationFilterView: View {
-    @StateObject var viewModel: NotificationFilterViewModel
+    @StateObject private var viewModel: NotificationFilterViewModel
     @State var filtersChanged = false
-    private let stringTable = "NotificationView"
-    private let navigationStrings = "Navigation"
+    
+    init(coreVM: CoreNotificationFilterViewModel) {
+        _viewModel = StateObject(wrappedValue: NotificationFilterViewModel(coreViewModel: coreVM))
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                SectionHeading(sectionTitle: String.localize(forKey: "Select Filter", withComment: "Set Notification Filter", inTable: stringTable))
+                SectionHeading(sectionTitle: "Select Filter")
                     .padding(15)
                 Divider()
                 
                 ForEach(viewModel.allFilters.keys.sorted{$0.sortIndex < $1.sortIndex}, id: \.self) { filter in
-                    if let selected = viewModel.allFilters[filter]?.boolValue {
+                    if let selected = viewModel.allFilters[filter] {
                         Button {
                             viewModel.toggleFilters(filter: filter)
                         } label: {
-                            MoreFilterOption(option: filter.type.localize(withComment: filter.type, useTable: stringTable), isSelected: .constant(selected))
+                            MoreFilterOption(option: filter.type, isSelected: .constant(selected))
                             Spacer()
                         }
                         .buttonStyle(.borderless)
@@ -46,13 +48,7 @@ struct NotificationFilterView: View {
             }.padding(.vertical, 20)
             Spacer()
         }
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear {
-            viewModel.viewDidDisappear()
-        }
-        .customNavigationTitle(with: NavigationScreen.notificationFilter.localize(useTable: navigationStrings, withComment: "Select Notification Filter"))
+        .customNavigationTitle(with: NavigationScreen.notificationFilter.localize())
         .navigationBarTitleDisplayMode(.inline)
     }
 }

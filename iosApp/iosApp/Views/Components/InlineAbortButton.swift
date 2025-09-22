@@ -25,15 +25,14 @@ struct InlineAbortButton: View {
             HStack{
                 Image(systemName: "square.fill")
                     .padding(0.5)
-                    
                     .foregroundColor(.more.important)
-                Text(String.localize(forKey: "Abort", withComment: "Abort running task.", inTable: stringTable))
+                Text("Abort")
                     .foregroundColor(.more.secondary)
             }
             .padding(5)
             
         }
-        .accent(color: .more.primaryLight)
+        .tint(.more.primaryLight)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
                 .stroke(Color.more.secondaryMedium, lineWidth: 1)

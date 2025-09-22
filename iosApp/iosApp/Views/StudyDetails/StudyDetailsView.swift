@@ -34,12 +34,11 @@ struct StudyDetailsView: View {
                     .padding(.top)
                     .padding(.bottom)
                 
-                TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: String.localize(forKey: "tasks_completed", withComment: "string for completed tasks", inTable: stringTable))
+                TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: "tasks_completed")
                     .padding(.bottom, 0.2)
                 
                 HStack(alignment: .center) {
-                    BasicText(text: String
-                        .localize(forKey: "study_duration", withComment: "string for study duration", inTable: stringTable))
+                    BasicText(text: "study_duration")
                     
                     Spacer()
                     BasicText(text: (viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString()),
@@ -47,7 +46,7 @@ struct StudyDetailsView: View {
                     )
                 }.padding(.bottom)
                 
-                ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", String.localize(forKey: "participant_info", withComment: "Participant Information of study.", inTable: stringTable), lineLimit: 4)
+                ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", "participant_info", lineLimit: 4)
                     .padding(.bottom, 35)
                 
                 ExpandableContentWithLink(
@@ -65,13 +64,13 @@ struct StudyDetailsView: View {
                             }
                         }
                     },
-                    title: { String.localize(forKey: "obs_modules", withComment: "Observation modules of study.", inTable: stringTable) }, expanded: $isObservationListOpen
+                    title: { String(localized: "obs_modules") }, expanded: $isObservationListOpen
                 ).padding(.top, 0.5)
                 
                 Spacer()
             }
         }
-        .customNavigationTitle(with: NavigationScreen.studyDetails.localize(useTable: navigationStrings, withComment: "Study Details"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.studyDetails.localize(), displayMode: .inline)
         .onAppear {
             viewModel.viewDidAppear()
         }

@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,11 @@ class LimeSurveyActivity : ComponentActivity() {
             intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID),
             intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID)
         )
+
+        onBackPressedDispatcher.addCallback(this) {
+            viewModel.onFinish()
+            finish()
+        }
 
         webView = WebView(this)
         webView?.let { webView ->
@@ -105,12 +111,6 @@ class LimeSurveyActivity : ComponentActivity() {
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
         viewModel.onFinish()
         return super.getOnBackInvokedDispatcher()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.onFinish()
     }
 
     companion object {

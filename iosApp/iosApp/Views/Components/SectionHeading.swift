@@ -22,11 +22,11 @@ struct SectionHeading: View {
     
     var body: some View {
         if showAllText {
-            Text(sectionTitle)
+            Text(LocalizedStringKey(sectionTitle))
                 .font(font)
                 .fixedSize(horizontal: false, vertical: true)
         } else {
-            Text(sectionTitle)
+            Text(LocalizedStringKey(sectionTitle))
                 .font(font)
         }
     }

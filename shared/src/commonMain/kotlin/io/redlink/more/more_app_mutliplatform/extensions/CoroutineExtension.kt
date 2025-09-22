@@ -11,13 +11,19 @@
 package io.redlink.more.more_app_mutliplatform.extensions
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-fun CoroutineScope.repeatEveryFewSeconds(intervalMillis: Long, action: suspend CoroutineScope.() -> Unit): Job {
-    return launch {
+fun CoroutineScope.repeatEveryFewSeconds(
+    intervalMillis: Long,
+    coroutineContext: CoroutineContext = Dispatchers.Default,
+    action: suspend CoroutineScope.() -> Unit
+): Job {
+    return launch(coroutineContext) {
         while (isActive) {
             action()
             delay(intervalMillis)

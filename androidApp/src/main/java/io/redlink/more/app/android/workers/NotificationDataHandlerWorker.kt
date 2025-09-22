@@ -16,7 +16,6 @@ import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.ext.toRealmDictionary
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.Shared
 import kotlinx.coroutines.Dispatchers
@@ -43,15 +42,15 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            Napier.i( "Notification Worker started!")
+            Napier.i("Notification Worker started!")
             val data = inputData.getString(NOTIFICATION_DATA)
             val type: Type = object : TypeToken<Map<String, String>>() {}.type
             val notificationData: Map<String, String> = Gson().fromJson(data, type)
-            Napier.i( "NotificationData: $notificationData")
-            shared.notificationManager.handleNotificationData(shared, notificationData.toRealmDictionary())
+            Napier.i("NotificationData: $notificationData")
+            shared.notificationManager.handleNotificationData(shared, notificationData)
             Result.success()
         } catch (err: Exception) {
-            Napier.e( err.stackTraceToString())
+            Napier.e(err.stackTraceToString())
             Result.failure()
         }
     }

@@ -10,35 +10,98 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
-import io.realm.kotlin.types.RealmObject
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
+import io.redlink.more.more_app_mutliplatform.extensions.mapState
+import io.redlink.more.more_app_mutliplatform.models.StudyState
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.transform
 
-class StudyRepository : Repository<StudySchema>() {
-    fun storeStudy(study: Study) {
-        val realmObjects = mutableListOf<RealmObject>()
-        realmObjects.add(StudySchema.toSchema(study))
-        realmObjects.addAll(study.observations.map { ObservationSchema.toSchema(it) })
-        realmObjects.addAll(study.observations.map { observation ->
-            observation.schedule.mapNotNull {
-                ScheduleSchema.toSchema(
-                    it,
-                    observation.observationId,
-                    observation.observationType,
-                    observation.observationTitle,
-                    observation.hidden ?: observation.noSchedule
-                )
+class StudyRepository(private val appDatabase: AppDatabase) {
+    private val _study = MutableStateFlow<StudyEntity?>(null)
+
+    @NativeCoroutines
+    val study: StateFlow<StudyEntity?> = _study
+
+    @NativeCoroutines
+    val studyState: StateFlow<StudyState> =
+        study.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)) {
+            it?.let { StudyState.getState(it.state) } ?: StudyState.NONE
+        }
+    private val _finishText = MutableStateFlow<String?>(null)
+
+    @NativeCoroutines
+    val finishText: StateFlow<String?> = _finishText
+
+    init {
+        Scope.launch(Dispatchers.IO) {
+            getStudy().collect {
+                _study.value = it
+                it?.let {
+                    _finishText.value = it.finishText
+                }
             }
-        }.flatten())
-        realmDatabase().store(realmObjects)
+        }
     }
 
-    fun getStudy(): Flow<StudySchema?> {
-        return realmDatabase().queryFirst()
+    suspend fun upsert(study: Study) {
+        deleteStudy()
+        StudyScope.launch(Dispatchers.IO) {
+            val studyEntity = StudyEntity.fromStudy(study)
+            appDatabase.studyDao().insert(studyEntity)
+            _finishText.value = study.finishText
+        }
+
+        StudyScope.launch(Dispatchers.IO) {
+            val observationEntities = study.observations.map { ObservationEntity.toEntity(it) }
+            appDatabase.observationDao().insertAll(observationEntities)
+        }
+
+        StudyScope.launch(Dispatchers.IO) {
+            val scheduleEntities = study.observations.flatMap { observation ->
+                observation.schedule.mapNotNull {
+                    ScheduleEntity.fromObservationSchedule(
+                        it,
+                        observation.observationId,
+                        observation.observationType,
+                        observation.observationTitle,
+                        observation.hidden ?: observation.noSchedule
+                    )
+                }
+            }
+            appDatabase.scheduleDao().insertAll(scheduleEntities)
+        }
     }
 
-    override fun count(): Flow<Long> = realmDatabase().count<StudySchema>()
+    fun getStudy(): Flow<StudyEntity?> {
+        return appDatabase.studyDao().getAllFlow().transform { emit(it.firstOrNull()) }
+    }
+
+    suspend fun updateStudyState(state: StudyState) {
+        study.value?.let {
+            appDatabase.studyDao().updateStudyState(it.studyId, state.descr)
+        }
+    }
+
+    suspend fun deleteStudy() {
+        study.value?.let {
+            appDatabase.studyDao().deleteAll()
+            appDatabase.observationDao().deleteAll()
+            appDatabase.observationDataDao().deleteAll()
+            appDatabase.scheduleDao().deleteAll()
+            appDatabase.dataPointDao().deleteAll()
+        }
+    }
 }

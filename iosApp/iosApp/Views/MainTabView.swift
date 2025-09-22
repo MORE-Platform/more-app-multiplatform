@@ -23,31 +23,31 @@ struct MainTabView: View {
         TabView(selection: $navigationModalState.tagState) {
             Group {
                 NavigationWithDestinations {
-                    DashboardView(viewModel: contentViewModel.dashboardViewModel)
+                    DashboardView(viewModel: contentViewModel.manualSchedule)
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
-                    Label(NavigationScreen.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
+                    Label(NavigationScreen.dashboard.localize(), systemImage: "house")
                 }
                 .tag(0)
 
                 if #available(iOS 15.0, *) {
                     NavigationWithDestinations {
-                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                        NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
                             .padding(.horizontal, navigationModalState.horizontalContentPadding)
                     }
                     .tabItem {
-                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                        Label(NavigationScreen.notifications.localize(), systemImage: "bell")
                     }
                     .tag(1)
                     .badge(contentViewModel.unreadNotificationCount)
                 } else {
                     NavigationWithDestinations {
-                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
+                        NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
                             .padding(.horizontal, navigationModalState.horizontalContentPadding)
                     }
                     .tabItem {
-                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
+                        Label(NavigationScreen.notifications.localize(), systemImage: "bell")
                     }
                     .tag(1)
                 }
@@ -56,12 +56,12 @@ struct MainTabView: View {
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
-                    Label(NavigationScreen.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
+                    Label(NavigationScreen.info.localize(), systemImage: "info.circle")
                 }
                 .tag(2)
             }
         }
-        .accent(color: .more.primaryDark)
+        .tint(.more.primaryDark)
         .onAppear {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
@@ -97,7 +97,7 @@ struct MainTabView: View {
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {
-            LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
+            LeaveStudyView()
         }
     }
 }

@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.services.bluetooth
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 
 interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
 
@@ -34,9 +35,9 @@ interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
 
     fun scan()
 
-    fun connect(device: BluetoothDevice): Error?
+    fun connect(device: BluetoothDeviceEntity): Error?
 
-    fun disconnect(device: BluetoothDevice)
+    fun disconnect(device: BluetoothDeviceEntity)
 
     fun stopScanning()
     override fun close()

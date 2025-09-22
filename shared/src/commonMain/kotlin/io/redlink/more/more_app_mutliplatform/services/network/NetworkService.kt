@@ -12,29 +12,36 @@ package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.basic
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.ConfigurationApi
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.DataApi
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.NotificationApi
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.api.RegistrationApi
+import io.redlink.more.more_app_mutliplatform.models.LoginModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationServiceType
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.StudyConsent
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
-import kotlinx.coroutines.cancel
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
@@ -44,65 +51,33 @@ class NetworkService(
     private val credentialRepository: CredentialRepository,
 ) : Closeable {
     private var httpClient: HttpClient? = null
-    private var configurationApi: ConfigurationApi? = null
-    private var dataApi: DataApi? = null
-    private var notificationApi: NotificationApi? = null
 
     private var engineUseCounter = 10
 
-    private fun initConfigApi() {
-        if (configurationApi == null) {
-            Napier.i(tag = "NetworkService::initConfigApi") { "Initializing ConfigurationApi..." }
-            initHttpClient()
-            credentialRepository.credentials()?.let { credentials ->
-                httpClient?.let { httpClient ->
-                    val url = endpointRepository.endpoint()
-                    configurationApi = ConfigurationApi(baseUrl = url,
-                        httpClient.engine,
-                        httpClientConfig = { httpClient.engineConfig })
-                    configurationApi?.setUsername(credentials.apiId)
-                    configurationApi?.setPassword(credentials.apiKey)
-                }
-            }
-        }
-    }
-
-    private fun initDataApi() {
-        if (dataApi == null || dataApi == null) {
-            Napier.i(tag = "NetworkService::initDataApi") { "Init DataAPI..." }
-            initHttpClient()
-            credentialRepository.credentials()?.let { credentials ->
-                httpClient?.let { httpClient ->
-                    val api = DataApi(baseUrl = endpointRepository.endpoint(),
-                        httpClient.engine,
-                        httpClientConfig = { httpClient.engineConfig })
-                    api.setUsername(credentials.apiId)
-                    api.setPassword(credentials.apiKey)
-                    dataApi = api
-                }
-            }
-        }
-    }
-
-    private fun initNotificationApi() {
-        if (notificationApi == null) {
-            Napier.i(tag = "NetworkService::initNotificationApi") { "Init Notification API..." }
-            initHttpClient()
-            credentialRepository.credentials()?.let { credentials ->
-                httpClient?.let { httpClient ->
-                    val api = NotificationApi(endpointRepository.endpoint(),
-                        httpClient.engine,
-                        httpClientConfig = { httpClient.engineConfig })
-                    api.setUsername(credentials.apiId)
-                    api.setPassword(credentials.apiKey)
-                    notificationApi = api
-                }
-            }
-        }
-    }
-
-    private fun initLoggingApi() {
+    private fun initHttpClientWithAuth(): HttpClient? {
         initHttpClient()
+        val creds = credentialRepository.credentials.value
+        return httpClient?.config {
+            install(Auth) {
+                creds?.let { authCredentials ->
+                    basic {
+                        credentials {
+                            BasicAuthCredentials(
+                                username = authCredentials.apiId,
+                                password = authCredentials.apiKey
+                            )
+                        }
+                        sendWithoutRequest { true }
+                    }
+                }
+            }
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
+            }
+        }
     }
 
     private fun initHttpClient() {
@@ -113,32 +88,25 @@ class NetworkService(
 
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
-            credentialRepository.credentials()?.let {
+            credentialRepository.credentials.value?.let { credentials ->
                 Napier.i(tag = "NetworkService::deleteParticipation") { "Deleting Participation..." }
-                val httpClient = getHttpClient()
-                val url = endpointRepository.endpoint()
-                val registrationApi =
-                    RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
-
-                registrationApi.setUsername(it.apiId)
-                registrationApi.setPassword(it.apiKey)
-
-                val registrationResponse = registrationApi.unregisterFromStudy() ?: return Pair(
-                    false, NetworkServiceError(0, "Response null")
+                val client = initHttpClientWithAuth() ?: return Pair(
+                    false,
+                    NetworkServiceError(null, "Failed to init HTTP client")
                 )
-                Napier.i(registrationResponse.response.toString(), tag = TAG)
+                val baseUrl = endpointRepository.endpoint()
+
+                val response = client.delete("$baseUrl/registration")
+
+                Napier.i(response.toString(), tag = TAG)
                 close()
-                if (registrationResponse.success) {
+                if (response.status.isSuccess()) {
                     Napier.i(tag = "NetworkService::deleteParticipation") { "Participation deleted!" }
                     return Pair(true, null)
                 }
-                Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${registrationResponse.response.status.value}" }
-                val error = createErrorBody(
-                    registrationResponse.response.status.value, registrationResponse.response
-                )
-                return Pair(
-                    false, error
-                )
+                Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${response.status.value}" }
+                val error = createErrorBody(response.status.value, response)
+                return Pair(false, error)
             }
             return Pair(false, NetworkServiceError(null, "No credentials"))
         } catch (err: Exception) {
@@ -147,31 +115,29 @@ class NetworkService(
         }
     }
 
-    suspend fun validateRegistrationToken(
-        registrationToken: String, endpoint: String? = null
-    ): Pair<Study?, NetworkServiceError?> {
+    suspend fun validateRegistrationToken(loginModel: LoginModel): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::validateRegistrationToken") { "Validating Registration token..." }
-            val httpClient = getHttpClient()
-            val url = endpoint ?: endpointRepository.endpoint()
-            val registrationApi =
-                RegistrationApi(baseUrl = url, httpClientEngine = httpClient.engine)
-            val registrationResponse =
-                registrationApi.getStudyRegistrationInfo(moreRegistrationToken = registrationToken)
-                    ?: return Pair(null, NetworkServiceError(0, "Response null"))
-            Napier.i(registrationResponse.response.toString(), tag = TAG)
-            if (registrationResponse.success) {
-                registrationResponse.body().let {
-                    Napier.i(tag = "NetworkService::validateRegistrationToken") { "Registration token valid!" }
-                    return Pair(it, null)
-                }
+            initHttpClient()
+            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
+            val client = httpClient ?: return Pair(
+                null,
+                NetworkServiceError(null, "HTTP client not initialized")
+            )
+
+            val response = client.get("$baseUrl/registration") {
+                header("More-Registration-Token", loginModel.token)
+                contentType(ContentType.Application.Json)
             }
-            val error = createErrorBody(
-                registrationResponse.response.status.value, registrationResponse.response
-            )
-            return Pair(
-                null, error
-            )
+
+            Napier.i(response.toString(), tag = TAG)
+            if (response.status.isSuccess()) {
+                val study: Study = response.body()
+                Napier.i(tag = "NetworkService::validateRegistrationToken") { "Registration token valid!" }
+                return Pair(study, null)
+            }
+            val error = createErrorBody(response.status.value, response)
+            return Pair(null, error)
 
         } catch (err: Exception) {
             Napier.e(tag = "NetworkService::validateRegistrationToken") { err.stackTraceToString() }
@@ -180,29 +146,29 @@ class NetworkService(
     }
 
     suspend fun sendConsent(
-        registrationToken: String, studyConsent: StudyConsent, endpoint: String? = null
+        loginModel: LoginModel, studyConsent: StudyConsent
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendConsent") { "Sending Consent..." }
-            val httpClient = getHttpClient()
-            val url = endpoint ?: endpointRepository.endpoint()
-            val registrationApi = RegistrationApi(baseUrl = url,
-                httpClient.engine,
-                httpClientConfig = { httpClient.engineConfig })
-            val consentResponse =
-                registrationApi.registerForStudy(registrationToken, studyConsent) ?: return Pair(
-                    null, NetworkServiceError(0, "Response null")
-                )
-            if (consentResponse.success) {
-                consentResponse.body().let {
-                    Napier.i(tag = "NetworkService::sendConsent") { "Credentials received!" }
-                    return Pair(it, null)
-                }
-            }
-            return Pair(
+            initHttpClient()
+            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
+            val client = httpClient ?: return Pair(
                 null,
-                createErrorBody(consentResponse.response.status.value, consentResponse.response)
+                NetworkServiceError(null, "HTTP client not initialized")
             )
+
+            val response = client.post("$baseUrl/registration") {
+                header("More-Registration-Token", loginModel.token)
+                contentType(ContentType.Application.Json)
+                setBody(studyConsent)
+            }
+
+            if (response.status.isSuccess()) {
+                val appConfig: AppConfiguration = response.body()
+                Napier.i(tag = "NetworkService::sendConsent") { "Credentials received!" }
+                return Pair(appConfig, null)
+            }
+            return Pair(null, createErrorBody(response.status.value, response))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendConsent") { e.stackTraceToString() }
             return Pair(null, getException(e))
@@ -210,22 +176,27 @@ class NetworkService(
     }
 
     suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
-        initConfigApi()
         try {
             Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
-            val configResponse = configurationApi?.getStudyConfiguration() ?: return Pair(
-                null, NetworkServiceError(null, "No credentials set!")
-            )
-            if (configResponse.success) {
-                configResponse.body().let {
-                    Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
-                    return Pair(it, null)
-                }
-            }
+            credentialRepository.credentials.value?.let { credentials ->
+                val client = initHttpClientWithAuth() ?: return Pair(
+                    null,
+                    NetworkServiceError(null, "Failed to init HTTP client")
+                )
+                val baseUrl = endpointRepository.endpoint()
 
-            return Pair(
-                null, createErrorBody(configResponse.response.status.value, configResponse.response)
-            )
+                val response = client.get("$baseUrl/config/study") {
+                    contentType(ContentType.Application.Json)
+                }
+
+                if (response.status.isSuccess()) {
+                    val study: Study = response.body()
+                    Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
+                    return Pair(study, null)
+                }
+                return Pair(null, createErrorBody(response.status.value, response))
+            }
+            return Pair(null, NetworkServiceError(null, "No credentials set!"))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::getStudyConfig") { e.stackTraceToString() }
             return Pair(null, getException(e))
@@ -233,146 +204,145 @@ class NetworkService(
     }
 
     suspend fun sendNotificationToken(token: String): Pair<Boolean, NetworkServiceError?> {
-        initConfigApi()
-        configurationApi?.let {
-            try {
-                Napier.i(tag = "NetworkService::sendNotificationToken") { "Sending notification token..." }
-                val tokenResponse = it.setPushNotificationToken(
-                    serviceType = PushNotificationServiceType.FCM,
-                    pushNotificationToken = PushNotificationToken(token = token)
-                ) ?: return Pair(false, NetworkServiceError(0, "Response null"))
-                if (tokenResponse.success) {
+        try {
+            Napier.i(tag = "NetworkService::sendNotificationToken") { "Sending notification token..." }
+            credentialRepository.credentials.value?.let { credentials ->
+                val client = initHttpClientWithAuth() ?: return Pair(
+                    false,
+                    NetworkServiceError(null, "Failed to init HTTP client")
+                )
+                val baseUrl = endpointRepository.endpoint()
+                val pushToken = PushNotificationToken(token = token)
+
+                val response = client.put("$baseUrl/config/notifications/FCM") {
+                    contentType(ContentType.Application.Json)
+                    setBody(pushToken)
+                }
+
+                if (response.status.isSuccess()) {
                     Napier.i(tag = "NetworkService::sendNotificationToken") { "Uploading notification token success!" }
                     return Pair(true, null)
                 }
-                return Pair(
-                    false, createErrorBody(tokenResponse.status, tokenResponse.response)
-                )
-            } catch (err: Exception) {
-                Napier.e(tag = "NetworkService::sendNotificationToken") { err.stackTraceToString() }
-                return Pair(false, getException(err))
+                return Pair(false, createErrorBody(response.status.value, response))
             }
+            return Pair(false, NetworkServiceError(null, "No credentials found!"))
+        } catch (err: Exception) {
+            Napier.e(tag = "NetworkService::sendNotificationToken") { err.stackTraceToString() }
+            return Pair(false, getException(err))
         }
-        return Pair(false, getException(Exception("No credentials found!")))
     }
 
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
-        initDataApi()
         try {
             Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
-            val dataApiResponse = dataApi?.storeBulk(data) ?: return Pair(
-                emptySet(), NetworkServiceError(null, "No credentials set!")
-            )
-            if (dataApiResponse.success) {
-                dataApiResponse.body().let {
-                    Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
-                    dataApiResponse.response.cancel()
-                    return Pair(it.toSet(), null)
-                }
-            }
-            dataApiResponse.response.cancel()
-
-            return Pair(
-                emptySet(), createErrorBody(
-                    dataApiResponse.response.status.value, dataApiResponse.response
+            credentialRepository.credentials.value?.let { credentials ->
+                val client = initHttpClientWithAuth() ?: return Pair(
+                    emptySet(),
+                    NetworkServiceError(null, "Failed to init HTTP client")
                 )
-            )
+                val baseUrl = endpointRepository.endpoint()
+
+                val response = client.post("$baseUrl/data/bulk") {
+                    contentType(ContentType.Application.Json)
+                    setBody(data)
+                }
+
+                if (response.status.isSuccess()) {
+                    val result: List<String> = response.body()
+                    Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
+                    return Pair(result.toSet(), null)
+                }
+                return Pair(emptySet(), createErrorBody(response.status.value, response))
+            }
+            return Pair(emptySet(), NetworkServiceError(null, "No credentials set!"))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendData") { e.stackTraceToString() }
             return Pair(emptySet(), getException(e))
         }
     }
 
-    fun iosSendData(
-        data: DataBulk,
-        completionHandler: (Pair<Set<String>, NetworkServiceError?>) -> Unit
-    ) {
-        StudyScope.launch {
-            completionHandler(
-                sendData(data)
-            )
-        }
-    }
-
     suspend fun downloadMissedNotifications(): List<PushNotification> {
-        initNotificationApi()
-        val list = notificationApi?.let { notificationApi ->
-            try {
-                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
-                notificationApi.listPushNotifications()?.let { response ->
-                    if (response.success) {
-                        response.body()
-                    } else {
-                        Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
-                        emptyList()
-                    }
-                } ?: kotlin.run {
-                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Notification Response Null" }
+        return try {
+            Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
+            credentialRepository.credentials.value?.let { credentials ->
+                val client = initHttpClientWithAuth() ?: return@let emptyList()
+                val baseUrl = endpointRepository.endpoint()
+
+                val response = client.get("$baseUrl/notifications") {
+                    contentType(ContentType.Application.Json)
+                }
+
+                if (response.status.isSuccess()) {
+                    val notifications: List<PushNotification> = response.body()
+                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloaded Messages list: $notifications" }
+                    notifications
+                } else {
+                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
                     emptyList()
                 }
-            } catch (e: Exception) {
-                Napier.e(tag = "NetworkService::downloadMissedNotifications") { "Notification List error: $e" }
-                return emptyList()
+            } ?: run {
+                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No credentials available" }
+                emptyList()
             }
-        } ?: emptyList()
-        Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloaded Messages list: $list" }
-        return list
+        } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::downloadMissedNotifications") { "Notification List error: $e" }
+            emptyList()
+        }
     }
 
     suspend fun deletePushNotification(msgId: String) {
-        initNotificationApi()
-        notificationApi?.let { notificationApi ->
-            try {
-                notificationApi.deleteNotification(msgId)?.let { httpResponse ->
-                    if (httpResponse.success) {
-                        Napier.d(tag = "NetworkService::deletePushNotification") { "Successfully deleted notification with id: $msgId" }
-                    } else {
-                        Napier.d(tag = "NetworkService::deletePushNotification") { "Push notification not found with msgID: $msgId. Could not delete!" }
-                    }
+        try {
+            credentialRepository.credentials.value?.let { credentials ->
+                val client = initHttpClientWithAuth() ?: return
+                val baseUrl = endpointRepository.endpoint()
+
+                val response = client.delete("$baseUrl/notifications/$msgId") {
+                    contentType(ContentType.Application.Json)
                 }
-            } catch (e: Exception) {
-                Napier.e(tag = "NetworkService::deletePushNotification") { "Notification deletion error: $e" }
+
+                if (response.status.isSuccess()) {
+                    Napier.d(tag = "NetworkService::deletePushNotification") { "Successfully deleted notification with id: $msgId" }
+                } else {
+                    Napier.d(tag = "NetworkService::deletePushNotification") { "Push notification not found with msgID: $msgId. Could not delete!" }
+                }
             }
+        } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::deletePushNotification") { "Notification deletion error: $e" }
         }
     }
 
-    private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
+    private suspend fun createErrorBody(
+        code: Int,
+        responseBody: HttpResponse?
+    ): NetworkServiceError {
         return try {
             if (responseBody == null) {
                 return NetworkServiceError(code = code, message = "Error")
             }
-            val error = Json.decodeFromString<Error>(
-                responseBody.toString()
-            )
-            NetworkServiceError(code = code, message = error.msg ?: "Error")
+            val error: Error? = try {
+                responseBody.body<Error>()
+            } catch (_: Exception) {
+                null
+            }
+
+            NetworkServiceError(code = code, message = error?.msg ?: "Error")
         } catch (e: Exception) {
-            getException(e)
+            getException(e, code)
         }
     }
 
-    private fun getException(exception: Exception): NetworkServiceError {
+    private fun getException(exception: Exception, code: Int? = null): NetworkServiceError {
         val errorResponse = "System error!"
         Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
         exception.printStackTrace()
-        return NetworkServiceError(null, errorResponse)
+        return NetworkServiceError(code, errorResponse)
     }
 
     override fun close() {
         Napier.d(tag = "NetworkService::close") { "Clearing the Http engine..." }
         engineUseCounter = 10
-        configurationApi = null
-        dataApi = null
         httpClient?.close()
         httpClient = null
     }
 
-    private fun serializeToNDJson(logs: List<Log>): String {
-        return buildString {
-            logs.forEach { log ->
-                appendLine("{\"index\":{}}")
-                appendLine(Json.encodeToString(log))
-            }
-        }
-    }
 }
-

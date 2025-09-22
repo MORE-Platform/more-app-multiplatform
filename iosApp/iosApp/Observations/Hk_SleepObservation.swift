@@ -6,53 +6,51 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
-
 import Foundation
 import HealthKit
-import UIKit
 import shared
-
-
+import UIKit
 
 class Hk_SleepObservation: HealthkitBase {
     let healthStore: HKHealthStore
-    
+
     let now: Date
     var startDate: Date
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-    
-    init() {
-        self.healthStore = HKHealthStore()
-        self.now = Date()
-        self.startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+
+    init(repository: MainRepository) {
+        healthStore = HKHealthStore()
+        now = Date()
+        startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
         print("Observation initialized")
-        //must init with the observation type set
-        super.init(observationType: HealtkitType_Sleep())
+        // must init with the observation type set
+        super.init(repos: repository, observationType: HealtkitType_Sleep())
     }
-    
+
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         do {
-                print("observation config failed")
-                if let daysBackValue = settings["daysback"] {
-                    // Convert value to String, strip quotes, then to Int
-                    let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                    print(strValue)
-                    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                    if let daysBack = Int(strValue) {
-                        print(daysBack)
-                        
-                        // Subtract days from current date
-                        if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
-                            self.startDate = newDate
-                        }
+            print("observation config failed")
+            if let daysBackValue = settings["daysback"] {
+                // Convert value to String, strip quotes, then to Int
+                let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                print(strValue)
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                if let daysBack = Int(strValue) {
+                    print(daysBack)
+
+                    // Subtract days from current date
+                    if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
+                        startDate = newDate
                     }
                 }
-            } catch {
-                print(error.localizedDescription)
-            }    }
-    
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
     override func fetchData() {
         print("!!!!!!!!! CALLING Sleep FETCH !!!!!")
         guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
@@ -65,7 +63,7 @@ class Hk_SleepObservation: HealthkitBase {
             predicate: predicate,
             limit: HKObjectQueryNoLimit,
             sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
-        ) { query, results, error in
+        ) { _, results, error in
             if let error = error {
                 print("Error fetching sleep samples: \(error.localizedDescription)")
                 return
@@ -87,26 +85,23 @@ class Hk_SleepObservation: HealthkitBase {
                 default:
                     state = "Unknown"
                 }
-                
+
                 // Convert dates to string
                 let startString = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let endString = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                
+
                 // Create dictionary for this sample
                 let sampleData: [String: Any] = [
                     "state": state,
                     "start": startString,
-                    "end": endString
+                    "end": endString,
                 ]
                 sleepData.append(sampleData)
-            
             }
             let data: [String: Any] = ["sleepData": sleepData]
-            self.storeData(data: data,timestamp: -1){}
+            self.storeData(data: data, timestamp: -1) {}
         }
 
         healthStore.execute(query)
     }
 }
-
-

@@ -26,7 +26,11 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 import java.time.LocalDateTime
 
 @Composable
-fun TimeframeHours(startTime: LocalDateTime, endTime: LocalDateTime, modifier: Modifier = Modifier){
+fun TimeframeHours(
+    startTime: LocalDateTime,
+    endTime: LocalDateTime,
+    modifier: Modifier = Modifier
+) {
     Row(modifier = modifier) {
         Icon(
             Icons.Default.AccessTimeFilled,

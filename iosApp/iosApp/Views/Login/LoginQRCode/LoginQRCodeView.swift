@@ -25,8 +25,6 @@ struct LoginQRCodeView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        
-        
         VStack(alignment: .center) {
             Image("more_welcome")
                 .padding(.top, 15)

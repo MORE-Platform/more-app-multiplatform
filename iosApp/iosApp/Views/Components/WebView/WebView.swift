@@ -24,15 +24,12 @@ struct WebView: View {
         VStack {
             if viewModel.progress < 1 {
                 ProgressView(value: viewModel.progress, total: 1)
+                    .tint(.more.primary)
             }
-            if #available(iOS 15.0, *) {
-                SwiftUIWebView(viewModel: viewModel, url: url)
-                    .refreshable {
-                        viewModel.webView.reload()
-                    }
-            } else {
-                SwiftUIWebView(viewModel: viewModel, url: url)
-            }
+            SwiftUIWebView(viewModel: viewModel, url: url)
+                .refreshable {
+                    viewModel.webView.reload()
+                }
         }
     }
     

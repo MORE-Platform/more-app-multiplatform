@@ -15,27 +15,45 @@
 
 
 import shared
+import Combine
+import KMPNativeCoroutinesCombine
 
 
 class NotificationViewModel: ObservableObject {
-    let recorder = IOSDataRecorder()
     private let filterViewModel: CoreNotificationFilterViewModel
     private let coreModel: CoreNotificationViewModel
-
+    
     @Published var notificationList: [NotificationModel] = []
-    @Published var filterText: String = "FilterText"
-
+    
+    @Published var filterText: String = ""
+    
+    private var cancellables = Set<AnyCancellable>()
+    
     init(filterViewModel: CoreNotificationFilterViewModel) {
         self.filterViewModel = filterViewModel
         self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager, protocolReplacement: nil, hostReplacement: nil)
-        coreModel.onNotificationLoad { [weak self] notifications in
-            DispatchQueue.main.async {
-                self?.notificationList = []
+        
+        createPublisher(for: coreModel.notificationList)
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] notifications in
                 self?.notificationList = notifications
             }
-        }
+            .store(in: &cancellables)
+        
+        createPublisher(for: filterViewModel.activeTypes)
+            .map { (types: Set<String>) -> String in
+                guard !types.isEmpty else { return "" }
+                return types.sorted().joined(separator: ", ")
+            }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] text in
+                self?.filterText = text
+            }
+            .store(in: &cancellables)
     }
-
+    
     func handleNotificationAction(notification: NotificationModel, navigationModalState: NavigationModalState) {
         coreModel.handleNotificationAction(notification: notification) { (actionHandler, data) in
             switch(actionHandler) {
@@ -48,19 +66,5 @@ class NotificationViewModel: ObservableObject {
             }
         }
     }
-
-    func viewDidAppear() {
-        coreModel.viewDidAppear()
-    }
-
-    func viewDidDisappear() {
-        coreModel.viewDidDisappear()
-    }
-
-    func getFilterText(stringTable: String) {
-        self.filterText = filterViewModel.getActiveTypes().map {
-            $0.localize(withComment: $0, useTable: stringTable)
-        }
-        .joined(separator: ", ")
-    }
 }
+

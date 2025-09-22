@@ -11,14 +11,12 @@
 package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
-import io.realm.kotlin.ext.copyFromRealm
-import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,29 +24,27 @@ import kotlinx.datetime.Clock
 import kotlin.math.ceil
 
 class ObservationManager(
+    private val repositories: MainRepository,
     private val observationFactory: ObservationFactory,
     private val dataRecorder: DataRecorder
 ) {
-    private val scheduleRepository = ScheduleRepository()
-    private val dataPointCountRepository = DataPointCountRepository()
-    private val observationRepository = ObservationRepository()
 
     private val runningObservations = mutableMapOf<String, Observation>()
 
-    private val scheduleSchemaList = mutableSetOf<ScheduleSchema>()
+    private val scheduleSchemaList = mutableSetOf<ScheduleEntity>()
 
     private val currentlyRunning = mutableSetOf<String>()
-    private var upToDateTimestamps: Map<String, RealmInstant> = emptyMap()
+    private var upToDateTimestamps: Map<String, Long> = emptyMap()
 
     fun activateScheduleUpdate() {
         Napier.i(tag = "ObservationManager::activateScheduleUpdate") { "ObservationManager: ScheduleUpdater activating..." }
-        StudyScope.launch {
-            scheduleRepository.allSchedulesWithStatus(true).cancellable().collect { list ->
+        StudyScope.launch(Dispatchers.IO) {
+            repositories.schedule.allSchedulesWithStatus(true).cancellable().collect { list ->
                 if (runningObservations.isNotEmpty()) {
-                    list.filter { it.scheduleId.toHexString() in runningObservations.keys }
-                        .map { it.scheduleId.toHexString() }.forEach {
+                    list.filter { it.scheduleId in runningObservations.keys }
+                        .map { it.scheduleId }.forEach {
                             stop(it)
-                            dataPointCountRepository.delete(it)
+                            repositories.dataPointCount.delete(it)
                         }
                 }
             }
@@ -56,12 +52,12 @@ class ObservationManager(
         val firstCall = ceil(Clock.System.now().toEpochMilliseconds() / 60_000.0).toLong() * 60_000
         StudyScope.launch {
             delay(firstCall - Clock.System.now().toEpochMilliseconds())
-            StudyScope.repeatedLaunch(30000L) {
+            StudyScope.repeatedLaunch(30000L, Dispatchers.IO) {
                 updateTaskStates()
             }
         }
-        StudyScope.launch {
-            observationRepository.collectAllTimestamps().cancellable().collect {
+        StudyScope.launch(Dispatchers.IO) {
+            repositories.observation.collectAllTimestamps().cancellable().collect {
                 upToDateTimestamps = it
             }
         }
@@ -69,14 +65,15 @@ class ObservationManager(
 
     suspend fun restartStillRunning(): Set<String> {
         val startedObservations = mutableSetOf<String>()
-        scheduleRepository.allScheduleWithRunningState().cancellable().firstOrNull()?.let { list ->
-            Napier.i(tag = "ObservationManager::restartStillRunning") { "Restarting schedules: $list" }
-            list.filter { it.scheduleId.toHexString() !in runningObservations.keys }.forEach {
-                if (start(it.scheduleId.toHexString())) {
-                    startedObservations.add(it.scheduleId.toHexString())
+        repositories.schedule.allScheduleWithRunningState().cancellable().firstOrNull()
+            ?.let { list ->
+                Napier.i(tag = "ObservationManager::restartStillRunning") { "Restarting schedules: $list" }
+                list.filter { it.scheduleId !in runningObservations.keys }.forEach {
+                    if (start(it.scheduleId)) {
+                        startedObservations.add(it.scheduleId)
+                    }
                 }
             }
-        }
         return startedObservations
     }
 
@@ -87,28 +84,28 @@ class ObservationManager(
             val result = findOrCreateObservation(scheduleId)?.let { scheduleSchema ->
                 Napier.i(tag = "ObservationManager::start") { "Trying to start schedule: $scheduleSchema" }
                 val result =
-                    observationRepository.getObservationByObservationId(scheduleSchema.observationId)
+                    repositories.observation.getObservationByObservationId(scheduleSchema.observationId)
                         ?.let { observation ->
                             Napier.i(tag = "ObservationManager::start") { "Found Observation Config: ${observation.configAsMap()}" }
                             val config = observation.configAsMap().toMutableMap()
                             scheduleSchema.start?.let {
-                                config[Observation.CONFIG_TASK_START] = it.epochSeconds
+                                config[Observation.CONFIG_TASK_START] = it
                             }
                             scheduleSchema.end?.let {
-                                config[Observation.CONFIG_TASK_STOP] = it.epochSeconds
+                                config[Observation.CONFIG_TASK_STOP] = it
                             }
                             config[Observation.SCHEDULE_ID] =
-                                scheduleSchema.scheduleId.toHexString()
+                                scheduleSchema.scheduleId
                             if (scheduleSchema.getState() == ScheduleState.PAUSED) {
                                 config[Observation.CONFIG_LAST_COLLECTION_TIMESTAMP] =
-                                    observation.collectionTimestamp.epochSeconds
+                                    observation.collectionTimestamp
                             }
                             start(scheduleSchema, config)
                         } ?: false
                 if (!result) {
                     Napier.w(tag = "ObservationManager::start") { "Could not retrieve Observation Schema for schedule: $scheduleSchema" }
                     runningObservations.remove(scheduleId)
-                    scheduleSchemaList.removeAll { it.scheduleId.toHexString() == scheduleId }
+                    scheduleSchemaList.removeAll { it.scheduleId == scheduleId }
                     currentlyRunning.remove(scheduleId)
                 }
                 result
@@ -123,13 +120,13 @@ class ObservationManager(
     }
 
     private fun start(
-        schedule: ScheduleSchema,
+        schedule: ScheduleEntity,
         config: Map<String, Any>
     ): Boolean {
-        runningObservations[schedule.scheduleId.toHexString()]?.observationConfig(config)
-        return if (runningObservations[schedule.scheduleId.toHexString()]?.start(
+        runningObservations[schedule.scheduleId]?.observationConfig(config)
+        return if (runningObservations[schedule.scheduleId]?.start(
                 schedule.observationId,
-                schedule.scheduleId.toHexString()
+                schedule.scheduleId
             ) == true
         ) {
             setObservationState(schedule, ScheduleState.RUNNING)
@@ -143,7 +140,7 @@ class ObservationManager(
 
     fun pause(scheduleId: String) {
         runningObservations[scheduleId]?.let { observation ->
-            scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
+            scheduleSchemaList.firstOrNull { it.scheduleId == scheduleId }?.let {
                 Napier.i(tag = "ObservationManager::pause") { "Pausing schedule: $it" }
                 observation.stop(scheduleId)
                 setObservationState(it, ScheduleState.PAUSED)
@@ -166,16 +163,16 @@ class ObservationManager(
     }
 
     fun startObservationType(type: String) {
-        StudyScope.launch {
+        StudyScope.launch(Dispatchers.IO) {
             Napier.d(tag = "ObservationManager::startObservationType") { "Restarting Observations with type: $type" }
-            scheduleRepository.allSchedulesWithStatus(false)
+            repositories.schedule.allSchedulesWithStatus(false)
                 .firstOrNull()
                 ?.filter { it.observationType == type && it.getState().active() }
                 ?.forEach {
-                    if (start(it.scheduleId.toHexString())) {
+                    if (start(it.scheduleId)) {
                         Napier.i(tag = "ObservationManager::startObservationType") { "Started Schedule: $it" }
                     } else {
-                        currentlyRunning.remove(it.scheduleId.toHexString())
+                        currentlyRunning.remove(it.scheduleId)
                         Napier.i(tag = "ObservationManager::startObservationType") { "Failed to start schedule: $it" }
                     }
                 }
@@ -184,7 +181,7 @@ class ObservationManager(
 
     fun stop(scheduleId: String) {
         runningObservations[scheduleId]?.let { observation ->
-            scheduleSchemaList.firstOrNull { it.scheduleId.toHexString() == scheduleId }?.let {
+            scheduleSchemaList.firstOrNull { it.scheduleId == scheduleId }?.let {
                 Napier.i(tag = "ObservationManager::stop") { "Stopping schedule: $it" }
                 observation.stop(scheduleId)
                 observation.removeDataCount()
@@ -206,11 +203,11 @@ class ObservationManager(
     }
 
     fun updateTaskStates() {
-        scheduleRepository.updateTaskStates(observationFactory, dataRecorder)
+        repositories.schedule.updateTaskStates(observationFactory, dataRecorder)
     }
 
     suspend fun updateTaskStatesWithBLEDevices() {
-        scheduleRepository.updateTaskStatesWithBLEDevices(observationFactory, dataRecorder)
+        repositories.schedule.updateTaskStatesWithBLEDevices(observationFactory, dataRecorder)
     }
 
     fun hasRunningTasks() = currentlyRunning.isNotEmpty()
@@ -222,16 +219,18 @@ class ObservationManager(
         val runningObs = runningObservations.toList()
         runningObs.forEach { (scheduleId, observation) ->
             observation.stopAndFinish(scheduleId)
-            scheduleRepository.setCompletionStateFor(scheduleId, true)
-            dataPointCountRepository.delete(scheduleId)
+            StudyScope.launch(Dispatchers.IO) {
+                repositories.schedule.setCompletionStateFor(scheduleId, true)
+            }
+            repositories.dataPointCount.delete(scheduleId)
             runningObservations.remove(scheduleId)
-            scheduleSchemaList.removeAll { it.scheduleId.toHexString() == scheduleId }
+            scheduleSchemaList.removeAll { it.scheduleId == scheduleId }
             currentlyRunning.clear()
         }
     }
 
     fun collectAllData(onCompletion: (Boolean) -> Unit) {
-        StudyScope.launch {
+        StudyScope.launch(Dispatchers.IO) {
             restartStillRunning()
             if (!hasRunningTasks()) {
                 onCompletion(true)
@@ -239,7 +238,7 @@ class ObservationManager(
             var counter = 0
             runningObservations.values.forEach {
                 upToDateTimestamps[it.observationType.observationType]?.let { lastTimestamp ->
-                    it.store(lastTimestamp.epochSeconds, Clock.System.now().epochSeconds) {
+                    it.store(lastTimestamp, Clock.System.now().epochSeconds) {
                         if (++counter == runningObservations.size) {
                             onCompletion(true)
                         }
@@ -253,36 +252,38 @@ class ObservationManager(
         }
     }
 
-    private suspend fun findOrCreateObservation(scheduleId: String): ScheduleSchema? {
-        return scheduleRepository.scheduleWithId(scheduleId).firstOrNull()?.let {
-            val fixedScheduleSchema = it.copyFromRealm()
+    private suspend fun findOrCreateObservation(scheduleId: String): ScheduleEntity? {
+        return repositories.schedule.scheduleWithId(scheduleId).firstOrNull()?.let {
+            val fixedScheduleSchema = it
             Napier.d(tag = "ObservationManager::findOrCreateObservation") { "Found Schema $it" }
             if (findOrCreateObservation(fixedScheduleSchema)) fixedScheduleSchema else null
         }
     }
 
-    private fun findOrCreateObservation(schedule: ScheduleSchema): Boolean {
-        return (runningObservations[schedule.scheduleId.toHexString()]
+    private fun findOrCreateObservation(schedule: ScheduleEntity): Boolean {
+        return (runningObservations[schedule.scheduleId]
             ?: observationFactory.observation(schedule.observationType)
                 ?.let { observation ->
                     Napier.d(tag = "ObservationManager::findOrCreateObservation") { "Found Observation for ScheduleSchema: $schedule : $observation" }
-                    runningObservations[schedule.scheduleId.toHexString()] = observation
+                    runningObservations[schedule.scheduleId] = observation
                     scheduleSchemaList.add(schedule)
                     schedule
                 }) != null
     }
 
-    private fun setObservationState(schedule: ScheduleSchema, state: ScheduleState) {
+    private fun setObservationState(schedule: ScheduleEntity, state: ScheduleState) {
         Napier.i(tag = "ObservationManager::setObservationState") { "New Schedule State for Schema: $schedule; ${schedule.state} -> $state" }
-        setObservationState(schedule.scheduleId.toHexString(), state)
+        setObservationState(schedule.scheduleId, state)
     }
 
     private fun setObservationState(scheduleId: String, state: ScheduleState) {
-        if (state != ScheduleState.DONE) {
-            scheduleRepository.setRunningStateFor(scheduleId, state)
-        } else {
-            scheduleRepository.setCompletionStateFor(scheduleId, true)
-            dataPointCountRepository.delete(scheduleId)
+        StudyScope.launch(Dispatchers.IO) {
+            if (state != ScheduleState.DONE) {
+                repositories.schedule.setRunningStateFor(scheduleId, state)
+            } else {
+                repositories.schedule.setCompletionStateFor(scheduleId, true)
+                repositories.dataPointCount.delete(scheduleId)
+            }
         }
     }
 }

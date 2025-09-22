@@ -26,10 +26,11 @@ import io.redlink.more.app.android.activities.login.composables.ParticipationKey
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
-
+import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
 
 @Composable
-fun LoginView(model: LoginViewModel) {
+fun LoginView(registrationService: RegistrationService) {
+    val model = remember { LoginViewModel(registrationService) }
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

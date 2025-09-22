@@ -10,7 +10,6 @@
  */
 package io.redlink.more.app.android.extensions
 
-
 import android.app.Activity
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -27,18 +26,19 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 
 @Composable
 @ReadOnlyComposable
 fun getStringResource(@StringRes id: Int): String =
-    LocalContext.current.resources.getText(id).toString()
+    LocalResources.current.getText(id).toString()
 
 @Composable
 @ReadOnlyComposable
 fun getStringResourceByName(name: String): String {
-    val resourceId = LocalContext.current.resources.getIdentifier(
+    val resourceId = LocalResources.current.getIdentifier(
         name,
         "string",
         LocalContext.current.packageName

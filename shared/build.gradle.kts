@@ -3,7 +3,9 @@ plugins {
     kotlin("plugin.serialization")
 
     id("com.android.library")
-    id("io.realm.kotlin") version "1.14.1"
+    id("androidx.room")
+    id("com.google.devtools.ksp")
+    id("com.rickclephas.kmp.nativecoroutines")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -11,21 +13,21 @@ val openApiInputDir = "$rootDir/openapi"
 val openApiOutputDir = "$generated/open_api"
 val mobileAppApiInput = "$openApiInputDir/MobileAppAPI.yaml"
 val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
-val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.openapi"
+val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.services.network.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
-val coroutinesVersion = "1.8.1"
-val ktorVersion = "2.3.12"
+val coroutinesVersion = "1.10.2"
+val ktorVersion = "3.2.3"
 val napierVersion = "2.7.1"
-val serializationVersion = "1.6.0"
-val gsonVersion = "2.10.1"
+val serializationVersion = "1.9.0"
+val gsonVersion = "2.13.2"
+val roomVersion = "2.7.2"
+val sqliteVersion = "2.5.2"
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
         publishLibraryVariants("release")
     }
@@ -47,12 +49,18 @@ kotlin {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-            implementation("io.realm.kotlin:library-base:1.13.0")
             implementation("io.github.aakira:napier:$napierVersion")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             implementation("io.ktor:ktor-client-auth:$ktorVersion")
             implementation("io.ktor:ktor-client-logging:$ktorVersion")
-            implementation("dev.tmapps:konnection:1.4.1")
+            implementation("dev.tmapps:konnection:1.4.5")
+
+            // Room common dependencies
+            implementation("androidx.room:room-runtime:$roomVersion")
+            implementation("androidx.sqlite:sqlite-bundled:$sqliteVersion")
+
+            implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.7.1"))
+            implementation("org.kotlincrypto.hash:md")
         }
 
         commonTest.dependencies {
@@ -60,7 +68,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+            implementation("androidx.security:security-crypto-ktx:1.1.0")
             implementation("io.ktor:ktor-client-android:$ktorVersion")
             implementation("com.google.code.gson:gson:$gsonVersion")
         }
@@ -68,12 +76,16 @@ kotlin {
         iosMain.dependencies {
             implementation("io.ktor:ktor-client-darwin:$ktorVersion")
         }
+
+        all {
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+        }
     }
 }
 
 android {
     namespace = "io.redlink.more.more_app_multiplatform"
-    compileSdk = 34
+    compileSdk = 36
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 29
@@ -82,8 +94,21 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
-task("testClasses").doLast {
-    println("This is a dummy testClasses task")
+room {
+    schemaDirectory("$projectDir/schemas")
 }
+
+dependencies {
+    add("kspAndroid", "androidx.room:room-compiler:$roomVersion")
+    add("kspIosArm64", "androidx.room:room-compiler:$roomVersion")
+    add("kspIosSimulatorArm64", "androidx.room:room-compiler:$roomVersion")
+    add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
+}
+

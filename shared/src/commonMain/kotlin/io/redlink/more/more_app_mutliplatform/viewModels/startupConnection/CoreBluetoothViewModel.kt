@@ -10,35 +10,33 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.startupConnection
 
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
+import kotlinx.coroutines.flow.StateFlow
 
 class CoreBluetoothViewModel(
     observationFactory: ObservationFactory,
     val coreBluetooth: BluetoothController
 ) : CoreViewModel() {
-    val devicesNeededToConnectTo = observationFactory.studyObservationTypes
+    @NativeCoroutines
+    val devicesNeededToConnectTo: StateFlow<Set<String>> = observationFactory.studyObservationTypes
 
     override fun viewDidAppear() {
         coreBluetooth.viewDidAppear()
     }
 
     override fun viewDidDisappear() {
-        super.viewDidDisappear()
         coreBluetooth.viewDidDisappear()
     }
 
-    fun connectToDevice(device: BluetoothDevice): Boolean {
+    fun connectToDevice(device: BluetoothDeviceEntity): Boolean {
         return coreBluetooth.connectToDevice(device)
     }
 
-    fun disconnectFromDevice(device: BluetoothDevice) {
+    fun disconnectFromDevice(device: BluetoothDeviceEntity) {
         coreBluetooth.unpairFromDevice(device)
     }
-
-    fun devicesNeededChange(providedState: (Set<String>) -> Unit) =
-        devicesNeededToConnectTo.asClosure(providedState)
 }

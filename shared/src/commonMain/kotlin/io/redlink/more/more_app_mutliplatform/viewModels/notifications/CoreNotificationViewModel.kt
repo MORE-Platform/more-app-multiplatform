@@ -10,14 +10,14 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.notifications
 
-import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 
 class CoreNotificationViewModel(
@@ -27,36 +27,37 @@ class CoreNotificationViewModel(
     private val hostReplacement: String? = null
 ) : CoreViewModel() {
     private val originalNotificationList = mutableListOf<NotificationModel>()
-    val notificationList: MutableStateFlow<List<NotificationModel>> = MutableStateFlow(listOf())
+    private val _notificationList: MutableStateFlow<List<NotificationModel>> =
+        MutableStateFlow(listOf())
 
-    override fun viewDidAppear() {
+    @NativeCoroutines
+    val notificationList: StateFlow<List<NotificationModel>> = _notificationList
+
+    init {
         launchScope {
             coreFilterModel.filters.collect {
                 if (originalNotificationList.isNotEmpty()) {
                     if (coreFilterModel.filterActive()) {
-                        notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
+                        _notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
                     } else {
-                        notificationList.set(originalNotificationList.toList())
+                        _notificationList.set(originalNotificationList.toList())
                     }
                 }
             }
         }
         launchScope {
-            notificationManager.notificationRepository.getAllUserFacingNotifications().cancellable()
+            notificationManager.repository.notification.getAllUserFacingNotifications()
+                .cancellable()
                 .collect {
                     originalNotificationList.clear()
                     originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
                     if (originalNotificationList.isNotEmpty() && coreFilterModel.filterActive()) {
-                        notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
+                        _notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
                     } else {
-                        notificationList.set(originalNotificationList.toList())
+                        _notificationList.set(originalNotificationList.toList())
                     }
                 }
         }
-    }
-
-    fun onNotificationLoad(provideNewState: ((List<NotificationModel>) -> Unit)): Closeable {
-        return notificationList.asClosure(provideNewState)
     }
 
     fun handleNotificationAction(

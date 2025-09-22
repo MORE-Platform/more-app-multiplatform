@@ -24,7 +24,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
-import io.redlink.more.more_app_mutliplatform.database.schemas.NotificationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
 import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager.Companion.MSG_ID
 
@@ -32,7 +32,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
     private val defaultChannelId = context.getString(R.string.default_channel_id)
     private val unreadChannelId = context.getString(R.string.unread_channel_id)
     private val unreadNotificationId = 1
-    override fun displayNotification(notification: NotificationSchema) {
+    override fun displayNotification(notification: NotificationEntity) {
         notification.title?.let { title ->
             notification.notificationBody?.let { message ->
                 val intent = Intent(context, ContentActivity::class.java).apply {
@@ -85,7 +85,6 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
             Napier.e(tag = "NotificationError") { "Notification title is null" }
         }
     }
-
 
     override fun deleteNotificationFromSystem(notificationId: String) {
         context.getSystemService(NotificationManager::class.java)?.cancel(notificationId.hashCode())

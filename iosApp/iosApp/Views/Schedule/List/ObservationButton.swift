@@ -32,9 +32,7 @@ struct ObservationButton: View {
                     navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
                 }) {
                     VStack {
-                        Text(
-                            String.localize(forKey: "start_questionnaire", withComment: "Button to start a questionnaire", inTable: stringTable)
-                        )
+                        Text("start_questionnaire")
                     }
                 }
             } else if observationType == "lime-survey-observation" {
@@ -42,10 +40,7 @@ struct ObservationButton: View {
                     navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
                 }) {
                     VStack {
-                        Text(
-                            "Start LimeSurvey"
-                                .localize(withComment: "Button to start a limesurvey", useTable: stringTable)
-                        )
+                        Text("Button to start a limesurvey")
                     }
                 }
             } else if observationType == "healthkit-mobile-observation:HR_observation" ||
@@ -64,7 +59,6 @@ struct ObservationButton: View {
                     VStack {
                         Text(
                             "Fetch Healthkit data"
-                                .localize(withComment: "Button to get data from healthkit", useTable: stringTable)
                         )
                     }}
             }
@@ -79,13 +73,9 @@ struct ObservationButton: View {
                 }) {
                     VStack {
                         if state == ScheduleState.running {
-                            Text(
-                                String.localize(forKey: "pause_observation", withComment: "Button to pause an observation", inTable: stringTable)
-                            )
+                            Text("pause_observation")
                         } else {
-                            Text(
-                                String.localize(forKey: "start_observation", withComment: "Button to start an observation", inTable: stringTable)
-                            )
+                            Text("start_observation")
                         }
                     }
                 }

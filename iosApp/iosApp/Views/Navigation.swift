@@ -15,7 +15,6 @@
 
 import SwiftUI
 
-@available(iOS 16.0, *)
 struct NavigationWithStack<Content: View>: View {
     var content: () -> Content
 
@@ -63,18 +62,7 @@ struct Navigation<Content: View>: View {
     @EnvironmentObject private var contentViewModel: ContentViewModel
     var body: some View {
         VStack {
-            if #available(iOS 16.0, *) {
-                NavigationWithStack(content: content)
-            } else {
-                NavigationView {
-                    content()
-                        .background(Color.more.mainBackground)
-                        .navigationBarTitleDisplayMode(.inline)
-                        .environmentObject(navigationModalState)
-                        .environmentObject(contentViewModel)
-                }
-                .background(Color.more.mainBackground)
-            }
+            NavigationWithStack(content: content)
         }
         .background(Color.more.mainBackground)
     }
@@ -87,42 +75,12 @@ struct NavigationWithDestinations<Content: View>: View {
     var body: some View {
         Navigation {
             VStack {
-                if #available(iOS 16.0, *) {
-                    content()
-                        .background(Color.more.mainBackground)
-                        .navigationDestination(for: NavigationScreen.self) { screen in
-                            viewForScreen(screen)
-                        }
-                } else {
-                    ForEach(NavigationScreen.allCases) { screen in
-                        if screen == navigationModalState.currentScreen() {
-                            NavigationLink(destination: viewForOldScreen(screen), isActive: navigationModalState.screenBinding(for: screen)) {
-                                EmptyView()
-                            }
-                            .opacity(0)
-                        }
+                content()
+                    .background(Color.more.mainBackground)
+                    .navigationDestination(for: NavigationScreen.self) { screen in
+                        viewForScreen(screen)
                     }
-
-                    content()
-                        .background(Color.more.mainBackground)
-                }
             }
-        }
-    }
-    
-    
-    @ViewBuilder
-    private func viewForOldScreen(_ screen: NavigationScreen) -> some View {
-        VStack {
-            ForEach(NavigationScreen.allCases) { screen in
-                if screen == navigationModalState.currentScreen() {
-                    NavigationLink(destination: viewForScreen(screen), isActive: navigationModalState.screenBinding(for: screen)) {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                }
-            }
-            viewForScreen(screen)
         }
     }
     
@@ -132,28 +90,30 @@ struct NavigationWithDestinations<Content: View>: View {
             VStack {
                 switch screen {
                 case .taskDetails:
-                    if let navigationState = navigationModalState.navigationState(for: screen) {
-                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationState))
+                    if let scheduleId = navigationModalState.navigationState(for: screen)?.scheduleId {
+                        TaskDetailsView(scheduleId: scheduleId)
                     } else {
                         EmptyView()
                     }
                 case .settings:
-                    SettingsView(viewModel: SettingsViewModel())
+                    SettingsView()
                 case .studyDetails:
                     StudyDetailsView(viewModel: StudyDetailsViewModel())
                 case .dashboardFilter:
-                    DashboardFilterView(viewModel: contentViewModel.dashboardViewModel.scheduleViewModel.filterViewModel)
+                    DashboardFilterView(viewModel: contentViewModel.manualSchedule.filterViewModel)
                 case .notificationFilter:
-                    NotificationFilterView(viewModel: contentViewModel.notificationFilterViewModel)
+                    NotificationFilterView(coreVM: contentViewModel.coreNotificationFilterViewModel)
                 case .pastObservations:
                     CompletedSchedules(scheduleViewModel: contentViewModel.completedViewModel)
                 case .runningObservations:
                     RunningSchedules(scheduleViewModel: contentViewModel.runningViewModel)
                 case .bluetoothConnections:
-                    BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel, viewOpen: .constant(false))
+                    BluetoothConnectionView(viewOpen: .constant(false))
                 case .observationDetails:
                     if let observationId = navigationModalState.navigationState(for: screen)?.observationId {
-                        ObservationDetailsView(viewModel: ObservationDetailsViewModel(observationId: observationId))
+                        ObservationDetailsView(observationId: observationId)
+                    } else {
+                        EmptyView()
                     }
                 case .healthConnectSettings:
                     HealthKitView()
@@ -167,7 +127,6 @@ struct NavigationWithDestinations<Content: View>: View {
     }
 }
 
-@available(iOS 16, *)
 struct NavigationTitleViewModifier: ViewModifier {
     var text: String
     var displayMode: NavigationBarItem.TitleDisplayMode = .automatic
@@ -179,16 +138,6 @@ struct NavigationTitleViewModifier: ViewModifier {
     }
 }
 
-struct NavigationBarTitleViewModifier: ViewModifier {
-    var text: String
-    var displayMode: NavigationBarItem.TitleDisplayMode = .automatic
-
-    func body(content: Content) -> some View {
-        content
-            .navigationBarTitle(text, displayMode: displayMode)
-    }
-}
-
 enum Capitalization {
     case uppercase, lowercase, normal
 }
@@ -196,31 +145,17 @@ enum Capitalization {
 extension View {
     @ViewBuilder
     func customNavigationTitle(with text: String, displayMode: NavigationBarItem.TitleDisplayMode = .inline) -> some View {
-        if #available(iOS 16, *) {
-            self.modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
-        } else {
-            modifier(NavigationBarTitleViewModifier(text: text, displayMode: displayMode))
-        }
+        self.modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
     }
 
     @ViewBuilder
     func textFieldAutoCapitalizataion(capitalization: Capitalization) -> some View {
-        if #available(iOS 15, *) {
-            if capitalization == .uppercase {
-                self.modifier(TextFieldViewModifier(capitalization: .characters))
-            } else if capitalization == .lowercase {
-                self.modifier(TextFieldViewModifier(capitalization: .never))
-            } else {
-                self.modifier(TextFieldViewModifier(capitalization: .sentences))
-            }
+        if capitalization == .uppercase {
+            self.modifier(TextFieldViewModifier(capitalization: .characters))
+        } else if capitalization == .lowercase {
+            self.modifier(TextFieldViewModifier(capitalization: .never))
         } else {
-            if capitalization == .uppercase {
-                modifier(TextFieldOldViewModifier(capitalization: .allCharacters))
-            } else if capitalization == .lowercase {
-                modifier(TextFieldOldViewModifier(capitalization: .none))
-            } else {
-                modifier(TextFieldOldViewModifier(capitalization: .sentences))
-            }
+            self.modifier(TextFieldViewModifier(capitalization: .sentences))
         }
     }
 
@@ -229,31 +164,9 @@ extension View {
     }
 }
 
-@available(iOS 15, *)
-struct PresentationViewModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .interactiveDismissDisabled()
-    }
-}
-
-struct PresentationCoverViewModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-    }
-}
-
-@available(iOS 15, *)
 struct TextFieldViewModifier: ViewModifier {
     var capitalization: TextInputAutocapitalization = .words
     func body(content: Content) -> some View {
         content.textInputAutocapitalization(capitalization)
-    }
-}
-
-struct TextFieldOldViewModifier: ViewModifier {
-    var capitalization: UITextAutocapitalizationType = .words
-    func body(content: Content) -> some View {
-        content.autocapitalization(capitalization)
     }
 }

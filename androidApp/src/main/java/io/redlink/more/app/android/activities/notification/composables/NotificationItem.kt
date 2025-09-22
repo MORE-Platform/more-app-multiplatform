@@ -42,7 +42,7 @@ import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
+import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromEpochSeconds
 import io.redlink.more.app.android.extensions.toAnnotatedString
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.ui.theme.MoreColors
@@ -134,7 +134,7 @@ fun NotificationItem(
                 )
 
                 Text(
-                    text = notificationModel.timestamp.jvmLocalDateTimeFromMilliseconds()
+                    text = notificationModel.timestamp.jvmLocalDateTimeFromEpochSeconds()
                         .formattedString("dd.MM.yyyy HH:mm:ss"),
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
@@ -142,12 +142,15 @@ fun NotificationItem(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+
             if (notificationModel.deepLink != null) {
-                Icon(
-                    if (notificationModel.read) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = getStringResource(id = R.string.more_observation_open),
-                    tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
-                )
+                if (!notificationModel.read || notificationModel.completed) {
+                    Icon(
+                        if (notificationModel.completed) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = getStringResource(id = R.string.more_observation_open),
+                        tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
+                    )
+                }
             }
         }
     }
