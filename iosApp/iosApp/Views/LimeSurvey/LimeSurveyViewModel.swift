@@ -18,7 +18,7 @@ import shared
 import WebKit
 
 class LimeSurveyViewModel: ObservableObject {
-    private let coreViewModel = CoreLimeSurveyViewModel(database: AppDelegate.database, observationFactory: AppDelegate.shared.observationFactory)
+    private let coreViewModel = CoreLimeSurveyViewModel(repositories: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory)
 
     let webViewModel = WebViewViewModel()
 

@@ -17,15 +17,15 @@ import SwiftUI
 import shared
 
 struct SettingsView: View {
-    @StateObject var viewModel: SettingsViewModel
-    @State var exitButton = Color.more.important
+    @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
+    @State private var exitButton = Color.more.important
     
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(String.localize(forKey: "settings_text", withComment: "information about accepted permissions", inTable: stringTable))
+            Text("settings_text")
                 .foregroundColor(.more.secondary)
                 .padding(.bottom, 15)
             if let permissions = viewModel.permissionModel {
@@ -35,18 +35,12 @@ struct SettingsView: View {
             
             Spacer()
         }
-        .customNavigationTitle(with: NavigationScreen.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear{
-            viewModel.viewDidDisappear()
-        }
+        .customNavigationTitle(with: NavigationScreen.settings.localize())
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(viewModel: SettingsViewModel())
+        SettingsView()
     }
 }

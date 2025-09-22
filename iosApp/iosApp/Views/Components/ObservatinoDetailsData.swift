@@ -20,8 +20,6 @@ struct ObservationDetailsData: View {
     var dateRange: String
     var timeframe: String
     
-    private let stringTable = "TaskDetail"
-    
     var body: some View {
         
         VStack {
@@ -34,7 +32,7 @@ struct ObservationDetailsData: View {
             HStack {
                     Image(systemName: "clock.fill")
                         .padding(0.7)
-                Text(String.localize(forKey: "Timeframe", withComment: "Timeframe of observation", inTable: stringTable))
+                Text("Timeframe")
                         .foregroundColor(.more.primary)
                     
                     BasicText(text: timeframe, color: .more.secondary)

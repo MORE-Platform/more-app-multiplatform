@@ -10,41 +10,35 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.taskCompletionBar
 
-import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.models.TaskCompletion
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 
-class CoreTaskCompletionBarViewModel(database: AppDatabase) : CoreViewModel() {
-    val taskCompletion: MutableStateFlow<TaskCompletion> = MutableStateFlow(TaskCompletion())
-    private val repository = ScheduleRepository(database)
+class CoreTaskCompletionBarViewModel(private val repository: MainRepository) : CoreViewModel() {
+    private val _taskCompletion: MutableStateFlow<TaskCompletion> =
+        MutableStateFlow(TaskCompletion())
+
+    @NativeCoroutines
+    val taskCompletion: StateFlow<TaskCompletion> = _taskCompletion
 
     init {
         launchScope {
-            repository.count()
+            repository.schedule.count()
                 .combine(
-                    repository.allSchedulesWithStatus(true).cancellable()
+                    repository.schedule.allSchedulesWithStatus(true).cancellable()
                 ) { scheduleCount, doneSchedules ->
                     TaskCompletion(
                         doneSchedules.size,
                         scheduleCount
                     )
                 }.cancellable().collect {
-                    taskCompletion.emit(it)
+                    _taskCompletion.value = it
                 }
         }
-    }
-
-    override fun viewDidAppear() {
-
-    }
-
-    fun onLoadTaskCompletion(provideNewState: ((taskCompletion: TaskCompletion) -> Unit)): Closeable {
-        return taskCompletion.asClosure(provideNewState)
     }
 }

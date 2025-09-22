@@ -5,8 +5,8 @@ data class AlertDialogModel(
     var message: String,
     var positiveTitle: String,
     var negativeTitle: String? = null,
-    var onPositive: () -> Unit = {},
-    var onNegative: () -> Unit = {}
+    var onPositive: (() -> Unit)? = null,
+    var onNegative: (() -> Unit)? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

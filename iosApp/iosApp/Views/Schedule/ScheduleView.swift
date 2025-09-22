@@ -18,21 +18,17 @@ import shared
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
-    
-    @EnvironmentObject var navigationModalState: NavigationModalState
-    
-    private let stringsTable = "ScheduleListView"
     var body: some View {
         VStack {
             ScrollViewReader { _ in
                 ScrollView(.vertical) {
                     if (viewModel.schedulesByDate.isEmpty) {
                         if viewModel.scheduleListType == ScheduleListType.running {
-                            EmptyListView(text: "No running tasks currently".localize(withComment: "No running tasks in list", useTable: stringsTable))
+                            EmptyListView(text: "No running tasks currently")
                         } else if viewModel.scheduleListType == ScheduleListType.completed {
-                            EmptyListView(text: "No tasks completed by now".localize(withComment: "No completed tasks in list", useTable: stringsTable))
+                            EmptyListView(text: "No tasks completed by now")
                         } else {
-                            EmptyListView(text: "No tasks to show".localize(withComment: "No tasks in list shown", useTable: stringsTable))
+                            EmptyListView(text: "No tasks to show")
                         }
                     } else {
                         LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
@@ -63,12 +59,6 @@ struct ScheduleView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear {
-            viewModel.viewDidDisappear()
         }
     }
 }

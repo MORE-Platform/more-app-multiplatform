@@ -28,6 +28,7 @@ import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.getDatabaseBuilder
 import io.redlink.more.more_app_mutliplatform.database.getRoomDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
 
@@ -83,14 +84,15 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                 polarConnector = PolarConnector(context)
                 val androidBluetoothConnector = polarConnector!!
                 val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
-                val dataManager = AndroidObservationDataManager(context, database)
+                val repositories = MainRepository(database)
+                val dataManager = AndroidObservationDataManager(context, repositories)
                 shared = Shared(
                     LocalPushNotificationService(context),
-                    database,
+                    repositories,
                     SharedPreferencesRepository(context),
                     dataManager,
                     androidBluetoothConnector,
-                    AndroidObservationFactory(context, dataManager, database),
+                    AndroidObservationFactory(context, dataManager, repositories),
                     AndroidDataRecorder()
                 )
             }

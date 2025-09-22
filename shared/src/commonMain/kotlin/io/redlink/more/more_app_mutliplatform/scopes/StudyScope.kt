@@ -1,4 +1,4 @@
-package io.redlink.more.more_app_mutliplatform.util
+package io.redlink.more.more_app_mutliplatform.scopes
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart

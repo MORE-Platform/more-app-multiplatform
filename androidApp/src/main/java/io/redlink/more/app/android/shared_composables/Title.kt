@@ -21,11 +21,12 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun Title(text: String,
-          modifier: Modifier = Modifier,
-          color: Color = MoreColors.PrimaryDark,
-          textAlign: TextAlign = TextAlign.Start,
-          maxLines: Int  = 2
+fun Title(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MoreColors.PrimaryDark,
+    textAlign: TextAlign = TextAlign.Start,
+    maxLines: Int = 2
 ) {
     Text(
         text = text,

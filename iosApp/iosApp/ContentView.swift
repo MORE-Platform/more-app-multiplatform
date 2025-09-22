@@ -11,44 +11,19 @@
 import shared
 import SwiftUI
 struct ContentView: View {
-    @StateObject var viewModel: ContentViewModel
+    @ObservedObject var viewModel: ContentViewModel
     @StateObject private var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
         ZStack {
             MoreMainBackgroundView() {
                 VStack {
                     if viewModel.hasCredentials {
-                        if !navigationModalState.mayChangeViewStructure() {
-                            if navigationModalState.studyIsUpdating {
-                                StudyUpdateView()
-                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                            } else if navigationModalState.currentStudyState == StudyState.paused {
-                                StudyPausedView()
-                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                            } else if navigationModalState.currentStudyState == StudyState.closed {
-                                StudyClosedView(viewModel: viewModel)
-                                    .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                            }
-                        } else {
-                            MainTabView()
-                                .sheet(isPresented: $viewModel.showBleView) {
-                                    MoreMainBackgroundView(contentPadding: navigationModalState.horizontalContentPadding) {
-                                        BluetoothConnectionView(viewModel: viewModel.bluetoothViewModel, viewOpen: $viewModel.showBleView, showAsSeparateView: true)
-                                    }
-                                }
-                        }
+                       CredentialsView(navigationModalState: navigationModalState, viewModel: viewModel)
+                    } else if !viewModel.credentialsLoaded || (viewModel.hasCredentials && navigationModalState.currentStudyState == .none) {
+                        StudyLoadingView()
+                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
                     } else {
-                        VStack {
-                            if viewModel.loginViewScreenNr == 0 {
-                                LoginView(model: viewModel.loginViewModel)
-                                    .onAppear {
-                                        navigationModalState.clearViews()
-                                        navigationModalState.tagState = 0
-                                    }
-                            } else {
-                                ConsentView(viewModel: viewModel.consentViewModel)
-                            }
-                        }
+                        RegistrationView(navigationModalState: navigationModalState)
                     }
                 }
             }
@@ -59,6 +34,52 @@ struct ContentView: View {
         .background(Color.more.mainBackground)
         .environmentObject(navigationModalState)
         .environmentObject(viewModel)
+    }
+}
+
+struct CredentialsView: View {
+    @ObservedObject var navigationModalState: NavigationModalState
+    @ObservedObject var viewModel: ContentViewModel
+    var body: some View {
+        VStack {
+            if !navigationModalState.mayChangeViewStructure() {
+                if navigationModalState.studyIsUpdating {
+                    StudyUpdateView()
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                } else if navigationModalState.currentStudyState == StudyState.paused {
+                    StudyPausedView()
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                } else if navigationModalState.currentStudyState == StudyState.closed {
+                    StudyClosedView()
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                }
+            } else {
+                MainTabView()
+                    .sheet(isPresented: $viewModel.showBleView) {
+                        MoreMainBackgroundView(contentPadding: navigationModalState.horizontalContentPadding) {
+                            BluetoothConnectionView(viewOpen: $viewModel.showBleView, showAsSeparateView: true)
+                        }
+                    }
+            }
+        }
+    }
+}
+
+struct RegistrationView: View {
+    @ObservedObject var navigationModalState: NavigationModalState
+    @StateObject private var registration = RegistrationObservable(service: RegistrationService(shared: AppDelegate.shared))
+    var body: some View {
+        VStack {
+            if registration.study != nil {
+                ConsentView(registration: registration)
+            } else {
+                LoginView(registration: registration)
+                    .onAppear {
+                        navigationModalState.clearViews()
+                        navigationModalState.tagState = 0
+                    }
+            }
+        }
     }
 }
 

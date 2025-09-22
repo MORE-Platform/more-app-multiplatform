@@ -14,8 +14,7 @@ protocol DashboardFilterObserver {
 }
 
 class DashboardFilterViewModel: ObservableObject {
-    let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel(database: AppDelegate.database)
-    private let stringTable = "DashboardFilter"
+    let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel(repository: AppDelegate.shared.repositories)
     
     var delegate: DashboardFilterObserver? = nil
     
@@ -63,7 +62,7 @@ class DashboardFilterViewModel: ObservableObject {
     
     func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
         var isSelected = false
-        let allItemsString = String.localize(forKey: "All Items", withComment: "String for All Items", inTable: stringTable)
+        let allItemsString = String(localized: "All Items")
         if option == allItemsString && selectedValuesInList.isEmpty {
             isSelected = true
         } else {

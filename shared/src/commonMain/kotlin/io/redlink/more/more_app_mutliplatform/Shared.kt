@@ -13,8 +13,7 @@ package io.redlink.more.more_app_mutliplatform
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
@@ -22,6 +21,8 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
@@ -29,21 +30,17 @@ import io.redlink.more.more_app_mutliplatform.services.notification.Notification
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
-import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepository
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
-    val database: AppDatabase,
+    val repositories: MainRepository,
     private val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
     val mainBluetoothConnector: BluetoothConnector,
@@ -51,17 +48,21 @@ class Shared(
     val dataRecorder: DataRecorder
 ) {
     private val viewManager = ViewManager
-    val deeplinkManager = DeeplinkManager(database, observationFactory)
-    val endpointRepository: EndpointRepository = EndpointRepository(sharedStorageRepository)
-    val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
-    private val studyStateRepository: StudyStateRepository =
-        StudyStateRepository(sharedStorageRepository)
-    val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
-    val observationManager = ObservationManager(database, observationFactory, dataRecorder)
-    val bluetoothController = BluetoothController(database, mainBluetoothConnector)
+    val deeplinkManager = DeeplinkManager(repositories, observationFactory)
+    val endpointRepository = EndpointRepository(sharedStorageRepository)
+    val credentialRepository = CredentialRepository(sharedStorageRepository)
+    val networkService = NetworkService(endpointRepository, credentialRepository)
+
+    val observationManager = ObservationManager(
+        repositories,
+        observationFactory,
+        dataRecorder
+    )
+    val bluetoothController =
+        BluetoothController(repositories.bluetoothDevice, mainBluetoothConnector)
     val notificationManager =
         NotificationManager(
-            database,
+            repositories,
             localNotificationListener,
             networkService,
             deeplinkManager,
@@ -72,14 +73,10 @@ class Shared(
 
     val unreadNotificationCount = notificationManager.unreadUserCount
 
-    val currentStudyState = studyStateRepository.currentStudyState
-    var finishText: String? = null
     private var bluetoothListener: Job? = null
 
     private val mutex = Mutex()
     private val konnection = Konnection.instance
-
-    val studyRepository = StudyRepository(database)
 
     init {
         onApplicationStart()
@@ -88,7 +85,7 @@ class Shared(
     }
 
     private fun onApplicationStart() {
-        if (credentialRepository.hasCredentials()) {
+        if (credentialRepository.hasCredentials.value) {
             activateObservationWatcher()
         }
     }
@@ -100,17 +97,20 @@ class Shared(
         Napier.i { "App is in foreground: $boolean" }
         appIsInForeGround = boolean
         if (appIsInForeGround) {
-            if (credentialRepository.hasCredentials()) {
+            if (credentialRepository.hasCredentials.value) {
                 updateStudyBlocking()
                 notificationManager.createNewFCMIfNecessary()
                 bluetoothListener?.cancel()
+
                 bluetoothListener = StudyScope.launch(Dispatchers.IO) {
                     bluetoothController.listenToConnectionChanges(
                         observationFactory
                     )
                 }.second
-                observationFactory.updateObservationErrors()
-                updateTaskStates()
+                if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    observationFactory.updateObservationErrors()
+                    updateTaskStates()
+                }
             }
             notificationManager.clearAllNotifications()
         } else {
@@ -119,21 +119,23 @@ class Shared(
     }
 
     fun updateTaskStates() {
-        if (appIsInForeGround && credentialRepository.hasCredentials()) {
+        if (appIsInForeGround && credentialRepository.hasCredentials.value && repositories.study.studyState.value == StudyState.ACTIVE) {
             observationManager.updateTaskStates()
             notificationManager.downloadMissedNotifications()
             bluetoothController.startScanningForDevices(observationFactory.bleDevicesNeeded())
         }
     }
 
-    private fun activateObservationWatcher(overwriteCheck: Boolean = false) {
-        StudyScope.launch(Dispatchers.IO) {
-            if (overwriteCheck || studyRepository.getStudy()
-                    .firstOrNull()?.active == true
-            ) {
-                observationDataManager.listenToDatapointCountChanges()
-                updateTaskStates()
-                observationManager.activateScheduleUpdate()
+    private fun activateObservationWatcher() {
+        Scope.launch {
+            repositories.study.studyState.collect { state ->
+                if (state == StudyState.ACTIVE) {
+                    observationDataManager.listenToDatapointCountChanges()
+                    updateTaskStates()
+                    observationManager.activateScheduleUpdate()
+                } else {
+                    stopObservations()
+                }
             }
         }
     }
@@ -163,11 +165,20 @@ class Shared(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
     ) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.Main) {
             updateStudy(oldStudyState, newStudyState)
         }
     }
 
+    /**
+     * Updates the study state and related resources. This function ensures that any change in the
+     * current study, study state, or study configuration is appropriately handled. It synchronizes
+     * updates using a lock and takes necessary actions such as storing the new state, updating study
+     * resources, managing notifications, and handling changes in connectivity.
+     *
+     * @param oldStudyState The previous state of the study. Can be null if there is no specific old state to compare with.
+     * @param newStudyState The new state to transition the study to. Can be null if no state change is required.
+     */
     suspend fun updateStudy(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
@@ -178,29 +189,17 @@ class Shared(
             } else {
                 Napier.d(tag = "Shared::updateStudy") { "Updating study..." }
             }
-            val currentStudy = studyRepository.getStudy().firstOrNull()
-            if (currentStudy != null) {
-                Napier.d(tag = "Shared::updateStudy") { "Has current study: $currentStudy with study state: ${currentStudy.getState()} is active: ${currentStudy.active}" }
-                if (currentStudyState.firstOrNull() == StudyState.NONE) {
-                    studyStateRepository.storeState(currentStudy.getState())
-                }
-                currentStudy.finishText?.let {
-                    finishText = it
-                }
-            }
-
+            val currentStudy = repositories.study.study.value
             if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
                 Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
-                studyStateRepository.storeState(newStudyState)
+                repositories.study.updateStudyState(newStudyState)
                 StudyScope.cancel()
-                stopObservations()
-                removeStudyData()
                 notificationManager.clearAllNotifications()
             } else {
                 if (!konnection.isConnected()) {
                     Napier.d(tag = "Shared::updateStudy") { "No network connection, skipping study update" }
                     if (newStudyState != null) {
-                        studyStateRepository.storeState(newStudyState)
+                        repositories.study.updateStudyState(newStudyState)
                     }
                     return
                 }
@@ -251,31 +250,17 @@ class Shared(
 
                     viewManager.studyIsUpdating(true)
                     StudyScope.cancel()
-                    stopObservations()
-                    removeStudyData()
-                    if (study.studyState?.let { StudyState.getState(it) } != StudyState.CLOSED) {
-                        studyRepository.storeStudy(study)
+                    observationFactory.clearNeededObservationTypes()
+                    notificationManager.clearAllNotifications()
+                    repositories.notification.deleteAll()
+                    repositories.study.upsert(study)
+                    if (study.studyState?.let { StudyState.getState(it) } == StudyState.ACTIVE) {
                         resetFirstStartUp()
                         observationFactory.updateObservationErrors()
-                    }
-                    if (newStudyState == null) {
-                        studyStateRepository.storeState(study.studyState?.let {
-                            StudyState.getState(
-                                it
-                            )
-                        }
-                            ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
-                    }
-                    if (study.active == true) {
-                        activateObservationWatcher(true)
                     }
                     viewManager.studyIsUpdating(false)
                 } else {
                     Napier.d(tag = "Shared::updateStudy") { "No study update needed - study data is unchanged" }
-                }
-
-                if (newStudyState != null) {
-                    studyStateRepository.storeState(newStudyState)
                 }
             }
         }
@@ -283,11 +268,6 @@ class Shared(
 
     fun newLogin() {
         notificationManager.newFCMToken()
-        studyStateRepository.storeState(StudyState.ACTIVE)
-        StudyScope.launch {
-            finishText = studyRepository.getStudy().firstOrNull()?.finishText
-        }
-        activateObservationWatcher()
         observationFactory.updateObservationErrors()
         bluetoothListener?.cancel()
         bluetoothListener = StudyScope.launch {
@@ -299,18 +279,17 @@ class Shared(
 
     fun exitStudy(onDeletion: () -> Unit) {
         StudyScope.cancel()
-        stopObservations()
         bluetoothController.resetAll()
         Scope.launch(Dispatchers.IO) {
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
             removeStudyData()
+            repositories.notification.deleteAll()
+            observationFactory.clearNeededObservationTypes()
             clearSharedStorage()
             onDeletion()
-            observationFactory.clearNeededObservationTypes()
             viewManager.resetAll()
-            studyStateRepository.storeState(StudyState.NONE)
         }
     }
 
@@ -322,7 +301,6 @@ class Shared(
             observationFactory.clearNeededObservationTypes()
             clearSharedStorage()
             notificationManager.clearAllNotifications()
-            studyStateRepository.storeState(StudyState.NONE)
         }
     }
 
@@ -336,17 +314,9 @@ class Shared(
     }
 
     suspend fun removeStudyData() {
-        database.studyDao().deleteAll()
-        database.observationDao().deleteAll()
-        database.scheduleDao().deleteAll()
-        database.observationDataDao().deleteAll()
-        database.dataPointDao().deleteAll()
-        database.notificationDao().deleteAll()
+        repositories.deleteAll()
         observationFactory.clearNeededObservationTypes()
     }
-
-    fun onStudyStateChange(providedState: (StudyState) -> Unit) =
-        currentStudyState.asClosure(providedState)
 
     fun unreadNotificationCountAsClosure(state: (Int) -> Unit) =
         unreadNotificationCount.asClosure(state)

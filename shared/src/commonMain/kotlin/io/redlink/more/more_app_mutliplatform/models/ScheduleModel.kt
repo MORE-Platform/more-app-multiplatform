@@ -23,7 +23,6 @@ data class ScheduleModel(
     val hidden: Boolean,
     var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
-
     fun isSameAs(other: ScheduleModel) = this.scheduleId == other.scheduleId
 
     fun hasSameContentAs(other: ScheduleModel): Boolean {

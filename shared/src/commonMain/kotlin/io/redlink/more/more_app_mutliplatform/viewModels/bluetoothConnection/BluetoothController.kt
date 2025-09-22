@@ -10,22 +10,21 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.BluetoothDeviceRepository
 import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
@@ -36,15 +35,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 
 class BluetoothController(
-    database: AppDatabase,
+    private val bluetoothDeviceRepository: BluetoothDeviceRepository,
     private val bluetoothConnector: BluetoothConnector,
     private val scanDuration: Long = 5000,
     private val scanInterval: Long = 10000
 ) : CoreViewModel(), BluetoothConnectorObserver, Closeable {
     private val deviceManager = BluetoothDeviceManager
-    private val bluetoothDeviceRepository = BluetoothDeviceRepository(database)
 
     private val _isScanning = MutableStateFlow(false)
+
+    @NativeCoroutines
     val isScanning: StateFlow<Boolean> = _isScanning
 
     private var backgroundScanningEnabled = false
@@ -52,7 +52,10 @@ class BluetoothController(
 
     private var scanJob: String? = null
 
-    val bluetoothPower = MutableStateFlow(BluetoothState.ON)
+    private val _bluetoothPower = MutableStateFlow(BluetoothState.ON)
+
+    @NativeCoroutines
+    val bluetoothPower: StateFlow<BluetoothState> = _bluetoothPower
 
     private var bleViewHasBeenOpened = false
 
@@ -136,7 +139,7 @@ class BluetoothController(
         customScanInterval: Long = scanInterval
     ) {
         launchScope {
-            bluetoothPower.collect {
+            _bluetoothPower.collect {
                 if (it == BluetoothState.ON) {
                     startPeriodicScan(customScanDuration, customScanInterval)
                 } else {
@@ -232,7 +235,7 @@ class BluetoothController(
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
         Napier.i(tag = "BluetoothController::onBluetoothStateChange") { "Bluetooth state changed to $bluetoothState" }
-        bluetoothPower.set(bluetoothState)
+        _bluetoothPower.set(bluetoothState)
         if (bluetoothState == BluetoothState.OFF) {
             deviceManager.clearDiscovered()
             deviceManager.clearConnected()
@@ -259,11 +262,6 @@ class BluetoothController(
         Napier.i(tag = "BluetoothController::isScanning") { "Scanning status changed to: $boolean" }
         this._isScanning.set(boolean)
     }
-
-    fun bluetoothStateAsClosure(providedState: (BluetoothState) -> Unit) =
-        bluetoothPower.asClosure(providedState)
-
-    fun isScanningAsClosure(state: (Boolean) -> Unit) = isScanning.asClosure(state)
 
     suspend fun listenToConnectionChanges(
         observationFactory: ObservationFactory

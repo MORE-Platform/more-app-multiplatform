@@ -10,7 +10,6 @@
  */
 package io.redlink.more.app.android.ui.theme
 
-
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

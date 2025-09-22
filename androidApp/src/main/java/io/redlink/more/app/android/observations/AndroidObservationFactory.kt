@@ -22,9 +22,10 @@ import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_s
 import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,19 +33,19 @@ import kotlinx.coroutines.withContext
 class AndroidObservationFactory(
     context: Context,
     observationDataManager: ObservationDataManager,
-    database: AppDatabase
+    repository: MainRepository
 ) :
-    ObservationFactory(database, observationDataManager) {
+    ObservationFactory(repository, observationDataManager) {
     init {
         observations.addAll(
             setOf(
-                AccelerometerObservation(context, database),
-                GPSObservation(context, database, gpsService = GPSService(context)),
-                PolarHeartRateObservation(database),
-                HealthkitObservation_HR(context, database),
-                HealthkitObservation_exercise(context, database),
-                HealthkitObservation_Sleep(context, database),
-                HealthkitObservation_steps(context, database),
+                AccelerometerObservation(context, repository),
+                GPSObservation(context, repository, gpsService = GPSService(context)),
+                PolarHeartRateObservation(repository),
+                HealthkitObservation_HR(context, repository),
+                HealthkitObservation_exercise(context, repository),
+                HealthkitObservation_Sleep(context, repository),
+                HealthkitObservation_steps(context, repository),
             )
         )
 

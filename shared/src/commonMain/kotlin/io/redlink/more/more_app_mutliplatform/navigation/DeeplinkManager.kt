@@ -1,9 +1,7 @@
 package io.redlink.more.more_app_mutliplatform.navigation
 
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.extractRouteFromDeepLink
 import io.redlink.more.more_app_mutliplatform.extensions.mapQueryParams
@@ -14,10 +12,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
 
-class DeeplinkManager(database: AppDatabase, val observationFactory: ObservationFactory) {
+class DeeplinkManager(
+    private val repos: MainRepository,
+    val observationFactory: ObservationFactory
+) {
     private val deepLinks = mutableSetOf<String>()
-    private val scheduleRepository = ScheduleRepository(database)
-    private val observationRepository = ObservationRepository(database)
 
     fun addAvailableDeepLinks(deepLinks: Set<String>) {
         this.deepLinks.addAll(deepLinks)
@@ -32,14 +31,14 @@ class DeeplinkManager(database: AppDatabase, val observationFactory: Observation
             val queryParams = deepLink.mapQueryParams()
             val observationId = queryParams["observationId"]
             if (observationId.isNullOrEmpty()
-                || observationRepository.observationById(observationId.first())
+                || repos.observation.observationById(observationId.first())
                     .firstOrNull() == null
             ) {
                 emit(null)
                 return@flow
             }
             val schedule =
-                scheduleRepository.firstScheduleAvailableForObservationId(observationId.first())
+                repos.schedule.firstScheduleAvailableForObservationId(observationId.first())
                     .cancellable().firstOrNull()
 
             emit(deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement))

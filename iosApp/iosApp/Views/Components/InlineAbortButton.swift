@@ -25,9 +25,8 @@ struct InlineAbortButton: View {
             HStack{
                 Image(systemName: "square.fill")
                     .padding(0.5)
-                    
                     .foregroundColor(.more.important)
-                Text(String.localize(forKey: "Abort", withComment: "Abort running task.", inTable: stringTable))
+                Text("Abort")
                     .foregroundColor(.more.secondary)
             }
             .padding(5)

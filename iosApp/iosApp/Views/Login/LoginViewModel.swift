@@ -15,37 +15,32 @@
 
 
 import shared
-
-protocol LoginViewModelListener {
-    func tokenValid(study: Study)
-}
+import KMPNativeCoroutinesCombine
+import Combine
 
 class LoginViewModel: ObservableObject {
-    
-    
-    private let coreModel: CoreLoginViewModel
-    
-    var delegate: LoginViewModelListener? = nil
-
-    @Published var isLoading = false
+    private let registrationService: RegistrationService
     @Published var endpoint: String = ""
     @Published var defaultEndpoint: String = ""
     @Published var token: String = ""
-    @Published var error: String = ""
     
     @Published var showQRCodeView: Bool = false
     
-    init(registrationService: RegistrationService) {
-        print("LoginViewModel allocated!")
-        coreModel = CoreLoginViewModel(registrationService: registrationService)
-        defaultEndpoint = registrationService.getEndpointRepository().endpoint()
-        
+    private var cancellables: Set<AnyCancellable> = []
 
-        coreModel.onLoadingChange { loading in
-            if let loading = loading as? Bool {
-                self.isLoading = loading
+
+    init(registration: RegistrationService) {
+        self.registrationService = registration
+        defaultEndpoint = registration.getEndpointRepository().endpoint()
+        
+        Publishers.CombineLatest($endpoint, $token)
+            .map { !$0.isEmpty || !$1.isEmpty }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasInput in
+                self?.registrationService.clearError()
             }
-        }
+            .store(in: &cancellables)
     }
     
     func extractValuesFromQRCode(qrCodeUrl: String) {
@@ -58,16 +53,13 @@ class LoginViewModel: ObservableObject {
      }
     
     func validate() {
-        self.error = ""
-        coreModel.sendRegistrationToken(token: token, endpoint: endpoint.isEmpty ? nil : endpoint) { study in
-            self.delegate?.tokenValid(study: study)
-            DispatchQueue.main.async {
-                self.token = ""
-            }
-        } onError: { error in
-            DispatchQueue.main.async {
-                self.error = error?.message ?? ""
-            }
+        let loginModel = LoginModel(token: token, endpoint: currentStudyEndpoint())
+        if loginModel.valid() {
+            registrationService.sendRegistrationToken(loginModel: loginModel)
+        } else {
+            AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Token or Endpoint invalid", message: "login_model_invalid_body", positiveTitle: "Ok", negativeTitle: nil, onPositive: {
+                AlertController.shared.closeAlertDialog()
+            }, onNegative: nil))
         }
     }
     
@@ -77,10 +69,6 @@ class LoginViewModel: ObservableObject {
     
     func currentStudyEndpoint() -> String {
         endpoint.isEmpty ? defaultEndpoint : endpoint
-    }
-    
-    deinit {
-        print("LoginViewModel deallocated")
     }
 }
 

@@ -12,9 +12,8 @@ package io.redlink.more.app.android.activities
 
 import android.app.Activity
 import android.content.Context
-import android.net.Uri
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -23,10 +22,6 @@ import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.consent.ConsentViewModel
-import io.redlink.more.app.android.activities.consent.ConsentViewModelListener
-import io.redlink.more.app.android.activities.login.LoginViewModel
-import io.redlink.more.app.android.activities.login.LoginViewModelListener
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
@@ -34,8 +29,7 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
+import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
@@ -45,25 +39,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
-class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelListener {
-    private val registrationService: RegistrationService by lazy {
-        RegistrationService(
-            MoreApplication.shared!!
-        )
-    }
+class ContentViewModel : ViewModel() {
+    val registrationService: RegistrationService = RegistrationService(MoreApplication.shared!!)
 
-    val loginViewModel: LoginViewModel by lazy { LoginViewModel(registrationService, this) }
-    val consentViewModel: ConsentViewModel by lazy { ConsentViewModel(registrationService, this) }
-
-    val hasCredentials =
-        mutableStateOf(MoreApplication.shared!!.credentialRepository.hasCredentials())
-    val loginViewScreenNr = mutableIntStateOf(0)
+    val hasCredentials = mutableStateOf(false)
 
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
 
     init {
         NavigationScreen.createDeepLinksForAllRoutes()
         viewModelScope.launch(Dispatchers.IO) {
+            MoreApplication.shared!!.credentialRepository.hasCredentials.collect {
+                hasCredentials.value = it
+            }
+        }
+        viewModelScope.launch(Dispatchers.Main.immediate) {
             AlertController.alertDialogModel.collect {
                 withContext(Dispatchers.Main) {
                     alertDialogOpen.value = it
@@ -97,7 +87,9 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
         viewModelScope.launch(Dispatchers.IO) {
             ViewManager.checkingForNewStudyData.first { !it }
             val modifiedDeepLink = rawDeepLink?.let { link ->
-                MoreApplication.shared!!.deeplinkManager
+                val sharedInstance = MoreApplication.shared
+                    ?: throw IllegalStateException("MoreApplication.shared is not initialized")
+                sharedInstance.deeplinkManager
                     .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
                     .firstOrNull()
             }
@@ -105,15 +97,17 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
             val finalUri = when {
                 modifiedDeepLink != null -> {
                     notificationId?.let {
-                        MoreApplication.shared!!.notificationManager.handleNotificationInteraction(
+                        val sharedInstance = MoreApplication.shared
+                            ?: throw IllegalStateException("MoreApplication.shared is not initialized")
+                        sharedInstance.notificationManager.handleNotificationInteraction(
                             it, modifiedDeepLink
                         )
                     }
-                    Uri.parse(modifiedDeepLink)
+                    modifiedDeepLink.toUri()
                 }
 
                 notificationId != null -> {
-                    Uri.parse(ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters())
+                    (ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters()).toUri()
                 }
 
                 else -> null
@@ -135,32 +129,5 @@ class ContentViewModel : ViewModel(), LoginViewModelListener, ConsentViewModelLi
                 forwardDeepLink = true
             )
         }
-    }
-
-    private fun showLoginView() {
-        viewModelScope.launch(Dispatchers.Main) {
-            loginViewScreenNr.intValue = 0
-            registrationService.reset()
-        }
-    }
-
-    private fun showConsentView() {
-        viewModelScope.launch(Dispatchers.Main) {
-            loginViewScreenNr.intValue = 1
-        }
-    }
-
-    override fun tokenIsValid(study: Study) {
-        this.consentViewModel.setConsentInfo(study.consentInfo)
-        this.consentViewModel.buildConsentModel()
-        showConsentView()
-    }
-
-    override fun credentialsStored() {
-        hasCredentials.value = true
-    }
-
-    override fun decline() {
-        showLoginView()
     }
 }

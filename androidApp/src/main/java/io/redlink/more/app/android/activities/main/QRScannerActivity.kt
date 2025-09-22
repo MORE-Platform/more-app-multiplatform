@@ -67,19 +67,18 @@ import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary
 
-
 // Infos to Barcodes mit ML Kit: https://developers.google.com/ml-kit/vision/barcode-scanning/android?hl=de
 
-class QRScannerActivity: ComponentActivity() {
+class QRScannerActivity : ComponentActivity() {
     // preview view for the camera qr code scanner
     private lateinit var previewView: PreviewView
     private val scanner = BarcodeScanning.getClient()
 
     private val permissionGiven: MutableState<Boolean> = mutableStateOf(false)
 
-
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             permissionGiven.value = isGranted
             if (isGranted) {
@@ -106,17 +105,24 @@ class QRScannerActivity: ComponentActivity() {
 
     private fun requestCameraPermissionIfNeeded() {
         when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 startCamera()
             }
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) -> {
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.CAMERA
+            ) -> {
             }
+
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
-
 
     // function converts camera image into an inputimage
     @OptIn(ExperimentalGetImage::class)

@@ -28,10 +28,12 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
@@ -41,6 +43,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
+    val isLoading by model.registrationService.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -70,7 +73,7 @@ fun ConsentButtons(model: ConsentViewModel) {
     }
 
 
-    if (!model.loading.value) {
+    if (!isLoading) {
         Column(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,7 +89,6 @@ fun ConsentButtons(model: ConsentViewModel) {
                         backgroundColor = MoreColors.Primary,
                         contentColor = MoreColors.White
                     ),
-                enabled = !model.loading.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
@@ -104,7 +106,6 @@ fun ConsentButtons(model: ConsentViewModel) {
                         backgroundColor = MoreColors.Important,
                         contentColor = MoreColors.White
                     ),
-                enabled = !model.loading.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
@@ -132,7 +133,8 @@ fun checkAndRequestPermissions(
     model: ConsentViewModel,
     extraPermissions: Set<String> = emptySet()
 ) {
-    val permissions = model.permissions.toMutableSet()
+    val permissions =
+        MoreApplication.shared!!.observationFactory.studySensorPermissions().toMutableSet()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         permissions.add(Manifest.permission.POST_NOTIFICATIONS)

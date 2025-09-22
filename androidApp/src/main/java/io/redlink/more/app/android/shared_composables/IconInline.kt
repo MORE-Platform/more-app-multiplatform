@@ -20,7 +20,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun IconInline(icon: ImageVector, color: Color = MoreColors.Primary, contentDescription: String, modifier: Modifier = Modifier) {
+fun IconInline(
+    icon: ImageVector,
+    color: Color = MoreColors.Primary,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
     Icon(
         icon,
         contentDescription = contentDescription,

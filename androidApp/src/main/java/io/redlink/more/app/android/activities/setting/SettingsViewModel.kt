@@ -42,12 +42,4 @@ class SettingsViewModel : ViewModel() {
             }
         }
     }
-
-    fun viewDidAppear() {
-        coreSettingsViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreSettingsViewModel.viewDidDisappear()
-    }
 }

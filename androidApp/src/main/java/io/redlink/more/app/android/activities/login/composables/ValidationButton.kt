@@ -18,9 +18,11 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
@@ -29,15 +31,16 @@ import io.redlink.more.app.android.ui.theme.morePrimary
 
 @Composable
 fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
-    if (!model.loadingState.value) {
+    val isLoading by model.isLoading.collectAsStateWithLifecycle()
+    if (!isLoading) {
         OutlinedButton(
             onClick = {
                 focusManager.clearFocus()
                 model.validateKey()
             },
-            enabled = model.participationKeyNotBlank() && !model.loadingState.value,
+            enabled = model.participationKeyNotBlank(),
             colors = ButtonDefaults.morePrimary(),
-            border = if (model.participationKeyNotBlank() && !model.loadingState.value)
+            border = if (model.participationKeyNotBlank())
                 BorderStroke(0.dp, MoreColors.Primary)
             else
                 BorderStroke(2.dp, MoreColors.SecondaryMedium),

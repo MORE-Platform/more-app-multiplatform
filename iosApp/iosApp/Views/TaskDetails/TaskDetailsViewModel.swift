@@ -36,8 +36,8 @@ class TaskDetailsViewModel: ObservableObject {
     
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
     
-    init(dataRecorder: DataRecorder) {
-        self.coreModel = CoreTaskDetailsViewModel(database: AppDelegate.database, dataRecorder: dataRecorder)
+    init(scheduleId: String) {
+        self.coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, observationFactory: AppDelegate.shared.observationFactory, scheduleId: scheduleId)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { [weak self] taskDetails in
             if let self {
@@ -62,9 +62,6 @@ class TaskDetailsViewModel: ObservableObject {
         }
     }
     
-    func setSchedule(scheduleId: String) {
-        coreModel.setSchedule(scheduleId: scheduleId)
-    }
     
     func viewDidAppear() {
         coreModel.viewDidAppear()

@@ -90,28 +90,30 @@ struct NavigationWithDestinations<Content: View>: View {
             VStack {
                 switch screen {
                 case .taskDetails:
-                    if let navigationState = navigationModalState.navigationState(for: screen) {
-                        TaskDetailsView(viewModel: contentViewModel.getTaskDetailsVM(navigationState: navigationState))
+                    if let scheduleId = navigationModalState.navigationState(for: screen)?.scheduleId {
+                        TaskDetailsView(scheduleId: scheduleId)
                     } else {
                         EmptyView()
                     }
                 case .settings:
-                    SettingsView(viewModel: SettingsViewModel())
+                    SettingsView()
                 case .studyDetails:
                     StudyDetailsView(viewModel: StudyDetailsViewModel())
                 case .dashboardFilter:
-                    DashboardFilterView(viewModel: contentViewModel.dashboardViewModel.scheduleViewModel.filterViewModel)
+                    DashboardFilterView(viewModel: contentViewModel.manualSchedule.filterViewModel)
                 case .notificationFilter:
-                    NotificationFilterView(viewModel: contentViewModel.notificationFilterViewModel)
+                    NotificationFilterView(coreVM: contentViewModel.coreNotificationFilterViewModel)
                 case .pastObservations:
                     CompletedSchedules(scheduleViewModel: contentViewModel.completedViewModel)
                 case .runningObservations:
                     RunningSchedules(scheduleViewModel: contentViewModel.runningViewModel)
                 case .bluetoothConnections:
-                    BluetoothConnectionView(viewModel: contentViewModel.bluetoothViewModel, viewOpen: .constant(false))
+                    BluetoothConnectionView(viewOpen: .constant(false))
                 case .observationDetails:
                     if let observationId = navigationModalState.navigationState(for: screen)?.observationId {
-                        ObservationDetailsView(viewModel: ObservationDetailsViewModel(observationId: observationId))
+                        ObservationDetailsView(observationId: observationId)
+                    } else {
+                        EmptyView()
                     }
                 case .healthConnectSettings:
                     HealthKitView()

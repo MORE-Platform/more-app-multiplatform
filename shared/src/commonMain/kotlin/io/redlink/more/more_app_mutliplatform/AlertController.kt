@@ -1,6 +1,6 @@
 package io.redlink.more.more_app_mutliplatform
 
-import io.redlink.more.more_app_mutliplatform.extensions.asNullableClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
@@ -10,16 +10,17 @@ import kotlinx.coroutines.flow.StateFlow
 object AlertController {
     private val _alertDialogModel = MutableStateFlow<AlertDialogModel?>(null)
 
+    @NativeCoroutines
     val alertDialogModel: StateFlow<AlertDialogModel?> = _alertDialogModel
     private var alertDialogQueue = mutableListOf<AlertDialogModel>()
 
     fun openAlertDialog(model: AlertDialogModel) {
-        if (model.onPositive == {}) {
+        if (model.onPositive == null || model.onPositive == {}) {
             model.onPositive = {
                 closeAlertDialog()
             }
         }
-        if (model.onNegative == {}) {
+        if (model.onNegative == null || model.onNegative == {}) {
             model.onNegative = {
                 closeAlertDialog()
             }
@@ -34,7 +35,4 @@ object AlertController {
     fun closeAlertDialog() {
         this._alertDialogModel.setNullable(alertDialogQueue.removeFirstOrNull())
     }
-
-    fun onNewAlertDialogModel(provideNewState: ((AlertDialogModel?) -> Unit)) =
-        alertDialogModel.asNullableClosure(provideNewState)
 }
