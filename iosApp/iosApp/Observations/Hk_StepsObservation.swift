@@ -21,13 +21,13 @@ class Hk_StepsObservation: HealthkitBase {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
     
-    init() {
+    init(database: AppDatabase) {
         self.healthStore = HKHealthStore()
         self.now = Date()
         self.startDate = Calendar.current.date(byAdding: .day, value: -1, to: now)!
         print("Observation initialized")
         //must init with the observation type set
-        super.init(observationType: HealthkitType_steps())
+        super.init(database: database, observationType: HealthkitType_steps())
     }
     
     override func fetchData() {

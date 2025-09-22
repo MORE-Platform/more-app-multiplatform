@@ -22,8 +22,9 @@ class IOSObservationFactory: ObservationFactory {
         observations.add(GPSObservation(database: database, sensorPermissions: ["gpsAlways"]))
         observations.add(AccelerometerBackgroundObservation(database: database, sensorPermissions: ["cmsensorrecorder"]))
         observations.add(PolarVerityHeartRateObservation(database: database, sensorPermissions: ["bluetoothAlways"]))
-        observations.add(Hk_HRObservation())
-        observations.add(Hk_SleepObservation())
-        observations.add(Hk_ExerciseObservation())
-        observations.add(Hk_StepsObservation())
+        observations.add(Hk_HRObservation(database: database))
+        observations.add(Hk_SleepObservation(database: database))
+        observations.add(Hk_ExerciseObservation(database: database))
+        observations.add(Hk_StepsObservation(database: database))
+    }
 }
