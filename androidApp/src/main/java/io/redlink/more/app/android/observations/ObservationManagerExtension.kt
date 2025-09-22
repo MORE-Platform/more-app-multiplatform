@@ -4,7 +4,7 @@ import android.app.Activity
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 
 /**

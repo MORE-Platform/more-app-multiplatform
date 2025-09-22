@@ -22,7 +22,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TaskCompletionBarViewModel : ViewModel() {
-    private val coreViewModel = CoreTaskCompletionBarViewModel(MoreApplication.shared!!.database)
+    private val coreViewModel =
+        CoreTaskCompletionBarViewModel(MoreApplication.shared!!.repositories)
     val taskCompletion: MutableState<TaskCompletion> = mutableStateOf(TaskCompletion())
 
     init {

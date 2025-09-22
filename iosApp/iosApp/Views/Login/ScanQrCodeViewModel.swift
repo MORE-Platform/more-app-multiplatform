@@ -37,7 +37,10 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
         qrDelegate.onCodeScanned = { [weak self] code in
             DispatchQueue.main.async {
                 self?.scannedCode = code
-                self?.cameraSession.stopRunning()
+                Task.detached { [weak self] in
+                    guard let session = self?.cameraSession else { return }
+                    session.stopRunning()
+                }
             }
         }
     }
@@ -48,14 +51,18 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
             case .authorized:
                 await MainActor.run {
                     self.cameraPermission = .approved
-                    self.setupCamera()
+                    Task.detached { [weak self] in
+                        self?.setupCamera()
+                    }
                 }
             case .notDetermined:
                 let granted = await AVCaptureDevice.requestAccess(for: .video)
                 await MainActor.run {
                     if granted {
                         self.cameraPermission = .approved
-                        self.setupCamera()
+                        Task.detached { [weak self] in
+                            self?.setupCamera()
+                        }
                         self.showError = false
                     } else {
                         self.showError = true
@@ -71,7 +78,9 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
 
     func setupCamera() {
         guard let device = AVCaptureDevice.default(for: .video) else {
-            self.showError = true
+            Task { @MainActor in
+                self.showError = true
+            }
             return
         }
 
@@ -88,7 +97,11 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
                 qrOutput.setMetadataObjectsDelegate(qrDelegate, queue: .main)
             }
 
-            cameraSession.startRunning()
+            Task.detached { [weak self] in
+                guard let session = self?.cameraSession else { return }
+                session.startRunning()
+            }
+            
         } catch {
             presentError(errorDescription: error.localizedDescription)
         }

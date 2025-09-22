@@ -18,6 +18,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose").version("2.2.10").apply(false)
     id("androidx.room").version("2.7.2").apply(false)
     id("com.google.devtools.ksp").version("2.2.10-2.0.2").apply(false)
+
+    id("com.rickclephas.kmp.nativecoroutines").version("1.0.0-ALPHA-47").apply(false)
 }
 
 

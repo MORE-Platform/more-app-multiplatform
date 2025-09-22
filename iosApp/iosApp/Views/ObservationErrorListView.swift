@@ -14,8 +14,6 @@ struct ObservationErrorListView: View {
     let taskObservationErrorActions: [String]
 
     @State private var scrollViewContentSize: CGSize = .zero
-    private let errorStrings = "Errors"
-    private let navigationStrings = "Navigation"
 
     var body: some View {
         if !taskObservationErrors.isEmpty || !taskObservationErrorActions.isEmpty {
@@ -29,7 +27,7 @@ struct ObservationErrorListView: View {
                                         .font(.more.headline)
                                         .foregroundColor(.more.important)
                                         .padding(.trailing, 4)
-                                    BasicText(text: "\(error.localize(withComment: "Error message", useTable: errorStrings))!")
+                                    BasicText(text: "\(error)!")
                                 }
                                 .padding(.bottom)
                             }
@@ -48,7 +46,7 @@ struct ObservationErrorListView: View {
                                 Image(systemName: "applewatch")
                                     .foregroundColor(.more.white)
                                     .padding(.trailing, 4)
-                                Text(String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: navigationStrings))
+                                Text("Devices")
                             }
                         }
                     }

@@ -10,7 +10,6 @@
  */
 package io.redlink.more.app.android.ui.theme
 
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -41,15 +40,16 @@ class MoreColors {
         val ApprovedMedium = Color(0xffb0d8bf)
         val ApprovedLight = Color(0xffe9f4ed)
 
-        val White = Color (0xffFFFFFF)
-
+        val White = Color(0xffFFFFFF)
 
         // Special Design ElementsA
         val Divider = PrimaryLight200 // Devider Line between elements
         val BackgroundOverlay = SecondaryMedium
 
         // border definitions
-        fun borderPrimary(active: Boolean) = BorderStroke(1.dp, if (active) Primary else PrimaryLight200)
+        fun borderPrimary(active: Boolean) =
+            BorderStroke(1.dp, if (active) Primary else PrimaryLight200)
+
         fun borderImportant() = BorderStroke(1.dp, Important)
         fun borderApproved() = BorderStroke(1.dp, Approved)
         fun borderDefault() = BorderStroke(1.dp, Secondary)
@@ -95,5 +95,5 @@ fun ButtonDefaults.moreApproved() = buttonColors(
     disabledContentColor = MoreColors.ApprovedLight,
     disabledBackgroundColor = MoreColors.ApprovedMedium,
 
-)
+    )
 

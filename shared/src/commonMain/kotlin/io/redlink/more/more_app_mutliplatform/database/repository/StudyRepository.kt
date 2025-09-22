@@ -10,23 +10,58 @@
  */
 package io.redlink.more.more_app_mutliplatform.database.repository
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
+import io.redlink.more.more_app_mutliplatform.extensions.mapState
+import io.redlink.more.more_app_mutliplatform.models.StudyState
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.transform
 
 class StudyRepository(private val appDatabase: AppDatabase) {
+    private val _study = MutableStateFlow<StudyEntity?>(null)
 
-    fun storeStudy(study: Study) {
+    @NativeCoroutines
+    val study: StateFlow<StudyEntity?> = _study
+
+    @NativeCoroutines
+    val studyState: StateFlow<StudyState> =
+        study.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)) {
+            it?.let { StudyState.getState(it.state) } ?: StudyState.NONE
+        }
+    private val _finishText = MutableStateFlow<String?>(null)
+
+    @NativeCoroutines
+    val finishText: StateFlow<String?> = _finishText
+
+    init {
+        Scope.launch(Dispatchers.IO) {
+            getStudy().collect {
+                _study.value = it
+                it?.let {
+                    _finishText.value = it.finishText
+                }
+            }
+        }
+    }
+
+    suspend fun upsert(study: Study) {
+        deleteStudy()
         StudyScope.launch(Dispatchers.IO) {
             val studyEntity = StudyEntity.fromStudy(study)
             appDatabase.studyDao().insert(studyEntity)
+            _finishText.value = study.finishText
         }
 
         StudyScope.launch(Dispatchers.IO) {
@@ -54,11 +89,19 @@ class StudyRepository(private val appDatabase: AppDatabase) {
         return appDatabase.studyDao().getAllFlow().transform { emit(it.firstOrNull()) }
     }
 
-    fun getStudyById(studyId: String): Flow<StudyEntity?> {
-        return appDatabase.studyDao().getByIdFlow(studyId)
+    suspend fun updateStudyState(state: StudyState) {
+        study.value?.let {
+            appDatabase.studyDao().updateStudyState(it.studyId, state.descr)
+        }
     }
 
-    fun getStudyCount(): Flow<Int> {
-        return appDatabase.studyDao().getCount()
+    suspend fun deleteStudy() {
+        study.value?.let {
+            appDatabase.studyDao().deleteAll()
+            appDatabase.observationDao().deleteAll()
+            appDatabase.observationDataDao().deleteAll()
+            appDatabase.scheduleDao().deleteAll()
+            appDatabase.dataPointDao().deleteAll()
+        }
     }
 }

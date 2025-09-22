@@ -19,7 +19,7 @@ struct DashboardFilterView: View {
     var body: some View {
         ScrollView {
             VStack {
-                SectionHeading(sectionTitle: String.localize(forKey: "Select Time", withComment: "Set time filter", inTable: stringTable))
+                SectionHeading(sectionTitle: "Select Time")
                     .padding(15)
                 Divider()
                 
@@ -41,7 +41,7 @@ struct DashboardFilterView: View {
             }.padding(.vertical, 20)
             
             VStack {
-                SectionHeading(sectionTitle: String.localize(forKey: "Select Type", withComment: "Set titypeme filter", inTable: stringTable))
+                SectionHeading(sectionTitle: "Select Type")
                     .padding(15)
                 Divider()
                 
@@ -49,7 +49,7 @@ struct DashboardFilterView: View {
                     viewModel.clearTypeFilter()
                 } label: {
                     HStack {
-                        MoreFilterOption(option: String.localize(forKey: "All Items", withComment: "String for All Items", inTable: stringTable), isSelected: $viewModel.typeFilterActive)
+                        MoreFilterOption(option: "All Items", isSelected: $viewModel.typeFilterActive)
                         Spacer()
                     }
                 }
@@ -76,6 +76,6 @@ struct DashboardFilterView: View {
             }
             Spacer()
         }
-        .customNavigationTitle(with: NavigationScreen.dashboardFilter.localize(useTable: navigationStrings, withComment: "Select Dashboard Filter"))
+        .customNavigationTitle(with: NavigationScreen.dashboardFilter.localize())
     }
 }

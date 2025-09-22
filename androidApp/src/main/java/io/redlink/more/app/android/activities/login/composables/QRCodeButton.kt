@@ -37,7 +37,6 @@ import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
 import io.redlink.more.app.android.ui.theme.moreSecondary
 
-
 @Composable
 fun QRCodeButton(model: LoginViewModel) {
 
@@ -46,8 +45,8 @@ fun QRCodeButton(model: LoginViewModel) {
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         val data = result.data
-        val scanned = result.data?.getStringExtra("qrResult") ?:
-            return@rememberLauncherForActivityResult
+        val scanned =
+            result.data?.getStringExtra("qrResult") ?: return@rememberLauncherForActivityResult
         model.extractValuesFromQRCode(scanned)
     }
 

@@ -17,15 +17,14 @@ import SwiftUI
 import shared
 
 struct LoginButton: View {
-    @EnvironmentObject var model: LoginViewModel
-    @Binding var stringTable: String
     @Binding var disabled: Bool
+    let action: () -> Void
 
     var body: some View {
-        MoreActionButton(backgroundColor: Color.more.primary, disabled: $disabled) {
-            model.validate()
+        MoreActionButton(backgroundColor: Color.more.primary, disabled: .constant(disabled)) {
+            action()
         } label: {
-            Text(verbatim:.localize(forKey: "login_button", withComment: "button to log into a more study", inTable: stringTable))
+            Text("login_button")
         }
     }
 }
@@ -33,7 +32,8 @@ struct LoginButton: View {
 struct LoginButton_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
-        LoginButton(stringTable: .constant("LoginView"), disabled: .constant(false))
-            .environmentObject(LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(database: database, dataManager: ObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
+        LoginButton(disabled: .constant(false)) {
+            print("Hello World")
+        }
     }
 }

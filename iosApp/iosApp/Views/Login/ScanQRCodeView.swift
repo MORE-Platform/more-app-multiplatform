@@ -14,8 +14,6 @@ import AVFoundation
 struct ScanQRCodeView: View {
     @StateObject private var viewModel = ScanQRCodeViewModel()
     @ObservedObject var model: LoginViewModel
-     
-    private let stringTable = "LoginView"
     
     // Error Properties
     @State private var errorMessage: String = ""
@@ -40,7 +38,7 @@ struct ScanQRCodeView: View {
                     .font(.largeTitle)
                     .foregroundColor(.more.textDefault)
                 
-                Text(verbatim:.localize(forKey: "scan_qr_code", withComment: "Login with QR Code.", inTable: stringTable))
+                Text("scan_qr_code")
                     .foregroundColor(.more.primary)
             }
             
@@ -71,7 +69,7 @@ struct ScanQRCodeView: View {
                 
                 if(viewModel.showError) {
                     HStack(spacing: 8) {
-                        Text(verbatim:.localize(forKey: "provide_camera_access", withComment: "Access to camera wasn't granted to scan QR Code.", inTable: stringTable))
+                        Text("provide_camera_access")
                             .foregroundColor(.more.important)
                             .padding(.horizontal, 20)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -87,16 +85,16 @@ struct ScanQRCodeView: View {
         .onAppear(perform: viewModel.checkCameraPermission)
         .alert(isPresented: $viewModel.showError) {
             Alert(
-                title: Text(verbatim:.localize(forKey: "permission_needed", withComment: "Camera permission is needed, but not granted.", inTable: stringTable)),
+                title: Text("permission_needed"),
                 message: Text(viewModel.errorMessage),
-                primaryButton: .default(Text(verbatim:.localize(forKey: "open_settings", withComment: "Open device settings to grant permissions.", inTable: stringTable)), action: {
+                primaryButton: .default(Text("open_settings"), action: {
                     let settingsString = UIApplication.openSettingsURLString
                     if let settingsURL = URL(string: settingsString) {
                         // open app settings, using openURL SwiftUI API
                         openURL(settingsURL)
                     }
                 }),
-                secondaryButton: .cancel(Text(verbatim:.localize(forKey: "cancel", withComment: "Cancel QR Code scan", inTable: stringTable)))
+                secondaryButton: .cancel(Text("Cancel"))
             )
         }
         .onChange(of: viewModel.scannedCode) { code in
@@ -110,8 +108,9 @@ struct ScanQRCodeView: View {
 
 struct ScanQRCodeView_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    static let repos = MainRepository(appDatabase: database)
     static var previews: some View {
-        ScanQRCodeView(model: LoginViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), database: database, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(database: database), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(database: database, dataManager: iOSObservationDataManager(database: database)), dataRecorder: IOSDataRecorder()))))
+        ScanQRCodeView(model: LoginViewModel(registration: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
     }
 }
 

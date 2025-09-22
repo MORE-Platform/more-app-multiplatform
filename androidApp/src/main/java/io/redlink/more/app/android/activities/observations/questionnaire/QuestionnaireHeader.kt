@@ -32,12 +32,13 @@ import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
 
-
 @Composable
 fun QuestionnaireHeader(model: QuestionnaireViewModel) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(2.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+    )
     {
         HeaderTitle(title = model.observationTitle.value)
         Spacer(Modifier.height(12.dp))

@@ -53,6 +53,6 @@ fun RemoteMessage.daoFromRemoteMessage(): NotificationEntity {
         priority = 1,
         notificationData = this.data,
         channelId = null,
-        timestamp = sentTime
+        timestamp = sentTime / 1000
     )
 }

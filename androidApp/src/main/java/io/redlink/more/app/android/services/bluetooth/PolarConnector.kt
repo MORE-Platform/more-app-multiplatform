@@ -23,10 +23,10 @@ import io.redlink.more.app.android.observations.HR.PolarConnectorListener
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.HR.PolarObserverCallback
 import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.delay
 
 class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListener {
@@ -185,10 +185,10 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
         this.bluetoothState = bluetoothState
         updateObserver { it.onBluetoothStateChange(bluetoothState) }
-        if (MoreApplication.shared?.credentialRepository?.hasCredentials() == true && bluetoothState == BluetoothState.ON) {
+        if (MoreApplication.shared?.credentialRepository?.hasCredentials?.value == true && bluetoothState == BluetoothState.ON) {
             Scope.launch {
                 scan()
-                delay(10000)
+                delay(5000)
                 stopScanning()
             }
         } else {

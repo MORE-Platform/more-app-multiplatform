@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.main.composables.TabItem
 
-
 @Composable
 fun MainTabView(selectedIndex: Int, unreadNotificationCount: Int = 0, onTabChange: (Int) -> Unit) {
     val nameSet = setOf(
@@ -40,7 +39,8 @@ fun MainTabView(selectedIndex: Int, unreadNotificationCount: Int = 0, onTabChang
         },
     ) {
 
-        Tab(selected = selectedIndex == 0,
+        Tab(
+            selected = selectedIndex == 0,
             onClick = {
                 onTabChange(0)
             }) {
@@ -52,7 +52,8 @@ fun MainTabView(selectedIndex: Int, unreadNotificationCount: Int = 0, onTabChang
                 selected = selectedIndex == 0
             )
         }
-        Tab(selected = selectedIndex == 1,
+        Tab(
+            selected = selectedIndex == 1,
             onClick = {
                 onTabChange(1)
             }) {
@@ -65,7 +66,8 @@ fun MainTabView(selectedIndex: Int, unreadNotificationCount: Int = 0, onTabChang
                 unreadNotificationCount
             )
         }
-        Tab(selected = selectedIndex == 2,
+        Tab(
+            selected = selectedIndex == 2,
             onClick = {
                 onTabChange(2)
             }) {

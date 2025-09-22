@@ -32,10 +32,10 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
+import io.redlink.more.more_app_mutliplatform.models.LoginModel
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.AppConfiguration
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Error
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Log
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotification
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.PushNotificationToken
 import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.Study
@@ -56,7 +56,7 @@ class NetworkService(
 
     private fun initHttpClientWithAuth(): HttpClient? {
         initHttpClient()
-        val creds = credentialRepository.credentials()
+        val creds = credentialRepository.credentials.value
         return httpClient?.config {
             install(Auth) {
                 creds?.let { authCredentials ->
@@ -88,7 +88,7 @@ class NetworkService(
 
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 Napier.i(tag = "NetworkService::deleteParticipation") { "Deleting Participation..." }
                 val client = initHttpClientWithAuth() ?: return Pair(
                     false,
@@ -115,20 +115,18 @@ class NetworkService(
         }
     }
 
-    suspend fun validateRegistrationToken(
-        registrationToken: String, endpoint: String? = null
-    ): Pair<Study?, NetworkServiceError?> {
+    suspend fun validateRegistrationToken(loginModel: LoginModel): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::validateRegistrationToken") { "Validating Registration token..." }
             initHttpClient()
-            val baseUrl = endpoint ?: endpointRepository.endpoint()
+            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
             val client = httpClient ?: return Pair(
                 null,
                 NetworkServiceError(null, "HTTP client not initialized")
             )
 
             val response = client.get("$baseUrl/registration") {
-                header("More-Registration-Token", registrationToken)
+                header("More-Registration-Token", loginModel.token)
                 contentType(ContentType.Application.Json)
             }
 
@@ -148,19 +146,19 @@ class NetworkService(
     }
 
     suspend fun sendConsent(
-        registrationToken: String, studyConsent: StudyConsent, endpoint: String? = null
+        loginModel: LoginModel, studyConsent: StudyConsent
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendConsent") { "Sending Consent..." }
             initHttpClient()
-            val baseUrl = endpoint ?: endpointRepository.endpoint()
+            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
             val client = httpClient ?: return Pair(
                 null,
                 NetworkServiceError(null, "HTTP client not initialized")
             )
 
             val response = client.post("$baseUrl/registration") {
-                header("More-Registration-Token", registrationToken)
+                header("More-Registration-Token", loginModel.token)
                 contentType(ContentType.Application.Json)
                 setBody(studyConsent)
             }
@@ -180,7 +178,7 @@ class NetworkService(
     suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 val client = initHttpClientWithAuth() ?: return Pair(
                     null,
                     NetworkServiceError(null, "Failed to init HTTP client")
@@ -208,7 +206,7 @@ class NetworkService(
     suspend fun sendNotificationToken(token: String): Pair<Boolean, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendNotificationToken") { "Sending notification token..." }
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 val client = initHttpClientWithAuth() ?: return Pair(
                     false,
                     NetworkServiceError(null, "Failed to init HTTP client")
@@ -237,7 +235,7 @@ class NetworkService(
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 val client = initHttpClientWithAuth() ?: return Pair(
                     emptySet(),
                     NetworkServiceError(null, "Failed to init HTTP client")
@@ -266,7 +264,7 @@ class NetworkService(
     suspend fun downloadMissedNotifications(): List<PushNotification> {
         return try {
             Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 val client = initHttpClientWithAuth() ?: return@let emptyList()
                 val baseUrl = endpointRepository.endpoint()
 
@@ -294,7 +292,7 @@ class NetworkService(
 
     suspend fun deletePushNotification(msgId: String) {
         try {
-            credentialRepository.credentials()?.let { credentials ->
+            credentialRepository.credentials.value?.let { credentials ->
                 val client = initHttpClientWithAuth() ?: return
                 val baseUrl = endpointRepository.endpoint()
 
@@ -313,25 +311,31 @@ class NetworkService(
         }
     }
 
-    private fun createErrorBody(code: Int, responseBody: HttpResponse?): NetworkServiceError {
+    private suspend fun createErrorBody(
+        code: Int,
+        responseBody: HttpResponse?
+    ): NetworkServiceError {
         return try {
             if (responseBody == null) {
                 return NetworkServiceError(code = code, message = "Error")
             }
-            val error = Json.decodeFromString<Error>(
-                responseBody.toString()
-            )
-            NetworkServiceError(code = code, message = error.msg ?: "Error")
+            val error: Error? = try {
+                responseBody.body<Error>()
+            } catch (_: Exception) {
+                null
+            }
+
+            NetworkServiceError(code = code, message = error?.msg ?: "Error")
         } catch (e: Exception) {
-            getException(e)
+            getException(e, code)
         }
     }
 
-    private fun getException(exception: Exception): NetworkServiceError {
+    private fun getException(exception: Exception, code: Int? = null): NetworkServiceError {
         val errorResponse = "System error!"
         Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
         exception.printStackTrace()
-        return NetworkServiceError(null, errorResponse)
+        return NetworkServiceError(code, errorResponse)
     }
 
     override fun close() {
@@ -341,13 +345,4 @@ class NetworkService(
         httpClient = null
     }
 
-    private fun serializeToNDJson(logs: List<Log>): String {
-        return buildString {
-            logs.forEach { log ->
-                appendLine("{\"index\":{}}")
-                appendLine(Json.encodeToString(log))
-            }
-        }
-    }
 }
-

@@ -26,6 +26,6 @@ struct CompletedSchedules: View {
             ScheduleListHeader(scheduleViewModel: scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             ScheduleView(viewModel: scheduleViewModel)
         }
-        .customNavigationTitle(with: NavigationScreen.pastObservations.localize(useTable: navigationStrings, withComment: "Completed Schedules title"),displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.pastObservations.localize(),displayMode: .inline)
     }
 }

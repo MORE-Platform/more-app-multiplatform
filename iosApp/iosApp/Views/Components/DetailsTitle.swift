@@ -21,7 +21,7 @@ struct DetailsTitle: View {
     var font: Font = Font.body
     var weight: Font.Weight = Font.Weight.semibold
     var body: some View {
-        Text(text)
+        Text(LocalizedStringKey(text))
             .foregroundColor(color)
             .font(font)
             .fontWeight(weight)

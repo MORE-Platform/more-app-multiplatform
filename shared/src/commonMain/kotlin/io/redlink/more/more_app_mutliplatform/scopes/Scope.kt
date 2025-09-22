@@ -8,10 +8,11 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.more_app_mutliplatform.util
+package io.redlink.more.more_app_mutliplatform.scopes
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.extensions.repeatEveryFewSeconds
+import io.redlink.more.more_app_mutliplatform.util.createUUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

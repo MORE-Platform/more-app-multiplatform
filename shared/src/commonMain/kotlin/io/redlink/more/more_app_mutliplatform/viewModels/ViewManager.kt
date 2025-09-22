@@ -1,32 +1,38 @@
 package io.redlink.more.more_app_mutliplatform.viewModels
 
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 
 object ViewManager {
     private val _studyIsUpdating = MutableStateFlow(false)
     private val _showBluetoothView = MutableStateFlow(false)
     private val _checkingForNewStudyData = MutableStateFlow(false)
+
+    @NativeCoroutines
     val studyIsUpdating: StateFlow<Boolean> = _studyIsUpdating
+
+    @NativeCoroutines
     val checkingForNewStudyData: StateFlow<Boolean> = _checkingForNewStudyData
+
+    @NativeCoroutines
     val showBluetoothView: StateFlow<Boolean> = _showBluetoothView
 
     private var bleViewOpen = false
 
     fun studyIsUpdating(state: Boolean) {
-        _studyIsUpdating.set(state)
+        _studyIsUpdating.value = state
+        _showBluetoothView.value = false
     }
 
     fun checkingForUpdate(state: Boolean) {
-        _checkingForNewStudyData.set(state)
+        _checkingForNewStudyData.value = state
     }
 
     fun showBLEView(state: Boolean): Boolean {
-        if (!state || !bleViewOpen) {
-            _showBluetoothView.update { state }
+        if (!state || !_showBluetoothView.value || !bleViewOpen || !_studyIsUpdating.value) {
+            _showBluetoothView.value = state
             return state
         }
         return false
@@ -35,13 +41,6 @@ object ViewManager {
     fun bleViewOpen(state: Boolean) {
         bleViewOpen = state
     }
-
-    fun showBluetoothViewAsClosure(state: (Boolean) -> Unit) = showBluetoothView.asClosure(state)
-
-    fun studyIsUpdatingAsClosure(state: (Boolean) -> Unit) = studyIsUpdating.asClosure(state)
-
-    fun checkingForNewStudyDataAsClosure(state: (Boolean) -> Unit) =
-        checkingForNewStudyData.asClosure(state)
 
     fun resetAll() {
         _studyIsUpdating.set(false)

@@ -41,6 +41,9 @@ interface BaseDao<T> {
     @Update
     suspend fun update(entity: T)
 
+    @Update
+    suspend fun updateAll(entities: List<T>)
+
     /**
      * Delete a single entity from the database
      */

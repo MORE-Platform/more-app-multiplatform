@@ -10,52 +10,43 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
-import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 
-class CoreStudyDetailsViewModel(appDatabase: AppDatabase) : CoreViewModel() {
-    val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
-    val studyRepository = StudyRepository(appDatabase)
-    val scheduleRepository = ScheduleRepository(appDatabase)
-    val observationRepository = ObservationRepository(appDatabase)
+class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
+    private val _studyModel = MutableStateFlow<StudyDetailsModel?>(null)
 
-    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
-        return studyModel.asClosure(provideNewState)
-    }
+    @NativeCoroutines
+    val studyModel: StateFlow<StudyDetailsModel?> = _studyModel
 
-    override fun viewDidAppear() {
-        launchScope(Dispatchers.IO) {
-            val taskCount: Int = scheduleRepository.count().cancellable().firstOrNull() ?: 0
-
-            studyRepository.getStudy().cancellable()
-                .combine(
-                    scheduleRepository.allSchedulesWithStatus(true).cancellable()
-                ) { study, doneTasks ->
-                    Pair(study, doneTasks.size)
-                }.combine(
-                    observationRepository.observations().cancellable()
-                ) { (study, doneTaskCount), observations ->
-                    study?.let { studySchema ->
-                        studyModel.value = StudyDetailsModel.createModelFrom(
-                            studySchema,
-                            observations.sortedBy { it.observationTitle },
+    init {
+        launchScope {
+            shared.repositories.study.study.combine(
+                shared.repositories.schedule.allSchedulesWithStatus(true)
+            ) { study, schedules ->
+                Pair(study, schedules)
+            }
+                .combine(shared.repositories.observation.observations()) { (study, schedules), observations ->
+                    val taskCount: Int =
+                        shared.repositories.schedule.count().cancellable().firstOrNull() ?: 0
+                    study?.let {
+                        StudyDetailsModel.createModelFrom(
+                            it,
+                            observations.sortedBy { obs -> obs.observationTitle },
                             taskCount.toLong(),
-                            doneTaskCount.toLong()
+                            schedules.size.toLong()
                         )
                     }
-                }.collect { }
+                }.collect { studyDetailsModel ->
+                    _studyModel.value = studyDetailsModel
+                }
         }
     }
 }

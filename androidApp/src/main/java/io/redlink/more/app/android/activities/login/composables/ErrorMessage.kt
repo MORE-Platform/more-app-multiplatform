@@ -25,7 +25,9 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 @Composable
 fun ErrorMessage(hasError: Boolean, errorMsg: String) {
     if (hasError) {
-        Spacer(modifier = Modifier.height(8.dp).fillMaxWidth())
+        Spacer(modifier = Modifier
+            .height(8.dp)
+            .fillMaxWidth())
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = errorMsg, color = MoreColors.Important, textAlign = TextAlign.Center)
         }

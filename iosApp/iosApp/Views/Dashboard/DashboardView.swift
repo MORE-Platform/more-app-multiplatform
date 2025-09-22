@@ -18,7 +18,7 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    @StateObject var viewModel: DashboardViewModel
+    @StateObject var viewModel: ScheduleViewModel
     private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
@@ -26,27 +26,21 @@ struct DashboardView: View {
     private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
-            ScheduleListHeader(scheduleViewModel: viewModel.scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            ScheduleListHeader(scheduleViewModel: viewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             if selection == 0 {
-                ScheduleView(viewModel: viewModel.scheduleViewModel)
+                ScheduleView(viewModel: viewModel)
             } else {
                 EmptyView()
             }
         }
-        .customNavigationTitle(with: NavigationScreen.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear {
-            viewModel.viewDidDisappear()
-        }
+        .customNavigationTitle(with: NavigationScreen.dashboard.localize(), displayMode: .inline)
     }
 }
 
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(viewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all)))
+            DashboardView(viewModel: ScheduleViewModel(scheduleListType: .all))
                 .environmentObject(ContentViewModel())
         }
     }

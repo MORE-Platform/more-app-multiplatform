@@ -27,9 +27,9 @@ class AccelerometerBackgroundObservation: Observation_ {
     private let semaphore = Semaphore()
     private let observationRepository: ObservationRepository
 
-    init(database: AppDatabase, sensorPermissions: Set<String>) {
-        observationRepository = ObservationRepository(appDatabase: database)
-        super.init(database: database, observationType: AccelerometerType(sensorPermissions: sensorPermissions))
+    init(repos: MainRepository, sensorPermissions: Set<String>) {
+        self.observationRepository = repos.observation
+        super.init(repos: repos, observationType: AccelerometerType(sensorPermissions: sensorPermissions))
     }
 
     override func start() -> Bool {

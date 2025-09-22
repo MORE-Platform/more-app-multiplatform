@@ -11,9 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey
 
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.database.AppDatabase
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.extensions.asNullableClosure
 import io.redlink.more.more_app_mutliplatform.extensions.set
@@ -27,7 +25,10 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 
-class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: ObservationFactory) :
+class CoreLimeSurveyViewModel(
+    private val repositories: MainRepository,
+    observationFactory: ObservationFactory
+) :
     CoreViewModel() {
     private var observation: LimeSurveyObservation? =
         observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
@@ -35,9 +36,6 @@ class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: Observa
     private var observationId: String? = null
     val limeSurveyLink: StateFlow<String?>? = observation?.limeURL
     val dataLoading = MutableStateFlow(false)
-
-    private val scheduleRepository = ScheduleRepository(database)
-    private val observationRepository = ObservationRepository(database)
 
     fun setScheduleId(scheduleId: String, notificationId: String?) {
         if (scheduleId != this.scheduleId) {
@@ -47,10 +45,10 @@ class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: Observa
                     this.scheduleId = scheduleId
                     launchScope(Dispatchers.Main) {
                         dataLoading.set(true)
-                        scheduleRepository.scheduleWithId(scheduleId).cancellable()
+                        repositories.schedule.scheduleWithId(scheduleId).cancellable()
                             .transform { scheduleSchema ->
                                 emit(scheduleSchema?.let {
-                                    observationRepository.observationById(it.observationId)
+                                    repositories.observation.observationById(it.observationId)
                                         .cancellable().firstOrNull()
                                 })
                             }.cancellable().firstOrNull().let { observationSchema ->
@@ -70,7 +68,8 @@ class CoreLimeSurveyViewModel(database: AppDatabase, observationFactory: Observa
 
     fun setObservationId(observationId: String, notificationId: String?) {
         launchScope {
-            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable()
+            repositories.schedule.firstScheduleIdAvailableForObservationId(observationId)
+                .cancellable()
                 .firstOrNull()?.let { setScheduleId(it, notificationId) }
         }
     }

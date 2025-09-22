@@ -41,9 +41,6 @@ struct TaskCompletionBarView: View {
                 .scaleEffect(x: 1, y: 5)
                 .padding(.bottom)
         }
-        .onAppear {
-            viewModel.loadTaskCompletion()
-        }
     }
 }
 

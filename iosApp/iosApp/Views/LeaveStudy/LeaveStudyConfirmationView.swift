@@ -16,12 +16,7 @@
 import SwiftUI
 struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
-    @EnvironmentObject private var contentViewModel: ContentViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    var float = CGFloat(0)
-    
-    private let stringTable = "SettingsView"
-    private let navigationStrings = "Navigation"
     
     @State private var simpleRightDirectionSliderOffsetX: CGFloat = 0
     @State private var simpleLeftDirectionSliderOffsetX: CGFloat = 0
@@ -46,12 +41,12 @@ struct LeaveStudyConfirmationView: View {
                     .foregroundColor(Color.more.important)
                     .padding()
                 
-                Text(String.localize(forKey: "second_message", withComment: "second exit message", inTable: stringTable))
+                Text("second_message")
                     .foregroundColor(Color.more.secondary)
                     .padding(.bottom, 2)
                     .multilineTextAlignment(.center)
                 
-                Text(String.localize(forKey: "sure_message", withComment: "last exit message", inTable: stringTable))
+                Text("sure_message")
                     .foregroundColor(Color.more.primary)
                     .fontWeight(.bold)
                     .padding(.bottom, 2)
@@ -67,7 +62,7 @@ struct LeaveStudyConfirmationView: View {
                     navigationModalState.closeView(screen: .withdrawStudy)
                     navigationModalState.closeView(screen: .withdrawStudyConfirm)
                 } label: {
-                    Text(String.localize(forKey: "continue_study", withComment: "button to continue study", inTable: stringTable)).foregroundColor(Color.more.white)
+                    Text("continue_study").foregroundColor(Color.more.white)
                 }
                 .padding(.bottom, 2)
                 
@@ -75,20 +70,13 @@ struct LeaveStudyConfirmationView: View {
                     viewModel.leaveStudy()
                     navigationModalState.clearViews()
                 } label: {
-                    Text(String.localize(forKey: "withdraw", withComment: "button to exit study", inTable: stringTable))
+                    Text("withdraw")
                 }
                 
                 Spacer()
             }
             .padding(.horizontal, 40)
         }
-        .customNavigationTitle(with: NavigationScreen.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear{
-            viewModel.viewDidDisappear()
-        }
-    
+        .customNavigationTitle(with: NavigationScreen.settings.localize())
     }
 }

@@ -99,8 +99,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
 }
 
 extension NavigationScreen {
-    func localize(useTable table: String, withComment comment: String) -> String {
-        return values.screenName.localize(withComment: comment, useTable: table)
+    func localize() -> String {
+        return values.screenName
     }
 
     func generateURL(withParameters params: [NavigationParameter: String]) -> URL? {

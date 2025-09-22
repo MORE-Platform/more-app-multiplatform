@@ -18,18 +18,6 @@ import Foundation
 import shared
 
 extension String {
-    func localize(withComment comment: String, useTable table: String? = nil) -> String {
-        let result = NSLocalizedString(self, tableName: table, comment: comment)
-        if result.isEmpty {
-            return self
-        }
-        return result
-    }
-
-    static func localize(forKey key: String, withComment comment: String, inTable table: String? = nil) -> String {
-        return key.localize(withComment: comment, useTable: table)
-    }
-
     func toMD5() -> String {
         let digest = Insecure.MD5.hash(data: data(using: .utf8) ?? Data())
         return Data(digest).base64EncodedString()

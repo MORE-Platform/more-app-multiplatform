@@ -5,6 +5,7 @@ plugins {
     id("com.android.library")
     id("androidx.room")
     id("com.google.devtools.ksp")
+    id("com.rickclephas.kmp.nativecoroutines")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -19,7 +20,7 @@ val coroutinesVersion = "1.10.2"
 val ktorVersion = "3.2.3"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
-val gsonVersion = "2.13.1"
+val gsonVersion = "2.13.2"
 val roomVersion = "2.7.2"
 val sqliteVersion = "2.5.2"
 
@@ -57,6 +58,9 @@ kotlin {
             // Room common dependencies
             implementation("androidx.room:room-runtime:$roomVersion")
             implementation("androidx.sqlite:sqlite-bundled:$sqliteVersion")
+
+            implementation(project.dependencies.platform("org.kotlincrypto.hash:bom:0.7.1"))
+            implementation("org.kotlincrypto.hash:md")
         }
 
         commonTest.dependencies {
@@ -72,6 +76,10 @@ kotlin {
         iosMain.dependencies {
             implementation("io.ktor:ktor-client-darwin:$ktorVersion")
         }
+
+        all {
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+        }
     }
 }
 
@@ -86,6 +94,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 room {
@@ -99,8 +112,3 @@ dependencies {
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
 }
 
-tasks.register("testClasses") {
-    doLast {
-        println("This is a dummy testClasses task")
-    }
-}

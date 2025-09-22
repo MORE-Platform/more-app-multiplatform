@@ -17,7 +17,7 @@ import SwiftUI
 
 struct AppVersion: View {
     var body: some View {
-        Text("\("App Version".localize(withComment: "App Version")): \(Bundle.main.appBuild)")
+        Text("\("App Version"): \(Bundle.main.appBuild)")
             .font(.system(size: 10, weight: .medium))
             .foregroundColor(.more.primary)
             .padding(.vertical, 10)
