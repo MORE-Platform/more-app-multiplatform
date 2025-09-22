@@ -16,4 +16,5 @@
     <string name="nav_leave_study_confirm">Studie verlassen bestätigen</string>
     <string name="nav_limesurvey">Limesurvey</string>
     <string name="nav_observation_errors">Aufzeichnungsfehler</string>
+    <string name="health_connect">Verbindungen zu Health Connect</string>
 </resources>
