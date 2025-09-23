@@ -13,13 +13,13 @@ import UIKit
 
 class Hk_SleepObservation: HealthkitBase {
     let healthStore: HKHealthStore
-
+    
     let now: Date
     var startDate: Date
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-
+    
     init(repository: MainRepository) {
         healthStore = HKHealthStore()
         now = Date()
@@ -28,18 +28,15 @@ class Hk_SleepObservation: HealthkitBase {
         // must init with the observation type set
         super.init(repos: repository, observationType: HealtkitType_Sleep())
     }
-
+    
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         do {
             print("observation config failed")
             if let daysBackValue = settings["daysback"] {
                 // Convert value to String, strip quotes, then to Int
                 let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                print(strValue)
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 if let daysBack = Int(strValue) {
-                    print(daysBack)
-
+                    
                     // Subtract days from current date
                     if let newDate = Calendar.current.date(byAdding: .day, value: -daysBack, to: Date()) {
                         startDate = newDate
@@ -50,14 +47,13 @@ class Hk_SleepObservation: HealthkitBase {
             print(error.localizedDescription)
         }
     }
-
+    
     override func fetchData() {
-        print("!!!!!!!!! CALLING Sleep FETCH !!!!!")
         guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
             print("Sleep type not available")
             return
         }
-
+        
         let query = HKSampleQuery(
             sampleType: sleepType,
             predicate: predicate,
@@ -68,28 +64,36 @@ class Hk_SleepObservation: HealthkitBase {
                 print("Error fetching sleep samples: \(error.localizedDescription)")
                 return
             }
-
+            
             guard let results = results as? [HKCategorySample] else {
                 print("No sleep samples found")
                 return
             }
             var sleepData: [[String: Any]] = []
-
+            
             for sample in results {
                 let state: String
                 switch sample.value {
                 case HKCategoryValueSleepAnalysis.inBed.rawValue:
                     state = "InBed"
-                case HKCategoryValueSleepAnalysis.asleep.rawValue:
-                    state = "Asleep"
+                case HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue:
+                    state = "Asleep (Unspecified)"
+                case HKCategoryValueSleepAnalysis.asleepCore.rawValue:
+                    state = "Asleep (Core)"
+                case HKCategoryValueSleepAnalysis.asleepREM.rawValue:
+                    state = "Asleep (REM)"
+                case HKCategoryValueSleepAnalysis.asleepDeep.rawValue:
+                    state = "Asleep (Deep)"
+                case HKCategoryValueSleepAnalysis.awake.rawValue:
+                    state = "Awake"
                 default:
-                    state = "Unknown"
+                    state = "Other"
                 }
-
+                
                 // Convert dates to string
                 let startString = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let endString = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-
+                
                 // Create dictionary for this sample
                 let sampleData: [String: Any] = [
                     "state": state,
@@ -101,7 +105,9 @@ class Hk_SleepObservation: HealthkitBase {
             let data: [String: Any] = ["sleepData": sleepData]
             self.storeData(data: data, timestamp: -1) {}
         }
-
+        
         healthStore.execute(query)
     }
+    
 }
+

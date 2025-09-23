@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_steps
 import kotlinx.coroutines.launch
@@ -38,12 +39,11 @@ class HealthkitObservation_steps(
     override fun getPermission(): Set<String> = PERMISSIONS
 
     override fun start(): Boolean {
-        println("Steps reading from Healthkit")
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
-                    println("Missing Health Connect permissions")
-                    stop { println("Stopped: No permissions") }
+                    Napier.e("Missing Health Connect permissions")
+                    stop { Napier.e("Stopped: No permissions") }
                     return@launch
                 }
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
@@ -54,11 +54,7 @@ class HealthkitObservation_steps(
                 )
                 var stepcount = 0L
                 for (record in records) {
-                    println(record)
-                    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     stepcount += record.count
-
-                    println("RECORD OF THIS SENT TO THE BACKEND")
                 }
                 storeData(
                     mapOf(
@@ -67,10 +63,10 @@ class HealthkitObservation_steps(
                         "end" to formatter.format(now)
                     )
                 )
-                stop { println("records sent") }
+                stop { Napier.d("records sent") }
             } catch (e: Exception) {
-                println("Error: ${e.message}")
-                stop { println("Stopped after error") }
+               Napier.e("Error: ${e.message}")
+                stop { Napier.e("Stopped after error") }
             }
         }
         return true

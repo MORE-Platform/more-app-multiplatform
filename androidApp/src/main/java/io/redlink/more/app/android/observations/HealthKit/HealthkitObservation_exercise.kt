@@ -7,6 +7,7 @@ import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.ExerciseSessionData
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthkitType_exercise
@@ -40,7 +41,7 @@ class HealthkitObservation_exercise(
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
-                    println("Missing Health Connect permissions")
+                    Napier.e("Missing Health Connect permissions")
                     stop { println("Stopped: No permissions") }
                     return@launch
                 }
@@ -48,10 +49,9 @@ class HealthkitObservation_exercise(
                 val records = healthConnectManager.readData<ExerciseSessionRecord>(
                     TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
                 )
-
+                Napier.d {   "Size of exercise records ${records.size}"}
                 for (record in records) {
-                    println(record)
-                    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
                     val res = healthConnectClient.aggregate(
                         AggregateRequest(
                             metrics = setOf(
@@ -71,11 +71,11 @@ class HealthkitObservation_exercise(
 
                 }
 
-                stop { println("Stopped after data collection") }
+                stop { Napier.e("Stopped after data collection") }
 
             } catch (e: Exception) {
-                println("Error: ${e.message}")
-                stop { println("Stopped after error") }
+                Napier.e("Error: ${e.message}")
+                stop { Napier.e("Stopped after error") }
             }
         }
 

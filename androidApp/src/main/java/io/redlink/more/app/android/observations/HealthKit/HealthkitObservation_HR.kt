@@ -4,6 +4,7 @@ import android.content.Context
 import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.HrSessionData
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealthKitType_HR
@@ -32,26 +33,24 @@ class HealthkitObservation_HR(
     override fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
-        println("HR reading from Healthkit")
+        Napier.d("HR reading from Healthkit")
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
-                    println("Missing Health Connect permissions")
-                    stop { println("Stopped: No permissions") }
+                    Napier.e("Missing Health Connect permissions")
+                    stop { Napier.e("Stopped: No permissions") }
                     return@launch
                 }
                 val records = healthConnectManager.readData<HeartRateRecord>(
                     TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
                 )
                 for (record in records) {
-                    println(record)
-                    println("!!s!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     storeData(HrSessionData(record))
                 }
-                stop { println("records sent") }
+                stop { Napier.d("records sent") }
             } catch (e: Exception) {
-                println("Error: ${e.message}")
-                stop { println("Stopped after error") }
+                Napier.e("Error: ${e.message}")
+                stop { Napier.d("Stopped after error") }
             }
         }
         return true

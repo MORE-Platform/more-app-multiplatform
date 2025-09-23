@@ -46,14 +46,14 @@ abstract class BaseHealthKitObservation<T : Record>(
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
-        println("observation config called")
+        Napier.e("observation config called")
         try {
             settings["daysback"]?.toString()?.trim('\"')?.toLong()?.let {
                 println(it)
                 start_time = now.minusDays(it)
             }
         } catch (e: java.lang.Exception) {
-            println(e.stackTraceToString())
+            Napier.e("Error when setting up observation config ${e.stackTraceToString()}")
         }
 
     }

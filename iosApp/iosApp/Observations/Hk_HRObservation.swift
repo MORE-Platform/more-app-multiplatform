@@ -35,8 +35,6 @@ class Hk_HRObservation: HealthkitBase {
             if let daysBackValue = settings["daysback"] {
                 // Convert value to String, strip quotes, then to Int
                 let strValue = String(describing: daysBackValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                print(strValue)
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 if let daysBack = Int(strValue) {
                     print(daysBack)
 
@@ -94,7 +92,5 @@ class Hk_HRObservation: HealthkitBase {
         healthStore.execute(query)
     }
 
-    override func ableToAutomaticallyStart() -> Bool {
-        return true
-    }
+ 
 }

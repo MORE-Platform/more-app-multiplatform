@@ -42,7 +42,7 @@ class HealthkitBase : Observation_{
     }
     
     override func ableToAutomaticallyStart() -> Bool {
-        return false
+        return true
     }
     
     override func stop(onCompletion: @escaping () -> Void) {

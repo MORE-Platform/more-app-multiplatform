@@ -4,6 +4,7 @@ import android.content.Context
 import android.health.connect.HealthPermissions
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.observations.HealthKit.DataFormatter.SleepSessionData
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.HealtkitType_Sleep
@@ -36,8 +37,8 @@ class HealthkitObservation_Sleep(
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
-                    println("Missing Health Connect permissions")
-                    stop { println("Stopped: No permissions") }
+                    Napier.e("Missing Health Connect permissions")
+                    stop { Napier.e("Stopped: No permissions") }
                     return@launch
                 }
 
@@ -46,16 +47,14 @@ class HealthkitObservation_Sleep(
                 )
 
                 for (record in records) {
-                    println(record)
-                    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     storeData(SleepSessionData(record).toJson())
                 }
 
-                stop { println("Stopped after data collection") }
+                stop { Napier.d("Stopped after data collection") }
 
             } catch (e: Exception) {
-                println("Error: ${e.message}")
-                stop { println("Stopped after error") }
+                Napier.e("Error: ${e.message}")
+                stop { Napier.e("Stopped after error") }
             }
         }
 
