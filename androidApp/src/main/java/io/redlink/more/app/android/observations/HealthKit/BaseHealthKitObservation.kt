@@ -26,7 +26,8 @@ abstract class BaseHealthKitObservation<T : Record>(
     protected val healthConnectManager = HealthConnectManager(context)
     protected val healthConnectClient = HealthConnectClient.getOrCreate(context)
     protected val now = ZonedDateTime.now()
-    var start_time = now.minusDays(1)
+    var startTime: ZonedDateTime = now.minusDays(1)
+    protected var sendingRawData : Boolean = false
     protected val scope = CoroutineScope(Job() + Dispatchers.IO)
     protected val requestPermissionActivityContract =
         PermissionController.createRequestPermissionResultContract()
@@ -50,7 +51,11 @@ abstract class BaseHealthKitObservation<T : Record>(
         try {
             settings["daysback"]?.toString()?.trim('\"')?.toLong()?.let {
                 println(it)
-                start_time = now.minusDays(it)
+                startTime = now.minusDays(it)
+            }
+            settings["sendRawData"]?.toString()?.trim('\"')?.toBoolean()?.let{
+                println(it)
+                sendingRawData=true
             }
         } catch (e: java.lang.Exception) {
             Napier.e("Error when setting up observation config ${e.stackTraceToString()}")

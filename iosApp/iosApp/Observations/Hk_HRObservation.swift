@@ -19,7 +19,7 @@ class Hk_HRObservation: HealthkitBase {
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-
+    private var sendRawData :Bool = false
     init(repository: MainRepository) {
         healthStore = HKHealthStore()
         now = Date()
@@ -44,6 +44,11 @@ class Hk_HRObservation: HealthkitBase {
                     }
                 }
             }
+            if let sendRawDataValue = settings["sendRawData"] {
+                let strValue = String(describing: sendRawDataValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                sendRawData = Bool(strValue) ?? false
+            }
+            
         } catch {
             print(error.localizedDescription)
         }
@@ -72,21 +77,33 @@ class Hk_HRObservation: HealthkitBase {
                 return
             }
             var hrrecords = []
-            for sample in results {
-                let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
-
-                let item: [String: Any] = [
-                    "start": start,
-                    "end": end,
-                    "bpm": bpm,
-                ]
-                print("Heart Rate: \(bpm) bpm from \(start) to \(end)")
-                hrrecords.append(item)
+            if(!self.sendRawData){
+                for sample in results {
+                    let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                    let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                    let bpm = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                    
+                    let item: [String: Any] = [
+                        "start": start,
+                        "end": end,
+                        "bpm": bpm,
+                    ]
+                    print("Heart Rate: \(bpm) bpm from \(start) to \(end)")
+                    hrrecords.append(item)
+                }
+                let data: [String: Any] = ["hr_records": hrrecords]
+                self.storeData(data: data, timestamp: -1) {}
             }
-            let data: [String: Any] = ["hr_records": hrrecords]
-            self.storeData(data: data, timestamp: -1) {}
+            else{
+                let jsonRawDataList = results.map { self.mapSampleToJSON($0) }
+
+                // Wrap into a payload dictionary
+                let data: [String: Any] = ["raw Data": jsonRawDataList]
+
+                // Store it
+                self.storeData(data: data, timestamp: -1) {}
+            }
+            
         }
 
         healthStore.execute(query)

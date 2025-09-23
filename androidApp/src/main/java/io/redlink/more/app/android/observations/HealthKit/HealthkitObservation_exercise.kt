@@ -36,7 +36,6 @@ class HealthkitObservation_exercise(
     override fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
-        println("Exercise observation called")
 
         observationJob = scope.launch {
             try {
@@ -47,7 +46,7 @@ class HealthkitObservation_exercise(
                 }
 
                 val records = healthConnectManager.readData<ExerciseSessionRecord>(
-                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                    TimeRangeFilter.between(startTime.toInstant(), now.toInstant())
                 )
                 Napier.d {   "Size of exercise records ${records.size}"}
                 for (record in records) {
@@ -67,10 +66,14 @@ class HealthkitObservation_exercise(
                     val distance = res[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
                     val calories =
                         res[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inCalories ?: 0.0
-                    storeData(ExerciseSessionData(record, distance, calories))
+                    if (!sendingRawData) {
+                        storeData(ExerciseSessionData(record, distance, calories))
+                    }
 
                 }
-
+                if(sendingRawData){
+                    storeData(mapOf("Raw exercise data " to records),-1)
+                }
                 stop { Napier.e("Stopped after data collection") }
 
             } catch (e: Exception) {

@@ -32,8 +32,6 @@ class HealthkitObservation_Sleep(
     override fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
-        println("sleep observation called")
-
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
@@ -43,13 +41,17 @@ class HealthkitObservation_Sleep(
                 }
 
                 val records = healthConnectManager.readData<SleepSessionRecord>(
-                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                    TimeRangeFilter.between(startTime.toInstant(), now.toInstant())
                 )
 
                 for (record in records) {
-                    storeData(SleepSessionData(record).toJson())
-                }
+                    if (!sendingRawData){
+                    storeData(SleepSessionData(record).toJson())}
 
+                }
+                if (sendingRawData){
+                    storeData(mapOf("Sleep records" to records),-1)
+                }
                 stop { Napier.d("Stopped after data collection") }
 
             } catch (e: Exception) {

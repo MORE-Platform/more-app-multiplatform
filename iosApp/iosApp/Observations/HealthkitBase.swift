@@ -15,9 +15,68 @@ import shared
 
 class HealthkitBase : Observation_{
     
+   
     
-    
-    
+    func mapSampleToJSON(_ sample: HKSample) -> [String: Any] {
+        var dict: [String: Any] = [
+            "uuid": sample.uuid.uuidString,
+            "type": sample.sampleType.identifier,
+            "startDate": sample.startDate.ISO8601Format(),
+            "endDate": sample.endDate.ISO8601Format()
+        ]
+        
+        // Handle specific sample subclasses
+        switch sample {
+        case let q as HKQuantitySample:
+            let unit: HKUnit
+                
+                switch q.quantityType.identifier {
+                case HKQuantityTypeIdentifier.heartRate.rawValue:
+                    unit = HKUnit.count().unitDivided(by: .minute())
+                case HKQuantityTypeIdentifier.stepCount.rawValue:
+                    unit = HKUnit.count()
+                case HKQuantityTypeIdentifier.distanceWalkingRunning.rawValue:
+                    unit = HKUnit.meter()
+                case HKQuantityTypeIdentifier.activeEnergyBurned.rawValue:
+                    unit = HKUnit.kilocalorie()
+                default:
+                    unit = HKUnit.count() // fallback if unknown
+                }
+                
+                dict["quantity"] = q.quantity.doubleValue(for: unit)
+                dict["unit"] = unit.unitString
+            
+        case let c as HKCumulativeQuantitySample:
+            dict["quantity"] = c.quantity.doubleValue(for: HKUnit.count())
+            dict["unit"] = "count"
+            
+        case let d as HKDiscreteQuantitySample:
+            dict["average"] = d.averageQuantity.doubleValue(for: HKUnit.count())
+            dict["min"] = d.minimumQuantity.doubleValue(for: HKUnit.count())
+            dict["max"] = d.maximumQuantity.doubleValue(for: HKUnit.count())
+            dict["unit"] = "count"
+            
+        case let cat as HKCategorySample:
+            dict["value"] = cat.value
+            dict["categoryType"] = cat.categoryType.identifier
+            
+        case let workout as HKWorkout:
+            dict["workoutType"] = workout.workoutActivityType.rawValue
+            dict["duration"] = workout.duration
+            dict["totalEnergyBurned"] = workout.totalEnergyBurned?.doubleValue(for: .kilocalorie())
+            dict["totalDistance"] = workout.totalDistance?.doubleValue(for: .meter())
+            
+        default:
+            dict["description"] = sample.description
+        }
+        
+        // Attach metadata if available
+        if let metadata = sample.metadata {
+            dict["metadata"] = metadata.mapValues { "\($0)" } // stringify values
+        }
+        
+        return dict
+    }
     
     override func start() -> Bool {
         if #available(iOS 15.0, *) {

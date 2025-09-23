@@ -42,10 +42,17 @@ class HealthkitObservation_HR(
                     return@launch
                 }
                 val records = healthConnectManager.readData<HeartRateRecord>(
-                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                    TimeRangeFilter.between(startTime.toInstant(), now.toInstant())
                 )
+
                 for (record in records) {
-                    storeData(HrSessionData(record))
+                    if(!sendingRawData){storeData(HrSessionData(record))}
+
+
+                }
+                if (sendingRawData){
+                    Napier.d { "Sending this raw data to backend ${records}" }
+                    storeData(mapOf("records" to records),-1)
                 }
                 stop { Napier.d("records sent") }
             } catch (e: Exception) {

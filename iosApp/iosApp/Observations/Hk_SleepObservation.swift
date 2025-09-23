@@ -20,6 +20,7 @@ class Hk_SleepObservation: HealthkitBase {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
     
+    private var sendRawData :Bool = false
     init(repository: MainRepository) {
         healthStore = HKHealthStore()
         now = Date()
@@ -43,10 +44,17 @@ class Hk_SleepObservation: HealthkitBase {
                     }
                 }
             }
+            if let sendRawDataValue = settings["sendRawData"] {
+                let strValue = String(describing: sendRawDataValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                sendRawData = Bool(strValue) ?? false
+            }
+            
         } catch {
             print(error.localizedDescription)
         }
     }
+    
+    
     
     override func fetchData() {
         guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
@@ -70,7 +78,7 @@ class Hk_SleepObservation: HealthkitBase {
                 return
             }
             var sleepData: [[String: Any]] = []
-            
+            if(!self.sendRawData){
             for sample in results {
                 let state: String
                 switch sample.value {
@@ -103,7 +111,16 @@ class Hk_SleepObservation: HealthkitBase {
                 sleepData.append(sampleData)
             }
             let data: [String: Any] = ["sleepData": sleepData]
-            self.storeData(data: data, timestamp: -1) {}
+            self.storeData(data: data, timestamp: -1) {}}
+            else{
+                let jsonRawDataList = results.map { self.mapSampleToJSON($0) }
+
+                // Wrap into a payload dictionary
+                let data: [String: Any] = ["raw Data": jsonRawDataList]
+
+                // Store it
+                self.storeData(data: data, timestamp: -1) {}
+            }
         }
         
         healthStore.execute(query)

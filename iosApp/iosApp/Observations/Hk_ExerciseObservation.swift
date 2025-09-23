@@ -18,7 +18,7 @@ class Hk_ExerciseObservation: HealthkitBase {
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-
+    private var sendRawData :Bool = false
     init(repostiory: MainRepository) {
         healthStore = HKHealthStore()
         now = Date()
@@ -45,6 +45,10 @@ class Hk_ExerciseObservation: HealthkitBase {
                     }
                 }
             }
+            if let sendRawDataValue = settings["sendRawData"] {
+                let strValue = String(describing: sendRawDataValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                sendRawData = Bool(strValue) ?? false
+            }
         } catch {
             print(error.localizedDescription)
         }
@@ -64,34 +68,43 @@ class Hk_ExerciseObservation: HealthkitBase {
                 print("Error fetching workouts: \(error.localizedDescription)")
                 return
             }
-
+            
             guard let workouts = results as? [HKWorkout] else {
                 print("No workouts found")
                 return
             }
+            if(!self.sendRawData){
+                for workout in workouts {
+                    let start = workout.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm") // convert Date to timestamp
+                    let end = workout.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
+                    let calories = workout.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
+                    let distance = workout.totalDistance?.doubleValue(for: HKUnit.meter()) ?? 0
+                    let type = workout.workoutActivityType
+                    // HKWorkoutActivityType
+                    let workoutName = WorkoutType(type).rawValue
+                    let data: [String: Any] = [
+                        "WorkoutType": workoutName,
+                        "Calories": calories,
+                        "Distance": distance,
+                        "Start": start,
+                        "End": end,
+                    ]
+                    print(data)
+                    print(workout)
+                    print("@@@@@")
+                    self.storeData(data: data, timestamp: -1) {}
+                    // print("Workout: \(type) from \(start) to \(end), Calories: \(calories), Distance: \(distance)m")
+                }}
+            else{
+                //General mapper from parent class
+                
+                let jsonRawDataList = workouts.map { self.mapSampleToJSON($0) }
 
-            for workout in workouts {
-                let start = workout.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm") // convert Date to timestamp
-                let end = workout.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
-                let calories = workout.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
-                let distance = workout.totalDistance?.doubleValue(for: HKUnit.meter()) ?? 0
-                let type = workout.workoutActivityType
-                // HKWorkoutActivityType
-                let workoutName = WorkoutType(type).rawValue
-                let data: [String: Any] = [
-                    "WorkoutType": workoutName,
+                // Wrap into a payload dictionary
+                let data: [String: Any] = ["raw Data": jsonRawDataList]
 
-                    "Calories": calories,
-                    "Distance": distance,
-                    "Start": start,
-                    "End": end,
-                ]
-                print(data)
-                print(workout)
-                print("@@@@@")
-                self.storeData(data: data, timestamp: -1) {}
-                // print("Workout: \(type) from \(start) to \(end), Calories: \(calories), Distance: \(distance)m")
-            }
+                // Store it
+                self.storeData(data: data, timestamp: -1) {}            }
         }
 
         healthStore.execute(query)

@@ -20,7 +20,7 @@ class Hk_StepsObservation: HealthkitBase {
     var predicate: NSPredicate {
         HKQuery.predicateForSamples(withStart: startDate, end: now, options: .strictStartDate)
     }
-    
+    private var sendRawData :Bool = false
     init(repository: MainRepository) {
         self.healthStore = HKHealthStore()
         self.now = Date()
@@ -54,17 +54,28 @@ class Hk_StepsObservation: HealthkitBase {
             }
             
             for sample in results {
+             //debugging 
                 let start = sample.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let end = sample.endDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")
                 let steps = sample.quantity.doubleValue(for: HKUnit.count())
-                
+                print(sample)
             }
             
-            
+            if(!self.sendRawData){
             let totalSteps = results.reduce(0.0) { $0 + $1.quantity.doubleValue(for: HKUnit.count()) }
             let data: [String: Any] = ["Steps" : totalSteps, "Start": self.startDate.formattedString(dateFormat: "yyyy-MM-dd:HH:mm"), "End": self.now.formattedString(dateFormat: "yyyy-MM-dd:HH:mm")]
                     print("Total steps in time range: \(totalSteps)")
-            self.storeData(data: data, timestamp: -1){}
+            self.storeData(data: data, timestamp: -1){}}
+            else{
+                
+                let jsonRawDataList = results.map { self.mapSampleToJSON($0) }
+
+                // Wrap into a payload dictionary
+                let data: [String: Any] = ["raw Data": jsonRawDataList]
+
+                // Store it
+                self.storeData(data: data, timestamp: -1) {}
+            }
         }
         healthStore.execute(query)
     }
@@ -82,6 +93,10 @@ class Hk_StepsObservation: HealthkitBase {
                         }
                     }
                 }
+            if let sendRawDataValue = settings["sendRawData"] {
+                let strValue = String(describing: sendRawDataValue).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                sendRawData = Bool(strValue) ?? false
+            }
             } catch {
                 print(error.localizedDescription)
             }    }

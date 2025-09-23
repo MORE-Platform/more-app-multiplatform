@@ -2,6 +2,7 @@ package io.redlink.more.app.android.observations.HealthKit
 
 import android.content.Context
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import io.github.aakira.napier.Napier
@@ -39,6 +40,8 @@ class HealthkitObservation_steps(
     override fun getPermission(): Set<String> = PERMISSIONS
 
     override fun start(): Boolean {
+
+        val rawDataList: MutableList<StepsRecord> = mutableListOf()
         observationJob = scope.launch {
             try {
                 if (!hasPermissions()) {
@@ -50,8 +53,9 @@ class HealthkitObservation_steps(
                     .withLocale(Locale.GERMANY)
                     .withZone(ZoneOffset.UTC)
                 val records = healthConnectManager.readData<StepsRecord>(
-                    TimeRangeFilter.between(start_time.toInstant(), now.toInstant())
+                    TimeRangeFilter.between(startTime.toInstant(), now.toInstant())
                 )
+                if(!sendingRawData){
                 var stepcount = 0L
                 for (record in records) {
                     stepcount += record.count
@@ -59,10 +63,13 @@ class HealthkitObservation_steps(
                 storeData(
                     mapOf(
                         "steps" to stepcount,
-                        "start" to formatter.format(start_time),
+                        "start" to formatter.format(startTime),
                         "end" to formatter.format(now)
                     )
-                )
+                )}
+                else{
+                    storeData(mapOf("raw step records" to records),-1)
+                }
                 stop { Napier.d("records sent") }
             } catch (e: Exception) {
                Napier.e("Error: ${e.message}")
