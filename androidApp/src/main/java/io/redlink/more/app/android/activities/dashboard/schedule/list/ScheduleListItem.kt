@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -125,23 +126,23 @@ fun ScheduleListItem(
                     ) {
                         navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel().scheduleId))
                     }
-                }/*
+                }
                 "healthkit-mobile-observation:HR_observation",
                 "healthkit-mobile-observation:Sleep_observation",
                 "healthkit-mobile-observation:Steps_observation",
                 "healthkit-mobile-observation:Exercise_observation"-> {
                     SmallTextButton(
                         text = "Fetch Healthkit Data",
-                        enabled = scheduleModel.scheduleState.active()
+                        enabled = scheduleModel().scheduleState.active()
                     ) {
                         //TODO PROPER HANDLING WITH CHECK FOR SUCCESS
                         viewModel.viewModelScope.launch {
-                            viewModel.startObservation(scheduleModel.scheduleId)
+                            viewModel.startObservation(scheduleModel().scheduleId)
                             delay(3000) // wait 3 seconds
-                            viewModel.stopObservation(scheduleModel.scheduleId)
+                            viewModel.stopObservation(scheduleModel().scheduleId)
                         }
                     }
-                }*/
+                }
                 else -> {
                     SmallTextButton(
                         text = if (scheduleModel().scheduleState == ScheduleState.RUNNING) getStringResource(

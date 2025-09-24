@@ -70,13 +70,15 @@ class HealthkitObservation_steps(
                 else{
                     storeData(mapOf("raw step records" to records),-1)
                 }
-                stop { Napier.d("records sent") }
+                //stop { Napier.d("records sent") }
+                true
             } catch (e: Exception) {
                Napier.e("Error: ${e.message}")
-                stop { Napier.e("Stopped after error") }
+                //stop { Napier.e("Stopped after error") }
+                false
             }
         }
-        return true
+        return false
     }
 
 }

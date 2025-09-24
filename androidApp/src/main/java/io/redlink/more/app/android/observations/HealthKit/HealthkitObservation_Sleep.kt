@@ -52,15 +52,16 @@ class HealthkitObservation_Sleep(
                 if (sendingRawData){
                     storeData(mapOf("Sleep records" to records),-1)
                 }
-                stop { Napier.d("Stopped after data collection") }
-
+                //stop { Napier.d("Stopped after data collection") }
+                true
             } catch (e: Exception) {
                 Napier.e("Error: ${e.message}")
-                stop { Napier.e("Stopped after error") }
+               // stop { Napier.e("Stopped after error") }
+                false
             }
         }
 
-        return true
+        return false
     }
 
 }

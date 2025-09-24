@@ -54,10 +54,12 @@ class HealthkitObservation_HR(
                     Napier.d { "Sending this raw data to backend ${records}" }
                     storeData(mapOf("records" to records),-1)
                 }
-                stop { Napier.d("records sent") }
+                //stop { Napier.d("records sent") }
+                true
             } catch (e: Exception) {
                 Napier.e("Error: ${e.message}")
-                stop { Napier.d("Stopped after error") }
+                //stop { Napier.d("Stopped after error") }
+                false
             }
         }
         return true

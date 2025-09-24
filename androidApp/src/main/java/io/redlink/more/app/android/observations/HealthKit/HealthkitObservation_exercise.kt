@@ -74,15 +74,18 @@ class HealthkitObservation_exercise(
                 if(sendingRawData){
                     storeData(mapOf("Raw exercise data " to records),-1)
                 }
-                stop { Napier.e("Stopped after data collection") }
+
+                true
+                //stop { Napier.e("Stopped after data collection") }
 
             } catch (e: Exception) {
                 Napier.e("Error: ${e.message}")
-                stop { Napier.e("Stopped after error") }
+               // stop { Napier.e("Stopped after error") }
+                false
             }
         }
 
-        return true
+        return false
     }
 
 }
