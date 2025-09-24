@@ -55,7 +55,7 @@ class Hk_HRObservation: HealthkitBase {
     }
 
     override func fetchData() {
-        print("!!!!!!!!! CALLING HR FETCH !!!!!")
+
         guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
             print("Sleep type not available")
             return

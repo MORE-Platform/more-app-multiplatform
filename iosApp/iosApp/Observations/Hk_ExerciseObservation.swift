@@ -55,7 +55,7 @@ class Hk_ExerciseObservation: HealthkitBase {
     }
 
     override func fetchData() {
-        print("!!!!!!!!! CALLING WORKOUT FETCH !!!!!")
+
         let workoutType = HKObjectType.workoutType()
 
         let query = HKSampleQuery(
