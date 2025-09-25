@@ -156,8 +156,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                     )
                 }
             }
-        },
-        alertDialogModel = viewModel.alertDialogOpen.value
+        }
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (viewModel.dataLoading.value) {

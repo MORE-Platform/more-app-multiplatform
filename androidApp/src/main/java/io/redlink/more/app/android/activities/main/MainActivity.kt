@@ -51,6 +51,7 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
 import io.redlink.more.app.android.activities.studyStates.StudyClosedView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -106,6 +107,7 @@ class MainActivity : ComponentActivity() {
 
             val studyState by MoreApplication.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
             val studyIsUpdating by ViewManager.studyIsUpdating.collectAsStateWithLifecycle(false)
+            val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle(false)
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
@@ -113,9 +115,8 @@ class MainActivity : ComponentActivity() {
 
             if (studyIsUpdating) {
                 StudyUpdateView()
-                navHostController.navigate(
-                    NavigationScreen.DASHBOARD.navigationRoute()
-                )
+            } else if (studyLoadingError) {
+                StudyLoadingErrorView()
             } else if (studyState == StudyState.PAUSED) {
                 StudyPausedView()
             } else if (studyState == StudyState.CLOSED) {
@@ -127,7 +128,8 @@ class MainActivity : ComponentActivity() {
                     viewModel.navigationBarTitle.value,
                     viewModel,
                     navHostController,
-                    activityLauncher
+                    activityLauncher,
+                    studyState
                 )
             }
         }
@@ -139,7 +141,8 @@ fun MainView(
     navigationTitle: String,
     viewModel: MainViewModel,
     navController: NavHostController,
-    activityResultLauncher: ActivityResultLauncher<Intent>
+    activityResultLauncher: ActivityResultLauncher<Intent>,
+    studyState: StudyState = StudyState.NONE,
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
     val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
@@ -159,7 +162,6 @@ fun MainView(
             }
         },
         unreadNotificationCount = viewModel.unreadNotificationCount.intValue,
-        alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         NavHost(
             navController = navController,
@@ -446,6 +448,25 @@ fun MainView(
                 ) {
                     viewModel.showBackButton.value = true
                     ObservationErrorView()
+                }
+            }
+        }
+        LaunchedEffect(studyState) {
+            if (studyState == StudyState.ACTIVE) {
+                val currentBase = navController.currentDestination
+                    ?.route
+                    ?.substringBefore("?")
+
+                val dashboardBase = NavigationScreen.DASHBOARD.routeWithParameters()
+
+                if (currentBase != dashboardBase) {
+                    navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             }
         }

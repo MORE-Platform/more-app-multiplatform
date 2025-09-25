@@ -97,8 +97,12 @@ struct LoginView: View {
                                     if registration.connected {
                                         model.validate()
                                     } else {
-                                        AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "no_internet_title", message: "no_internet_message", positiveTitle: "Ok", negativeTitle: nil) { AlertController.shared.closeAlertDialog()
-                                        })
+                                        AlertController.shared.openAlertDialog(model: AlertDialogModel(
+                                            title: "no_internet_title",
+                                            message: "no_internet_message",
+                                            confirmLabel: "Ok",
+                                            cancelLabel: nil, onConfirm: nil)
+                                        )
                                     }
                                 }
                             }

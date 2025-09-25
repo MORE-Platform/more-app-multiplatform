@@ -105,8 +105,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
         showBackButton = true,
         onBackButtonClick = {
             (context as? Activity)?.finish()
-        },
-        alertDialogModel = viewModel.alertDialogOpen.value
+        }
     ) {
         LazyColumn {
             item {

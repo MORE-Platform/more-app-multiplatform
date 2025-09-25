@@ -235,7 +235,7 @@ class BluetoothController(
 
     override fun onBluetoothStateChange(bluetoothState: BluetoothState) {
         Napier.i(tag = "BluetoothController::onBluetoothStateChange") { "Bluetooth state changed to $bluetoothState" }
-        _bluetoothPower.set(bluetoothState)
+        _bluetoothPower.value = bluetoothState
         if (bluetoothState == BluetoothState.OFF) {
             deviceManager.clearDiscovered()
             deviceManager.clearConnected()

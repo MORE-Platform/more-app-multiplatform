@@ -1,8 +1,7 @@
 package io.redlink.more.more_app_mutliplatform
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import io.redlink.more.more_app_mutliplatform.extensions.set
-import io.redlink.more.more_app_mutliplatform.extensions.setNullable
+import io.redlink.more.more_app_mutliplatform.extensions.then
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,24 +14,20 @@ object AlertController {
     private var alertDialogQueue = mutableListOf<AlertDialogModel>()
 
     fun openAlertDialog(model: AlertDialogModel) {
-        if (model.onPositive == null || model.onPositive == {}) {
-            model.onPositive = {
-                closeAlertDialog()
-            }
-        }
-        if (model.onNegative == null || model.onNegative == {}) {
-            model.onNegative = {
-                closeAlertDialog()
-            }
-        }
+        model.onConfirm = composeWithClose(model.onConfirm)
+        model.onDecline = composeWithClose(model.onDecline)
+
         if (this.alertDialogQueue.isEmpty() && this.alertDialogModel.value == null) {
-            this._alertDialogModel.set(model)
+            this._alertDialogModel.value = model
         } else if (!this.alertDialogQueue.contains(model) && this.alertDialogModel.value != model) {
             this.alertDialogQueue.add(model)
         }
     }
 
+    private fun composeWithClose(action: (() -> Unit)?): () -> Unit =
+        (action ?: {}) then { closeAlertDialog() }
+
     fun closeAlertDialog() {
-        this._alertDialogModel.setNullable(alertDialogQueue.removeFirstOrNull())
+        this._alertDialogModel.value = alertDialogQueue.removeFirstOrNull()
     }
 }

@@ -820,6 +820,22 @@
         }
       }
     },
+    "leave_confirmation_message" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher aufgezeichneten  Daten werden von Ihrem Mobiltelefon gelöscht!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you leave this study, you may not re-enter. Your participation will be cancelled and your data will be deleted from your mobile phone!"
+          }
+        }
+      }
+    },
     "leave_study" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1821,22 +1837,6 @@
         }
       }
     },
-    "second_message" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn Sie die Studie verlassen, können Sie später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher aufgezeichneten  Daten werden von Ihrem Mobiltelefon gelöscht."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "If you leave this study, you may not re-enter. Your participation will be cancelled and your data will be deleted from your mobile phone!"
-          }
-        }
-      }
-    },
     "Select Time" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2131,12 +2131,46 @@
         }
       }
     },
+    "study_loading_error_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es gab ein Problem beim Laden Ihrer Studie.\\nBitte versuchen Sie es später erneut oder kontaktieren Sie Ihren Studien Administrator"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There was an issue loading your study.\\nPlease try again later or contact your study administrator"
+          }
+        }
+      }
+    },
+    "study_loading_error_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Laden der Studie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error loading Study"
+          }
+        }
+      }
+    },
     "study_update_title" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Studie wird gerade aktualisiert"
           }
         },

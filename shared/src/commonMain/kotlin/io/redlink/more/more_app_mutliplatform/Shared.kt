@@ -201,16 +201,25 @@ class Shared(
                     if (newStudyState != null) {
                         repositories.study.updateStudyState(newStudyState)
                     }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
                     return
                 }
 
                 val (study, error) = networkService.getStudyConfig()
                 if (error != null) {
                     Napier.e { error.message }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
                     return
                 }
                 if (study == null) {
                     Napier.d { "Study is null" }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
                     return
                 }
 
@@ -253,6 +262,7 @@ class Shared(
                     observationFactory.clearNeededObservationTypes()
                     notificationManager.clearAllNotifications()
                     repositories.notification.deleteAll()
+                    ViewManager.studyError(false)
                     repositories.study.upsert(study)
                     if (study.studyState?.let { StudyState.getState(it) } == StudyState.ACTIVE) {
                         resetFirstStartUp()

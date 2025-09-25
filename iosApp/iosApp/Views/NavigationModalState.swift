@@ -13,10 +13,10 @@
 //  https://commonsclause.com/).
 //
 
-import shared
-import SwiftUI
 import Combine
 import KMPNativeCoroutinesCombine
+import shared
+import SwiftUI
 
 struct NavigationState: Hashable {
     var scheduleId: String? = nil
@@ -31,7 +31,6 @@ struct NavigationActions {
 }
 
 class NavigationModalState: ObservableObject {
-    
     let horizontalContentPadding: CGFloat = 24
 
     @Published var navigationStack: [NavigationScreen] = []
@@ -45,6 +44,8 @@ class NavigationModalState: ObservableObject {
     @Published var studyIsUpdating: Bool = false
     @Published var currentStudyState: StudyState = .none
 
+    @Published var studyLoadingError: Bool = false
+
     @Published var tagState: Int = 0 {
         didSet {
             if let onReset = currentNavigationAction()?.onReset {
@@ -52,20 +53,28 @@ class NavigationModalState: ObservableObject {
             }
         }
     }
-    
+
     private var cancellables: Set<AnyCancellable> = []
-    
+
     init(repos: MainRepository) {
         createPublisher(for: repos.study.studyState)
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: {_ in}) { [weak self] state in
-                self?.currentStudyState = state
-                if state == StudyState.closed || state == StudyState.paused {
-                    self?.clearViews()
-                }
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] state in
+            self?.currentStudyState = state
+            if state == StudyState.closed || state == StudyState.paused {
+                self?.clearViews()
             }
-            .store(in: &cancellables)
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.studyLoadingError)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] studyLoadingError in
+            self?.studyLoadingError = studyLoadingError.boolValue
+        }
+        .store(in: &cancellables)
     }
 
     func screenBinding(for screen: NavigationScreen) -> Binding<Bool> {
@@ -182,21 +191,23 @@ class NavigationModalState: ObservableObject {
     }
 
     func popNavigationAction() {
-        let _ = navigationActions.removeFirst()
+        _ = navigationActions.removeFirst()
     }
 
     func removeNavigationAction() {
         if !navigationActions.isEmpty {
-            let _ = navigationActions.popLast()
+            _ = navigationActions.popLast()
         }
     }
 
     func mayChangeViewStructure() -> Bool {
-        !studyIsUpdating && currentStudyState == StudyState.active || currentStudyState == StudyState.none
+        !studyIsUpdating && !studyLoadingError && currentStudyState == StudyState.active || currentStudyState == StudyState.none
     }
 
     func openWithDeepLink(url: URL, notificationId: String? = nil) {
-        guard !ViewManager.shared.studyIsUpdatingValue else { return }
+        guard !ViewManager.shared.studyIsUpdatingValue else {
+            return
+        }
         AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: nil, hostReplacement: nil) { modifiedDeepLink in
             if let modifiedDeepLink,
                let modifiedURL = URL(string: modifiedDeepLink) {
@@ -204,27 +215,26 @@ class NavigationModalState: ObservableObject {
                 if let matchingScreen = NavigationScreen.allCases.first(where: { $0.values.navigationLink == path }) {
                     var parameters: [NavigationParameter: String] = [:]
                     let components = URLComponents(url: modifiedURL, resolvingAgainstBaseURL: false)
-                    
+
                     for queryItem in components?.queryItems ?? [] {
                         if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
                             parameters[parameter] = value
                         }
                     }
-                    
+
                     let observationId = parameters[.observationId]
                     let notificationId = parameters[.notificaitonId] ?? notificationId
                     let scheduleId = parameters[.scheduleId]
-                    
+
                     if let notificationId {
                         AppDelegate.shared.notificationManager.handleNotificationInteraction(notificationId: notificationId, deeplink: modifiedDeepLink)
                     }
-                    
+
                     self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                 }
             } else if modifiedDeepLink == nil, let notificationId {
                 AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: notificationId)
             }
         }
-        
     }
 }

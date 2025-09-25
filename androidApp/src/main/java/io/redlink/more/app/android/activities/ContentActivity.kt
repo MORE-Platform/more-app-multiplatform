@@ -22,12 +22,14 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -78,7 +80,9 @@ fun ContentView(viewModel: ContentViewModel) {
     val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
     val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
     val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
-    MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
+    val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
+
+    MoreBackground(showBackButton = false) {
         if (credentialsLoaded && !hasCredentials) {
             if (validLogin != null) {
                 ConsentView(viewModel.registrationService)
@@ -86,6 +90,8 @@ fun ContentView(viewModel: ContentViewModel) {
                 LoginView(viewModel.registrationService)
                 AppVersion()
             }
+        } else if (studyLoadingError) {
+            StudyLoadingErrorView()
         } else {
             StudyLoadingView()
         }
