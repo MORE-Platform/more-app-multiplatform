@@ -15,10 +15,10 @@ struct ContentView: View {
     @StateObject private var navigationModalState = AppDelegate.navigationScreenHandler
     var body: some View {
         ZStack {
-            MoreMainBackgroundView() {
+            MoreMainBackgroundView {
                 VStack {
                     if viewModel.hasCredentials {
-                       CredentialsView(navigationModalState: navigationModalState, viewModel: viewModel)
+                        CredentialsView(navigationModalState: navigationModalState, viewModel: viewModel)
                     } else if !viewModel.credentialsLoaded || (viewModel.hasCredentials && navigationModalState.currentStudyState == .none) {
                         StudyLoadingView()
                             .padding(.horizontal, navigationModalState.horizontalContentPadding)
@@ -43,16 +43,18 @@ struct CredentialsView: View {
     var body: some View {
         VStack {
             if !navigationModalState.mayChangeViewStructure() {
-                if navigationModalState.studyIsUpdating {
-                    StudyUpdateView()
-                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                } else if navigationModalState.currentStudyState == StudyState.paused {
-                    StudyPausedView()
-                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                } else if navigationModalState.currentStudyState == StudyState.closed {
-                    StudyClosedView()
-                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
+                VStack {
+                    if navigationModalState.studyIsUpdating {
+                        StudyUpdateView()
+                    } else if navigationModalState.studyLoadingError {
+                        StudyLoadingErrorView()
+                    } else if navigationModalState.currentStudyState == StudyState.paused {
+                        StudyPausedView()
+                    } else if navigationModalState.currentStudyState == StudyState.closed {
+                        StudyClosedView()
+                    }
                 }
+                .padding(.horizontal, navigationModalState.horizontalContentPadding)
             } else {
                 MainTabView()
                     .sheet(isPresented: $viewModel.showBleView) {

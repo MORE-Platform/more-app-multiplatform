@@ -24,8 +24,6 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
@@ -61,18 +59,9 @@ class MainViewModel(context: Context) : ViewModel() {
         QuestionnaireViewModel()
     }
 
-    val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
     private var lastBleViewState = false
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            AlertController.alertDialogModel.collect {
-                withContext(Dispatchers.Main) {
-                    alertDialogOpen.value = it
-                }
-            }
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
             MoreApplication.shared!!.unreadNotificationCount.collect {
                 withContext(Dispatchers.Main) {

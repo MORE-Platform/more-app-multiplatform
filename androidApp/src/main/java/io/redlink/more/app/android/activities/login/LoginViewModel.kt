@@ -27,7 +27,7 @@ class LoginViewModel(
     val isLoading = registrationService.isLoading
     val error = registrationService.error
 
-    val dataEndpoint = mutableStateOf("");
+    val dataEndpoint = mutableStateOf("")
     val defaultEndpoint = mutableStateOf(registrationService.getEndpointRepository().endpoint())
     val endpointError = mutableStateOf<String?>(null)
 
@@ -47,7 +47,7 @@ class LoginViewModel(
                     AlertDialogModel(
                         stringResource(R.string.more_token_error),
                         stringResource(R.string.more_404),
-                        positiveTitle = "Ok"
+                        confirmLabel = "Ok"
                     )
                 )
             }
@@ -55,7 +55,7 @@ class LoginViewModel(
             val dialogModel = AlertDialogModel(
                 title = stringResource(R.string.no_internet_connection_title),
                 message = stringResource(R.string.no_internet_connection_body),
-                positiveTitle = "Ok"
+                confirmLabel = "Ok"
             )
             AlertController.openAlertDialog(dialogModel)
         }

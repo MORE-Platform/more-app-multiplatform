@@ -38,15 +38,13 @@ class ConsentViewModel(
             AlertDialogModel(
                 title = stringResource(R.string.required_permissions_not_granted_title),
                 message = stringResource(R.string.required_permission_not_granted_message),
-                positiveTitle = stringResource(R.string.proceed_to_settings_button),
-                negativeTitle = stringResource(R.string.proceed_without_granting_button),
-                onPositive = {
+                confirmLabel = stringResource(R.string.proceed_to_settings_button),
+                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                onConfirm = {
                     MoreApplication.openSettings.value = true
-                    AlertController.closeAlertDialog()
                 },
-                onNegative = {
+                onDecline = {
                     acceptConsent(context)
-                    AlertController.closeAlertDialog()
                 }
             ))
     }
@@ -56,15 +54,13 @@ class ConsentViewModel(
             AlertDialogModel(
                 title = stringResource(R.string.notification_permission_not_granted_title),
                 message = stringResource(R.string.notification_permission_not_granted_message),
-                positiveTitle = stringResource(R.string.proceed_to_settings_button),
-                negativeTitle = stringResource(R.string.proceed_without_granting_button),
-                onPositive = {
+                confirmLabel = stringResource(R.string.proceed_to_settings_button),
+                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                onConfirm = {
                     MoreApplication.openSettings.value = true
-                    AlertController.closeAlertDialog()
                 },
-                onNegative = {
+                onDecline = {
                     acceptConsent(context)
-                    AlertController.closeAlertDialog()
                 }
             ))
     }

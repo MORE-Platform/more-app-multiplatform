@@ -11,7 +11,7 @@ import SwiftUI
 
 struct MoreAlertDialog: View {
     let alertDialogModel: AlertDialogModel
-    
+
     var body: some View {
         ZStack {
             Color.black.opacity(0.5)
@@ -39,24 +39,24 @@ struct MoreAlertDialog: View {
 
                 VStack {
                     MoreActionButton(disabled: .constant(false)) {
-                        if let onPositive = alertDialogModel.onPositive {
-                            onPositive()
+                        if let onConfirm = alertDialogModel.onConfirm {
+                            onConfirm()
                         }
                     } label: {
-                        Text(LocalizedStringKey(alertDialogModel.positiveTitle))
+                        Text(LocalizedStringKey(alertDialogModel.confirmLabel))
                     }
 
-                    if let negativeTitle = alertDialogModel.negativeTitle {
+                    if let cancelLabel = alertDialogModel.cancelLabel {
                         MoreActionButton(backgroundColor: .more.secondaryLight, disabled: .constant(false)) {
-                            if let onNegative = alertDialogModel.onNegative {
-                                onNegative()
+                            if let onDecline = alertDialogModel.onDecline {
+                                onDecline()
                             }
                         } label: {
                             if #available(iOS 17.0, *) {
-                                Text(LocalizedStringKey(negativeTitle))
+                                Text(LocalizedStringKey(cancelLabel))
                                     .foregroundStyle(Color.more.primary)
                             } else {
-                                Text(LocalizedStringKey(negativeTitle))
+                                Text(LocalizedStringKey(cancelLabel))
                                     .foregroundColor(.more.primary)
                             }
                         }
@@ -76,9 +76,15 @@ struct MoreAlertDialog: View {
 }
 
 #Preview {
-    MoreAlertDialog(alertDialogModel: AlertDialogModel(title: "Needed permissions were not given", message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?", positiveTitle: "Required Permissions Were Not Granted", negativeTitle: "Continue without allowing", onPositive: {
-        print("Settings")
-    }, onNegative: {
-        print("Continue")
-    }))
+    MoreAlertDialog(alertDialogModel: AlertDialogModel(
+        title: "Needed permissions were not given",
+        message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?",
+        confirmLabel: "Required Permissions Were Not Granted",
+        cancelLabel: "Continue without allowing",
+        onConfirm: {
+            print("Settings")
+        },
+        onDecline: {
+            print("Continue")
+        }))
 }

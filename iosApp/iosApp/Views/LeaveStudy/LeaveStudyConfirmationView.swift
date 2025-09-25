@@ -14,18 +14,19 @@
 //
 
 import SwiftUI
+
 struct LeaveStudyConfirmationView: View {
     @StateObject var viewModel: SettingsViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    
+
     @State private var simpleRightDirectionSliderOffsetX: CGFloat = 0
     @State private var simpleLeftDirectionSliderOffsetX: CGFloat = 0
     @State private var rectangularSliderOffsetX: CGFloat = 0
-    @State private var  neumorphicSliderOffsetX: CGFloat = 0
+    @State private var neumorphicSliderOffsetX: CGFloat = 0
     @State private var alertPresented: Bool = false
     @State var continueButton = Color.more.approved
-    
-    
+
+
     var body: some View {
         MoreMainBackgroundView {
             VStack {
@@ -33,28 +34,28 @@ struct LeaveStudyConfirmationView: View {
                     .padding(.vertical)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
-                
+
                 Spacer()
-                
+
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 60))
                     .foregroundColor(Color.more.important)
                     .padding()
-                
-                Text("second_message")
+
+                Text("leave_confirmation_message")
                     .foregroundColor(Color.more.secondary)
                     .padding(.bottom, 2)
                     .multilineTextAlignment(.center)
-                
+
                 Text("sure_message")
                     .foregroundColor(Color.more.primary)
                     .fontWeight(.bold)
                     .padding(.bottom, 2)
                     .multilineTextAlignment(.center)
-                
+
                 Spacer()
                     .frame(height: 150)
-                
+
                 MoreActionButton(
                     backgroundColor: .more.approved,
                     disabled: .constant(false)
@@ -65,14 +66,14 @@ struct LeaveStudyConfirmationView: View {
                     Text("continue_study").foregroundColor(Color.more.white)
                 }
                 .padding(.bottom, 2)
-                
+
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                     viewModel.leaveStudy()
                     navigationModalState.clearViews()
                 } label: {
                     Text("withdraw")
                 }
-                
+
                 Spacer()
             }
             .padding(.horizontal, 40)

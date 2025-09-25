@@ -27,10 +27,10 @@ fun MessageAlertDialog(model: AlertDialogModel) {
     MessageAlertDialog(
         title = model.title,
         message = model.message,
-        positiveButtonTitle = model.positiveTitle,
-        negativeButtonTitle = model.negativeTitle,
-        onPositive = model.onPositive,
-        onNegative = model.onNegative
+        positiveButtonTitle = model.confirmLabel,
+        negativeButtonTitle = model.cancelLabel,
+        onPositive = model.onConfirm,
+        onNegative = model.onDecline
     )
 }
 
