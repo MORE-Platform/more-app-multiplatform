@@ -14,6 +14,7 @@ import android.Manifest
 import android.content.Context
 import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
+import io.redlink.more.app.android.observations.HR.Polar360Observation
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_HR
 import io.redlink.more.app.android.observations.HealthKit.HealthkitObservation_Sleep
@@ -45,6 +46,7 @@ class AndroidObservationFactory(
                 HealthkitObservation_exercise(context, repository),
                 HealthkitObservation_Sleep(context, repository),
                 HealthkitObservation_steps(context, repository),
+                Polar360Observation(repository)
             )
         )
 
