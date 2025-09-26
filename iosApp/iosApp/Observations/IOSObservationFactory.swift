@@ -26,5 +26,6 @@ class IOSObservationFactory: ObservationFactory {
         observations.add(Hk_SleepObservation(repository: repository))
         observations.add(Hk_ExerciseObservation(repostiory: repository))
         observations.add(Hk_StepsObservation(repository: repository))
+        observations.add(Polar360Observation(repos: repository, sensorPermissions: ["bluetoothAlways"]))
     }
 }

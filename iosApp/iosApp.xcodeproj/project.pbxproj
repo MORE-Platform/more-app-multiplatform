@@ -160,6 +160,7 @@
 		B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */; };
 		B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */; };
 		B7B4888229FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */; };
+		C53959182E8699B4003AA166 /* Polar360Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53959172E8699AC003AA166 /* Polar360Observation.swift */; };
 		C53C55622E547689007D38C7 /* HealthkitBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55612E547679007D38C7 /* HealthkitBase.swift */; };
 		C53C55642E5477B1007D38C7 /* Hk_SleepObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55632E5477A3007D38C7 /* Hk_SleepObservation.swift */; };
 		C53C55662E547999007D38C7 /* Hk_StepsObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55652E54798A007D38C7 /* Hk_StepsObservation.swift */; };
@@ -372,6 +373,7 @@
 		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
 		B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterText.swift; sourceTree = "<group>"; };
 		B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAdaptsToOpenKeyboard.swift; sourceTree = "<group>"; };
+		C53959172E8699AC003AA166 /* Polar360Observation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360Observation.swift; sourceTree = "<group>"; };
 		C53C55612E547679007D38C7 /* HealthkitBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthkitBase.swift; sourceTree = "<group>"; };
 		C53C55632E5477A3007D38C7 /* Hk_SleepObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hk_SleepObservation.swift; sourceTree = "<group>"; };
 		C53C55652E54798A007D38C7 /* Hk_StepsObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hk_StepsObservation.swift; sourceTree = "<group>"; };
@@ -499,6 +501,7 @@
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
 			isa = PBXGroup;
 			children = (
+				C53959172E8699AC003AA166 /* Polar360Observation.swift */,
 				C53C55692E547D73007D38C7 /* Hk_ExerciseObservation.swift */,
 				C53C55672E547B29007D38C7 /* Hk_HRObservation.swift */,
 				C53C55652E54798A007D38C7 /* Hk_StepsObservation.swift */,
@@ -1129,6 +1132,7 @@
 				1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */,
 				C53C556A2E547D87007D38C7 /* Hk_ExerciseObservation.swift in Sources */,
 				B784169029C8B1DA0035D830 /* InlineAbortButton.swift in Sources */,
+				C53959182E8699B4003AA166 /* Polar360Observation.swift in Sources */,
 				B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
