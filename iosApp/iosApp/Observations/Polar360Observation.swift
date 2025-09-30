@@ -38,13 +38,14 @@ class Polar360Observation: Observation_{
     private var hrObservation: Disposable?
     private var tmpObservation: Disposable?
     private var accObservation: Disposable?
+    private var ppiObservation: Disposable?
 
     private let deviceManager = BluetoothDeviceManager.shared
 
     private var deviceListener: AnyCancellable?
     
     private let errorStringTable = "Errors"
-    
+    private var deviceid : String? = nil
     private let schedulerForeground = ConcurrentDispatchQueueScheduler(qos:.userInitiated)
     private let schedulerBackground = ConcurrentDispatchQueueScheduler(qos: .background)
     
@@ -60,15 +61,41 @@ class Polar360Observation: Observation_{
                 let acceptableDevices = deviceManager.connectedDevicesValue.deviceWithNameIn(nameSet: deviceIdentificer)
                 
                 if !acceptableDevices.isEmpty, let firstAddress = acceptableDevices[0].address {
+                    deviceid = firstAddress
+                    //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                    
                     
                     setupForFirstTimeUse(identifier: firstAddress)
                         .subscribe(
                             onCompleted: { [weak self] in
                                 guard let self else { return }
-                                self.listenToDeviceConnection()
+
+                                do {
+                                    try self.listenToDeviceConnection()
+                                } catch {
+                                    print("Device connection failed: \(error)")
+                                }
+                                //this stream does not fire
                                 self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                if self.hrObservation == nil {
+                                    print("❌ hrstream returned nil")
+                                }
+
+                                self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                if self.ppiObservation == nil {
+                                    print("❌ ppistream returned nil")
+                                }
+
                                 self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                if self.accObservation == nil {
+                                    print("❌ accstream returned nil")
+                                }
+
                                 self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                if self.tmpObservation == nil {
+                                    print("❌ tmpstream returned nil")
+                                }
+                                                     
                             },
                             onError: { error in
                                 print("Setup failed with error: \(error)")
@@ -84,6 +111,9 @@ class Polar360Observation: Observation_{
         }
     
     override func stop(onCompletion: @escaping () -> Void) {
+        
+        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .acc)
+        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .temperature)
         self.hrObservation?.dispose()
         self.accObservation?.dispose()
         self.hrObservation?.dispose()
@@ -130,13 +160,22 @@ class Polar360Observation: Observation_{
                 self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
                 }
             }
-        }, onError: { [weak self] error in
-            print(error)
+            }, onError: { [weak self] error in
+                print("\(error) hr stream fail error")
             if let self {
                 showObservationErrorNotification(notificationBody: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!", fallbackTitle: "Observation Error")
                 Observation_.pauseObservation(self.observationType)
             }
         })
+    }
+    private func ppistream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
+        return polarConnector.polarApi.startPpiStreaming(identifier)
+            .subscribe(on:scheduler)
+            .subscribe(onNext: { data in
+                if let sample = data.samples.first {
+                    print("ppi sample \(sample) asd " )
+                }
+            })
     }
     private func tmpstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
         return polarConnector.polarApi
@@ -160,7 +199,8 @@ class Polar360Observation: Observation_{
                 if let sample = data.samples.first {
                     print("\(sample.timeStamp): \(sample.temperature)")
                 }
-            })
+            },
+                       onError: {error in print("Error: \(error)")})
     }
     
     
@@ -197,9 +237,38 @@ class Polar360Observation: Observation_{
             }
             .andThen(
                 Completable.deferred {
+                    return Completable.empty()
+                                //return  self.polarConnector.polarApi.enableSDKMode(identifier)
+                            
+                        
+                }
+            )
+    }
+    
+    private func enableSdkMode(identifier: String) -> Disposable {
+        return polarConnector.polarApi
+            .isSDKModeEnabled(identifier)
+            .subscribe(
+                onSuccess: { [weak self] sdkEnabled in
+                    guard let self = self else { return }
                     
-                        return try self.polarConnector.polarApi.enableSDKMode(identifier)
-                    
+                    if !sdkEnabled {
+                        _ = self.polarConnector.polarApi
+                            .enableSDKMode(identifier)
+                            .subscribe(
+                                onCompleted: {
+                                    print("✅ SDK mode enabled for \(identifier)")
+                                },
+                                onError: { error in
+                                    print("❌ Failed to enable SDK mode: \(error)")
+                                }
+                            )
+                    } else {
+                        print("ℹ️ SDK mode already enabled for \(identifier)")
+                    }
+                },
+                onFailure: { error in
+                    print("❌ Failed to check SDK mode: \(error)")
                 }
             )
     }
