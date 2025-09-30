@@ -53,7 +53,76 @@ class Polar360Observation: Observation_{
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
     }
     
+    class hrData: Codable {
+        let value: Int
+        let timestamp: UInt64
+        
+        init(value:Int, timestamp:UInt64){
+            self.value = value
+            self.timestamp = timestamp
+        }
+    }
     
+    class accData: Codable {
+        let x: Int32
+        let y: Int32
+        let z: Int32
+        let timestamp: UInt64
+        
+        init(x:Int32 , y:Int32 , z: Int32 , timestamp:UInt64){
+            self.x = x
+            self.y = y
+            self.z = z
+            self.timestamp = timestamp
+        }
+    }
+    
+    class tempData: Codable {
+        let value: Float
+        let timestamp: UInt64
+        
+        init(value:Float , Timestamp:UInt64){
+            self.value = value
+            self.timestamp = Timestamp
+        }
+    }
+    
+    class SyncedPacket: Codable {
+        let hr: hrData
+        let acc : accData?
+        let temp: tempData
+        init(hr: hrData, acc: accData?, temp: tempData) {
+              self.hr = hr
+              self.acc = acc
+              self.temp = temp
+          }
+    }
+    
+    
+    private let hrQueue = Polar360Queue<hrData>(maxSize: 10)
+    private let accQueue = Polar360Queue<accData>(maxSize: 10)
+    private let tempQueue = Polar360Queue<tempData>(maxSize: 10)
+    
+    
+    private func tryBuildPacket()-> SyncedPacket?{
+        if((hrQueue.size() != 0) && (tempQueue.size() != 0 ))
+        {
+            let hritem = hrQueue.pollLast()
+            let tempitem = tempQueue.pollLast()
+            let accitem = accQueue.pollLast() ?? nil
+            if (hritem != nil && tempitem != nil ){
+                return SyncedPacket(hr: hritem!, acc: accitem, temp: tempitem!)
+            }
+        }
+        return nil
+    }
+    
+    private func sendOutData(packet:SyncedPacket){
+        print("sending data")
+        /*self.storeData(data: packet,timestamp: -1) {
+            print("Data Stored")
+        }*/
+    }
     
         
     override func start() -> Bool {
@@ -62,46 +131,21 @@ class Polar360Observation: Observation_{
                 
                 if !acceptableDevices.isEmpty, let firstAddress = acceptableDevices[0].address {
                     deviceid = firstAddress
-                    //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                    
-                    
                     setupForFirstTimeUse(identifier: firstAddress)
                         .subscribe(
                             onCompleted: { [weak self] in
                                 guard let self else { return }
-
-                                do {
-                                    try self.listenToDeviceConnection()
-                                } catch {
-                                    print("Device connection failed: \(error)")
-                                }
-                                //this stream does not fire
-                                self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                if self.hrObservation == nil {
-                                    print("❌ hrstream returned nil")
-                                }
-
+                                self.listenToDeviceConnection()
+                                //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
                                 self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                if self.ppiObservation == nil {
-                                    print("❌ ppistream returned nil")
-                                }
-
                                 self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                if self.accObservation == nil {
-                                    print("❌ accstream returned nil")
-                                }
-
                                 self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                if self.tmpObservation == nil {
-                                    print("❌ tmpstream returned nil")
-                                }
-                                                     
                             },
                             onError: { error in
                                 print("Setup failed with error: \(error)")
                             }
                         )
-                        .disposed(by: disposeBag) // ⚡️ Important: make sure you manage subscription lifetime
+                        .disposed(by: disposeBag)
                 }
                 return true
             }
@@ -113,8 +157,19 @@ class Polar360Observation: Observation_{
     override func stop(onCompletion: @escaping () -> Void) {
         
         self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .acc)
+            .subscribe(
+            onCompleted: {
+                print("stopped acc")
+            }
+        ).disposed(by: disposeBag)
         self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .temperature)
-        self.hrObservation?.dispose()
+            .subscribe(onCompleted: {print("stopped temp")})
+            .disposed(by: disposeBag)
+        
+        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "", feature: .ppi)
+            .subscribe(onCompleted: {print("stopped ppi")})
+            .disposed(by: disposeBag)
+        self.ppiObservation?.dispose()
         self.accObservation?.dispose()
         self.hrObservation?.dispose()
         deviceListener?.cancel()
@@ -127,7 +182,7 @@ class Polar360Observation: Observation_{
             .catch { error -> Single<PolarSensorSetting> in
                 print("ACC settings request failed: \(error)")
                 let defaultSettings = try! PolarSensorSetting([
-                    .sampleRate: 52,
+                    .sampleRate: 50,
                     .resolution: 1
                 ])
                 return Single.just(defaultSettings)
@@ -142,6 +197,10 @@ class Polar360Observation: Observation_{
             .subscribe(
                 onNext: { data in
                     guard let sample = data.first else { return }
+                    self.accQueue.add(accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp))
+                    self.tryBuildPacket().map{
+                        packet in self.sendOutData(packet: packet)
+                    }
                     print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
                 },
                 onError: { error in
@@ -157,8 +216,10 @@ class Polar360Observation: Observation_{
             .subscribe(on: scheduler)
             .subscribe(onNext: { [weak self] data in
             if let self, let hrData = data.first {
-                self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
-                }
+                print(hrData.hr)
+                
+                //self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
+                
             }
             }, onError: { [weak self] error in
                 print("\(error) hr stream fail error")
@@ -173,7 +234,12 @@ class Polar360Observation: Observation_{
             .subscribe(on:scheduler)
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
-                    print("ppi sample \(sample) asd " )
+                    
+                    self.hrQueue.add(hrData(value: sample.hr,timestamp: sample.timeStamp))
+                    self.tryBuildPacket().map {
+                        packet in self.sendOutData(packet: packet)
+                    }
+                    print("ppi sample \(sample) " )
                 }
             })
     }
@@ -197,6 +263,12 @@ class Polar360Observation: Observation_{
             .observe(on: scheduler)               // process on thread B
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
+                    
+                    self.tempQueue.add(tempData(value: sample.temperature, Timestamp: sample.timeStamp))
+                    
+                    self.tryBuildPacket().map {
+                        packet in self.sendOutData(packet: packet)
+                    }
                     print("\(sample.timeStamp): \(sample.temperature)")
                 }
             },

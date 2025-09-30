@@ -166,6 +166,7 @@
 		C53C55662E547999007D38C7 /* Hk_StepsObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55652E54798A007D38C7 /* Hk_StepsObservation.swift */; };
 		C53C55682E547B37007D38C7 /* Hk_HRObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55672E547B29007D38C7 /* Hk_HRObservation.swift */; };
 		C53C556A2E547D87007D38C7 /* Hk_ExerciseObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C55692E547D73007D38C7 /* Hk_ExerciseObservation.swift */; };
+		C54478862E8BF363008D3916 /* Polar360Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54478852E8BF351008D3916 /* Polar360Queue.swift */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED474B4C29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED474B4B29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift */; };
 		ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A7F3E29DC405B00E266EC /* FCMService.swift */; };
@@ -379,6 +380,7 @@
 		C53C55652E54798A007D38C7 /* Hk_StepsObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hk_StepsObservation.swift; sourceTree = "<group>"; };
 		C53C55672E547B29007D38C7 /* Hk_HRObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hk_HRObservation.swift; sourceTree = "<group>"; };
 		C53C55692E547D73007D38C7 /* Hk_ExerciseObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hk_ExerciseObservation.swift; sourceTree = "<group>"; };
+		C54478852E8BF351008D3916 /* Polar360Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360Queue.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED474B4B29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionThankYouView.swift; sourceTree = "<group>"; };
 		ED6A7F3E29DC405B00E266EC /* FCMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCMService.swift; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
 			isa = PBXGroup;
 			children = (
+				C54478852E8BF351008D3916 /* Polar360Queue.swift */,
 				C53959172E8699AC003AA166 /* Polar360Observation.swift */,
 				C53C55692E547D73007D38C7 /* Hk_ExerciseObservation.swift */,
 				C53C55672E547B29007D38C7 /* Hk_HRObservation.swift */,
@@ -1269,6 +1272,7 @@
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,
 				1FDFB9852B62A81000CB87B1 /* MoreAlertDialog.swift in Sources */,
+				C54478862E8BF363008D3916 /* Polar360Queue.swift in Sources */,
 				1F27536129CC372500324417 /* AppState.swift in Sources */,
 				B784169A29CA18320035D830 /* DatapointsCollection.swift in Sources */,
 				1F43998C29C1006800687906 /* NotificationView.swift in Sources */,
