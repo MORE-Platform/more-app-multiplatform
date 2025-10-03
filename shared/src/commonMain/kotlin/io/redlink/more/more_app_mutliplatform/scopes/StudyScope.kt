@@ -39,9 +39,10 @@ object StudyScope {
     fun repeatedLaunch(
         intervalMillis: Long,
         coroutineContext: CoroutineContext = Dispatchers.Default,
+        initalDelay: Long = 0,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
-        val result = Scope.repeatedLaunch(intervalMillis, coroutineContext, block)
+        val result = Scope.repeatedLaunch(intervalMillis, coroutineContext, initalDelay, block)
 
         Scope.launch {
             mutex.withLock {

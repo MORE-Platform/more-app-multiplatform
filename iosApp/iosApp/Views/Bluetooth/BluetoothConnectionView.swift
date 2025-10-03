@@ -43,19 +43,19 @@ struct BluetoothConnectionView: View {
                     Title(titleText: "External Device Setup")
                     BasicText(text: "\(String(localized: "Some tasks in this study need certain bluetooth devices to be completed and only activate, once a certain device is connected. Please make sure to turn on and connect these devices")):", color: Color.more.secondary)
                         .padding(.vertical, 8)
-                    
+
                     ForEach(viewModel.neededDevices, id: \.self) { device in
                         SectionHeading(sectionTitle: "- \(device)")
                     }
                     .padding(.bottom, 8)
-                    
+
                     if showAsSeparateView {
                         BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices", color: Color.more.secondary)
                             .padding(.top, 8)
                     }
-                    
 
-                    if viewModel.bluetoothPower == .on {
+
+                    if viewModel.bluetoothPower {
                         Section(header: SectionHeading(sectionTitle: "Connected devices")) {
                             if viewModel.connectedDevices.isEmpty {
                                 EmptyListView(text: "\("No devices connected")!")
@@ -88,7 +88,7 @@ struct BluetoothConnectionView: View {
                                 }
                             }
                         }
-                        
+
                         Section(header: SectionHeading(sectionTitle: "Discovered devices")) {
                             if viewModel.discoveredDevices.isEmpty {
                                 EmptyListView(text: "\("No devices found nearby")!")

@@ -58,7 +58,7 @@ jobs:
 
   android:
     name: Android
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: PlayStore
     if: startsWith(github.ref, 'refs/tags/')
     env:

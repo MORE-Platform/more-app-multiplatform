@@ -8,19 +8,33 @@
 
 import Foundation
 import shared
+import KMPNativeCoroutinesCombine
+import Combine
 
 class ObservationErrorsViewModel: ObservableObject {
     @Published var observationErrors: [String] = []
     @Published var observationErrorActions: [String] = []
-    
+
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
-        AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
-            DispatchQueue.main.async {
-                if let self {
-                    self.observationErrors = Array(Set(errors.filterValues { $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }.flatMap{$0.value}))
-                    self.observationErrorActions = Array(Set(errors.filterValues { $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED }.flatMap{$0.value}))
-                }
+        createPublisher(for: ObservationStates.shared.observationErrors)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] errors in
+            self?.observationErrors = Array(Set(errors.filterValues {
+                $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
             }
+                                                .flatMap {
+                                                    $0.value
+                                                }))
+            self?.observationErrorActions = Array(Set(errors.filterValues {
+                $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
+            }
+                                                      .flatMap {
+                                                          $0.value
+                                                      }))
         }
+        .store(in: &cancellables)
     }
 }

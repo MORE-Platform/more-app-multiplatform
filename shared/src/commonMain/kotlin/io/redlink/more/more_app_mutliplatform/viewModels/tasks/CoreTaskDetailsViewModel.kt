@@ -16,7 +16,7 @@ import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.firstOrNull
 class CoreTaskDetailsViewModel(
     private val repository: MainRepository,
     private val dataRecorder: DataRecorder,
-    private val observationFactory: ObservationFactory,
     private var scheduleId: String
 ) : CoreViewModel() {
 
@@ -65,7 +64,7 @@ class CoreTaskDetailsViewModel(
             }
         }
         launchScope {
-            observationFactory.observationErrors.collect { errors ->
+            ObservationStates.observationErrors.collect { errors ->
                 _observationErrors.value = errors
                 taskDetailsModel.value?.let { taskDetails ->
                     if (taskDetails.observationType != "") {

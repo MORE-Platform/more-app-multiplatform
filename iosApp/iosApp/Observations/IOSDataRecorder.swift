@@ -73,7 +73,13 @@ class IOSDataRecorder: DataRecorder {
     }
     
     func updateTaskStates() {
-        AppDelegate.shared.observationManager.updateTaskStates()
+        Task {
+            do {
+                try await AppDelegate.shared.observationManager.updateTaskStates()
+            } catch {
+                print("Cannot update task states: \(error)")
+            }
+        }
     }
     
     func activateScheduleUpdate() {

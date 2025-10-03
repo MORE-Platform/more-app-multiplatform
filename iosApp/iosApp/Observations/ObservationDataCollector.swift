@@ -20,12 +20,21 @@ class ObservationDataCollector {
 
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {
         print("Collect undone observations")
-        AppDelegate.shared.updateTaskStates()
-        AppDelegate.shared.observationManager.collectAllData {success in
-            AppDelegate.shared.observationDataManager.saveAndSend()
-            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { timer in
-                completion(success.boolValue)
+        Task {
+            do {
+                try await AppDelegate.shared.observationManager.updateTaskStates()
+                await MainActor.run {
+                    AppDelegate.shared.observationManager.collectAllData { success in
+                        AppDelegate.shared.observationDataManager.saveAndSend()
+                        Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { timer in
+                            completion(success.boolValue)
+                        }
+                    }
+                }
+            } catch {
+                print("Cannot update task states: \(error)")
             }
+
         }
     }
 }

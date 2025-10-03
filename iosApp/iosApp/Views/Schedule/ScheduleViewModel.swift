@@ -26,30 +26,37 @@ class ScheduleViewModel: ObservableObject {
 
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
     @Published var observationErrors: [String: Set<String>] = [:]
-    
+    @Published var numberOfErrors: Int = 0
+
     private var cancellables = Set<AnyCancellable>()
 
     init(scheduleListType: ScheduleListType) {
         self.scheduleListType = scheduleListType
-        coreModel = CoreScheduleViewModel(repos: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel, observationFactory: AppDelegate.shared.observationFactory)
-        
-        createPublisher(for: coreModel.schedulesByDate)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] schedules in
-                self?.schedulesByDate = schedules.mapKeys { $0.toInt64().toDate() }
-            }
-            .store(in: &cancellables)
-        
-        createPublisher(for: coreModel.observationErrors)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] errors in
-                self?.observationErrors = errors
-            }
-            .store(in: &cancellables)
-    }
+        coreModel = CoreScheduleViewModel(repos: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleListType: scheduleListType, coreFilterModel: filterViewModel.coreViewModel)
 
-    func numberOfObservationErrors() -> Int {
-        Set(observationErrors.values.flatMap { $0 }).count
+        createPublisher(for: coreModel.schedulesByDate)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] schedules in
+            self?.schedulesByDate = schedules.mapKeys {
+                $0.toInt64().toDate()
+            }
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: coreModel.observationErrors)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] errors in
+            self?.observationErrors = errors
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: coreModel.numberOfErrors)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] numberOfErrors in
+            self?.numberOfErrors = numberOfErrors.intValue
+        }
+        .store(in: &cancellables)
     }
 }
 

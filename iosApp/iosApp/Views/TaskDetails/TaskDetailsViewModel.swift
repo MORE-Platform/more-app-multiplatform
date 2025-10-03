@@ -15,10 +15,12 @@
 
 import shared
 import SwiftUI
+import Combine
+import KMPNativeCoroutinesCombine
 
 class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
-    
+
     @Published var taskDetailsModel: TaskDetailsModel? {
         didSet {
             updateTaskObservationErrors()
@@ -27,17 +29,19 @@ class TaskDetailsViewModel: ObservableObject {
     @Published var dataCount: Int64 = 0
     @Published var taskObservationErrors: [String] = []
     @Published var taskObservationErrorAction: [String] = []
-    
-    private var observationErrors: [String : Set<String>] = [:] {
+
+    private var observationErrors: [String: Set<String>] = [:] {
         didSet {
             updateTaskObservationErrors()
         }
     }
-    
+
     var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
-    
+
+    private var cancellables = Set<AnyCancellable>()
+
     init(scheduleId: String) {
-        self.coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, observationFactory: AppDelegate.shared.observationFactory, scheduleId: scheduleId)
+        self.coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleId: scheduleId)
         self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { [weak self] taskDetails in
             if let self {
@@ -46,27 +50,27 @@ class TaskDetailsViewModel: ObservableObject {
                 }
             }
         }
-        
+
         coreModel.onNewDataCount { [weak self] count in
             if let self {
                 self.dataCount = count?.int64Value ?? 0
             }
         }
-        
-        AppDelegate.shared.observationFactory.observationErrorsAsClosure { [weak self] errors in
-            if let self {
-                DispatchQueue.main.async {
-                    self.observationErrors = errors                    
-                }
-            }
+
+        createPublisher(for: ObservationStates.shared.observationErrors)
+        .receive(on: DispatchQueue.main)
+        .removeDuplicates()
+        .sink(receiveCompletion: { _ in }) { [weak self] errors in
+            self?.observationErrors = errors
         }
+        .store(in: &cancellables)
     }
-    
-    
+
+
     func viewDidAppear() {
         coreModel.viewDidAppear()
     }
-    
+
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
     }
@@ -74,20 +78,24 @@ class TaskDetailsViewModel: ObservableObject {
     func getDateRangeString() -> String {
         let startDate = taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
         let endDate = taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
-        if(startDate != endDate) {
+        if (startDate != endDate) {
             return startDate + " - " + endDate
         }
         return startDate
     }
-    
+
     func getTimeRangeString() -> String {
         return (taskDetailsModel?.start.toDateString(dateFormat: "HH:mm") ?? "") + " - " + (taskDetailsModel?.end.toDateString(dateFormat: "HH:mm") ?? "")
     }
-    
+
     private func updateTaskObservationErrors() {
         if let taskDetailsModel {
-            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType]?.filter { $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED} ?? [])
-            self.taskObservationErrorAction = Array(observationErrors[taskDetailsModel.observationType]?.filter { $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED} ?? [])
+            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType]?.filter {
+                $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
+            } ?? [])
+            self.taskObservationErrorAction = Array(observationErrors[taskDetailsModel.observationType]?.filter {
+                $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
+            } ?? [])
         } else {
             self.taskObservationErrors = []
         }
@@ -98,11 +106,11 @@ extension TaskDetailsViewModel: ObservationActionDelegate {
     func start(scheduleId: String) {
         coreModel.startObservation()
     }
-    
+
     func pause(scheduleId: String) {
         coreModel.pauseObservation()
     }
-    
+
     func stop(scheduleId: String) {
         coreModel.stopObservation()
     }

@@ -21,20 +21,19 @@ struct ScheduleListHeader: View {
     @Binding var tasksCompleted: Double
     
     @EnvironmentObject var navigationModalState: NavigationModalState
-    private let stringTable = "DashboardView"
 
     var body: some View {
         VStack {
             TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: "tasks_completed")
                 .padding(.bottom)
-            if scheduleViewModel.numberOfObservationErrors() > 0 {
+            if scheduleViewModel.numberOfErrors > 0 {
                 MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
                     navigationModalState.openView(screen: .observationErrors)
                 } label: {
                     HStack {
                         Image(systemName: "exclamationmark.triangle")
                             .padding(.trailing, 2)
-                        Text(verbatim: String(scheduleViewModel.numberOfObservationErrors()))
+                        Text(verbatim: String(scheduleViewModel.numberOfErrors))
                         Text("Error")
                     }
                 }

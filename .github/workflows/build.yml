@@ -51,7 +51,7 @@ jobs:
 
   android:
     name: Android
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: PlayStore
     env:
       GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}

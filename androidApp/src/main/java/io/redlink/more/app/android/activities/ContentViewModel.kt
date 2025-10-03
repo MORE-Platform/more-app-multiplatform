@@ -31,9 +31,7 @@ import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,7 +83,6 @@ class ContentViewModel : ViewModel() {
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
 
         viewModelScope.launch(Dispatchers.IO) {
-            ViewManager.checkingForNewStudyData.first { !it }
             val modifiedDeepLink = rawDeepLink?.let { link ->
                 val sharedInstance = MoreApplication.shared
                     ?: throw IllegalStateException("MoreApplication.shared is not initialized")

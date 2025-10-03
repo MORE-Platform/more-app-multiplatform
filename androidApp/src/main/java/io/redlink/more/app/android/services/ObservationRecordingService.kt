@@ -34,6 +34,7 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -606,7 +607,7 @@ class ObservationRecordingService : Service() {
         }
 
         fun pause(scheduleId: String) {
-            if (MoreApplication.shared?.appIsInForeGround == true) {
+            if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
                 serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
@@ -618,7 +619,7 @@ class ObservationRecordingService : Service() {
         }
 
         fun stop(scheduleId: String) {
-            if (MoreApplication.shared?.appIsInForeGround == true) {
+            if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
@@ -630,7 +631,7 @@ class ObservationRecordingService : Service() {
         }
 
         fun stopAll() {
-            if (MoreApplication.shared?.appIsInForeGround == true) {
+            if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
