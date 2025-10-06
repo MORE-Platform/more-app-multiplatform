@@ -24,7 +24,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
     private var countJob: Job? = null
 
     private var scheduleCount = mutableMapOf<String, Long>()
-    private val konnection = Konnection.instance
+    protected val konnection = Konnection.instance
 
     init {
         Napier.i(tag = "ObservationDataManager::init") { "ObservationDataManager init!" }
@@ -63,7 +63,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         if (countJob == null) {
             Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Starting to listen for changes in datapoint counts" }
             countJob = Scope.repeatedLaunch(60000, Dispatchers.IO) {
-                if (konnection.isConnected()) {
+                if (isConnected()) {
                     val count = repository.observationData.getCount()
                     if (count > 0) {
                         Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Observation data count: $count! Sending data..." }
@@ -85,9 +85,11 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         countJob = null
     }
 
-    private fun deleteAll(idSet: Set<String>) {
-        Scope.launch(Dispatchers.IO) {
-            repository.observationData.deleteAllWithId(idSet)
-        }
+    protected fun isConnected() = konnection.isConnected()
+
+    protected suspend fun dataBulk() = repository.observationData.allAsBulk()
+
+    protected suspend fun deleteAll(idSet: Set<String>) {
+        repository.observationData.deleteAllWithId(idSet)
     }
 }
