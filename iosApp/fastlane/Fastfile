@@ -87,8 +87,6 @@ platform :ios do
                     bundle_identifier: identifier
                )
             end
-
-#             xcodes(version: "26.0-beta", select_for_current_build_only: true)
        end
 
       build_app(
