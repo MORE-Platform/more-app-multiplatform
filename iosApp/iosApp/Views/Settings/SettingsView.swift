@@ -7,22 +7,22 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
     @State private var exitButton = Color.more.important
-    
+
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("settings_text")
@@ -32,7 +32,7 @@ struct SettingsView: View {
                 ConsentList(permissionModel: permissions)
                     .padding(.top)
             }
-            
+
             Spacer()
         }
         .customNavigationTitle(with: NavigationScreen.settings.localize())

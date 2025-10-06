@@ -13,69 +13,29 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 import io.redlink.more.more_app_mutliplatform.database.AppDatabase
 import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
-import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.map
 
 class BluetoothDeviceRepository(
     private val database: AppDatabase
 ) {
-
-    private val deviceManager = BluetoothDeviceManager
-
-    init {
-        Scope.launch(Dispatchers.IO) {
-            pairedDevices().cancellable().collect {
-                deviceManager.addPairedDeviceIds(it.toSet())
-            }
-        }
-    }
-
-    fun count(): Flow<Long> = database.bluetoothDeviceDao().getAllFlow().map { it.size.toLong() }
-
     fun storePairedDevice(bluetoothDevice: BluetoothDeviceEntity) {
         if (bluetoothDevice.address != null) {
-            StudyScope.launch {
-                val existingDevice =
-                    database.bluetoothDeviceDao().getByAddress(bluetoothDevice.address!!)
-                if (existingDevice == null) {
-                    val entity = bluetoothDevice.toEntity()
-                    database.bluetoothDeviceDao().insert(entity)
-                }
+            Scope.launch(Dispatchers.IO) {
+                database.bluetoothDeviceDao().insert(bluetoothDevice)
             }
         }
     }
 
     fun unpairDevice(bluetoothDevice: BluetoothDeviceEntity) {
         bluetoothDevice.address?.let {
-            StudyScope.launch(Dispatchers.IO) {
+            Scope.launch(Dispatchers.IO) {
                 database.bluetoothDeviceDao().deleteByAddress(it)
             }
         }
     }
 
     fun pairedDevices(): Flow<List<BluetoothDeviceEntity>> =
-        database.bluetoothDeviceDao().getAllFlow().map { entities ->
-            entities.map { it.toBluetoothDevice() }
-        }
-
-    private fun BluetoothDeviceEntity.toEntity(): BluetoothDeviceEntity {
-        return BluetoothDeviceEntity(
-            deviceId = this.deviceId,
-            deviceName = this.deviceName,
-            address = this.address
-        )
-    }
-
-    private fun BluetoothDeviceEntity.toBluetoothDevice(): BluetoothDeviceEntity {
-        return BluetoothDeviceEntity(
-            this@toBluetoothDevice.deviceId,
-            this@toBluetoothDevice.deviceName,
-            this@toBluetoothDevice.address
-        )
-    }
+        database.bluetoothDeviceDao().getAllFlow()
 }

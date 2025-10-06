@@ -17,19 +17,18 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
  * Generic Error
  *
- * @param code 
- * @param msg 
+ * @param code
+ * @param msg
  */
 @Serializable
 
-data class Error (
+data class Error(
 
     @SerialName(value = "code") val code: kotlin.String? = null,
 

@@ -17,23 +17,22 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * 
+ *
  *
  * @param projectId The Google Cloud project ID
  * @param applicationId The Google App ID that is used to uniquely identify an instance of an app.
- * @param apiKey 
- * @param databaseUrl 
+ * @param apiKey
+ * @param databaseUrl
  * @param gcmSenderId The Project Number from the Google Developer's console
- * @param storageBucket 
+ * @param storageBucket
  */
 @Serializable
 
-data class FcmNotificationConfigAllOf (
+data class FcmNotificationConfigAllOf(
 
     /* The Google Cloud project ID */
     @SerialName(value = "projectId") val projectId: kotlin.String? = null,

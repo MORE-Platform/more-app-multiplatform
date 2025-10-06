@@ -59,7 +59,7 @@ interface StudyDao : BaseDao<StudyEntity> {
 
     @Query("SELECT COUNT(*) FROM studies WHERE active = :active")
     suspend fun getCountByActive(active: Boolean): Int
-    
+
     @Query("UPDATE studies SET state = :state WHERE studyId = :studyId")
     suspend fun updateStudyState(studyId: String, state: String)
 }

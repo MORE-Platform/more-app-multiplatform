@@ -7,28 +7,26 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct TaskCompletionBarView: View {
-    
     @StateObject var viewModel: TaskCompletionBarViewModel
     var progressViewTitle: String = ""
 
-    
     var body: some View {
         VStack {
             HStack {
                 if progressViewTitle != "" {
                     BasicText(text: progressViewTitle, color: Color.more.secondary)
                 }
-                
+
                 Spacer()
                 if viewModel.taskCompletion.totalTasks != 0 {
                     BasicText(text: String(format: "%.2f%%", viewModel.taskCompletionPercentage))

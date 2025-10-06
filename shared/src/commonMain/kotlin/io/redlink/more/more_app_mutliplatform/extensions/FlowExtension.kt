@@ -50,18 +50,6 @@ fun <T : Any?> MutableStateFlow<T>.asClosure(provideNewState: ((T) -> Unit)): Cl
     }
 }
 
-fun <T : Any?> MutableStateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
-    val job = Scope.create()
-    this.onEach {
-        provideNewState(it)
-    }.launchIn(CoroutineScope(Dispatchers.Main + job.second))
-    return object : Closeable {
-        override fun close() {
-            job.second.cancel()
-        }
-    }
-}
-
 fun <T : Any?> StateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)): Closeable {
     val job = Scope.create()
     this.onEach {
@@ -71,56 +59,6 @@ fun <T : Any?> StateFlow<T?>.asNullableClosure(provideNewState: ((T?) -> Unit)):
         override fun close() {
             job.second.cancel()
         }
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.append(value: T?) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.add(value ?: return)) {
-        this.set(mutableCollection)
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.appendIfNotContains(value: T, includes: (T) -> Boolean) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.firstOrNull(includes) == null) {
-        if (mutableCollection.add(value)) {
-            this.set(mutableCollection)
-        }
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.appendAll(value: Collection<T>) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.addAll(value)) {
-        this.set(mutableCollection)
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.remove(value: T?) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.remove(value ?: return)) {
-        this.set(mutableCollection)
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.removeWhere(includes: (T) -> Boolean) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.removeAll(includes)) {
-        this.set(mutableCollection)
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.removeAll(values: Collection<T>) {
-    val mutableCollection = this.value.toMutableSet()
-    if (mutableCollection.removeAll(values.toSet())) {
-        this.set(mutableCollection)
-    }
-}
-
-fun <T> MutableStateFlow<Set<T>>.clear() {
-    if (this.value.isNotEmpty()) {
-        this.set(emptySet())
     }
 }
 

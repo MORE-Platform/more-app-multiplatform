@@ -17,20 +17,19 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.Required
+import kotlinx.serialization.SerialName
 
 /**
- * 
  *
- * @param service 
+ *
+ * @param service
  */
-
 
 interface PushNotificationConfig {
 
-    @SerialName(value = "service") @Required val service: PushNotificationServiceType
+    @SerialName(value = "service")
+    @Required
+    val service: PushNotificationServiceType
 }
 

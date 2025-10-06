@@ -83,7 +83,7 @@ struct NavigationWithDestinations<Content: View>: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func viewForScreen(_ screen: NavigationScreen) -> some View {
         MoreMainBackgroundView(contentPadding: navigationModalState.horizontalContentPadding) {
@@ -143,17 +143,17 @@ enum Capitalization {
 extension View {
     @ViewBuilder
     func customNavigationTitle(with text: String, displayMode: NavigationBarItem.TitleDisplayMode = .inline) -> some View {
-        self.modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
+        modifier(NavigationTitleViewModifier(text: text, displayMode: displayMode))
     }
 
     @ViewBuilder
     func textFieldAutoCapitalizataion(capitalization: Capitalization) -> some View {
         if capitalization == .uppercase {
-            self.modifier(TextFieldViewModifier(capitalization: .characters))
+            modifier(TextFieldViewModifier(capitalization: .characters))
         } else if capitalization == .lowercase {
-            self.modifier(TextFieldViewModifier(capitalization: .never))
+            modifier(TextFieldViewModifier(capitalization: .never))
         } else {
-            self.modifier(TextFieldViewModifier(capitalization: .sentences))
+            modifier(TextFieldViewModifier(capitalization: .sentences))
         }
     }
 

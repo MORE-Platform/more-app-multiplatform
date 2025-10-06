@@ -32,7 +32,7 @@ class CoreBluetoothViewModel(
         coreBluetooth.viewDidDisappear()
     }
 
-    fun connectToDevice(device: BluetoothDeviceEntity): Boolean {
+    suspend fun connectToDevice(device: BluetoothDeviceEntity): Boolean {
         return coreBluetooth.connectToDevice(device)
     }
 

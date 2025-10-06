@@ -14,12 +14,12 @@
 //
 
 import BackgroundTasks
+import FirebaseCore
+import FirebaseCrashlyticsSwift
+import FirebaseMessaging
 import Foundation
 import shared
 import UIKit
-import FirebaseCore
-import FirebaseMessaging
-import FirebaseCrashlyticsSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     static let appGroup = "group.ac.at.lbg.dhp.more.group"
@@ -61,11 +61,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         return true
     }
-    
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Notification Received: \(userInfo)")
         AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
-        
+
         completionHandler(.newData)
     }
 
@@ -89,7 +89,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static func registerForNotifications() {
         DispatchQueue.main.async {
             if !UIApplication.shared.isRegisteredForRemoteNotifications {
-                UIApplication.shared.registerForRemoteNotifications()                
+                UIApplication.shared.registerForRemoteNotifications()
             }
         }
     }

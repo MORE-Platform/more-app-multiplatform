@@ -34,16 +34,16 @@ struct InfoView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            
+
             Spacer()
-            
+
             if let id = viewModel.participantId, let alias = viewModel.participantAlias {
                 HStack(alignment: .center) {
                     BasicText(text: "\("Participant") \(id): \(alias)", color: .more.secondary)
                 }
                 Divider()
             }
-            
+
             ContactInfo(
                 title: "info_contact_title",
                 info: "info_disclaimer",
@@ -52,7 +52,7 @@ struct InfoView: View {
                 contactEmail: viewModel.contactEmail,
                 contactPhoneNumber: viewModel.contactPhoneNumber
             )
-            
+
             Spacer()
             AppVersion()
         }

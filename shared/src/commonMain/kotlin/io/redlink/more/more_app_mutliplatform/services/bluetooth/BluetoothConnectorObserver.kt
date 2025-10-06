@@ -26,7 +26,5 @@ interface BluetoothConnectorObserver {
 
     fun removeDiscoveredDevice(device: BluetoothDeviceEntity)
 
-    fun isScanning(boolean: Boolean)
-
-    fun onBluetoothStateChange(bluetoothState: BluetoothState)
+    fun resetAll()
 }

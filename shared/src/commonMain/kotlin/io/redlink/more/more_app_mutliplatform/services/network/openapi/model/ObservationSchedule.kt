@@ -17,20 +17,19 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * 
  *
- * @param start 
- * @param end 
+ *
+ * @param start
+ * @param end
  */
 @Serializable
 
-data class ObservationSchedule (
+data class ObservationSchedule(
 
     @SerialName(value = "start") val start: Instant? = null,
 

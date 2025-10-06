@@ -17,18 +17,17 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * 
  *
- * @param token 
+ *
+ * @param token
  */
 @Serializable
 
-data class PushNotificationToken (
+data class PushNotificationToken(
 
     @SerialName(value = "token") val token: kotlin.String? = null
 

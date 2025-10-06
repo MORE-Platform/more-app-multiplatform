@@ -28,7 +28,7 @@ class AccelerometerBackgroundObservation: Observation_ {
     private let observationRepository: ObservationRepository
 
     init(repos: MainRepository, sensorPermissions: Set<String>) {
-        self.observationRepository = repos.observation
+        observationRepository = repos.observation
         super.init(repos: repos, observationType: AccelerometerType(sensorPermissions: sensorPermissions))
     }
 

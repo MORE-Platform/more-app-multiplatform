@@ -28,16 +28,16 @@ extension String {
             let regex = try! NSRegularExpression(pattern: RegexData.companion.url, options: [])
             let range = NSRange(location: 0, length: utf16.count)
             var markdownString = self
-            
+
             let matches = regex.matches(in: self, options: [], range: range).reversed()
-            
+
             for match in matches {
                 guard let range = Range(match.range, in: self) else { continue }
                 let url = String(self[range])
                 let markdown = "[\(url)](\(url))"
                 markdownString = markdownString.replacingCharacters(in: range, with: markdown)
             }
-            
+
             return markdownString
         }
         return self

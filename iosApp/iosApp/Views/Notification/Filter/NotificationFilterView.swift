@@ -7,31 +7,33 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct NotificationFilterView: View {
     @StateObject private var viewModel: NotificationFilterViewModel
     @State var filtersChanged = false
-    
+
     init(coreVM: CoreNotificationFilterViewModel) {
         _viewModel = StateObject(wrappedValue: NotificationFilterViewModel(coreViewModel: coreVM))
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView {
                 SectionHeading(sectionTitle: "Select Filter")
                     .padding(15)
                 Divider()
-                
-                ForEach(viewModel.allFilters.keys.sorted{$0.sortIndex < $1.sortIndex}, id: \.self) { filter in
+
+                ForEach(viewModel.allFilters.keys.sorted {
+                    $0.sortIndex < $1.sortIndex
+                }, id: \.self) { filter in
                     if let selected = viewModel.allFilters[filter] {
                         Button {
                             viewModel.toggleFilters(filter: filter)
@@ -42,14 +44,13 @@ struct NotificationFilterView: View {
                         .buttonStyle(.borderless)
                         .frame(maxWidth: .infinity)
                         Divider()
-                        
                     }
                 }
-            }.padding(.vertical, 20)
+            }
+            .padding(.vertical, 20)
             Spacer()
         }
         .customNavigationTitle(with: NavigationScreen.notificationFilter.localize())
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-

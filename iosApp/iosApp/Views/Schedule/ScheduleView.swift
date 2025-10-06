@@ -13,8 +13,8 @@
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
@@ -22,7 +22,7 @@ struct ScheduleView: View {
         VStack {
             ScrollViewReader { _ in
                 ScrollView(.vertical) {
-                    if (viewModel.schedulesByDate.isEmpty) {
+                    if viewModel.schedulesByDate.isEmpty {
                         if viewModel.scheduleListType == ScheduleListType.running {
                             EmptyListView(text: "No running tasks currently")
                         } else if viewModel.scheduleListType == ScheduleListType.completed {

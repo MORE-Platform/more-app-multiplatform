@@ -25,19 +25,19 @@ import kotlinx.serialization.json.JsonObject
 /**
  * The configuration of an observation for the study.
  *
- * @param observationId 
- * @param observationType 
- * @param observationTitle 
- * @param participantInfo 
- * @param schedule 
- * @param required 
+ * @param observationId
+ * @param observationType
+ * @param observationTitle
+ * @param participantInfo
+ * @param schedule
+ * @param required
  * @param version A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed.
- * @param configuration 
- * @param hidden 
+ * @param configuration
+ * @param hidden
  */
 @Serializable
 
-data class Observation (
+data class Observation(
 
     @SerialName(value = "observationId") @Required val observationId: kotlin.String,
 

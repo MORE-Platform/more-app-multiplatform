@@ -71,7 +71,7 @@ class MainViewModel(context: Context) : ViewModel() {
         }
 
         viewModelScope.launch {
-            ViewManager.showBluetoothView.collect {
+            ViewManager.bleViewActive.collect {
                 if (it && !lastBleViewState) {
                     openBLESetupActivity(context)
                 }

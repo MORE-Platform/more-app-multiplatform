@@ -12,7 +12,7 @@ struct MoreFilter: View {
     @Binding var filterText: String
     var destination: NavigationScreen
     var image = Image(systemName: "slider.horizontal.3")
-    
+
     @EnvironmentObject private var navigationModalState: NavigationModalState
 
     var body: some View {
