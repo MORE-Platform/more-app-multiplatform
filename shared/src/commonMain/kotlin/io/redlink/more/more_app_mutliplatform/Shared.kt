@@ -104,6 +104,7 @@ class Shared(
                             notificationManager.createNewFCMIfNecessary()
                             notificationManager.clearAllNotifications()
                             notificationManager.downloadMissedNotifications()
+                            dataRecorder.restartAll()
                         } else {
                             ViewManager.showBLEView(false)
                         }

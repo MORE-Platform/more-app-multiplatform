@@ -53,7 +53,7 @@ class PolarVerityHeartRateObservation: Observation_ {
                     print("HR Ready: \(hrReady)")
                     Task {
                         do {
-                            try await AppDelegate.shared.observationManager.startObservationType(type: self.observationType.observationType)
+                            try await AppDelegate.shared.observationManager.updateTaskStates()
                         } catch {
                             print("Cannot start polar observation: \(error)")
                         }

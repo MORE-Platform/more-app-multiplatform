@@ -75,9 +75,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
             polarController.hrFeatureChange.collect { (studyActive, hrReady) ->
                 if (studyActive) {
                     if (hrReady) {
-                        MoreApplication.shared!!.observationManager.startObservationType(
-                            super.observationType.observationType
-                        )
+                        MoreApplication.shared!!.observationManager.updateTaskStates()
                     } else {
                         Observation.pauseObservation(
                             super.observationType
@@ -97,21 +95,22 @@ class PolarHeartRateObservation(repos: MainRepository) :
             return polarDevices.firstOrNull()?.let {
                 try {
                     heartRateDisposable =
-                        polarConnector.polarApi.startHrStreaming(it.address!!).subscribe(
-                            { polarData ->
-                                storeData(mapOf("hr" to polarData.samples[0].hr))
-                            },
-                            { error ->
-                                Napier.e(
-                                    tag = "PolarHeartRateObservation::start",
-                                    message = "HR Recording error: ${error.stackTraceToString()}"
-                                )
-                                pauseObservation(PolarVerityHeartRateType(emptySet()))
-                                showObservationErrorNotification(
-                                    stringResource(R.string.observation_bluetooth_error),
-                                    stringResource(R.string.observation_error)
-                                )
-                            })
+                        polarConnector.polarApi.startHrStreaming(it.address!!)
+                            .subscribe(
+                                { polarData ->
+                                    storeData(mapOf("hr" to polarData.samples[0].hr))
+                                },
+                                { error ->
+                                    Napier.e(
+                                        tag = "PolarHeartRateObservation::start",
+                                        message = "HR Recording error: ${error.stackTraceToString()}"
+                                    )
+                                    pauseObservation(PolarVerityHeartRateType(emptySet()))
+                                    showObservationErrorNotification(
+                                        stringResource(R.string.observation_bluetooth_error),
+                                        stringResource(R.string.observation_error)
+                                    )
+                                })
                     deviceConnectionListener = listenToDeviceConnection()
                     true
                 } catch (exception: Exception) {

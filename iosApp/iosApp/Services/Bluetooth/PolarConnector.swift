@@ -201,7 +201,6 @@ class PolarConnector: NSObject, BluetoothConnector {
     }
 
     func resetAll() {
-        PolarStates.shared.resetAll()
         polarApi.cleanup()
     }
 }

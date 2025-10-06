@@ -19,7 +19,6 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -170,6 +169,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
 
                 val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
                 val activeIds = mutableSetOf<String>()
+                val pausingIds = mutableSetOf<String>()
 
                 schedules.forEach { scheduleEntity ->
                     val newState = scheduleEntity.updateState()
@@ -180,18 +180,18 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
                     }
 
                     if (newState == ScheduleState.RUNNING
-                        || (autoStartingObservations.isNotEmpty()
-                                && scheduleEntity.hidden
-                                && newState.active()
-                                && scheduleEntity.observationType in autoStartingObservations
-                                && observationFactory.observation(scheduleEntity.observationType)
-                            ?.bleDevicesNeeded()
-                            ?.let { needed ->
-                                BluetoothStateManagement.connectedDevices.value.map { it.deviceName }
-                                    .containsAll(needed)
-                            } != false)
+                        || scheduleEntity.hidden
+                        && newState.active()
+                        && scheduleEntity.observationType in autoStartingObservations
                     ) {
-                        activeIds.add(scheduleEntity.scheduleId)
+                        observationFactory.observation(scheduleEntity.observationType)
+                            ?.let { observation ->
+                                if (observation.observerAccessible()) {
+                                    activeIds.add(scheduleEntity.scheduleId)
+                                } else {
+                                    pausingIds.add(scheduleEntity.scheduleId)
+                                }
+                            }
                     }
                 }
 
@@ -201,6 +201,11 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
 
                 if (activeIds.isNotEmpty()) {
                     dataRecorder.startMultiple(activeIds)
+                }
+                if (pausingIds.isNotEmpty()) {
+                    pausingIds.forEach { scheduleId ->
+                        dataRecorder.pause(scheduleId)
+                    }
                 }
             } catch (e: Exception) {
                 Napier.e("Error updating schedule states", e)

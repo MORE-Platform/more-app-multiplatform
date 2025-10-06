@@ -49,7 +49,7 @@ class BluetoothController(
     init {
         bluetoothConnector.addObserver(this)
 
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             bluetoothDeviceRepository.pairedDevices().distinctUntilChanged().cancellable().collect {
                 bleManager.addPairedDeviceIds(it.toSet())
             }
@@ -80,8 +80,8 @@ class BluetoothController(
                 }
         }
 
-        Scope.launch(supervisor + Dispatchers.IO) {
-            bleManager.connectedDevices.collect {
+        Scope.launch {
+            bleManager.connectedDevices.collectLatest {
                 observationFactory.updateObservationErrors()
             }
         }
@@ -124,6 +124,14 @@ class BluetoothController(
             return
         }
         periodicScanJob = Scope.repeatedLaunch(interval, supervisor) {
+            if (!bleManager.uiOverride.value) {
+                while (!ViewManager.appInForeground.value) {
+                    delay(BACKGROUND_SCAN_DURATION)
+                }
+                if (bleManager.bgScanningActive.value) {
+                    delay(BACKGROUND_SCAN_DURATION)
+                }
+            }
             Napier.d { "Scanning for Bluetooth Devices..." }
             bluetoothConnector.scan()
             delay(duration)
@@ -196,8 +204,8 @@ class BluetoothController(
     override fun resetAll() {
         Napier.i(tag = "BluetoothController::resetAll") { "Resetting Bluetooth data!" }
         disableBackgroundScanner()
-        bleManager.uiOverrides(false)
         stopPeriodicScan()
+        bleManager.uiOverrides(false)
         bleManager.clearDiscovered()
         bluetoothConnector.resetAll()
     }
@@ -209,9 +217,8 @@ class BluetoothController(
 
     companion object {
         // Energy-optimized scanning intervals
-        private const val BACKGROUND_SCAN_DURATION = 1000L  // Reduced from 2s to 1s
-        private const val BACKGROUND_SCAN_INTERVAL =
-            30000L // Increased from 10s to 30s for better battery life
+        private const val BACKGROUND_SCAN_DURATION = 1500L
+        private const val BACKGROUND_SCAN_INTERVAL = 30000L
         private const val MAX_BACKGROUND_SCAN_INTERVAL = 300000L // Max 5 minutes between scans
     }
 }

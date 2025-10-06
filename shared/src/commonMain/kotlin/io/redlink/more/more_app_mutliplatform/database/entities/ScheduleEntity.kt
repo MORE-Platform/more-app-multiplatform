@@ -26,7 +26,7 @@ data class ScheduleEntity(
     fun endInstant() = end?.let { Instant.fromEpochSeconds(it) }
 
     fun updateState(specificState: ScheduleState? = null): ScheduleState {
-        val newState = if (specificState != null) {
+        return if (specificState != null) {
             specificState
         } else {
             val now = Clock.System.now().epochSeconds
@@ -42,18 +42,12 @@ data class ScheduleEntity(
                         }
 
                         now < startTime -> ScheduleState.DEACTIVATED
-                        startTime <= now && !getState().running() -> ScheduleState.ACTIVE
+                        startTime <= now && !getState().active() -> ScheduleState.ACTIVE
                         else -> ScheduleState.getState(state)
                     }
                 }
             } ?: ScheduleState.getState(state)
         }
-
-        return newState
-    }
-
-    fun equalsSchedule(other: ScheduleEntity): Boolean {
-        return scheduleId == other.scheduleId
     }
 
     override fun toString(): String {
