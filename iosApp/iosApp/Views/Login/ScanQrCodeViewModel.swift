@@ -6,10 +6,9 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
+import AVFoundation
 import shared
 import SwiftUI
-import AVFoundation
-
 
 enum CameraPermissionStatus: String {
     case idle = "Not Determined"
@@ -22,16 +21,16 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
     @Published var cameraSession = AVCaptureSession()
     @Published var cameraPermission: CameraPermissionStatus = .idle
     @Published var scannedCode: String? = nil
-    
+
     // Error Properties
     @Published var errorMessage: String = ""
     @Published var showError: Bool = false
-  
+
     // QR Code Scanner Output
     private let qrOutput = AVCaptureMetadataOutput()
     // Camera QR Code Output Delegate
     private let qrDelegate = QRScannerDelegate()
-    
+
     override init() {
         super.init()
         qrDelegate.onCodeScanned = { [weak self] code in
@@ -101,21 +100,20 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
                 guard let session = self?.cameraSession else { return }
                 session.startRunning()
             }
-            
+
         } catch {
             presentError(errorDescription: error.localizedDescription)
         }
     }
 
     func presentError(errorDescription: String?) {
-        if (errorDescription != nil) {
+        if errorDescription != nil {
             print("Error when setting up camera: ")
             print(errorDescription! as String)
         }
-    
+
         DispatchQueue.main.async {
             self.showError = true
-            
         }
     }
 }

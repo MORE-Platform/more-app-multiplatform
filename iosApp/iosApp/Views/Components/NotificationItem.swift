@@ -7,14 +7,14 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct NotificationItem: View {
     let notificationModel: NotificationModel
@@ -37,17 +37,17 @@ struct NotificationItem: View {
                         .font(.system(size: 10))
                 }
             }
-            
+
             HStack(alignment: .center) {
                 VStack(alignment: .leading) {
                     BasicText(text: notificationModel.notificationBody.applyHyperlinks().trimmingCharacters(in: .whitespacesAndNewlines), color: .more.secondary)
-                        
+
                     BasicText(text: (notificationModel.timestamp).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
                         .padding(.top, 4)
                 }
                 Spacer()
                 if notificationModel.deepLink != nil {
-                    if (!notificationModel.read || notificationModel.completed) {
+                    if !notificationModel.read || notificationModel.completed {
                         Image(systemName: notificationModel.completed ? "checkmark.circle" : "chevron.right")
                             .foregroundColor(notificationModel.completed ? .more.approved : .more.secondary)
                     }

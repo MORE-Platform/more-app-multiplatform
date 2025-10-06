@@ -24,17 +24,17 @@ import kotlinx.serialization.Serializable
 /**
  * configuration-settings for Firebase Cloud Messaging
  *
- * @param service 
+ * @param service
  * @param projectId The Google Cloud project ID
  * @param applicationId The Google App ID that is used to uniquely identify an instance of an app.
- * @param apiKey 
- * @param databaseUrl 
+ * @param apiKey
+ * @param databaseUrl
  * @param gcmSenderId The Project Number from the Google Developer's console
- * @param storageBucket 
+ * @param storageBucket
  */
 @Serializable
 
-data class FcmNotificationConfig (
+data class FcmNotificationConfig(
 
     @SerialName(value = "service") @Required override val service: PushNotificationServiceType,
 

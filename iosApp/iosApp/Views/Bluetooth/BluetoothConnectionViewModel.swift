@@ -13,11 +13,11 @@
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
 import Combine
-import KMPNativeCoroutinesCombine
 import Dispatch
+import Foundation
+import KMPNativeCoroutinesCombine
+import shared
 
 class BluetoothConnectionViewModel: ObservableObject {
     private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.bluetoothController)
@@ -38,7 +38,7 @@ class BluetoothConnectionViewModel: ObservableObject {
     init() {
         createPublisher(for: bleManager.connectedDevices)
         .map { devices in
-            return Array(devices)
+            Array(devices)
             .compactMap { device -> BluetoothDeviceEntity? in
                 guard let name = device.deviceName, !name.isEmpty else {
                     return nil

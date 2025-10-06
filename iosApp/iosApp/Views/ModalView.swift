@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,33 +18,33 @@ import SwiftUI
 struct ModalView<T: View>: UIViewControllerRepresentable {
     let view: T
     let isModal: Bool
-    let onDismissalAttempt: (()->())?
-    
+    let onDismissalAttempt: (() -> Void)?
+
     func makeUIViewController(context: Context) -> UIHostingController<T> {
         UIHostingController(rootView: view)
     }
-    
+
     func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) {
         context.coordinator.modalView = self
         uiViewController.rootView = view
         uiViewController.parent?.presentationController?.delegate = context.coordinator
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, UIAdaptivePresentationControllerDelegate {
         var modalView: ModalView
-        
+
         init(_ modalView: ModalView) {
             self.modalView = modalView
         }
-        
+
         func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
             !modalView.isModal
         }
-        
+
         func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {
             modalView.onDismissalAttempt?()
         }
@@ -52,7 +52,7 @@ struct ModalView<T: View>: UIViewControllerRepresentable {
 }
 
 extension View {
-    func presentation(isModal: Bool, onDismissalAttempt: (()->())? = nil) -> some View {
+    func presentation(isModal: Bool, onDismissalAttempt: (() -> Void)? = nil) -> some View {
         ModalView(view: self, isModal: isModal, onDismissalAttempt: onDismissalAttempt)
     }
 }

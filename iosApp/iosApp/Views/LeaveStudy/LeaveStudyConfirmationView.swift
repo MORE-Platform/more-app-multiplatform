@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -25,7 +25,6 @@ struct LeaveStudyConfirmationView: View {
     @State private var neumorphicSliderOffsetX: CGFloat = 0
     @State private var alertPresented: Bool = false
     @State var continueButton = Color.more.approved
-
 
     var body: some View {
         MoreMainBackgroundView {

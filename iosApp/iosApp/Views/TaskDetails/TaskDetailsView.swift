@@ -27,7 +27,7 @@ struct TaskDetailsView: View {
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
     private let errorStrings = "Errors"
-    
+
     init(scheduleId: String) {
         _viewModel = StateObject(wrappedValue: TaskDetailsViewModel(scheduleId: scheduleId))
     }
@@ -65,7 +65,7 @@ struct TaskDetailsView: View {
                         DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
                     }
                     Spacer()
-                    
+
                     VStack {
                         ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
                             .background(
@@ -84,7 +84,7 @@ struct TaskDetailsView: View {
                                 }
                             )
                             .frame(maxWidth: .infinity, maxHeight: 100)
-                        
+
                         if !detailsModel.hidden {
                             if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                                 Divider()
@@ -94,13 +94,11 @@ struct TaskDetailsView: View {
                                     observationType: detailsModel.observationType,
                                     state: detailsModel.state,
                                     disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
-                                .padding(.bottom)
+                                    .padding(.bottom)
                             }
                         }
                     }
-
                 }
-                
             }
             .customNavigationTitle(with: NavigationScreen.taskDetails.localize())
             .onAppear {

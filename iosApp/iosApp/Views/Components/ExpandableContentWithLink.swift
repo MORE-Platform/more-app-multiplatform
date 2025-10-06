@@ -19,10 +19,10 @@ struct ExpandableContentWithLink<Content: View>: View {
     @State var content: () -> Content
     @State var title: () -> String
     @Binding var expanded: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading) {
-            HStack() {
+            HStack {
                 SectionHeading(sectionTitle: title())
                 Spacer()
                 UIToggleFoldViewButton(isOpen: $expanded)
@@ -33,9 +33,9 @@ struct ExpandableContentWithLink<Content: View>: View {
                     expanded.toggle()
                 }
             }
-            
+
             Divider().padding(.bottom)
-            
+
             if expanded {
                 VStack {
                     self.content()

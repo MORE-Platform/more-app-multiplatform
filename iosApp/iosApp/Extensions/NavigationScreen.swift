@@ -30,7 +30,7 @@ enum NavigationParameter: String {
 
 enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     var id: Self { self }
-    
+
     case dashboard
     case notifications
     case info

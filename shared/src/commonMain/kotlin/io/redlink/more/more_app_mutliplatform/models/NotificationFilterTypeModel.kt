@@ -17,11 +17,13 @@ enum class NotificationFilterTypeModel(val type: String, val sortIndex: Int) {
 
     companion object {
         fun createModel(type: String): NotificationFilterTypeModel? {
-            return when(type) {
+            return when (type) {
                 ALL.type -> ALL
                 UNREAD.type -> UNREAD
                 IMPORTANT.type -> IMPORTANT
-                else -> { null }
+                else -> {
+                    null
+                }
             }
         }
     }

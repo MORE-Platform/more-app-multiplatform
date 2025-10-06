@@ -222,9 +222,6 @@ class Shared(
                     repositories.notification.deleteAll()
                     ViewManager.studyError(false)
                     repositories.study.upsert(study)
-//                    if (study.studyState?.let { StudyState.getState(it) }?.isActive() == true) {
-//                        observationFactory.updateObservationErrors()
-//                    }
                     viewManager.studyIsUpdating(false)
                 } else {
                     Napier.d(tag = "Shared::updateStudy") { "No study update needed - study data is unchanged" }

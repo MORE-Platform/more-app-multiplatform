@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -19,9 +19,9 @@ struct SimpleQuestionThankYouView: View {
     @EnvironmentObject var questionModelState: NavigationModalState
     private let navigationStrings = "Navigation"
     private let simpleQuestionStrings = "SimpleQuestionObservation"
-    
+
     var body: some View {
-        MoreMainBackgroundView {        
+        MoreMainBackgroundView {
             VStack(
                 alignment: .leading,
                 spacing: 10
@@ -33,7 +33,7 @@ struct SimpleQuestionThankYouView: View {
                     .padding(.bottom, 8)
                 BasicText(text: "thank_you_participation", color: .more.secondary)
                 Spacer()
-                
+
                 MoreActionButton(disabled: .constant(false)) {
                     questionModelState.closeView(screen: .questionObservationThanks)
                 } label: {
@@ -46,5 +46,4 @@ struct SimpleQuestionThankYouView: View {
         .padding(.horizontal, 40)
         .customNavigationTitle(with: NavigationScreen.questionObservation.localize(), displayMode: .inline)
     }
-    
 }

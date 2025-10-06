@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -25,21 +25,23 @@ struct MoreActionButton<ButtonLabel: View>: View {
     var alertOpen: Binding<Bool> = .constant(false)
     let action: () -> Void
     var label: () -> ButtonLabel
-    var errorAlert: () -> Alert = {Alert(title: Text("Alert"), dismissButton: .default(Text("Ok")))}
+    var errorAlert: () -> Alert = {
+        Alert(title: Text("Alert"), dismissButton: .default(Text("Ok")))
+    }
 
     var body: some View {
-        Button(action: action){
+        Button(action: action) {
             label()
-        .frame(maxWidth: maxWidth)
-        .padding()
-        .foregroundColor(disabled ? disabeldColor : .more.white)
-        .background(disabled ? disabledBackgroundColor : backgroundColor)
-        .cornerRadius(.moreBorder.cornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
-                .stroke(disabled ? disabeldBorderColor : backgroundColor, lineWidth: 1)
-        )
-    }
+                .frame(maxWidth: maxWidth)
+                .padding()
+                .foregroundColor(disabled ? disabeldColor : .more.white)
+                .background(disabled ? disabledBackgroundColor : backgroundColor)
+                .cornerRadius(.moreBorder.cornerRadius)
+                .overlay(
+                    RoundedRectangle(cornerRadius: .moreBorder.cornerRadius)
+                        .stroke(disabled ? disabeldBorderColor : backgroundColor, lineWidth: 1)
+                )
+        }
         .disabled(disabled)
         .alert(isPresented: alertOpen, content: errorAlert)
     }

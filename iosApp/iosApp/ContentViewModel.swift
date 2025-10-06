@@ -7,17 +7,17 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
 import BackgroundTasks
-import KMPNativeCoroutinesCombine
 import Combine
+import Foundation
+import KMPNativeCoroutinesCombine
+import shared
 
 class ContentViewModel: ObservableObject {
     @Published var hasCredentials = false
@@ -27,7 +27,6 @@ class ContentViewModel: ObservableObject {
     @Published var showBleView = false
 
     @Published var mainTabViewSelection = 0
-
 
     @Published var alertDialogModel: AlertDialogModel? = nil
     @Published var unreadNotificationCount: Int = 0
@@ -47,7 +46,6 @@ class ContentViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-
         createPublisher(for: AppDelegate.shared.credentialRepository.credentials)
         .receive(on: DispatchQueue.main)
         .sink(receiveCompletion: { _ in }) { [weak self] credentials in
@@ -67,7 +65,6 @@ class ContentViewModel: ObservableObject {
             self?.credentialsLoaded = loaded
         }
         .store(in: &cancellables)
-
 
         createPublisher(for: ViewManager.shared.studyIsUpdating)
         .receive(on: DispatchQueue.main)
@@ -90,7 +87,6 @@ class ContentViewModel: ObservableObject {
         }
         .store(in: &cancellables)
 
-
         AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
             self?.unreadNotificationCount = kInt.intValue
         }
@@ -106,7 +102,6 @@ class ContentViewModel: ObservableObject {
         return limeSurveyVM
     }
 
-
     private func reinitAllViewModels() {
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -116,4 +111,3 @@ class ContentViewModel: ObservableObject {
         infoViewModel = InfoViewModel()
     }
 }
-

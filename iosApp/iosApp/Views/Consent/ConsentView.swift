@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -19,32 +19,31 @@ import SwiftUI
 struct ConsentView: View {
     @StateObject private var viewModel: ConsentViewModel
     @ObservedObject private var registration: RegistrationObservable
-    
+
     init(registration: RegistrationObservable) {
         _registration = ObservedObject(wrappedValue: registration)
         _viewModel = StateObject(wrappedValue: ConsentViewModel(registrationService: registration.service))
     }
-    
+
     var body: some View {
         if let permissionModel = viewModel.permissionModel {
             VStack {
                 Title2(titleText: permissionModel.studyTitle)
                     .padding(.bottom, 30)
-                
+
                 ScrollView {
                     ExpandableText(permissionModel.studyParticipantInfo, "Participant Information", lineLimit: 4)
                         .padding(.bottom, 35)
-                    
+
                     ConsentList(permissionModel: permissionModel)
                 }
-                
+
                 Spacer()
                 if registration.isLoading {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .tint(.more.primary)
                 } else {
-                    
                     MoreActionButton(disabled: .constant(viewModel.requestedPermissions || registration.isLoading), alertOpen: $viewModel.showErrorAlert) {
                         viewModel.requestPermissions()
                     } label: {

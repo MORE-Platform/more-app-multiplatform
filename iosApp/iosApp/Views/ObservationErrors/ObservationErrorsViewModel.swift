@@ -6,10 +6,10 @@
 //  Copyright © 2024 Redlink GmbH. All rights reserved.
 //
 
-import Foundation
-import shared
-import KMPNativeCoroutinesCombine
 import Combine
+import Foundation
+import KMPNativeCoroutinesCombine
+import shared
 
 class ObservationErrorsViewModel: ObservableObject {
     @Published var observationErrors: [String] = []

@@ -62,7 +62,7 @@ class LocalPushNotifications: LocalNotificationListener {
             requestLocalNotification(identifier: notification.notificationId, title: title, subtitle: body)
         }
     }
-    
+
     func updateBadgeCount(count: Int32) {
         AppDelegate.appGroupUserDefaults?.set(Int(count), forKey: LocalPushNotifications.notificationCountKey)
         UNUserNotificationCenter.current().setBadgeCount(Int(count)) { error in

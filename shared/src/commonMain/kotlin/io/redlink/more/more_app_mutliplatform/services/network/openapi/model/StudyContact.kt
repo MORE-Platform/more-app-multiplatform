@@ -17,7 +17,6 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -31,7 +30,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 
-data class StudyContact (
+data class StudyContact(
 
     @SerialName(value = "institute") val institute: kotlin.String? = null,
 
@@ -41,5 +40,5 @@ data class StudyContact (
 
     @SerialName(value = "phoneNumber") val phoneNumber: kotlin.String? = null,
 
-)
+    )
 

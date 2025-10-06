@@ -13,14 +13,14 @@
 //  https://commonsclause.com/).
 //
 
+import Combine
 import CoreBluetooth
 import Foundation
+import KMPNativeCoroutinesCombine
 import PolarBleSdk
 import RxSwift
 import shared
 import UIKit
-import Combine
-import KMPNativeCoroutinesCombine
 
 class PolarVerityHeartRateObservation: Observation_ {
     private let deviceIdentificer: Set<String> = ["Polar"]
@@ -42,10 +42,10 @@ class PolarVerityHeartRateObservation: Observation_ {
     private static var lastCannotStartNotificationDate: Date?
 
     init(repos: MainRepository, sensorPermissions: Set<String>) {
-        self.polarController = PolarController(repos: repos)
+        polarController = PolarController(repos: repos)
         super.init(repos: repos, observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
 
-        createPublisher(for: self.polarController.hrFeatureChange)
+        createPublisher(for: polarController.hrFeatureChange)
         .receive(on: DispatchQueue.main)
         .sink(receiveCompletion: { _ in }) { pair in
             if let studyActive = pair.first?.boolValue, studyActive {
@@ -151,4 +151,3 @@ class PolarVerityHeartRateObservation: Observation_ {
             })
     }
 }
-

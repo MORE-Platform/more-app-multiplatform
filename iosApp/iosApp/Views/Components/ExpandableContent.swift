@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -19,17 +19,17 @@ struct ExpandableContent<Content: View>: View {
     @State var content: () -> Content
     @State var title: () -> String
     @State private var expanded: Bool = false
-    
+
     var body: some View {
         VStack(alignment: .leading) {
-            HStack() {
+            HStack {
                 SectionHeading(sectionTitle: title())
                 Spacer()
                 UIToggleFoldViewButton(isOpen: $expanded)
             }
-            
+
             Divider()
-            
+
             if expanded {
                 VStack {
                     self.content()
@@ -39,13 +39,11 @@ struct ExpandableContent<Content: View>: View {
                 .transition(.opacity.combined(with: .scale))
                 .padding(.top, 8)
             }
-
         }
         .padding(.bottom)
         .animation(.easeOut(duration: 0.3), value: expanded)
     }
 }
-
 
 struct ExpandableContent_Preview: PreviewProvider {
     static var previews: some View {

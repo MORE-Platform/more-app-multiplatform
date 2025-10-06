@@ -7,14 +7,14 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct BluetoothConnectionView: View {
     @StateObject private var viewModel = BluetoothConnectionViewModel()
@@ -53,7 +53,6 @@ struct BluetoothConnectionView: View {
                         BasicText(text: "You can connect to and disconnect from devices at any time: Info > Devices", color: Color.more.secondary)
                             .padding(.top, 8)
                     }
-
 
                     if viewModel.bluetoothPower {
                         Section(header: SectionHeading(sectionTitle: "Connected devices")) {

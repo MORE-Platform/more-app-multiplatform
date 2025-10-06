@@ -19,7 +19,7 @@ struct ScheduleListHeader: View {
     @ObservedObject var scheduleViewModel: ScheduleViewModel
     @Binding var totalTasks: Double
     @Binding var tasksCompleted: Double
-    
+
     @EnvironmentObject var navigationModalState: NavigationModalState
 
     var body: some View {
@@ -44,4 +44,3 @@ struct ScheduleListHeader: View {
         }
     }
 }
-

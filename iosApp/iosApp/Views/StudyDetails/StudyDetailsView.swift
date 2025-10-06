@@ -33,22 +33,22 @@ struct StudyDetailsView: View {
                 Title2(titleText: viewModel.studyDetailsModel?.study.studyTitle ?? "")
                     .padding(.top)
                     .padding(.bottom)
-                
+
                 TaskCompletionBarView(viewModel: TaskCompletionBarViewModel(), progressViewTitle: "tasks_completed")
                     .padding(.bottom, 0.2)
-                
+
                 HStack(alignment: .center) {
                     BasicText(text: "study_duration")
-                    
+
                     Spacer()
                     BasicText(text: (viewModel.studyStart.formattedString()) + " - " + (viewModel.studyEnd.formattedString()),
                               color: Color.more.secondary
                     )
                 }.padding(.bottom)
-                
+
                 ExpandableText(viewModel.studyDetailsModel?.study.participantInfo ?? "", "participant_info", lineLimit: 4)
                     .padding(.bottom, 35)
-                
+
                 ExpandableContentWithLink(
                     content: {
                         ScrollView {
@@ -66,7 +66,7 @@ struct StudyDetailsView: View {
                     },
                     title: { String(localized: "obs_modules") }, expanded: $isObservationListOpen
                 ).padding(.top, 0.5)
-                
+
                 Spacer()
             }
         }
@@ -85,4 +85,3 @@ struct StudyDetailsView_Previews: PreviewProvider {
         StudyDetailsView(viewModel: StudyDetailsViewModel())
     }
 }
-

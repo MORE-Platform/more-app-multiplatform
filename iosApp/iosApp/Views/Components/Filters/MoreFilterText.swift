@@ -10,7 +10,7 @@ import SwiftUI
 
 struct MoreFilterText: View {
     @Binding var text: String
-    
+
     var body: some View {
         Text(LocalizedStringKey(text))
             .font(.system(size: 16))
@@ -18,5 +18,3 @@ struct MoreFilterText: View {
             .foregroundColor(Color.more.secondary)
     }
 }
-
-

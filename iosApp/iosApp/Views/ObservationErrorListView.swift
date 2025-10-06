@@ -19,7 +19,7 @@ struct ObservationErrorListView: View {
         if !taskObservationErrors.isEmpty || !taskObservationErrorActions.isEmpty {
             VStack {
                 if !taskObservationErrors.isEmpty {
-                        ScrollView {
+                    ScrollView {
                         VStack {
                             ForEach(taskObservationErrors, id: \.self) { error in
                                 HStack {
@@ -35,7 +35,7 @@ struct ObservationErrorListView: View {
                     }
                     .frame(maxHeight: 100)
                 }
-                
+
                 if !taskObservationErrorActions.isEmpty {
                     if taskObservationErrorActions
                         .contains(Observation_.companion.ERROR_DEVICE_NOT_CONNECTED) {
@@ -58,5 +58,4 @@ struct ObservationErrorListView: View {
 
 #Preview {
     ObservationErrorListView(taskObservationErrors: ["Error"], taskObservationErrorActions: [Observation_.companion.ERROR_DEVICE_NOT_CONNECTED])
-        
 }

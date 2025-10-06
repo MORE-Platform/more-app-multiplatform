@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -23,7 +23,7 @@ protocol WebViewListener {
 class WebViewViewModel: NSObject, ObservableObject {
     private static let webViewProgressObserverKey = "estimatedProgress"
     let webView = WKWebView(frame: .zero)
-    
+
     var delegate: WebViewListener?
 
     @Published var progress: Float = 0

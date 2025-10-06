@@ -24,17 +24,17 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 /**
- * 
  *
- * @param dataId 
- * @param observationId 
- * @param observationType 
- * @param dataValue 
- * @param timestamp 
+ *
+ * @param dataId
+ * @param observationId
+ * @param observationType
+ * @param dataValue
+ * @param timestamp
  */
 @Serializable
 
-data class ObservationData (
+data class ObservationData(
 
     @SerialName(value = "dataId") @Required val dataId: kotlin.String,
 

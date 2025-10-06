@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,7 +18,7 @@ import shared
 
 class IOSDataRecorder: DataRecorder {
     private var runningSchedules: Set<String> = Set()
-    
+
     func start(scheduleId: String) {
         if !runningSchedules.contains(scheduleId) {
             Task { @MainActor in
@@ -32,9 +32,12 @@ class IOSDataRecorder: DataRecorder {
             }
         }
     }
-    
+
     func startMultiple(scheduleIds: Set<String>) {
-        scheduleIds.filter{!runningSchedules.contains($0)}.forEach { id in
+        scheduleIds.filter {
+            !runningSchedules.contains($0)
+        }
+        .forEach { id in
             Task { @MainActor in
                 do {
                     if (try await AppDelegate.shared.observationManager.start(scheduleId: id)).boolValue {
@@ -46,22 +49,22 @@ class IOSDataRecorder: DataRecorder {
             }
         }
     }
-    
+
     func pause(scheduleId: String) {
         AppDelegate.shared.observationManager.pause(scheduleId: scheduleId)
         runningSchedules.remove(scheduleId)
     }
-    
+
     func stop(scheduleId: String) {
         AppDelegate.shared.observationManager.stop(scheduleId: scheduleId)
         runningSchedules.remove(scheduleId)
     }
-    
+
     func stopAll() {
         AppDelegate.shared.observationManager.stopAll()
         runningSchedules.removeAll()
     }
-    
+
     func restartAll() {
         Task { @MainActor in
             do {
@@ -71,7 +74,7 @@ class IOSDataRecorder: DataRecorder {
             }
         }
     }
-    
+
     func updateTaskStates() {
         Task {
             do {
@@ -81,7 +84,7 @@ class IOSDataRecorder: DataRecorder {
             }
         }
     }
-    
+
     func activateScheduleUpdate() {
         AppDelegate.shared.observationManager.activateScheduleUpdate()
     }

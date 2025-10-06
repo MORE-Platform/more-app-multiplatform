@@ -6,26 +6,25 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
-import SwiftUI
 import AVKit
+import SwiftUI
 
 // Camera View using built in AVCaptureVideoPreviewLayer
 struct QRCodeCameraView: UIViewRepresentable {
     var frameSize: CGSize
     @Binding var cameraSession: AVCaptureSession
-    
+
     func makeUIView(context: Context) -> UIView {
-      let view = CameraPreviewView()
+        let view = CameraPreviewView()
         view.configure(session: cameraSession)
-        
+
         return view
     }
-    
+
     func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.setNeedsLayout()
     }
 }
-
 
 struct QRCodeCameraView_Previews: PreviewProvider {
     @State static var previewSession = AVCaptureSession()
@@ -37,4 +36,3 @@ struct QRCodeCameraView_Previews: PreviewProvider {
         )
     }
 }
-

@@ -7,16 +7,16 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import shared
-import SwiftUI
 import Combine
 import KMPNativeCoroutinesCombine
+import shared
+import SwiftUI
 
 class TaskDetailsViewModel: ObservableObject {
     private let coreModel: CoreTaskDetailsViewModel
@@ -26,6 +26,7 @@ class TaskDetailsViewModel: ObservableObject {
             updateTaskObservationErrors()
         }
     }
+
     @Published var dataCount: Int64 = 0
     @Published var taskObservationErrors: [String] = []
     @Published var taskObservationErrorAction: [String] = []
@@ -41,8 +42,8 @@ class TaskDetailsViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init(scheduleId: String) {
-        self.coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleId: scheduleId)
-        self.simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
+        coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleId: scheduleId)
+        simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { [weak self] taskDetails in
             if let self {
                 if let taskDetails {
@@ -66,7 +67,6 @@ class TaskDetailsViewModel: ObservableObject {
         .store(in: &cancellables)
     }
 
-
     func viewDidAppear() {
         coreModel.viewDidAppear()
     }
@@ -78,7 +78,7 @@ class TaskDetailsViewModel: ObservableObject {
     func getDateRangeString() -> String {
         let startDate = taskDetailsModel?.start.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
         let endDate = taskDetailsModel?.end.toDateString(dateFormat: "dd.MM.yyyy") ?? ""
-        if (startDate != endDate) {
+        if startDate != endDate {
             return startDate + " - " + endDate
         }
         return startDate
@@ -90,14 +90,14 @@ class TaskDetailsViewModel: ObservableObject {
 
     private func updateTaskObservationErrors() {
         if let taskDetailsModel {
-            self.taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType]?.filter {
+            taskObservationErrors = Array(observationErrors[taskDetailsModel.observationType]?.filter {
                 $0 != Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
             } ?? [])
-            self.taskObservationErrorAction = Array(observationErrors[taskDetailsModel.observationType]?.filter {
+            taskObservationErrorAction = Array(observationErrors[taskDetailsModel.observationType]?.filter {
                 $0 == Observation_.companion.ERROR_DEVICE_NOT_CONNECTED
             } ?? [])
         } else {
-            self.taskObservationErrors = []
+            taskObservationErrors = []
         }
     }
 }

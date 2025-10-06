@@ -13,9 +13,9 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import Combine
 import KMPNativeCoroutinesCombine
+import shared
 
 class ScheduleViewModel: ObservableObject {
     let recorder = AppDelegate.shared.dataRecorder
@@ -73,4 +73,3 @@ extension ScheduleViewModel: ObservationActionDelegate {
         coreModel.stop(scheduleId: scheduleId)
     }
 }
-

@@ -17,7 +17,6 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -29,11 +28,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 
-data class Participant (
+data class Participant(
 
     @SerialName(value = "alias") val alias: kotlin.String? = null,
 
     @SerialName(value = "id") val id: kotlin.Int? = null,
 
-)
+    )
 
