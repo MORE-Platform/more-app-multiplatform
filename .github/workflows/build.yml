@@ -9,7 +9,7 @@ on:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-15
+    runs-on: macos-26
     environment: AppStore
     env:
       FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
@@ -40,11 +40,11 @@ jobs:
         with:
           xcode-version: '26.0.1'
 
-      # Needs to be removed, after github fixed an issue with the Xcode 26 beta version
-      - name: Download iOS 26.0 Platform
-        run: |
-          xcodebuild -downloadPlatform iOS
-        working-directory: .
+      #      # Needs to be removed, after github fixed an issue with the Xcode 26 beta version
+      #      - name: Download iOS 26.0 Platform
+      #        run: |
+      #          xcodebuild -downloadPlatform iOS
+      #        working-directory: .
 
       - name: Build iOS app
         run: fastlane build
