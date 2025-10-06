@@ -128,7 +128,6 @@ class RegistrationService(
                     study?.let { study ->
                         shared.observationFactory.clearNeededObservationTypes()
                         shared.repositories.study.upsert(study)
-                        shared.resetFirstStartUp()
                         shared.newLogin()
                     } ?: run {
                         if (_error.value == null) {

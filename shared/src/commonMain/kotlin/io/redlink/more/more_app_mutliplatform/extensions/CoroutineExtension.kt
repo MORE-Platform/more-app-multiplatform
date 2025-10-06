@@ -20,10 +20,14 @@ import kotlin.coroutines.CoroutineContext
 
 fun CoroutineScope.repeatEveryFewSeconds(
     intervalMillis: Long,
+    initialDelay: Long = 0,
     coroutineContext: CoroutineContext = Dispatchers.Default,
     action: suspend CoroutineScope.() -> Unit
 ): Job {
     return launch(coroutineContext) {
+        if (initialDelay > 0) {
+            delay(initialDelay)
+        }
         while (isActive) {
             action()
             delay(intervalMillis)

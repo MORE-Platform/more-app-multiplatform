@@ -17,20 +17,19 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * 
  *
- * @param observationId 
- * @param active 
+ *
+ * @param observationId
+ * @param active
  */
 @Serializable
 
-data class ObservationConsent (
+data class ObservationConsent(
 
     @SerialName(value = "observationId") @Required val observationId: kotlin.String,
 

@@ -13,22 +13,23 @@ package io.redlink.more.more_app_mutliplatform.viewModels.schedules
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
+import io.redlink.more.more_app_mutliplatform.extensions.mapState
 import io.redlink.more.more_app_mutliplatform.extensions.time
 import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -38,8 +39,7 @@ class CoreScheduleViewModel(
     private val repos: MainRepository,
     private val dataRecorder: DataRecorder,
     private val scheduleListType: ScheduleListType,
-    val coreFilterModel: CoreDashboardFilterViewModel,
-    private val observationFactory: ObservationFactory,
+    val coreFilterModel: CoreDashboardFilterViewModel
 ) : CoreViewModel() {
     private var originalScheduleList = emptySet<ScheduleModel>()
 
@@ -48,26 +48,27 @@ class CoreScheduleViewModel(
     @NativeCoroutines
     val schedulesByDate: StateFlow<Map<Long, List<ScheduleModel>>> = _schedulesByDate
 
-    private val _observationErrors = MutableStateFlow<Map<String, Set<String>>>(emptyMap())
+    private val parentJob = SupervisorJob()
 
     @NativeCoroutines
-    val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
+    val observationErrors: StateFlow<Map<String, Set<String>>> =
+        ObservationStates.observationErrors.mapState(
+            CoroutineScope(parentJob)
+        ) {
+            it.mapValues { entry ->
+                entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
+            }
+        }
+
+    @NativeCoroutines
+    val numberOfErrors: StateFlow<Int> = observationErrors.mapState(CoroutineScope(parentJob)) {
+        it.values.flatten().toSet().count()
+    }
 
     private val sortedSchedulesCache = mutableMapOf<LocalDate, List<ScheduleModel>>()
     private var cacheVersion = 0L
 
     init {
-        launchScope {
-            observationFactory.observationErrors.collect {
-                val errors = it.mapValues { entry ->
-                    entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }.toSet()
-                }
-                withContext(Dispatchers.Main) {
-                    _observationErrors.update { errors }
-                }
-            }
-        }
-
         launchScope {
             coreFilterModel.currentTypeFilter
                 .combine(coreFilterModel.currentDateFilter) { typeFilter, dateFilter ->
@@ -136,8 +137,6 @@ class CoreScheduleViewModel(
     private fun createManualTasks(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return createModels(scheduleList.filter { !it.hidden })
     }
-
-    fun numberOfObservationErrors(): Int = _observationErrors.value.values.flatten().toSet().count()
 
     private fun updateSchedulesFromSnapshot(newSchedules: Collection<ScheduleModel>) {
         val newMap: Map<Long, List<ScheduleModel>> =

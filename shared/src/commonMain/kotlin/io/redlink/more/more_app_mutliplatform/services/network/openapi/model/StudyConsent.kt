@@ -17,7 +17,6 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,12 +26,12 @@ import kotlinx.serialization.Serializable
  *
  * @param consent Explicitly state the consent of the Participant
  * @param deviceId Identifier of the device used to provide consent
- * @param consentInfoMD5 MD5-Hash of the `consentInfo` (text) the participant actually gave consent. 
- * @param observations 
+ * @param consentInfoMD5 MD5-Hash of the `consentInfo` (text) the participant actually gave consent.
+ * @param observations
  */
 @Serializable
 
-data class StudyConsent (
+data class StudyConsent(
 
     /* Explicitly state the consent of the Participant */
     @SerialName(value = "consent") @Required val consent: kotlin.Boolean = false,

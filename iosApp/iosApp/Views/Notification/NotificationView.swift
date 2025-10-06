@@ -20,7 +20,7 @@ struct NotificationView: View {
     @StateObject private var notificationViewModel: NotificationViewModel
 
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    
+
     init(coreFilterVM: CoreNotificationFilterViewModel) {
         _notificationViewModel = StateObject(wrappedValue: NotificationViewModel(filterViewModel: coreFilterVM))
     }

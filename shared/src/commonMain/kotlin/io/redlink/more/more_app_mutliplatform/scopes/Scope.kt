@@ -108,10 +108,11 @@ object Scope {
     fun repeatedLaunch(
         intervalMillis: Long,
         coroutineContext: CoroutineContext = Dispatchers.Default,
+        initalDelay: Long = 0,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val uuid = createUUID()
-        val job = scope.repeatEveryFewSeconds(intervalMillis, coroutineContext, block)
+        val job = scope.repeatEveryFewSeconds(intervalMillis, initalDelay, coroutineContext, block)
 
         scope.launch {
             mutex.withLock {

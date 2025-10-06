@@ -20,7 +20,8 @@ import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreBluetoothViewModel
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +60,7 @@ class BluetoothViewModel : ViewModel() {
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.discoveredDevices.collect {
+            BluetoothStateManagement.discoveredDevices.collect {
                 withContext(Dispatchers.Main) {
                     discoveredDevices.clear()
                     discoveredDevices.addAll(it)
@@ -68,7 +69,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.connectedDevices.collect {
+            BluetoothStateManagement.connectedDevices.collect {
                 withContext(Dispatchers.Main) {
                     connectedDevices.clear()
                     connectedDevices.addAll(it)
@@ -77,7 +78,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            coreBluetoothViewModel.coreBluetooth.isScanning.collect {
+            BluetoothStateManagement.scanning.collect {
                 withContext(Dispatchers.Main) {
                     isScanning.value = it
                 }
@@ -101,7 +102,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.devicesCurrentlyConnecting.collect {
+            BluetoothStateManagement.devicesCurrentlyConnecting.collect {
                 withContext(Dispatchers.Main) {
                     connectingDevices.clear()
                     connectingDevices.addAll(it.mapNotNull { it.address })
@@ -121,7 +122,9 @@ class BluetoothViewModel : ViewModel() {
     }
 
     fun connectToDevice(device: BluetoothDeviceEntity) {
-        coreBluetoothViewModel.connectToDevice(device)
+        Scope.launch {
+            coreBluetoothViewModel.connectToDevice(device)
+        }
     }
 
     fun disconnectFromDevice(device: BluetoothDeviceEntity) {

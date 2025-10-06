@@ -10,15 +10,18 @@
  */
 package io.redlink.more.more_app_mutliplatform.extensions
 
-import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
-import platform.Foundation.*
+import platform.Foundation.NSJSONSerialization
+import platform.Foundation.NSJSONWritingPrettyPrinted
+import platform.Foundation.NSString
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.create
 
 @OptIn(ExperimentalForeignApi::class)
 actual fun Any.asString(): String? {
     return try {
         NSJSONSerialization.dataWithJSONObject(this, NSJSONWritingPrettyPrinted, null)?.let {
-           return NSString.create(it, NSUTF8StringEncoding) as String?
+            return NSString.create(it, NSUTF8StringEncoding) as String?
         }
     } catch (e: Exception) {
         println(e)

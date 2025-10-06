@@ -130,11 +130,9 @@ class NotificationManager(
         }
     }
 
-    fun downloadMissedNotifications() {
-        Scope.launch(Dispatchers.IO) {
-            Napier.d { "Updating notifications" }
-            storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
-        }
+    suspend fun downloadMissedNotifications() {
+        Napier.d { "Updating notifications" }
+        storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
     }
 
     fun deleteNotificationFromRepository(notificationId: String) {

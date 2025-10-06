@@ -12,10 +12,6 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
-import io.redlink.more.more_app_mutliplatform.extensions.appendAll
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.clear
-import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
@@ -23,12 +19,8 @@ import io.redlink.more.more_app_mutliplatform.services.notification.Notification
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 
 abstract class ObservationFactory(
     repository: MainRepository,
@@ -39,11 +31,6 @@ abstract class ObservationFactory(
 
     private val _studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
-    private val _observationErrors: MutableStateFlow<Map<String, Set<String>>> =
-        MutableStateFlow(emptyMap())
-    val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
-
-    private var observationErrorWatcher: Job? = null
 
     init {
         observations.add(SimpleQuestionObservation(repository))
@@ -51,33 +38,19 @@ abstract class ObservationFactory(
         Scope.launch(Dispatchers.IO) {
             repository.observation.observationTypes().collect {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
-                _studyObservationTypes.clear()
-                _studyObservationTypes.appendAll(it)
-            }
-        }
-        Scope.launch(Dispatchers.IO) {
-            studyObservationTypes.collect {
-                if (it.isNotEmpty()) {
-                    listenToObservationErrors()
-                } else {
-                    observationErrorWatcher?.cancel()
-                    observationErrorWatcher = null
-                    _observationErrors.update { emptyMap() }
-                }
+                _studyObservationTypes.value = it
             }
         }
     }
 
     fun addNeededObservationTypes(observationTypes: Set<String>) {
         Napier.i(tag = "ObservationFactory::addNeededObservationTypes") { "Adding observation types to studyObservationTypes: $observationTypes" }
-        _studyObservationTypes.appendAll(observationTypes)
+        _studyObservationTypes.value += observationTypes
     }
 
     fun clearNeededObservationTypes() {
-        _studyObservationTypes.clear()
-        observationErrorWatcher?.cancel()
-        observationErrorWatcher = null
-        _observationErrors.update { emptyMap() }
+        _studyObservationTypes.value = setOf()
+        ObservationStates.resetAll()
     }
 
     fun setCredentialsRepository(credentialRepository: CredentialRepository) {
@@ -113,22 +86,7 @@ abstract class ObservationFactory(
         return autoStartTypes
     }
 
-    private fun listenToObservationErrors() {
-        val flowList = studyObservations().map { it.observationErrors }
-        val combinedFlow = combine(flowList) { values ->
-            values.toMap()
-        }
-        observationErrorWatcher?.cancel()
-        observationErrorWatcher = Scope.launch(Dispatchers.IO) {
-            Napier.d(tag = "ObservationFactory::listenToObservationErrors") { "Listening for observation errors" }
-            combinedFlow.cancellable().collect {
-                _observationErrors.set(it)
-                Napier.d(tag = "ObservationFactory::updateObservationErrors") { observationErrors.value.toString() }
-            }
-        }.second
-    }
-
-    fun updateObservationErrors() {
+    suspend fun updateObservationErrors() {
         if (this.credentialRepository?.hasCredentials?.value == true) {
             studyObservations().forEach { it.updateObservationErrors() }
         }
@@ -147,6 +105,4 @@ abstract class ObservationFactory(
     private fun studyObservations() =
         observations.filter { it.observationType.observationType in studyObservationTypes.value }
 
-    fun observationErrorsAsClosure(state: (Map<String, Set<String>>) -> Unit) =
-        observationErrors.asClosure(state)
 }

@@ -8,17 +8,17 @@
 
 import shared
 
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 struct ScanQRCodeView: View {
     @StateObject private var viewModel = ScanQRCodeViewModel()
     @ObservedObject var model: LoginViewModel
-    
+
     // Error Properties
     @State private var errorMessage: String = ""
     @Environment(\.openURL) private var openURL
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Button {
@@ -28,32 +28,32 @@ struct ScanQRCodeView: View {
                     .foregroundColor(.more.textDefault)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Image("more_welcome")
                 .padding(.top, 20)
                 .padding(.bottom, 10)
-            
+
             HStack(spacing: 8) {
                 Image(systemName: "qrcode.viewfinder")
                     .font(.largeTitle)
                     .foregroundColor(.more.textDefault)
-                
+
                 Text("scan_qr_code")
                     .foregroundColor(.more.primary)
             }
-            
+
             Spacer(minLength: 0)
-            
+
             /// Scanner Frame
             ZStack {
                 GeometryReader {
                     let size = $0.size
-                    
+
                     QRCodeCameraView(frameSize: CGSize(width: size.width, height: size.height), cameraSession: $viewModel.cameraSession)
-                        .onAppear() {
+                        .onAppear {
                             viewModel.setupCamera()
                         }
-                    
+
                     ZStack {
                         ForEach(0...4, id: \.self) { index in
                             let rotation = Double(index) * 90
@@ -66,8 +66,8 @@ struct ScanQRCodeView: View {
                     .frame(width: size.width, height: size.width)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                
-                if(viewModel.showError) {
+
+                if viewModel.showError {
                     HStack(spacing: 8) {
                         Text("provide_camera_access")
                             .foregroundColor(.more.important)
@@ -77,7 +77,7 @@ struct ScanQRCodeView: View {
                     }
                 }
             }
-           
+
             Spacer(minLength: 45)
         }
         .padding(15)
@@ -113,4 +113,3 @@ struct ScanQRCodeView_Previews: PreviewProvider {
         ScanQRCodeView(model: LoginViewModel(registration: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
     }
 }
-

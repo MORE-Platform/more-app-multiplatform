@@ -12,7 +12,6 @@ package io.redlink.more.more_app_mutliplatform
 
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyState
@@ -21,6 +20,7 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
@@ -34,23 +34,27 @@ import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
     val repositories: MainRepository,
-    private val sharedStorageRepository: SharedStorageRepository,
+    sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
-    val mainBluetoothConnector: BluetoothConnector,
+    mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder
 ) {
     private val viewManager = ViewManager
     val deeplinkManager = DeeplinkManager(repositories, observationFactory)
     val endpointRepository = EndpointRepository(sharedStorageRepository)
-    val credentialRepository = CredentialRepository(sharedStorageRepository)
+    val credentialRepository = CredentialRepository(sharedStorageRepository).also {
+        observationFactory.setCredentialsRepository(it)
+    }
     val networkService = NetworkService(endpointRepository, credentialRepository)
 
     val observationManager = ObservationManager(
@@ -59,7 +63,11 @@ class Shared(
         dataRecorder
     )
     val bluetoothController =
-        BluetoothController(repositories.bluetoothDevice, mainBluetoothConnector)
+        BluetoothController(
+            repositories.bluetoothDevice,
+            mainBluetoothConnector,
+            observationFactory = observationFactory
+        )
     val notificationManager =
         NotificationManager(
             repositories,
@@ -68,105 +76,55 @@ class Shared(
             deeplinkManager,
             sharedStorageRepository
         )
-
-    var appIsInForeGround = false
+            .also { observationFactory.setNotificationManager(it) }
 
     val unreadNotificationCount = notificationManager.unreadUserCount
-
-    private var bluetoothListener: Job? = null
 
     private val mutex = Mutex()
     private val konnection = Konnection.instance
 
     init {
-        onApplicationStart()
-        observationFactory.setCredentialsRepository(credentialRepository)
-        observationFactory.setNotificationManager(notificationManager)
-    }
-
-    private fun onApplicationStart() {
-        if (credentialRepository.hasCredentials.value) {
-            activateObservationWatcher()
-        }
-    }
-
-    fun appInForeground(boolean: Boolean) {
-        if (appIsInForeGround == boolean) {
-            return
-        }
-        Napier.i { "App is in foreground: $boolean" }
-        appIsInForeGround = boolean
-        if (appIsInForeGround) {
-            if (credentialRepository.hasCredentials.value) {
-                updateStudyBlocking()
-                notificationManager.createNewFCMIfNecessary()
-                bluetoothListener?.cancel()
-
-                bluetoothListener = StudyScope.launch(Dispatchers.IO) {
-                    bluetoothController.listenToConnectionChanges(
-                        observationFactory
-                    )
-                }.second
-                if (repositories.study.studyState.value == StudyState.ACTIVE) {
-                    observationFactory.updateObservationErrors()
-                    updateTaskStates()
-                }
-            }
-            notificationManager.clearAllNotifications()
-        } else {
-            ViewManager.showBLEView(false)
-        }
-    }
-
-    fun updateTaskStates() {
-        if (appIsInForeGround && credentialRepository.hasCredentials.value && repositories.study.studyState.value == StudyState.ACTIVE) {
-            observationManager.updateTaskStates()
-            notificationManager.downloadMissedNotifications()
-            bluetoothController.startScanningForDevices(observationFactory.bleDevicesNeeded())
-        }
-    }
-
-    private fun activateObservationWatcher() {
         Scope.launch {
-            repositories.study.studyState.collect { state ->
-                if (state == StudyState.ACTIVE) {
-                    observationDataManager.listenToDatapointCountChanges()
-                    updateTaskStates()
-                    observationManager.activateScheduleUpdate()
-                } else {
-                    stopObservations()
+            var prevFg: Boolean? = null
+            var prevState: Boolean? = null
+            combine(
+                ViewManager.appInForeground,
+                credentialRepository.hasCredentials,
+                repositories.study.studyState
+            ) { fg, cred, state -> Pair(fg, cred && state.isActive()) }
+                .distinctUntilChanged()
+                .collectLatest { (fg, state) ->
+                    ViewManager.currentStudyActive(state)
+                    if (fg != prevFg && (state == prevState || prevState == null && state)) {
+                        Napier.d(tag = "Shared::init") { "App went to foreground: $fg, study state: $state" }
+                        if (fg && state) {
+                            updateStudy()
+                            observationManager.updateTaskStates()
+                            observationFactory.updateObservationErrors()
+                            notificationManager.createNewFCMIfNecessary()
+                            notificationManager.clearAllNotifications()
+                            notificationManager.downloadMissedNotifications()
+                        } else {
+                            ViewManager.showBLEView(false)
+                        }
+                    } else if (fg == prevFg && prevState != null && state != prevState) {
+                        Napier.d(tag = "Shared::init") { "Study state changed: $prevState -> $state" }
+                        if (state) {
+                            observationDataManager.listenToDatapointCountChanges()
+                            observationManager.activateScheduleUpdate()
+                            Scope.launch {
+                                observationManager.updateTaskStates()
+                                observationFactory.updateObservationErrors()
+                            }
+                        } else {
+                            stopObservations()
+                            ViewManager.showBLEView(false)
+                            ObservationStates.resetAll()
+                        }
+                    }
+                    prevFg = fg
+                    prevState = state
                 }
-            }
-        }
-    }
-
-    fun resetFirstStartUp() {
-        log { "Resetting first login to true..." }
-        sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, true)
-        log {
-            "Reset! First login is ${
-                sharedStorageRepository.load(
-                    FIRST_OPEN_AFTER_LOGIN_KEY,
-                    true
-                )
-            }"
-        }
-    }
-
-    private fun firstStartUp(): Boolean {
-        return if (sharedStorageRepository.load(FIRST_OPEN_AFTER_LOGIN_KEY, true)) {
-            log { "Setting first startup to false..." }
-            sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, false)
-            true
-        } else false
-    }
-
-    private fun updateStudyBlocking(
-        oldStudyState: StudyState? = null,
-        newStudyState: StudyState? = null
-    ) {
-        Scope.launch(Dispatchers.Main) {
-            updateStudy(oldStudyState, newStudyState)
         }
     }
 
@@ -264,10 +222,6 @@ class Shared(
                     repositories.notification.deleteAll()
                     ViewManager.studyError(false)
                     repositories.study.upsert(study)
-                    if (study.studyState?.let { StudyState.getState(it) } == StudyState.ACTIVE) {
-                        resetFirstStartUp()
-                        observationFactory.updateObservationErrors()
-                    }
                     viewManager.studyIsUpdating(false)
                 } else {
                     Napier.d(tag = "Shared::updateStudy") { "No study update needed - study data is unchanged" }
@@ -276,15 +230,9 @@ class Shared(
         }
     }
 
-    fun newLogin() {
+    suspend fun newLogin() {
         notificationManager.newFCMToken()
         observationFactory.updateObservationErrors()
-        bluetoothListener?.cancel()
-        bluetoothListener = StudyScope.launch {
-            bluetoothController.listenToConnectionChanges(
-                observationFactory
-            )
-        }.second
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
@@ -300,17 +248,6 @@ class Shared(
             clearSharedStorage()
             onDeletion()
             viewManager.resetAll()
-        }
-    }
-
-    fun clearRemainingData() {
-        Napier.i { "Clearing remaining data..." }
-        bluetoothController.resetAll()
-        Scope.launch {
-            removeStudyData()
-            observationFactory.clearNeededObservationTypes()
-            clearSharedStorage()
-            notificationManager.clearAllNotifications()
         }
     }
 
@@ -330,8 +267,4 @@ class Shared(
 
     fun unreadNotificationCountAsClosure(state: (Int) -> Unit) =
         unreadNotificationCount.asClosure(state)
-
-    companion object {
-        const val FIRST_OPEN_AFTER_LOGIN_KEY = "first_open_after_login_key"
-    }
 }

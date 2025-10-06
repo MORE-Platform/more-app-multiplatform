@@ -15,15 +15,13 @@ import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEnti
 import io.redlink.more.more_app_mutliplatform.database.entities.ObservationDataEntity
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -48,14 +46,6 @@ abstract class Observation(
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
     var timestampCollectionJob: Job? = null
-
-    private val _observationErrors = MutableStateFlow<Pair<String, Set<String>>>(
-        Pair(
-            this.observationType.observationType,
-            emptySet()
-        )
-    )
-    val observationErrors: StateFlow<Pair<String, Set<String>>> = _observationErrors;
 
     fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
@@ -99,7 +89,9 @@ abstract class Observation(
         if (removeNotification) {
             handleNotification(scheduleId)
         }
-        updateObservationErrors()
+        Scope.launch {
+            updateObservationErrors()
+        }
     }
 
     fun observationDataManagerAdded() = dataManager != null
@@ -149,29 +141,25 @@ abstract class Observation(
     fun observerAccessible(): Boolean {
         val errors = observerErrors()
         Napier.d(tag = "Observation::observerAccessible") { errors.toString() }
-        updateObservationErrors()
+        Scope.launch {
+            updateObservationErrors()
+        }
         return errors.isEmpty()
+
     }
 
     protected open fun observerErrors(): Set<String> = emptySet()
 
-    fun updateObservationErrors() {
-        StudyScope.launch(Dispatchers.IO) {
-            repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
-                if (it.isNotEmpty()) {
-                    Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
+    suspend fun updateObservationErrors() {
+        repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
+            if (it.isNotEmpty()) {
+                Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
 
-                    if (repos.study.studyState.value == StudyState.ACTIVE) {
-                        _observationErrors.value = Pair(
-                            observationType.observationType,
-                            observerErrors()
-                        )
-                    } else {
-                        _observationErrors.value = Pair(
-                            observationType.observationType,
-                            emptySet()
-                        )
-                    }
+                if (repos.study.studyState.value.isActive()) {
+                    ObservationStates.updateObservationErrors(
+                        observationType.observationType,
+                        observerErrors()
+                    )
                 }
             }
         }
@@ -207,7 +195,9 @@ abstract class Observation(
             saveAndSend()
             observationShutdown(scheduleId)
         }
-        updateObservationErrors()
+        Scope.launch {
+            updateObservationErrors()
+        }
     }
 
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
@@ -224,7 +214,9 @@ abstract class Observation(
                 observationShutdown(it)
             }
         }
-        updateObservationErrors()
+        Scope.launch {
+            updateObservationErrors()
+        }
     }
 
     fun stopAndSetDone(scheduleId: String) {
@@ -240,7 +232,9 @@ abstract class Observation(
             observationShutdown(scheduleId)
             removeDataCount()
             handleNotification(scheduleId)
-            updateObservationErrors()
+            Scope.launch {
+                updateObservationErrors()
+            }
         }
     }
 

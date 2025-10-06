@@ -17,20 +17,19 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Credentials for the App for interacting with the backends 
+ * Credentials for the App for interacting with the backends
  *
- * @param apiId 
- * @param apiKey 
+ * @param apiId
+ * @param apiKey
  */
 @Serializable
 
-data class ApiKey (
+data class ApiKey(
 
     @SerialName(value = "apiId") @Required val apiId: kotlin.String,
 

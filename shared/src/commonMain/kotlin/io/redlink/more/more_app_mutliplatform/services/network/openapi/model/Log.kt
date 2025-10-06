@@ -23,7 +23,7 @@ data class Log(
     val user: User? = null,
     val tag: String? = null,
     val throwable: LogThrowable? = null,
-){
+) {
     val timestamp: String = Clock.System.now().toString()
     val platform: Platform = getPlatform()
 }

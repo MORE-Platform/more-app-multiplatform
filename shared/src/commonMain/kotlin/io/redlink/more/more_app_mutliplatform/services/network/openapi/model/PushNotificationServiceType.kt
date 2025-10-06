@@ -17,7 +17,6 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,16 +44,17 @@ enum class PushNotificationServiceType(val value: kotlin.String) {
         /**
          * Converts the provided [data] to a [String] on success, null otherwise.
          */
-        fun encode(data: kotlin.Any?): kotlin.String? = if (data is PushNotificationServiceType) "$data" else null
+        fun encode(data: kotlin.Any?): kotlin.String? =
+            if (data is PushNotificationServiceType) "$data" else null
 
         /**
          * Returns a valid [PushNotificationServiceType] for [data], null otherwise.
          */
         fun decode(data: kotlin.Any?): PushNotificationServiceType? = data?.let {
-          val normalizedData = "$it".lowercase()
-          values().firstOrNull { value ->
-            it == value || normalizedData == "$value".lowercase()
-          }
+            val normalizedData = "$it".lowercase()
+            values().firstOrNull { value ->
+                it == value || normalizedData == "$value".lowercase()
+            }
         }
     }
 }

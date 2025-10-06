@@ -25,7 +25,6 @@ struct LoginView: View {
     @State private var showEndpoint = false
     @State private var disabledQRCodeButton = false
 
-
     init(registration: RegistrationObservable) {
         _registration = ObservedObject(wrappedValue: registration)
         _model = StateObject(wrappedValue: LoginViewModel(registration: registration.service))

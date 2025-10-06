@@ -20,7 +20,7 @@ struct LimeSurveyView: View {
 
     private let stringsTable = "LimeSurvey"
     var body: some View {
-        MoreMainBackgroundView(contentPadding: 0) {        
+        MoreMainBackgroundView(contentPadding: 0) {
             VStack {
                 if viewModel.dataLoading {
                     HStack {

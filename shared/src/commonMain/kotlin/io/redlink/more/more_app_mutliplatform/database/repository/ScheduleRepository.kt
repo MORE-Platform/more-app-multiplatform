@@ -19,18 +19,20 @@ import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 class ScheduleRepository(private val appDatabase: AppDatabase) {
+
+    private val mutex = Mutex()
 
     fun count() = appDatabase.scheduleDao().countAsFlow()
 
@@ -43,6 +45,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
 
     fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleEntity?> {
         return appDatabase.scheduleDao().getByObservationIdFlow(observationId)
+            .distinctUntilChanged()
             .transform { scheduleList ->
                 val observation = appDatabase.observationDao().getByObservationId(observationId)
                 if (observation?.scheduleLess == true) {
@@ -151,101 +154,58 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         return appDatabase.scheduleDao().getById(id)
     }
 
-    fun updateTaskStates(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
-        StudyScope.launch {
-            updateTaskStatesSync(observationFactory, dataRecorder)
-        }
-    }
-
-    suspend fun updateTaskStatesSync(
+    suspend fun updateTaskStates(
         observationFactory: ObservationFactory,
         dataRecorder: DataRecorder
     ) {
-        val autoStartingObservations = observationFactory.autoStartableObservations()
-        Napier.i { "Updating Schedule states..." }
-
-        try {
-            val schedules = appDatabase.scheduleDao().getByDone(false)
-
-            val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
-            val activeIds = mutableSetOf<String>()
-
-            schedules.forEach { scheduleEntity ->
-                val newState = scheduleEntity.updateState()
-
-                if (scheduleEntity.getState() != newState) {
-                    stateUpdates.add(scheduleEntity.scheduleId to newState)
-                    Napier.i { "State update for Entity: $scheduleEntity; ${scheduleEntity.getState()} -> $newState" }
-                }
-
-                if (newState == ScheduleState.RUNNING
-                    || (autoStartingObservations.isNotEmpty()
-                            && scheduleEntity.hidden
-                            && newState.active()
-                            && scheduleEntity.observationType in autoStartingObservations
-                            && observationFactory.observation(scheduleEntity.observationType)
-                        ?.bleDevicesNeeded()
-                        ?.let { needed ->
-                            BluetoothDeviceManager.connectedDevices.value.map { it.deviceName }
-                                .containsAll(needed)
-                        } != false)
-                ) {
-                    activeIds.add(scheduleEntity.scheduleId)
-                }
-            }
-
-            StudyScope.launch(Dispatchers.IO) {
-                stateUpdates.forEach { (scheduleId, newState) ->
-                    appDatabase.scheduleDao().updateState(scheduleId, newState.name)
-                }
-            }
-
-            if (activeIds.isNotEmpty()) {
-                dataRecorder.startMultiple(activeIds)
-            }
-        } catch (e: Exception) {
-            Napier.e("Error updating schedule states", e)
+        if (mutex.isLocked) {
+            return
         }
-    }
-
-    suspend fun updateTaskStatesWithBLEDevices(
-        observationFactory: ObservationFactory,
-        dataRecorder: DataRecorder
-    ) {
-        val autoStartingObservations = observationFactory.autoStartableObservations()
-        if (autoStartingObservations.isNotEmpty()) {
-            Napier.i { "Updating Schedule states using Bluetooth devices..." }
+        mutex.withLock {
+            val autoStartingObservations = observationFactory.autoStartableObservations()
+            Napier.i { "Updating Schedule states..." }
 
             try {
                 val schedules = appDatabase.scheduleDao().getByDone(false)
 
-                val activeIds = schedules.filter { scheduleEntity ->
-                    observationFactory.observation(scheduleEntity.observationType)
-                        ?.bleDevicesNeeded()
-                        ?.isNotEmpty() == true && scheduleEntity.observationType in autoStartingObservations
-                }.mapNotNull { scheduleEntity ->
+                val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
+                val activeIds = mutableSetOf<String>()
+
+                schedules.forEach { scheduleEntity ->
                     val newState = scheduleEntity.updateState()
 
-                    if (newState.active() && scheduleEntity.hidden && observationFactory.observation(
-                            scheduleEntity.observationType
-                        )?.bleDevicesNeeded()
-                            ?.let { needed ->
-                                BluetoothDeviceManager.connectedDevices.value.map { it.deviceName }
-                                    .containsAll(needed)
-                            } != false
-                    ) {
-                        scheduleEntity.scheduleId
-                    } else {
-                        null
+                    if (scheduleEntity.getState() != newState) {
+                        stateUpdates.add(scheduleEntity.scheduleId to newState)
+                        Napier.i { "State update for Entity: $scheduleEntity; ${scheduleEntity.getState()} -> $newState" }
                     }
-                }.toSet()
+
+                    if (newState == ScheduleState.RUNNING
+                        || (autoStartingObservations.isNotEmpty()
+                                && scheduleEntity.hidden
+                                && newState.active()
+                                && scheduleEntity.observationType in autoStartingObservations
+                                && observationFactory.observation(scheduleEntity.observationType)
+                            ?.bleDevicesNeeded()
+                            ?.let { needed ->
+                                BluetoothStateManagement.connectedDevices.value.map { it.deviceName }
+                                    .containsAll(needed)
+                            } != false)
+                    ) {
+                        activeIds.add(scheduleEntity.scheduleId)
+                    }
+                }
+
+                stateUpdates.forEach { (scheduleId, newState) ->
+                    appDatabase.scheduleDao().updateState(scheduleId, newState.name)
+                }
 
                 if (activeIds.isNotEmpty()) {
                     dataRecorder.startMultiple(activeIds)
                 }
             } catch (e: Exception) {
-                Napier.e("Error updating schedule states with BLE devices", e)
+                Napier.e("Error updating schedule states", e)
             }
         }
+
     }
 }

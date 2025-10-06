@@ -7,56 +7,56 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-
-import shared
 import Combine
 import KMPNativeCoroutinesCombine
-
+import shared
 
 class NotificationViewModel: ObservableObject {
     private let filterViewModel: CoreNotificationFilterViewModel
     private let coreModel: CoreNotificationViewModel
-    
+
     @Published var notificationList: [NotificationModel] = []
-    
+
     @Published var filterText: String = ""
-    
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(filterViewModel: CoreNotificationFilterViewModel) {
         self.filterViewModel = filterViewModel
-        self.coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager, protocolReplacement: nil, hostReplacement: nil)
-        
+        coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager, protocolReplacement: nil, hostReplacement: nil)
+
         createPublisher(for: coreModel.notificationList)
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: {_ in}) { [weak self] notifications in
-                self?.notificationList = notifications
-            }
-            .store(in: &cancellables)
-        
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] notifications in
+            self?.notificationList = notifications
+        }
+        .store(in: &cancellables)
+
         createPublisher(for: filterViewModel.activeTypes)
-            .map { (types: Set<String>) -> String in
-                guard !types.isEmpty else { return "" }
-                return types.sorted().joined(separator: ", ")
+        .map { (types: Set<String>) -> String in
+            guard !types.isEmpty else {
+                return ""
             }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] text in
-                self?.filterText = text
-            }
-            .store(in: &cancellables)
+            return types.sorted().joined(separator: ", ")
+        }
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] text in
+            self?.filterText = text
+        }
+        .store(in: &cancellables)
     }
-    
+
     func handleNotificationAction(notification: NotificationModel, navigationModalState: NavigationModalState) {
-        coreModel.handleNotificationAction(notification: notification) { (actionHandler, data) in
-            switch(actionHandler) {
+        coreModel.handleNotificationAction(notification: notification) { actionHandler, data in
+            switch actionHandler {
             case NotificationActionHandler.deeplink:
                 if let uri = URL(string: data) {
                     navigationModalState.openWithDeepLink(url: uri, notificationId: notification.notificationId)
@@ -67,4 +67,3 @@ class NotificationViewModel: ObservableObject {
         }
     }
 }
-

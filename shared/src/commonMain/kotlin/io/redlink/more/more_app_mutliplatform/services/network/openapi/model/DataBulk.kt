@@ -24,12 +24,12 @@ import kotlinx.serialization.Serializable
 /**
  * A bulk of observation data containing a unique id, the API Key of the participant and the array of observation data
  *
- * @param bulkId 
- * @param dataPoints 
+ * @param bulkId
+ * @param dataPoints
  */
 @Serializable
 
-data class DataBulk (
+data class DataBulk(
 
     @SerialName(value = "bulkId") @Required val bulkId: kotlin.String,
 

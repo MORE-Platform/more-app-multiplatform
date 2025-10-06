@@ -4,8 +4,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,7 +16,7 @@ class ObservationErrorViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.observationFactory.observationErrors.collect {
+            ObservationStates.observationErrors.collect {
                 Napier.d { it.toString() }
                 val (actions, errors) = it.values.flatten().toSet()
                     .partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
@@ -29,6 +29,5 @@ class ObservationErrorViewModel : ViewModel() {
             }
         }
     }
-
 
 }

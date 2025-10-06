@@ -52,7 +52,7 @@ class CoreSettingsViewModel(
             }
         }
     }
-    
+
     fun exitStudy() {
         shared.exitStudy {
             _dataDeleted.value = true

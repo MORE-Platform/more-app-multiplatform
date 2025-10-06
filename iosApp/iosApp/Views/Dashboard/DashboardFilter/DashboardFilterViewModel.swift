@@ -15,19 +15,19 @@ protocol DashboardFilterObserver {
 
 class DashboardFilterViewModel: ObservableObject {
     let coreViewModel: CoreDashboardFilterViewModel = CoreDashboardFilterViewModel(repository: AppDelegate.shared.repositories)
-    
-    var delegate: DashboardFilterObserver? = nil
-    
+
+    var delegate: DashboardFilterObserver?
+
     @Published var currentTypeFilter: [String: KotlinBoolean] = [:]
     @Published var typeFilterActive = false
-    
+
     @Published var currentDateFilter: [DateFilter: KotlinBoolean] = [:]
-    
+
     init() {
         coreViewModel.onNewDateFilter { [weak self] dateFilter in
             self?.currentDateFilter = dateFilter
         }
-        
+
         coreViewModel.onNewTypeFilter { [weak self] typeFilter in
             if let self {
                 self.currentTypeFilter = typeFilter
@@ -35,31 +35,31 @@ class DashboardFilterViewModel: ObservableObject {
             }
         }
     }
-    
+
     func viewDidAppear() {
         coreViewModel.viewDidAppear()
     }
-    
+
     func viewDidDisappear() {
         coreViewModel.viewDidDisappear()
     }
-    
+
     func toggleTypeFilter(type: String) {
         coreViewModel.toggleTypeFilter(type: type)
     }
-    
+
     func clearTypeFilter() {
         coreViewModel.clearTypeFilters()
     }
-    
+
     func toggleDateFilter(dateFilter: DateFilter) {
         coreViewModel.toggleDateFilter(date: dateFilter)
     }
-    
-    func updateFilterText() -> String  {
-        return self.delegate?.updateFilterText() ?? ""
+
+    func updateFilterText() -> String {
+        return delegate?.updateFilterText() ?? ""
     }
-    
+
     func isItemSelected(selectedValuesInList: [String], option: String) -> Bool {
         var isSelected = false
         let allItemsString = String(localized: "All Items")

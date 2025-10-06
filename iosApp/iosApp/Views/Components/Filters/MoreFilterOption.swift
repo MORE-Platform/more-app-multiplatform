@@ -11,9 +11,9 @@ import SwiftUI
 struct MoreFilterOption: View {
     var option: String
     @Binding var isSelected: Bool
-    
+
     private let stringTable = "DashboardFilter"
-    
+
     var body: some View {
         VStack {
             HStack {

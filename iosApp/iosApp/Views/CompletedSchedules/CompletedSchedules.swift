@@ -7,14 +7,14 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct CompletedSchedules: View {
     @StateObject var scheduleViewModel: ScheduleViewModel
@@ -26,6 +26,6 @@ struct CompletedSchedules: View {
             ScheduleListHeader(scheduleViewModel: scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             ScheduleView(viewModel: scheduleViewModel)
         }
-        .customNavigationTitle(with: NavigationScreen.pastObservations.localize(),displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.pastObservations.localize(), displayMode: .inline)
     }
 }

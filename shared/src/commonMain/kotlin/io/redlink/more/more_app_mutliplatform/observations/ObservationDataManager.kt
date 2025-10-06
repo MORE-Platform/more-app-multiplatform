@@ -80,7 +80,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
     }
 
     fun stopListeningToCountChanges() {
-        Napier.d(tag = "ObservationDataManager::stopListeningToCountChanges") { "Stopped listening for changes in datapoint counts" }
+        Napier.d(tag = "ObservationDataManager::stopListeningToCAndroiduntChanges") { "Stopped listening for changes in datapoint counts" }
         countJob?.cancel()
         countJob = null
     }

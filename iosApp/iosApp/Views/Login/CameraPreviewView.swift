@@ -6,8 +6,8 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
-import UIKit
 import AVFoundation
+import UIKit
 
 class CameraPreviewView: UIView {
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -21,7 +21,7 @@ class CameraPreviewView: UIView {
         layer.videoGravity = .resizeAspectFill
         layer.frame = bounds
         self.layer.insertSublayer(layer, at: 0)
-        self.previewLayer = layer
+        previewLayer = layer
     }
 
     override func layoutSubviews() {

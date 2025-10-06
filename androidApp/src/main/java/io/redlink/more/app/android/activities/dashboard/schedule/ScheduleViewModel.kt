@@ -15,8 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.polar.PolarStates
 import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
 import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,15 +33,14 @@ class ScheduleViewModel(
         MoreApplication.shared!!.repositories,
         MoreApplication.shared!!.dataRecorder,
         scheduleListType = scheduleListType,
-        coreFilterModel = coreDashboardFilterViewModel,
-        observationFactory = MoreApplication.shared!!.observationFactory
+        coreFilterModel = coreDashboardFilterViewModel
     )
 
     val polarHrReady: MutableState<Boolean> = mutableStateOf(false)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            PolarHeartRateObservation.hrReady.collect {
+            PolarStates.hrFeatureReady.collect {
                 withContext(Dispatchers.Main) {
                     polarHrReady.value = it
                 }
@@ -56,10 +55,4 @@ class ScheduleViewModel(
     fun pauseObservation(scheduleId: String) {
         coreViewModel.pause(scheduleId)
     }
-
-    fun stopObservation(scheduleId: String) {
-        coreViewModel.stop(scheduleId)
-    }
-
-    fun numberOfObservationErrors(): Int = coreViewModel.numberOfObservationErrors()
 }

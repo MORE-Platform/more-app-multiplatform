@@ -17,10 +17,6 @@ interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
 
     var observer: MutableSet<BluetoothConnectorObserver>
 
-    var bluetoothState: BluetoothState
-
-    var scanning: Boolean
-
     val specificBluetoothConnectors: MutableMap<String, BluetoothConnector>
 
     fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector)
@@ -30,8 +26,6 @@ interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
     fun removeObserver(bluetoothConnectorObserver: BluetoothConnectorObserver)
 
     fun updateObserver(action: (BluetoothConnectorObserver) -> Unit)
-
-    fun replayStates()
 
     fun scan()
 

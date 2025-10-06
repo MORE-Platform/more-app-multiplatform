@@ -22,7 +22,7 @@ struct DashboardFilterView: View {
                 SectionHeading(sectionTitle: "Select Time")
                     .padding(15)
                 Divider()
-                
+
                 ForEach(viewModel.currentDateFilter.keys.sorted { $0.sortIndex < $1.sortIndex }, id: \.self) { filter in
                     if let selected = viewModel.currentDateFilter[filter]?.boolValue {
                         Button {
@@ -39,12 +39,12 @@ struct DashboardFilterView: View {
                     }
                 }
             }.padding(.vertical, 20)
-            
+
             VStack {
                 SectionHeading(sectionTitle: "Select Type")
                     .padding(15)
                 Divider()
-                
+
                 Button {
                     viewModel.clearTypeFilter()
                 } label: {
@@ -55,7 +55,7 @@ struct DashboardFilterView: View {
                 }
                 .buttonStyle(.borderless)
                 .frame(maxWidth: .infinity)
-                
+
                 Divider()
                 ForEach(viewModel.currentTypeFilter.keys.sorted(), id: \.self) { filter in
                     if let selected = viewModel.currentTypeFilter[filter]?.boolValue {
@@ -69,7 +69,7 @@ struct DashboardFilterView: View {
                         }
                         .buttonStyle(.borderless)
                         .frame(maxWidth: .infinity)
-                        
+
                         Divider()
                     }
                 }

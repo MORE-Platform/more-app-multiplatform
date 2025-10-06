@@ -6,9 +6,9 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
-import SwiftUI
 import AVFoundation
 import AVKit
+import SwiftUI
 
 class QRScannerDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     var onCodeScanned: ((String) -> Void)?
@@ -20,4 +20,3 @@ class QRScannerDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
 }
-

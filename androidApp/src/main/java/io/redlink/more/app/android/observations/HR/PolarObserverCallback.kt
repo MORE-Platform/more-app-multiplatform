@@ -16,32 +16,16 @@ import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHealthThermometerData
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
+import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
 import java.util.UUID
 
 class PolarObserverCallback : PolarBleApiCallback() {
-
-    private var listeners: MutableSet<HeartRateListener> = mutableSetOf()
-
     var connectionListener: PolarConnectorListener? = null
-
-    fun addListener(listener: HeartRateListener) {
-        this.listeners.add(listener)
-    }
-
-    fun removeListener(listener: HeartRateListener): Int {
-        this.listeners.remove(listener)
-        return this.listeners.size
-    }
-
-    private fun updateListeners(update: (HeartRateListener) -> Unit) {
-        listeners.forEach(update)
-    }
 
     override fun blePowerStateChanged(powered: Boolean) {
         super.blePowerStateChanged(powered)
         Napier.d("BLE power: $powered", tag = "PolarObserverCallback::blePowerStateChanged")
-        connectionListener?.onPowerChange(if (powered) BluetoothState.ON else BluetoothState.OFF)
+        BluetoothStateManagement.setBluetoothState(powered)
     }
 
     override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
