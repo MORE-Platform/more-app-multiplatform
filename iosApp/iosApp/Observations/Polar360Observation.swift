@@ -48,17 +48,18 @@ class Polar360Observation: Observation_{
     private var deviceid : String? = nil
     private let schedulerForeground = ConcurrentDispatchQueueScheduler(qos:.userInitiated)
     private let schedulerBackground = ConcurrentDispatchQueueScheduler(qos: .background)
+
     
     init (repos: MainRepository , sensorPermissions: Set<String>){
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
     }
     
     class hrData: Codable {
-        let value: Int
+        let hr: Int
         let timestamp: UInt64
         
-        init(value:Int, timestamp:UInt64){
-            self.value = value
+        init(hr:Int, timestamp:UInt64){
+            self.hr = hr
             self.timestamp = timestamp
         }
     }
@@ -78,24 +79,55 @@ class Polar360Observation: Observation_{
     }
     
     class tempData: Codable {
-        let value: Float
+        let temp: Float
         let timestamp: UInt64
         
-        init(value:Float , Timestamp:UInt64){
-            self.value = value
+        init(temp:Float , Timestamp:UInt64){
+            self.temp = temp
             self.timestamp = Timestamp
         }
     }
     
     class SyncedPacket: Codable {
-        let hr: hrData
-        let acc : accData?
-        let temp: tempData
-        init(hr: hrData, acc: accData?, temp: tempData) {
-              self.hr = hr
-              self.acc = acc
-              self.temp = temp
+        let hr_data: hrData
+        let acc_data : accData?
+        let temp_data: tempData
+        init(hr_data: hrData, acc_data: accData?, temp_data: tempData) {
+              self.hr_data = hr_data
+              self.acc_data = acc_data
+              self.temp_data = temp_data
           }
+        /// Convert the packet into a JSON string
+            func toJson(pretty: Bool = false) -> String? {
+                let encoder = JSONEncoder()
+                if pretty {
+                    encoder.outputFormatting = .prettyPrinted
+                }
+
+                do {
+                    let data = try encoder.encode(self)
+                    return String(data: data, encoding: .utf8)
+                } catch {
+                    print("❌ Failed to encode SyncedPacket: \(error)")
+                    return nil
+                }
+            }
+
+            /// Convert the packet into raw Data (for networking, file storage, etc.)
+            func toJsonData(pretty: Bool = false) -> Data? {
+                let encoder = JSONEncoder()
+                if pretty {
+                    encoder.outputFormatting = .prettyPrinted
+                }
+
+                do {
+                    return try encoder.encode(self)
+                } catch {
+                    print("❌ Failed to encode SyncedPacket: \(error)")
+                    return nil
+                }
+            }
+        
     }
     
     
@@ -111,17 +143,37 @@ class Polar360Observation: Observation_{
             let tempitem = tempQueue.pollLast()
             let accitem = accQueue.pollLast() ?? nil
             if (hritem != nil && tempitem != nil ){
-                return SyncedPacket(hr: hritem!, acc: accitem, temp: tempitem!)
+                return SyncedPacket(hr_data: hritem!, acc_data: accitem, temp_data: tempitem!)
             }
         }
         return nil
     }
     
     private func sendOutData(packet:SyncedPacket){
-        print("sending data")
-        /*self.storeData(data: packet,timestamp: -1) {
-            print("Data Stored")
-        }*/
+        print("sending data \(packet)")
+        print("packet data \(packet.hr_data.hr) \(packet.temp_data.temp) ")
+       
+            let data = [
+                "hr": [
+                    "value": packet.hr_data.hr,
+                    "timestamp": packet.hr_data.timestamp
+                ],
+                "acc": [
+                    "x":   packet.acc_data?.x ?? 0,
+                    "y":packet.acc_data?.y ?? 0,
+                    "z": packet.acc_data?.z ?? 0,
+                    "timestamp": packet.acc_data?.timestamp ?? 0
+                ],
+                "temp": [
+                    "value": packet.temp_data.temp,
+                    "timestamp": packet.temp_data.timestamp
+                ]
+            ]
+        
+        self.storeData(data: data, timestamp: -1){
+            print("stored")
+        }
+          
     }
     
         
@@ -197,10 +249,13 @@ class Polar360Observation: Observation_{
             .subscribe(
                 onNext: { data in
                     guard let sample = data.first else { return }
-                    self.accQueue.add(accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp))
-                    self.tryBuildPacket().map{
-                        packet in self.sendOutData(packet: packet)
-                    }
+                    if(self.hrQueue.peekLast() != nil){
+                        self.accQueue.add(accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp))
+                        self.tryBuildPacket().map{
+                            packet in
+                            print(packet)
+                            self.sendOutData(packet: packet)
+                        }}
                     print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
                 },
                 onError: { error in
@@ -235,9 +290,14 @@ class Polar360Observation: Observation_{
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
                     
-                    self.hrQueue.add(hrData(value: sample.hr,timestamp: sample.timeStamp))
+                    self.hrQueue.add(hrData(hr: sample.hr,timestamp: sample.timeStamp))
                     self.tryBuildPacket().map {
-                        packet in self.sendOutData(packet: packet)
+                        packet in
+                        print(packet)
+                        //dont want to fill up queue with other streams untill hr data starts arriving
+                        // so we store state and check for it
+                    
+                        self.sendOutData(packet: packet)
                     }
                     print("ppi sample \(sample) " )
                 }
@@ -263,12 +323,14 @@ class Polar360Observation: Observation_{
             .observe(on: scheduler)               // process on thread B
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
-                    
-                    self.tempQueue.add(tempData(value: sample.temperature, Timestamp: sample.timeStamp))
-                    
-                    self.tryBuildPacket().map {
-                        packet in self.sendOutData(packet: packet)
-                    }
+                    if(self.hrQueue.peekLast() != nil){
+                        self.tempQueue.add(tempData(temp: sample.temperature, Timestamp: sample.timeStamp))
+                        
+                        self.tryBuildPacket().map {
+                            packet in
+                            print(packet)
+                            self.sendOutData(packet: packet)
+                        }}
                     print("\(sample.timeStamp): \(sample.temperature)")
                 }
             },
