@@ -67,7 +67,7 @@ object BluetoothStateManagement {
 
     fun uiOverrides(override: Boolean) {
         _uiOverride.value = override
-        Napier.i { "BLE UI Override" }
+        Napier.i { "BLE UI overrides: $override" }
     }
 
     fun enableBgScanning(): Boolean {
@@ -80,8 +80,10 @@ object BluetoothStateManagement {
     }
 
     fun disableBgScanning() {
+        if (bgScanningActive.value) {
+            Napier.i { "BLE Background Scan disabled" }
+        }
         _bgScanningActive.value = false
-        Napier.i { "BLE Background Scan disabled" }
     }
 
     fun addConnectedDevices(devices: Set<BluetoothDeviceEntity>) {

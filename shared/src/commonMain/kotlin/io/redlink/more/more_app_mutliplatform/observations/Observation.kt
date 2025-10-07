@@ -64,7 +64,8 @@ abstract class Observation(
             notificationIds[scheduleId] = notificationId
         }
         if (running && configChanged) {
-            stopAndFinish(scheduleId)
+            stop {}
+            running = false
         }
         configChanged = false
         return if (!running) {
@@ -81,11 +82,11 @@ abstract class Observation(
             stop {
                 timestampCollectionJob?.cancel()
                 saveAndSend()
-                observationShutdown(scheduleId)
             }
         } else {
             saveAndSend()
         }
+        observationShutdown(scheduleId)
         if (removeNotification) {
             handleNotification(scheduleId)
         }
@@ -200,6 +201,7 @@ abstract class Observation(
         }
     }
 
+    // Used in iOS
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
         Napier.d(tag = "Observation::stopAndSetState") { "Stopping observation of type ${observationType.observationType} and setting state to $state for schedule $scheduleId." }
         stop {

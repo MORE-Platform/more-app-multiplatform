@@ -177,7 +177,6 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun resetAll() {
-        PolarStates.resetAll()
         polarApi.cleanup()
     }
 
