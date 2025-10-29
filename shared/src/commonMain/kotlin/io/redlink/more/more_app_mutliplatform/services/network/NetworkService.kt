@@ -11,6 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.services.network
 
 import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
