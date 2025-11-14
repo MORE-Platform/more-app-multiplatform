@@ -84,6 +84,17 @@ class GarminConnectViewModel: ObservableObject {
         }
     }
 
+    func clearAllWebViewData(completion: (() -> Void)? = nil) {
+        let dataStore = WKWebsiteDataStore.default()
+        let types = WKWebsiteDataStore.allWebsiteDataTypes()
+
+        dataStore.fetchDataRecords(ofTypes: types) { records in
+            WKWebsiteDataStore.default().removeData(ofTypes: types, for: records) {
+                completion?()
+            }
+        }
+    }
+
 
 }
 

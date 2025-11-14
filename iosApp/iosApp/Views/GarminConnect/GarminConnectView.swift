@@ -32,6 +32,9 @@ struct GarminConnectView: View {
                     .foregroundColor(.more.important)
             }
         }
+        .onAppear {
+            viewModel.clearAllWebViewData()
+        }
         .onReceive(viewModel.$shouldClose.removeDuplicates()) { close in
             if close {
                 dismiss()
