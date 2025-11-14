@@ -49,8 +49,8 @@ android {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 36
-        versionCode = 35
-        versionName = "4.1.7"
+        versionCode = 36
+        versionName = "4.1.8"
     }
     buildFeatures {
         compose = true
