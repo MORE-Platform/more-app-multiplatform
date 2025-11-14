@@ -152,7 +152,7 @@ android {
 val composeVersion = "1.6.0"
 val workVersion = "2.10.3"
 val navVersion = "2.9.3"
-val polarSDKVersion = "6.6.0"
+val polarSDKVersion = "6.7.0"
 val ktorVersion = "3.2.3"
 val roomVersion = "2.7.2"
 val koinVersion = "4.1.1"

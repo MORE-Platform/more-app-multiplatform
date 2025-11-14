@@ -42,6 +42,7 @@ import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.web.WebClient
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
@@ -51,7 +52,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 class LimeSurveyActivity : ComponentActivity() {
     val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
     var webView: WebView? = null
-    var webClientListener: LimeSurveyWebClient? = null
+    var webClientListener: WebClient? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +70,7 @@ class LimeSurveyActivity : ComponentActivity() {
 
         webView = WebView(this)
         webView?.let { webView ->
-            webClientListener = LimeSurveyWebClient()
+            webClientListener = WebClient()
             webClientListener?.let {
                 webClientListener?.setListener(viewModel)
                 webView.apply {

@@ -99,6 +99,15 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {
             LeaveStudyView()
         }
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .garminConnect)) {
+            Navigation {
+                GarminConnectView()
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .onDisappear {
+                navigationModalState.removeNavigationAction()
+            }
+        }
     }
 }
 
@@ -107,3 +116,4 @@ struct MainTabView_Previews: PreviewProvider {
         MainTabView()
     }
 }
+

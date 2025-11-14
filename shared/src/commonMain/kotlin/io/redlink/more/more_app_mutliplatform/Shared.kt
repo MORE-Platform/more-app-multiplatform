@@ -21,6 +21,7 @@ import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManage
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GarminType
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
@@ -32,8 +33,7 @@ import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import io.redlink.more.more_app_mutliplatform.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -43,7 +43,7 @@ import kotlinx.coroutines.sync.withLock
 class Shared(
     localNotificationListener: LocalNotificationListener,
     val repositories: MainRepository,
-    sharedStorageRepository: SharedStorageRepository,
+    val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
     mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
@@ -105,6 +105,7 @@ class Shared(
                             notificationManager.clearAllNotifications()
                             notificationManager.downloadMissedNotifications()
                             dataRecorder.restartAll()
+                            garminLogin()
                         } else {
                             ViewManager.showBLEView(false)
                         }
@@ -117,6 +118,7 @@ class Shared(
                                 observationManager.updateTaskStates()
                                 observationFactory.updateObservationErrors()
                             }
+                            garminLogin()
                         } else {
                             stopObservations()
                             ViewManager.showBLEView(false)
@@ -234,12 +236,28 @@ class Shared(
     suspend fun newLogin() {
         notificationManager.newFCMToken()
         observationFactory.updateObservationErrors()
+        garminLogin()
+    }
+
+    private fun garminLogin() {
+        Scope.launch {
+            Napier.d(tag = "Shared::garminLogin") { "Checking Garmin login" }
+            if (observationFactory.observationTypes()
+                    .contains(GarminType().observationType)
+                && !sharedStorageRepository.load(
+                    CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN,
+                    false
+                )
+            ) {
+                ViewManager.requestGarminConnectView(true)
+            }
+        }
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
         StudyScope.cancel()
         bluetoothController.resetAll()
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
@@ -259,6 +277,7 @@ class Shared(
 
     private fun clearSharedStorage() {
         credentialRepository.remove()
+        sharedStorageRepository.remove(CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN)
     }
 
     suspend fun removeStudyData() {

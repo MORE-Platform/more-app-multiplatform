@@ -75,6 +75,30 @@ class NavigationModalState: ObservableObject {
             self?.studyLoadingError = studyLoadingError.boolValue
         }
         .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.showGarminConnectView)
+        .removeDuplicates()
+        .map {
+            $0.boolValue
+        }
+        .flatMap { show -> AnyPublisher<Bool, Never> in
+            if show {
+                return Just(true)
+                    .delay(for: .seconds(0.5), scheduler: DispatchQueue.global(qos: .userInitiated))
+                    .eraseToAnyPublisher()
+            } else {
+                return Just(false).eraseToAnyPublisher()
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] show in
+            if show {
+                self?.openView(screen: .garminConnect)
+            } else {
+                self?.closeView(screen: .garminConnect)
+            }
+        }
+        .store(in: &cancellables)
     }
 
     func screenBinding(for screen: NavigationScreen) -> Binding<Bool> {
@@ -201,7 +225,9 @@ class NavigationModalState: ObservableObject {
     }
 
     func mayChangeViewStructure() -> Bool {
-        !studyIsUpdating && !studyLoadingError && currentStudyState == StudyState.active || currentStudyState == StudyState.none
+        let notUpdatingOrError = !studyIsUpdating && !studyLoadingError
+        let allowedState = currentStudyState == .active || currentStudyState == .none
+        return notUpdatingOrError && allowedState
     }
 
     func openWithDeepLink(url: URL, notificationId: String? = nil) {

@@ -57,6 +57,8 @@
 		1F43998929C0FF3E00687906 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998829C0FF3E00687906 /* MainTabView.swift */; };
 		1F43998C29C1006800687906 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998B29C1006800687906 /* NotificationView.swift */; };
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
+		1F43DE212EC6137300B6F07B /* GarminConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE202EC6137300B6F07B /* GarminConnectView.swift */; };
+		1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
 		1F5F842429E67B370010C2D2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */; };
 		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
@@ -262,6 +264,8 @@
 		1F43998829C0FF3E00687906 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		1F43998B29C1006800687906 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		1F43DE202EC6137300B6F07B /* GarminConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectView.swift; sourceTree = "<group>"; };
+		1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectViewModel.swift; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
 		1F5F842329E67B370010C2D2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
@@ -520,6 +524,15 @@
 			path = Info;
 			sourceTree = "<group>";
 		};
+		1F43DE1F2EC6136700B6F07B /* GarminConnect */ = {
+			isa = PBXGroup;
+			children = (
+				1F43DE202EC6137300B6F07B /* GarminConnectView.swift */,
+				1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */,
+			);
+			path = GarminConnect;
+			sourceTree = "<group>";
+		};
 		1F6A4E3A29F6C94B00F0247F /* Bluetooth */ = {
 			isa = PBXGroup;
 			children = (
@@ -662,6 +675,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F43DE1F2EC6136700B6F07B /* GarminConnect */,
 				1F1E45CF2E7842E300C82016 /* Registration */,
 				1F8937892BFF1EB20083D20E /* ObservationErrors */,
 				1F2C4BDB2A6F974900C29888 /* StudyStates */,
@@ -1160,6 +1174,7 @@
 				1F69081329D44D900079C219 /* DateExtension.swift in Sources */,
 				1FF5B28B2A8274C10076EF8E /* AppVersion.swift in Sources */,
 				1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */,
+				1F43DE212EC6137300B6F07B /* GarminConnectView.swift in Sources */,
 				B72C646129DC812900F5A7C6 /* MoreTextFieldSmBottom.swift in Sources */,
 				1F43997D29B8D70800687906 /* ScheduleListItem.swift in Sources */,
 				B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */,
@@ -1231,6 +1246,7 @@
 				1F8847E82992BEE30023EF10 /* BasicText.swift in Sources */,
 				1F750CAF2A6FA8AE006E455E /* StudyClosedView.swift in Sources */,
 				B746706D2DF03FE800676D79 /* ScanQRCodeView.swift in Sources */,
+				1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */,
 				B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
 				1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */,

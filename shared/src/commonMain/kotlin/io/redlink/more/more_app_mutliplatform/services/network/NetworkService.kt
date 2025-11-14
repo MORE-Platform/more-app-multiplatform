@@ -26,7 +26,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -51,8 +53,6 @@ class NetworkService(
     private val credentialRepository: CredentialRepository,
 ) : Closeable {
     private var httpClient: HttpClient? = null
-
-    private var engineUseCounter = 10
 
     private fun initHttpClientWithAuth(): HttpClient? {
         initHttpClient()
@@ -85,6 +85,8 @@ class NetworkService(
             httpClient = getHttpClient(Logger.DEFAULT)
         }
     }
+
+    fun baseUrl(): String = endpointRepository.endpoint()
 
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
@@ -290,9 +292,63 @@ class NetworkService(
         }
     }
 
+    fun getBasicAuthHeader(): String? {
+        return credentialRepository.credentials.value?.basicAuthHeader()
+    }
+
+    fun getGarminSSOUrl(): Url? {
+        try {
+            credentialRepository.credentials.value?.let {
+                val baseUrl = endpointRepository.endpoint()
+                return Url("$baseUrl/registration/garmin")
+            }
+        } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::getGarminSSOUrl") { "Error getting Garmin SSO Url: $e" }
+        }
+        return null
+    }
+
+    suspend fun garminSSOCallback(code: String, status: String): Boolean {
+        return garminSSOCallbackUrl()?.let { callbackUrl ->
+            try {
+                credentialRepository.credentials.value?.let {
+                    val client = initHttpClientWithAuth() ?: return@let false
+                    val result = client.get(callbackUrl) {
+                        url {
+                            parameters.append("code", code)
+                            parameters.append("state", status)
+                        }
+                    }
+                    Napier.d(tag = "NetworkService::garminSSOCallback") {
+                        "Received callback response: ${result.status}"
+                    }
+                    if (!result.status.isSuccess()) {
+                        try {
+                            val bodyText = result.bodyAsText()
+                            Napier.e(tag = "NetworkService::garminSSOCallback") {
+                                "Garmin SSO callback failed with status ${result.status.value}, body: $bodyText"
+                            }
+                        } catch (_: Exception) {
+                        }
+                    }
+                    result.status.isSuccess()
+                } ?: false
+            } catch (e: Exception) {
+                Napier.e(tag = "NetworkService::garminSSOCallback") { "Network error: ${e.message}" }
+                false
+            }
+        } ?: false
+    }
+
+    fun garminSSOCallbackUrl(): Url? {
+        return getGarminSSOUrl()?.let {
+            Url("$it/callback")
+        }
+    }
+
     suspend fun deletePushNotification(msgId: String) {
         try {
-            credentialRepository.credentials.value?.let { credentials ->
+            credentialRepository.credentials.value?.let { _ ->
                 val client = initHttpClientWithAuth() ?: return
                 val baseUrl = endpointRepository.endpoint()
 
@@ -340,7 +396,6 @@ class NetworkService(
 
     override fun close() {
         Napier.d(tag = "NetworkService::close") { "Clearing the Http engine..." }
-        engineUseCounter = 10
         httpClient?.close()
         httpClient = null
     }

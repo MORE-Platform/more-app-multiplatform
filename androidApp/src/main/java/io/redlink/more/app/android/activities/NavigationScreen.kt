@@ -20,6 +20,7 @@ import androidx.navigation.navDeepLink
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GarminType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
 
@@ -82,6 +83,12 @@ enum class NavigationScreen(
             )
         ), stringResource = R.string.nav_limesurvey
     ),
+    GARMIN_CONNECT(
+        GarminType().observationType,
+        parameters = mapOf(),
+        stringResource = R.string.nav_garmin_connect
+    ),
+
     OBSERVATION_ERRORS("observation-errors", stringResource = R.string.nav_observation_errors);
 
     private var cachedNavArguments: List<NamedNavArgument>? = null

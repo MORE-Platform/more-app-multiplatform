@@ -17,7 +17,7 @@ import Foundation
 import WebKit
 
 protocol WebViewListener {
-    func onRedirect(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy
+    func onRedirect(navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy
 }
 
 class WebViewViewModel: NSObject, ObservableObject {
@@ -73,6 +73,9 @@ extension WebViewViewModel: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
-        return delegate?.onRedirect(navigationAction: navigationAction) ?? .allow
+        if let delegate = delegate {
+            return await delegate.onRedirect(navigationAction: navigationAction)
+        }
+        return .allow
     }
 }

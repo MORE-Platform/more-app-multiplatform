@@ -17,7 +17,7 @@ import SwiftUI
 import WebKit
 
 struct WebView: View {
-    @State var url: URL?
+    @State var url: URLRequest?
     @StateObject var viewModel: WebViewViewModel
 
     var body: some View {
@@ -43,10 +43,10 @@ struct WebView: View {
 struct SwiftUIWebView: UIViewRepresentable {
     typealias UIViewType = WKWebView
 
-    private let url: URL?
+    private let url: URLRequest?
     private let viewModel: WebViewViewModel
 
-    init(viewModel: WebViewViewModel, url: URL?) {
+    init(viewModel: WebViewViewModel, url: URLRequest?) {
         self.viewModel = viewModel
         self.url = url
     }
@@ -58,7 +58,7 @@ struct SwiftUIWebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: Context) {
         print("WebView URL: \(String(describing: url))")
         if let url {
-            viewModel.webView.load(URLRequest(url: url))
+            viewModel.webView.load(url)
         } else {
             viewModel.webView.load(URLRequest(url: URL(string: "about:blank")!))
         }
@@ -67,6 +67,6 @@ struct SwiftUIWebView: UIViewRepresentable {
 
 struct SwiftUIWebView_Previews: PreviewProvider {
     static var previews: some View {
-        WebView(url: URL(string: "https://www.devtechie.com")!, viewModel: WebViewViewModel())
+        WebView(url: URLRequest(url: URL(string: "https://www.devtechie.com")!), viewModel: WebViewViewModel())
     }
 }

@@ -50,6 +50,7 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     case withdrawStudyConfirm
     case limeSurvey
     case observationErrors
+    case garminConnect
 
     var values: NavigationScreenValues {
         switch self {
@@ -91,6 +92,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
             return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
         case .observationErrors:
             return NavigationScreenValues(screenName: "Observation Errors", navigationLink: "/observation-errors")
+        case .garminConnect:
+            return NavigationScreenValues(screenName: "Garmin Connect", navigationLink: "/garmin-connect", parameters: [], fullScreen: true)
         }
     }
 

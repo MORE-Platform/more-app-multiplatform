@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.activities.web.WebClientListener
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel

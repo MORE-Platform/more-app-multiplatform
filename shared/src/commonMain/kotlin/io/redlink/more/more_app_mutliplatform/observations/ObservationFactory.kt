@@ -12,6 +12,7 @@ package io.redlink.more.more_app_mutliplatform.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
+import io.redlink.more.more_app_mutliplatform.observations.garmin.GarminObservation
 import io.redlink.more.more_app_mutliplatform.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.more_app_mutliplatform.observations.simpleQuestionObservation.SimpleQuestionObservation
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
@@ -35,6 +36,7 @@ abstract class ObservationFactory(
     init {
         observations.add(SimpleQuestionObservation(repository))
         observations.add(LimeSurveyObservation(repository))
+        observations.add(GarminObservation(repository))
         Scope.launch(Dispatchers.IO) {
             repository.observation.observationTypes().collect {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }

@@ -94,12 +94,12 @@ class LimeSurveyViewModel: ObservableObject {
 }
 
 extension LimeSurveyViewModel: WebViewListener {
-    func onRedirect(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
-        if let url = navigationAction.request.url {
+    func onRedirect(navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        if let url = await navigationAction.request.url {
             print("onRedirect URL: \(url)")
             let (endPath, parameters) = extractPathAndParameters(url: url)
             if endPath.lowercased().contains("end.htm"), parameters.keys.contains("savedid") {
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     self.wasAnswered = true
                     self.onFinish()
                 }
@@ -108,3 +108,4 @@ extension LimeSurveyViewModel: WebViewListener {
         return .allow
     }
 }
+
