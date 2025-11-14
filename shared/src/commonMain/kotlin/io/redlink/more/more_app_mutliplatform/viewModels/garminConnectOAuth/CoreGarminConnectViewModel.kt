@@ -43,7 +43,6 @@ class CoreGarminConnectViewModel(
         val code = requestUrl.parameters[GARMIN_CALLBACK_CODE_PARAMETER]
         val status = requestUrl.parameters[GARMIN_CALLBACK_STATUS_PARAMETER]
         Napier.d(tag = "CoreGarminConnectViewModel::checkIfUrlIsCallback") { "Code: $code, Status: $status" }
-        // Treat the URL as a valid callback as long as the code is present. The state may be missing in some flows.
         return code != null
     }
 
@@ -77,7 +76,6 @@ class CoreGarminConnectViewModel(
     companion object {
         const val GARMIN_CONNECT_SUCCESSFUL_LOGIN = "GARMIN_CONNECT_SUCCESSFUL_LOGIN"
 
-        const val GARMIN_SSO_URL = "garmin.com"
         private const val GARMIN_CALLBACK_CODE_PARAMETER = "code"
         private const val GARMIN_CALLBACK_STATUS_PARAMETER = "state"
     }
