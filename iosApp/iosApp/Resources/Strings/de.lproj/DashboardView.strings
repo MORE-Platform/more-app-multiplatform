@@ -1,0 +1,12 @@
+/* 
+  DashboardView.strings
+  iosApp
+
+  Created by Julia Mayrhauser on 03.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"tasks_completed" = "Gesamtfortschritt";
+"study_currently_inactive" = "Die Studie ist derzeit nicht aktiv";
+"open_filter_settings" = "Öffnen Sie die Filter";
+"schedule" = "Zeitplan";

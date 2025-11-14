@@ -1,0 +1,14 @@
+/* 
+  AlertDialog.strings
+  iosApp
+
+  Created by Jan Cortiel on 30.01.24.
+  Copyright © 2024 Redlink GmbH. All rights reserved.
+*/
+"Required Permissions Were Not Granted" = "Erforderliche Berechtigungen wurden nicht erteilt";
+"This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?" = "Diese Studie benötigt eine oder mehrere Sensorenberechtigungen, um ordnungsgemäß zu funktionieren. Sie haben die Möglichkeit, die Sensorenberechtigungen abzulehnen; sollten Sie sich jedoch dafür entscheiden, funktionieren die Anwendung und die Studie möglicherweise nicht vollständig oder wie erwartet. Möchten Sie zu den Einstellungen navigieren und der Anwendung den Zugriff auf diese notwendigen Berechtigungen gestatten?";
+"Proceed to Settings" = "Zu den Einstellungen gehen";
+"Proceed Without Granting Permissions" = "Ohne Berechtigungen fortfahren";
+
+"Notification Permissions Not Granted" = "Benachrichtigungsberechtigungen nicht erteilt";
+"We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks." = "Wir bitten um Erlaubnis, Ihnen Push-Benachrichtigungen zu senden. Dies hilft, den aktuellen Status der Studie jederzeit aufrechtzuerhalten und dient als Erinnerung an Ihre Aufgaben.";

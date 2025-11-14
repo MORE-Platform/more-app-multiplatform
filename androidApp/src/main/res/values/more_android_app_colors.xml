@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="more_primary_dark">#476580</color>
+    <color name="more_primary">#6E8FAC</color>
+    <color name="more_primary_medium">#A6BCD0</color>
+    <color name="more_primary_light_200">#DCE2E7</color>
+    <color name="more_primary_light">#F4F9FD</color>
+
+    <color name="more_secondary">#707070</color>
+    <color name="more_secondary_medium">#BBC3C7</color>
+    <color name="more_secondary_light">#F4F4F4</color>
+
+    <color name="more_text_default">#707070</color>
+    <color name="more_text_inactive">#BBC3C7</color>
+
+    <color name="more_important">#A37070</color>
+    <color name="more_important_medium">#D6B7B7</color>
+    <color name="more_important_light">#F5E7E7</color>
+
+    <color name="more_approved">#6F9A80</color>
+    <color name="more_approved_medium">#B0D8BF</color>
+    <color name="more_approved_light">#E9F4ED</color>
+
+    <color name="more_white">#FFFFFF</color>
+</resources>

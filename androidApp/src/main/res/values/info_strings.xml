@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_study_details">Study Details</string>
+    <string name="info_study_details_desc">Open Study Details</string>
+    <string name="info_running_observations">Running Observations</string>
+    <string name="info_running_observations_desc">Open Running Observations</string>
+    <string name="info_completed_observations">Past Observations</string>
+    <string name="info_completed_observations_desc">Open Past Observations</string>
+    <string name="info_devices">Devices</string>
+    <string name="info_devices_desc">Open Devices</string>
+    <string name="info_settings">Settings</string>
+    <string name="info_consent_settings">Consent Settings</string>
+    <string name="info_consent_settings_desc">Open Settings</string>
+    <string name="info_leave_study">Leave Study</string>
+    <string name="info_leave_study_desc">Exit Application</string>
+    <string name="info_disclaimer">When encountering problems, feel free to contact us.</string>
+    <string name="info_contact_data">Contact</string>
+    <string name="info_participant_credentials">Participant</string>
+</resources>

@@ -1,0 +1,19 @@
+/*
+  SimpleQuestionObservation.strings
+  iosApp
+
+  Created by Isabella Aigner on 20.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Answer" = "Antwort";
+"select_answer" = "Bitte beantworten Sie die Frage";
+
+"submit" = "Einreichen";
+"close" = "Schließen";
+"return_to_dashboard" = "Zurück zur Übersicht";
+
+"answer_submitted" = "Ihre Antwort auf die Frage wurde erfolgreich übermittelt!";
+
+"thank_you" = "Vielen Dank!";
+"thank_you_participation" = "Vielen Dank für Ihre Teilnahme!";

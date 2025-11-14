@@ -1,0 +1,24 @@
+/*
+  Navigation.strings
+  iosApp
+
+  Created by Jan Cortiel on 15.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Dashboard" = "Übersicht";
+"Dashboard Filter" = "Filter";
+"Notifications" = "Nachrichten";
+"Information" = "Information";
+"Settings" = "Einstellungen";
+"Task Details" = "Aufgabendetails";
+"Observation Details" = "Aufzeichnungsdetails";
+"Observation Filter" = "Filter";
+"Question Observation" = "Simple Frage";
+"Study Details" = "Studiendetails";
+"Running Observations" = "Laufende Aufzeichnungen";
+"Past Observations" = "Vergangene Aufzeichnungen";
+"Devices" = "Geräte";
+"Observation Errors" = "Aufzeichnungsfehler";
+
+"Scan QR Code" = "QR-Code scannen";

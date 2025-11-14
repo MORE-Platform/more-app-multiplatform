@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="more_lime_survey_loading_error">System error! Could not load limesurvey data!</string>
+    <string name="more_lime_data_loading">Data loading</string>
+    <string name="more_lime_cancel">Cancel Survey</string>
+    <string name="more_lime_finish">Finish Survey</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_info">Information</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_task_detail">Task Details</string>
+    <string name="nav_observation_detail">Observation Details</string>
+    <string name="nav_study_details">Study Details</string>
+    <string name="nav_observation_filter">Observation Filter</string>
+    <string name="nav_notification_filter">Notification Filter</string>
+    <string name="nav_simple_question">Simple Question</string>
+    <string name="nav_running_schedules">Running Observations</string>
+    <string name="nav_completed_schedules">Past Observations</string>
+    <string name="nav_leave_study">Leave Study</string>
+    <string name="nav_leave_study_confirm">Confirm to leave the study</string>
+    <string name="nav_limesurvey">Limesurvey</string>
+    <string name="nav_observation_errors">Observation Errors</string>
+</resources>

@@ -1,0 +1,12 @@
+/* 
+  ObservationTypes.strings
+  iosApp
+
+  Created by Isabella Aigner on 05.04.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"All Items" = "All Items";
+"gps-mobile-observation" = "GPS Mobile Observation";
+"acc-mobile-observation" = "ACC Mobile Observation";
+"polar-verity-observation" = "Polar Verity Observation";

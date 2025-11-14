@@ -1,0 +1,25 @@
+/* 
+  Navigation.strings
+  iosApp
+
+  Created by Jan Cortiel on 15.03.23.
+  Copyright © 2023 Redlink GmbH. All rights reserved.
+*/
+
+"Dashboard" = "Dashboard";
+"Dashboard Filter" = "Dashboard Filter";
+"Notifications" = "Notifications";
+"Information" = "Information";
+"Settings" = "Settings";
+"Task Details" = "Task Detail";
+"Observation Details" = "Observation Details";
+"Observation Filter" = "Observation Filter";
+"Question Observation" = "Question";
+"Study Details" = "Study Details";
+"Running Observations" = "Running Observations";
+"Past Observations" = "Past Observations";
+"Devices" = "Devices";
+"Observation Errors" = "Observation Errors";
+
+"Scan QR Code" = "Scan QR Code";
+
