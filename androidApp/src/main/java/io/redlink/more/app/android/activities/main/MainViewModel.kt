@@ -21,6 +21,7 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.observations.garmin.GarminConnectActivity
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
@@ -98,6 +99,16 @@ class MainViewModel(context: Context) : ViewModel() {
                 observationId
             )
             intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID, notificationId)
+            activityResultLauncher.launch(intent)
+        }
+    }
+
+    fun openGarminActivity(
+        context: Context,
+        activityResultLauncher: ActivityResultLauncher<Intent>
+    ) {
+        (context as? Activity)?.let { activity ->
+            val intent = Intent(activity, GarminConnectActivity::class.java)
             activityResultLauncher.launch(intent)
         }
     }

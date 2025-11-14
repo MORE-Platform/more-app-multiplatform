@@ -10,4 +10,12 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-data class CredentialModel(val apiId: String, val apiKey: String)
+import io.ktor.util.encodeBase64
+
+data class CredentialModel(val apiId: String, val apiKey: String) {
+    fun basicAuthHeader(): String {
+        val raw = "$apiId:$apiKey"
+        val encoded = raw.encodeBase64()
+        return "Basic $encoded"
+    }
+}

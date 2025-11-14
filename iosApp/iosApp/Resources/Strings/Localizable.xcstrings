@@ -423,6 +423,9 @@
         }
       }
     },
+    "Could not receive the url" : {
+
+    },
     "Dashboard" : {
       "comment" : "Navigation.strings\n  iosApp\n\n  Created by Jan Cortiel on 15.03.23.\n  Copyright © 2023 Redlink GmbH. All rights reserved.",
       "extractionState" : "manual",

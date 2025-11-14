@@ -26,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -62,6 +65,10 @@ import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     private lateinit var navHostController: NavHostController
@@ -131,6 +138,22 @@ class MainActivity : ComponentActivity() {
                     activityLauncher,
                     studyState
                 )
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                ViewManager.showGarminConnectView.collect {
+                    if (it) {
+                        while (!::navHostController.isInitialized) {
+                            delay(500)
+                        }
+                        delay(500)
+                        withContext(Dispatchers.Main) {
+                            navHostController.navigate(NavigationScreen.GARMIN_CONNECT.routeWithParameters())
+                        }
+                    }
+                }
             }
         }
     }
@@ -415,6 +438,23 @@ fun MainView(
                         navController = navController,
                         taskCompletionBarViewModel = taskCompletionBarViewModel
                     )
+                }
+            }
+
+            NavigationScreen.GARMIN_CONNECT.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute()
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LaunchedEffect(Unit) {
+                            viewModel.openGarminActivity(
+                                currentContext.value,
+                                activityResultLauncher
+                            )
+                        }
+                    }
                 }
             }
 
