@@ -7,46 +7,40 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct SettingsView: View {
-    @StateObject var viewModel: SettingsViewModel
-    @State var exitButton = Color.more.important
-    
+    @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
+    @State private var exitButton = Color.more.important
+
     private let stringTable = "SettingsView"
     private let navigationStrings = "Navigation"
-    
+
     var body: some View {
         VStack(alignment: .leading) {
-            Text(String.localize(forKey: "settings_text", withComment: "information about accepted permissions", inTable: stringTable))
+            Text("settings_text")
                 .foregroundColor(.more.secondary)
                 .padding(.bottom, 15)
             if let permissions = viewModel.permissionModel {
                 ConsentList(permissionModel: permissions)
                     .padding(.top)
             }
-            
+
             Spacer()
         }
-        .customNavigationTitle(with: NavigationScreen.settings.localize(useTable: navigationStrings, withComment: "Settings Screen"))
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear{
-            viewModel.viewDidDisappear()
-        }
+        .customNavigationTitle(with: NavigationScreen.settings.localize())
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(viewModel: SettingsViewModel())
+        SettingsView()
     }
 }

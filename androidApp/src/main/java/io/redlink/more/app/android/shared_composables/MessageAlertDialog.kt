@@ -27,10 +27,11 @@ fun MessageAlertDialog(model: AlertDialogModel) {
     MessageAlertDialog(
         title = model.title,
         message = model.message,
-        positiveButtonTitle = model.positiveTitle,
-        negativeButtonTitle = model.negativeTitle,
-        onPositive = model.onPositive,
-        onNegative = model.onNegative)
+        positiveButtonTitle = model.confirmLabel,
+        negativeButtonTitle = model.cancelLabel,
+        onPositive = model.onConfirm,
+        onNegative = model.onDecline
+    )
 }
 
 @Composable
@@ -41,10 +42,13 @@ fun MessageAlertDialog(
     positiveButtonColors: ButtonColors? = null,
     negativeButtonTitle: String? = null,
     negativeButtonColors: ButtonColors? = null,
-    onPositive: () -> Unit,
-    onNegative: () -> Unit = {},
+    onPositive: (() -> Unit)? = null,
+    onNegative: (() -> Unit)? = null
 ) {
-    val defaultButtonColors = ButtonDefaults.textButtonColors(backgroundColor = MoreColors.PrimaryLight, contentColor = MoreColors.Primary)
+    val defaultButtonColors = ButtonDefaults.textButtonColors(
+        backgroundColor = MoreColors.PrimaryLight,
+        contentColor = MoreColors.Primary
+    )
     AlertDialog(
         onDismissRequest = { },
         title = {
@@ -58,7 +62,8 @@ fun MessageAlertDialog(
             Text(text = message)
         },
         confirmButton = {
-            TextButton(onClick = { onPositive() },
+            TextButton(
+                onClick = { onPositive?.let { it() } },
                 colors = positiveButtonColors ?: defaultButtonColors
             ) {
                 Text(text = positiveButtonTitle)
@@ -66,7 +71,8 @@ fun MessageAlertDialog(
         },
         dismissButton = {
             if (negativeButtonTitle != null) {
-                TextButton(onClick = { onNegative() },
+                TextButton(
+                    onClick = { onNegative?.let { it() } },
                     colors = negativeButtonColors ?: defaultButtonColors
                 ) {
                     Text(text = negativeButtonTitle)

@@ -19,7 +19,11 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun MediumTitle(text: String, modifier: Modifier = Modifier, textAlign: TextAlign = TextAlign.Start) {
+fun MediumTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
+) {
     Text(
         text = text,
         fontWeight = FontWeight.Medium,

@@ -7,45 +7,43 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
+import Combine
 import Foundation
+import KMPNativeCoroutinesCombine
 import shared
 
 class SettingsViewModel: ObservableObject {
-    private let coreSettingsViewModel: CoreSettingsViewModel
-    var delegate: ConsentViewModelListener? = nil
-    
+    private let coreSettingsViewModel = CoreSettingsViewModel(shared: AppDelegate.shared)
+
     @Published var studyTitle: String?
-    @Published private(set) var permissionModel: PermissionModel?
-    @Published var dataDeleted = false
+    @Published var permissionModel: PermissionModel?
     @Published var showSettings = false
-    
+
+    private var cancellables: Set<AnyCancellable> = []
+
     init() {
-        coreSettingsViewModel = CoreSettingsViewModel(shared: AppDelegate.shared)
-        coreSettingsViewModel.onLoadStudy { [weak self] study in
-            self?.studyTitle = study?.studyTitle
+        createPublisher(for: coreSettingsViewModel.study)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] studyEntity in
+            self?.studyTitle = studyEntity?.studyTitle
         }
-        coreSettingsViewModel.onPermissionChange { [weak self] permissions in
+        .store(in: &cancellables)
+
+        createPublisher(for: coreSettingsViewModel.permissionModel)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] permissions in
             self?.permissionModel = permissions
         }
+        .store(in: &cancellables)
     }
-    
+
     func leaveStudy() {
-        dataDeleted = true
         coreSettingsViewModel.exitStudy()
-        self.delegate?.credentialsDeleted()
-    }
-    
-    func viewDidAppear() {
-        coreSettingsViewModel.viewDidAppear()
-    }
-    
-    func viewDidDisappear() {
-        coreSettingsViewModel.viewDidDisappear()
     }
 }

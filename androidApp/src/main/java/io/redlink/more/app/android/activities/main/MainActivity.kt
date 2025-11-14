@@ -26,17 +26,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
-import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.info.InfoView
 import io.redlink.more.app.android.activities.notification.NotificationView
 import io.redlink.more.app.android.activities.notification.filter.NotificationFilterView
@@ -50,21 +54,45 @@ import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
 import io.redlink.more.app.android.activities.studyStates.StudyClosedView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
 import io.redlink.more.app.android.activities.studyStates.StudyPausedView
 import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
+import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
+import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
 import io.redlink.more.more_app_mutliplatform.models.StudyState
-import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
-    private var loadedNavController = false
-
     private lateinit var navHostController: NavHostController
+
+    override fun onResume() {
+        super.onResume()
+        ActivityProvider.setCurrentActivity(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ActivityProvider.clearCurrentActivity()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PermissionUtils.cleanupPermissionLauncher(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = MainViewModel(this)
+
+        PermissionUtils.initializePermissionLauncher(this)
 
         val activityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -75,33 +103,57 @@ class MainActivity : ComponentActivity() {
 
         val destinationChangeListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
-                viewModel.navigationBarTitle.value = destination.navigatorName
+                val route = destination.route?.split("?")?.firstOrNull() ?: ""
+                NavigationScreen.byRoute(route)?.let { screen ->
+                    viewModel.navigationBarTitle.value = getString(screen.stringResource)
+                }
             }
+
         setContent {
             navHostController = rememberNavController()
+
+            val studyState by MoreApplication.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
+            val studyIsUpdating by ViewManager.studyIsUpdating.collectAsStateWithLifecycle(false)
+            val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle(false)
 
             LaunchedEffect(Unit) {
                 navHostController.addOnDestinationChangedListener(destinationChangeListener)
             }
-            if (viewModel.studyIsUpdating.value) {
+
+            if (studyIsUpdating) {
                 StudyUpdateView()
-                if (loadedNavController) {
-                    navHostController.navigate(
-                        NavigationScreen.DASHBOARD.navigationRoute()
-                    )
-                }
-            } else if (viewModel.studyState.value == StudyState.PAUSED) {
+            } else if (studyLoadingError) {
+                StudyLoadingErrorView()
+            } else if (studyState == StudyState.PAUSED) {
                 StudyPausedView()
-            } else if (viewModel.studyState.value == StudyState.CLOSED) {
-                StudyClosedView(viewModel.finishText.value)
+            } else if (studyState == StudyState.CLOSED) {
+                StudyClosedView()
+            } else if (studyState == StudyState.NONE) {
+                StudyUpdateView()
             } else {
                 MainView(
                     viewModel.navigationBarTitle.value,
                     viewModel,
                     navHostController,
-                    activityLauncher
+                    activityLauncher,
+                    studyState
                 )
-                loadedNavController = true
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                ViewManager.showGarminConnectView.collect {
+                    if (it) {
+                        while (!::navHostController.isInitialized) {
+                            delay(500)
+                        }
+                        delay(500)
+                        withContext(Dispatchers.Main) {
+                            navHostController.navigate(NavigationScreen.GARMIN_CONNECT.routeWithParameters())
+                        }
+                    }
+                }
             }
         }
     }
@@ -112,9 +164,11 @@ fun MainView(
     navigationTitle: String,
     viewModel: MainViewModel,
     navController: NavHostController,
-    activityResultLauncher: ActivityResultLauncher<Intent>
+    activityResultLauncher: ActivityResultLauncher<Intent>,
+    studyState: StudyState = StudyState.NONE,
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
+    val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
@@ -131,7 +185,6 @@ fun MainView(
             }
         },
         unreadNotificationCount = viewModel.unreadNotificationCount.intValue,
-        alertDialogModel = viewModel.alertDialogOpen.value
     ) {
         NavHost(
             navController = navController,
@@ -145,10 +198,10 @@ fun MainView(
                 ) {
                     viewModel.tabIndex.intValue = 0
                     viewModel.showBackButton.value = false
-                    viewModel.navigationBarTitle.value = screen.stringRes()
                     DashboardView(
-                        navController, viewModel = viewModel.dashboardViewModel,
-                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                        navController,
+                        viewModel.manualTasks,
+                        taskCompletionBarViewModel = taskCompletionBarViewModel
                     )
                 }
             }
@@ -161,8 +214,7 @@ fun MainView(
                 ) {
                     viewModel.tabIndex.intValue = 1
                     viewModel.showBackButton.value = false
-                    viewModel.navigationBarTitle.value = screen.stringRes()
-                    NotificationView(navController, viewModel = viewModel.notificationViewModel)
+                    NotificationView(navController, viewModel.coreNotificationFilterViewModel)
                 }
             }
 
@@ -175,8 +227,7 @@ fun MainView(
                 ) {
                     viewModel.tabIndex.intValue = 2
                     viewModel.showBackButton.value = false
-                    viewModel.navigationBarTitle.value = screen.stringRes()
-                    InfoView(navController, viewModel = viewModel.infoVM)
+                    InfoView(navController)
                 }
             }
 
@@ -187,9 +238,8 @@ fun MainView(
                     screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
-                    SettingsView(model = viewModel.settingsViewModel, navController = navController)
+                    SettingsView()
                 }
             }
             NavigationScreen.SCHEDULE_DETAILS.let { screen ->
@@ -203,14 +253,11 @@ fun MainView(
                     val scheduleId by remember {
                         mutableStateOf(requireNotNull(arguments.getString("scheduleId")))
                     }
-                    val taskVM by remember { mutableStateOf(viewModel.getTaskDetailsVM(scheduleId)) }
 
-                    viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
 
                     TaskDetailsView(
                         navController = navController,
-                        viewModel = taskVM,
                         scheduleId = scheduleId
                     )
                 }
@@ -223,11 +270,7 @@ fun MainView(
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
-                    viewModel.navigationBarTitle.value =
-                        NavigationScreen.OBSERVATION_DETAILS.stringRes()
                     val observationId = arguments.getString("observationId")
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
 
                     val obsDetailsVM by remember {
@@ -246,12 +289,11 @@ fun MainView(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
 
                     StudyDetailsView(
-                        viewModel = viewModel.studyDetailsViewModel, navController = navController,
-                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                        navController = navController,
+                        taskCompletionBarViewModel = taskCompletionBarViewModel
                     )
                 }
             }
@@ -263,29 +305,20 @@ fun MainView(
                     screen.createDeepLinkRoute()
 
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
 
-                    val arguments by remember { mutableStateOf(requireNotNull(it.arguments)) }
-                    val vm by remember {
-                        mutableStateOf(
-                            when (ScheduleListType.valueOf(
-                                arguments.getString(
+                    val coreViewModel = remember {
+                        viewModel.schedulesViewModel(
+                            ScheduleListType.valueOf(
+                                requireNotNull(it.arguments).getString(
                                     "scheduleListType",
                                     "ALL"
                                 )
-                            )) {
-                                ScheduleListType.MANUALS -> viewModel.manualTasks.filterModel
-                                ScheduleListType.RUNNING -> viewModel.runningSchedulesViewModel.filterModel
-                                ScheduleListType.COMPLETED -> viewModel.completedSchedulesViewModel.filterModel
-                                ScheduleListType.ALL -> DashboardFilterViewModel(
-                                    CoreDashboardFilterViewModel()
-                                )
-                            }
+                            )
                         )
-                    }
-                    DashboardFilterView(viewModel = vm)
+                    }.coreViewModel
+
+                    DashboardFilterView(coreViewModel)
                 }
             }
 
@@ -305,10 +338,8 @@ fun MainView(
                         mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
                     }
 
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
-                    val vm by remember {
+                    val viewModel by remember {
                         mutableStateOf(
                             viewModel.creteNewSimpleQuestionViewModel(
                                 scheduleId,
@@ -318,8 +349,8 @@ fun MainView(
                         )
                     }
                     QuestionnaireView(
-                        navController = navController,
-                        viewModel = vm
+                        navController,
+                        viewModel
                     )
                 }
             }
@@ -361,8 +392,6 @@ fun MainView(
                     screen.routeWithParameters(), screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = false
 
                     QuestionnaireResponseView(navController)
@@ -375,11 +404,9 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
 
-                    NotificationFilterView(viewModel = viewModel.notificationFilterViewModel)
+                    NotificationFilterView(coreViewModel = viewModel.coreNotificationFilterViewModel)
                 }
             }
 
@@ -389,14 +416,12 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
 
                     RunningSchedulesView(
                         viewModel = viewModel.runningSchedulesViewModel,
                         navController = navController,
-                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                        taskCompletionBarViewModel = taskCompletionBarViewModel
                     )
                 }
             }
@@ -407,14 +432,29 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
                     CompletedSchedulesView(
                         viewModel = viewModel.completedSchedulesViewModel,
                         navController = navController,
-                        taskCompletionBarViewModel = viewModel.taskCompletionBarViewModel
+                        taskCompletionBarViewModel = taskCompletionBarViewModel
                     )
+                }
+            }
+
+            NavigationScreen.GARMIN_CONNECT.let { screen ->
+                composable(
+                    screen.routeWithParameters(),
+                    screen.createListOfNavArguments(),
+                    screen.createDeepLinkRoute()
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LaunchedEffect(Unit) {
+                            viewModel.openGarminActivity(
+                                currentContext.value,
+                                activityResultLauncher
+                            )
+                        }
+                    }
                 }
             }
 
@@ -424,9 +464,8 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value = screen.stringRes()
                     viewModel.showBackButton.value = true
-                    LeaveStudyView(navController, viewModel = viewModel.leaveStudyViewModel)
+                    LeaveStudyView(navController)
                 }
             }
 
@@ -436,10 +475,8 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
-                    LeaveStudyConfirmView(navController, viewModel = viewModel.leaveStudyViewModel)
+                    LeaveStudyConfirmView(navController)
                 }
             }
 
@@ -449,10 +486,27 @@ fun MainView(
                     screen.createListOfNavArguments(),
                     screen.createDeepLinkRoute()
                 ) {
-                    viewModel.navigationBarTitle.value =
-                        screen.stringRes()
                     viewModel.showBackButton.value = true
                     ObservationErrorView()
+                }
+            }
+        }
+        LaunchedEffect(studyState) {
+            if (studyState == StudyState.ACTIVE) {
+                val currentBase = navController.currentDestination
+                    ?.route
+                    ?.substringBefore("?")
+
+                val dashboardBase = NavigationScreen.DASHBOARD.routeWithParameters()
+
+                if (currentBase != dashboardBase) {
+                    navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             }
         }

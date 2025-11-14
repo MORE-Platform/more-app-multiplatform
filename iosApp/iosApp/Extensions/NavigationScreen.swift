@@ -30,7 +30,7 @@ enum NavigationParameter: String {
 
 enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     var id: Self { self }
-    
+
     case dashboard
     case notifications
     case info
@@ -50,6 +50,7 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
     case withdrawStudyConfirm
     case limeSurvey
     case observationErrors
+    case garminConnect
 
     var values: NavigationScreenValues {
         switch self {
@@ -91,6 +92,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
             return NavigationScreenValues(screenName: "LimeSurvey", navigationLink: "/lime-survey-observation", parameters: [.observationId, .notificaitonId, .scheduleId], fullScreen: true)
         case .observationErrors:
             return NavigationScreenValues(screenName: "Observation Errors", navigationLink: "/observation-errors")
+        case .garminConnect:
+            return NavigationScreenValues(screenName: "Garmin Connect", navigationLink: "/garmin-connect", parameters: [], fullScreen: true)
         }
     }
 
@@ -99,8 +102,8 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
 }
 
 extension NavigationScreen {
-    func localize(useTable table: String, withComment comment: String) -> String {
-        return values.screenName.localize(withComment: comment, useTable: table)
+    func localize() -> String {
+        return values.screenName
     }
 
     func generateURL(withParameters params: [NavigationParameter: String]) -> URL? {

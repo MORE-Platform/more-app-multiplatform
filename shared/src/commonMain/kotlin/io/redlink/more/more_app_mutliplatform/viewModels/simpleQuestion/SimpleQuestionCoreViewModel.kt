@@ -11,8 +11,7 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion
 
 import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.SimpleQuestionModel
 import io.redlink.more.more_app_mutliplatform.observations.Observation
@@ -24,14 +23,14 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
 class SimpleQuestionCoreViewModel(
+    private val repository: MainRepository,
     observationFactory: ObservationFactory,
-): CoreViewModel() {
+) : CoreViewModel() {
     private var scheduleId: String? = null
-    private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    private val observationRepository: ObservationRepository = ObservationRepository()
 
     val simpleQuestionModel = MutableStateFlow<SimpleQuestionModel?>(null)
-    private var observation: Observation? = observationFactory.observation(SimpleQuestionType().observationType)
+    private var observation: Observation? =
+        observationFactory.observation(SimpleQuestionType().observationType)
 
     private var notificationId: String? = null
 
@@ -39,21 +38,30 @@ class SimpleQuestionCoreViewModel(
         this.scheduleId = scheduleId
         this.notificationId = notificationId
         launchScope {
-            scheduleRepository.scheduleWithId(scheduleId).cancellable().firstOrNull()?.let { scheduleSchema ->
-                observationRepository.observationById(scheduleSchema.observationId).cancellable().firstOrNull()?.let { observationSchema ->
-                    simpleQuestionModel.emit(SimpleQuestionModel.createModelFrom(observationSchema, scheduleId))
+            repository.schedule.scheduleWithId(scheduleId).cancellable().firstOrNull()
+                ?.let { scheduleSchema ->
+                    repository.observation.observationById(scheduleSchema.observationId)
+                        .cancellable().firstOrNull()?.let { observationSchema ->
+                            simpleQuestionModel.emit(
+                                SimpleQuestionModel.createModelFrom(
+                                    observationSchema,
+                                    scheduleId
+                                )
+                            )
+                        }
                 }
-            }
         }
     }
 
     fun setScheduleViaObservationId(observationId: String, notificationId: String? = null) {
         launchScope {
-            scheduleRepository.firstScheduleIdAvailableForObservationId(observationId).cancellable().firstOrNull()?.let { setScheduleId(it, notificationId)}
+            repository.schedule.firstScheduleIdAvailableForObservationId(observationId)
+                .cancellable()
+                .firstOrNull()?.let { setScheduleId(it, notificationId) }
         }
     }
 
-    fun finishQuestion(data: String, setObservationToDone: Boolean){
+    fun finishQuestion(data: String, setObservationToDone: Boolean) {
         simpleQuestionModel.value?.let {
             observation?.let { observation ->
                 observation.start(it.observationId, it.scheduleId, notificationId)

@@ -35,14 +35,6 @@ class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFil
         }
     }
 
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreViewModel.viewDidDisappear()
-    }
-
     fun toggleFilter(filter: NotificationFilterTypeModel) {
         coreViewModel.toggleFilter(filter)
     }

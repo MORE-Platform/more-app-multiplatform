@@ -13,16 +13,18 @@ package io.redlink.more.app.android.activities.observations.questionnaire
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.more_app_mutliplatform.viewModels.simpleQuestion.SimpleQuestionCoreViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class QuestionnaireViewModel : ViewModel() {
-    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(MoreApplication.shared!!.observationFactory)
+    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory
+    )
 
     val hasData = mutableStateOf(false)
     val observationTitle = mutableStateOf("")
@@ -31,10 +33,8 @@ class QuestionnaireViewModel : ViewModel() {
     val answerSet = mutableStateOf("")
     val observationParticipantInfo = mutableStateOf("")
 
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
-
     init {
-        scope.launch {
+        viewModelScope.launch(Dispatchers.Main.immediate) {
             coreViewModel.simpleQuestionModel.collect { model ->
                 withContext(Dispatchers.Main) {
                     model?.let {

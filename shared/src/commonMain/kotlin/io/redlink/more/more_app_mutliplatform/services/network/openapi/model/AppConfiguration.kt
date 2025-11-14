@@ -22,14 +22,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * The configuration settings for the App while participating on a study 
+ * The configuration settings for the App while participating on a study
  *
- * @param credentials 
- * @param endpoint base-uri of the App-API to use during the runtime of the study.  If omitted, the client should stay with the current endpoint. 
+ * @param credentials
+ * @param endpoint base-uri of the App-API to use during the runtime of the study.  If omitted, the client should stay with the current endpoint.
  */
 @Serializable
 
-data class AppConfiguration (
+data class AppConfiguration(
 
     @SerialName(value = "credentials") @Required val credentials: ApiKey,
 

@@ -11,6 +11,7 @@
 package io.redlink.more.app.android.activities.notification.filter
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,9 +35,11 @@ import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 
 @Composable
-fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
+fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
+    val viewModel = remember { NotificationFilterViewModel(coreViewModel) }
     LazyColumn {
         item {
             HeaderTitle(
@@ -49,7 +53,7 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if(entry.value)
+                if (entry.value)
                     IconInline(
                         icon = Icons.Rounded.Done,
                         color = MoreColors.Approved,
@@ -59,7 +63,10 @@ fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleFilter(entry.key) })
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { viewModel.toggleFilter(entry.key) })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(

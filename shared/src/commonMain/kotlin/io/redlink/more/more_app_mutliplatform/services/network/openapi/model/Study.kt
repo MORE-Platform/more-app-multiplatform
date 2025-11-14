@@ -17,7 +17,6 @@
 
 package io.redlink.more.more_app_mutliplatform.services.network.openapi.model
 
-
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
@@ -26,11 +25,11 @@ import kotlinx.serialization.Serializable
 /**
  * The study object containing all information and observation information to configure and initialize the APP
  *
- * @param studyTitle 
- * @param participantInfo 
- * @param consentInfo 
- * @param start 
- * @param end 
+ * @param studyTitle
+ * @param participantInfo
+ * @param consentInfo
+ * @param start
+ * @param end
  * @param observations
  * @param contact
  * @param version A version indicator. Currently the last-modified date in EPOCH-format but that's not guaranteed.

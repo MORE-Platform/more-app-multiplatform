@@ -11,9 +11,9 @@ import SwiftUI
 struct MoreFilterOption: View {
     var option: String
     @Binding var isSelected: Bool
-    
+
     private let stringTable = "DashboardFilter"
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -24,7 +24,7 @@ struct MoreFilterOption: View {
                     Spacer()
                         .frame(width: 5)
                 }
-                MoreFilterText(text: .constant(String.localize(forKey: option, withComment: "String representation of observation type", inTable: stringTable)))
+                MoreFilterText(text: .constant(option))
             }
             .padding(5)
         }

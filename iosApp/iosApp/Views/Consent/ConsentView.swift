@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,82 +17,71 @@ import shared
 import SwiftUI
 
 struct ConsentView: View {
-    @StateObject var viewModel: ConsentViewModel
+    @StateObject private var viewModel: ConsentViewModel
+    @ObservedObject private var registration: RegistrationObservable
 
-    private let stringsTable = "ConsentView"
-    private let taskStringTable = "TaskDetail"
+    init(registration: RegistrationObservable) {
+        _registration = ObservedObject(wrappedValue: registration)
+        _viewModel = StateObject(wrappedValue: ConsentViewModel(registrationService: registration.service))
+    }
+
     var body: some View {
-        VStack {
-            Title2(titleText: viewModel.permissionModel.studyTitle)
-                .padding(.bottom, 30)
+        if let permissionModel = viewModel.permissionModel {
+            VStack {
+                Title2(titleText: permissionModel.studyTitle)
+                    .padding(.bottom, 30)
 
-            ScrollView {
-                ExpandableText(viewModel.permissionModel.studyParticipantInfo, String.localize(forKey: "Participant Information", withComment: "Participant Information of study.", inTable: taskStringTable), lineLimit: 4)
-                    .padding(.bottom, 35)
-                
-                ConsentList(permissionModel: viewModel.permissionModel)
-            }
-            
-            Spacer()
-            if viewModel.isLoading {
-                ProgressView()
-                    .progressViewStyle(.circular)
-            } else {
-                MoreActionButton(disabled: $viewModel.requestedPermissions, alertOpen: $viewModel.showErrorAlert) {
-                    viewModel.requestPermissions()
-                } label: {
-                    VStack {
-                        if viewModel.requestedPermissions {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                        } else {
-                            Text(verbatim: .localize(
-                                forKey: "accept_button",
-                                withComment: "Button to accept the study consent", inTable: stringsTable))
+                ScrollView {
+                    ExpandableText(permissionModel.studyParticipantInfo, "Participant Information", lineLimit: 4)
+                        .padding(.bottom, 35)
+
+                    ConsentList(permissionModel: permissionModel)
+                }
+
+                Spacer()
+                if registration.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.more.primary)
+                } else {
+                    MoreActionButton(disabled: .constant(viewModel.requestedPermissions || registration.isLoading), alertOpen: $viewModel.showErrorAlert) {
+                        viewModel.requestPermissions()
+                    } label: {
+                        VStack {
+                            if viewModel.requestedPermissions {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                    .tint(.more.primary)
+                            } else {
+                                Text("accept_button")
+                            }
                         }
                     }
-                } errorAlert: {
-                    Alert(title:
-                        Text(verbatim: .localize(
-                            forKey: "permissions_denied",
-                            withComment: "Error dialog title", inTable: stringsTable))
-                            .foregroundColor(.more.important),
-                        message: Text(viewModel.error),
-                        primaryButton: .default(Text(
-                            verbatim: .localize(
-                                forKey: "to_settings",
-                                withComment: "Dialog button to retry sending your consent for this study", inTable: stringsTable)),
-                        action: {
-                            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                            }
-
-                        }),
-                        secondaryButton: .cancel({ viewModel.decline() })
-                    )
-                }
-                Spacer()
-                MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
-                    viewModel.decline()
-                } label: {
-                    Text(verbatim: .localize(
-                        forKey: "decline_button",
-                        withComment: "Button to decline the study", inTable: stringsTable))
+                    Spacer()
+                    MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
+                        viewModel.decline()
+                    } label: {
+                        Text("decline_button")
+                    }
                 }
             }
-        }
-        .padding(24)
-        .onAppear {
-            viewModel.onAppear()
-        }
-        .onDisappear {
-            viewModel.onDisappear()
+            .padding(24)
+            .onAppear {
+                viewModel.onAppear()
+            }
+            .onDisappear {
+                viewModel.onDisappear()
+            }
+        } else {
+            StudyLoadingView()
         }
     }
 }
 
 struct ConsentView_Previews: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    static let repos = MainRepository(appDatabase: database)
     static var previews: some View {
-        ConsentView(viewModel: ConsentViewModel(registrationService: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(dataManager: ObservationDataManager()), dataRecorder: IOSDataRecorder()))))
+        ConsentView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(repository: repos, dataManager: ObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder()))))
     }
 }

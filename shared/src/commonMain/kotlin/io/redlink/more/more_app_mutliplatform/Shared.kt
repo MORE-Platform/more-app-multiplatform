@@ -10,15 +10,9 @@
  */
 package io.redlink.more.more_app_mutliplatform
 
+import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
-import io.github.aakira.napier.log
-import io.redlink.more.more_app_mutliplatform.database.DatabaseManager
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
-import io.redlink.more.more_app_mutliplatform.database.schemas.DataPointCountSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationDataSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.StudyState
 import io.redlink.more.more_app_mutliplatform.navigation.DeeplinkManager
@@ -26,6 +20,10 @@ import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
+import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GarminType
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
 import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
 import io.redlink.more.more_app_mutliplatform.services.notification.LocalNotificationListener
@@ -33,135 +31,115 @@ import io.redlink.more.more_app_mutliplatform.services.notification.Notification
 import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
 import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
 import io.redlink.more.more_app_mutliplatform.services.store.SharedStorageRepository
-import io.redlink.more.more_app_mutliplatform.services.store.StudyStateRepository
-import io.redlink.more.more_app_mutliplatform.util.Scope
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.BluetoothController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
+import io.redlink.more.more_app_mutliplatform.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
-    private val sharedStorageRepository: SharedStorageRepository,
+    val repositories: MainRepository,
+    val sharedStorageRepository: SharedStorageRepository,
     val observationDataManager: ObservationDataManager,
-    val mainBluetoothConnector: BluetoothConnector,
+    mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder
 ) {
     private val viewManager = ViewManager
-    val deeplinkManager = DeeplinkManager(observationFactory)
-    val endpointRepository: EndpointRepository = EndpointRepository(sharedStorageRepository)
-    val credentialRepository: CredentialRepository = CredentialRepository(sharedStorageRepository)
-    private val studyStateRepository: StudyStateRepository =
-        StudyStateRepository(sharedStorageRepository)
-    val networkService: NetworkService = NetworkService(endpointRepository, credentialRepository)
-    val observationManager = ObservationManager(observationFactory, dataRecorder)
-    val bluetoothController = BluetoothController(mainBluetoothConnector)
+    val deeplinkManager = DeeplinkManager(repositories, observationFactory)
+    val endpointRepository = EndpointRepository(sharedStorageRepository)
+    val credentialRepository = CredentialRepository(sharedStorageRepository).also {
+        observationFactory.setCredentialsRepository(it)
+    }
+    val networkService = NetworkService(endpointRepository, credentialRepository)
+
+    val observationManager = ObservationManager(
+        repositories,
+        observationFactory,
+        dataRecorder
+    )
+    val bluetoothController =
+        BluetoothController(
+            repositories.bluetoothDevice,
+            mainBluetoothConnector,
+            observationFactory = observationFactory
+        )
     val notificationManager =
         NotificationManager(
+            repositories,
             localNotificationListener,
             networkService,
             deeplinkManager,
             sharedStorageRepository
         )
-
-    var appIsInForeGround = false
+            .also { observationFactory.setNotificationManager(it) }
 
     val unreadNotificationCount = notificationManager.unreadUserCount
 
-    val currentStudyState = studyStateRepository.currentStudyState
-    var finishText: String? = null
-    private var bluetoothListener: Job? = null
-
     private val mutex = Mutex()
+    private val konnection = Konnection.instance
 
     init {
-        onApplicationStart()
-        observationFactory.setCredentialsRepository(credentialRepository)
-        observationFactory.setNotificationManager(notificationManager)
-    }
-
-    private fun onApplicationStart() {
-        if (credentialRepository.hasCredentials()) {
-            activateObservationWatcher()
+        Scope.launch {
+            var prevFg: Boolean? = null
+            var prevState: Boolean? = null
+            combine(
+                ViewManager.appInForeground,
+                credentialRepository.hasCredentials,
+                repositories.study.studyState
+            ) { fg, cred, state -> Pair(fg, cred && state.isActive()) }
+                .distinctUntilChanged()
+                .collectLatest { (fg, state) ->
+                    ViewManager.currentStudyActive(state)
+                    if (fg != prevFg && (state == prevState || prevState == null && state)) {
+                        Napier.d(tag = "Shared::init") { "App went to foreground: $fg, study state: $state" }
+                        if (fg && state) {
+                            updateStudy()
+                            observationManager.updateTaskStates()
+                            observationFactory.updateObservationErrors()
+                            notificationManager.createNewFCMIfNecessary()
+                            notificationManager.clearAllNotifications()
+                            notificationManager.downloadMissedNotifications()
+                            dataRecorder.restartAll()
+                            garminLogin()
+                        } else {
+                            ViewManager.showBLEView(false)
+                        }
+                    } else if (fg == prevFg && prevState != null && state != prevState) {
+                        Napier.d(tag = "Shared::init") { "Study state changed: $prevState -> $state" }
+                        if (state) {
+                            observationDataManager.listenToDatapointCountChanges()
+                            observationManager.activateScheduleUpdate()
+                            Scope.launch {
+                                observationManager.updateTaskStates()
+                                observationFactory.updateObservationErrors()
+                            }
+                            garminLogin()
+                        } else {
+                            stopObservations()
+                            ViewManager.showBLEView(false)
+                            ObservationStates.resetAll()
+                        }
+                    }
+                    prevFg = fg
+                    prevState = state
+                }
         }
     }
 
-    fun appInForeground(boolean: Boolean) {
-        Napier.i { "App is in foreground: $boolean" }
-        appIsInForeGround = boolean
-        if (appIsInForeGround) {
-            notificationManager.clearAllNotifications()
-            if (credentialRepository.hasCredentials()) {
-                updateStudyBlocking()
-                notificationManager.createNewFCMIfNecessary()
-                bluetoothListener?.cancel()
-                bluetoothListener = StudyScope.launch {
-                    bluetoothController.listenToConnectionChanges(
-                        observationFactory
-                    )
-                }.second
-                observationFactory.updateObservationErrors()
-                updateTaskStates()
-            }
-        } else {
-            ViewManager.showBLEView(false)
-        }
-    }
-
-    fun updateTaskStates() {
-        if (appIsInForeGround && credentialRepository.hasCredentials()) {
-            observationManager.updateTaskStates()
-            notificationManager.downloadMissedNotifications()
-            bluetoothController.startScanningForDevices(observationFactory.bleDevicesNeeded())
-        }
-    }
-
-    private fun activateObservationWatcher(overwriteCheck: Boolean = false) {
-        StudyScope.launch {
-            if (overwriteCheck || StudyRepository().getStudy().firstOrNull()?.active == true) {
-                observationDataManager.listenToDatapointCountChanges()
-                updateTaskStates()
-                observationManager.activateScheduleUpdate()
-            }
-        }
-    }
-
-    fun resetFirstStartUp() {
-        log { "Resetting first login to true..." }
-        sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, true)
-        log {
-            "Reset! First login is ${
-                sharedStorageRepository.load(
-                    FIRST_OPEN_AFTER_LOGIN_KEY,
-                    true
-                )
-            }"
-        }
-    }
-
-    private fun firstStartUp(): Boolean {
-        return if (sharedStorageRepository.load(FIRST_OPEN_AFTER_LOGIN_KEY, true)) {
-            log { "Setting first startup to false..." }
-            sharedStorageRepository.store(FIRST_OPEN_AFTER_LOGIN_KEY, false)
-            true
-        } else false
-    }
-
-    private fun updateStudyBlocking(
-        oldStudyState: StudyState? = null,
-        newStudyState: StudyState? = null
-    ) {
-        Scope.launch(Dispatchers.IO) {
-            updateStudy(oldStudyState, newStudyState)
-        }
-    }
-
+    /**
+     * Updates the study state and related resources. This function ensures that any change in the
+     * current study, study state, or study configuration is appropriately handled. It synchronizes
+     * updates using a lock and takes necessary actions such as storing the new state, updating study
+     * resources, managing notifications, and handling changes in connectivity.
+     *
+     * @param oldStudyState The previous state of the study. Can be null if there is no specific old state to compare with.
+     * @param newStudyState The new state to transition the study to. Can be null if no state change is required.
+     */
     suspend fun updateStudy(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
@@ -172,103 +150,123 @@ class Shared(
             } else {
                 Napier.d(tag = "Shared::updateStudy") { "Updating study..." }
             }
-            val studyRepository = StudyRepository()
-            val currentStudy = studyRepository.getStudy().firstOrNull()
-            if (currentStudy != null) {
-                Napier.d(tag = "Shared::updateStudy") { "Has current study: $currentStudy with study state: ${currentStudy.getState()} is active: ${currentStudy.active}" }
-                if (currentStudyState.firstOrNull() == StudyState.NONE) {
-                    studyStateRepository.storeState(currentStudy.getState())
-                }
-                currentStudy.finishText?.let {
-                    finishText = it
-                }
-            }
+            val currentStudy = repositories.study.study.value
             if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
                 Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
-                studyStateRepository.storeState(newStudyState)
-                viewManager.studyIsUpdating(true)
+                repositories.study.updateStudyState(newStudyState)
                 StudyScope.cancel()
-                stopObservations()
-                removeStudyData()
                 notificationManager.clearAllNotifications()
-                viewManager.studyIsUpdating(false)
             } else {
+                if (!konnection.isConnected()) {
+                    Napier.d(tag = "Shared::updateStudy") { "No network connection, skipping study update" }
+                    if (newStudyState != null) {
+                        repositories.study.updateStudyState(newStudyState)
+                    }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
+                    return
+                }
+
                 val (study, error) = networkService.getStudyConfig()
                 if (error != null) {
                     Napier.e { error.message }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
                     return
                 }
                 if (study == null) {
                     Napier.d { "Study is null" }
+                    if (currentStudy == null) {
+                        ViewManager.studyError(true)
+                    }
                     return
                 }
+
                 var studyHasChanged = false
-                currentStudy?.let {
-                    if ((study.studyState?.let { StudyState.getState(it) } != it.getState() || it.active != study.active) || it.version != study.version) {
+                var stateChanged = false
+                var activeStatusChanged = false
+                var versionChanged = false
+
+                currentStudy?.let { current ->
+                    val newState = study.studyState?.let { StudyState.getState(it) }
+                    val currentState = current.getState()
+
+                    if (newState != currentState) {
+                        stateChanged = true
                         studyHasChanged = true
+                        Napier.d(tag = "Shared::updateStudy") { "Study state changed: $currentState -> $newState" }
+                    }
+
+                    if (current.active != study.active) {
+                        activeStatusChanged = true
+                        studyHasChanged = true
+                        Napier.d(tag = "Shared::updateStudy") { "Study active status changed: ${current.active} -> ${study.active}" }
+                    }
+
+                    if (current.version != study.version) {
+                        versionChanged = true
+                        studyHasChanged = true
+                        Napier.d(tag = "Shared::updateStudy") { "Study version changed: ${current.version} -> ${study.version}" }
                     }
                 }
-                if (studyHasChanged || currentStudy == null) {
+
+                val hasNoCurrentStudy = currentStudy == null
+                val shouldUpdate = studyHasChanged || hasNoCurrentStudy
+
+                if (shouldUpdate) {
+                    Napier.d(tag = "Shared::updateStudy") { "Study update required - hasNoCurrentStudy: $hasNoCurrentStudy, stateChanged: $stateChanged, activeStatusChanged: $activeStatusChanged, versionChanged: $versionChanged" }
+
                     viewManager.studyIsUpdating(true)
                     StudyScope.cancel()
-                    stopObservations()
-                    removeStudyData()
-                    if (study.studyState?.let { StudyState.getState(it) } != StudyState.CLOSED) {
-                        studyRepository.storeStudy(study)
-                        resetFirstStartUp()
-                        observationFactory.updateObservationErrors()
-                    }
-                    if (newStudyState == null) {
-                        studyStateRepository.storeState(study.studyState?.let {
-                            StudyState.getState(
-                                it
-                            )
-                        }
-                            ?: if (study.active == true) StudyState.ACTIVE else StudyState.PAUSED)
-                    }
-                    if (study.active == true) {
-                        activateObservationWatcher(true)
-                    }
+                    observationFactory.clearNeededObservationTypes()
+                    notificationManager.clearAllNotifications()
+                    repositories.notification.deleteAll()
+                    ViewManager.studyError(false)
+                    repositories.study.upsert(study)
                     viewManager.studyIsUpdating(false)
-                }
-                if (newStudyState != null) {
-                    studyStateRepository.storeState(newStudyState)
+                } else {
+                    Napier.d(tag = "Shared::updateStudy") { "No study update needed - study data is unchanged" }
                 }
             }
         }
     }
 
-    fun newLogin() {
+    suspend fun newLogin() {
         notificationManager.newFCMToken()
-        studyStateRepository.storeState(StudyState.ACTIVE)
-        StudyScope.launch {
-            finishText = StudyRepository().getStudy().firstOrNull()?.finishText
-        }
-        activateObservationWatcher()
-        updateTaskStates()
         observationFactory.updateObservationErrors()
-        bluetoothListener?.cancel()
-        bluetoothListener = StudyScope.launch {
-            bluetoothController.listenToConnectionChanges(
-                observationFactory
-            )
-        }.second
+        garminLogin()
+    }
+
+    private fun garminLogin() {
+        Scope.launch {
+            Napier.d(tag = "Shared::garminLogin") { "Checking Garmin login" }
+            if (observationFactory.observationTypes()
+                    .contains(GarminType().observationType)
+                && !sharedStorageRepository.load(
+                    CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN,
+                    false
+                )
+            ) {
+                ViewManager.requestGarminConnectView(true)
+            }
+        }
     }
 
     fun exitStudy(onDeletion: () -> Unit) {
         StudyScope.cancel()
-        stopObservations()
         bluetoothController.resetAll()
         Scope.launch {
             networkService.deleteParticipation()
             notificationManager.clearAllNotifications()
             notificationManager.deleteFCMToken()
-            clearSharedStorage()
             removeStudyData()
-            onDeletion()
+            repositories.notification.deleteAll()
             observationFactory.clearNeededObservationTypes()
+            clearSharedStorage()
+            onDeletion()
             viewManager.resetAll()
-            studyStateRepository.storeState(StudyState.NONE)
         }
     }
 
@@ -279,28 +277,14 @@ class Shared(
 
     private fun clearSharedStorage() {
         credentialRepository.remove()
+        sharedStorageRepository.remove(CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN)
     }
 
-    private suspend fun removeStudyData() {
-        DatabaseManager.deleteAllFromSchema(
-            setOf(
-                StudySchema::class,
-                ObservationSchema::class,
-                ScheduleSchema::class,
-                ObservationDataSchema::class,
-                DataPointCountSchema::class,
-            )
-        )
+    suspend fun removeStudyData() {
+        repositories.deleteAll()
         observationFactory.clearNeededObservationTypes()
     }
 
-    fun onStudyStateChange(providedState: (StudyState) -> Unit) =
-        currentStudyState.asClosure(providedState)
-
     fun unreadNotificationCountAsClosure(state: (Int) -> Unit) =
         unreadNotificationCount.asClosure(state)
-
-    companion object {
-        const val FIRST_OPEN_AFTER_LOGIN_KEY = "first_open_after_login_key"
-    }
 }

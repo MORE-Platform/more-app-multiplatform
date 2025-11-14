@@ -10,12 +10,12 @@ import SwiftUI
 
 struct ObservationErrorsView: View {
     @StateObject private var observationErrorsViewModel = ObservationErrorsViewModel()
-    
+
     private let navigationStrings = "Navigation"
     var body: some View {
         ObservationErrorListView(taskObservationErrors: observationErrorsViewModel.observationErrors, taskObservationErrorActions: observationErrorsViewModel.observationErrorActions)
             .padding(.vertical)
-            .customNavigationTitle(with: NavigationScreen.observationErrors.localize(useTable: navigationStrings, withComment: "Observation Errors title"), displayMode: .inline)
+            .customNavigationTitle(with: NavigationScreen.observationErrors.localize(), displayMode: .inline)
     }
 }
 

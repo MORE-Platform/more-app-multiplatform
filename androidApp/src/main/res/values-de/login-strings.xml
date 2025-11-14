@@ -8,9 +8,12 @@
     <string name="more_login_button_label">Login</string>
     <string name="more_endpoint_input_placeholder">URL der Studie eingeben</string>
     <string name="more_token_error">Ein Fehler beim Token ist aufgetreten</string>
+    <string name="more_404">"Fehler im Token oder in der URL"</string>
+    <string name="more_system_error">System Error! Bitte versuchen Sie es später oder kontaktieren Sie Ihren Studien-Administrator!</string>
     <string name="more_qr_code_button">Scannen Sie bitte Ihren QR Code</string>
     <string name="more_qr_code_button_description">Öffnen Sie die Kamera um den QR code zu scannen</string>
     <string name="more_or_text">oder</string>
-
-
+    <string name="more_qr_code_scan_automatically">QR Code wird automatisch gescannt.</string>
+    <string name="more_qr_camera_needed">Um den QR Code zu scannen benötigen wir Zugriff zu deiner Kamera.</string>
+    <string name="more_close_icon">QR Code Scanner-Overlay schließen</string>
 </resources>

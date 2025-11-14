@@ -11,126 +11,61 @@
 package io.redlink.more.app.android.activities.consent
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.models.PermissionModel
-import io.redlink.more.more_app_mutliplatform.services.extensions.toMD5
-import io.redlink.more.more_app_mutliplatform.services.network.RegistrationService
-import io.redlink.more.more_app_mutliplatform.viewModels.permission.CorePermissionViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-interface ConsentViewModelListener {
-    fun credentialsStored()
-    fun decline()
-}
+import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
+import io.redlink.more.more_app_mutliplatform.viewModels.permission.CoreConsentViewModel
 
 class ConsentViewModel(
-    registrationService: RegistrationService,
-    private val consentViewModelListener: ConsentViewModelListener
+    val registrationService: RegistrationService
 ) : ViewModel() {
-    private val coreModel =
-        CorePermissionViewModel(registrationService, stringResource(R.string.consent_information))
-    private var consentInfo: String? = null
-
-    val permissionModel =
-        mutableStateOf(
-            PermissionModel(
-                "Title",
-                "Participation Info",
-                "Study Consent Info",
-                emptyList()
-            )
-        )
-    val loading = mutableStateOf(false)
-    val error = mutableStateOf<String?>(null)
-    val permissions = mutableSetOf<String>()
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreModel.permissionModel.collect {
-                withContext(Dispatchers.Main) {
-                    permissionModel.value = it
-                    permissions.addAll(MoreApplication.shared!!.observationFactory.studySensorPermissions())
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            coreModel.loadingFlow.collect {
-                withContext(Dispatchers.Main) {
-                    loading.value = it
-                }
-            }
-        }
-    }
-
-    fun setConsentInfo(info: String) {
-        this.consentInfo = info
-    }
+    val coreModel =
+        CoreConsentViewModel(registrationService, stringResource(R.string.consent_information))
 
     fun acceptConsent(context: Context) {
-        consentInfo?.let { info ->
-            getSecureID(context)?.let { uniqueDeviceId ->
-                coreModel.acceptConsent(info.toMD5(), uniqueDeviceId,
-                    onSuccess = {
-                        consentViewModelListener.credentialsStored()
-                        MoreApplication.shared!!.newLogin()
-                    }, onError = {
-                        error.value = it?.message
-                    })
-            }
+        getSecureID(context)?.let { uniqueDeviceId ->
+            registrationService.acceptConsent(uniqueDeviceId)
         }
     }
 
     fun openPermissionDeniedAlertDialog(context: Context) {
-        AlertController.openAlertDialog(AlertDialogModel(
-            title = stringResource(R.string.required_permissions_not_granted_title),
-            message = stringResource(R.string.required_permission_not_granted_message),
-            positiveTitle = stringResource(R.string.proceed_to_settings_button),
-            negativeTitle = stringResource(R.string.proceed_without_granting_button),
-            onPositive = {
-                MoreApplication.openSettings.value = true
-                AlertController.closeAlertDialog()
-            },
-            onNegative = {
-                acceptConsent(context)
-                AlertController.closeAlertDialog()
-            }
-        ))
+        AlertController.openAlertDialog(
+            AlertDialogModel(
+                title = stringResource(R.string.required_permissions_not_granted_title),
+                message = stringResource(R.string.required_permission_not_granted_message),
+                confirmLabel = stringResource(R.string.proceed_to_settings_button),
+                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                onConfirm = {
+                    MoreApplication.openSettings.value = true
+                },
+                onDecline = {
+                    acceptConsent(context)
+                }
+            ))
     }
 
     fun openNotificationPermissionDeniedAlertDialog(context: Context) {
-        AlertController.openAlertDialog(AlertDialogModel(
-            title = stringResource(R.string.notification_permission_not_granted_title),
-            message = stringResource(R.string.notification_permission_not_granted_message),
-            positiveTitle = stringResource(R.string.proceed_to_settings_button),
-            negativeTitle = stringResource(R.string.proceed_without_granting_button),
-            onPositive = {
-                MoreApplication.openSettings.value = true
-                AlertController.closeAlertDialog()
-            },
-            onNegative = {
-                acceptConsent(context)
-                AlertController.closeAlertDialog()
-            }
-        ))
+        AlertController.openAlertDialog(
+            AlertDialogModel(
+                title = stringResource(R.string.notification_permission_not_granted_title),
+                message = stringResource(R.string.notification_permission_not_granted_message),
+                confirmLabel = stringResource(R.string.proceed_to_settings_button),
+                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                onConfirm = {
+                    MoreApplication.openSettings.value = true
+                },
+                onDecline = {
+                    acceptConsent(context)
+                }
+            ))
     }
 
     fun decline() {
-        coreModel.declineConsent()
-        consentViewModelListener.decline()
-    }
-
-    fun buildConsentModel() {
-        coreModel.buildConsentModel()
+        registrationService.declineConsent()
     }
 }

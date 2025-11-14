@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.web.WebClient
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
@@ -50,7 +52,7 @@ import io.redlink.more.app.android.ui.theme.MoreColors
 class LimeSurveyActivity : ComponentActivity() {
     val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
     var webView: WebView? = null
-    var webClientListener: LimeSurveyWebClient? = null
+    var webClientListener: WebClient? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,9 +63,14 @@ class LimeSurveyActivity : ComponentActivity() {
             intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID)
         )
 
+        onBackPressedDispatcher.addCallback(this) {
+            viewModel.onFinish()
+            finish()
+        }
+
         webView = WebView(this)
         webView?.let { webView ->
-            webClientListener = LimeSurveyWebClient()
+            webClientListener = WebClient()
             webClientListener?.let {
                 webClientListener?.setListener(viewModel)
                 webView.apply {
@@ -105,12 +112,6 @@ class LimeSurveyActivity : ComponentActivity() {
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
         viewModel.onFinish()
         return super.getOnBackInvokedDispatcher()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        viewModel.onFinish()
     }
 
     companion object {
@@ -156,8 +157,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                     )
                 }
             }
-        },
-        alertDialogModel = viewModel.alertDialogOpen.value
+        }
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (viewModel.dataLoading.value) {

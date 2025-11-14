@@ -18,22 +18,20 @@ import SwiftUI
 struct LimeSurveyView: View {
     @StateObject var viewModel: LimeSurveyViewModel
 
-    private let stringsTable = "LimeSurvey"
     var body: some View {
-        MoreMainBackgroundView(contentPadding: 0) {        
+        MoreMainBackgroundView(contentPadding: 0) {
             VStack {
                 if viewModel.dataLoading {
                     HStack {
                         Text("Data is loading...")
                     }
-                } else {
-                    
-                    WebView(url: viewModel.limeSurveyLink, viewModel: viewModel.webViewModel)
+                } else if let url = viewModel.limeSurveyLink {
+                    WebView(url: URLRequest(url: url), viewModel: viewModel.webViewModel)
                         .ignoresSafeArea(.all, edges: .bottom)
                 }
             }
         }
-        .customNavigationTitle(with: NavigationScreen.limeSurvey.localize(useTable: stringsTable, withComment: "LimeSurvey View"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.limeSurvey.localize(), displayMode: .inline)
         .toolbar {
             if viewModel.wasAnswered {
                 Button {

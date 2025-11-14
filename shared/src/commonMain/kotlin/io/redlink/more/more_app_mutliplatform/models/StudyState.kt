@@ -16,7 +16,9 @@ enum class StudyState(val descr: String) {
     PAUSED("paused"),
     CLOSED("closed");
 
+    fun isActive() = this == ACTIVE
+
     companion object {
-        fun getState(name: String) = StudyState.values().firstOrNull { it.descr == name } ?: NONE
+        fun getState(name: String) = entries.firstOrNull { it.descr == name } ?: NONE
     }
 }

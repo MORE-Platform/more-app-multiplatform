@@ -10,55 +10,43 @@
  */
 package io.redlink.more.more_app_mutliplatform.viewModels.studydetails
 
-import io.ktor.utils.io.core.Closeable
-import io.ktor.utils.io.core.use
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.StudyRepository
-import io.redlink.more.more_app_mutliplatform.extensions.asClosure
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.Shared
 import io.redlink.more.more_app_mutliplatform.models.StudyDetailsModel
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 
-class CoreStudyDetailsViewModel: CoreViewModel() {
-    val studyModel = MutableStateFlow<StudyDetailsModel?>(null)
+class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
+    private val _studyModel = MutableStateFlow<StudyDetailsModel?>(null)
 
-    fun onLoadStudyDetails(provideNewState: ((StudyDetailsModel?) -> Unit)): Closeable {
-        return studyModel.asClosure(provideNewState)
-    }
+    @NativeCoroutines
+    val studyModel: StateFlow<StudyDetailsModel?> = _studyModel
 
-    override fun viewDidAppear() {
+    init {
         launchScope {
-            StudyRepository().use { studyRepository ->
-                ScheduleRepository().use { scheduleRepository ->
-                    ObservationRepository().use { observationRepository ->
-                        studyRepository.getStudy()
-                            .combine(scheduleRepository.allSchedulesWithStatus(true).cancellable()) { study, doneTasks ->
-                                Pair(study, doneTasks.size)
-                            }.combine(scheduleRepository.count().cancellable()) { (studySchema, doneTaskCount), taskCount ->
-                                Triple(
-                                    studySchema,
-                                    doneTaskCount,
-                                    taskCount
-                                )
-                            }.combine(observationRepository.observations().cancellable()) { triple, observations ->
-                                Pair(
-                                    triple,
-                                    observations,
-                                )
-                            }.cancellable().collect { (triple, observations) ->
-                                triple.first?.let {studySchema ->
-                                    println(studySchema)
-                                    studyModel.value = StudyDetailsModel.createModelFrom(studySchema, observations.sortedBy { it.observationTitle }, triple.third,
-                                        triple.second.toLong()
-                                    )
-                                }
-                            }
-                    }
-                }
+            shared.repositories.study.study.combine(
+                shared.repositories.schedule.allSchedulesWithStatus(true)
+            ) { study, schedules ->
+                Pair(study, schedules)
             }
+                .combine(shared.repositories.observation.observations()) { (study, schedules), observations ->
+                    val taskCount: Int =
+                        shared.repositories.schedule.count().cancellable().firstOrNull() ?: 0
+                    study?.let {
+                        StudyDetailsModel.createModelFrom(
+                            it,
+                            observations.sortedBy { obs -> obs.observationTitle },
+                            taskCount.toLong(),
+                            schedules.size.toLong()
+                        )
+                    }
+                }.collect { studyDetailsModel ->
+                    _studyModel.value = studyDetailsModel
+                }
         }
     }
 }

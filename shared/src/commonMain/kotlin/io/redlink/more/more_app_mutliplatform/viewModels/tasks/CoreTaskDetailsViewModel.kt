@@ -11,49 +11,70 @@
 package io.redlink.more.more_app_mutliplatform.viewModels.tasks
 
 import io.ktor.utils.io.core.Closeable
-import io.redlink.more.more_app_mutliplatform.database.repository.DataPointCountRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationRepository
-import io.redlink.more.more_app_mutliplatform.database.repository.ScheduleRepository
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
 import io.redlink.more.more_app_mutliplatform.models.TaskDetailsModel
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.more_app_mutliplatform.observations.ObservationStates
 import io.redlink.more.more_app_mutliplatform.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 
 class CoreTaskDetailsViewModel(
-    private val dataRecorder: DataRecorder
-): CoreViewModel() {
-    private var scheduleId: String? = null
+    private val repository: MainRepository,
+    private val dataRecorder: DataRecorder,
+    private var scheduleId: String
+) : CoreViewModel() {
 
-    private val dataPointCountRepository: DataPointCountRepository = DataPointCountRepository()
-    private val observationRepository: ObservationRepository = ObservationRepository()
-    private val scheduleRepository: ScheduleRepository = ScheduleRepository()
-    val taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
-    val dataCount = MutableStateFlow<Long>(0)
+    private val _taskDetailsModel = MutableStateFlow<TaskDetailsModel?>(null)
+    val taskDetailsModel: StateFlow<TaskDetailsModel?> = _taskDetailsModel
+    private val _dataCount = MutableStateFlow<Long>(0)
+    val dataCount: StateFlow<Long> = _dataCount
+    private val _observationErrors = MutableStateFlow<Map<String, Set<String>>>(emptyMap())
+    val observationErrors: StateFlow<Map<String, Set<String>>> = _observationErrors
+    private val _taskObservationErrors = MutableStateFlow<List<String>>(emptyList())
+    val taskObservationErrors: StateFlow<List<String>> = _taskObservationErrors
+    private val _taskObservationErrorActions = MutableStateFlow<List<String>>(emptyList())
+    val taskObservationErrorActions: StateFlow<List<String>> = _taskObservationErrorActions
 
-    fun setSchedule(scheduleId: String) {
-        this.scheduleId = scheduleId
-        taskDetailsModel.value = null
-        dataCount.value = 0
-    }
-
-    override fun viewDidAppear() {
-        scheduleId?.let {
-            launchScope {
-                scheduleRepository.scheduleWithId(it).cancellable().collect { schedule ->
-                    schedule?.let { schedule ->
-                        observationRepository.observationById(schedule.observationId).cancellable().firstOrNull()?.let {
-                            taskDetailsModel.emit(TaskDetailsModel.createModelFrom(it, schedule))
+    init {
+        launchScope {
+            repository.schedule.scheduleWithId(scheduleId).cancellable().collect { schedule ->
+                schedule?.let { schedule ->
+                    repository.observation.observationById(schedule.observationId).cancellable()
+                        .firstOrNull()?.let {
+                            _taskDetailsModel.emit(
+                                TaskDetailsModel.createModelFrom(
+                                    it,
+                                    schedule
+                                )
+                            )
                         }
-                    }
                 }
             }
-            launchScope {
-                dataPointCountRepository.get(it).cancellable().collect {
-                    it?.let {
-                        dataCount.emit(it.count)
+        }
+        launchScope {
+            repository.dataPointCount.get(scheduleId).cancellable().collect {
+                it?.let {
+                    _dataCount.emit(it.count)
+                }
+            }
+        }
+        launchScope {
+            ObservationStates.observationErrors.collect { errors ->
+                _observationErrors.value = errors
+                taskDetailsModel.value?.let { taskDetails ->
+                    if (taskDetails.observationType != "") {
+                        _taskObservationErrors.value = emptyList()
+                        _taskObservationErrorActions.value = emptyList()
+                        observationErrors.value[taskDetails.observationType]?.let { errors ->
+                            val (actions, messages) = errors.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
+                            _taskObservationErrors.value = messages.toList()
+                            _taskObservationErrorActions.value = actions.toList()
+                        }
                     }
                 }
             }
@@ -61,19 +82,19 @@ class CoreTaskDetailsViewModel(
     }
 
     fun onLoadTaskDetails(provideNewState: ((TaskDetailsModel?) -> Unit)): Closeable =
-        taskDetailsModel.asClosure(provideNewState)
+        _taskDetailsModel.asClosure(provideNewState)
 
-    fun onNewDataCount(provideNewState: (Long?) -> Unit) = dataCount.asClosure(provideNewState)
+    fun onNewDataCount(provideNewState: (Long?) -> Unit) = _dataCount.asClosure(provideNewState)
 
     fun startObservation() {
-        scheduleId?.let { dataRecorder.start(it) }
+        dataRecorder.start(scheduleId)
     }
 
     fun stopObservation() {
-        scheduleId?.let { dataRecorder.stop(it) }
+        dataRecorder.stop(scheduleId)
     }
 
     fun pauseObservation() {
-        scheduleId?.let { dataRecorder.pause(it) }
+        dataRecorder.pause(scheduleId)
     }
 }

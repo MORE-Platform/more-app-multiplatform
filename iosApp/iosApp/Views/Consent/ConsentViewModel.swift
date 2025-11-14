@@ -7,133 +7,99 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
+import AVFoundation
+import Combine
+import KMPNativeCoroutinesCombine
 import shared
 import UIKit
-import AVFoundation
 
-protocol ConsentViewModelListener {
-    func credentialsStored()
-    func decline()
-    func credentialsDeleted()
-}
-
-class ConsentViewModel: NSObject, ObservableObject {
-    private let coreModel: CorePermissionViewModel
-    var consentInfo: String? = nil
-    var delegate: ConsentViewModelListener? = nil
+class ConsentViewModel: ObservableObject {
+    private let coreModel: CoreConsentViewModel
+    private let registration: RegistrationService
+    var consentInfo: String?
     private let stringTable = "SettingsView"
-    
-    @Published private(set) var permissionModel: PermissionModel = PermissionModel(studyTitle: "Title", studyParticipantInfo: "Info", studyConsentInfo: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: "SettingsView"), consentInfo: []) {
-        didSet {
-            self.permissionManager.setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
-        }
-    }
-    @Published var isLoading = false
-    @Published var error: String = ""
+
+    @Published var permissionModel: PermissionModel? = nil
     @Published var showErrorAlert: Bool = false
     @Published var requestedPermissions = false
 
+    private var cancellables = Set<AnyCancellable>()
+
     lazy var permissionManager = PermissionManager()
     var permissionGranted = false
-    
+
     init(registrationService: RegistrationService) {
-        print("ConsentViewModel allocated!")
-        coreModel = CorePermissionViewModel(registrationService: registrationService, studyConsentTitle: String.localize(forKey: "study_consent", withComment: "Consent of the study", inTable: stringTable))
-        super.init()
-        coreModel.onConsentModelChange { model in
-            DispatchQueue.main.async {
-                self.permissionModel = model
-            }
+        registration = registrationService
+        coreModel = CoreConsentViewModel(registrationService: registrationService, studyConsentTitle: String(localized: "study_consent"))
+
+        createPublisher(for: coreModel.permissions)
+        .receive(on: DispatchQueue.main)
+        .sink { _ in
+        } receiveValue: { [weak self] model in
+            self?.permissionModel = model
         }
-        coreModel.onLoadingChange { loading in
-            if let loading = loading as? Bool {
-                DispatchQueue.main.async {
-                    self.isLoading = loading
-                }
-            }
-        }
+        .store(in: &cancellables)
     }
-    
+
     func onAppear() {
-        coreModel.viewDidAppear()
         permissionManager.observer = self
     }
 
     func onDisappear() {
-        coreModel.viewDidDisappear()
         permissionManager.observer = nil
     }
-    
+
     func resetPermissionRequest() {
-        self.requestedPermissions = false
-        self.permissionManager.resetRequest()
+        requestedPermissions = false
+        permissionManager.resetRequest()
     }
 
     func requestPermissions() {
-        self.requestedPermissions = true
+        requestedPermissions = true
         permissionManager.requestPermission(permissionRequest: true)
     }
 
-    func reloadPermissions() {
-        coreModel.onConsentModelChange { model in
-            self.permissionModel = model
-        }
-    }
-    
     private func acceptConsent() {
-        if let consentInfo, let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
-            coreModel.acceptConsent(consentInfoMd5: consentInfo.toMD5(), uniqueDeviceId: uniqueId) { credentialsStored in
-                DispatchQueue.main.async {
-                    self.delegate?.credentialsStored()
-                }
-            } onError: { error in
-                if let error {
-                    DispatchQueue.main.async {
-                        self.error = error.message
-                    }
-                }
-            }
+        if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+            registration.acceptConsent(uniqueDeviceId: uniqueId)
         }
     }
-    
-    func buildConsentModel() {
-        coreModel.buildConsentModel()
-    }
-    
+
     func decline() {
-        coreModel.declineConsent()
-        delegate?.decline()
-    }
-    
-    deinit {
-        print("ConsentViewModel deallocated!")
+        registration.declineConsent()
     }
 }
 
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
-        if permissionManager.anyNeededPermissionDeclined() {
-            AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-                AlertController.shared.closeAlertDialog()
-                self.resetPermissionRequest()
-            }, onNegative: {
+        Task { @MainActor in
+            if permissionManager.anyNeededPermissionDeclined() {
+                AlertController.shared.openAlertDialog(model:
+                                                       AlertDialogModel(
+                                                           title: "Required Permissions Were Not Granted",
+                                                           message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?",
+                                                           confirmLabel: "Proceed to Settings",
+                                                           cancelLabel: "Proceed Without Granting Permissions",
+                                                           onConfirm: {
+                                                               if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                                                                   UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                                               }
+                                                               self.resetPermissionRequest()
+                                                           },
+                                                           onDecline: {
+                                                               self.acceptConsent()
+                                                               self.requestedPermissions = false
+                                                           }))
+            } else {
                 self.acceptConsent()
                 self.requestedPermissions = false
-                AlertController.shared.closeAlertDialog()
-            }))
-        } else {
-            self.acceptConsent()
-            self.requestedPermissions = false
+            }
         }
-        
     }
 }

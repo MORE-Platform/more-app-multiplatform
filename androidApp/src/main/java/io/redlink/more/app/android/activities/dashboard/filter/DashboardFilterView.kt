@@ -11,6 +11,7 @@
 package io.redlink.more.app.android.activities.dashboard.filter
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,10 +36,11 @@ import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
-
+import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
 
 @Composable
-fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
+fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
+    val viewModel = remember { DashboardFilterViewModel(coreScheduleViewModel.coreFilterModel) }
     LazyColumn {
         item {
             HeaderTitle(
@@ -61,7 +64,10 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleDateFilter(item.key) })
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { viewModel.toggleDateFilter(item.key) })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
@@ -96,7 +102,10 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.clearTypeFilter() })
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { viewModel.clearTypeFilter() })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
@@ -124,7 +133,10 @@ fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleTypeFilter(item.key) })
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { viewModel.toggleTypeFilter(item.key) })
                         .padding(4.dp)
                 ) {
                     HeaderDescription(

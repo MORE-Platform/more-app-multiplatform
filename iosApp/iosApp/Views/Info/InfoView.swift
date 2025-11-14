@@ -26,44 +26,38 @@ struct InfoView: View {
             Divider()
             VStack {
                 InfoList()
-                    .hideListRowSeparator()
+                    .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.more.primaryLight)
                     .padding(.top, 7)
                 Spacer()
             }
             .listStyle(.plain)
-            .clearListBackground()
-            
+            .scrollContentBackground(.hidden)
+
             Spacer()
-            
+
             if let id = viewModel.participantId, let alias = viewModel.participantAlias {
                 HStack(alignment: .center) {
-                    BasicText(text: "\("Participant".localize(withComment: "Participant ID", useTable: infoStrings)) \(id): \(alias)", color: .more.secondary)
+                    BasicText(text: "\("Participant") \(id): \(alias)", color: .more.secondary)
                 }
                 Divider()
             }
-            
+
             ContactInfo(
-                title: String.localize(forKey: "info_contact_title", withComment: "Contact us.", inTable: infoStrings),
-                info: String.localize(forKey: "info_disclaimer", withComment: "Contact us.", inTable: infoStrings),
+                title: "info_contact_title",
+                info: "info_disclaimer",
                 contactInstitute: viewModel.contactInstitute,
                 contactPerson: viewModel.contactPerson,
                 contactEmail: viewModel.contactEmail,
                 contactPhoneNumber: viewModel.contactPhoneNumber
             )
-            
+
             Spacer()
             AppVersion()
         }
         .padding(.horizontal, 10)
-        .customNavigationTitle(with: NavigationScreen.info.localize(useTable: navigationStrings, withComment: "Information Title"))
-        .onAppear {
-            viewModel.viewDidAppear()
-        }
-        .onDisappear {
-            viewModel.viewDidDisappear()
-        }
+        .customNavigationTitle(with: NavigationScreen.info.localize())
     }
 }
 

@@ -20,7 +20,7 @@ data class DateFilter(
     var selected: Boolean = false
 ) {
     fun toEnum(): DateFilterModel? {
-        return DateFilterModel.values()
+        return DateFilterModel.entries
             .firstOrNull { describing == it.toString() }
     }
 }
@@ -35,7 +35,7 @@ enum class DateFilterModel(
     ONE_WEEK(1, DateTimeUnit.WEEK, 2),
     ONE_MONTH(1, DateTimeUnit.MONTH, 3);
 
-    fun asDataClass() = DateFilter(toString() ,number, dateBased, sortIndex)
+    fun asDataClass() = DateFilter(toString(), number, dateBased, sortIndex)
 
     companion object {
         fun asDataClassList() = DateFilterModel.values().map { it.asDataClass() }

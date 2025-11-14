@@ -10,7 +10,7 @@
  */
 package io.redlink.more.more_app_mutliplatform.models
 
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 
 data class ScheduleModel(
     val scheduleId: String,
@@ -23,7 +23,6 @@ data class ScheduleModel(
     val hidden: Boolean,
     var scheduleState: ScheduleState = ScheduleState.DEACTIVATED
 ) {
-
     fun isSameAs(other: ScheduleModel) = this.scheduleId == other.scheduleId
 
     fun hasSameContentAs(other: ScheduleModel): Boolean {
@@ -33,19 +32,18 @@ data class ScheduleModel(
                 && this.scheduleState == other.scheduleState
     }
 
-
     companion object {
-        fun createModel(schedule: ScheduleSchema): ScheduleModel? {
+        fun createModel(schedule: ScheduleEntity): ScheduleModel? {
             val start = schedule.start ?: return null
             val end = schedule.end ?: return null
             return ScheduleModel(
-                scheduleId = schedule.scheduleId.toHexString(),
+                scheduleId = schedule.scheduleId,
                 observationId = schedule.observationId,
                 observationType = schedule.observationType,
                 observationTitle = schedule.observationTitle,
                 done = schedule.done,
-                start = start.epochSeconds,
-                end = end.epochSeconds,
+                start = start,
+                end = end,
                 hidden = schedule.hidden,
                 scheduleState = schedule.getState()
             )

@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -20,12 +20,12 @@ protocol SimpleQuestionObservationListener {
 }
 
 class SimpleQuestionObservationViewModel: ObservableObject {
-    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(observationFactory: AppDelegate.shared.observationFactory)
-    
+    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(repository: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory)
+
     @Published var simpleQuestoinModel: SimpleQuestionModel?
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
-    
+
     init() {
         coreModel.onLoadSimpleQuestionObservation { model in
             if let model {
@@ -36,7 +36,7 @@ class SimpleQuestionObservationViewModel: ObservableObject {
             }
         }
     }
-    
+
     func setScheduleId(navigationState: NavigationState) {
         if let scheduleId = navigationState.scheduleId {
             coreModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationState.notificationId)
@@ -44,24 +44,23 @@ class SimpleQuestionObservationViewModel: ObservableObject {
             coreModel.setScheduleViaObservationId(observationId: observationId, notificationId: navigationState.notificationId)
         }
     }
-    
+
     func viewDidAppear() {
         coreModel.viewDidAppear()
     }
-    
+
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
         answerSet = ""
     }
-    
+
     func setAnswer(answer: String) {
-        self.answerSet = answer
-    }
-    
-    func finish() {
-        if !self.answerSet.isEmpty {
-            coreModel.finishQuestion(data: self.answerSet, setObservationToDone: true)
-        }
+        answerSet = answer
     }
 
+    func finish() {
+        if !answerSet.isEmpty {
+            coreModel.finishQuestion(data: answerSet, setObservationToDone: true)
+        }
+    }
 }

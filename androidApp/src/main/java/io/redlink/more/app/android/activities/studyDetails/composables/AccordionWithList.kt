@@ -14,6 +14,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,10 +37,14 @@ import androidx.navigation.NavController
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 
 @Composable
-fun AccordionWithList(navController: NavController, title: String, observations: List<ObservationSchema>) {
+fun AccordionWithList(
+    navController: NavController,
+    title: String,
+    observations: List<ObservationEntity>
+) {
     val open = remember {
         mutableStateOf(false)
     }
@@ -63,7 +68,10 @@ fun AccordionWithList(navController: NavController, title: String, observations:
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
-                .clickable {
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
                     open.value = !open.value
                 }
         ) {
@@ -83,7 +91,6 @@ fun AccordionWithList(navController: NavController, title: String, observations:
         if (open.value) {
             ObservationList(observations = observations, navController = navController)
         }
-
 
     }
 }

@@ -7,14 +7,14 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 import shared
+import SwiftUI
 
 struct ObservationButton: View {
     @EnvironmentObject var navigationModalState: NavigationModalState
@@ -24,7 +24,7 @@ struct ObservationButton: View {
     var state: ScheduleState
     var disabled: Bool
     private let stringTable = "ScheduleListView"
-    
+
     var body: some View {
         VStack {
             if observationType == "question-observation" {
@@ -32,9 +32,7 @@ struct ObservationButton: View {
                     navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
                 }) {
                     VStack {
-                        Text(
-                            String.localize(forKey: "start_questionnaire", withComment: "Button to start a questionnaire", inTable: stringTable)
-                        )
+                        Text("start_questionnaire")
                     }
                 }
             } else if observationType == "lime-survey-observation" {
@@ -42,10 +40,7 @@ struct ObservationButton: View {
                     navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
                 }) {
                     VStack {
-                        Text(
-                            "Start LimeSurvey"
-                                .localize(withComment: "Button to start a limesurvey", useTable: stringTable)
-                        )
+                        Text("Button to start a limesurvey")
                     }
                 }
             } else {
@@ -58,13 +53,9 @@ struct ObservationButton: View {
                 }) {
                     VStack {
                         if state == ScheduleState.running {
-                            Text(
-                                String.localize(forKey: "pause_observation", withComment: "Button to pause an observation", inTable: stringTable)
-                            )
+                            Text("pause_observation")
                         } else {
-                            Text(
-                                String.localize(forKey: "start_observation", withComment: "Button to start an observation", inTable: stringTable)
-                            )
+                            Text("start_observation")
                         }
                     }
                 }

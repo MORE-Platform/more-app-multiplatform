@@ -11,6 +11,7 @@
 package io.redlink.more.app.android.activities.studyDetails.composables
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -30,10 +32,10 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
 
 @Composable
-fun ObservationList(navController: NavController, observations: List<ObservationSchema>) {
+fun ObservationList(navController: NavController, observations: List<ObservationEntity>) {
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxWidth()
@@ -42,7 +44,10 @@ fun ObservationList(navController: NavController, observations: List<Observation
             Row(
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-                    .clickable {
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         navController.navigate(
                             NavigationScreen.OBSERVATION_DETAILS.navigationRoute(
                                 "observationId" to observation.observationId

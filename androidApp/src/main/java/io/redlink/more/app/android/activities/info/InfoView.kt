@@ -29,8 +29,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
@@ -50,18 +50,10 @@ import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun InfoView(navController: NavController, viewModel: InfoViewModel) {
+fun InfoView(navController: NavController) {
+    val viewModel = remember { InfoViewModel() }
+    val studyInfo by viewModel.coreViewModel.studyModel.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.INFO.routeWithParameters())
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         item {
             Divider()
@@ -118,7 +110,7 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
         }
 
         item {
-            viewModel.model.value?.let {
+            studyInfo?.let {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,7 +229,6 @@ fun InfoView(navController: NavController, viewModel: InfoViewModel) {
                     }
                 }
             }
-
 
         }
         item {

@@ -14,12 +14,14 @@ import io.github.aakira.napier.Napier
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.parametersOf
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.extensions.setNullable
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class LimeSurveyObservation : Observation(observationType = LimeSurveyType()) {
+class LimeSurveyObservation(repos: MainRepository) :
+    Observation(repos, observationType = LimeSurveyType()) {
     val limeURL = MutableStateFlow<String?>(null)
 
     override fun start(): Boolean {

@@ -22,3 +22,6 @@ fun String.mapQueryParams(): Map<String, Set<String>> {
 
     return queryParams.mapValues { it.value.toSet() }
 }
+
+fun String.overlaps(other: String?, ignoreCase: Boolean = false): Boolean =
+    other?.let { this.contains(other, ignoreCase) || other.contains(this, ignoreCase) } ?: false

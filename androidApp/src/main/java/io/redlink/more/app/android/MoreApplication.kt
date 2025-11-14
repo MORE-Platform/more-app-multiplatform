@@ -25,8 +25,13 @@ import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
 import io.redlink.more.more_app_mutliplatform.Shared
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.getDatabaseBuilder
+import io.redlink.more.more_app_mutliplatform.database.getRoomDatabase
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.napierDebugBuild
 import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
 
 /**
  * Main Application class of the project.
@@ -43,21 +48,21 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
     }
 
     override fun onTerminate() {
+        shared?.bluetoothController?.close()
         super.onTerminate()
-        shared?.mainBluetoothConnector?.close()
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
-        shared?.appInForeground(true)
+        ViewManager.appIsInForeground(true)
         shared?.notificationManager?.updateNotificationBadgeCount()
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Napier.i { "App is in the background..." }
-        shared?.appInForeground(false)
+        ViewManager.appIsInForeground(false)
     }
 
     companion object {
@@ -79,13 +84,16 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
             if (shared == null) {
                 polarConnector = PolarConnector(context)
                 val androidBluetoothConnector = polarConnector!!
-                val dataManager = AndroidObservationDataManager(context)
+                val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
+                val repositories = MainRepository(database)
+                val dataManager = AndroidObservationDataManager(context, repositories)
                 shared = Shared(
                     LocalPushNotificationService(context),
+                    repositories,
                     SharedPreferencesRepository(context),
                     dataManager,
                     androidBluetoothConnector,
-                    AndroidObservationFactory(context, dataManager),
+                    AndroidObservationFactory(context, dataManager, repositories),
                     AndroidDataRecorder()
                 )
             }

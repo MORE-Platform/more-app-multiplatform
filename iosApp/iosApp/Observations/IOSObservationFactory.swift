@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,10 +17,10 @@ import Foundation
 import shared
 
 class IOSObservationFactory: ObservationFactory {
-    override init(dataManager: ObservationDataManager) {
-        super.init(dataManager: dataManager)
-        observations.add(GPSObservation(sensorPermissions: ["gpsAlways"]))
-        observations.add(AccelerometerBackgroundObservation(sensorPermissions: ["cmsensorrecorder"]))
-        observations.add(PolarVerityHeartRateObservation(sensorPermissions: ["bluetoothAlways"]))
+    override init(repository: MainRepository, dataManager: ObservationDataManager) {
+        super.init(repository: repository, dataManager: dataManager)
+        observations.add(GPSObservation(repos: repository, sensorPermissions: ["gpsAlways"]))
+        observations.add(AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"]))
+        observations.add(PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"]))
     }
 }

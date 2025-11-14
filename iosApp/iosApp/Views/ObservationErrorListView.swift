@@ -14,14 +14,12 @@ struct ObservationErrorListView: View {
     let taskObservationErrorActions: [String]
 
     @State private var scrollViewContentSize: CGSize = .zero
-    private let errorStrings = "Errors"
-    private let navigationStrings = "Navigation"
 
     var body: some View {
         if !taskObservationErrors.isEmpty || !taskObservationErrorActions.isEmpty {
             VStack {
                 if !taskObservationErrors.isEmpty {
-                        ScrollView {
+                    ScrollView {
                         VStack {
                             ForEach(taskObservationErrors, id: \.self) { error in
                                 HStack {
@@ -29,7 +27,7 @@ struct ObservationErrorListView: View {
                                         .font(.more.headline)
                                         .foregroundColor(.more.important)
                                         .padding(.trailing, 4)
-                                    BasicText(text: "\(error.localize(withComment: "Error message", useTable: errorStrings))!")
+                                    BasicText(text: "\(error)!")
                                 }
                                 .padding(.bottom)
                             }
@@ -37,7 +35,7 @@ struct ObservationErrorListView: View {
                     }
                     .frame(maxHeight: 100)
                 }
-                
+
                 if !taskObservationErrorActions.isEmpty {
                     if taskObservationErrorActions
                         .contains(Observation_.companion.ERROR_DEVICE_NOT_CONNECTED) {
@@ -48,7 +46,7 @@ struct ObservationErrorListView: View {
                                 Image(systemName: "applewatch")
                                     .foregroundColor(.more.white)
                                     .padding(.trailing, 4)
-                                Text(String.localize(forKey: "Devices", withComment: "Lists all connected or needed devices.", inTable: navigationStrings))
+                                Text("Devices")
                             }
                         }
                     }
@@ -60,5 +58,4 @@ struct ObservationErrorListView: View {
 
 #Preview {
     ObservationErrorListView(taskObservationErrors: ["Error"], taskObservationErrorActions: [Observation_.companion.ERROR_DEVICE_NOT_CONNECTED])
-        
 }

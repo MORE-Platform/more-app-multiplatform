@@ -12,123 +12,106 @@ package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
-import io.redlink.more.more_app_mutliplatform.extensions.areAllNamesIn
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.extensions.asMappedFlow
-import io.redlink.more.more_app_mutliplatform.extensions.firstAsFlow
-import io.redlink.more.more_app_mutliplatform.extensions.localDateTime
-import io.redlink.more.more_app_mutliplatform.extensions.toLocalDate
 import io.redlink.more.more_app_mutliplatform.models.ScheduleState
 import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
-import io.redlink.more.more_app_mutliplatform.util.StudyScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
-import org.mongodb.kbson.ObjectId
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
-class ScheduleRepository : Repository<ScheduleSchema>() {
+class ScheduleRepository(private val appDatabase: AppDatabase) {
 
-    override fun count(): Flow<Long> = realmDatabase().count<ScheduleSchema>()
+    private val mutex = Mutex()
 
-    fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleSchema>> {
-        return realm()?.query<ScheduleSchema>("done = $0", done)?.asMappedFlow() ?: emptyFlow()
+    fun count() = appDatabase.scheduleDao().countAsFlow()
+
+    fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleEntity>> {
+        return appDatabase.scheduleDao().getByDoneFlow(done)
     }
 
-    fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING) =
-        realmDatabase().query<ScheduleSchema>(
-            query = "state = $0",
-            queryArgs = arrayOf(scheduleState.name)
-        )
+    fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING): Flow<List<ScheduleEntity>> =
+        appDatabase.scheduleDao().getByStateFlow(scheduleState.name)
 
-    fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleSchema?> {
-        return realm()?.query<ScheduleSchema>("observationId = $0", observationId)?.asMappedFlow()
-            ?.transform { scheduleList ->
-                if (realm()?.query<ObservationSchema>("observationId = $0", observationId)
-                        ?.firstAsFlow()?.firstOrNull()?.scheduleLess == true
-                ) {
-                    emit(scheduleList.sortedBy { it.end }.last())
+    fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleEntity?> {
+        return appDatabase.scheduleDao().getByObservationIdFlow(observationId)
+            .distinctUntilChanged()
+            .transform { scheduleList ->
+                val observation = appDatabase.observationDao().getByObservationId(observationId)
+                if (observation?.scheduleLess == true) {
+                    emit(scheduleList.sortedBy { it.end }.lastOrNull())
                 } else {
                     val now = Clock.System.now().epochSeconds
                     val filtered = scheduleList.filter {
                         !it.getState().completed()
                                 && it.start != null
                                 && it.end != null
-                                && (it.end?.epochSeconds ?: 0) > now
-                    }.sortedBy { it.start?.epochSeconds }.firstOrNull()
+                                && it.end > now
+                    }.sortedBy { it.start }.firstOrNull()
                     emit(filtered)
                 }
-            } ?: emptyFlow()
+            }
     }
 
-    fun allSchedulesToday(observationType: ObservationType): Flow<List<ScheduleSchema>> {
-        val today = Clock.System.now().localDateTime().date
-        return realm()?.query<ScheduleSchema>(
-            "observationType = $0",
-            observationType.observationType
-        )
-            ?.asMappedFlow()?.transform { list ->
+    fun allSchedulesToday(observationType: ObservationType): Flow<List<ScheduleEntity>> {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        return appDatabase.scheduleDao().getByObservationTypeFlow(observationType.observationType)
+            .transform { list ->
                 emit(list.filter {
                     !it.getState().completed()
-                            && (it.start?.toLocalDate() == today || it.end?.toLocalDate() == today)
+                            && (it.startInstant()
+                        ?.toLocalDateTime(TimeZone.currentSystemDefault())?.date == today
+                            || it.endInstant()
+                        ?.toLocalDateTime(TimeZone.currentSystemDefault())?.date == today)
                 })
-            } ?: flow { emit(emptyList()) }
+            }
     }
 
     fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
-        firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId?.toHexString() }
+        firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId }
 
     fun collectRunningState(
         forState: ScheduleState,
-        provideNewState: (List<ScheduleSchema>) -> Unit
+        provideNewState: (List<ScheduleEntity>) -> Unit
     ): Closeable {
         return allScheduleWithRunningState(forState).asClosure(provideNewState)
     }
 
-    fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleSchema?, ScheduleSchema?>> {
-        return realmDatabase().query<ScheduleSchema>(
-            query = "observationId = $0",
-            queryArgs = arrayOf(observationId)
-        ).transform {
+    fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> {
+        return appDatabase.scheduleDao().getByObservationIdFlow(observationId).transform {
             val start = it.sortedBy { it.start }.firstOrNull()
             val end = it.sortedBy { it.end }.lastOrNull()
-
             emit(Pair(start, end))
         }
     }
 
-    fun setRunningStateFor(id: String, scheduleState: ScheduleState) {
-        realm()?.writeBlocking {
-            this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()?.let {
-                it.state = scheduleState.name
-            }
-        }
+    suspend fun setRunningStateFor(id: String, scheduleState: ScheduleState) {
+        appDatabase.scheduleDao().updateState(id, scheduleState.name)
     }
 
-    fun setCompletionStateFor(id: String, wasDone: Boolean) {
-        realm()?.writeBlocking {
-            this.query<ScheduleSchema>("scheduleId = $0", ObjectId(id)).first().find()
-                ?.updateState(if (wasDone) ScheduleState.DONE else ScheduleState.ENDED)
-        }
+    suspend fun setCompletionStateFor(id: String, wasDone: Boolean) {
+        val newState = if (wasDone) ScheduleState.DONE else ScheduleState.ENDED
+        appDatabase.scheduleDao().updateState(id, newState.name)
+        appDatabase.scheduleDao().updateDoneStatus(id, wasDone)
     }
 
     fun nextSchedule(): Flow<Long?> {
-        return allSchedulesWithStatus().transform { schemas ->
-            val startInstances =
-                schemas.mapNotNull { it.start }.filter { it > RealmInstant.now() }.toSet()
-            val endInstances =
-                schemas.mapNotNull { it.end }.filter { it > RealmInstant.now() }.toSet()
-            val nextStart = startInstances.minOfOrNull { it.epochSeconds }
-            val nextEnd = endInstances.minOfOrNull { it.epochSeconds }
+        return allSchedulesWithStatus().transform { schedules ->
+            val now = Clock.System.now().epochSeconds
+            val startTimes = schedules.mapNotNull { it.start }.filter { it > now }.toSet()
+            val endTimes = schedules.mapNotNull { it.end }.filter { it > now }.toSet()
+            val nextStart = startTimes.minOfOrNull { it }
+            val nextEnd = endTimes.minOfOrNull { it }
+
             if (nextStart != null && nextEnd != null) {
                 if (nextStart < nextEnd) emit(nextStart) else emit(nextEnd)
                 return@transform
@@ -137,97 +120,97 @@ class ScheduleRepository : Repository<ScheduleSchema>() {
         }
     }
 
+    suspend fun getPreviousSchedule(
+        observationId: String,
+        currScheduleId: String
+    ): ScheduleEntity? {
+        val schedules = appDatabase.scheduleDao().getByObservationId(observationId)
+        val currentIndex = schedules.indexOfFirst { it.scheduleId == currScheduleId }
+
+        return if (currentIndex > 0) schedules[currentIndex - 1] else null
+    }
+
+    fun queryAllSchedulesForObservationId(observationId: String): Flow<List<ScheduleEntity>> {
+        return appDatabase.scheduleDao().getByObservationIdFlow(observationId)
+    }
+
     suspend fun getNextSchedule() = nextSchedule().firstOrNull()
 
     fun nextScheduleStart(): Flow<Long?> {
-        return allSchedulesWithStatus().transform { schemas ->
-            emit(
-                schemas.mapNotNull { it.start }.filter { it > RealmInstant.now() }.toSet()
-                    .minOfOrNull { it.epochSeconds })
+        return allSchedulesWithStatus().transform { schedules ->
+            val now = Clock.System.now().epochSeconds
+            val nextStart = schedules.mapNotNull { it.start }
+                .filter { it > now }
+                .minOfOrNull { it }
+            emit(nextStart)
         }
     }
 
     fun collectNextScheduleStart(provideNewState: (Long?) -> Unit) =
         nextScheduleStart().asClosure(provideNewState)
 
-    fun scheduleWithId(id: String) = realmDatabase().queryFirst<ScheduleSchema>(
-        query = "scheduleId = $0",
-        queryArgs = arrayOf(ObjectId(id))
-    )
-
-    fun updateTaskStates(observationFactory: ObservationFactory, dataRecorder: DataRecorder) {
-        StudyScope.launch {
-            updateTaskStatesSync(observationFactory, dataRecorder)
-        }
+    fun scheduleWithId(id: String): Flow<ScheduleEntity?> {
+        return appDatabase.scheduleDao().getById(id)
     }
 
-    suspend fun updateTaskStatesSync(
+    suspend fun updateTaskStates(
         observationFactory: ObservationFactory,
         dataRecorder: DataRecorder
     ) {
-        val autoStartingObservations = observationFactory.autoStartableObservations()
-        Napier.i { "Updating Schedule states..." }
-        val activeIds = realm()?.let {
-            it.write {
-                query<ScheduleSchema>("done = $0", false).find().mapNotNull { scheduleSchema ->
-                    val newState = scheduleSchema.updateState()
-                    if (scheduleSchema.getState() != newState) {
-                        Napier.i { "State update for Schema: $scheduleSchema; ${scheduleSchema.getState()} -> $newState" }
+        if (mutex.isLocked) {
+            return
+        }
+        mutex.withLock {
+            val autoStartingObservations = observationFactory.autoStartableObservations()
+            Napier.i { "Updating Schedule states..." }
+
+            try {
+                val schedules = appDatabase.scheduleDao().getByDone(false)
+
+                val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
+                val activeIds = mutableSetOf<String>()
+                val pausingIds = mutableSetOf<String>()
+
+                schedules.forEach { scheduleEntity ->
+                    val newState = scheduleEntity.updateState()
+
+                    if (scheduleEntity.getState() != newState) {
+                        stateUpdates.add(scheduleEntity.scheduleId to newState)
+                        Napier.i { "State update for Entity: $scheduleEntity; ${scheduleEntity.getState()} -> $newState" }
                     }
+
                     if (newState == ScheduleState.RUNNING
-                        || (autoStartingObservations.isNotEmpty()
-                                && scheduleSchema.hidden
-                                && newState.active()
-                                && scheduleSchema.observationType in autoStartingObservations
-                                && observationFactory.observation(scheduleSchema.observationType)
-                            ?.bleDevicesNeeded()
-                            ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false)
+                        || scheduleEntity.hidden
+                        && newState.active()
+                        && scheduleEntity.observationType in autoStartingObservations
                     ) {
-                        scheduleSchema.scheduleId.toHexString()
-                    } else {
-                        null
+                        observationFactory.observation(scheduleEntity.observationType)
+                            ?.let { observation ->
+                                if (observation.observerAccessible()) {
+                                    activeIds.add(scheduleEntity.scheduleId)
+                                } else {
+                                    pausingIds.add(scheduleEntity.scheduleId)
+                                }
+                            }
                     }
                 }
-            }
-        }?.toSet() ?: emptySet()
-        if (activeIds.isNotEmpty()) {
-            dataRecorder.startMultiple(activeIds)
-        }
-    }
 
-    suspend fun updateTaskStatesWithBLEDevices(
-        observationFactory: ObservationFactory,
-        dataRecorder: DataRecorder
-    ) {
-        val autoStartingObservations = observationFactory.autoStartableObservations()
-        if (autoStartingObservations.isNotEmpty()) {
-            Napier.i { "Updating Schedule states using Bluetooth devices..." }
-            val activeIds = realm()?.let {
-                it.write {
-                    query<ScheduleSchema>("done = $0", false).find().filter {
-                        observationFactory.observation(it.observationType)?.bleDevicesNeeded()
-                            ?.isNotEmpty() == true && it.observationType in autoStartingObservations
-                    }.mapNotNull { scheduleSchema ->
-                        val newState = scheduleSchema.updateState()
-                        if (newState.active() && scheduleSchema.hidden && observationFactory.observation(
-                                scheduleSchema.observationType
-                            )
-                                ?.bleDevicesNeeded()
-                                ?.areAllNamesIn(BluetoothDeviceManager.connectedDevices.value) != false
+                stateUpdates.forEach { (scheduleId, newState) ->
+                    appDatabase.scheduleDao().updateState(scheduleId, newState.name)
+                }
 
-                        ) {
-                            scheduleSchema.scheduleId.toHexString()
-                        } else {
-                            null
-                        }
+                if (activeIds.isNotEmpty()) {
+                    dataRecorder.startMultiple(activeIds)
+                }
+                if (pausingIds.isNotEmpty()) {
+                    pausingIds.forEach { scheduleId ->
+                        dataRecorder.pause(scheduleId)
                     }
                 }
-            }?.toSet() ?: emptySet()
-            if (activeIds.isNotEmpty()) {
-                dataRecorder.startMultiple(activeIds)
+            } catch (e: Exception) {
+                Napier.e("Error updating schedule states", e)
             }
         }
+
     }
-
-
 }

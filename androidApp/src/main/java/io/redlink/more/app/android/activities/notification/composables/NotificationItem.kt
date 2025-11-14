@@ -25,7 +25,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -36,11 +36,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
+import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromEpochSeconds
 import io.redlink.more.app.android.extensions.toAnnotatedString
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.ui.theme.MoreColors
@@ -48,7 +50,9 @@ import io.redlink.more.more_app_mutliplatform.models.NotificationModel
 
 @Composable
 fun NotificationItem(
-    notificationModel: NotificationModel
+    viewModel: NotificationViewModel,
+    notificationModel: NotificationModel,
+    navController: NavController
 ) {
     val context = LocalContext.current
     Column {
@@ -102,7 +106,7 @@ fun NotificationItem(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 50.dp)
         ) {
-            val annotatedNotificationModelBody = remember {
+            val annotatedNotificationModelBody = remember(notificationModel.notificationBody) {
                 notificationModel.notificationBody.trim().toAnnotatedString()
             }
             Column(
@@ -121,12 +125,16 @@ fun NotificationItem(
                             .firstOrNull()?.let { annotation ->
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))
                                 context.startActivity(intent)
+                            } ?: run {
+                            if (!notificationModel.read) {
+                                viewModel.handleNotificationAction(notificationModel, navController)
                             }
+                        }
                     }
                 )
 
                 Text(
-                    text = notificationModel.timestamp.jvmLocalDateTimeFromMilliseconds()
+                    text = notificationModel.timestamp.jvmLocalDateTimeFromEpochSeconds()
                         .formattedString("dd.MM.yyyy HH:mm:ss"),
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
@@ -134,12 +142,15 @@ fun NotificationItem(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+
             if (notificationModel.deepLink != null) {
-                Icon(
-                    if (notificationModel.read) Icons.Default.Done else Icons.Default.ArrowForwardIos,
-                    contentDescription = getStringResource(id = R.string.more_observation_open),
-                    tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
-                )
+                if (!notificationModel.read || notificationModel.completed) {
+                    Icon(
+                        if (notificationModel.completed) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = getStringResource(id = R.string.more_observation_open),
+                        tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
+                    )
+                }
             }
         }
     }

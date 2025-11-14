@@ -6,4 +6,8 @@
     <string name="notification_permission_not_granted_message">We request permission to send you push notifications. This assists in maintaining the study\'s current status at all times and serves as a reminder for your tasks.</string>
     <string name="proceed_to_settings_button">Proceed to Settings</string>
     <string name="proceed_without_granting_button">Proceed Without Granting Permissions</string>
+    <string name="no_internet_connection_title">No internet connection</string>
+    <string name="no_internet_connection_body">Please connect to the internet and try again</string>
+    <string name="accept_button">Accept</string>
+    <string name="decline_button">Decline</string>
 </resources>

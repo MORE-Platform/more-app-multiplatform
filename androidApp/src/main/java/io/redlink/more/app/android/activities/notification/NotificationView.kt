@@ -11,45 +11,41 @@
 package io.redlink.more.app.android.activities.notification
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreDivider
-
+import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
 
 @Composable
-fun NotificationView(navController: NavController, viewModel: NotificationViewModel) {
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route =
-        backStackEntry?.arguments?.getString(NavigationScreen.NOTIFICATIONS.routeWithParameters())
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
+fun NotificationView(
+    navController: NavController,
+    coreFilterViewModel: CoreNotificationFilterViewModel
+) {
+    val viewModel = remember { NotificationViewModel(coreFilterViewModel) }
+    val notificationList by viewModel.coreViewModel.notificationList.collectAsStateWithLifecycle()
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -70,25 +66,29 @@ fun NotificationView(navController: NavController, viewModel: NotificationViewMo
         }
 
         item {
-            if (viewModel.notificationList.isEmpty()) {
+            if (notificationList.isEmpty()) {
                 Text(text = getStringResource(id = R.string.no_notifications_yet))
             }
         }
 
-        items(viewModel.notificationList.sortedByDescending { it.timestamp }) { notification ->
-            Column(
+        items(notificationList.sortedByDescending { it.timestamp }) { notification ->
+            Box(
                 modifier = Modifier
-                    .clickable {
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         if (!notification.read) {
                             viewModel.handleNotificationAction(notification, navController)
                         }
                     }
                     .padding(bottom = 10.dp)
             ) {
-                NotificationItem(
-                    notification
-                )
-                MoreDivider()
+                Column {
+                    NotificationItem(viewModel, notification, navController)
+                    MoreDivider()
+                }
             }
         }
     }

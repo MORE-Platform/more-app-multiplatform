@@ -57,20 +57,16 @@ class LocalPushNotifications: LocalNotificationListener {
         }
     }
 
-    func displayNotification(notification: NotificationSchema) {
+    func displayNotification(notification: NotificationEntity) {
         if let title = notification.title, let body = notification.notificationBody {
             requestLocalNotification(identifier: notification.notificationId, title: title, subtitle: body)
         }
     }
-    
+
     func updateBadgeCount(count: Int32) {
         AppDelegate.appGroupUserDefaults?.set(Int(count), forKey: LocalPushNotifications.notificationCountKey)
-        if #available(iOS 16.0, *) {
-            UNUserNotificationCenter.current().setBadgeCount(Int(count)) { error in
-                print(error ?? "Error setting badge count")
-            }
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = Int(count)
+        UNUserNotificationCenter.current().setBadgeCount(Int(count)) { error in
+            print(error ?? "Error setting badge count")
         }
     }
 

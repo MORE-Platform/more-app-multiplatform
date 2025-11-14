@@ -10,37 +10,55 @@
  */
 package io.redlink.more.app.android.activities.login.composables
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.login.LoginViewModel
+import io.redlink.more.app.android.activities.qrScanner.QRScannerActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
-
+import io.redlink.more.app.android.ui.theme.moreSecondary
 
 @Composable
-fun QRCodeButton() {
+fun QRCodeButton(model: LoginViewModel) {
+
+    val context = rememberUpdatedState(LocalContext.current)
+    val qrScannerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        val scanned =
+            result.data?.getStringExtra("qrResult") ?: return@rememberLauncherForActivityResult
+        model.extractValuesFromQRCode(scanned)
+    }
+
     OutlinedButton(
-        onClick = {},
+        onClick = {
+            val intent = Intent(context.value, QRScannerActivity::class.java)
+            qrScannerLauncher.launch(intent)
+        },
         modifier = Modifier
             .fillMaxWidth(1f)
-            .padding(vertical = 8.dp)
             .height(60.dp),
-        colors = ButtonDefaults.morePrimary(),
+        colors = ButtonDefaults.moreSecondary(),
         border = MoreColors.borderPrimary(true)
     ) {
         Row(
@@ -50,10 +68,10 @@ fun QRCodeButton() {
         ) {
             Text(text = getStringResource(id = R.string.more_qr_code_button))
             Icon(
-                Icons.Default.ArrowForwardIos,
+                Icons.Default.QrCode,
                 tint = MoreColors.White,
                 contentDescription = getStringResource(id = R.string.more_qr_code_button_description),
-                modifier = Modifier.fillMaxHeight(0.4f)
+                modifier = Modifier.fillMaxHeight(0.6f)
             )
         }
     }

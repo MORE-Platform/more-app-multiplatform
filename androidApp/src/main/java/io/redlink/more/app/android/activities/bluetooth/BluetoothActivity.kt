@@ -15,6 +15,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -103,8 +105,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
         showBackButton = true,
         onBackButtonClick = {
             (context as? Activity)?.finish()
-        },
-        alertDialogModel = viewModel.alertDialogOpen.value
+        }
     ) {
         LazyColumn {
             item {
@@ -213,7 +214,10 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp)
-                                .clickable {
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
                                     viewModel.connectToDevice(device)
                                 }
                         ) {

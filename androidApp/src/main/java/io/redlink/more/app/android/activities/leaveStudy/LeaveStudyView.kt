@@ -43,11 +43,12 @@ import io.redlink.more.app.android.ui.theme.moreApproved
 import io.redlink.more.app.android.ui.theme.moreImportant
 
 @Composable
-fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel) {
+fun LeaveStudyView(navController: NavController) {
     val context = LocalContext.current
-
+    val viewModel = remember { LeaveStudyViewModel() }
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY.routeWithParameters())
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -68,7 +69,11 @@ fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel)
             verticalArrangement = Arrangement.Center
         ) {
             viewModel.permissionModel.value?.let {
-                Title(text = it.studyTitle, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Title(
+                    text = it.studyTitle,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
 
             Spacer(Modifier.height(80.dp))

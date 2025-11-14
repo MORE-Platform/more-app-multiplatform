@@ -13,7 +13,6 @@ package io.redlink.more.app.android.activities.consent.composables
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,19 +28,22 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.ui.theme.MoreColors
-
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
+    val isLoading by model.registrationService.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -71,7 +73,7 @@ fun ConsentButtons(model: ConsentViewModel) {
     }
 
 
-    if (!model.loading.value) {
+    if (!isLoading) {
         Column(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,7 +89,6 @@ fun ConsentButtons(model: ConsentViewModel) {
                         backgroundColor = MoreColors.Primary,
                         contentColor = MoreColors.White
                     ),
-                enabled = !model.loading.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
@@ -105,7 +106,6 @@ fun ConsentButtons(model: ConsentViewModel) {
                         backgroundColor = MoreColors.Important,
                         contentColor = MoreColors.White
                     ),
-                enabled = !model.loading.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
@@ -133,17 +133,25 @@ fun checkAndRequestPermissions(
     model: ConsentViewModel,
     extraPermissions: Set<String> = emptySet()
 ) {
-    val permissions = model.permissions
+    val permissions =
+        MoreApplication.shared!!.observationFactory.studySensorPermissions().toMutableSet()
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         permissions.add(Manifest.permission.POST_NOTIFICATIONS)
     }
+
     permissions.addAll(extraPermissions)
+
+    permissions.addAll(
+        MoreApplication.shared?.observationFactory?.studySensorPermissions() ?: emptySet()
+    )
 
     val hasBackgroundLocationPermission =
         permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     if (hasBackgroundLocationPermission) {
         permissions.remove(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
+
     if (hasBackgroundLocationPermission) {
         checkPermissionForBackgroundLocationAccess(context, launcher, model)
     } else {
@@ -157,11 +165,7 @@ fun checkPermissions(
     permissions: Set<String>,
     model: ConsentViewModel,
 ): Boolean {
-    return if (
-        !permissions.all {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-    ) {
+    return if (!PermissionUtils.hasAllPermissions(permissions, context)) {
         launcher.launch(permissions.toTypedArray())
         false
     } else {
@@ -175,10 +179,10 @@ fun checkPermissionForBackgroundLocationAccess(
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
 ) {
-    if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+    if (PermissionUtils.hasAllPermissions(
+            setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+            context
+        )
     ) return
 
     AlertDialog.Builder(context)

@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,14 +18,13 @@ import SwiftUI
 struct DatapointsCollection: View {
     @Binding var datapoints: Int64
     var running: Bool
-    private let stringTable = "TaskDetail"
     var body: some View {
         VStack {
             if running {
                 CircleActivityIndicator()
             }
-            Title2(titleText: String.localize(forKey: "Collected Datapoints", withComment: "Shows collected Datapoints beneath", inTable: stringTable))
-            
+            Title2(titleText: "Collected Datapoints")
+
             Text(String(datapoints))
                 .font(.more.title2)
                 .foregroundColor(.more.secondary)

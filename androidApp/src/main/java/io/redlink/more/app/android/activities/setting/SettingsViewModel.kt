@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.database.schemas.StudySchema
+import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
 import io.redlink.more.more_app_mutliplatform.models.PermissionModel
 import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel : ViewModel() {
     private var coreSettingsViewModel = CoreSettingsViewModel(MoreApplication.shared!!)
-    val study = mutableStateOf<StudySchema?>(null)
+    val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 
     init {
@@ -41,13 +41,5 @@ class SettingsViewModel : ViewModel() {
                 }
             }
         }
-    }
-
-    fun viewDidAppear() {
-        coreSettingsViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreSettingsViewModel.viewDidDisappear()
     }
 }

@@ -13,6 +13,8 @@
 //  https://commonsclause.com/).
 //
 
+import Combine
+import KMPNativeCoroutinesCombine
 import shared
 import SwiftUI
 
@@ -29,7 +31,6 @@ struct NavigationActions {
 }
 
 class NavigationModalState: ObservableObject {
-    
     let horizontalContentPadding: CGFloat = 24
 
     @Published var navigationStack: [NavigationScreen] = []
@@ -43,12 +44,61 @@ class NavigationModalState: ObservableObject {
     @Published var studyIsUpdating: Bool = false
     @Published var currentStudyState: StudyState = .none
 
+    @Published var studyLoadingError: Bool = false
+
     @Published var tagState: Int = 0 {
         didSet {
             if let onReset = currentNavigationAction()?.onReset {
                 onReset()
             }
         }
+    }
+
+    private var cancellables: Set<AnyCancellable> = []
+
+    init(repos: MainRepository) {
+        createPublisher(for: repos.study.studyState)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] state in
+            self?.currentStudyState = state
+            if state == StudyState.closed || state == StudyState.paused {
+                self?.clearViews()
+            }
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.studyLoadingError)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] studyLoadingError in
+            self?.studyLoadingError = studyLoadingError.boolValue
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.showGarminConnectView)
+        .removeDuplicates()
+        .map {
+            $0.boolValue
+        }
+        .flatMap { show -> AnyPublisher<Bool, Never> in
+            if show {
+                return Just(true)
+                    .delay(for: .seconds(0.5), scheduler: DispatchQueue.global(qos: .userInitiated))
+                    .eraseToAnyPublisher()
+            } else {
+                return Just(false).eraseToAnyPublisher()
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] show in
+            if show {
+                self?.openView(screen: .garminConnect)
+            } else {
+                self?.closeView(screen: .garminConnect)
+            }
+        }
+        .store(in: &cancellables)
     }
 
     func screenBinding(for screen: NavigationScreen) -> Binding<Bool> {
@@ -79,13 +129,6 @@ class NavigationModalState: ObservableObject {
         }
     }
 
-    func setStudyState(_ state: StudyState) {
-        currentStudyState = state
-        if state == StudyState.closed || state == StudyState.paused {
-            clearViews()
-        }
-    }
-
     func currentNavigationAction() -> NavigationActions? {
         navigationActions.last
     }
@@ -103,7 +146,9 @@ class NavigationModalState: ObservableObject {
                 navigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
                 navigationStack.append(screen)
                 if let onViewOpen = currentNavigationAction()?.onViewOpen {
-                    onViewOpen(screen)
+                    Task { @MainActor in
+                        onViewOpen(screen)
+                    }
                 }
             } else {
                 fullscreenNavigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
@@ -170,20 +215,25 @@ class NavigationModalState: ObservableObject {
     }
 
     func popNavigationAction() {
-        let _ = navigationActions.removeFirst()
+        _ = navigationActions.removeFirst()
     }
 
     func removeNavigationAction() {
         if !navigationActions.isEmpty {
-            let _ = navigationActions.popLast()
+            _ = navigationActions.popLast()
         }
     }
 
     func mayChangeViewStructure() -> Bool {
-        !studyIsUpdating && currentStudyState == StudyState.active || currentStudyState == StudyState.none
+        let notUpdatingOrError = !studyIsUpdating && !studyLoadingError
+        let allowedState = currentStudyState == .active || currentStudyState == .none
+        return notUpdatingOrError && allowedState
     }
 
     func openWithDeepLink(url: URL, notificationId: String? = nil) {
+        guard !ViewManager.shared.studyIsUpdatingValue else {
+            return
+        }
         AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: nil, hostReplacement: nil) { modifiedDeepLink in
             if let modifiedDeepLink,
                let modifiedURL = URL(string: modifiedDeepLink) {

@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,7 +18,7 @@ import SwiftUI
 struct InactiveText: View {
     var text: String
     var body: some View {
-        Text(text)
+        Text(LocalizedStringKey(text))
             .font(.moreFont.inactiveText)
             .foregroundColor(.more.textInactive)
             .lineLimit(1)

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.ui.theme.MoreColors
 
 @Composable
-fun HeaderTitle (
+fun HeaderTitle(
     title: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,

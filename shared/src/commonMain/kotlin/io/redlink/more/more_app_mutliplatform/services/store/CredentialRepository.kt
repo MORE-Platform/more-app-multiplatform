@@ -10,20 +10,41 @@
  */
 package io.redlink.more.more_app_mutliplatform.services.store
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.more_app_mutliplatform.extensions.mapState
 import io.redlink.more.more_app_mutliplatform.models.CredentialModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class CredentialRepository(private val sharedStorageRepository: SharedStorageRepository) {
-    private var cache: CredentialModel? = null
+    private val _credentialsLoaded = MutableStateFlow(false)
+
+    @NativeCoroutines
+    val credentialsLoaded: StateFlow<Boolean> = _credentialsLoaded
+    private var _cache = MutableStateFlow<CredentialModel?>(null)
+
+    @NativeCoroutines
+    val credentials: StateFlow<CredentialModel?> = _cache
+
+    @NativeCoroutines
+    val hasCredentials: StateFlow<Boolean> =
+        credentials.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate), false) {
+            it != null
+        }
 
     init {
-        cache = load()
+        _cache.value = load()
+        _credentialsLoaded.value = true
     }
 
     fun store(credentials: CredentialModel): Boolean {
         if (credentials.apiId.isNotEmpty() && credentials.apiKey.isNotEmpty()) {
             sharedStorageRepository.store(CREDENTIAL_ID, credentials.apiId)
             sharedStorageRepository.store(CREDENTIAL_KEY, credentials.apiKey)
-            cache = credentials
+            _cache.value = credentials
             return true
         }
         return false
@@ -41,12 +62,8 @@ class CredentialRepository(private val sharedStorageRepository: SharedStorageRep
     fun remove() {
         sharedStorageRepository.remove(CREDENTIAL_ID)
         sharedStorageRepository.remove(CREDENTIAL_KEY)
-        cache = null
+        _cache.value = null
     }
-
-    fun credentials() = cache ?: load()
-
-    fun hasCredentials() = credentials() != null
 
     companion object {
         private const val CREDENTIAL_ID = "sharedStorageCredentialID"

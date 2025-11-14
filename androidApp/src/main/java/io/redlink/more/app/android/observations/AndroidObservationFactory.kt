@@ -18,20 +18,25 @@ import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
+import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
 import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
 import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AndroidObservationFactory(context: Context, observationDataManager: ObservationDataManager) :
-    ObservationFactory(observationDataManager) {
+class AndroidObservationFactory(
+    context: Context,
+    observationDataManager: ObservationDataManager,
+    repository: MainRepository
+) :
+    ObservationFactory(repository, observationDataManager) {
     init {
         observations.addAll(
             setOf(
-                AccelerometerObservation(context),
-                GPSObservation(context, gpsService = GPSService(context)),
-                PolarHeartRateObservation()
+                AccelerometerObservation(context, repository),
+                GPSObservation(context, repository, gpsService = GPSService(context)),
+                PolarHeartRateObservation(repository)
             )
         )
 

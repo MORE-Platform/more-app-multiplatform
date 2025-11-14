@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,7 +18,7 @@ import shared
 import WebKit
 
 class LimeSurveyViewModel: ObservableObject {
-    private let coreViewModel = CoreLimeSurveyViewModel(observationFactory: AppDelegate.shared.observationFactory)
+    private let coreViewModel = CoreLimeSurveyViewModel(repositories: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory)
 
     let webViewModel = WebViewViewModel()
 
@@ -27,7 +27,7 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var wasAnswered = false
 
     private var navigationModalState: NavigationModalState?
-    
+
     private var limeSurveyLinkChange: Ktor_ioCloseable?
 
     init() {
@@ -37,12 +37,11 @@ class LimeSurveyViewModel: ObservableObject {
                 self?.dataLoading = boolean.boolValue
             }
         }
-        
     }
 
     func viewDidAppear() {
         coreViewModel.viewDidAppear()
-        
+
         limeSurveyLinkChange = coreViewModel.onLimeSurveyLinkChange { [weak self] link in
             DispatchQueue.main.async {
                 if let link {
@@ -52,7 +51,6 @@ class LimeSurveyViewModel: ObservableObject {
                 }
             }
         }
-        
     }
 
     func viewDidDisappear() {
@@ -62,7 +60,7 @@ class LimeSurveyViewModel: ObservableObject {
         wasAnswered = false
         coreViewModel.viewDidDisappear()
     }
-    
+
     func setNavigationModalState(navigationModalState: NavigationModalState) {
         self.navigationModalState = navigationModalState
         if let state = navigationModalState.navigationState(for: .limeSurvey) {
@@ -80,7 +78,7 @@ class LimeSurveyViewModel: ObservableObject {
         } else {
             coreViewModel.cancel()
         }
-        self.navigationModalState?.closeView(screen: .limeSurvey)
+        navigationModalState?.closeView(screen: .limeSurvey)
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {
@@ -96,12 +94,12 @@ class LimeSurveyViewModel: ObservableObject {
 }
 
 extension LimeSurveyViewModel: WebViewListener {
-    func onRedirect(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
-        if let url = navigationAction.request.url {
+    func onRedirect(navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        if let url = await navigationAction.request.url {
             print("onRedirect URL: \(url)")
             let (endPath, parameters) = extractPathAndParameters(url: url)
             if endPath.lowercased().contains("end.htm"), parameters.keys.contains("savedid") {
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     self.wasAnswered = true
                     self.onFinish()
                 }
@@ -110,3 +108,4 @@ extension LimeSurveyViewModel: WebViewListener {
         return .allow
     }
 }
+

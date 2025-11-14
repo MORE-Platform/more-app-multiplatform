@@ -25,12 +25,11 @@ class AccelerometerBackgroundObservation: Observation_ {
 
     private var timer: Timer?
     private let semaphore = Semaphore()
-    private let observationRepository: ObservationRepository = {
-        ObservationRepository()
-    }()
+    private let observationRepository: ObservationRepository
 
-    init(sensorPermissions: Set<String>) {
-        super.init(observationType: AccelerometerType(sensorPermissions: sensorPermissions))
+    init(repos: MainRepository, sensorPermissions: Set<String>) {
+        observationRepository = repos.observation
+        super.init(repos: repos, observationType: AccelerometerType(sensorPermissions: sensorPermissions))
     }
 
     override func start() -> Bool {

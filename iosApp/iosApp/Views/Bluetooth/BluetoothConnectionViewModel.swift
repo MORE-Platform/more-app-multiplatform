@@ -13,79 +13,102 @@
 //  https://commonsclause.com/).
 //
 
+import Combine
+import Dispatch
 import Foundation
+import KMPNativeCoroutinesCombine
 import shared
 
 class BluetoothConnectionViewModel: ObservableObject {
     private let coreViewModel: CoreBluetoothViewModel = CoreBluetoothViewModel(observationFactory: AppDelegate.shared.observationFactory, coreBluetooth: AppDelegate.shared.bluetoothController)
-    private let deviceManager = BluetoothDeviceManager.shared
+    private let bleManager = BluetoothStateManagement.shared
 
-    @Published var discoveredDevices: [BluetoothDevice] = []
-    @Published var connectedDevices: [BluetoothDevice] = []
+    @Published var discoveredDevices: [BluetoothDeviceEntity] = []
+    @Published var connectedDevices: [BluetoothDeviceEntity] = []
     @Published var connectingDevices: [String] = []
 
     @Published var bluetoothIsScanning = false
 
     @Published var neededDevices: [String] = []
 
-    @Published var bluetoothPower: BluetoothState = .off
+    @Published var bluetoothPower = false
+
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
-        deviceManager.connectedDevicesAsClosure { [weak self] deviceSet in
-            if let self {
-                DispatchQueue.main.async {
-                    self.connectedDevices = Array(deviceSet)
-                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
-                        .sorted(by: { d1, d2 in
-                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
-                                return name1 < name2
-                            } else {
-                                return false
-                            }
-                        })
+        createPublisher(for: bleManager.connectedDevices)
+        .map { devices in
+            Array(devices)
+            .compactMap { device -> BluetoothDeviceEntity? in
+                guard let name = device.deviceName, !name.isEmpty else {
+                    return nil
                 }
+                return device
+            }
+            .sorted {
+                ($0.deviceName ?? "") < ($1.deviceName ?? "")
             }
         }
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] devices in
+            self?.connectedDevices = devices
+        }
+        .store(in: &cancellables)
 
-        deviceManager.devicesCurrentlyConnectingAsClosure { [weak self] devices in
-            if let self {
-                DispatchQueue.main.async {
-                    self.connectingDevices = devices.compactMap { $0.address }
-                }
+        createPublisher(for: bleManager.devicesCurrentlyConnecting)
+        .map { devices in
+            devices.compactMap {
+                $0.address
             }
         }
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] addresses in
+            self?.connectingDevices = addresses
+        }
+        .store(in: &cancellables)
 
-        deviceManager.discoveredDevicesAsClosure { [weak self] deviceSet in
-            if let self {
-                DispatchQueue.main.async {
-                    self.discoveredDevices = Array(deviceSet)
-                        .filter { $0.deviceName != nil && !($0.deviceName?.isEmpty ?? true) }
-                        .sorted(by: { d1, d2 in
-                            if let name1 = d1.deviceName, let name2 = d2.deviceName {
-                                let name1ContainsKeyword = self.neededDevices.contains(where: name1.contains)
-                                let name2ContainsKeyword = self.neededDevices.contains(where: name2.contains)
-                                if name1ContainsKeyword && !name2ContainsKeyword {
-                                    return true
-                                } else if !name1ContainsKeyword && name2ContainsKeyword {
-                                    return false
-                                } else {
-                                    return name1 < name2
-                                }
-                            } else {
-                                return false
-                            }
-                        })
+        createPublisher(for: bleManager.discoveredDevices)
+        .map { [weak self] devices -> [BluetoothDeviceEntity] in
+            let needed = Set(self?.neededDevices ?? [])
+            let filtered = devices.compactMap { device -> (BluetoothDeviceEntity, String, Bool)? in
+                guard let name = device.deviceName, !name.isEmpty else {
+                    return nil
                 }
+                let matchesNeeded = needed.isEmpty ? false : needed.contains(where: { name.contains($0) })
+                return (device, name, matchesNeeded)
+            }
+            let sorted = filtered.sorted { lhs, rhs in
+                if lhs.2 != rhs.2 {
+                    return lhs.2 && !rhs.2
+                }
+                return lhs.1 < rhs.1
+            }
+            return sorted.map {
+                $0.0
             }
         }
-
-        coreViewModel.coreBluetooth.isScanningAsClosure { [weak self] kBool in
-            self?.bluetoothIsScanning = kBool.boolValue
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] devices in
+            self?.discoveredDevices = devices
         }
+        .store(in: &cancellables)
 
-        coreViewModel.coreBluetooth.bluetoothStateAsClosure { [weak self] bluetoothState in
-            self?.bluetoothPower = bluetoothState
+        createPublisher(for: bleManager.scanning)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] scanning in
+            self?.bluetoothIsScanning = scanning.boolValue
         }
+        .store(in: &cancellables)
+
+        createPublisher(for: bleManager.bluetoothActive)
+        .removeDuplicates()
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] power in
+            self?.bluetoothPower = power.boolValue
+        }
+        .store(in: &cancellables)
     }
 
     func viewDidAppear() {
@@ -98,11 +121,17 @@ class BluetoothConnectionViewModel: ObservableObject {
         ViewManager.shared.showBLEView(state: false)
     }
 
-    func connectToDevice(device: BluetoothDevice) {
-        coreViewModel.connectToDevice(device: device)
+    func connectToDevice(device: BluetoothDeviceEntity) {
+        Task {
+            do {
+                try await coreViewModel.connectToDevice(device: device)
+            } catch {
+                print("Cannot connect to bluetooth device: \(device.deviceName ?? "Unknown"): \(error)")
+            }
+        }
     }
 
-    func disconnectFromDevice(device: BluetoothDevice) {
+    func disconnectFromDevice(device: BluetoothDeviceEntity) {
         coreViewModel.disconnectFromDevice(device: device)
     }
 }

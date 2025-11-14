@@ -7,46 +7,46 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
 import CoreMotion
+import Foundation
 import shared
 
 class AccelerometerObservation: Observation_ {
     private let motion = CMMotionManager()
-    private var accelerometerFrequency = 1.0/60.0
-    
-    private var timer: Timer? = nil
-    
-    init(sensorPermission: Set<String>) {
-        super.init(observationType: AccelerometerType(sensorPermissions: sensorPermission))
+    private var accelerometerFrequency = 1.0 / 60.0
+
+    private var timer: Timer?
+
+    init(repos: MainRepository, sensorPermission: Set<String>) {
+        super.init(repos: repos, observationType: AccelerometerType(sensorPermissions: sensorPermission))
     }
-    
+
     override func start() -> Bool {
         if motion.isAccelerometerAvailable {
             self.timer = setTimer()
             guard let timer else {
                 return false
             }
-            self.motion.startAccelerometerUpdates()
+            motion.startAccelerometerUpdates()
             RunLoop.main.add(timer, forMode: .default)
-            
+
             return true
         }
         return false
     }
-    
+
     override func stop(onCompletion: @escaping () -> Void) {
         timer?.invalidate()
         motion.stopAccelerometerUpdates()
         onCompletion()
     }
-    
+
     override func observerErrors() -> Set<String> {
         var errors: Set<String> = []
         if !motion.isAccelerometerAvailable {
@@ -54,16 +54,16 @@ class AccelerometerObservation: Observation_ {
         }
         return errors
     }
-    
-    override func applyObservationConfig(settings: Dictionary<String, Any>){
-        
+
+    override func applyObservationConfig(settings: Dictionary<String, Any>) {
     }
-    
+
     private func setTimer() -> Timer {
-        Timer(fire: Date(), interval: accelerometerFrequency, repeats: true, block: { timer in
+        Timer(fire: Date(), interval: accelerometerFrequency, repeats: true, block: { _ in
             if let data = self.motion.accelerometerData {
                 let dict = ["x": data.acceleration.x, "y": data.acceleration.y, "z": data.acceleration.z]
-                self.storeData(data: dict, timestamp: -1){}
+                self.storeData(data: dict, timestamp: -1) {
+                }
             }
         })
     }

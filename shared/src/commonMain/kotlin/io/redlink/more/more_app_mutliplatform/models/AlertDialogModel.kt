@@ -3,10 +3,10 @@ package io.redlink.more.more_app_mutliplatform.models
 data class AlertDialogModel(
     var title: String,
     var message: String,
-    var positiveTitle: String,
-    var negativeTitle: String? = null,
-    var onPositive: () -> Unit = {},
-    var onNegative: () -> Unit = {}
+    var confirmLabel: String,
+    var cancelLabel: String? = null,
+    var onConfirm: (() -> Unit)? = null,
+    var onDecline: (() -> Unit)? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -16,8 +16,8 @@ data class AlertDialogModel(
 
         if (title != other.title) return false
         if (message != other.message) return false
-        if (positiveTitle != other.positiveTitle) return false
-        if (negativeTitle != other.negativeTitle) return false
+        if (confirmLabel != other.confirmLabel) return false
+        if (cancelLabel != other.cancelLabel) return false
 
         return true
     }
@@ -25,8 +25,8 @@ data class AlertDialogModel(
     override fun hashCode(): Int {
         var result = title.hashCode()
         result = 31 * result + message.hashCode()
-        result = 31 * result + positiveTitle.hashCode()
-        result = 31 * result + (negativeTitle?.hashCode() ?: 0)
+        result = 31 * result + confirmLabel.hashCode()
+        result = 31 * result + (cancelLabel?.hashCode() ?: 0)
         return result
     }
 }

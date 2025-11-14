@@ -17,25 +17,29 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Date
 
 fun Long.jvmLocalDateTime(): LocalDateTime {
-    return LocalDateTime.ofEpochSecond(
-        this,
-        0,
-        ZoneId.systemDefault().rules.getOffset(Instant.ofEpochSecond(this))
+    return LocalDateTime.ofInstant(
+        Instant.ofEpochSecond(this),
+        ZoneId.systemDefault()
     )
 }
 
 fun Long.jvmLocalDateTimeFromMilliseconds(): LocalDateTime {
-    return LocalDateTime.ofEpochSecond(
-        this / 1000,
-        0,
-        ZoneId.systemDefault().rules.getOffset(Instant.ofEpochSecond(this / 1000))  // convert milliseconds to seconds
+    return LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
     )
 }
 
-fun Long.jvmLocalDate(): LocalDate = this.jvmLocalDateTime().toLocalDate()
+fun Long.jvmLocalDateTimeFromEpochSeconds(): LocalDateTime {
+    return this.jvmLocalDateTime()
+}
+
+fun Long.jvmLocalDate(): LocalDate {
+    return this.jvmLocalDateTime().toLocalDate()
+}
 
 fun LocalDate.formattedString(pattern: String = "dd.MM.yyyy"): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)

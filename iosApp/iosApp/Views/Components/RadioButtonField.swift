@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -18,23 +18,23 @@ import SwiftUI
 struct RadioButtonField: View {
     let id: String
     let label: String
-    let isMarked:Bool
-    let callback: (String)->()
-    
+    let isMarked: Bool
+    let callback: (String) -> Void
+
     init(
         id: String,
-        label:String,
+        label: String,
         isMarked: Bool = false,
-        callback: @escaping (String)->()
-        ) {
+        callback: @escaping (String) -> Void
+    ) {
         self.id = id
         self.label = label
         self.isMarked = isMarked
         self.callback = callback
     }
-    
+
     var body: some View {
-        Button(action:{
+        Button(action: {
             self.callback(self.id)
         }) {
             HStack(alignment: .center) {
@@ -54,7 +54,7 @@ struct RadioButtonField_Preview: PreviewProvider {
     static var previews: some View {
         RadioButtonField(id: "Test", label: "Test", isMarked: false,
                          callback: { selected in
-            print("Selected item is \(selected)")
-        })
+                             print("Selected item is \(selected)")
+                         })
     }
 }

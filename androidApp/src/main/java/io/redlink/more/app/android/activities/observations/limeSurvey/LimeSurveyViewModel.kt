@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.activities.web.WebClientListener
 import io.redlink.more.more_app_mutliplatform.AlertController
 import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel
@@ -26,7 +27,10 @@ import java.net.URI
 import java.net.URL
 
 class LimeSurveyViewModel : ViewModel(), WebClientListener {
-    private val coreViewModel = CoreLimeSurveyViewModel(MoreApplication.shared!!.observationFactory)
+    private val coreViewModel = CoreLimeSurveyViewModel(
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory
+    )
     val limeSurveyLink = mutableStateOf<String?>(null)
     val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)

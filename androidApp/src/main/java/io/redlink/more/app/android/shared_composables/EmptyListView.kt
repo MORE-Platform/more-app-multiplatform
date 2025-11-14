@@ -16,15 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun EmptyListView(text: String) {
-    Box(contentAlignment = Alignment.CenterStart,
+    Box(
+        contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
     ) {
-        BasicText(text = text)
+        BasicText(text = text, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
     }
 }

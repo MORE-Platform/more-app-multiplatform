@@ -11,14 +11,11 @@
 package io.redlink.more.more_app_mutliplatform.services.bluetooth
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
 
 interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
 
     var observer: MutableSet<BluetoothConnectorObserver>
-
-    var bluetoothState: BluetoothState
-
-    var scanning: Boolean
 
     val specificBluetoothConnectors: MutableMap<String, BluetoothConnector>
 
@@ -30,13 +27,11 @@ interface BluetoothConnector : BluetoothConnectorObserver, Closeable {
 
     fun updateObserver(action: (BluetoothConnectorObserver) -> Unit)
 
-    fun replayStates()
-
     fun scan()
 
-    fun connect(device: BluetoothDevice): Error?
+    fun connect(device: BluetoothDeviceEntity): Error?
 
-    fun disconnect(device: BluetoothDevice)
+    fun disconnect(device: BluetoothDeviceEntity)
 
     fun stopScanning()
     override fun close()

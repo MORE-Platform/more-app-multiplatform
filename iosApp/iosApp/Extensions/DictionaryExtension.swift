@@ -25,12 +25,26 @@ extension Dictionary {
     func filterValues<V>(predicate: (V) -> Bool) -> [Key: Set<V>] where Value == Set<V> {
         return mapValues { $0.filter(predicate) }
     }
+
+    func mapKeys<NewKey>(_ transform: (Key) throws -> NewKey) rethrows -> [NewKey: Value] where NewKey: Hashable {
+        try reduce(into: [NewKey: Value]()) { result, element in
+            let newKey = try transform(element.key)
+            result[newKey] = element.value
+        }
+    }
+
+    func mapValues<NewValue>(_ transform: (Value) throws -> NewValue) rethrows -> [Key: NewValue] {
+        try reduce(into: [Key: NewValue]()) { result, element in
+            let newValue = try transform(element.value)
+            result[element.key] = newValue
+        }
+    }
 }
 
 extension Dictionary where Value == Set<AnyHashable> {
     func flattenValues() -> Set<Value.Element> {
         var resultSet = Set<Value.Element>()
-        for valueSet in self.values {
+        for valueSet in values {
             resultSet.formUnion(valueSet)
         }
         return resultSet

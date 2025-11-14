@@ -11,81 +11,78 @@
 package io.redlink.more.more_app_mutliplatform.database.repository
 
 import io.ktor.utils.io.core.Closeable
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.types.RealmInstant
-import io.redlink.more.more_app_mutliplatform.database.schemas.ObservationSchema
-import io.redlink.more.more_app_mutliplatform.database.schemas.ScheduleSchema
+import io.redlink.more.more_app_mutliplatform.database.AppDatabase
+import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
+import io.redlink.more.more_app_mutliplatform.database.entities.ScheduleEntity
 import io.redlink.more.more_app_mutliplatform.extensions.asClosure
-import io.redlink.more.more_app_mutliplatform.util.Scope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
+import kotlinx.datetime.Clock
 
-class ObservationRepository : Repository<ObservationSchema>() {
-    override fun count(): Flow<Long> = realmDatabase().count<ObservationSchema>()
+class ObservationRepository(private val appDatabase: AppDatabase) {
 
-    fun observations() = realmDatabase().query<ObservationSchema>()
+    suspend fun getCount(): Int = appDatabase.observationDao().getCount()
 
-    fun observationWithUndoneSchedules(): Flow<Map<ObservationSchema, List<ScheduleSchema>>> {
-        return ScheduleRepository().allSchedulesWithStatus()
-            .combine(observations()) { schedules, observations ->
-                observations.associateWith { observation -> schedules.filter { it.observationId == observation.observationId } }
+    fun observations() = appDatabase.observationDao().getAllFlow()
+
+    fun observationWithUndoneSchedules(): Flow<Map<ObservationEntity, List<ScheduleEntity>>> {
+        return appDatabase.scheduleDao().getByDoneFlow(false)
+            .combine(observations()) { schedules: List<ScheduleEntity>, observations: List<ObservationEntity> ->
+                observations.associateWith { observation ->
+                    schedules.filter { schedule -> schedule.observationId == observation.observationId }
+                }
             }
     }
 
-    fun lastCollection(type: String, timestamp: Long) {
-        Scope.launch {
-            realm()?.write {
-                this.query<ObservationSchema>("observationType == $0", type)
-                    .find()
-                    .forEach {
-                        it.collectionTimestamp = RealmInstant.from(timestamp, 0)
-                    }
+    suspend fun updateLastCollection(type: String, timestamp: Long) {
+        val observations = appDatabase.observationDao().getByObservationType(type)
+        observations.forEach { observation ->
+            val updatedObservation = observation.copy(collectionTimestamp = timestamp)
+            appDatabase.observationDao().update(updatedObservation)
+        }
+    }
+
+    suspend fun updateLastCollection(types: Set<String>, timestamp: Long) {
+        types.forEach { type ->
+            val observations = appDatabase.observationDao().getByObservationType(type)
+            observations.forEach { observation ->
+                val updatedObservation = observation.copy(collectionTimestamp = timestamp)
+                appDatabase.observationDao().update(updatedObservation)
             }
         }
     }
 
-    fun lastCollection(type: Set<String>, timestamp: Long) {
-        realm()?.writeBlocking {
-            this.query<ObservationSchema>("observationType IN $0", type).find()
-                .forEach { it.collectionTimestamp = RealmInstant.from(timestamp, 0) }
-        }
-    }
-
-    fun collectionTimestamp(type: String) =
-        realmDatabase().query<ObservationSchema>("observationType == $0", queryArgs = arrayOf(type))
-            .transform {
-                emit(it
-                    .map { observationSchema -> observationSchema.collectionTimestamp }
-                    .firstOrNull()
-                )
+    fun collectionTimestamp(type: String): Flow<Long?> =
+        appDatabase.observationDao().getByObservationTypeFlow(type)
+            .transform { observationList ->
+                emit(observationList.firstOrNull()?.collectionTimestamp)
             }
 
-    fun collectAllTimestamps() =
-        observations().transform { emit(it.associate { it.observationType to it.collectionTimestamp }) }
-
-    fun collectTimestampForObservationIds(observationIds: Set<String>) =
-        realmDatabase().queryAllWhereFieldInList<ObservationSchema, String>(
-            "observationType",
-            observationIds
-        ).transform {
-            emit(
-                it.maxByOrNull { it.collectionTimestamp }?.collectionTimestamp
-                    ?: RealmInstant.now()
-            )
+    fun collectAllTimestamps(): Flow<Map<String, Long>> =
+        observations().transform { observationList ->
+            emit(observationList.associate { it.observationType to it.collectionTimestamp })
         }
 
-    fun collectTimestampOfType(type: String, newState: (RealmInstant?) -> Unit): Closeable {
+    fun collectTimestampForObservationIds(observationIds: Set<String>): Flow<Long> =
+        observations().transform { observationList ->
+            val filteredObservations =
+                observationList.filter { it.observationType in observationIds }
+            val maxTimestamp =
+                filteredObservations.maxByOrNull { it.collectionTimestamp }?.collectionTimestamp
+                    ?: Clock.System.now().toEpochMilliseconds()
+            emit(maxTimestamp)
+        }
+
+    fun collectTimestampOfType(type: String, newState: (Long?) -> Unit): Closeable {
         return collectionTimestamp(type).asClosure(newState)
     }
 
     fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
-        return collectAllTimestamps().transform { emit(it.mapValues { it.value.epochSeconds }) }
-            .asClosure(newState)
+        return collectAllTimestamps().asClosure(newState)
     }
 
-    fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationSchema, List<ScheduleSchema>>) -> Unit): Closeable {
+    fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationEntity, List<ScheduleEntity>>) -> Unit): Closeable {
         return observationWithUndoneSchedules().asClosure(newState)
     }
 
@@ -93,15 +90,10 @@ class ObservationRepository : Repository<ObservationSchema>() {
         emit(observationList.map { it.observationType }.toSet())
     }
 
-    fun observationById(observationId: String) = realmDatabase().queryFirst<ObservationSchema>(
-        "observationId == $0",
-        queryArgs = arrayOf(observationId)
-    )
+    fun observationById(observationId: String) =
+        appDatabase.observationDao().getByObservationIdFlow(observationId)
 
-    suspend fun getObservationByObservationId(observationId: String): ObservationSchema? {
-        return realmDatabase().queryFirst<ObservationSchema>(
-            "observationId == $0",
-            queryArgs = arrayOf(observationId)
-        ).firstOrNull()
+    suspend fun getObservationByObservationId(observationId: String): ObservationEntity? {
+        return appDatabase.observationDao().getByObservationId(observationId)
     }
 }

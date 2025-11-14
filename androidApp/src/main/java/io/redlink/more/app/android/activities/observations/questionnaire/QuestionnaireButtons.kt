@@ -32,7 +32,6 @@ import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.ui.theme.morePrimary
 
-
 @Composable
 fun QuestionnaireButtons(navController: NavController, model: QuestionnaireViewModel) {
     val context = LocalContext.current
