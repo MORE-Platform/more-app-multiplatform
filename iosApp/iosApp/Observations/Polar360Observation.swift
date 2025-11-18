@@ -169,7 +169,7 @@ class Polar360Observation: Observation_{
         ] as [String : Any]
 
         self.storeData(data: data, timestamp: -1){
-            print("stored")
+            print("Data stored sending to backend")
         }
 
     }
@@ -186,8 +186,7 @@ class Polar360Observation: Observation_{
                     onCompleted: { [weak self] in
                         guard let self else { return }
                         self.listenToDeviceConnection()
-                        print(samplingrate)
-                        print("STARTFUNC")
+                        print("Starting streaming...")
                         //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
                         self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
                         self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
@@ -254,9 +253,7 @@ class Polar360Observation: Observation_{
         .subscribe(
             onNext: { data  in
                 
-                /*for sample in data {
-                    print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
-                }*/
+               
                 let data_formatted: [accData] = data.map { sample in
                     accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp)
                 }
@@ -271,14 +268,7 @@ class Polar360Observation: Observation_{
                     
                 }
                 guard let sample = data.first else { return }
-                /*if(self.hrQueue.peekLast() != nil){
-                    self.accQueue.add(accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp))
-                    self.tryBuildPacket().map{
-                        packet in
-                        print(packet)
-                        self.sendOutData(packet: packet)
-                    }}*/
-                //print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
+               
             },
             onError: { error in
                 print("Accelerometer stream failed: \(error)")
@@ -288,13 +278,15 @@ class Polar360Observation: Observation_{
             }
         )
     }
+    
+    //Not using hr stream using ppi instead
     private func hrstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
         return polarConnector.polarApi.startHrStreaming(identifier)
             .subscribe(on: scheduler)
             .throttle(.seconds(samplingrate), scheduler: scheduler) //This allows us to lower the sampling rate to anything we want,
             .subscribe(onNext: { [weak self] data in
                 if let self, let hrData = data.first {
-                    //print(hrData.hr)
+                    
                     
                     self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
 
@@ -317,7 +309,6 @@ class Polar360Observation: Observation_{
                     self.hrQueue.add(hrData(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
                     self.tryBuildPacket().map {
                         packet in
-                        print(packet)
                         //dont want to fill up queue with other streams untill hr data starts arriving
                         // so we store state and check for it
 
@@ -354,7 +345,6 @@ class Polar360Observation: Observation_{
 
                     self.tryBuildPacket().map {
                         packet in
-                        print(packet)
                         self.sendOutData(packet: packet)
                     }}
                 print("\(sample.timeStamp): \(sample.temperature)")
@@ -390,13 +380,14 @@ class Polar360Observation: Observation_{
                     typicalDay: PolarFirstTimeUseConfig.TypicalDay.mostlyMoving,
                     sleepGoalMinutes: 480
                 )
-
+                
                 return self.polarConnector.polarApi
                     .doFirstTimeUse(identifier, ftuConfig: ftuConfig)
             }
         }
         .andThen(
             Completable.deferred {
+                print("FTU setup successful")
                 return Completable.empty()
                 //return  self.polarConnector.polarApi.enableSDKMode(identifier)
 
@@ -445,7 +436,6 @@ class Polar360Observation: Observation_{
             })
     }
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
-        print("obsv config called")
         if let value = settings["sampling_rate"] {
                 // KMM numeric objects often respond to `intValue` or `doubleValue`
                 if let kotlinNumber = value as? NSNumber {

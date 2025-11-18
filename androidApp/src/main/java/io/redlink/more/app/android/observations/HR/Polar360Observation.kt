@@ -5,7 +5,6 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.model.PolarAccelerometerData
@@ -141,7 +140,7 @@ class Polar360Observation(repos: MainRepository):
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ setupDone ->
                             if (!setupDone) {
-                                Log.e(TAG, "Device setup failed, aborting start")
+                                Napier.e(tag = "Polar360:Start"){"Device setup failed, aborting start"}
                                 return@subscribe
                             }
                             heartRateDisposable = ppiStream(it.deviceId!!)
@@ -150,7 +149,7 @@ class Polar360Observation(repos: MainRepository):
                             accDisposable =accStream(it.deviceId!!)
                             // continue starting HR/ACC/TEMP streaming here
                         }, { error ->
-                            Log.e(TAG, "Setup check failed: ${error.localizedMessage}")
+                            Napier.e(tag = "Polar360::error with streaming"){"Setup check failed: ${error.localizedMessage}"}
                         })
                     mutableStatDeviceId.set(it.deviceId!!)
 
@@ -257,7 +256,7 @@ class Polar360Observation(repos: MainRepository):
                 if (intValue != null) {
                     samplingRate = intValue
                 } else {
-                    println("Warning: sampling_rate is not a valid number: $value")
+                    Napier.e(tag = "Polar360::Observation_config" ) {"Warning: sampling_rate is not a valid number: $value"}
                 }
             }
         }
@@ -304,10 +303,11 @@ class Polar360Observation(repos: MainRepository):
         return polarConnector.polarApi.isFtuDone(deviceId)
             .flatMap { ftuDone ->
                 if (ftuDone) {
-                    println("FTUDONE")
+                    Napier.d(tag = "Polar360::ftudone"){"Ftu already done returning true"}
                     Single.just(true)
                 } else {
-                    println("FTU init")
+                    Napier.d(tag = "Polar360::ftudone"){"Ftu setup starting"}
+
                     val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
                     sdf.timeZone = TimeZone.getTimeZone("UTC")
@@ -342,7 +342,8 @@ class Polar360Observation(repos: MainRepository):
         return polarConnector.polarApi.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.ACC)
             .subscribeOn(Schedulers.io())
             .onErrorResumeNext { error: Throwable ->
-                Log.e(TAG, "Settings request failed. Reason: $error")
+                Napier.e(tag = "Polar360::Accstream"){"Acc stream settings fetch failed"}
+
                 Single.just(
                     PolarSensorSetting(
                         hashMapOf(
@@ -355,13 +356,13 @@ class Polar360Observation(repos: MainRepository):
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .toFlowable()
             .flatMap { settings: PolarSensorSetting ->
-                Log.d(TAG, "Using temperature settings: $settings")
+                Napier.d(tag = "Polar360::Accstream"){"Using temperature settings: $settings"}
                 // Explicit type to help inference
                 polarConnector.polarApi.startAccStreaming(deviceId, settings) as Flowable<PolarAccelerometerData>
             }
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .doOnSubscribe {
-                Log.d(TAG, "Temperature stream starting...")
+                Napier.d(tag = "Polar360::Accstream"){"Temperature stream starting..."}
             }
             .subscribe(
                 { data: PolarAccelerometerData ->
@@ -385,7 +386,7 @@ class Polar360Observation(repos: MainRepository):
                     }
                 },
                 { error ->
-                    Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
+                    Napier.e(tag = "Polar360::Accstream"){"Temperature stream failed: ${error.localizedMessage}"}
 
                     accDisposable=null
                 }
@@ -395,7 +396,7 @@ class Polar360Observation(repos: MainRepository):
         return polarConnector.polarApi.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE)
             .subscribeOn(Schedulers.io())
             .onErrorResumeNext { error: Throwable ->
-                Log.e(TAG, "Settings request failed. Reason: $error")
+                Napier.e(tag = "Polar360::Tempstream"){"Settings request failed. Reason: $error"}
                 Single.just(
                     PolarSensorSetting(
                         hashMapOf(
@@ -408,27 +409,27 @@ class Polar360Observation(repos: MainRepository):
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .toFlowable()
             .flatMap { settings: PolarSensorSetting ->
-                Log.d(TAG, "Using temperature settings: $settings")
+                Napier.d(tag = "Polar360::Tempstream"){"Using temperature settings: $settings"}
+
                 // Explicit type to help inference
                 polarConnector.polarApi.startTemperatureStreaming(deviceId, settings) as Flowable<PolarTemperatureData>
             }
             .throttleFirst(samplingRate.toLong(), TimeUnit.SECONDS, Schedulers.io())
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .doOnSubscribe {
-                Log.d(TAG, "Temperature stream starting...")
+                Napier.d(tag = "Polar360::Tempstream"){"Temperature stream starting..."}
             }
             .subscribe(
                 { data: PolarTemperatureData ->
                     if (data.samples.isNotEmpty()) {
                         val sample = data.samples[0]
                         val temp = sample.temperature
-                        Log.d(TAG, "Temperature: $temp °C, timestamp: ${sample.timeStamp}")
                         tmpQueue!!.add(tmpItem(sample.temperature,sample.timeStamp))
                         tryBuildPacket()?.let { sendOut(it) }
                     }
                 },
                 { error ->
-                    Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
+                    Napier.d(tag = "Polar360::Tempstream"){"Temperature stream failed: ${error.localizedMessage}"}
 
                     tempDisposable=null
                 }
@@ -438,9 +439,11 @@ class Polar360Observation(repos: MainRepository):
     private fun ppiStream(deviceId:String): Disposable{
         return polarConnector.polarApi.startPpiStreaming(deviceId)
             .throttleFirst(samplingRate.toLong(), TimeUnit.SECONDS, Schedulers.io())
+            .doOnSubscribe {
+                Napier.d(tag = "Polar360::Ppistream"){"Ppi streaming started"}
+            }
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(
             { polarData ->
-                Log.d(TAG, "HR: ${polarData.samples[0].hr} ")
                 hrQueue!!.add(hrData(polarData.samples[0].hr,polarData.samples[0].timeStamp,polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
                 tryBuildPacket()?.let { println(it) }
             },
