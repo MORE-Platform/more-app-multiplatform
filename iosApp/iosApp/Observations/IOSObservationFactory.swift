@@ -23,6 +23,5 @@ class IOSObservationFactory: ObservationFactory {
         observations.add(AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"]))
         observations.add(PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"]))
         observations.add(Polar360Observation(repos:repository,sensorPermissions: ["bluetoothAlways"]))
-        observations.add(Polar360Observation_offline(repos: repository, sensorPermissions: ["bluetoothAlways"]))
     }
 }

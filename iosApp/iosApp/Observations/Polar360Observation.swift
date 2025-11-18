@@ -36,7 +36,7 @@ class Polar360Observation: Observation_{
     private var deviceid : String? = nil
     private let schedulerForeground = ConcurrentDispatchQueueScheduler(qos:.userInitiated)
     private let schedulerBackground = ConcurrentDispatchQueueScheduler(qos: .background)
-
+    private var samplingrate : Int = 1
 
     init (repos: MainRepository , sensorPermissions: Set<String>){
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
@@ -45,10 +45,13 @@ class Polar360Observation: Observation_{
     class hrData: Codable {
         let hr: Int
         let timestamp: UInt64
-
-        init(hr:Int, timestamp:UInt64){
+        let ppiInMs : UInt16
+        let ppiErrorEstimate : UInt16
+        init(hr:Int, timestamp:UInt64, ppiInMs:UInt16, ppiErrorEstimate:UInt16){
             self.hr = hr
             self.timestamp = timestamp
+            self.ppiInMs = ppiInMs
+            self.ppiErrorEstimate = ppiErrorEstimate
         }
     }
 
@@ -78,9 +81,9 @@ class Polar360Observation: Observation_{
 
     class SyncedPacket: Codable {
         let hr_data: hrData
-        let acc_data : accData?
+        let acc_data : [accData]?
         let temp_data: tempData
-        init(hr_data: hrData, acc_data: accData?, temp_data: tempData) {
+        init(hr_data: hrData, acc_data: [accData]?, temp_data: tempData) {
             self.hr_data = hr_data
             self.acc_data = acc_data
             self.temp_data = temp_data
@@ -120,17 +123,17 @@ class Polar360Observation: Observation_{
 
 
     private let hrQueue = Polar360Queue<hrData>(maxSize: 10)
-    private let accQueue = Polar360Queue<accData>(maxSize: 10)
+    private let accQueue = Polar360Queue<[accData]>(maxSize: 10)
     private let tempQueue = Polar360Queue<tempData>(maxSize: 10)
 
 
     private func tryBuildPacket()-> SyncedPacket?{
-        if((hrQueue.size() != 0) && (tempQueue.size() != 0 ))
+        if((hrQueue.size() != 0) && (tempQueue.size() != 0 ) && (accQueue.size() != 0 ))
         {
             let hritem = hrQueue.pollLast()
             let tempitem = tempQueue.pollLast()
-            let accitem = accQueue.pollLast() ?? nil
-            if (hritem != nil && tempitem != nil ){
+            let accitem = accQueue.pollLast()
+            if (hritem != nil && tempitem != nil && accitem != nil ){
                 return SyncedPacket(hr_data: hritem!, acc_data: accitem, temp_data: tempitem!)
             }
         }
@@ -140,23 +143,30 @@ class Polar360Observation: Observation_{
     private func sendOutData(packet:SyncedPacket){
         print("sending data \(packet)")
         print("packet data \(packet.hr_data.hr) \(packet.temp_data.temp) ")
-
+        
+        
+        
+        
         let data = [
             "hr": [
                 "value": packet.hr_data.hr,
-                "timestamp": packet.hr_data.timestamp
+                "timestamp": packet.hr_data.timestamp,
+                "ppiInMs" : packet.hr_data.ppiInMs,
+                "ppiErrorEstimate" : packet.hr_data.ppiErrorEstimate
             ],
-            "acc": [
-                "x":   packet.acc_data?.x ?? 0,
-                "y":packet.acc_data?.y ?? 0,
-                "z": packet.acc_data?.z ?? 0,
-                "timestamp": packet.acc_data?.timestamp ?? 0
-            ],
+            "acc": packet.acc_data?.compactMap({ accSample in
+                [
+                    "x": accSample.x,
+                    "y": accSample.y,
+                    "z": accSample.z,
+                    "timestamp": accSample.timestamp
+                ]
+            }),
             "temp": [
                 "value": packet.temp_data.temp,
                 "timestamp": packet.temp_data.timestamp
             ]
-        ]
+        ] as [String : Any]
 
         self.storeData(data: data, timestamp: -1){
             print("stored")
@@ -176,6 +186,8 @@ class Polar360Observation: Observation_{
                     onCompleted: { [weak self] in
                         guard let self else { return }
                         self.listenToDeviceConnection()
+                        print(samplingrate)
+                        print("STARTFUNC")
                         //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
                         self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
                         self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
@@ -190,9 +202,10 @@ class Polar360Observation: Observation_{
             return true
         }
 
-        print("obsv ended")
+        showObservationErrorNotification(notificationBody:"Cannot start Observation! Please make sure to enable Bluetooth and connect all necessary devices!",fallbackTitle: "Observation ERROR" )
         return false
     }
+    
 
     override func stop(onCompletion: @escaping () -> Void) {
 
@@ -215,12 +228,16 @@ class Polar360Observation: Observation_{
         deviceListener?.cancel()
         onCompletion()
     }
+    
+    
 
     private func accstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
+        
         return polarConnector.polarApi
         .requestStreamSettings(identifier, feature: .acc)
         .catch { error -> Single<PolarSensorSetting> in
             print("ACC settings request failed: \(error)")
+           
             let defaultSettings = try! PolarSensorSetting([
                                                               .sampleRate: 50,
                                                               .resolution: 1
@@ -229,22 +246,39 @@ class Polar360Observation: Observation_{
         }
         .asObservable()
         .flatMap { settings in
-            print("Using accelerometer settings: \(settings)")
+            
             return self.polarConnector.polarApi.startAccStreaming(identifier, settings: settings)
         }
         .subscribe(on: MainScheduler.instance)
         .observe(on: scheduler)
         .subscribe(
-            onNext: { data in
+            onNext: { data  in
+                
+                /*for sample in data {
+                    print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
+                }*/
+                let data_formatted: [accData] = data.map { sample in
+                    accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp)
+                }
+                if self.accQueue.size() == 0
+                {
+                    self.accQueue.add(data_formatted)
+                }
+                else {
+                    var items = self.accQueue.pollLast()!
+                    items.append(contentsOf: data_formatted)
+                    self.accQueue.add(items)
+                    
+                }
                 guard let sample = data.first else { return }
-                if(self.hrQueue.peekLast() != nil){
+                /*if(self.hrQueue.peekLast() != nil){
                     self.accQueue.add(accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp))
                     self.tryBuildPacket().map{
                         packet in
                         print(packet)
                         self.sendOutData(packet: packet)
-                    }}
-                print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
+                    }}*/
+                //print("x y z: \(sample.x) \(sample.y) \(sample.z), timestamp: \(sample.timeStamp)")
             },
             onError: { error in
                 print("Accelerometer stream failed: \(error)")
@@ -257,11 +291,12 @@ class Polar360Observation: Observation_{
     private func hrstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
         return polarConnector.polarApi.startHrStreaming(identifier)
             .subscribe(on: scheduler)
+            .throttle(.seconds(samplingrate), scheduler: scheduler) //This allows us to lower the sampling rate to anything we want,
             .subscribe(onNext: { [weak self] data in
                 if let self, let hrData = data.first {
-                    print(hrData.hr)
-
-                    //self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
+                    //print(hrData.hr)
+                    
+                    self.storeData(data: ["hr": hrData.hr], timestamp: -1) {}
 
                 }
             }, onError: { [weak self] error in
@@ -275,10 +310,11 @@ class Polar360Observation: Observation_{
     private func ppistream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
         return polarConnector.polarApi.startPpiStreaming(identifier)
             .subscribe(on:scheduler)
+            .throttle(.seconds(samplingrate), scheduler: scheduler)
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
-
-                    self.hrQueue.add(hrData(hr: sample.hr,timestamp: sample.timeStamp))
+                    
+                    self.hrQueue.add(hrData(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
                     self.tryBuildPacket().map {
                         packet in
                         print(packet)
@@ -305,10 +341,12 @@ class Polar360Observation: Observation_{
         .asObservable()
         .flatMap { settings in
             print("Using temperature settings: \(settings)")
+            
             return self.polarConnector.polarApi.startTemperatureStreaming(identifier, settings: settings)
         }
         .subscribe(on: MainScheduler.instance) // start on main (required by Polar SDK)
-        .observe(on: scheduler)               // process on thread B
+        .observe(on: scheduler)
+        .throttle(.seconds(samplingrate), scheduler: scheduler)
         .subscribe(onNext: { data in
             if let sample = data.samples.first {
                 if(self.hrQueue.peekLast() != nil){
@@ -407,5 +445,20 @@ class Polar360Observation: Observation_{
             })
     }
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
+        print("obsv config called")
+        if let value = settings["sampling_rate"] {
+                // KMM numeric objects often respond to `intValue` or `doubleValue`
+                if let kotlinNumber = value as? NSNumber {
+                    samplingrate = kotlinNumber.intValue
+                } else {
+                    // Try casting to AnyObject and use description -> Int
+                    let stringValue = String(describing: value)
+                    if let intValue = Int(stringValue) {
+                        samplingrate = intValue
+                    } else {
+                        print("Warning: sampling_rate is not a valid number: \(value)")
+                    }
+                }
+            }
     }
 }

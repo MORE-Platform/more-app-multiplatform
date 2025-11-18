@@ -162,7 +162,6 @@
 		B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */; };
 		B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */; };
 		B7B4888229FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */; };
-		C51A372D2EAA0C7C007D2670 /* Polar360Observation_offline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51A372C2EAA0C7C007D2670 /* Polar360Observation_offline.swift */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED474B4C29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED474B4B29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift */; };
 		ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A7F3E29DC405B00E266EC /* FCMService.swift */; };
@@ -372,7 +371,6 @@
 		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
 		B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterText.swift; sourceTree = "<group>"; };
 		B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAdaptsToOpenKeyboard.swift; sourceTree = "<group>"; };
-		C51A372C2EAA0C7C007D2670 /* Polar360Observation_offline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360Observation_offline.swift; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED474B4B29FAAC7A0077AD5C /* SimpleQuestionThankYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleQuestionThankYouView.swift; sourceTree = "<group>"; };
 		ED6A7F3E29DC405B00E266EC /* FCMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCMService.swift; sourceTree = "<group>"; };
@@ -501,7 +499,6 @@
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
 				53D8A0870AB58CA330321126 /* Polar360Queue.swift */,
 				53D8A2718FB884A86FF5CB70 /* Polar360Observation.swift */,
-				C51A372C2EAA0C7C007D2670 /* Polar360Observation_offline.swift */,
 			);
 			path = Observations;
 			sourceTree = "<group>";
@@ -1193,7 +1190,6 @@
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
-				C51A372D2EAA0C7C007D2670 /* Polar360Observation_offline.swift in Sources */,
 				B77F20112A014C8400C44118 /* NavigationModalState.swift in Sources */,
 				B708884D2DF2EE600048A4AC /* CameraPreviewView.swift in Sources */,
 				1F2C4BDD2A6F976F00C29888 /* StudyUpdateView.swift in Sources */,

@@ -29,16 +29,15 @@ import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
 import io.redlink.more.more_app_mutliplatform.extensions.set
 import io.redlink.more.more_app_mutliplatform.observations.Observation
 import io.redlink.more.more_app_mutliplatform.observations.observationTypes.Polar360Type
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.more_app_mutliplatform.scopes.Scope
 import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 import kotlin.collections.filter
 import kotlin.collections.firstOrNull
 import kotlin.collections.forEach
@@ -84,15 +83,16 @@ class Polar360Observation(repos: MainRepository):
     )
     data class hrData(
         val hr : Int ,
-        val timestamp: Long,
-
+        val timestamp: ULong,
+        val ppiInMs : Int,
+        val ppiErrorEstimate: Int
     )
 
     data class SyncedPacket(
-        val hr: Int,
+        val hr: hrData,
         val temp: tmpItem,
-        val acc: accItem? = null,
-        val timestamp: Long = System.currentTimeMillis()
+        val acc: List<accItem>?
+
     )
 
     private val deviceManager = BluetoothStateManagement
@@ -103,18 +103,20 @@ class Polar360Observation(repos: MainRepository):
 
     private var tempDisposable : Disposable? = null
     private var accDisposable : Disposable? = null
-    private var hrQueue: BoundedQueue<Int>? = BoundedQueue<Int>(10)
+    private var hrQueue: BoundedQueue<hrData>? = BoundedQueue<hrData>(10)
     private var tmpQueue: BoundedQueue<tmpItem>? =BoundedQueue<tmpItem>(10)
-    private var accQueue: BoundedQueue<accItem>? = BoundedQueue<accItem>(10)
+    private var accQueue: BoundedQueue<List<accItem>>? = BoundedQueue<List<accItem>>(10)
     private var firstimeUseDisposable:Disposable? = null
     private val mutableStatDeviceId: MutableStateFlow<String> = MutableStateFlow("")
 
+    private var samplingRate : Int = 1
+
     private  fun tryBuildPacket(): SyncedPacket? {
-        if ((hrQueue?.size() != 0 ) && (tmpQueue?.size() != 0)) {
+        if ((hrQueue?.size() != 0 ) && (tmpQueue?.size() != 0) &&  (accQueue?.size()) != 0) {
             val hr = hrQueue?.pollLast()
             val temp = tmpQueue?.pollLast()
-            val acc = accQueue?.pollLast() ?: null// optional
-            if (hr != null && temp != null) {
+            val acc = accQueue?.pollLast() // optional
+            if (hr != null && temp != null && acc!=null) {
                 return SyncedPacket(hr, temp, acc)
             }
         }
@@ -122,8 +124,6 @@ class Polar360Observation(repos: MainRepository):
     }
 
     fun sendOut(packet: SyncedPacket) {
-        Log.d("SYNC", "Packet => HR=${packet.hr}, Temp=${packet.temp.temp}, " +
-                "Acc=${packet.acc?.let { "(${it.x},${it.y},${it.z})" } ?: "none"}")
         storeData(packet)
     }
 
@@ -144,114 +144,16 @@ class Polar360Observation(repos: MainRepository):
                                 Log.e(TAG, "Device setup failed, aborting start")
                                 return@subscribe
                             }
+                            heartRateDisposable = ppiStream(it.deviceId!!)
+                            // Query available settings first
+                            tempDisposable= tempstream(it.deviceId!!)
+                            accDisposable =accStream(it.deviceId!!)
                             // continue starting HR/ACC/TEMP streaming here
                         }, { error ->
                             Log.e(TAG, "Setup check failed: ${error.localizedMessage}")
                         })
                     mutableStatDeviceId.set(it.deviceId!!)
 
-                    heartRateDisposable =
-                        polarConnector.polarApi.startPpiStreaming(it.deviceId!!).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(
-                            { polarData ->
-                                Log.d(TAG, "HR: ${polarData.samples[0].hr} ")
-                                hrQueue!!.add(polarData.samples[0].hr)
-                                tryBuildPacket()?.let { println(it) }
-                            },
-                            { error ->
-                                Napier.e(
-                                    tag = "PolarHeartRateObservation::start",
-                                    message = "HR Recording error: ${error.stackTraceToString()}"
-                                )
-                                pauseObservation(Polar360Type(emptySet()))
-                                showObservationErrorNotification(
-                                    stringResource(R.string.observation_bluetooth_error),
-                                    stringResource(R.string.observation_error)
-                                )
-                            })
-                    // Query available settings first
-                    tempDisposable= polarConnector.polarApi.requestStreamSettings(it.deviceId!!, PolarBleApi.PolarDeviceDataType.TEMPERATURE)
-                        .subscribeOn(Schedulers.io())
-                        .onErrorResumeNext { error: Throwable ->
-                            Log.e(TAG, "Settings request failed. Reason: $error")
-                            Single.just(
-                                PolarSensorSetting(
-                                    hashMapOf(
-                                        PolarSensorSetting.SettingType.SAMPLE_RATE to 1,
-                                        PolarSensorSetting.SettingType.RESOLUTION to 1
-                                    )
-                                )
-                            )
-                        }
-                        .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
-                        .toFlowable()
-                        .flatMap { settings: PolarSensorSetting ->
-                            Log.d(TAG, "Using temperature settings: $settings")
-                            // Explicit type to help inference
-                            polarConnector.polarApi.startTemperatureStreaming(it.deviceId!!, settings) as Flowable<PolarTemperatureData>
-                        }
-                        .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
-                        .doOnSubscribe {
-                            Log.d(TAG, "Temperature stream starting...")
-                        }
-                        .subscribe(
-                            { data: PolarTemperatureData ->
-                                if (data.samples.isNotEmpty()) {
-                                    val sample = data.samples[0]
-                                    val temp = sample.temperature
-                                    Log.d(TAG, "Temperature: $temp °C, timestamp: ${sample.timeStamp}")
-                                    tmpQueue!!.add(tmpItem(sample.temperature,sample.timeStamp))
-                                    tryBuildPacket()?.let { sendOut(it) }
-                                }
-                            },
-                            { error ->
-                                Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
-
-                                tempDisposable=null
-                            }
-                        )
-                    accDisposable =polarConnector.polarApi.requestStreamSettings(it.deviceId!!, PolarBleApi.PolarDeviceDataType.ACC)
-                        .subscribeOn(Schedulers.io())
-                        .onErrorResumeNext { error: Throwable ->
-                            Log.e(TAG, "Settings request failed. Reason: $error")
-                            Single.just(
-                                PolarSensorSetting(
-                                    hashMapOf(
-                                        PolarSensorSetting.SettingType.SAMPLE_RATE to 1,
-                                        PolarSensorSetting.SettingType.RESOLUTION to 1
-                                    )
-                                )
-                            )
-                        }
-                        .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
-                        .toFlowable()
-                        .flatMap { settings: PolarSensorSetting ->
-                            Log.d(TAG, "Using temperature settings: $settings")
-                            // Explicit type to help inference
-                            polarConnector.polarApi.startAccStreaming(it.deviceId!!, settings) as Flowable<PolarAccelerometerData>
-                        }
-                        .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
-                        .doOnSubscribe {
-                            Log.d(TAG, "Temperature stream starting...")
-                        }.subscribe(
-                            { data: PolarAccelerometerData ->
-                                if (data.samples.isNotEmpty()) {
-                                    val x = data.samples[0].x
-                                    val y = data.samples[0].y
-                                    val z = data.samples[0].z
-                                    val timestamp = data.samples[0].timeStamp
-                                    Log.d(TAG, "x y z : $x $y $z  °C, timestamp: ${timestamp}")
-                                    accQueue!!.add(accItem(x,y,z,timestamp))
-                                    //println(accQueue!!.peekLast())
-                                    //println(hrQueue!!.peekLast())
-                                    //println(tmpQueue!!.peekLast())
-                                }
-                            },
-                            { error ->
-                                Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
-
-                                accDisposable=null
-                            }
-                        )
 
 
                     deviceConnectionListener = listenToDeviceConnection()
@@ -285,6 +187,7 @@ class Polar360Observation(repos: MainRepository):
     override fun stop(onCompletion: () -> Unit) {
         var streamDisposable1 : Disposable? = null
         var streamDisposable2 : Disposable? = null
+
 
         streamDisposable1 = polarConnector.polarApi.stopOfflineRecording(mutableStatDeviceId.value,PolarBleApi.PolarDeviceDataType.TEMPERATURE)
             .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
@@ -336,11 +239,29 @@ class Polar360Observation(repos: MainRepository):
     }
 
     override fun ableToAutomaticallyStart(): Boolean {
-        return false
         return observerAccessible()
     }
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
+
+        val value = settings["sampling_rate"]
+        if(value!= null){
+            if (value is Number) {
+                samplingRate = value.toInt()
+
+            } else {
+                // Fallback: convert to string and try parsing
+                val stringValue = value.toString()
+                val intValue = stringValue.toIntOrNull()
+
+                if (intValue != null) {
+                    samplingRate = intValue
+                } else {
+                    println("Warning: sampling_rate is not a valid number: $value")
+                }
+            }
+        }
+
     }
 
     private fun hasPermissions(context: Context): Boolean {
@@ -416,6 +337,125 @@ class Polar360Observation(repos: MainRepository):
             }
     }
 
+
+    private fun accStream(deviceId:String) : Disposable{
+        return polarConnector.polarApi.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.ACC)
+            .subscribeOn(Schedulers.io())
+            .onErrorResumeNext { error: Throwable ->
+                Log.e(TAG, "Settings request failed. Reason: $error")
+                Single.just(
+                    PolarSensorSetting(
+                        hashMapOf(
+                            PolarSensorSetting.SettingType.SAMPLE_RATE to 1,
+                            PolarSensorSetting.SettingType.RESOLUTION to 1
+                        )
+                    )
+                )
+            }
+            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+            .toFlowable()
+            .flatMap { settings: PolarSensorSetting ->
+                Log.d(TAG, "Using temperature settings: $settings")
+                // Explicit type to help inference
+                polarConnector.polarApi.startAccStreaming(deviceId, settings) as Flowable<PolarAccelerometerData>
+            }
+            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+            .doOnSubscribe {
+                Log.d(TAG, "Temperature stream starting...")
+            }
+            .subscribe(
+                { data: PolarAccelerometerData ->
+                    if (data.samples.isNotEmpty()) {
+
+                       val items : List<accItem> =  data.samples.map { sample ->
+                            accItem(
+                                x = sample.x,
+                                y = sample.y,
+                                z = sample.z,
+                                timestamp = sample.timeStamp
+                            )
+                        }
+                        if (accQueue!!.size() == 0){
+                        accQueue!!.add(items)}
+                        else{
+                            val from_queue : MutableList<accItem> = accQueue!!.pollLast() as MutableList<accItem>
+                            from_queue.addAll(items)
+                            accQueue!!.add(from_queue)
+                        }
+                    }
+                },
+                { error ->
+                    Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
+
+                    accDisposable=null
+                }
+            )
+    }
+    private fun tempstream(deviceId: String): Disposable{
+        return polarConnector.polarApi.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE)
+            .subscribeOn(Schedulers.io())
+            .onErrorResumeNext { error: Throwable ->
+                Log.e(TAG, "Settings request failed. Reason: $error")
+                Single.just(
+                    PolarSensorSetting(
+                        hashMapOf(
+                            PolarSensorSetting.SettingType.SAMPLE_RATE to 1,
+                            PolarSensorSetting.SettingType.RESOLUTION to 1
+                        )
+                    )
+                )
+            }
+            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+            .toFlowable()
+            .flatMap { settings: PolarSensorSetting ->
+                Log.d(TAG, "Using temperature settings: $settings")
+                // Explicit type to help inference
+                polarConnector.polarApi.startTemperatureStreaming(deviceId, settings) as Flowable<PolarTemperatureData>
+            }
+            .throttleFirst(samplingRate.toLong(), TimeUnit.SECONDS, Schedulers.io())
+            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+            .doOnSubscribe {
+                Log.d(TAG, "Temperature stream starting...")
+            }
+            .subscribe(
+                { data: PolarTemperatureData ->
+                    if (data.samples.isNotEmpty()) {
+                        val sample = data.samples[0]
+                        val temp = sample.temperature
+                        Log.d(TAG, "Temperature: $temp °C, timestamp: ${sample.timeStamp}")
+                        tmpQueue!!.add(tmpItem(sample.temperature,sample.timeStamp))
+                        tryBuildPacket()?.let { sendOut(it) }
+                    }
+                },
+                { error ->
+                    Log.e(TAG, "Temperature stream failed: ${error.localizedMessage}")
+
+                    tempDisposable=null
+                }
+            )
+    }
+
+    private fun ppiStream(deviceId:String): Disposable{
+        return polarConnector.polarApi.startPpiStreaming(deviceId)
+            .throttleFirst(samplingRate.toLong(), TimeUnit.SECONDS, Schedulers.io())
+            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(
+            { polarData ->
+                Log.d(TAG, "HR: ${polarData.samples[0].hr} ")
+                hrQueue!!.add(hrData(polarData.samples[0].hr,polarData.samples[0].timeStamp,polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
+                tryBuildPacket()?.let { println(it) }
+            },
+            { error ->
+                Napier.e(
+                    tag = "PolarHeartRateObservation::start",
+                    message = "HR Recording error: ${error.stackTraceToString()}"
+                )
+                pauseObservation(Polar360Type(emptySet()))
+                showObservationErrorNotification(
+                    stringResource(R.string.observation_bluetooth_error),
+                    stringResource(R.string.observation_error)
+                )
+            })
+    }
 
 
 }

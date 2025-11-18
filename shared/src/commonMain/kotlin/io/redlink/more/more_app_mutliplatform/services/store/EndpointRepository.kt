@@ -35,11 +35,11 @@ class EndpointRepository(private val sharedStorageRepository: SharedStorageRepos
         sharedStorageRepository.remove(ENDPOINT_KEY)
     }
 
-    fun endpoint(): String = "https://76737444df09.ngrok-free.app/api/v1"
+    fun endpoint(): String = "https://a2059e9e29e4.ngrok-free.app/api/v1"
 
     companion object {
         private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
         private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://76737444df09.ngrok-free.app/api/v1"
+            "https://a2059e9e29e4.ngrok-free.app/api/v1"
     }
 }
