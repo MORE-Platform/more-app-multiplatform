@@ -13,7 +13,7 @@ val openApiInputDir = "$rootDir/openapi"
 val openApiOutputDir = "$generated/open_api"
 val mobileAppApiInput = "$openApiInputDir/MobileAppAPI.yaml"
 val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
-val mobileAppApiPackage = "io.redlink.more.more_app_multiplatform.services.network.openapi"
+val mobileAppApiPackage = "io.redlink.umm.blendedcare.services.network.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 val coroutinesVersion = "1.10.2"

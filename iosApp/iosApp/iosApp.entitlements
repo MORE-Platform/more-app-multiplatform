@@ -8,11 +8,13 @@
 	<true/>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
 	<true/>
+	<key>com.apple.developer.usernotifications.communication</key>
+	<true/>
 	<key>com.apple.developer.usernotifications.time-sensitive</key>
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.ac.at.lbg.dhp.more.group</string>
+		<string>group.io.redlink.umm.blendedcare.ios</string>
 	</array>
 </dict>
 </plist>

@@ -22,7 +22,7 @@ import shared
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.ac.at.lbg.dhp.more.group"
+    static let appGroup = "group.io.redlink.umm.blendedcare.ios"
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)

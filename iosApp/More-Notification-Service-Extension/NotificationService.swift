@@ -9,7 +9,7 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-    private static let appGroup = "group.ac.at.lbg.dhp.more.group"
+    private static let appGroup = "group.io.redlink.umm.blendedcare.ios"
     private static let notificationCountKey = "notification_count"
     private static let STUDY_UPDATE_NOTIFICATION_KEY = "key"
     private static let STUDY_UPDATE_NOTIFICATION_VALUE = "STUDY_STATE_CHANGED"

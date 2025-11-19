@@ -1,0 +1,116 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.umm.participant.viewModels.limeSurvey
+
+import io.github.aakira.napier.Napier
+import io.redlink.umm.participant.database.repository.MainRepository
+import io.redlink.umm.participant.extensions.asClosure
+import io.redlink.umm.participant.extensions.asNullableClosure
+import io.redlink.umm.participant.extensions.set
+import io.redlink.umm.participant.observations.ObservationFactory
+import io.redlink.umm.participant.observations.limesurvey.LimeSurveyObservation
+import io.redlink.umm.participant.viewModels.CoreViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
+
+class CoreLimeSurveyViewModel(
+    private val repositories: MainRepository,
+    observationFactory: ObservationFactory
+) :
+    CoreViewModel() {
+    private var observation: LimeSurveyObservation? =
+        observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
+    private var scheduleId: String? = null
+    private var observationId: String? = null
+    val limeSurveyLink: StateFlow<String?>? = observation?.limeURL
+    val dataLoading = MutableStateFlow(false)
+
+    fun setScheduleId(scheduleId: String, notificationId: String?) {
+        if (scheduleId != this.scheduleId) {
+            Napier.i { "Setting scheduleId: $scheduleId for LimeSurvey" }
+            observation?.let { observation ->
+                if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
+                    this.scheduleId = scheduleId
+                    launchScope(Dispatchers.Main) {
+                        dataLoading.set(true)
+                        repositories.schedule.scheduleWithId(scheduleId).cancellable()
+                            .transform { scheduleSchema ->
+                                emit(scheduleSchema?.let {
+                                    repositories.observation.observationById(it.observationId)
+                                        .cancellable().firstOrNull()
+                                })
+                            }.cancellable().firstOrNull().let { observationSchema ->
+                                observationSchema?.let {
+                                    observationId = it.observationId
+                                    observation.observationConfig(it.configAsMap())
+                                    observation.start(it.observationId, scheduleId, notificationId)
+                                }
+                                dataLoading.set(false)
+                            }
+                    }
+                }
+
+            }
+        }
+    }
+
+    fun setObservationId(observationId: String, notificationId: String?) {
+        launchScope {
+            repositories.schedule.firstScheduleIdAvailableForObservationId(observationId)
+                .cancellable()
+                .firstOrNull()?.let { setScheduleId(it, notificationId) }
+        }
+    }
+
+    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) =
+        limeSurveyLink?.asNullableClosure(providedState)
+
+    fun onDataLoadingChange(providedState: (Boolean) -> Unit) = dataLoading.asClosure(providedState)
+
+    override fun viewDidAppear() {
+
+    }
+
+    override fun viewDidDisappear() {
+        super.viewDidDisappear()
+        clear()
+    }
+
+    fun finish() {
+        scheduleId?.let {
+            observation?.storeData()
+            observation?.stopAndSetDone(it)
+        }
+        clear()
+    }
+
+    fun cancel() {
+        scheduleId?.let {
+            observation?.stop(it)
+        }
+        clear()
+    }
+
+    fun clear() {
+        scheduleId = null
+        observationId = null
+        dataLoading.value = false
+    }
+
+    override fun close() {
+        super.close()
+        clear()
+    }
+}
