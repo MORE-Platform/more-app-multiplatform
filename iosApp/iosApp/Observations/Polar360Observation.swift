@@ -181,6 +181,19 @@ class Polar360Observation: Observation_{
 
             if !acceptableDevices.isEmpty, let firstAddress = acceptableDevices[0].address {
                 deviceid = firstAddress
+                
+                self.polarConnector.polarApi.enableSDKMode(firstAddress).subscribe(
+                    onCompleted: { [weak self] in
+                        guard let self else { return }
+                        print("Enabled SDK Mode")
+                    },
+                    onError: {
+                        error in
+                        print("Error: \(error)")
+                    }
+                ).disposed(by: disposeBag)
+                
+                
                 setupForFirstTimeUse(identifier: firstAddress)
                 .subscribe(
                     onCompleted: { [weak self] in
@@ -373,8 +386,8 @@ class Polar360Observation: Observation_{
                     height: 180,
                     weight: 80,
                     maxHeartRate: 180,
-                    vo2Max: 80,
-                    restingHeartRate: 100,
+                    vo2Max: 40,
+                    restingHeartRate: 80,
                     trainingBackground: PolarFirstTimeUseConfig.TrainingBackground.frequent,
                     deviceTime: dateFormatter.string(from: Date()),
                     typicalDay: PolarFirstTimeUseConfig.TypicalDay.mostlyMoving,
