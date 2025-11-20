@@ -198,7 +198,6 @@ To run the pipeline, you need to set up the following environment variables:
 - `APPLE_CONNECT_KEY_ID`: App Store Connect API Key ID
 - `APPLE_CONNECT_ISSUER_ID`: App Store Connect API Issuer ID
 - `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
-- `APPLE_CERTIFICATE`: Apple certificate for signing
 - `FASTLANE_MATCH_SECRET`: Password for match repository
 - `MATCH_AUTH`: Basic authorization for match Git repository
 

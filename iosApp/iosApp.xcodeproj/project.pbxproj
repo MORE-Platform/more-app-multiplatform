@@ -323,7 +323,7 @@
 		1FC9574B2C072B7900EB92D6 /* BlendedCare-Notification-Service-Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "BlendedCare-Notification-Service-Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FC9574D2C072B7900EB92D6 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		1FC9574F2C072B7900EB92D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1FC957572C072C1F00EB92D6 /* More-Notification-Service-Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "More-Notification-Service-Extension.entitlements"; sourceTree = "<group>"; };
+		1FC957572C072C1F00EB92D6 /* BlendedCare-Notification-Service-Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "BlendedCare-Notification-Service-Extension.entitlements"; sourceTree = "<group>"; };
 		1FDC264729C1CEF40011D8A4 /* InfoListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoListItem.swift; sourceTree = "<group>"; };
 		1FDC264929C1CFE80011D8A4 /* NavigationText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationText.swift; sourceTree = "<group>"; };
 		1FDC264B29C1D1660011D8A4 /* InfoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoList.swift; sourceTree = "<group>"; };
@@ -745,21 +745,21 @@
 			path = Filter;
 			sourceTree = "<group>";
 		};
-		1FC9574C2C072B7900EB92D6 /* More-Notification-Service-Extension */ = {
+		1FC9574C2C072B7900EB92D6 /* BlendedCare-Notification-Service-Extension */ = {
 			isa = PBXGroup;
 			children = (
-				1FC957572C072C1F00EB92D6 /* More-Notification-Service-Extension.entitlements */,
+				1FC957572C072C1F00EB92D6 /* BlendedCare-Notification-Service-Extension.entitlements */,
 				1FC9574D2C072B7900EB92D6 /* NotificationService.swift */,
 				1FC9574F2C072B7900EB92D6 /* Info.plist */,
 			);
-			path = "More-Notification-Service-Extension";
+			path = "BlendedCare-Notification-Service-Extension";
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
 				7555FF7D242A565900829871 /* iosApp */,
-				1FC9574C2C072B7900EB92D6 /* More-Notification-Service-Extension */,
+				1FC9574C2C072B7900EB92D6 /* BlendedCare-Notification-Service-Extension */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
 			);
@@ -1289,7 +1289,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "BlendedCare-Notification-Service-Extension/BlendedCare-Notification-Service-Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4.0.26;
@@ -1299,8 +1299,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "More-Notification-Service-Extension/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "More-Notification-Service-Extension";
+				INFOPLIST_FILE = "BlendedCare-Notification-Service-Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "BlendedCare-Notification-Service-Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Redlink GmbH. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1310,7 +1310,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.redlink.umm.blendedcare.ios.app.participant.More-Notification-Service-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.redlink.umm.blendedcare.ios.app.participant.BlendedCare-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1330,7 +1330,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_ENTITLEMENTS = "More-Notification-Service-Extension/More-Notification-Service-Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "BlendedCare-Notification-Service-Extension/BlendedCare-Notification-Service-Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4.0.26;
@@ -1339,8 +1339,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "More-Notification-Service-Extension/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "More-Notification-Service-Extension";
+				INFOPLIST_FILE = "BlendedCare-Notification-Service-Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "BlendedCare-Notification-Service-Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Redlink GmbH. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1350,7 +1350,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.redlink.umm.blendedcare.ios.app.participant.More-Notification-Service-Extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "io.redlink.umm.blendedcare.ios.app.participant.BlendedCare-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
