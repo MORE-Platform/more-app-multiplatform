@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.firebase.crashlytics")
     id("com.google.devtools.ksp")
-
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 fun loadEnvFromFile(): Properties {
@@ -196,7 +196,7 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
 
     ksp("androidx.room:room-compiler:$roomVersion")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
     implementation("io.insert-koin:koin-android")

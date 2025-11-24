@@ -5,16 +5,12 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.app.ActivityCompat
-import androidx.work.impl.schedulers
-import com.google.android.gms.common.Feature
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.model.PolarAccelerometerData
 import com.polar.sdk.api.model.PolarFirstTimeUseConfig
 import com.polar.sdk.api.model.PolarHrData
 import com.polar.sdk.api.model.PolarOfflineRecordingData
-import com.polar.sdk.api.model.PolarOfflineRecordingEntry
 import com.polar.sdk.api.model.PolarPpiData
 import com.polar.sdk.api.model.PolarSensorSetting
 import com.polar.sdk.api.model.PolarTemperatureData
@@ -55,8 +51,9 @@ import kotlin.stackTraceToString
 import kotlin.text.contains
 import kotlin.text.lowercase
 import kotlin.to
-
-
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         setOf(
@@ -77,37 +74,58 @@ class Polar360Observation(repos: MainRepository):
         repos,
         observationType = Polar360Type(permissions)
     ) {
-    data class tmpItem (
-        val temp : Float,
-        val timestamp: Long,
-    )
 
+
+    @Serializable
     data class accItem(
         val x:Int,
         val y:Int,
         val z:Int,
         val timestamp: Long,
     )
-    data class hrData(
+    @Serializable
+    data class ppi_data(
         val hr : Int ,
         val timestamp: ULong,
         val ppiInMs : Int,
         val ppiErrorEstimate: Int
     )
 
+
+    @Serializable
+    data class tmpItem (
+        val temp : Float,
+        val timestamp: Long,
+    )
+    @Serializable
+    data class hr_data(
+        val hr : Int,
+        val ts : ULong
+    )
+
     data class SyncedPacket(
-        val hr: hrData,
+        val hr: ppi_data,
         val temp: tmpItem,
         val acc: List<accItem>?
 
     )
 
+    fun toJson(): String {
+        return Json.encodeToString(this)
+    }
+
+
+    @Serializable
     data class Offline_recording_packet(
-        val hr_data :  List<PolarHrData.PolarHrSample>?,
-        val ppi_data : List<PolarPpiData.PolarPpiSample>?,
-        val temp_data :  List<PolarTemperatureData.PolarTemperatureDataSample>?,
-        val acc_data :  List<PolarAccelerometerData.PolarAccelerometerDataSample>?,
-    )
+        var hr_data :  List<hr_data>?,
+        var ppi_data : List<ppi_data>?,
+        var temp_data :  List<tmpItem>?,
+        var acc_data :  List<accItem>?,
+    ){
+        fun toJson(): String {
+            return Json.encodeToString(this)
+        }
+    }
     private val deviceManager = BluetoothStateManagement
     private val deviceIdentifier = setOf("Polar")
     private val polarConnector = MoreApplication.polarConnector!!
@@ -116,7 +134,7 @@ class Polar360Observation(repos: MainRepository):
 
     private var tempDisposable : Disposable? = null
     private var accDisposable : Disposable? = null
-    private var hrQueue: BoundedQueue<hrData>? = BoundedQueue<hrData>(10)
+    private var hrQueue: BoundedQueue<ppi_data>? = BoundedQueue<ppi_data>(10)
     private var tmpQueue: BoundedQueue<tmpItem>? =BoundedQueue<tmpItem>(10)
     private var accQueue: BoundedQueue<List<accItem>>? = BoundedQueue<List<accItem>>(10)
     private var firstimeUseDisposable:Disposable? = null
@@ -130,6 +148,13 @@ class Polar360Observation(repos: MainRepository):
     private var Hr : Boolean = false
     private var Temp : Boolean = false
     private var Acc : Boolean = false
+
+    private var packet: Offline_recording_packet = Offline_recording_packet(
+        hr_data = emptyList(),
+        ppi_data = emptyList(),
+        temp_data = emptyList(),
+        acc_data = emptyList()
+    )
 
     private  fun tryBuildPacket(): SyncedPacket? {
         if ((hrQueue?.size() != 0 ) && (tmpQueue?.size() != 0) &&  (accQueue?.size()) != 0) {
@@ -146,6 +171,7 @@ class Polar360Observation(repos: MainRepository):
     fun sendOut(packet: SyncedPacket) {
         storeData(packet)
     }
+
 
     override fun start(): Boolean {
         Napier.d(tag = "Polar360::start") { "Trying to start Polar 360 Observation..." }
@@ -236,7 +262,7 @@ class Polar360Observation(repos: MainRepository):
                                                                 if(Hr) {
                                                                     val c3 = startOfflineRecording(
                                                                         it.deviceId!!,
-                                                                        PolarBleApi.PolarDeviceDataType.HR,
+                                                                        PolarBleApi.PolarDeviceDataType.PPI,
                                                                         null
                                                                     )
                                                                         .doOnComplete { Napier.d(tag = "Polar360:OfflineStart") { "HR started" } }
@@ -370,74 +396,84 @@ class Polar360Observation(repos: MainRepository):
 
                     }
                 )
-            var packet : Offline_recording_packet
+
+            val streamDisposable4 = polarConnector.polarApi.stopOfflineRecording(
+                mutableStatDeviceId.value,
+                PolarBleApi.PolarDeviceDataType.PPI
+            )
+                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
+                    {
+                        Napier.d(tag = TAG, message = "Sucessfully stopped ACC stream")
+                    },
+                    {
+                        Napier.d(tag = TAG, message = "could not stop the acc stream")
+
+                    }
+                )
+
             var temp_records : List<PolarTemperatureData.PolarTemperatureDataSample> = emptyList()
             var ppi_records : List<PolarPpiData.PolarPpiSample> = emptyList()
             var acc_records : List<PolarAccelerometerData.PolarAccelerometerDataSample> =emptyList()
             var hr_records : List<PolarHrData.PolarHrSample> = emptyList()
-            val fetching = polarConnector.polarApi
-                .listOfflineRecordings(mutableStatDeviceId.value!!)
+
+            val g = polarConnector.polarApi
+                .listOfflineRecordings(mutableStatDeviceId.value) // Flowable<PolarOfflineRecordingEntry>
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({ recording ->
-                    Napier.d("Found ${recording.size} ${recording.path} ${recording.type} offline recordings")
-
-
-
-                        // For each recording, fetch the actual data
-                        val files = polarConnector.polarApi.getOfflineRecord(mutableStatDeviceId.value!!, recording)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({
-                                when (it){
-                                    is PolarOfflineRecordingData.HrOfflineRecording ->{
-                                        hr_records = it.data.samples
-                                        Napier.d(tag = "Polar360::OfflineFetch") { "Samples: ${it.data.samples}" }
+                .concatMap { entry ->
+                    polarConnector.polarApi.getOfflineRecord(mutableStatDeviceId.value, entry, secret = null)
+                        .subscribeOn(Schedulers.io())
+                        .flatMap { data ->
+                            // process data here
+                            when (data) {
+                                is PolarOfflineRecordingData.PpiOfflineRecording -> {
+                                    ppi_records = data.data.samples
+                                    if(Ppi){
+                                    packet.ppi_data = processPpiSamples(data.data.samples)}
+                                    else{
+                                        //we use ppi for hr too since it stores the timestamp
+                                        packet.hr_data = processHrSamples(data.data.samples)
                                     }
-                                    is PolarOfflineRecordingData.PpiOfflineRecording ->{
-                                        ppi_records = it.data.samples
-                                        Napier.d(tag = "Polar360::OfflineFetch") { "Samples: ${it.data.samples}" }
-                                    }is PolarOfflineRecordingData.TemperatureOfflineRecording ->{
-                                        temp_records = it.data.samples
-                                        Napier.d(tag = "Polar360::OfflineFetch") { "Samples: ${it.data.samples}" }
-                                    }
-                                    is PolarOfflineRecordingData.AccOfflineRecording ->{
-                                        acc_records = it.data.samples
-                                        Napier.d(tag = "Polar360::OfflineFetch") { "Samples: ${it.data.samples}" }
-                                    }
-                                    else -> {
-                                        Napier.e(tag = "Polar360::OfflineFetch"){"issue with datatype"}
-                                    }
-
+                                    Napier.d("PPI samples: ${ppi_records.size}")
                                 }
-
-
-
-                            }, { error ->
-                                Napier.e(tag = "POLAR") { "Error getting bytes: $error" }
-                            })
-                        packet = Offline_recording_packet(
-                            hr_data = hr_records,
-                            ppi_data= ppi_records,
-                            temp_data = temp_records,
-                            acc_data= acc_records
-                        )
-                        Napier.d(tag="POLAR360::Seding out packet"){"packet ${packet.hr_data}"}
-                        storeData(packet,-1)
-                        val removed = polarConnector.polarApi.removeOfflineRecord(mutableStatDeviceId.value!!,recording)
-                            .subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
-                            .subscribe(
-                                {
-                                    Napier.d(tag = "Polar360:removingOfflinerecord"){"Removing record ${recording.path} sucess"}
+                                is PolarOfflineRecordingData.TemperatureOfflineRecording -> {
+                                    temp_records = data.data.samples
+                                    packet.temp_data = processTemperatureSamples(data.data.samples)
+                                    Napier.d("TEMP samples: ${temp_records.size}")
                                 }
-                                ,{
-                                    Napier.e(tag = "Polar360:removingOfflinerecord"){"Error removing record ${recording.path}"}
+                                is PolarOfflineRecordingData.AccOfflineRecording -> {
+                                    acc_records = data.data.samples
+                                    packet.acc_data = processAccSamples(data.data.samples)
+                                    Napier.d("ACC samples: ${acc_records.size}")
                                 }
-                            )
+                                else -> {
+                                    Napier.e { "data nor supported" }
+                                }
+                            }
 
-                }, { error ->
-                    Napier.d( "Error listing offline recordings: $error")
-                })
+                            // Remove record but continue emitting the original data
+                            polarConnector.polarApi.removeOfflineRecord(mutableStatDeviceId.value, entry)
+                                .subscribeOn(Schedulers.io())
+                                .andThen(Single.just(data)) // emit the data after removal
+                        }
+                        .toFlowable()
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { data ->
+                        // This now emits the actual PolarOfflineRecordingData
+                        Napier.d("Data emitted: $data")
+                    },
+                    { error ->
+                        Napier.e("Error processing offline records: $error")
+                    },
+                    {
+                        // All recordings processed
+                        Napier.d("All offline recordings processed")
+                        Napier.d("${packet.hr_data!!.size} ${packet.temp_data!!.size} and ${packet.acc_data!!.size} ### ${packet.ppi_data!!.size}")
+                        storeData(packet.toJson(), -1)
+                        onCompletion()
+                    }
+                )
 
         }
         else{
@@ -446,8 +482,8 @@ class Polar360Observation(repos: MainRepository):
             accDisposable?.dispose()
             heartRateDisposable?.dispose()
         }
-
         //Shared disposables
+
         deviceConnectionListener?.cancel()
         firstimeUseDisposable?.dispose()
         deviceConnectionListener = null
@@ -696,7 +732,7 @@ class Polar360Observation(repos: MainRepository):
             }
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(
             { polarData ->
-                hrQueue!!.add(hrData(polarData.samples[0].hr,polarData.samples[0].timeStamp,polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
+                hrQueue!!.add(ppi_data(polarData.samples[0].hr,polarData.samples[0].timeStamp,polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
                 tryBuildPacket()?.let { println(it) }
             },
             { error ->
@@ -715,6 +751,10 @@ class Polar360Observation(repos: MainRepository):
     private fun startOfflineRecording(deviceId: String,feature: PolarBleApi.PolarDeviceDataType,settings: PolarSensorSetting?): Completable{
         if (settings != null){
         return polarConnector.polarApi.startOfflineRecording(deviceId,feature,settings,null)
+        }
+        if(feature == PolarBleApi.PolarDeviceDataType.HR  ||  feature == PolarBleApi.PolarDeviceDataType.PPI){
+            //hr and ppi is specific that just needs to be started without getting steam settings
+            return polarConnector.polarApi.startOfflineRecording(deviceId,feature)
         }
         else{
             return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId,feature).subscribeOn(Schedulers.io())
@@ -738,6 +778,54 @@ class Polar360Observation(repos: MainRepository):
                 }
         }
     }
+
+    fun processHrSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<hr_data> {
+        if (samples.isNullOrEmpty()) return emptyList()
+
+        return samples.map { sample ->
+            hr_data(
+                hr = sample.hr,
+                ts = sample.timeStamp
+            )
+        }
+    }
+    fun processPpiSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<ppi_data> {
+        if (samples.isNullOrEmpty()) return emptyList()
+
+        return samples.map { sample ->
+            ppi_data(
+                hr = sample.hr,
+                timestamp = sample.timeStamp,
+                ppiInMs = sample.ppi,
+                ppiErrorEstimate = sample.errorEstimate
+            )
+        }
+    }
+    fun processTemperatureSamples(samples: List<PolarTemperatureData.PolarTemperatureDataSample>?): List<tmpItem> {
+        if (samples.isNullOrEmpty()) return emptyList()
+
+        return samples.map { sample ->
+            tmpItem(
+                temp = sample.temperature,
+                timestamp = sample.timeStamp
+            )
+        }
+    }
+    fun processAccSamples(samples: List<PolarAccelerometerData.PolarAccelerometerDataSample>?): List<accItem> {
+        if (samples.isNullOrEmpty()) return emptyList()
+
+        return samples.map { sample ->
+            accItem(
+                x = sample.x,
+                y = sample.y,
+                z = sample.z,
+                timestamp = sample.timeStamp
+            )
+        }
+    }
+
+
+
 
     private fun stopOfflineRecording(deviceId: String,feature: PolarBleApi.PolarDeviceDataType): Completable{
         return polarConnector.polarApi.stopOfflineRecording(deviceId,feature)

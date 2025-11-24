@@ -38,6 +38,8 @@ class Polar360Observation: Observation_{
     private let schedulerBackground = ConcurrentDispatchQueueScheduler(qos: .background)
     private var samplingrate : Int = 1
 
+    private let OfflineRecording : Bool = false
+    
     init (repos: MainRepository , sensorPermissions: Set<String>){
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
     }
@@ -182,34 +184,65 @@ class Polar360Observation: Observation_{
             if !acceptableDevices.isEmpty, let firstAddress = acceptableDevices[0].address {
                 deviceid = firstAddress
                 
-                self.polarConnector.polarApi.enableSDKMode(firstAddress).subscribe(
-                    onCompleted: { [weak self] in
-                        guard let self else { return }
-                        print("Enabled SDK Mode")
-                    },
-                    onError: {
-                        error in
-                        print("Error: \(error)")
-                    }
-                ).disposed(by: disposeBag)
                 
-                
-                setupForFirstTimeUse(identifier: firstAddress)
-                .subscribe(
-                    onCompleted: { [weak self] in
-                        guard let self else { return }
-                        self.listenToDeviceConnection()
-                        print("Starting streaming...")
-                        //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                        self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                        self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                        self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                    },
-                    onError: { error in
-                        print("Setup failed with error: \(error)")
-                    }
-                )
-                .disposed(by: disposeBag)
+                if(OfflineRecording){
+                    self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
+                        onCompleted: { [weak self] in
+                            guard let self else { return }
+                            print("Disabled SDK Mode for offline recording")
+                        },
+                        onError: {
+                            error in
+                            print("Error: \(error)")
+                        }
+                    ).disposed(by: disposeBag)
+                    
+                    setupForFirstTimeUse(identifier: firstAddress).subscribe(
+                        onCompleted: { [weak self] in
+                            guard let self else { return }
+                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .hr,settings: nil,secret: nil)
+                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .acc,settings: nil,secret: nil)
+                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .ppi,settings: nil,secret: nil)
+                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .temperature,settings: nil,secret: nil)
+                        },
+                        onError: {
+                            error in
+                            print("Error: \(error)")
+                        }
+                    ).disposed(by: disposeBag)
+                    
+                }
+                else{
+                    self.polarConnector.polarApi.enableSDKMode(firstAddress).subscribe(
+                        onCompleted: { [weak self] in
+                            guard let self else { return }
+                            print("Enabled SDK Mode")
+                        },
+                        onError: {
+                            error in
+                            print("Error: \(error)")
+                        }
+                    ).disposed(by: disposeBag)
+                    
+                    
+                    setupForFirstTimeUse(identifier: firstAddress)
+                        .subscribe(
+                            onCompleted: { [weak self] in
+                                guard let self else { return }
+                                self.listenToDeviceConnection()
+                                print("Starting streaming...")
+                                //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                            },
+                            onError: { error in
+                                print("Setup failed with error: \(error)")
+                            }
+                        )
+                        .disposed(by: disposeBag)
+                    
+                }
             }
             return true
         }
