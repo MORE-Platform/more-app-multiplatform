@@ -44,7 +44,7 @@ class Polar360Observation: Observation_{
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
     }
 
-    class hrData: Codable {
+    class ppi_data: Codable {
         let hr: Int
         let timestamp: UInt64
         let ppiInMs : UInt16
@@ -57,7 +57,7 @@ class Polar360Observation: Observation_{
         }
     }
 
-    class accData: Codable {
+    class acc_data: Codable {
         let x: Int32
         let y: Int32
         let z: Int32
@@ -71,7 +71,7 @@ class Polar360Observation: Observation_{
         }
     }
 
-    class tempData: Codable {
+    class temp_data: Codable {
         let temp: Float
         let timestamp: UInt64
 
@@ -80,13 +80,41 @@ class Polar360Observation: Observation_{
             self.timestamp = Timestamp
         }
     }
+    
+    class hr_data: Codable {
+        let hr: Int
+        let timestamp: UInt64
+        init(hr:Int, timestamp:UInt64){
+            self.hr = hr
+            self.timestamp = timestamp
+        }
+    }
+    
+    class OfflineDataPack: Codable {
+        var hr_data: [hr_data]?
+        var ppi_data: [ppi_data]?
+        var temp_data: [temp_data]?
+        var acc_data: [acc_data]?
+
+        init(
+            hr_data: [hr_data]?,
+            ppi_data: [ppi_data]?,
+            temp_data: [temp_data]?,
+            acc_data: [acc_data]?
+        ) {
+            self.hr_data = hr_data
+            self.ppi_data = ppi_data
+            self.temp_data = temp_data
+            self.acc_data = acc_data
+        }
+    }
 
     class SyncedPacket: Codable {
-        let hr_data: hrData
-        let acc_data : [accData]?
-        let temp_data: tempData
-        init(hr_data: hrData, acc_data: [accData]?, temp_data: tempData) {
-            self.hr_data = hr_data
+        let ppi_data: ppi_data
+        let acc_data : [acc_data]?
+        let temp_data: temp_data
+        init(ppi_data: ppi_data, acc_data: [acc_data]?, temp_data: temp_data) {
+            self.ppi_data = ppi_data
             self.acc_data = acc_data
             self.temp_data = temp_data
         }
@@ -124,19 +152,19 @@ class Polar360Observation: Observation_{
     }
 
 
-    private let hrQueue = Polar360Queue<hrData>(maxSize: 10)
-    private let accQueue = Polar360Queue<[accData]>(maxSize: 10)
-    private let tempQueue = Polar360Queue<tempData>(maxSize: 10)
+    private let hrQueue = Polar360Queue<ppi_data>(maxSize: 10)
+    private let accQueue = Polar360Queue<[acc_data]>(maxSize: 10)
+    private let tempQueue = Polar360Queue<temp_data>(maxSize: 10)
 
 
     private func tryBuildPacket()-> SyncedPacket?{
         if((hrQueue.size() != 0) && (tempQueue.size() != 0 ) && (accQueue.size() != 0 ))
         {
-            let hritem = hrQueue.pollLast()
+            let ppi_item = hrQueue.pollLast()
             let tempitem = tempQueue.pollLast()
             let accitem = accQueue.pollLast()
-            if (hritem != nil && tempitem != nil && accitem != nil ){
-                return SyncedPacket(hr_data: hritem!, acc_data: accitem, temp_data: tempitem!)
+            if (ppi_item != nil && tempitem != nil && accitem != nil ){
+                return SyncedPacket(ppi_data: ppi_item!, acc_data: accitem, temp_data: tempitem!)
             }
         }
         return nil
@@ -144,17 +172,17 @@ class Polar360Observation: Observation_{
 
     private func sendOutData(packet:SyncedPacket){
         print("sending data \(packet)")
-        print("packet data \(packet.hr_data.hr) \(packet.temp_data.temp) ")
+        print("packet data \(packet.ppi_data.hr) \(packet.temp_data.temp) ")
         
         
         
         
         let data = [
             "hr": [
-                "value": packet.hr_data.hr,
-                "timestamp": packet.hr_data.timestamp,
-                "ppiInMs" : packet.hr_data.ppiInMs,
-                "ppiErrorEstimate" : packet.hr_data.ppiErrorEstimate
+                "value": packet.ppi_data.hr,
+                "timestamp": packet.ppi_data.timestamp,
+                "ppiInMs" : packet.ppi_data.ppiInMs,
+                "ppiErrorEstimate" : packet.ppi_data.ppiErrorEstimate
             ],
             "acc": packet.acc_data?.compactMap({ accSample in
                 [
@@ -200,7 +228,14 @@ class Polar360Observation: Observation_{
                     setupForFirstTimeUse(identifier: firstAddress).subscribe(
                         onCompleted: { [weak self] in
                             guard let self else { return }
-                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .hr,settings: nil,secret: nil)
+                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .hr,settings: nil,secret: nil).subscribe(
+                                onCompleted: {
+                                    print("Started Offline Recording for hr")
+                                },
+                                onError: { error in
+                                    print("Error: \(error)")
+                                }
+                            ).disposed(by: disposeBag)
                             self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .acc,settings: nil,secret: nil)
                             self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .ppi,settings: nil,secret: nil)
                             self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .temperature,settings: nil,secret: nil)
@@ -267,11 +302,81 @@ class Polar360Observation: Observation_{
         self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "", feature: .ppi)
             .subscribe(onCompleted: {print("stopped ppi")})
             .disposed(by: disposeBag)
-        self.ppiObservation?.dispose()
-        self.accObservation?.dispose()
-        self.hrObservation?.dispose()
-        deviceListener?.cancel()
-        onCompletion()
+        if(OfflineRecording){
+            var recordings: [PolarOfflineRecordingEntry] = []
+            self.polarConnector.polarApi.listOfflineRecordings(self.deviceid ?? "")
+                .subscribe(
+                        onNext: { entry in
+                            print("--- Offline Recording Entry ---")
+                            print("id: \(entry.path)")
+                            print("type: \(entry.type)")
+                            print("start: \(entry.date)")
+                            print("stop: \(entry.size)")
+                            recordings.append(entry)
+                        },
+                        onError: { error in
+                            print("Error: \(error)")
+                        },
+                        onCompleted: {
+                            print("Done")
+                        }
+                    )
+            let pack = OfflineDataPack(hr_data:nil,ppi_data:nil,temp_data:nil,acc_data:nil)
+            for recording in recordings {
+
+                switch recording.type {
+
+                case .acc:
+                    // Fetch ACC data
+                    polarConnector.polarApi
+                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
+                        .subscribe(onSuccess: { data in
+                            print(data)
+                            // Assuming `data` contains ACC samples in `data.accSamples` or raw bytes
+                            // You need to parse ACC samples here
+                            // Example pseudo-code:
+                            // for sample in data.accSamples { pack.acc_data.append(AccData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timestamp)) }
+                        }, onError: { error in
+                            print("Error fetching ACC: \(error)")
+                        })
+
+                case .ppi:
+                    // Fetch PPI data
+                    polarConnector.polarApi
+                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
+                        .subscribe(onSuccess: { data in
+                            print(data)
+                            // Parse PPI samples and append
+                            // for sample in data.ppiSamples { pack.ppi_data.append(PpiData(ppi: sample.ppi, timestamp: sample.timestamp)) }
+                        }, onError: { error in
+                            print("Error fetching PPI: \(error)")
+                        })
+
+                case .hr:
+                    // Fetch HR data
+                    polarConnector.polarApi
+                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
+                        .subscribe(onSuccess: { data in
+                            print(data)
+                            // Parse HR samples and append
+                            // for sample in data.hrSamples { pack.hr_data.append(HrData(bpm: sample.hr, timestamp: sample.timestamp)) }
+                        }, onError: { error in
+                            print("Error fetching HR: \(error)")
+                        })
+
+                default:
+                    print("Unsupported type, skipping")
+                }
+            }
+            
+            
+        }
+        else{
+            self.ppiObservation?.dispose()
+            self.accObservation?.dispose()
+            self.hrObservation?.dispose()
+            deviceListener?.cancel()
+            onCompletion()}
     }
     
     
@@ -300,8 +405,8 @@ class Polar360Observation: Observation_{
             onNext: { data  in
                 
                
-                let data_formatted: [accData] = data.map { sample in
-                    accData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp)
+                let data_formatted: [acc_data] = data.map { sample in
+                    acc_data(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp)
                 }
                 if self.accQueue.size() == 0
                 {
@@ -352,7 +457,7 @@ class Polar360Observation: Observation_{
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
                     
-                    self.hrQueue.add(hrData(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
+                    self.hrQueue.add(ppi_data(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
                     self.tryBuildPacket().map {
                         packet in
                         //dont want to fill up queue with other streams untill hr data starts arriving
@@ -387,7 +492,7 @@ class Polar360Observation: Observation_{
         .subscribe(onNext: { data in
             if let sample = data.samples.first {
                 if(self.hrQueue.peekLast() != nil){
-                    self.tempQueue.add(tempData(temp: sample.temperature, Timestamp: sample.timeStamp))
+                    self.tempQueue.add(temp_data(temp: sample.temperature, Timestamp: sample.timeStamp))
 
                     self.tryBuildPacket().map {
                         packet in
