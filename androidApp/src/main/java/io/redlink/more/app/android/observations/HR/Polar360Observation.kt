@@ -220,7 +220,7 @@ class Polar360Observation(repos: MainRepository):
                                                     }
                                                     .flatMapCompletable { supportedTypes ->
 
-                                                        // 🔥 INSERT the boolean-check function here
+
                                                         polarConnector.polarApi.isSDKModeEnabled(it.deviceId!!)   // Single<Boolean>
                                                             .doOnSuccess { enabled ->
                                                                 Napier.d(tag = "Polar360:SDK") { "SDK mode enabled = $enabled" }
@@ -296,7 +296,7 @@ class Polar360Observation(repos: MainRepository):
 
 
                     else{
-                    //TODO here when onine streaming var set to true,
+
                     firstimeUseDisposable = checkIfDeviceIsSetup(it.deviceId!!)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -353,7 +353,7 @@ class Polar360Observation(repos: MainRepository):
         var streamDisposable1 : Disposable? = null
         var streamDisposable2 : Disposable? = null
 
-        //Todo data fetch for offline data clear storage and stop recordings
+
         if (OfflineRecording) {
 
             streamDisposable1 = polarConnector.polarApi.stopOfflineRecording(
@@ -458,7 +458,7 @@ class Polar360Observation(repos: MainRepository):
                         .toFlowable()
                 }
                 .observeOn(Schedulers.io())
-                //ensure function gets data before sending it out
+
                 .blockingSubscribe(
                     { data ->
                         // This now emits the actual PolarOfflineRecordingData
@@ -504,7 +504,7 @@ class Polar360Observation(repos: MainRepository):
                                 }
                                 .flatMapCompletable { supportedTypes ->
 
-                                    // 🔥 INSERT the boolean-check function here
+
                                     polarConnector.polarApi.isSDKModeEnabled(mutableStatDeviceId.value)   // Single<Boolean>
                                         .doOnSuccess { enabled ->
                                             Napier.d(tag = "Polar360:SDK") { "SDK mode enabled = $enabled" }
