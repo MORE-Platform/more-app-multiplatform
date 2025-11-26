@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
+### android test_signing
+
+```sh
+[bundle exec] fastlane android test_signing
+```
+
+
+
 ### android test
 
 ```sh
@@ -38,6 +46,14 @@ Build the Android app (debug)
 ```
 
 Deploy to Google Play Beta
+
+### android deploy_production
+
+```sh
+[bundle exec] fastlane android deploy_production
+```
+
+Deploy to Google Play Production
 
 ----
 
