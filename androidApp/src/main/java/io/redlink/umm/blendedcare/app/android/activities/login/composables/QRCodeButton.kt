@@ -44,7 +44,6 @@ fun QRCodeButton(model: LoginViewModel) {
     val qrScannerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val data = result.data
         val scanned =
             result.data?.getStringExtra("qrResult") ?: return@rememberLauncherForActivityResult
         model.extractValuesFromQRCode(scanned)

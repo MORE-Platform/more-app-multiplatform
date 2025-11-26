@@ -62,7 +62,8 @@ class LoginViewModel(
     }
 
     fun extractValuesFromQRCode(qrCodeUrl: String) {
-        dataEndpoint.value = qrCodeUrl.substringBefore("signup?")
+        dataEndpoint.value =
+            qrCodeUrl.substringBefore("signup?").validateAndNormalizeUrl() ?: currentEndpoint()
         participantKey.value =
             qrCodeUrl.substringAfter("token=", "").takeIf { it.isNotEmpty() } ?: ""
     }

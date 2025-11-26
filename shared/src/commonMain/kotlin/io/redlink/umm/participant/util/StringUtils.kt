@@ -81,7 +81,6 @@ private fun String.isValidHostPart(): Boolean {
 private fun String.isValidDomain(): Boolean {
     if (this.isEmpty() || this.length > 253) return false
     if (this.startsWith(".") || this.endsWith(".")) return false
-    if (this.contains("")) return false
 
     val labels = this.split('.')
     if (labels.isEmpty()) return false
