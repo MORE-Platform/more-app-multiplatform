@@ -198,16 +198,15 @@ To run the pipeline, you need to set up the following environment variables:
 - `APPLE_CONNECT_KEY_ID`: App Store Connect API Key ID
 - `APPLE_CONNECT_ISSUER_ID`: App Store Connect API Issuer ID
 - `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
-- `APPLE_CERTIFICATE`: Apple certificate for signing
 - `FASTLANE_MATCH_SECRET`: Password for match repository
 - `MATCH_AUTH`: Basic authorization for match Git repository
 
 **Variables:**
 
 - `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers (e.g., "
-  ac.at.lbg.dhp.more,ac.at.lbg.dhp.more.More-Notification-Service-Extension")
+  io.redlink.umm.blendedcare.io.redlink.umm.blendedcare.More-Notification-Service-Extension")
 - `TARGETS`: Comma-separated list of Xcode targets corresponding to the app identifiers (e.g., "
-  More,More-Notification-Service-Extension")
+  BlendedCare,BlendedCare-Notification-Service-Extension")
 - `FASTLANE_IOS_BUILD_SCHEME`: Xcode scheme to build
 - `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
 - `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (
@@ -409,7 +408,7 @@ The source code of the shared module is organized in three source sets according
 
 When making changes to the Database Schemas, please *make sure to increase the Database Schema
 Version* in the `RealmDatabase.kt` file located unter
-`shared/src/commonMain/kotlin/io/redlink/more/more_app_mutliplatform/database`.
+`shared/src/commonMain/kotlin/io.redlink.umm.participant/database`.
 
 *If this version is not upgraded after a schema change, the app will crash on already deployed
 systems!*

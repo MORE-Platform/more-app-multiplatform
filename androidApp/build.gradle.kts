@@ -43,14 +43,14 @@ fun getEnvOrProperty(key: String, envProps: Properties): String? {
 val envProps = loadEnvFromFile()
 
 android {
-    namespace = "io.redlink.more.app.android"
+    namespace = "io.redlink.umm.blendedcare.app.android"
     compileSdk = 36
     defaultConfig {
-        applicationId = "ac.at.lbg.dhp.more"
+        applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 35
-        versionName = "4.1.7"
+        versionCode = 2
+        versionName = "0.0.1.1"
     }
     buildFeatures {
         compose = true

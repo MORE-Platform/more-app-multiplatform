@@ -12,21 +12,21 @@
 
 # Uncomment the line if you want fastlane to automatically update itself
 if ENV["CI"]
-    update_fastlane
+  update_fastlane
 end
 
 default_platform(:ios)
 
 platform :ios do
-    before_all do
-        create_keychain(
-          name: "temp_keychain",
-          password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
-          default_keychain: true,
-          unlock: true,
-          timeout: 3600,
-          lock_when_sleeps: false
-        )
+  before_all do
+    create_keychain(
+      name: "temp_keychain",
+      password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: false
+    )
 
     api_key = app_store_connect_api_key(
       key_id: ENV['APPLE_CONNECT_KEY_ID'],
@@ -38,14 +38,13 @@ platform :ios do
     lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
 
     if ENV["FASTLANE_MATCH_SECRET"] && !ENV["FASTLANE_MATCH_SECRET"].empty?
-        ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
+      ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
     end
-    end
+  end
 
-    after_all do |lane|
-        delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
-    end
-
+  after_all do |lane|
+    delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
+  end
 
   desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
   lane :increment_build do
@@ -57,45 +56,44 @@ platform :ios do
 
   desc "Build the app for App Store"
   lane :build do
-      identifiers = ENV["APP_IDENTIFIERS"].to_s.split(",").map(&:strip)
+    identifiers = ENV["APP_IDENTIFIERS"].to_s.split(",").map(&:strip)
 
-      match(
-        type: "appstore",
-        app_identifier: identifiers,
-        api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
-        team_id: ENV["FASTLANE_TEAM_ID"],
-        git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
-        verbose: true,
-        keychain_name: "temp_keychain",
-        keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
+    match(
+      type: "appstore",
+      app_identifier: identifiers,
+      api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+      team_id: ENV["FASTLANE_TEAM_ID"],
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
+      verbose: true,
+      keychain_name: "temp_keychain",
+      keychain_password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
+    )
+    if ENV["CI"]
+      unlock_keychain(
+        path: "~/Library/Keychains/temp_keychain-db",
+        password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
       )
-      if ENV["CI"]
-          unlock_keychain(
-                  path: "~/Library/Keychains/temp_keychain-db",
-                  password: ENV["FASTLANE_KEYCHAIN_PASSWORD"]
-                )
 
+      target_name = ENV["TARGETS"].to_s.split(",").map(&:strip)
+      identifiers.each_with_index do |identifier, index|
+        update_code_signing_settings(
+          use_automatic_signing: false,
+          targets: [target_name[index]],
+          team_id: ENV["FASTLANE_TEAM_ID"],
+          code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
+          profile_name: "match AppStore #{identifier}",
+          bundle_identifier: identifier
+        )
+      end
+    end
 
-            target_name = ENV["TARGETS"].to_s.split(",").map(&:strip)
-            identifiers.each_with_index do |identifier, index|
-               update_code_signing_settings(
-                    use_automatic_signing: false,
-                    targets: [target_name[index]],
-                    team_id: ENV["FASTLANE_TEAM_ID"],
-                    code_sign_identity: ENV["CODE_SIGN_IDENTITY"],
-                    profile_name: "match AppStore #{identifier}",
-                    bundle_identifier: identifier
-               )
-            end
-       end
-
-      build_app(
-        scheme: ENV["FASTLANE_IOS_SCHEME"],
-        clean: true,
-        output_directory: "build",
-        export_method: "app-store",
-        export_team_id: ENV["FASTLANE_TEAM_ID"]
-      )
+    build_app(
+      scheme: ENV["FASTLANE_IOS_SCHEME"],
+      clean: true,
+      output_directory: "build",
+      export_method: "app-store",
+      export_team_id: ENV["FASTLANE_TEAM_ID"]
+    )
   end
 
   desc "Deploy a new beta to TestFlight"
@@ -113,6 +111,24 @@ platform :ios do
     )
 
     UI.success("Successfully deployed to TestFlight")
+  end
+
+  desc "Deploy a new version to the App Store (production)"
+  lane :deploy_appstore do
+    UI.user_error!("APP_IDENTIFIERS is not set") if ENV['APP_IDENTIFIERS'].to_s.empty?
+    UI.user_error!("FASTLANE_BUILD_NUMBER is not set") if ENV['FASTLANE_BUILD_NUMBER'].to_s.empty?
+
+    increment_build
+    build
+
+    upload_to_app_store(
+      app_identifier: ENV['APP_IDENTIFIERS'].split(',').first,
+      api_key: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY],
+      submit_for_review: false,
+      automatic_release: false
+    )
+
+    UI.success("Successfully uploaded build to App Store Connect for review")
   end
 
   error do |lane, exception|

@@ -14,6 +14,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "More_app_mutliplatform"
+rootProject.name = "UMM_BlendedCare_Participant_App"
 include(":androidApp")
 include(":shared")
