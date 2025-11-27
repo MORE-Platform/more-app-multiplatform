@@ -132,6 +132,13 @@ platform :android do
     end
   end
 
+    private_lane :generate_openapi do
+      gradle(
+        task: ":shared:generateOpenApiClasses",
+        project_dir: ".."
+      )
+    end
+
   desc "Deploy to Google Play Beta"
   lane :deploy_beta do
     begin
@@ -189,6 +196,7 @@ platform :android do
         UI.message("Fallback version code: #{code}")
       end
 
+      generate_openapi
 
       gradle(
         task: "bundle",
@@ -283,6 +291,8 @@ platform :android do
         code = major * 10_000 + minor * 100 + patch
         UI.message("Fallback production version code: #{code}")
       end
+
+      generate_openapi
 
       gradle(
         task: "bundle",

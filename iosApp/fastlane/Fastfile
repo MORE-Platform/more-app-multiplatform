@@ -46,6 +46,13 @@ platform :ios do
     delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
   end
 
+  private_lane :generate_openapi do
+    gradle(
+      task: ":shared:generateOpenApiClasses",
+      project_dir: ".."
+    )
+  end
+
   desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
   lane :increment_build do
     version = ENV["FASTLANE_BUILD_NUMBER"]
@@ -86,6 +93,8 @@ platform :ios do
         )
       end
     end
+
+    generate_openapi
 
     build_app(
       scheme: ENV["FASTLANE_IOS_SCHEME"],

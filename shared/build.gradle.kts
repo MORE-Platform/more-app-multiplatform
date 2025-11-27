@@ -25,52 +25,7 @@ val gsonVersion = "2.13.2"
 val roomVersion = "2.7.2"
 val sqliteVersion = "2.5.2"
 
-val generateMobileAppApi by tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
-    "GenerateInterface1"
-) {
-    generatorName.set("kotlin")
-    library.set("multiplatform")
 
-    inputSpec.set(mobileAppApiInput)
-    outputDir.set(mobileAppApiOutputDir)
-
-    packageName.set(mobileAppApiPackage)
-    modelPackage.set("$mobileAppApiPackage.model")
-    apiPackage.set("$mobileAppApiPackage.api")
-
-    globalProperties.set(
-        mapOf(
-            "models" to "",
-            "apis" to "",
-            "supportingFiles" to "",
-            "modelDocs" to "false",
-            "apiDocs" to "false"
-        )
-    )
-
-    configOptions.set(
-        mapOf(
-            "dateLibrary" to "kotlinx-datetime"
-        )
-    )
-
-    typeMappings.putAll(
-        mapOf(
-            "object" to "kotlinx.serialization.json.JsonObject"
-        )
-    )
-
-    importMappings.putAll(
-        mapOf(
-            "Instant" to "kotlinx.datetime.Instant",
-            "kotlinx.serialization.json.JsonObject" to "kotlinx.serialization.json.JsonObject"
-        )
-    )
-
-    // Let Gradle cache this so it only runs when the YAML changes
-    inputs.file(mobileAppApiInput)
-    outputs.dir(mobileAppApiOutputDir)
-}
 
 kotlin {
     androidTarget {
@@ -160,12 +115,49 @@ dependencies {
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
 }
 
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
+    "generateOpenApiClasses",
+) {
+    generatorName.set("kotlin")
+    library.set("multiplatform")
 
-tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
-    dependsOn(generateMobileAppApi)
+    inputSpec.set(mobileAppApiInput)
+    outputDir.set(mobileAppApiOutputDir)
+
+    packageName.set(mobileAppApiPackage)
+    modelPackage.set("$mobileAppApiPackage.model")
+    apiPackage.set("$mobileAppApiPackage.api")
+
+    globalProperties.set(
+        mapOf(
+            "models" to "",
+            "apis" to "",
+            "supportingFiles" to "",
+            "modelDocs" to "false",
+            "apiDocs" to "false"
+        )
+    )
+
+    configOptions.set(
+        mapOf(
+            "dateLibrary" to "kotlinx-datetime"
+        )
+    )
+
+    typeMappings.putAll(
+        mapOf(
+            "object" to "kotlinx.serialization.json.JsonObject"
+        )
+    )
+
+    importMappings.putAll(
+        mapOf(
+            "Instant" to "kotlinx.datetime.Instant",
+            "kotlinx.serialization.json.JsonObject" to "kotlinx.serialization.json.JsonObject"
+        )
+    )
+
+    // Let Gradle cache this so it only runs when the YAML changes
+    inputs.file(mobileAppApiInput)
+    outputs.dir(mobileAppApiOutputDir)
 }
-
-//tasks.matching { it.name.startsWith("compile") && it.name.contains("Kotlin") }
-//    .configureEach {
-//        dependsOn(generateMobileAppApi)
-//    }
