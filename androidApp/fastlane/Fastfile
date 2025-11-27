@@ -94,6 +94,7 @@ platform :android do
     begin
       setup_android_signing
 
+       generate_openapi
       gradle(
         task: "assemble",
         build_type: "Debug",
