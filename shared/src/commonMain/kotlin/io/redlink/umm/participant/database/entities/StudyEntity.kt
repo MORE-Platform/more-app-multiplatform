@@ -3,8 +3,9 @@ package io.redlink.umm.participant.database.entities
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import io.redlink.umm.blendedcare.services.network.openapi.model.Study
+import io.redlink.umm.participant.extensions.toStudyState
 import io.redlink.umm.participant.models.StudyState
-import io.redlink.umm.participant.services.network.openapi.model.Study
 import io.redlink.umm.participant.util.createUUID
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -58,7 +59,7 @@ data class StudyEntity(
                 contactPhoneNumber = study.contact?.phoneNumber,
                 version = study.version,
                 active = active,
-                state = (study.studyState?.let { StudyState.getState(it) }
+                state = (study.studyState?.toStudyState()
                     ?: if (active) StudyState.ACTIVE else StudyState.PAUSED).descr,
                 finishText = study.finishText
             )

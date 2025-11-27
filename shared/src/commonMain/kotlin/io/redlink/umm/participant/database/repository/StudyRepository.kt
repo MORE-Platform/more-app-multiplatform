@@ -11,6 +11,7 @@
 package io.redlink.umm.participant.database.repository
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.umm.blendedcare.services.network.openapi.model.Study
 import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.ObservationEntity
 import io.redlink.umm.participant.database.entities.ScheduleEntity
@@ -19,7 +20,6 @@ import io.redlink.umm.participant.extensions.mapState
 import io.redlink.umm.participant.models.StudyState
 import io.redlink.umm.participant.scopes.Scope
 import io.redlink.umm.participant.scopes.StudyScope
-import io.redlink.umm.participant.services.network.openapi.model.Study
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -77,7 +77,7 @@ class StudyRepository(private val appDatabase: AppDatabase) {
                         observation.observationId,
                         observation.observationType,
                         observation.observationTitle,
-                        observation.hidden ?: observation.noSchedule
+                        observation.hidden ?: observation.noSchedule ?: false
                     )
                 }
             }

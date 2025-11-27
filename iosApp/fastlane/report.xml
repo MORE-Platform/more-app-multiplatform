@@ -5,44 +5,47 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000207">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.00022">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: create_keychain" time="0.073444">
+      <testcase classname="fastlane.lanes" name="1: create_keychain" time="0.096878">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.002554">
+      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.002266">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: Switch to ios increment_build lane" time="0.00012">
+      <testcase classname="fastlane.lanes" name="3: Switch to ios increment_build lane" time="0.000112">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: increment_build_number" time="0.221235">
+      <testcase classname="fastlane.lanes" name="4: increment_build_number" time="0.24683">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: increment_version_number" time="0.214482">
+      <testcase classname="fastlane.lanes" name="5: increment_version_number" time="0.250564">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: Switch to ios build lane" time="0.000112">
+      <testcase classname="fastlane.lanes" name="6: Switch to ios build lane" time="0.000183">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: match" time="3.274311">
+      <testcase classname="fastlane.lanes" name="7: match" time="3.432997">
         
-          <failure message="/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/actions/actions_helper.rb:67:in `execute_action&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:255:in `block in execute_action&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:229:in `chdir&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:229:in `execute_action&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:157:in `trigger_action_by_name&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/fast_file.rb:159:in `method_missing&apos;&#10;Fastfile:61:in `block (2 levels) in parsing_binding&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/lane.rb:41:in `call&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:204:in `try_switch_to_lane&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:146:in `trigger_action_by_name&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/fast_file.rb:159:in `method_missing&apos;&#10;Fastfile:105:in `block (2 levels) in parsing_binding&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/lane.rb:41:in `call&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:49:in `block in execute&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:45:in `chdir&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/runner.rb:45:in `execute&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/lane_manager.rb:46:in `cruise_lane&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/command_line_handler.rb:34:in `handle&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/commands_generator.rb:110:in `block (2 levels) in run&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/commander-4.6.0/lib/commander/command.rb:187:in `call&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/commander-4.6.0/lib/commander/command.rb:157:in `run&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/commander-4.6.0/lib/commander/runner.rb:444:in `run_active_command&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:124:in `run!&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/commander-4.6.0/lib/commander/delegates.rb:18:in `run!&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/commands_generator.rb:363:in `run&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/commands_generator.rb:43:in `start&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/fastlane/lib/fastlane/cli_tools_distributor.rb:123:in `take_off&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/lib/ruby/gems/3.3.0/gems/fastlane-2.229.1/bin/fastlane:23:in `&lt;top (required)&gt;&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/bin/fastlane:25:in `load&apos;&#10;/Users/jancortiel/.rbenv/versions/3.3.6/bin/fastlane:25:in `&lt;main&gt;&apos;&#10;&#10;Authentication credentials are missing or invalid. - Provide a properly configured and signed bearer token, and make sure that it has not expired. Learn more about Generating Tokens for API Requests https://developer.apple.com/go/?id=api-generating-tokens" />
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="8: build_app" time="8462.040757">
         
       </testcase>
     

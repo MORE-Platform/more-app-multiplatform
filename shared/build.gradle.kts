@@ -6,6 +6,7 @@ plugins {
     id("androidx.room")
     id("com.google.devtools.ksp")
     id("com.rickclephas.kmp.nativecoroutines")
+    id("org.openapi.generator").version("7.17.0").apply(true)
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -24,6 +25,53 @@ val gsonVersion = "2.13.2"
 val roomVersion = "2.7.2"
 val sqliteVersion = "2.5.2"
 
+val generateMobileAppApi by tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
+    "GenerateInterface1"
+) {
+    generatorName.set("kotlin")
+    library.set("multiplatform")
+
+    inputSpec.set(mobileAppApiInput)
+    outputDir.set(mobileAppApiOutputDir)
+
+    packageName.set(mobileAppApiPackage)
+    modelPackage.set("$mobileAppApiPackage.model")
+    apiPackage.set("$mobileAppApiPackage.api")
+
+    globalProperties.set(
+        mapOf(
+            "models" to "",
+            "apis" to "",
+            "supportingFiles" to "",
+            "modelDocs" to "false",
+            "apiDocs" to "false"
+        )
+    )
+
+    configOptions.set(
+        mapOf(
+            "dateLibrary" to "kotlinx-datetime"
+        )
+    )
+
+    typeMappings.putAll(
+        mapOf(
+            "object" to "kotlinx.serialization.json.JsonObject"
+        )
+    )
+
+    importMappings.putAll(
+        mapOf(
+            "Instant" to "kotlinx.datetime.Instant",
+            "kotlinx.serialization.json.JsonObject" to "kotlinx.serialization.json.JsonObject"
+        )
+    )
+
+    // Let Gradle cache this so it only runs when the YAML changes
+    inputs.file(mobileAppApiInput)
+    outputs.dir(mobileAppApiOutputDir)
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -41,7 +89,6 @@ kotlin {
             baseName = "shared"
         }
     }
-
     sourceSets {
         commonMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -80,6 +127,7 @@ kotlin {
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
+        sourceSets["commonMain"].kotlin.srcDirs("$mobileAppApiOutputDir/src/commonMain/kotlin")
     }
 }
 
@@ -112,3 +160,12 @@ dependencies {
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
 }
 
+
+tasks.withType<com.google.devtools.ksp.gradle.KspTask>().configureEach {
+    dependsOn(generateMobileAppApi)
+}
+
+//tasks.matching { it.name.startsWith("compile") && it.name.contains("Kotlin") }
+//    .configureEach {
+//        dependsOn(generateMobileAppApi)
+//    }

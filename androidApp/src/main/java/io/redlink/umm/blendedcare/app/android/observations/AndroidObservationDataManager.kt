@@ -42,7 +42,6 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
     private val workerConstraints =
         Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
             .build()
 
     override fun sendData(onCompletion: (Boolean) -> Unit) {
