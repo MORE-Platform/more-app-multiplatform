@@ -43,7 +43,8 @@ class Polar360Queue<T>{
     func peekLast() -> T? {
         return deque.last
     }
-
+    
+    
     /// Current snapshot
     func toList() -> [T] {
         return deque

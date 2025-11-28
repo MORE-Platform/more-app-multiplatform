@@ -38,7 +38,11 @@ class Polar360Observation: Observation_{
     private let schedulerBackground = ConcurrentDispatchQueueScheduler(qos: .background)
     private var samplingrate : Int = 1
 
-    private let OfflineRecording : Bool = false
+    private var OfflineRecording : Bool = false
+    private var Acc : Bool = false
+    private var Ppi : Bool = false
+    private var Hr : Bool = false
+    private var Tmp : Bool = false
     
     init (repos: MainRepository , sensorPermissions: Set<String>){
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
@@ -110,10 +114,12 @@ class Polar360Observation: Observation_{
     }
 
     class SyncedPacket: Codable {
-        let ppi_data: ppi_data
-        let acc_data : [acc_data]?
-        let temp_data: temp_data
-        init(ppi_data: ppi_data, acc_data: [acc_data]?, temp_data: temp_data) {
+        var hr_data : hr_data?
+        var ppi_data: ppi_data?
+        var acc_data : [acc_data]?
+        var temp_data: temp_data?
+        init(hr_data : hr_data? ,ppi_data: ppi_data?, acc_data: [acc_data]?, temp_data: temp_data?) {
+            self.hr_data = hr_data
             self.ppi_data = ppi_data
             self.acc_data = acc_data
             self.temp_data = temp_data
@@ -152,51 +158,106 @@ class Polar360Observation: Observation_{
     }
 
 
-    private let hrQueue = Polar360Queue<ppi_data>(maxSize: 10)
-    private let accQueue = Polar360Queue<[acc_data]>(maxSize: 10)
-    private let tempQueue = Polar360Queue<temp_data>(maxSize: 10)
+    private let hrQueue = Polar360Queue<hr_data>(maxSize: 20)
+    private let ppiQueue = Polar360Queue<ppi_data>(maxSize: 20)
+    private let accQueue = Polar360Queue<[acc_data]>(maxSize: 20)
+    private let tempQueue = Polar360Queue<temp_data>(maxSize: 20)
 
 
-    private func tryBuildPacket()-> SyncedPacket?{
-        if((hrQueue.size() != 0) && (tempQueue.size() != 0 ) && (accQueue.size() != 0 ))
-        {
-            let ppi_item = hrQueue.pollLast()
-            let tempitem = tempQueue.pollLast()
-            let accitem = accQueue.pollLast()
-            if (ppi_item != nil && tempitem != nil && accitem != nil ){
-                return SyncedPacket(ppi_data: ppi_item!, acc_data: accitem, temp_data: tempitem!)
-            }
-        }
-        return nil
+    private func tryBuildPacket() -> SyncedPacket? {
+        // Only poll queues if the corresponding flag is true
+        let hrData  = Hr  ? hrQueue.peekLast()  : nil
+        let tmpData = Tmp ? tempQueue.peekLast() : nil
+        let ppiData = Ppi ? ppiQueue.peekLast()  : nil
+        let accData = Acc ? accQueue.peekLast()  : nil
+        
+        
+        // If all enabled flags resulted in nil → return nil
+        if (Hr && hrData == nil) || (Tmp && tmpData == nil) || (Ppi && ppiData == nil) {
+                print("Build pack failed")
+               return nil
+           }
+        hrQueue.pollLast()
+        ppiQueue.pollLast()
+        tempQueue.pollLast()
+        accQueue.pollLast()
+        
+        return SyncedPacket(
+                hr_data: hrData,
+                ppi_data: ppiData,
+                acc_data: accData,
+                temp_data: tmpData
+        )
+        
     }
-
+    
+    
+    
     private func sendOutData(packet:SyncedPacket){
         print("sending data \(packet)")
-        print("packet data \(packet.ppi_data.hr) \(packet.temp_data.temp) ")
-        
-        
-        
-        
-        let data = [
-            "hr": [
-                "value": packet.ppi_data.hr,
-                "timestamp": packet.ppi_data.timestamp,
-                "ppiInMs" : packet.ppi_data.ppiInMs,
-                "ppiErrorEstimate" : packet.ppi_data.ppiErrorEstimate
-            ],
-            "acc": packet.acc_data?.compactMap({ accSample in
-                [
-                    "x": accSample.x,
-                    "y": accSample.y,
-                    "z": accSample.z,
-                    "timestamp": accSample.timestamp
+        var data = [:] as [String:Any]
+        if(Hr ){
+            if( packet.hr_data != nil){
+                data["hr"]=[
+                    "value": packet.hr_data?.hr,
+                    "timestamp": packet.hr_data?.timestamp,
+                ]}
+            else {
+                data["hr"]=[
+                    "value": 0,
+                    "timestamp": 0,
                 ]
-            }),
-            "temp": [
-                "value": packet.temp_data.temp,
-                "timestamp": packet.temp_data.timestamp
-            ]
-        ] as [String : Any]
+            }
+        }
+        if(Ppi)
+        {
+            if (packet.ppi_data != nil){
+                data["ppi"]=[
+                    "value": packet.ppi_data?.hr,
+                    "timestamp": packet.ppi_data?.timestamp,
+                    "ppiInMs" : packet.ppi_data?.ppiInMs,
+                    "ppiErrorEstimate" : packet.ppi_data?.ppiErrorEstimate
+                ]
+            }
+            else {
+                data["ppi"]=[
+                    "value": 0,
+                    "timestamp": 0,
+                    "ppiInMs" : 0,
+                    "ppiErrorEstimate" : 0
+                ]
+            }
+            
+        }
+        if(Acc) {
+            if(packet.acc_data != nil){
+                data["acc"] = packet.acc_data?.compactMap({ accSample in
+                    [
+                        "x": accSample.x,
+                        "y": accSample.y,
+                        "z": accSample.z,
+                        "timestamp": accSample.timestamp
+                    ]
+                })}
+            else{
+                data["acc"] = []
+            }
+        }
+        if(Tmp){
+            if(packet.temp_data != nil){
+                data["temp"]=[
+                    "value": packet.temp_data?.temp,
+                    "timestamp": packet.temp_data?.timestamp
+                ]
+            }
+            else{
+                data["temp"] = [
+                    "value" : 0,
+                    "timestamp" : 0
+                ]
+            }
+        }
+        
 
         self.storeData(data: data, timestamp: -1){
             print("Data stored sending to backend")
@@ -214,41 +275,99 @@ class Polar360Observation: Observation_{
                 
                 
                 if(OfflineRecording){
-                    self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
-                        onCompleted: { [weak self] in
-                            guard let self else { return }
-                            print("Disabled SDK Mode for offline recording")
-                        },
-                        onError: {
-                            error in
-                            print("Error: \(error)")
-                        }
-                    ).disposed(by: disposeBag)
                     
-                    setupForFirstTimeUse(identifier: firstAddress).subscribe(
+                    self.setupForFirstTimeUse(identifier: firstAddress).subscribe(
                         onCompleted: { [weak self] in
                             guard let self else { return }
-                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .hr,settings: nil,secret: nil).subscribe(
-                                onCompleted: {
-                                    print("Started Offline Recording for hr")
-                                },
-                                onError: { error in
-                                    print("Error: \(error)")
-                                }
-                            ).disposed(by: disposeBag)
-                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .acc,settings: nil,secret: nil)
-                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .ppi,settings: nil,secret: nil)
-                            self.polarConnector.polarApi.startOfflineRecording(firstAddress,feature: .temperature,settings: nil,secret: nil)
-                        },
-                        onError: {
-                            error in
-                            print("Error: \(error)")
-                        }
-                    ).disposed(by: disposeBag)
+                            print("FTu done ")
+                                        self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
+                                            onCompleted: { [weak self] in
+                                                guard let self else { return }
+                                                print("sdk mode disabled")
+                                                if(self.Acc){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .acc , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("Acc offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting acc offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                    
+                                                }
+                                                if(self.Ppi || self.Hr){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .ppi , settings:nil )
+                                                        .subscribe(
+                                                            onCompleted: {print("Started Offline Recording for ppi")},
+                                                            onError: {error in
+                                                                print("error when starting offline recording for ppi: \(error)")
+                                                            },
+                                                        ).disposed(by: self.disposeBag)
+                                                }
+                                                if(self.Tmp){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .temperature , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("temperature offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting temperature offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                }
+
+                                            },
+                                            onError: {
+                                                error in
+                                                print("Error disabling skd mode: \(error)")
+                                                
+                                                if(self.Acc){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .acc , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("Acc offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting acc offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                    
+                                                }
+                                                if(self.Ppi || self.Hr){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .ppi , settings:nil )
+                                                        .subscribe(
+                                                            onCompleted: {print("Started Offline Recording for ppi")},
+                                                            onError: {error in
+                                                                print("error when starting offline recording for ppi: \(error)")
+                                                            },
+                                                        ).disposed(by: self.disposeBag)
+                                                }
+                                                if(self.Tmp){
+                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .temperature , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("temperature offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting temperature offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                }
+                                            }
+                                        ).disposed(by: self.disposeBag)
+                                    }
+                            )
+                            
+                    
+                        
+                    
+                    
+                    
                     
                 }
                 else{
-                    self.polarConnector.polarApi.enableSDKMode(firstAddress).subscribe(
+                    self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
                         onCompleted: { [weak self] in
                             guard let self else { return }
                             print("Enabled SDK Mode")
@@ -267,9 +386,16 @@ class Polar360Observation: Observation_{
                                 self.listenToDeviceConnection()
                                 print("Starting streaming...")
                                 //self.hrObservation = self.hrstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
-                                self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                if(Hr || Ppi){
+                                    self.ppiObservation = self.ppistream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                
+                                }
+                                if(Acc){
+                                    self.accObservation = self.accstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                }
+                                if(Tmp){
+                                    self.tmpObservation = self.tmpstream(identifier: firstAddress, scheduler: self.schedulerBackground)
+                                }
                             },
                             onError: { error in
                                 print("Setup failed with error: \(error)")
@@ -303,70 +429,90 @@ class Polar360Observation: Observation_{
             .subscribe(onCompleted: {print("stopped ppi")})
             .disposed(by: disposeBag)
         if(OfflineRecording){
+            
+            var ppiList: [ppi_data] = []
+            var accList: [acc_data] = []
+            var tempList: [temp_data] = []
+            var hrList: [hr_data] = []
+            
+            let pack = OfflineDataPack(hr_data:nil, ppi_data:nil, temp_data:nil, acc_data:nil)
+
             var recordings: [PolarOfflineRecordingEntry] = []
+            /*
             self.polarConnector.polarApi.listOfflineRecordings(self.deviceid ?? "")
-                .subscribe(
-                        onNext: { entry in
-                            print("--- Offline Recording Entry ---")
-                            print("id: \(entry.path)")
-                            print("type: \(entry.type)")
-                            print("start: \(entry.date)")
-                            print("stop: \(entry.size)")
-                            recordings.append(entry)
-                        },
-                        onError: { error in
-                            print("Error: \(error)")
-                        },
-                        onCompleted: {
-                            print("Done")
-                        }
-                    )
-            let pack = OfflineDataPack(hr_data:nil,ppi_data:nil,temp_data:nil,acc_data:nil)
-            for recording in recordings {
-
-                switch recording.type {
-
-                case .acc:
-                    // Fetch ACC data
-                    polarConnector.polarApi
-                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
-                        .subscribe(onSuccess: { data in
-                            print(data)
-                            // Assuming `data` contains ACC samples in `data.accSamples` or raw bytes
-                            // You need to parse ACC samples here
-                            // Example pseudo-code:
-                            // for sample in data.accSamples { pack.acc_data.append(AccData(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timestamp)) }
-                        }, onError: { error in
-                            print("Error fetching ACC: \(error)")
-                        })
-
-                case .ppi:
-                    // Fetch PPI data
-                    polarConnector.polarApi
-                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
-                        .subscribe(onSuccess: { data in
-                            print(data)
-                            // Parse PPI samples and append
-                            // for sample in data.ppiSamples { pack.ppi_data.append(PpiData(ppi: sample.ppi, timestamp: sample.timestamp)) }
-                        }, onError: { error in
-                            print("Error fetching PPI: \(error)")
-                        })
-
-                case .hr:
-                    // Fetch HR data
-                    polarConnector.polarApi
-                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
-                        .subscribe(onSuccess: { data in
-                            print(data)
-                            // Parse HR samples and append
-                            // for sample in data.hrSamples { pack.hr_data.append(HrData(bpm: sample.hr, timestamp: sample.timestamp)) }
-                        }, onError: { error in
-                            print("Error fetching HR: \(error)")
-                        })
-
-                default:
-                    print("Unsupported type, skipping")
+                .flatMap { recordings -> Observable<PolarOfflineRecordingEntry> in
+                    let recordingsArray = Array(arrayLiteral: recordings) // convert to Swift array
+                    return Observable.from(recordingsArray)
                 }
+                .concatMap { recording in
+                    // For each recording, fetch the offline data
+                    self.polarConnector.polarApi.getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
+                        .asObservable()
+                        .flatMap { data -> Observable<PolarOfflineRecordingData> in
+                            // Process the data and populate lists
+                            switch data {
+                            case let .accOfflineRecordingData(accData, _, _):
+                                accList.append(contentsOf: accData.map { acc_data(x: $0.x, y: $0.y, z: $0.z, timestamp: $0.timeStamp) })
+                            case let .ppiOfflineRecordingData(ppiData, _):
+                                ppiList.append(contentsOf: ppiData.samples.map { ppi_data(hr: $0.hr, timestamp: $0.timeStamp, ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate) })
+                                hrList.append(contentsOf: ppiData.samples.map { hr_data(hr: $0.hr, timestamp: $0.timeStamp) }) // if needed
+                            case let .temperatureOfflineRecordingData(tempData, _):
+                                tempList.append(contentsOf: tempData.samples.map { temp_data(temp: $0.temperature, Timestamp: $0.timeStamp) })
+                            default:
+                                print("Not supported")
+                            }
+
+                            // After processing, remove the offline record
+                            return self.polarConnector.polarApi.removeOfflineRecord(self.deviceid ?? "", entry: recording)
+                                .do(
+                                    onError: { error in
+                                        print("Error deleting record \(recording.path): \(error)")
+                                    },
+                                        onCompleted: {
+                                            print("Record deleted: \(recording.path)")
+                                        }
+                                        
+                                    ).andThen(Observable.just(data)) // continue emitting the processed data
+                        }
+                }
+                .subscribe(
+                    onNext: { data in
+                        print("Processed data: \(data)")
+                    },
+                    onError: { error in
+                        print("Error processing offline records: \(error)")
+                    },
+                    onCompleted: {
+                        print("All offline recordings processed")
+                        print("ACC:", accList.count, "PPI:", ppiList.count, "TEMP:", tempList.count, "HR:", hrList.count)
+                        
+                        // Here you can store or send your packet
+                        pack.acc_data=accList
+                        pack.hr_data=hrList
+                        pack.ppi_data=ppiList
+                        pack.temp_data=tempList
+                       
+                
+                    },
+                    
+                ).disposed(by: disposeBag ) */
+            
+            Task {
+                do {
+                    let pack = try await processOfflineRecordings()
+                    print("pack size")
+                    print(pack.acc_data?.count,pack.ppi_data?.count,pack.temp_data?.count)
+                    // Now you can safely perform your synchronous logic
+                    self.storeData(data: pack, timestamp: -1) {
+                       print("data stored, sending to bakcend")
+                    }
+                    print("before oncomplete")
+                    
+                } catch {
+                    print("Error: \(error)")
+                }
+                saveAndSend()
+                onCompletion()
             }
             
             
@@ -376,9 +522,100 @@ class Polar360Observation: Observation_{
             self.accObservation?.dispose()
             self.hrObservation?.dispose()
             deviceListener?.cancel()
-            onCompletion()}
+            onCompletion()
+            
+        }
+        
     }
     
+    
+    func processOfflineRecordings() async throws -> OfflineDataPack {
+        try await withCheckedThrowingContinuation { continuation in
+            
+            
+            var ppiList: [ppi_data] = []
+            var accList: [acc_data] = []
+            var tempList: [temp_data] = []
+            var hrList: [hr_data] = []
+            let disposable = self.polarConnector.polarApi
+                .listOfflineRecordings(self.deviceid ?? "")
+                .flatMap { recordings -> Observable<PolarOfflineRecordingEntry> in
+                    let recordingsArray = Array(arrayLiteral: recordings) // convert to Swift array
+                    return Observable.from(recordingsArray)
+                }
+                .concatMap { recording in
+                    self.polarConnector.polarApi
+                        .getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
+                        .asObservable()
+                        .flatMap { data -> Observable<PolarOfflineRecordingData> in
+                            
+                            // Process data (your logic unchanged)
+                            switch data {
+                            case let .accOfflineRecordingData(accData, _, _):
+                                accList.append(contentsOf: accData.map {
+                                    acc_data(x: $0.x, y: $0.y, z: $0.z, timestamp: $0.timeStamp)
+                                })
+                                
+                            case let .ppiOfflineRecordingData(ppiData, _):
+                                ppiList.append(contentsOf: ppiData.samples.map {
+                                    ppi_data(hr: $0.hr, timestamp: $0.timeStamp,
+                                             ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate)
+                                })
+                                hrList.append(contentsOf: ppiData.samples.map {
+                                    hr_data(hr: $0.hr, timestamp: $0.timeStamp)
+                                })
+                                
+                            case let .temperatureOfflineRecordingData(tempData, _):
+                                tempList.append(contentsOf: tempData.samples.map {
+                                    temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
+                                })
+                            default:
+                                break
+                            }
+                            
+                            return self.polarConnector.polarApi.removeOfflineRecord(self.deviceid ?? "", entry: recording)
+                                .do(
+                                    onError: { error in
+                                        print("Error deleting record \(recording.path): \(error)")
+                                    },
+                                        onCompleted: {
+                                            print("Record deleted: \(recording.path)")
+                                        }
+                                        
+                                    ).andThen(Observable.just(data)) // continue emitting the processed data
+                        
+                        }
+                }
+                .subscribe(
+                    onNext: { data in
+                        print("Processed: \(data)")
+                    },
+                    onError: { error in
+                        continuation.resume(throwing: error)
+                    },
+                    onCompleted: {
+                        print("All recordings processed!")
+                        
+                        let pack = OfflineDataPack(hr_data:nil, ppi_data:nil, temp_data:nil, acc_data:nil)  // or however you create it
+                        pack.acc_data = accList
+                        pack.ppi_data = ppiList
+                        pack.temp_data = tempList
+                        pack.hr_data = hrList
+                        
+                        continuation.resume(returning: pack)
+                    }
+                )
+            
+            // Auto-cancel if the async task is cancelled
+            Task {
+                await Task.yield()
+                if Task.isCancelled {
+                    disposable.dispose()
+                }
+            }
+        }
+    }
+
     
 
     private func accstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
@@ -403,22 +640,23 @@ class Polar360Observation: Observation_{
         .observe(on: scheduler)
         .subscribe(
             onNext: { data  in
-                
+                guard let _ = data.first else { return }
                
                 let data_formatted: [acc_data] = data.map { sample in
                     acc_data(x: sample.x, y: sample.y, z: sample.z, timestamp: sample.timeStamp)
                 }
-                if self.accQueue.size() == 0
-                {
-                    self.accQueue.add(data_formatted)
-                }
-                else {
-                    var items = self.accQueue.pollLast()!
-                    items.append(contentsOf: data_formatted)
-                    self.accQueue.add(items)
+                self.accQueue.add(data_formatted)
+                
+                self.tryBuildPacket().map{
+                    packet in
+                    //dont want to fill up queue with other streams untill hr data starts arriving
+                    // so we store state and check for it
                     
+                    self.sendOutData(packet: packet)
                 }
-                guard let sample = data.first else { return }
+                    
+                
+                
                
             },
             onError: { error in
@@ -456,18 +694,32 @@ class Polar360Observation: Observation_{
             .throttle(.seconds(samplingrate), scheduler: scheduler)
             .subscribe(onNext: { data in
                 if let sample = data.samples.first {
-                    
-                    self.hrQueue.add(ppi_data(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
-                    self.tryBuildPacket().map {
-                        packet in
-                        //dont want to fill up queue with other streams untill hr data starts arriving
-                        // so we store state and check for it
-
-                        self.sendOutData(packet: packet)
+                    if(self.Ppi){
+                        self.ppiQueue.add(ppi_data(hr: sample.hr,timestamp: sample.timeStamp,ppiInMs: sample.ppInMs , ppiErrorEstimate: sample.ppErrorEstimate))
+                        print("ppiqueadded")
+                        self.tryBuildPacket().map {
+                            packet in
+                            //dont want to fill up queue with other streams untill hr data starts arriving
+                            // so we store state and check for it
+                            
+                            self.sendOutData(packet: packet)
+                        }}
+                    else{
+                        self.hrQueue.add(hr_data(hr:sample.hr,timestamp:sample.timeStamp))
+                        print("hrqueadded")
+                        self.tryBuildPacket().map {
+                            packet in
+                            self.sendOutData(packet: packet)
+                        }
                     }
                     print("ppi sample \(sample) " )
                 }
-            })
+            },
+                       onError:{
+                error in
+                print("error with ppi stream")
+            }
+            )
     }
     private func tmpstream(identifier:String,scheduler: ConcurrentDispatchQueueScheduler)->Disposable?{
         return polarConnector.polarApi
@@ -491,13 +743,13 @@ class Polar360Observation: Observation_{
         .throttle(.seconds(samplingrate), scheduler: scheduler)
         .subscribe(onNext: { data in
             if let sample = data.samples.first {
-                if(self.hrQueue.peekLast() != nil){
-                    self.tempQueue.add(temp_data(temp: sample.temperature, Timestamp: sample.timeStamp))
+                
+                self.tempQueue.add(temp_data(temp: sample.temperature, Timestamp: sample.timeStamp))
 
-                    self.tryBuildPacket().map {
-                        packet in
-                        self.sendOutData(packet: packet)
-                    }}
+                self.tryBuildPacket().map {
+                    packet in
+                    self.sendOutData(packet: packet)
+                }
                 print("\(sample.timeStamp): \(sample.temperature)")
             }
         },
@@ -574,6 +826,33 @@ class Polar360Observation: Observation_{
                 }
             )
     }
+    private func DisableSdkMode(identifier: String) -> Disposable {
+        return polarConnector.polarApi
+            .isSDKModeEnabled(identifier)
+            .subscribe(
+                onSuccess: { [weak self] sdkEnabled in
+                    guard let self = self else { return }
+
+                    if sdkEnabled {
+                        _ = self.polarConnector.polarApi
+                            .disableSDKMode(identifier)
+                            .subscribe(
+                                onCompleted: {
+                                    print("✅ SDK mode Disable for \(identifier)")
+                                },
+                                onError: { error in
+                                    print("❌ Failed to Disable SDK mode: \(error)")
+                                }
+                            )
+                    } else {
+                        print("ℹ️ SDK mode already disabled for \(identifier)")
+                    }
+                },
+                onFailure: { error in
+                    print("❌ Failed to check SDK mode: \(error)")
+                }
+            )
+    }
 
     private func listenToDeviceConnection() {
         deviceListener = createPublisher(for: deviceManager.connectedDevices)
@@ -586,6 +865,35 @@ class Polar360Observation: Observation_{
                 }
             })
     }
+    
+    private func startOfflineRecoding(identifier: String,feature:PolarDeviceDataType,settings:PolarSensorSetting?) ->Completable{
+        if(settings != nil){
+            return polarConnector.polarApi.startOfflineRecording( identifier, feature:feature,settings: settings!,secret: nil)
+        }
+        if(feature == PolarDeviceDataType.hr || feature == PolarDeviceDataType.ppi){
+            return polarConnector.polarApi.startOfflineRecording(identifier, feature: feature, settings: nil, secret: nil)
+        }
+        else{
+            return polarConnector.polarApi.requestOfflineRecordingSettings(identifier, feature: feature)
+                    .catch { error in
+                        print("Polar360::\(feature) - Settings request failed. Reason: \(error)")
+                        let defaultSettings = try PolarSensorSetting( [
+                            .sampleRate: 1,
+                            .resolution: 1
+                        ])
+                        return Single.just(defaultSettings)
+                    }
+                    .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+                    .flatMapCompletable { settings in
+                        print("Polar360::\(feature) - Using settings: \(settings.settings)")
+                        return self.polarConnector.polarApi.startOfflineRecording(identifier, feature: feature, settings: settings, secret: nil)
+                    }
+        }
+    }
+    
+    
+    
+    
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         if let value = settings["sampling_rate"] {
                 // KMM numeric objects often respond to `intValue` or `doubleValue`
@@ -601,5 +909,27 @@ class Polar360Observation: Observation_{
                     }
                 }
             }
+        if let offlineRecording = settings["Offline_recording"] {
+            OfflineRecording = String(describing: offlineRecording) == "true"
+        }
+        if let hrValue = settings["Hr"] {
+                Hr = String(describing: hrValue).lowercased() == "true"
+            }
+
+        if let accValue = settings["Acc"] {
+                Acc = String(describing: accValue).lowercased() == "true"
+            }
+
+        if let tempValue = settings["Temp"] {
+                Tmp = String(describing: tempValue).lowercased() == "true"
+            }
+
+            // MARK: - PPI logic (same as Kotlin)
+        if let ppiValue = settings["Ppi"], Hr != true {
+                Ppi = String(describing: ppiValue).lowercased() == "true"
+            }
+
+            print("Hr: \(Hr), Acc: \(Acc), Temp: \(Tmp), Ppi: \(Ppi)")
+      
     }
 }
