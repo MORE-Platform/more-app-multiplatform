@@ -14,6 +14,7 @@ import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.extensions.asClosure
+import io.redlink.umm.participant.extensions.toStudyState
 import io.redlink.umm.participant.models.StudyState
 import io.redlink.umm.participant.navigation.DeeplinkManager
 import io.redlink.umm.participant.observations.DataRecorder
@@ -151,7 +152,7 @@ class Shared(
                 Napier.d(tag = "Shared::updateStudy") { "Updating study..." }
             }
             val currentStudy = repositories.study.study.value
-            if (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED) {
+            if (newStudyState != null && (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED)) {
                 Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
                 repositories.study.updateStudyState(newStudyState)
                 StudyScope.cancel()
@@ -190,7 +191,7 @@ class Shared(
                 var versionChanged = false
 
                 currentStudy?.let { current ->
-                    val newState = study.studyState?.let { StudyState.getState(it) }
+                    val newState = study.studyState?.toStudyState()
                     val currentState = current.getState()
 
                     if (newState != currentState) {

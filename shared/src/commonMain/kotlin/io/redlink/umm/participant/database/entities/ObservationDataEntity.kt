@@ -14,9 +14,9 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import io.github.aakira.napier.Napier
+import io.redlink.umm.blendedcare.services.network.openapi.model.ObservationData
 import io.redlink.umm.participant.extensions.asString
 import io.redlink.umm.participant.observations.ObservationBulkModel
-import io.redlink.umm.participant.services.network.openapi.model.ObservationData
 import io.redlink.umm.participant.util.createUUID
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

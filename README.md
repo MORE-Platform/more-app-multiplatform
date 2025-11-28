@@ -70,12 +70,16 @@ The following is an instruction on how to install and configure the project on y
 5. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be
    accessed by pressing cmd + , on Mac or Ctrl + Alt + S on Windows/Linux. Then, navigate to "Build,
    Execution, Deployment > Build Tools > Gradle". The JDK location can be set within that section.
-6. Now we can build the project. Go to the terminal and perform the following command in the root
+6. **Before** building the project you need to generate the openapi api clients. To do that just run
+   `./gradlew :shared:generateOpenApiClasses` from the project root. This has to be done, every time
+   the OpenAPI spec changed, or the build directory was removed.
+7. Now we can build the project. Go to the terminal and perform the following command in the root
    folder of the project:
     ```sh
     ./gradlew build
     ```
-7. Now you should be good to go. You can create an emulator device and start your application.
+
+8.Now you should be good to go. You can create an emulator device and start your application.
 
 ### Troubleshooting with KDoctor
 

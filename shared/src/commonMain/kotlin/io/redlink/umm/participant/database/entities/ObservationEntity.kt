@@ -14,7 +14,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import io.github.aakira.napier.Napier
-import io.redlink.umm.participant.services.network.openapi.model.Observation
+import io.redlink.umm.blendedcare.services.network.openapi.model.Observation
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -56,7 +56,7 @@ data class ObservationEntity(
                 participantInfo = observation.participantInfo,
                 configuration = observation.configuration.toString(),
                 hidden = observation.hidden,
-                scheduleLess = observation.noSchedule,
+                scheduleLess = observation.noSchedule ?: false,
                 required = observation.required,
                 version = observation.version
             )

@@ -15,14 +15,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android test_signing
-
-```sh
-[bundle exec] fastlane android test_signing
-```
-
-
-
 ### android test
 
 ```sh

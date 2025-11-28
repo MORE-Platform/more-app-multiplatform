@@ -13,8 +13,8 @@ package io.redlink.umm.participant.database.entities
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotification
 import io.redlink.umm.participant.getPlatform
-import io.redlink.umm.participant.services.network.openapi.model.PushNotification
 import io.redlink.umm.participant.services.notification.NotificationManager
 import io.redlink.umm.participant.util.createUUID
 import kotlinx.datetime.Clock
@@ -116,7 +116,7 @@ data class NotificationEntity(
 
         fun toEntity(notification: PushNotification): NotificationEntity {
             return toEntity(
-                notificationId = notification.msgId,
+                notificationId = notification.msgId ?: createUUID(),
                 channelId = null,
                 title = notification.title,
                 notificationBody = notification.body,
@@ -124,7 +124,7 @@ data class NotificationEntity(
                 priority = 1,
                 read = false,
                 completed = false,
-                userFacing = notification.type == "text",
+                userFacing = (notification.type ?: "text") == "text",
                 notificationData = notification.data?.mapValues { it.value.toString() },
                 deepLink = notification.deepLink
             )

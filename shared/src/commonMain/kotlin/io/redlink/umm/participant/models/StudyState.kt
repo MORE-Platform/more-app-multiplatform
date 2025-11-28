@@ -22,3 +22,4 @@ enum class StudyState(val descr: String) {
         fun getState(name: String) = entries.firstOrNull { it.descr == name } ?: NONE
     }
 }
+

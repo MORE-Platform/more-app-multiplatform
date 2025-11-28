@@ -10,9 +10,9 @@
  */
 package io.redlink.umm.participant.models
 
+import io.redlink.umm.blendedcare.services.network.openapi.model.Study
 import io.redlink.umm.participant.database.entities.ObservationEntity
 import io.redlink.umm.participant.database.entities.StudyEntity
-import io.redlink.umm.participant.services.network.openapi.model.Study
 
 data class PermissionModel(
     val studyTitle: String,

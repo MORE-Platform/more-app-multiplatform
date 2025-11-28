@@ -11,106 +11,50 @@
 package io.redlink.umm.participant.services.network
 
 import io.github.aakira.napier.Napier
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
-import io.ktor.client.plugins.auth.providers.basic
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
 import io.ktor.http.Url
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.utils.io.core.Closeable
 import io.redlink.umm.blendedcare.app.android.services.network.errors.NetworkServiceError
+import io.redlink.umm.blendedcare.services.network.openapi.model.AppConfiguration
+import io.redlink.umm.blendedcare.services.network.openapi.model.DataBulk
+import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotification
+import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotificationServiceType
+import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotificationToken
+import io.redlink.umm.blendedcare.services.network.openapi.model.Study
+import io.redlink.umm.blendedcare.services.network.openapi.model.StudyConsent
 import io.redlink.umm.participant.models.LoginModel
-import io.redlink.umm.participant.services.network.openapi.model.AppConfiguration
-import io.redlink.umm.participant.services.network.openapi.model.DataBulk
-import io.redlink.umm.participant.services.network.openapi.model.Error
-import io.redlink.umm.participant.services.network.openapi.model.PushNotification
-import io.redlink.umm.participant.services.network.openapi.model.PushNotificationToken
-import io.redlink.umm.participant.services.network.openapi.model.Study
-import io.redlink.umm.participant.services.network.openapi.model.StudyConsent
 import io.redlink.umm.participant.services.store.CredentialRepository
 import io.redlink.umm.participant.services.store.EndpointRepository
-import kotlinx.serialization.json.Json
 
 private const val TAG = "NetworkService"
 
 class NetworkService(
-    private val endpointRepository: EndpointRepository,
-    private val credentialRepository: CredentialRepository,
-) : Closeable {
-    private var httpClient: HttpClient? = null
+    endpointRepository: EndpointRepository,
+    credentialRepository: CredentialRepository,
+) {
 
-    private fun initHttpClientWithAuth(): HttpClient? {
-        initHttpClient()
-        val creds = credentialRepository.credentials.value
-        return httpClient?.config {
-            install(Auth) {
-                creds?.let { authCredentials ->
-                    basic {
-                        credentials {
-                            BasicAuthCredentials(
-                                username = authCredentials.apiId,
-                                password = authCredentials.apiKey
-                            )
-                        }
-                        sendWithoutRequest { true }
-                    }
-                }
-            }
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                })
-            }
-        }
-    }
+    private val networkClients = NetworkClients(credentialRepository, endpointRepository)
 
-    private fun initHttpClient() {
-        if (httpClient == null) {
-            httpClient = getHttpClient(Logger.DEFAULT)
-        }
-    }
-
-    fun baseUrl(): String = endpointRepository.endpoint()
+    fun baseUrl() = networkClients.baseUrl()
 
     suspend fun deleteParticipation(): Pair<Boolean, NetworkServiceError?> {
         try {
-            credentialRepository.credentials.value?.let { credentials ->
-                Napier.i(tag = "NetworkService::deleteParticipation") { "Deleting Participation..." }
-                val client = initHttpClientWithAuth() ?: return Pair(
-                    false,
-                    NetworkServiceError(null, "Failed to init HTTP client")
-                )
-                val baseUrl = endpointRepository.endpoint()
+            Napier.i(tag = "NetworkService::deleteParticipation") { "Deleting Participation..." }
+            val client = networkClients.getRegistrationApi() ?: return Pair(
+                false,
+                NetworkServiceError(null, "Failed to init HTTP client")
+            )
 
-                val response = client.delete("$baseUrl/registration")
+            val response = client.unregisterFromStudy()
 
-                Napier.i(response.toString(), tag = TAG)
-                close()
-                if (response.status.isSuccess()) {
-                    Napier.i(tag = "NetworkService::deleteParticipation") { "Participation deleted!" }
-                    return Pair(true, null)
-                }
-                Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${response.status.value}" }
-                val error = createErrorBody(response.status.value, response)
-                return Pair(false, error)
+            Napier.i(response.toString(), tag = TAG)
+            if (response.success) {
+                Napier.i(tag = "NetworkService::deleteParticipation") { "Participation deleted!" }
+                return Pair(true, null)
             }
-            return Pair(false, NetworkServiceError(null, "No credentials"))
+            Napier.e(tag = "NetworkService::deleteParticipation") { "Error; Code: ${response.status}" }
+            val error = createErrorBody(response.status, response.response)
+            return Pair(false, error)
         } catch (err: Exception) {
             Napier.e(tag = "NetworkService::deleteParticipation") { err.stackTraceToString() }
             return Pair(false, getException(err))
@@ -120,25 +64,20 @@ class NetworkService(
     suspend fun validateRegistrationToken(loginModel: LoginModel): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::validateRegistrationToken") { "Validating Registration token..." }
-            initHttpClient()
-            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
-            val client = httpClient ?: return Pair(
+            val client = networkClients.getRegistrationApi(loginModel.endpoint) ?: return Pair(
                 null,
                 NetworkServiceError(null, "HTTP client not initialized")
             )
 
-            val response = client.get("$baseUrl/registration") {
-                header("More-Registration-Token", loginModel.token)
-                contentType(ContentType.Application.Json)
-            }
+            val response = client.getStudyRegistrationInfo(loginModel.token)
 
             Napier.i(response.toString(), tag = TAG)
-            if (response.status.isSuccess()) {
+            if (response.success) {
                 val study: Study = response.body()
                 Napier.i(tag = "NetworkService::validateRegistrationToken") { "Registration token valid!" }
                 return Pair(study, null)
             }
-            val error = createErrorBody(response.status.value, response)
+            val error = createErrorBody(response.status, response.response)
             return Pair(null, error)
 
         } catch (err: Exception) {
@@ -152,25 +91,20 @@ class NetworkService(
     ): Pair<AppConfiguration?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendConsent") { "Sending Consent..." }
-            initHttpClient()
-            val baseUrl = loginModel.endpoint ?: endpointRepository.endpoint()
-            val client = httpClient ?: return Pair(
+
+            val client = networkClients.getRegistrationApi(loginModel.endpoint) ?: return Pair(
                 null,
                 NetworkServiceError(null, "HTTP client not initialized")
             )
 
-            val response = client.post("$baseUrl/registration") {
-                header("More-Registration-Token", loginModel.token)
-                contentType(ContentType.Application.Json)
-                setBody(studyConsent)
-            }
+            val response = client.registerForStudy(loginModel.token, studyConsent)
 
-            if (response.status.isSuccess()) {
+            if (response.success) {
                 val appConfig: AppConfiguration = response.body()
                 Napier.i(tag = "NetworkService::sendConsent") { "Credentials received!" }
                 return Pair(appConfig, null)
             }
-            return Pair(null, createErrorBody(response.status.value, response))
+            return Pair(null, createErrorBody(response.status, response.response))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendConsent") { e.stackTraceToString() }
             return Pair(null, getException(e))
@@ -180,25 +114,19 @@ class NetworkService(
     suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
-            credentialRepository.credentials.value?.let { credentials ->
-                val client = initHttpClientWithAuth() ?: return Pair(
-                    null,
-                    NetworkServiceError(null, "Failed to init HTTP client")
-                )
-                val baseUrl = endpointRepository.endpoint()
+            val client = networkClients.getConfigApi() ?: return Pair(
+                null,
+                NetworkServiceError(null, "Failed to init HTTP client")
+            )
 
-                val response = client.get("$baseUrl/config/study") {
-                    contentType(ContentType.Application.Json)
-                }
+            val response = client.getStudyConfiguration()
 
-                if (response.status.isSuccess()) {
-                    val study: Study = response.body()
-                    Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
-                    return Pair(study, null)
-                }
-                return Pair(null, createErrorBody(response.status.value, response))
+            if (response.success) {
+                val study: Study = response.body()
+                Napier.i(tag = "NetworkService::getStudyConfig") { "Loading study data success!" }
+                return Pair(study, null)
             }
-            return Pair(null, NetworkServiceError(null, "No credentials set!"))
+            return Pair(null, createErrorBody(response.status, response.response))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::getStudyConfig") { e.stackTraceToString() }
             return Pair(null, getException(e))
@@ -208,26 +136,20 @@ class NetworkService(
     suspend fun sendNotificationToken(token: String): Pair<Boolean, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendNotificationToken") { "Sending notification token..." }
-            credentialRepository.credentials.value?.let { credentials ->
-                val client = initHttpClientWithAuth() ?: return Pair(
-                    false,
-                    NetworkServiceError(null, "Failed to init HTTP client")
-                )
-                val baseUrl = endpointRepository.endpoint()
-                val pushToken = PushNotificationToken(token = token)
+            val client = networkClients.getConfigApi() ?: return Pair(
+                false,
+                NetworkServiceError(null, "Failed to init HTTP client")
+            )
+            val pushToken = PushNotificationToken(token = token)
 
-                val response = client.put("$baseUrl/config/notifications/FCM") {
-                    contentType(ContentType.Application.Json)
-                    setBody(pushToken)
-                }
+            val response =
+                client.setPushNotificationToken(PushNotificationServiceType.FCM, pushToken)
 
-                if (response.status.isSuccess()) {
-                    Napier.i(tag = "NetworkService::sendNotificationToken") { "Uploading notification token success!" }
-                    return Pair(true, null)
-                }
-                return Pair(false, createErrorBody(response.status.value, response))
+            if (response.success) {
+                Napier.i(tag = "NetworkService::sendNotificationToken") { "Uploading notification token success!" }
+                return Pair(true, null)
             }
-            return Pair(false, NetworkServiceError(null, "No credentials found!"))
+            return Pair(false, createErrorBody(response.status, response.response))
         } catch (err: Exception) {
             Napier.e(tag = "NetworkService::sendNotificationToken") { err.stackTraceToString() }
             return Pair(false, getException(err))
@@ -237,26 +159,19 @@ class NetworkService(
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
-            credentialRepository.credentials.value?.let { credentials ->
-                val client = initHttpClientWithAuth() ?: return Pair(
-                    emptySet(),
-                    NetworkServiceError(null, "Failed to init HTTP client")
-                )
-                val baseUrl = endpointRepository.endpoint()
+            val client = networkClients.getDataApi() ?: return Pair(
+                emptySet(),
+                NetworkServiceError(null, "Failed to init HTTP client")
+            )
 
-                val response = client.post("$baseUrl/data/bulk") {
-                    contentType(ContentType.Application.Json)
-                    setBody(data)
-                }
+            val response = client.storeBulk(data)
 
-                if (response.status.isSuccess()) {
-                    val result: List<String> = response.body()
-                    Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
-                    return Pair(result.toSet(), null)
-                }
-                return Pair(emptySet(), createErrorBody(response.status.value, response))
+            if (response.success) {
+                val result: List<String> = response.body()
+                Napier.i(tag = "NetworkService::sendData") { "Sent data!" }
+                return Pair(result.toSet(), null)
             }
-            return Pair(emptySet(), NetworkServiceError(null, "No credentials set!"))
+            return Pair(emptySet(), createErrorBody(response.status, response.response))
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::sendData") { e.stackTraceToString() }
             return Pair(emptySet(), getException(e))
@@ -266,24 +181,16 @@ class NetworkService(
     suspend fun downloadMissedNotifications(): List<PushNotification> {
         return try {
             Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloading missed notifications from the Server..." }
-            credentialRepository.credentials.value?.let { credentials ->
-                val client = initHttpClientWithAuth() ?: return@let emptyList()
-                val baseUrl = endpointRepository.endpoint()
+            val client = networkClients.getNotificationApi() ?: return emptyList()
 
-                val response = client.get("$baseUrl/notifications") {
-                    contentType(ContentType.Application.Json)
-                }
+            val response = client.listPushNotifications()
 
-                if (response.status.isSuccess()) {
-                    val notifications: List<PushNotification> = response.body()
-                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloaded Messages list: $notifications" }
-                    notifications
-                } else {
-                    Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
-                    emptyList()
-                }
-            } ?: run {
-                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No credentials available" }
+            if (response.success) {
+                val notifications: List<PushNotification> = response.body()
+                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "Downloaded Messages list: $notifications" }
+                notifications
+            } else {
+                Napier.d(tag = "NetworkService::downloadMissedNotifications") { "No notifications received from the server" }
                 emptyList()
             }
         } catch (e: Exception) {
@@ -292,52 +199,15 @@ class NetworkService(
         }
     }
 
-    fun getBasicAuthHeader(): String? {
-        return credentialRepository.credentials.value?.basicAuthHeader()
-    }
+    fun getBasicAuthHeader(): String? = networkClients.basicAuthHeader()
 
     fun getGarminSSOUrl(): Url? {
         try {
-            credentialRepository.credentials.value?.let {
-                val baseUrl = endpointRepository.endpoint()
-                return Url("$baseUrl/registration/garmin")
-            }
+            return Url("${baseUrl()}/registration/garmin")
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::getGarminSSOUrl") { "Error getting Garmin SSO Url: $e" }
         }
         return null
-    }
-
-    suspend fun garminSSOCallback(code: String, status: String): Boolean {
-        return garminSSOCallbackUrl()?.let { callbackUrl ->
-            try {
-                credentialRepository.credentials.value?.let {
-                    val client = initHttpClientWithAuth() ?: return@let false
-                    val result = client.get(callbackUrl) {
-                        url {
-                            parameters.append("code", code)
-                            parameters.append("state", status)
-                        }
-                    }
-                    Napier.d(tag = "NetworkService::garminSSOCallback") {
-                        "Received callback response: ${result.status}"
-                    }
-                    if (!result.status.isSuccess()) {
-                        try {
-                            val bodyText = result.bodyAsText()
-                            Napier.e(tag = "NetworkService::garminSSOCallback") {
-                                "Garmin SSO callback failed with status ${result.status.value}, body: $bodyText"
-                            }
-                        } catch (_: Exception) {
-                        }
-                    }
-                    result.status.isSuccess()
-                } ?: false
-            } catch (e: Exception) {
-                Napier.e(tag = "NetworkService::garminSSOCallback") { "Network error: ${e.message}" }
-                false
-            }
-        } ?: false
     }
 
     fun garminSSOCallbackUrl(): Url? {
@@ -346,21 +216,36 @@ class NetworkService(
         }
     }
 
+    suspend fun garminSSOCallback(code: String, status: String): Boolean {
+        try {
+            Napier.d(tag = "NetworkService::garminSSOCallback") { "Received callback with code: $code and status: $status" }
+            val client = networkClients.getGarminRegistrationApi() ?: run {
+                Napier.e(tag = "NetworkService::garminSSOCallback") { "Garmin SSO callback failed: No client available" }
+                return false
+            }
+            val response = client.handleGarminCallback(code, status)
+            if (response.success) {
+                Napier.d(tag = "NetworkService::garminSSOCallback") { "Garmin SSO callback successful" }
+            } else {
+                Napier.e(tag = "NetworkService::garminSSOCallback") { "Garmin SSO callback failed: ${response.response}" }
+            }
+            return response.success
+        } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::garminSSOCallback") { "Garmin SSO callback failed: $e" }
+            return false
+        }
+    }
+
     suspend fun deletePushNotification(msgId: String) {
         try {
-            credentialRepository.credentials.value?.let { _ ->
-                val client = initHttpClientWithAuth() ?: return
-                val baseUrl = endpointRepository.endpoint()
+            val client = networkClients.getNotificationApi() ?: return
 
-                val response = client.delete("$baseUrl/notifications/$msgId") {
-                    contentType(ContentType.Application.Json)
-                }
+            val response = client.deleteNotification(msgId)
 
-                if (response.status.isSuccess()) {
-                    Napier.d(tag = "NetworkService::deletePushNotification") { "Successfully deleted notification with id: $msgId" }
-                } else {
-                    Napier.d(tag = "NetworkService::deletePushNotification") { "Push notification not found with msgID: $msgId. Could not delete!" }
-                }
+            if (response.success) {
+                Napier.d(tag = "NetworkService::deletePushNotification") { "Successfully deleted notification with id: $msgId" }
+            } else {
+                Napier.d(tag = "NetworkService::deletePushNotification") { "Push notification not found with msgID: $msgId. Could not delete!" }
             }
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::deletePushNotification") { "Notification deletion error: $e" }
@@ -381,7 +266,7 @@ class NetworkService(
                 null
             }
 
-            NetworkServiceError(code = code, message = error?.msg ?: "Error")
+            NetworkServiceError(code = code, message = error?.message ?: "Error")
         } catch (e: Exception) {
             getException(e, code)
         }
@@ -392,12 +277,6 @@ class NetworkService(
         Napier.e("Exception: ${exception.stackTraceToString()}", tag = TAG)
         exception.printStackTrace()
         return NetworkServiceError(code, errorResponse)
-    }
-
-    override fun close() {
-        Napier.d(tag = "NetworkService::close") { "Clearing the Http engine..." }
-        httpClient?.close()
-        httpClient = null
     }
 
 }

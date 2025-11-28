@@ -11,12 +11,12 @@
 package io.redlink.umm.participant.database.repository
 
 import io.github.aakira.napier.Napier
+import io.redlink.umm.blendedcare.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.ObservationDataEntity
 import io.redlink.umm.participant.extensions.mapAsBulkData
 import io.redlink.umm.participant.scopes.Scope
 import io.redlink.umm.participant.scopes.StudyScope
-import io.redlink.umm.participant.services.network.openapi.model.DataBulk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex

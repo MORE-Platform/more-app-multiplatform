@@ -11,9 +11,9 @@
 package io.redlink.umm.participant.extensions
 
 import io.github.aakira.napier.Napier
+import io.redlink.umm.blendedcare.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.database.entities.BluetoothDeviceEntity
 import io.redlink.umm.participant.database.entities.ObservationDataEntity
-import io.redlink.umm.participant.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.util.createUUID
 
 fun Collection<ObservationDataEntity>.mapAsBulkData(): DataBulk? {

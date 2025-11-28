@@ -16,8 +16,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.services.network.NetworkService
-import io.redlink.umm.participant.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.services.store.CredentialRepository
 import io.redlink.umm.participant.services.store.EndpointRepository
 import io.redlink.umm.participant.services.store.SharedPreferencesRepository
