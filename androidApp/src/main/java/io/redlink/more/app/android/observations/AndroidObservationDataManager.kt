@@ -42,7 +42,6 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
     private val workerConstraints =
         Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
             .build()
 
     override fun sendData(onCompletion: (Boolean) -> Unit) {
@@ -60,11 +59,11 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
         return workManager?.let { workManager ->
             val request = OneTimeWorkRequestBuilder<DataUploadWorker>()
                 .setConstraints(workerConstraints)
-                /*.apply {
+                .apply {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     }
-                }*/
+                }
                 .addTag(DataUploadWorker.WORKER_TAG)
                 .build()
 

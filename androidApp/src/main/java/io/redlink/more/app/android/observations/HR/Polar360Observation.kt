@@ -121,7 +121,7 @@ class Polar360Observation(repos: MainRepository):
 
     data class ppi_data(
         val hr : Int ,
-        val timestamp: ULong,
+        val timestamp: Long,
         val ppiInMs : Int,
         val ppiErrorEstimate: Int
     )
@@ -135,7 +135,7 @@ class Polar360Observation(repos: MainRepository):
 
     data class hr_data(
         val hr : Int,
-        val ts : ULong
+        val ts : Long
     )
 
     data class SyncedPacket(
@@ -151,43 +151,44 @@ class Polar360Observation(repos: MainRepository):
             var Temp: Boolean = false
             var Acc: Boolean = false
         }
-        fun to_string(): MutableMap<String, Any>{
-            val built_map = mutableMapOf<String,Any>()
-            if(Hr){
-                if(hr!= null){
-                    built_map["hr"] = mapOf<String,Any>(
+        fun mutableMap(): MutableMap<String, Any> {
+            val builtMap = mutableMapOf<String, Any>()
+
+            if (Hr) {
+                builtMap["hr"] = if (hr != null) {
+                    mapOf(
                         "value" to hr.hr,
                         "timestamp" to hr.ts
                     )
-                }
-                else{
-                    built_map["hr"]= mapOf<String,Any>(
+                } else {
+                    mapOf(
                         "value" to 0,
                         "timestamp" to 0
                     )
                 }
             }
-            if(Ppi){
-                if (ppi!= null){
-                    built_map["ppi"] = mapOf<String,Any>(
+
+            if (Ppi) {
+                builtMap["ppi"] = if (ppi != null) {
+                    mapOf(
                         "value" to ppi.hr,
                         "timestamp" to ppi.timestamp,
-                        "ppiInMs"  to ppi.ppiInMs,
+                        "ppiInMs" to ppi.ppiInMs,
                         "ppiErrorEstimate" to ppi.ppiErrorEstimate
                     )
-                }
-                else{
-                    built_map["ppi"] = mapOf<String,Any>(
+                } else {
+                    mapOf(
                         "value" to 0,
                         "timestamp" to 0,
-                        "ppiInMs"  to 0,
+                        "ppiInMs" to 0,
                         "ppiErrorEstimate" to 0
                     )
                 }
             }
-            if(Acc){
-                if (acc!= null){
-                    built_map["acc"] = acc.map { item ->
+
+            if (Acc) {
+                builtMap["acc"] = if (acc != null) {
+                    acc.map { item ->
                         mapOf(
                             "x" to item.x,
                             "y" to item.y,
@@ -195,27 +196,29 @@ class Polar360Observation(repos: MainRepository):
                             "timestamp" to item.timestamp
                         )
                     }
-                }
-                else{
-                    built_map["acc"] = mapOf<Any,Any>()
+                } else {
+                    emptyList<Any>()
                 }
             }
-            if(Temp){
-                if (temp!= null){
-                    built_map["temp"] = mapOf<String,Any>(
+
+            if (Temp) {
+                builtMap["temp"] = if (temp != null) {
+                    mapOf(
                         "value" to temp.temp,
                         "timestamp" to temp.timestamp
                     )
-                }
-                else{
-                    built_map["temp"] = mapOf<String,Any>(
+                } else {
+                    mapOf(
                         "value" to 0,
                         "timestamp" to 0
                     )
                 }
             }
-            return built_map
+
+            return builtMap
         }
+
+
     }
 
     fun toJson(): String {
@@ -252,8 +255,8 @@ class Polar360Observation(repos: MainRepository):
     }
 
     fun sendOut(packet: SyncedPacket) {
-
-        storeData(packet.to_string())
+        Napier.e(packet.mutableMap().toString())
+        storeData(packet )
     }
 
 
@@ -741,10 +744,10 @@ class Polar360Observation(repos: MainRepository):
             .subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(
             { polarData ->
                 if(Hr){
-                    hrQueue!!.add(hr_data(polarData.samples[0].hr,polarData.samples[0].timeStamp))
+                    hrQueue!!.add(hr_data(polarData.samples[0].hr,polarData.samples[0].timeStamp.toLong()))
                 }
                 else{
-                    ppiQueue!!.add(ppi_data(polarData.samples[0].hr,polarData.samples[0].timeStamp,polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
+                    ppiQueue!!.add(ppi_data(polarData.samples[0].hr,polarData.samples[0].timeStamp.toLong(),polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
                 }
                 tryBuildPacket()?.let { println(it) }
             },
@@ -798,7 +801,7 @@ class Polar360Observation(repos: MainRepository):
         return samples.map { sample ->
             hr_data(
                 hr = sample.hr,
-                ts = sample.timeStamp
+                ts = sample.timeStamp.toLong()
             )
         }
     }
@@ -808,7 +811,7 @@ class Polar360Observation(repos: MainRepository):
         return samples.map { sample ->
             ppi_data(
                 hr = sample.hr,
-                timestamp = sample.timeStamp,
+                timestamp = sample.timeStamp.toLong(),
                 ppiInMs = sample.ppi,
                 ppiErrorEstimate = sample.errorEstimate
             )
