@@ -82,11 +82,11 @@ abstract class Observation(
             stop {
                 timestampCollectionJob?.cancel()
                 saveAndSend()
+                observationShutdown(scheduleId)
             }
         } else {
             saveAndSend()
         }
-        observationShutdown(scheduleId)
         if (removeNotification) {
             handleNotification(scheduleId)
         }

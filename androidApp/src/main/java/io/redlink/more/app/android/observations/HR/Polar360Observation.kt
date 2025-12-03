@@ -110,6 +110,7 @@ class Polar360Observation(repos: MainRepository):
     var Temp : Boolean = false
     var Acc : Boolean = false
 
+    var Continous_recording : Boolean = false
 
 
     data class accItem(
@@ -255,8 +256,7 @@ class Polar360Observation(repos: MainRepository):
     }
 
     fun sendOut(packet: SyncedPacket) {
-        Napier.e(packet.mutableMap().toString())
-        storeData(packet )
+        storeData(packet.mutableMap() )
     }
 
 
@@ -476,9 +476,12 @@ class Polar360Observation(repos: MainRepository):
                     }
                 )
 
-                val restart_streams = startOfflineRecordings()
-                saveAndSend()
-                onCompletion()
+            if(Continous_recording){
+                    // Restarting offline recording for continous recording of data on device
+                    val restart_streams = startOfflineRecordings()
+                }
+            saveAndSend()
+            onCompletion()
 
         }
         else{
@@ -543,6 +546,9 @@ class Polar360Observation(repos: MainRepository):
         }
         print(settings["Hr"])
         print("@@@@@@@@@@")
+        if(settings["continuous_recording"] != null){
+            Continous_recording = settings["continuous_recording"].toString().toBoolean()
+        }
         if(settings["Hr"] != null){
            Hr = settings["Hr"].toString().toBoolean()
         }

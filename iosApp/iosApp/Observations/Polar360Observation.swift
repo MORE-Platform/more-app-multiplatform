@@ -43,9 +43,13 @@ class Polar360Observation: Observation_{
     private var Ppi : Bool = false
     private var Hr : Bool = false
     private var Tmp : Bool = false
+    private var Continous_recording : Bool = false
     
     init (repos: MainRepository , sensorPermissions: Set<String>){
         super.init(repos: repos, observationType: Polar360Type(sensorPermissions: sensorPermissions))
+    }
+    override func ableToAutomaticallyStart() -> Bool {
+        return false
     }
 
     class ppi_data: Codable {
@@ -99,7 +103,7 @@ class Polar360Observation: Observation_{
         var ppi_data: [ppi_data]?
         var temp_data: [temp_data]?
         var acc_data: [acc_data]?
-
+        
         init(
             hr_data: [hr_data]?,
             ppi_data: [ppi_data]?,
@@ -111,6 +115,30 @@ class Polar360Observation: Observation_{
             self.temp_data = temp_data
             self.acc_data = acc_data
         }
+        func toJSON() -> [String: Any]? {
+                do {
+                    let encoder = JSONEncoder()
+                    let data = try encoder.encode(self) // Encode to Data
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                    return jsonObject as? [String: Any] // Convert to dictionary
+                } catch {
+                    print("Error converting OfflineDataPack to JSON: \(error)")
+                    return nil
+                }
+            }
+
+            /// Optional: Pretty-print JSON as a string
+            func toJSONString(pretty: Bool = true) -> String? {
+                guard let jsonDict = toJSON() else { return nil }
+                do {
+                    let options: JSONSerialization.WritingOptions = pretty ? .prettyPrinted : []
+                    let data = try JSONSerialization.data(withJSONObject: jsonDict, options: options)
+                    return String(data: data, encoding: .utf8)
+                } catch {
+                    print("Error converting JSON dictionary to string: \(error)")
+                    return nil
+                }
+            }
     }
 
     class SyncedPacket: Codable {
@@ -276,95 +304,9 @@ class Polar360Observation: Observation_{
                 
                 if(OfflineRecording){
                     
-                    self.setupForFirstTimeUse(identifier: firstAddress).subscribe(
-                        onCompleted: { [weak self] in
-                            guard let self else { return }
-                            print("FTu done ")
-                                        self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
-                                            onCompleted: { [weak self] in
-                                                guard let self else { return }
-                                                print("sdk mode disabled")
-                                                if(self.Acc){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .acc , settings:nil ).subscribe(
-                                                        onCompleted:
-                                                            {
-                                                                print("Acc offline started")
-                                                            }, onError: {
-                                                                error in
-                                                                print("error with starting acc offline recording: \(error)")
-                                                            }
-                                                    ).disposed(by: self.disposeBag)
-                                                    
-                                                }
-                                                if(self.Ppi || self.Hr){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .ppi , settings:nil )
-                                                        .subscribe(
-                                                            onCompleted: {print("Started Offline Recording for ppi")},
-                                                            onError: {error in
-                                                                print("error when starting offline recording for ppi: \(error)")
-                                                            },
-                                                        ).disposed(by: self.disposeBag)
-                                                }
-                                                if(self.Tmp){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .temperature , settings:nil ).subscribe(
-                                                        onCompleted:
-                                                            {
-                                                                print("temperature offline started")
-                                                            }, onError: {
-                                                                error in
-                                                                print("error with starting temperature offline recording: \(error)")
-                                                            }
-                                                    ).disposed(by: self.disposeBag)
-                                                }
-
-                                            },
-                                            onError: {
-                                                error in
-                                                print("Error disabling skd mode: \(error)")
-                                                
-                                                if(self.Acc){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .acc , settings:nil ).subscribe(
-                                                        onCompleted:
-                                                            {
-                                                                print("Acc offline started")
-                                                            }, onError: {
-                                                                error in
-                                                                print("error with starting acc offline recording: \(error)")
-                                                            }
-                                                    ).disposed(by: self.disposeBag)
-                                                    
-                                                }
-                                                if(self.Ppi || self.Hr){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .ppi , settings:nil )
-                                                        .subscribe(
-                                                            onCompleted: {print("Started Offline Recording for ppi")},
-                                                            onError: {error in
-                                                                print("error when starting offline recording for ppi: \(error)")
-                                                            },
-                                                        ).disposed(by: self.disposeBag)
-                                                }
-                                                if(self.Tmp){
-                                                    self.startOfflineRecoding(identifier:firstAddress,feature: .temperature , settings:nil ).subscribe(
-                                                        onCompleted:
-                                                            {
-                                                                print("temperature offline started")
-                                                            }, onError: {
-                                                                error in
-                                                                print("error with starting temperature offline recording: \(error)")
-                                                            }
-                                                    ).disposed(by: self.disposeBag)
-                                                }
-                                            }
-                                        ).disposed(by: self.disposeBag)
-                                    }
-                            )
-                            
+                     _  = startOfflineRecordings(identifier: firstAddress)
                     
-                        
-                    
-                    
-                    
-                    
+                   
                 }
                 else{
                     self.polarConnector.polarApi.disableSDKMode(firstAddress).subscribe(
@@ -405,6 +347,7 @@ class Polar360Observation: Observation_{
                     
                 }
             }
+            print("returning true")
             return true
         }
 
@@ -497,22 +440,30 @@ class Polar360Observation: Observation_{
                     
                 ).disposed(by: disposeBag ) */
             
-            Task {
+            Task(priority: .background) {
                 do {
+                    // CPU / IO heavy work happens in background
                     let pack = try await processOfflineRecordings()
                     print("pack size")
-                    print(pack.acc_data?.count,pack.ppi_data?.count,pack.temp_data?.count)
-                    // Now you can safely perform your synchronous logic
-                    self.storeData(data: pack, timestamp: -1) {
-                       print("data stored, sending to bakcend")
+                    print(pack.acc_data?.count, pack.ppi_data?.count, pack.temp_data?.count)
+
+                    // Hop back to the MainActor for storeData (if it touches CoreData/UI)
+                    await MainActor.run {
+                        self.storeData(data: pack.toJSON(), timestamp: -1) {
+                            print("data stored, sending to backend")
+                        }
+                    }
+
+                    // Restart offline recordings if needed (background OK)
+                    if Continous_recording {
+                        _ = self.startOfflineRecordings(identifier: self.deviceid ?? "")
                     }
                     print("before oncomplete")
-                    
+                    onCompletion()
+
                 } catch {
                     print("Error: \(error)")
                 }
-                saveAndSend()
-                onCompletion()
             }
             
             
@@ -525,6 +476,7 @@ class Polar360Observation: Observation_{
             onCompletion()
             
         }
+        
         
     }
     
@@ -891,24 +843,131 @@ class Polar360Observation: Observation_{
         }
     }
     
+    private func startOfflineRecordings(identifier:String) -> Disposable{
+        return self.setupForFirstTimeUse(identifier: identifier).subscribe(
+            onCompleted: { [weak self] in
+                guard let self else { return }
+                print("FTu done ")
+                            self.polarConnector.polarApi.disableSDKMode(identifier).subscribe(
+                                onCompleted: { [weak self] in
+                                    guard let self else { return }
+                                    print("sdk mode disabled")
+                                    if(self.Acc){
+                                        self.startOfflineRecoding(identifier:identifier,feature: .acc , settings:nil ).subscribe(
+                                            onCompleted:
+                                                {
+                                                    print("Acc offline started")
+                                                }, onError: {
+                                                    error in
+                                                    print("error with starting acc offline recording: \(error)")
+                                                }
+                                        ).disposed(by: self.disposeBag)
+                                        
+                                    }
+                                    if(self.Ppi || self.Hr){
+                                        self.startOfflineRecoding(identifier:identifier,feature: .ppi , settings:nil )
+                                            .subscribe(
+                                                onCompleted: {print("Started Offline Recording for ppi")},
+                                                onError: {error in
+                                                    print("error when starting offline recording for ppi: \(error)")
+                                                },
+                                            ).disposed(by: self.disposeBag)
+                                    }
+                                    if(self.Tmp){
+                                        self.startOfflineRecoding(identifier:identifier,feature: .temperature , settings:nil ).subscribe(
+                                            onCompleted:
+                                                {
+                                                    print("temperature offline started")
+                                                }, onError: {
+                                                    error in
+                                                    print("error with starting temperature offline recording: \(error)")
+                                                }
+                                        ).disposed(by: self.disposeBag)
+                                    }
+
+                                },
+                                onError: {
+                                    error in
+                                    print("Error disabling skd mode: \(error)")
+                                    
+                                    self.polarConnector.polarApi.isSDKModeEnabled(identifier).subscribe(
+                                        onSuccess: {
+                                            enabled in
+                                            if(!enabled){
+                                                //we can start the offline recordings
+                                                if(self.Acc){
+                                                    self.startOfflineRecoding(identifier:identifier,feature: .acc , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("Acc offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting acc offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                    
+                                                }
+                                                if(self.Ppi || self.Hr){
+                                                    self.startOfflineRecoding(identifier:identifier,feature: .ppi , settings:nil )
+                                                        .subscribe(
+                                                            onCompleted: {print("Started Offline Recording for ppi")},
+                                                            onError: {error in
+                                                                print("error when starting offline recording for ppi: \(error)")
+                                                            },
+                                                        ).disposed(by: self.disposeBag)
+                                                }
+                                                if(self.Tmp){
+                                                    self.startOfflineRecoding(identifier:identifier,feature: .temperature , settings:nil ).subscribe(
+                                                        onCompleted:
+                                                            {
+                                                                print("temperature offline started")
+                                                            }, onError: {
+                                                                error in
+                                                                print("error with starting temperature offline recording: \(error)")
+                                                            }
+                                                    ).disposed(by: self.disposeBag)
+                                                }
+                                                
+                                            }
+                                            else{
+                                                print("skd mode still enabled cant start offline recording")
+                                            }
+                                        
+                                        },
+                                        onFailure: { error in
+                                                print("error when checking if skd mode is enabled: \(error)")
+                                            }
+                                    )
+                                    
+                                    
+                                }
+                            ).disposed(by: self.disposeBag)
+                        }
+                )
+    }
+    
     
     
     
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         if let value = settings["sampling_rate"] {
-                // KMM numeric objects often respond to `intValue` or `doubleValue`
-                if let kotlinNumber = value as? NSNumber {
-                    samplingrate = kotlinNumber.intValue
+            // KMM numeric objects often respond to `intValue` or `doubleValue`
+            if let kotlinNumber = value as? NSNumber {
+                samplingrate = kotlinNumber.intValue
+            } else {
+                // Try casting to AnyObject and use description -> Int
+                let stringValue = String(describing: value)
+                if let intValue = Int(stringValue) {
+                    samplingrate = intValue
                 } else {
-                    // Try casting to AnyObject and use description -> Int
-                    let stringValue = String(describing: value)
-                    if let intValue = Int(stringValue) {
-                        samplingrate = intValue
-                    } else {
-                        print("Warning: sampling_rate is not a valid number: \(value)")
-                    }
+                    print("Warning: sampling_rate is not a valid number: \(value)")
                 }
             }
+        }
+        if let continuous = settings["continuous_recording"]{
+            Continous_recording = String(describing: continuous) == "true"
+        }
+        
         if let offlineRecording = settings["Offline_recording"] {
             OfflineRecording = String(describing: offlineRecording) == "true"
         }
@@ -928,7 +987,7 @@ class Polar360Observation: Observation_{
         if let ppiValue = settings["Ppi"], Hr != true {
                 Ppi = String(describing: ppiValue).lowercased() == "true"
             }
-
+        
             print("Hr: \(Hr), Acc: \(Acc), Temp: \(Tmp), Ppi: \(Ppi)")
       
     }
