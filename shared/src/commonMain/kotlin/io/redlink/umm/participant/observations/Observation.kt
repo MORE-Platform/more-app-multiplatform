@@ -86,6 +86,7 @@ abstract class Observation(
             }
         } else {
             saveAndSend()
+            observationShutdown(scheduleId)
         }
         if (removeNotification) {
             handleNotification(scheduleId)
