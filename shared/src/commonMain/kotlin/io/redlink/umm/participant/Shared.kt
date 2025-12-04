@@ -243,7 +243,7 @@ class Shared(
     private fun garminLogin() {
         Scope.launch {
             Napier.d(tag = "Shared::garminLogin") { "Checking Garmin login" }
-            if (observationFactory.observationTypes()
+            if (observationFactory.studyObservationTypes.value
                     .contains(GarminType().observationType)
                 && !sharedStorageRepository.load(
                     CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN,
