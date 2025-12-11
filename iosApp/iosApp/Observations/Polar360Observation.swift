@@ -103,6 +103,7 @@ class Polar360Observation: Observation_{
         var ppi_data: [ppi_data]?
         var temp_data: [temp_data]?
         var acc_data: [acc_data]?
+        var explode: Bool
         
         init(
             hr_data: [hr_data]?,
@@ -114,6 +115,7 @@ class Polar360Observation: Observation_{
             self.ppi_data = ppi_data
             self.temp_data = temp_data
             self.acc_data = acc_data
+            self.explode = true
         }
         func toJSON() -> [String: Any]? {
                 do {
@@ -205,10 +207,11 @@ class Polar360Observation: Observation_{
                 print("Build pack failed")
                return nil
            }
-        hrQueue.pollLast()
-        ppiQueue.pollLast()
-        tempQueue.pollLast()
-        accQueue.pollLast()
+        //Remove last items from queue
+        _ = hrQueue.pollLast()
+        _ = ppiQueue.pollLast()
+        _ = tempQueue.pollLast()
+        _ = accQueue.pollLast()
         
         return SyncedPacket(
                 hr_data: hrData,
@@ -372,74 +375,6 @@ class Polar360Observation: Observation_{
             .subscribe(onCompleted: {print("stopped ppi")})
             .disposed(by: disposeBag)
         if(OfflineRecording){
-            
-            var ppiList: [ppi_data] = []
-            var accList: [acc_data] = []
-            var tempList: [temp_data] = []
-            var hrList: [hr_data] = []
-            
-            let pack = OfflineDataPack(hr_data:nil, ppi_data:nil, temp_data:nil, acc_data:nil)
-
-            var recordings: [PolarOfflineRecordingEntry] = []
-            /*
-            self.polarConnector.polarApi.listOfflineRecordings(self.deviceid ?? "")
-                .flatMap { recordings -> Observable<PolarOfflineRecordingEntry> in
-                    let recordingsArray = Array(arrayLiteral: recordings) // convert to Swift array
-                    return Observable.from(recordingsArray)
-                }
-                .concatMap { recording in
-                    // For each recording, fetch the offline data
-                    self.polarConnector.polarApi.getOfflineRecord(self.deviceid ?? "", entry: recording, secret: nil)
-                        .asObservable()
-                        .flatMap { data -> Observable<PolarOfflineRecordingData> in
-                            // Process the data and populate lists
-                            switch data {
-                            case let .accOfflineRecordingData(accData, _, _):
-                                accList.append(contentsOf: accData.map { acc_data(x: $0.x, y: $0.y, z: $0.z, timestamp: $0.timeStamp) })
-                            case let .ppiOfflineRecordingData(ppiData, _):
-                                ppiList.append(contentsOf: ppiData.samples.map { ppi_data(hr: $0.hr, timestamp: $0.timeStamp, ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate) })
-                                hrList.append(contentsOf: ppiData.samples.map { hr_data(hr: $0.hr, timestamp: $0.timeStamp) }) // if needed
-                            case let .temperatureOfflineRecordingData(tempData, _):
-                                tempList.append(contentsOf: tempData.samples.map { temp_data(temp: $0.temperature, Timestamp: $0.timeStamp) })
-                            default:
-                                print("Not supported")
-                            }
-
-                            // After processing, remove the offline record
-                            return self.polarConnector.polarApi.removeOfflineRecord(self.deviceid ?? "", entry: recording)
-                                .do(
-                                    onError: { error in
-                                        print("Error deleting record \(recording.path): \(error)")
-                                    },
-                                        onCompleted: {
-                                            print("Record deleted: \(recording.path)")
-                                        }
-                                        
-                                    ).andThen(Observable.just(data)) // continue emitting the processed data
-                        }
-                }
-                .subscribe(
-                    onNext: { data in
-                        print("Processed data: \(data)")
-                    },
-                    onError: { error in
-                        print("Error processing offline records: \(error)")
-                    },
-                    onCompleted: {
-                        print("All offline recordings processed")
-                        print("ACC:", accList.count, "PPI:", ppiList.count, "TEMP:", tempList.count, "HR:", hrList.count)
-                        
-                        // Here you can store or send your packet
-                        pack.acc_data=accList
-                        pack.hr_data=hrList
-                        pack.ppi_data=ppiList
-                        pack.temp_data=tempList
-                       
-                
-                    },
-                    
-                ).disposed(by: disposeBag ) */
-            
             Task(priority: .background) {
                 do {
                     // CPU / IO heavy work happens in background
@@ -456,6 +391,7 @@ class Polar360Observation: Observation_{
 
                     // Restart offline recordings if needed (background OK)
                     if Continous_recording {
+                        print("continous recording triggered")
                         _ = self.startOfflineRecordings(identifier: self.deviceid ?? "")
                     }
                     print("before oncomplete")
@@ -718,10 +654,7 @@ class Polar360Observation: Observation_{
                 NSLog("FTU already done")
                 return Completable.empty() // nothing to do
             } else {
-                let dateFormatter = ISO8601DateFormatter()
-                dateFormatter.formatOptions = [.withInternetDateTime]
-                dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
+                
                 let ftuConfig = PolarFirstTimeUseConfig(
                     gender: PolarFirstTimeUseConfig.Gender.female,
                     birthDate: Date(),
@@ -731,7 +664,7 @@ class Polar360Observation: Observation_{
                     vo2Max: 40,
                     restingHeartRate: 80,
                     trainingBackground: PolarFirstTimeUseConfig.TrainingBackground.frequent,
-                    deviceTime: dateFormatter.string(from: Date()),
+                    deviceTime: ISO8601DateFormatter().string(from: Date()),
                     typicalDay: PolarFirstTimeUseConfig.TypicalDay.mostlyMoving,
                     sleepGoalMinutes: 480
                 )
@@ -743,6 +676,14 @@ class Polar360Observation: Observation_{
         .andThen(
             Completable.deferred {
                 print("FTU setup successful")
+                self.polarConnector.polarApi.getLocalTime(identifier)
+                    .subscribe(onSuccess: { deviceTime in
+                        // deviceTime is a Date object
+                        print("Device local time: \(deviceTime)")
+                    }, onFailure: { error in
+                        print("Failed to get device time: \(error)")
+                    })
+                    .disposed(by: self.disposeBag)
                 return Completable.empty()
                 //return  self.polarConnector.polarApi.enableSDKMode(identifier)
 
@@ -935,7 +876,39 @@ class Polar360Observation: Observation_{
                                         
                                         },
                                         onFailure: { error in
-                                                print("error when checking if skd mode is enabled: \(error)")
+                                                print("error when checking if skd mode is enabled: \(error) trying to start recordings")
+                                            if(self.Acc){
+                                                self.startOfflineRecoding(identifier:identifier,feature: .acc , settings:nil ).subscribe(
+                                                    onCompleted:
+                                                        {
+                                                            print("Acc offline started")
+                                                        }, onError: {
+                                                            error in
+                                                            print("error with starting acc offline recording: \(error)")
+                                                        }
+                                                ).disposed(by: self.disposeBag)
+                                                
+                                            }
+                                            if(self.Ppi || self.Hr){
+                                                self.startOfflineRecoding(identifier:identifier,feature: .ppi , settings:nil )
+                                                    .subscribe(
+                                                        onCompleted: {print("Started Offline Recording for ppi")},
+                                                        onError: {error in
+                                                            print("error when starting offline recording for ppi: \(error)")
+                                                        },
+                                                    ).disposed(by: self.disposeBag)
+                                            }
+                                            if(self.Tmp){
+                                                self.startOfflineRecoding(identifier:identifier,feature: .temperature , settings:nil ).subscribe(
+                                                    onCompleted:
+                                                        {
+                                                            print("temperature offline started")
+                                                        }, onError: {
+                                                            error in
+                                                            print("error with starting temperature offline recording: \(error)")
+                                                        }
+                                                ).disposed(by: self.disposeBag)
+                                            }
                                             }
                                     )
                                     
@@ -964,6 +937,7 @@ class Polar360Observation: Observation_{
                 }
             }
         }
+        print(settings)
         if let continuous = settings["continuous_recording"]{
             Continous_recording = String(describing: continuous) == "true"
         }
@@ -988,7 +962,7 @@ class Polar360Observation: Observation_{
                 Ppi = String(describing: ppiValue).lowercased() == "true"
             }
         
-            print("Hr: \(Hr), Acc: \(Acc), Temp: \(Tmp), Ppi: \(Ppi)")
+            print("Hr: \(Hr), Acc: \(Acc), Temp: \(Tmp), Ppi: \(Ppi) Continous recording \(Continous_recording) ")
       
     }
 }

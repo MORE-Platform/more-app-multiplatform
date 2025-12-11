@@ -84,6 +84,7 @@ class Polar360Observation(repos: MainRepository):
         var ppi_data : List<ppi_data>?,
         var temp_data :  List<tmpItem>?,
         var acc_data :  List<accItem>?,
+        var explode : Boolean
     )
     private val deviceManager = BluetoothStateManagement
     private val deviceIdentifier = setOf("Polar")
@@ -230,7 +231,8 @@ class Polar360Observation(repos: MainRepository):
         hr_data = emptyList(),
         ppi_data = emptyList(),
         temp_data = emptyList(),
-        acc_data = emptyList()
+        acc_data = emptyList(),
+        explode = true
     )
 
     private fun tryBuildPacket(): SyncedPacket? {
