@@ -73,12 +73,6 @@ class Polar360Observation(repos: MainRepository):
         observationType = Polar360Type(permissions)
     ) {
 
-
-
-
-
-
-
     data class Offline_recording_packet(
         var hr_data :  List<hr_data>?,
         var ppi_data : List<ppi_data>?,
@@ -246,7 +240,6 @@ class Polar360Observation(repos: MainRepository):
         if(
             (Hr && hr == null) || (Temp && temp == null) || (Ppi && ppi == null)
         ) {
-            Napier.e("fdasfads")
             return null
         }
         hrQueue?.pollLast()
@@ -325,7 +318,7 @@ class Polar360Observation(repos: MainRepository):
                     return true
 
                 } catch (exception: Exception) {
-                    Napier.e(tag = "PolarHeartRateObservation::start") { exception.stackTraceToString() }
+                    Napier.e(tag = "Polar360Observation::start") { exception.stackTraceToString() }
                     showObservationErrorNotification(
                         stringResource(R.string.observation_cannot_start),
                         stringResource(R.string.observation_error)
@@ -333,7 +326,7 @@ class Polar360Observation(repos: MainRepository):
                     false
                 }
             } ?: run {
-                Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
+                Napier.d(tag = "Polar360Observation::start") { "No connected devices..." }
                 showObservationErrorNotification(
                     stringResource(R.string.observation_cannot_start),
                     stringResource(R.string.observation_error)
@@ -341,7 +334,7 @@ class Polar360Observation(repos: MainRepository):
                 false
             }
         }
-        Napier.d(tag = "PolarHeartRateObservation::start") { "No connected devices..." }
+        Napier.d(tag = "Polar360Observation::start") { "No connected devices..." }
         showObservationErrorNotification(
             stringResource(R.string.observation_cannot_start),
             stringResource(R.string.observation_error)
@@ -463,7 +456,6 @@ class Polar360Observation(repos: MainRepository):
 
                 .blockingSubscribe(
                     { data ->
-                        // This now emits the actual PolarOfflineRecordingData
                         Napier.d("Data emitted: $data")
 
                     },
@@ -487,7 +479,6 @@ class Polar360Observation(repos: MainRepository):
 
         }
         else{
-            //TODO Online streaming stop function
             tempDisposable?.dispose()
             accDisposable?.dispose()
             heartRateDisposable?.dispose()
@@ -546,8 +537,6 @@ class Polar360Observation(repos: MainRepository):
                 }
             }
         }
-        print(settings["Hr"])
-        print("@@@@@@@@@@")
         if(settings["continuous_recording"] != null){
             Continous_recording = settings["continuous_recording"].toString().toBoolean()
         }
@@ -571,7 +560,7 @@ class Polar360Observation(repos: MainRepository):
         SyncedPacket.Temp = Temp
         SyncedPacket.Ppi = Ppi
         SyncedPacket.Acc = Acc
-        Napier.d(tag="Polar360::ObservationConfig"){"Hr $Hr  Acc $Acc  Temp $Temp  Ppi $Ppi"}
+        Napier.d(tag="Polar360::ObservationConfig"){"Hr $Hr  Acc $Acc  Temp $Temp  Ppi $Ppi Continous recording enabled $Continous_recording"}
     }
 
     private fun hasPermissions(context: Context): Boolean {
@@ -581,11 +570,11 @@ class Polar360Observation(repos: MainRepository):
                     permission
                 ) == PackageManager.PERMISSION_DENIED
             ) {
-                Napier.e(tag = "PolarHeartRateObservation::hasPermission") { "Polar has no bluetooth permissions!" }
+                Napier.e(tag = "Polar360Observation::hasPermission") { "Polar has no bluetooth permissions!" }
                 return false
             }
         }
-        Napier.d(tag = "PolarHeartRateObservation::hasPermission") { "Polar has Bluetooth Permission!" }
+        Napier.d(tag = "Polar360Observation::hasPermission") { "Polar has Bluetooth Permission!" }
         return true
     }
 
@@ -595,7 +584,7 @@ class Polar360Observation(repos: MainRepository):
                 if (!deviceIdentifier.anyNameIn(devices)) {
                     pauseObservation(Polar360Type(emptySet()))
 
-                    Napier.d(tag = "PolarHeartRateObservation::Companion::listenToDeviceConnection") { "HR Feature removed!" }
+                    Napier.d(tag = "Polar360Observation::Companion::listenToDeviceConnection") { "HR Feature removed!" }
                 }
             }
         }.second
