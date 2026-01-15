@@ -18,6 +18,7 @@ import io.redlink.umm.participant.extensions.time
 import io.redlink.umm.participant.models.DateFilterModel
 import io.redlink.umm.participant.models.ScheduleListType
 import io.redlink.umm.participant.models.ScheduleModel
+import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.observations.DataRecorder
 import io.redlink.umm.participant.observations.Observation
 import io.redlink.umm.participant.observations.ObservationStates
@@ -41,6 +42,7 @@ class CoreScheduleViewModel(
     private val scheduleListType: ScheduleListType,
     val coreFilterModel: CoreDashboardFilterViewModel
 ) : CoreViewModel() {
+    private val scheduleStates = mutableSetOf<ScheduleState>()
     private var originalScheduleList = emptySet<ScheduleModel>()
 
     private val _schedulesByDate = MutableStateFlow<Map<Long, List<ScheduleModel>>>(emptyMap())
@@ -69,6 +71,21 @@ class CoreScheduleViewModel(
     private var cacheVersion = 0L
 
     init {
+        scheduleStates.addAll(
+            when (scheduleListType) {
+                ScheduleListType.MANUALS -> setOf(
+                    ScheduleState.DEACTIVATED, ScheduleState.ACTIVE,
+                    ScheduleState.RUNNING, ScheduleState.PAUSED
+                )
+                ScheduleListType.RUNNING -> {
+                    setOf(ScheduleState.RUNNING)
+                }
+                else -> {
+                    setOf(ScheduleState.DONE, ScheduleState.ENDED)
+                }
+            }
+        )
+
         launchScope {
             coreFilterModel.currentTypeFilter
                 .combine(coreFilterModel.currentDateFilter) { typeFilter, dateFilter ->
@@ -87,7 +104,7 @@ class CoreScheduleViewModel(
         }
 
         launchScope {
-            repos.schedule.allSchedulesWithStatus(done = scheduleListType == ScheduleListType.COMPLETED)
+            repos.schedule.allSchedulesWithStates(scheduleStates)
                 .cancellable()
                 .collect { schedules ->
                     val newList = when (scheduleListType) {

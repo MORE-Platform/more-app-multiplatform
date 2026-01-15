@@ -21,11 +21,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.ktor.util.collections.getValue
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.stringResource
 import io.redlink.umm.blendedcare.app.android.shared_composables.HeaderDescription
@@ -34,13 +37,16 @@ import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 
 @Composable
 fun QuestionnaireHeader(model: QuestionnaireViewModel) {
+    val observation by model.coreViewModel.simpleQuestionModel.collectAsStateWithLifecycle(null)
+    val title = observation?.observationTitle ?: ""
+    val info = observation?.participantInfo ?: ""
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(2.dp)
     )
     {
-        HeaderTitle(title = model.observationTitle.value)
+        HeaderTitle(title = title)
         Spacer(Modifier.height(12.dp))
 
         LazyColumn(
@@ -55,12 +61,12 @@ fun QuestionnaireHeader(model: QuestionnaireViewModel) {
                     text = stringResource(R.string.more_questionnaire_type),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
             }
             item {
-                HeaderDescription(description = model.observationParticipantInfo.value)
+                HeaderDescription(description = info)
             }
         }
 

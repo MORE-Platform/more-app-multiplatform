@@ -57,6 +57,9 @@ interface ScheduleDao : BaseDao<ScheduleEntity> {
     @Query("SELECT * FROM schedules WHERE done = :done")
     fun getByDoneFlow(done: Boolean): Flow<List<ScheduleEntity>>
 
+    @Query("SELECT * FROM schedules WHERE state IN (:states)")
+    fun getByStatesFlow(states: List<String>): Flow<List<ScheduleEntity>>
+
     @Query("SELECT * FROM schedules WHERE hidden = :hidden")
     suspend fun getByHidden(hidden: Boolean): List<ScheduleEntity>
 

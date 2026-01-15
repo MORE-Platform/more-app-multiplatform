@@ -47,6 +47,7 @@ import io.redlink.umm.blendedcare.app.android.activities.notification.filter.Not
 import io.redlink.umm.blendedcare.app.android.activities.observationErrors.ObservationErrorView
 import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireView
+import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.umm.blendedcare.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.umm.blendedcare.app.android.activities.setting.SettingsView
 import io.redlink.umm.blendedcare.app.android.activities.setting.leave_study.LeaveStudyConfirmView
@@ -339,18 +340,12 @@ fun MainView(
                     }
 
                     viewModel.showBackButton.value = true
-                    val viewModel by remember {
-                        mutableStateOf(
-                            viewModel.creteNewSimpleQuestionViewModel(
-                                scheduleId,
-                                observationId,
-                                notificationId
-                            )
-                        )
+                    val questionnaireViewModel = remember(scheduleId, notificationId, observationId) {
+                        QuestionnaireViewModel(scheduleId, notificationId, observationId)
                     }
                     QuestionnaireView(
                         navController,
-                        viewModel
+                        questionnaireViewModel
                     )
                 }
             }

@@ -16,7 +16,11 @@
 import SwiftUI
 
 struct LimeSurveyView: View {
-    @StateObject var viewModel: LimeSurveyViewModel
+    @StateObject private var viewModel: LimeSurveyViewModel
+    
+    init(navigationState: NavigationState) {
+        _viewModel = StateObject(wrappedValue: LimeSurveyViewModel(navigationState: navigationState))
+    }
 
     var body: some View {
         MoreMainBackgroundView(contentPadding: 0) {
@@ -60,6 +64,6 @@ struct LimeSurveyView: View {
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel())
+        LimeSurveyView(navigationState: NavigationState())
     }
 }

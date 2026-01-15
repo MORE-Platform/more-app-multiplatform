@@ -21,37 +21,29 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 
 @Composable
 fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
-    val selectedValue = remember { mutableStateOf("") }
-
-    val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
-    val onChangeState: (String) -> Unit = {
-        selectedValue.value = it
-        model.setAnswer(it)
-    }
-
-    val items = remember {
-        model.answers
-    }
+    val observation by model.coreViewModel.simpleQuestionModel.collectAsStateWithLifecycle(null)
+    val answers = (observation?.answers ?: mutableSetOf()).toList()
 
     LazyColumn {
-        items(items) { item ->
+        items(answers) { item ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .selectable(
-                        selected = isSelectedItem(item),
-                        onClick = { onChangeState(item) },
+                        selected = item == model.answerSet.value,
+                        onClick = { model.setAnswer(item) },
                         role = Role.RadioButton,
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -59,7 +51,7 @@ fun QuestionnaireRadioButtons(model: QuestionnaireViewModel) {
                     .padding(vertical = 8.dp)
             ) {
                 RadioButton(
-                    selected = isSelectedItem(item),
+                    selected = item == model.answerSet.value,
                     onClick = null,
                     colors = RadioButtonDefaults.colors(
                         selectedColor = MoreColors.Companion.Primary,
