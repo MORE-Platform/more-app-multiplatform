@@ -37,13 +37,11 @@ class TaskDetailsViewModel: ObservableObject {
         }
     }
 
-    var simpleQuestionObservationVM: SimpleQuestionObservationViewModel
 
     private var cancellables = Set<AnyCancellable>()
 
     init(scheduleId: String) {
         coreModel = CoreTaskDetailsViewModel(repository: AppDelegate.shared.repositories, dataRecorder: AppDelegate.shared.dataRecorder, scheduleId: scheduleId)
-        simpleQuestionObservationVM = SimpleQuestionObservationViewModel()
         coreModel.onLoadTaskDetails { [weak self] taskDetails in
             if let self {
                 if let taskDetails {

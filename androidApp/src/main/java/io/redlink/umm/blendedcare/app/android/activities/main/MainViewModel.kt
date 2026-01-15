@@ -56,10 +56,6 @@ class MainViewModel(context: Context) : ViewModel() {
         )
     }
 
-    private val simpleQuestionnaireViewModel by lazy {
-        QuestionnaireViewModel()
-    }
-
     private var lastBleViewState = false
 
     init {
@@ -114,23 +110,6 @@ class MainViewModel(context: Context) : ViewModel() {
             val intent = Intent(activity, GarminConnectActivity::class.java)
             activityResultLauncher.launch(intent)
         }
-    }
-
-    fun creteNewSimpleQuestionViewModel(
-        scheduleId: String? = null,
-        observationId: String? = null,
-        notificationId: String?
-    ): QuestionnaireViewModel {
-        if (scheduleId != null || observationId != null) {
-            simpleQuestionnaireViewModel.apply {
-                if (!scheduleId.isNullOrBlank()) {
-                    setScheduleId(scheduleId, notificationId)
-                } else if (!observationId.isNullOrBlank()) {
-                    setObservationId(observationId, notificationId)
-                }
-            }
-        }
-        return simpleQuestionnaireViewModel
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {

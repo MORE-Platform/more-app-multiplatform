@@ -70,7 +70,7 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
             if let navigationState = navigationModalState.navigationState(for: .questionObservation) {
                 Navigation {
-                    SimpleQuetionObservationView(viewModel: contentViewModel.getSimpleQuestionObservationVM(navigationState: navigationState))
+                    SimpleQuetionObservationView(navigationState: navigationState)
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 .onDisappear {
@@ -88,12 +88,14 @@ struct MainTabView: View {
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
-            Navigation {
-                LimeSurveyView(viewModel: contentViewModel.getLimeSurveyVM(navigationModalState: navigationModalState))
-                    .navigationBarTitleDisplayMode(.inline)
-            }
-            .onDisappear {
-                navigationModalState.removeNavigationAction()
+            if let navigationState = navigationModalState.navigationState(for: .limeSurvey) {
+                Navigation {
+                    LimeSurveyView(navigationState: navigationState)
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .onDisappear {
+                    navigationModalState.removeNavigationAction()
+                }
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {

@@ -18,16 +18,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 
 @Composable
 fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
+    val observation by model.coreViewModel.simpleQuestionModel.collectAsStateWithLifecycle(null)
+    val question = observation?.question ?: ""
     Spacer(Modifier.height(16.dp))
 
     Column(
@@ -36,7 +40,7 @@ fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
     ) {
         Text(
-            text = model.question.value,
+            text = question,
             maxLines = 5,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.SemiBold,

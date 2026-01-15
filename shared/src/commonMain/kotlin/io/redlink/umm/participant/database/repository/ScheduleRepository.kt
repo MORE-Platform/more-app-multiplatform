@@ -11,17 +11,14 @@
 package io.redlink.umm.participant.database.repository
 
 import io.github.aakira.napier.Napier
-import io.ktor.utils.io.core.Closeable
 import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.ScheduleEntity
-import io.redlink.umm.participant.extensions.asClosure
 import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.observations.DataRecorder
 import io.redlink.umm.participant.observations.ObservationFactory
 import io.redlink.umm.participant.observations.observationTypes.ObservationType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -37,6 +34,10 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
 
     fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleEntity>> {
         return appDatabase.scheduleDao().getByDoneFlow(done)
+    }
+
+    fun allSchedulesWithStates(states: Set<ScheduleState>): Flow<List<ScheduleEntity>> {
+        return appDatabase.scheduleDao().getByStatesFlow(states.map { it.name })
     }
 
     fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING): Flow<List<ScheduleEntity>> =
@@ -79,13 +80,6 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
     fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId }
 
-    fun collectRunningState(
-        forState: ScheduleState,
-        provideNewState: (List<ScheduleEntity>) -> Unit
-    ): Closeable {
-        return allScheduleWithRunningState(forState).asClosure(provideNewState)
-    }
-
     fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> {
         return appDatabase.scheduleDao().getByObservationIdFlow(observationId).transform {
             val start = it.sortedBy { it.start }.firstOrNull()
@@ -103,51 +97,6 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         appDatabase.scheduleDao().updateState(id, newState.name)
         appDatabase.scheduleDao().updateDoneStatus(id, wasDone)
     }
-
-    fun nextSchedule(): Flow<Long?> {
-        return allSchedulesWithStatus().transform { schedules ->
-            val now = Clock.System.now().epochSeconds
-            val startTimes = schedules.mapNotNull { it.start }.filter { it > now }.toSet()
-            val endTimes = schedules.mapNotNull { it.end }.filter { it > now }.toSet()
-            val nextStart = startTimes.minOfOrNull { it }
-            val nextEnd = endTimes.minOfOrNull { it }
-
-            if (nextStart != null && nextEnd != null) {
-                if (nextStart < nextEnd) emit(nextStart) else emit(nextEnd)
-                return@transform
-            }
-            if (nextStart != null) emit(nextStart) else emit(nextEnd)
-        }
-    }
-
-    suspend fun getPreviousSchedule(
-        observationId: String,
-        currScheduleId: String
-    ): ScheduleEntity? {
-        val schedules = appDatabase.scheduleDao().getByObservationId(observationId)
-        val currentIndex = schedules.indexOfFirst { it.scheduleId == currScheduleId }
-
-        return if (currentIndex > 0) schedules[currentIndex - 1] else null
-    }
-
-    fun queryAllSchedulesForObservationId(observationId: String): Flow<List<ScheduleEntity>> {
-        return appDatabase.scheduleDao().getByObservationIdFlow(observationId)
-    }
-
-    suspend fun getNextSchedule() = nextSchedule().firstOrNull()
-
-    fun nextScheduleStart(): Flow<Long?> {
-        return allSchedulesWithStatus().transform { schedules ->
-            val now = Clock.System.now().epochSeconds
-            val nextStart = schedules.mapNotNull { it.start }
-                .filter { it > now }
-                .minOfOrNull { it }
-            emit(nextStart)
-        }
-    }
-
-    fun collectNextScheduleStart(provideNewState: (Long?) -> Unit) =
-        nextScheduleStart().asClosure(provideNewState)
 
     fun scheduleWithId(id: String): Flow<ScheduleEntity?> {
         return appDatabase.scheduleDao().getById(id)

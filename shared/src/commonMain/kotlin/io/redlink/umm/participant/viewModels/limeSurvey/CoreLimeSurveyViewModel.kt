@@ -10,6 +10,7 @@
  */
 package io.redlink.umm.participant.viewModels.limeSurvey
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.extensions.asClosure
@@ -24,63 +25,54 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class CoreLimeSurveyViewModel(
     private val repositories: MainRepository,
-    observationFactory: ObservationFactory
+    observationFactory: ObservationFactory,
+    private var scheduleId: String? = null,
+    notificationId: String? = null,
+    private val observationId: String? = null
 ) :
     CoreViewModel() {
-    private var observation: LimeSurveyObservation? =
-        observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation
-    private var scheduleId: String? = null
-    private var observationId: String? = null
-    val limeSurveyLink: StateFlow<String?>? = observation?.limeURL
-    val dataLoading = MutableStateFlow(false)
+    private var observation: LimeSurveyObservation =
+        observationFactory.observation("lime-survey-observation") as? LimeSurveyObservation ?: throw IllegalStateException("No lime-survey-observation found in ObservationFactory")
 
-    fun setScheduleId(scheduleId: String, notificationId: String?) {
-        if (scheduleId != this.scheduleId) {
-            Napier.i { "Setting scheduleId: $scheduleId for LimeSurvey" }
-            observation?.let { observation ->
+    @NativeCoroutines
+    val limeSurveyLink: StateFlow<String?> = observation.limeURL
+    private val _dataLoading = MutableStateFlow(false)
+    @NativeCoroutines
+    val dataLoading: StateFlow<Boolean> = _dataLoading
+
+    init {
+        viewModelScope.launch {
+            if (scheduleId == null && observationId != null) {
+                scheduleId = repositories.schedule.firstScheduleIdAvailableForObservationId(observationId)
+                    .cancellable()
+                    .firstOrNull()
+            }
+
+            scheduleId?.let { scheduleId ->
+                Napier.i { "Setting scheduleId: $scheduleId for LimeSurvey" }
                 if (scheduleId.isNotEmpty() || scheduleId.isNotBlank()) {
-                    this.scheduleId = scheduleId
-                    launchScope(Dispatchers.Main) {
-                        dataLoading.set(true)
-                        repositories.schedule.scheduleWithId(scheduleId).cancellable()
-                            .transform { scheduleSchema ->
-                                emit(scheduleSchema?.let {
-                                    repositories.observation.observationById(it.observationId)
-                                        .cancellable().firstOrNull()
-                                })
-                            }.cancellable().firstOrNull().let { observationSchema ->
-                                observationSchema?.let {
-                                    observationId = it.observationId
-                                    observation.observationConfig(it.configAsMap())
-                                    observation.start(it.observationId, scheduleId, notificationId)
-                                }
-                                dataLoading.set(false)
+                    _dataLoading.update { true }
+                    repositories.schedule.scheduleWithId(scheduleId).cancellable()
+                        .transform { scheduleSchema ->
+                            emit(scheduleSchema?.let {
+                                repositories.observation.observationById(it.observationId)
+                                    .cancellable().firstOrNull()
+                            })
+                        }.cancellable().firstOrNull().let { observationSchema ->
+                            observationSchema?.let {
+                                observation.observationConfig(it.configAsMap())
+                                observation.start(it.observationId, scheduleId, notificationId)
                             }
-                    }
+                            _dataLoading.set(false)
+                        }
                 }
-
             }
         }
-    }
-
-    fun setObservationId(observationId: String, notificationId: String?) {
-        launchScope {
-            repositories.schedule.firstScheduleIdAvailableForObservationId(observationId)
-                .cancellable()
-                .firstOrNull()?.let { setScheduleId(it, notificationId) }
-        }
-    }
-
-    fun onLimeSurveyLinkChange(providedState: (String?) -> Unit) =
-        limeSurveyLink?.asNullableClosure(providedState)
-
-    fun onDataLoadingChange(providedState: (Boolean) -> Unit) = dataLoading.asClosure(providedState)
-
-    override fun viewDidAppear() {
-
     }
 
     override fun viewDidDisappear() {
@@ -90,23 +82,21 @@ class CoreLimeSurveyViewModel(
 
     fun finish() {
         scheduleId?.let {
-            observation?.storeData()
-            observation?.stopAndSetDone(it)
+            observation.storeData()
+            observation.stopAndSetDone(it)
         }
         clear()
     }
 
     fun cancel() {
         scheduleId?.let {
-            observation?.stop(it)
+            observation.stop(it)
         }
         clear()
     }
 
     fun clear() {
-        scheduleId = null
-        observationId = null
-        dataLoading.value = false
+        _dataLoading.value = false
     }
 
     override fun close() {

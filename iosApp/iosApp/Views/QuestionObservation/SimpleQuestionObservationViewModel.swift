@@ -15,34 +15,28 @@
 
 import shared
 
-protocol SimpleQuestionObservationListener {
-    func onQuestionAnswered()
-}
+import Combine
+import KMPNativeCoroutinesCombine
 
 class SimpleQuestionObservationViewModel: ObservableObject {
-    private let coreModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(repository: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory)
+    private let coreModel: SimpleQuestionCoreViewModel
 
     @Published var simpleQuestoinModel: SimpleQuestionModel?
     @Published var answers: [String] = []
     @Published var answerSet: String = ""
+    
+    private var cancellables = Set<AnyCancellable>()
 
-    init() {
-        coreModel.onLoadSimpleQuestionObservation { model in
-            if let model {
-                self.simpleQuestoinModel = model
-                self.answers = model.answers.map { value in
-                    String(describing: value)
-                }
+    init(navigationState: NavigationState) {
+        coreModel = SimpleQuestionCoreViewModel(repository: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory, scheduleId: navigationState.scheduleId, notificationId: navigationState.notificationId, observationId: navigationState.observationId)
+        
+        createPublisher(for: coreModel.simpleQuestionModel)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] model in
+                self?.simpleQuestoinModel = model
+                self?.answers = (model?.answers as? Set<NSString>)?.map { $0 as String } ?? []
             }
-        }
-    }
-
-    func setScheduleId(navigationState: NavigationState) {
-        if let scheduleId = navigationState.scheduleId {
-            coreModel.setScheduleId(scheduleId: scheduleId, notificationId: navigationState.notificationId)
-        } else if let observationId = navigationState.observationId {
-            coreModel.setScheduleViaObservationId(observationId: observationId, notificationId: navigationState.notificationId)
-        }
+            .store(in: &cancellables)
     }
 
     func viewDidAppear() {

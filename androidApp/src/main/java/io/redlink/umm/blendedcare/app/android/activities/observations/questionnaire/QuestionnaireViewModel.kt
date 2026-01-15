@@ -20,18 +20,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class QuestionnaireViewModel : ViewModel() {
-    private val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(
-        BlendedCareApplication.Companion.shared!!.repositories,
-        BlendedCareApplication.Companion.shared!!.observationFactory
+class QuestionnaireViewModel(scheduleId: String?, notificationId: String?, observationId: String?) : ViewModel() {
+    val coreViewModel: SimpleQuestionCoreViewModel = SimpleQuestionCoreViewModel(
+        BlendedCareApplication.shared!!.repositories,
+        BlendedCareApplication.shared!!.observationFactory,
+        scheduleId,
+        notificationId,
+        observationId
     )
 
     val hasData = mutableStateOf(false)
-    val observationTitle = mutableStateOf("")
-    val question = mutableStateOf("")
-    var answers = mutableStateListOf("")
     val answerSet = mutableStateOf("")
-    val observationParticipantInfo = mutableStateOf("")
 
     init {
         viewModelScope.launch(Dispatchers.Main.immediate) {
@@ -39,11 +38,6 @@ class QuestionnaireViewModel : ViewModel() {
                 withContext(Dispatchers.Main) {
                     model?.let {
                         hasData.value = true
-                        observationTitle.value = it.observationTitle
-                        question.value = it.question
-                        answers.clear()
-                        answers.addAll(it.answers)
-                        observationParticipantInfo.value = it.participantInfo
                     } ?: run {
                         hasData.value = false
                     }
@@ -54,19 +48,12 @@ class QuestionnaireViewModel : ViewModel() {
 
     fun viewDidAppear() {
         coreViewModel.viewDidAppear()
+        answerSet.value = ""
     }
 
     fun viewDidDisappear() {
         coreViewModel.viewDidDisappear()
         hasData.value = false
-    }
-
-    fun setScheduleId(scheduleId: String, notificationId: String?) {
-        coreViewModel.setScheduleId(scheduleId, notificationId)
-    }
-
-    fun setObservationId(observationId: String, notificationId: String?) {
-        coreViewModel.setScheduleViaObservationId(observationId, notificationId)
     }
 
     fun finish(setObservationToDone: Boolean = true) {

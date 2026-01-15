@@ -26,13 +26,14 @@ import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
 
-class LimeSurveyViewModel : ViewModel(), WebClientListener {
-    private val coreViewModel = CoreLimeSurveyViewModel(
-        BlendedCareApplication.Companion.shared!!.repositories,
-        BlendedCareApplication.Companion.shared!!.observationFactory
+class LimeSurveyViewModel(scheduleId: String?, notificationId: String?, observationId: String?) : ViewModel(), WebClientListener {
+    val coreViewModel = CoreLimeSurveyViewModel(
+        BlendedCareApplication.shared!!.repositories,
+        BlendedCareApplication.shared!!.observationFactory,
+        scheduleId,
+        notificationId,
+        observationId
     )
-    val limeSurveyLink = mutableStateOf<String?>(null)
-    val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)
     val networkLoading = mutableStateOf(false)
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
@@ -44,35 +45,6 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
                     alertDialogOpen.value = it
                 }
             }
-        }
-        viewModelScope.launch {
-            coreViewModel.dataLoading.collect {
-                withContext(Dispatchers.Main) {
-                    dataLoading.value = it
-                }
-            }
-        }
-        coreViewModel.limeSurveyLink?.let { flow ->
-            viewModelScope.launch {
-                flow.collect {
-                    withContext(Dispatchers.Main) {
-                        limeSurveyLink.value = it
-                    }
-                }
-            }
-        }
-
-    }
-
-    fun setModel(
-        scheduleId: String? = null,
-        observationId: String? = null,
-        notificationId: String? = null
-    ) {
-        if (!scheduleId.isNullOrBlank()) {
-            coreViewModel.setScheduleId(scheduleId, notificationId)
-        } else if (!observationId.isNullOrBlank()) {
-            coreViewModel.setObservationId(observationId, notificationId)
         }
     }
 

@@ -2,6 +2,7 @@ package io.redlink.umm.participant.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.aakira.napier.Napier
 import io.redlink.umm.blendedcare.services.network.openapi.model.ObservationSchedule
 import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.util.createUUID

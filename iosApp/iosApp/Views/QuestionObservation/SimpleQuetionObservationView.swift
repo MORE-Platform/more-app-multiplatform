@@ -17,9 +17,13 @@ import shared
 import SwiftUI
 
 struct SimpleQuetionObservationView: View {
-    @StateObject var viewModel: SimpleQuestionObservationViewModel
+    @StateObject private var viewModel: SimpleQuestionObservationViewModel
 
-    @EnvironmentObject var navigationModalState: NavigationModalState
+    @EnvironmentObject private var navigationModalState: NavigationModalState
+
+    init(navigationState: NavigationState) {
+        _viewModel = StateObject(wrappedValue: SimpleQuestionObservationViewModel(navigationState: navigationState))
+    }
 
     var body: some View {
         MoreMainBackgroundView {
@@ -28,13 +32,15 @@ struct SimpleQuetionObservationView: View {
                     .padding(.bottom, 20)
                     .padding(.top, 40)
 
-                VStack(
-                    alignment: .leading) {
+                VStack(alignment: .leading) {
                     ForEach(viewModel.answers, id: \.self) { answerOption in
-                        RadioButtonField(id: answerOption, label: answerOption, isMarked: viewModel.answerSet == answerOption ? true : false,
-                                         callback: { selected in
-                                             viewModel.setAnswer(answer: selected)
-                                         })
+                        RadioButtonField(
+                            id: answerOption,
+                            label: answerOption,
+                            isMarked: viewModel.answerSet == answerOption,
+                            callback: { selected in
+                                viewModel.setAnswer(answer: selected)
+                            })
                     }
 
                     VStack {
