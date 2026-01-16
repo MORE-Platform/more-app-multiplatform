@@ -18,7 +18,7 @@ import kotlinx.serialization.json.jsonArray
 
 class SimpleQuestionModel(
     var question: String = "",
-    val answers: MutableSet<String> = mutableSetOf(""),
+    val answers: List<String> = listOf(),
     var participantInfo: String = "",
     var observationId: String = "",
     var observationTitle: String = "",
@@ -37,13 +37,12 @@ class SimpleQuestionModel(
                 config["question"]?.toString()?.trim('\"') ?: "",
                 config["answers"]?.jsonArray?.map {
                     it.toString().trim('\"')
-                }?.toMutableSet() ?: mutableSetOf(),
+                } ?: emptyList(),
                 observationSchema.participantInfo,
                 observationSchema.observationId,
                 observationSchema.observationTitle,
                 scheduleId
             )
-
         }
     }
 }

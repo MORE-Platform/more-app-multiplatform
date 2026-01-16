@@ -34,7 +34,7 @@ class SimpleQuestionObservationViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: {_ in}) { [weak self] model in
                 self?.simpleQuestoinModel = model
-                self?.answers = (model?.answers as? Set<NSString>)?.map { $0 as String } ?? []
+                self?.answers = (model?.answers as? [NSString])?.map { $0 as String } ?? []
             }
             .store(in: &cancellables)
     }
@@ -58,3 +58,4 @@ class SimpleQuestionObservationViewModel: ObservableObject {
         }
     }
 }
+
