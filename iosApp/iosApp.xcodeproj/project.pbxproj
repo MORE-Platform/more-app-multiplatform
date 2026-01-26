@@ -59,12 +59,12 @@
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
 		1F43DE212EC6137300B6F07B /* GarminConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE202EC6137300B6F07B /* GarminConnectView.swift */; };
 		1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */; };
+		1F45E5B92F2766AB00EE8487 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
 		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
 		1F69081329D44D900079C219 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F69081229D44D900079C219 /* DateExtension.swift */; };
-		1F69FAD92ED0780700411214 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F69FAD82ED0780700411214 /* GoogleService-Info.plist */; };
 		1F6A4E3929F6C7C000F0247F /* EmptyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */; };
 		1F6A4E3C29F6C95B00F0247F /* PolarConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */; };
 		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
@@ -266,12 +266,12 @@
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		1F43DE202EC6137300B6F07B /* GarminConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectView.swift; sourceTree = "<group>"; };
 		1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectViewModel.swift; sourceTree = "<group>"; };
+		1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
 		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
 		1F69081229D44D900079C219 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
-		1F69FAD82ED0780700411214 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F6A4E3829F6C7C000F0247F /* EmptyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyListView.swift; sourceTree = "<group>"; };
 		1F6A4E3B29F6C95B00F0247F /* PolarConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConnector.swift; sourceTree = "<group>"; };
 		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
@@ -794,7 +794,7 @@
 				1F0026DA29CC8E730034EF65 /* AppDelegate.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */,
-				1F69FAD82ED0780700411214 /* GoogleService-Info.plist */,
+				1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -1046,7 +1046,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
-				1F69FAD92ED0780700411214 /* GoogleService-Info.plist in Resources */,
+				1F45E5B92F2766AB00EE8487 /* GoogleService-Info.plist in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				1FF6D8AD2BC516270050AF10 /* PrivacyInfo.xcprivacy in Resources */,

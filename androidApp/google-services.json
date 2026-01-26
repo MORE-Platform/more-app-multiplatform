@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:940819757386:android:06b2a30f282b2978bea9b3",
+        "mobilesdk_app_id": "1:940819757386:android:1b1f854607ef4357bea9b3",
         "android_client_info": {
           "package_name": "io.redlink.umm.blendedcare"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDVvqxvqlyPmCOp7BoC5TcQqzMgpDuVAs4"
+          "current_key": "AIzaSyCAhj1ftA8XaPwlFss6UlyjcKMOCyRaSXw"
         }
       ],
       "services": {
