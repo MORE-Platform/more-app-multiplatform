@@ -49,8 +49,8 @@ android {
         applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.0.5"
+        versionCode = 7
+        versionName = "0.0.6"
     }
     buildFeatures {
         compose = true
@@ -106,11 +106,11 @@ android {
             storeFile?.let {
                 this.storeFile = it
             } ?: run {
-                println("Keystore file not found, falling back to debug keystore")
-                this.storeFile = File(System.getProperty("user.home"), ".android/debug.keystore")
-                this.storePassword = "android"
-                this.keyAlias = "androiddebugkey"
-                this.keyPassword = "android"
+                println("Keystore file not found for release signing. Leaving release signing unconfigured.")
+                this.storeFile = null
+                this.storePassword = null
+                this.keyAlias = null
+                this.keyPassword = null
             }
         }
     }
@@ -125,10 +125,11 @@ android {
             buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
 
             val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile != null) {
-                signingConfig = releaseSigningConfig
+            signingConfig = if (releaseSigningConfig.storeFile != null) {
+                releaseSigningConfig
             } else {
-                println("Warning: No signing configuration available. Using debug signing.")
+                println("Warning: No release keystore configured. Falling back to default debug signing.")
+                signingConfigs.getByName("debug")
             }
 
             isMinifyEnabled = true
