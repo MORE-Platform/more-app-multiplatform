@@ -144,6 +144,9 @@ platform :android do
   lane :deploy_beta do
     begin
         signing_configured = setup_android_signing
+        unless signing_configured
+          UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
+        end
 
       if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
         UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
@@ -242,6 +245,9 @@ platform :android do
   lane :deploy_production do
     begin
       signing_configured = setup_android_signing
+      unless signing_configured
+        UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
+      end
 
       if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
         UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")

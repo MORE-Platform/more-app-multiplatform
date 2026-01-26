@@ -98,15 +98,19 @@ class Shared(
                     ViewManager.currentStudyActive(state)
                     if (fg != prevFg && (state == prevState || prevState == null && state)) {
                         Napier.d(tag = "Shared::init") { "App went to foreground: $fg, study state: $state" }
-                        if (fg && state) {
+                        if (fg) {
                             updateStudy()
-                            observationManager.updateTaskStates()
-                            observationFactory.updateObservationErrors()
-                            notificationManager.createNewFCMIfNecessary()
-                            notificationManager.clearAllNotifications()
-                            notificationManager.downloadMissedNotifications()
-                            dataRecorder.restartAll()
-                            garminLogin()
+                            if (state) {
+                                observationManager.updateTaskStates()
+                                observationFactory.updateObservationErrors()
+                                notificationManager.createNewFCMIfNecessary()
+                                notificationManager.clearAllNotifications()
+                                notificationManager.downloadMissedNotifications()
+                                dataRecorder.restartAll()
+                                garminLogin()
+                            } else {
+                                ViewManager.showBLEView(false)
+                            }
                         } else {
                             ViewManager.showBLEView(false)
                         }
