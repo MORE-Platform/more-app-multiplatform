@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.withContext
 
 class StudyRepository(private val appDatabase: AppDatabase) {
     private val _study = MutableStateFlow<StudyEntity?>(null)
@@ -48,15 +49,18 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     init {
         Scope.launch(Dispatchers.IO) {
             getStudy().collect {
-                _study.value = it
-                it?.let {
-                    _finishText.value = it.finishText
+                withContext(Dispatchers.Main) {
+                    _study.value = it
+                    it?.let {
+                        _finishText.value = it.finishText
+                    }
                 }
             }
         }
     }
 
     suspend fun upsert(study: Study) {
+
         deleteStudy()
         StudyScope.launch(Dispatchers.IO) {
             val studyEntity = StudyEntity.fromStudy(study)

@@ -49,8 +49,8 @@ android {
         applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 7
-        versionName = "0.0.6"
+        versionCode = 9
+        versionName = "0.0.9"
     }
     buildFeatures {
         compose = true

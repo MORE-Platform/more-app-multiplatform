@@ -22,6 +22,7 @@ import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotificatio
 import io.redlink.umm.blendedcare.services.network.openapi.model.PushNotificationToken
 import io.redlink.umm.blendedcare.services.network.openapi.model.Study
 import io.redlink.umm.blendedcare.services.network.openapi.model.StudyConsent
+import io.redlink.umm.participant.models.CredentialModel
 import io.redlink.umm.participant.models.LoginModel
 import io.redlink.umm.participant.services.store.CredentialRepository
 import io.redlink.umm.participant.services.store.EndpointRepository
@@ -111,10 +112,10 @@ class NetworkService(
         }
     }
 
-    suspend fun getStudyConfig(): Pair<Study?, NetworkServiceError?> {
+    suspend fun getStudyConfig(credentials: CredentialModel? = null): Pair<Study?, NetworkServiceError?> {
         try {
             Napier.i(tag = "NetworkService::getStudyConfig") { "Downloading study data..." }
-            val client = networkClients.getConfigApi() ?: return Pair(
+            val client = networkClients.getConfigApi(credentials) ?: return Pair(
                 null,
                 NetworkServiceError(null, "Failed to init HTTP client")
             )

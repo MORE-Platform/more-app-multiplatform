@@ -10,6 +10,7 @@
  */
 package io.redlink.umm.participant.services.notification
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.Shared
 import io.redlink.umm.participant.database.entities.NotificationEntity
@@ -53,7 +54,9 @@ class NotificationManager(
     private val deeplinkManager: DeeplinkManager,
     private val sharedStorageRepository: SharedStorageRepository
 ) {
-    val _unreadUserCount = MutableStateFlow(0)
+    private val _unreadUserCount = MutableStateFlow(0)
+
+    @NativeCoroutines
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
 
     init {

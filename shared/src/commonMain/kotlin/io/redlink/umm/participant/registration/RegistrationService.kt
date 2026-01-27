@@ -78,6 +78,9 @@ class RegistrationService(
                 addObservationPermissions(it)
             }
             _error.value = networkError
+            if (networkError != null) {
+                Napier.e(tag = "RegistrationService::sendRegistrationToken") { "Error sending registration token: $networkError" }
+            }
         }.second.invokeOnCompletion {
             _isLoading.value = false
         }
@@ -122,21 +125,22 @@ class RegistrationService(
                 }
                 val credentialModel =
                     CredentialModel(config.credentials.apiId, config.credentials.apiKey)
-                if (shared.credentialRepository.store(credentialModel)) {
-                    val (study, error) = shared.networkService.getStudyConfig()
-                    _error.value = error
-                    study?.let { study ->
-                        shared.observationFactory.clearNeededObservationTypes()
+                val (study, error) = shared.networkService.getStudyConfig(credentialModel)
+                _error.value = error
+                study?.let { study ->
+                    shared.observationFactory.clearNeededObservationTypes()
+                    if (shared.credentialRepository.store(credentialModel)) {
                         shared.repositories.study.upsert(study)
                         shared.newLogin()
-                    } ?: run {
-                        if (_error.value == null) {
-                            _error.value = NetworkServiceError(null, "Could not get study")
-                        }
+                    } else {
+                        _error.value = NetworkServiceError(null, "Could not store credentials")
                     }
-                } else {
-                    _error.value = NetworkServiceError(null, "Could not store credentials")
+                } ?: run {
+                    if (_error.value == null) {
+                        _error.value = NetworkServiceError(null, "Could not get study")
+                    }
                 }
+
             }
         }.second.invokeOnCompletion {
             _isLoading.value = false

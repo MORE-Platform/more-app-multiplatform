@@ -23,6 +23,8 @@ struct StudyPausedView: View {
                 .padding(.bottom, 8)
             Title2(titleText: "\(String(localized: "This study is currently paused by the Study Operator and will be resumed shortly"))!", textAlignment: .center)
             Spacer()
+            ReloadButton()
+            ExitButton()
         }
     }
 }
