@@ -16,6 +16,7 @@ import io.redlink.umm.blendedcare.services.network.openapi.api.DataApi
 import io.redlink.umm.blendedcare.services.network.openapi.api.GarminRegistrationApi
 import io.redlink.umm.blendedcare.services.network.openapi.api.NotificationsApi
 import io.redlink.umm.blendedcare.services.network.openapi.api.RegistrationApi
+import io.redlink.umm.participant.models.CredentialModel
 import io.redlink.umm.participant.services.store.CredentialRepository
 import io.redlink.umm.participant.services.store.EndpointRepository
 import kotlinx.serialization.json.Json
@@ -63,11 +64,11 @@ class NetworkClients(
     private fun isExpired(lastUsed: Long): Boolean =
         lastUsed != 0L && (now() - lastUsed) > clientTimeoutMs
 
-    private fun getHttpClientWithAuth(): HttpClient? {
+    private fun getHttpClientWithAuth(credentials: CredentialModel? = null): HttpClient? {
         ensureCredentialsUpToDate()
 
         val baseClient = getHttpClient() ?: return null
-        val creds = credentialRepository.credentials.value
+        val creds = credentials ?: credentialRepository.credentials.value
 
         return baseClient.config {
             install(Auth) {
@@ -104,19 +105,19 @@ class NetworkClients(
 
         if (current == null || isExpired(httpClientLastUsed)) {
             current?.close()
-            httpClient = getHttpClient(Logger.Companion.DEFAULT)
+            httpClient = getHttpClient(Logger.DEFAULT)
         }
 
         httpClientLastUsed = now
         return httpClient
     }
 
-    fun getConfigApi(): ConfigurationApi? {
+    fun getConfigApi(credentials: CredentialModel? = null): ConfigurationApi? {
         ensureCredentialsUpToDate()
 
         val now = now()
-        if (configurationApi == null || isExpired(configurationLastUsed)) {
-            configurationApi = getHttpClientWithAuth()?.let { client ->
+        if (credentials != null || configurationApi == null || isExpired(configurationLastUsed)) {
+            configurationApi = getHttpClientWithAuth(credentials)?.let { client ->
                 ConfigurationApi(baseUrl(), client)
             }
         }

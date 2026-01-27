@@ -170,6 +170,7 @@ fun MainView(
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
     val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
+    val notificationCount = BlendedCareApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
@@ -185,7 +186,7 @@ fun MainView(
                 2 -> navController.navigate(NavigationScreen.INFO.routeWithParameters())
             }
         },
-        unreadNotificationCount = viewModel.unreadNotificationCount.intValue,
+        unreadNotificationCount = notificationCount.value,
     ) {
         NavHost(
             navController = navController,

@@ -83,10 +83,13 @@ class ContentViewModel: ObservableObject {
             self?.alertDialogModel = alertDialogModel
         }
         .store(in: &cancellables)
-
-        AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
-            self?.unreadNotificationCount = kInt.intValue
-        }
+        
+        createPublisher(for: AppDelegate.shared.notificationManager.unreadUserCount)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in}) { [weak self] notificationCount in
+                self?.unreadNotificationCount = notificationCount.intValue
+            }
+            .store(in: &cancellables).self
     }
 
     private func reinitAllViewModels() {

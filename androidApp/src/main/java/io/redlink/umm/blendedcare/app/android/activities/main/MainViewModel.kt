@@ -18,26 +18,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
 import io.redlink.umm.blendedcare.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.umm.blendedcare.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.umm.blendedcare.app.android.activities.observations.garmin.GarminConnectActivity
 import io.redlink.umm.blendedcare.app.android.activities.observations.limeSurvey.LimeSurveyActivity
-import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.umm.blendedcare.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
 import io.redlink.umm.participant.models.ScheduleListType
 import io.redlink.umm.participant.viewModels.ViewManager
 import io.redlink.umm.participant.viewModels.notifications.CoreNotificationFilterViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainViewModel(context: Context) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
-
-    val unreadNotificationCount = mutableIntStateOf(0)
 
     val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
 
@@ -59,14 +53,6 @@ class MainViewModel(context: Context) : ViewModel() {
     private var lastBleViewState = false
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            BlendedCareApplication.shared!!.unreadNotificationCount.collect {
-                withContext(Dispatchers.Main) {
-                    unreadNotificationCount.intValue = it
-                }
-            }
-        }
-
         viewModelScope.launch {
             ViewManager.bleViewActive.collect {
                 if (it && !lastBleViewState) {
