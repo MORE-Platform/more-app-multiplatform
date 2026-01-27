@@ -17,6 +17,7 @@ import SwiftUI
 
 struct LimeSurveyView: View {
     @StateObject private var viewModel: LimeSurveyViewModel
+    @Environment(\.dismiss) private var dismiss
     
     init(navigationState: NavigationState) {
         _viewModel = StateObject(wrappedValue: LimeSurveyViewModel(navigationState: navigationState))
@@ -58,6 +59,11 @@ struct LimeSurveyView: View {
         }
         .onDisappear {
             viewModel.viewDidDisappear()
+        }
+        .onReceive(viewModel.$shouldClose.removeDuplicates()) { close in
+            if close {
+                dismiss()
+            }
         }
     }
 }

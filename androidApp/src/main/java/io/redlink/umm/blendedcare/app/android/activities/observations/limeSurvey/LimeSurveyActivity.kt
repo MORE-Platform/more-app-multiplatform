@@ -15,7 +15,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
@@ -52,17 +51,20 @@ import io.redlink.umm.blendedcare.app.android.shared_composables.MoreBackground
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 
 class LimeSurveyActivity : ComponentActivity() {
-    val viewModel: LimeSurveyViewModel = LimeSurveyViewModel(
-        intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
-        intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID),
-        intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID)
-    )
+    private val viewModel: LimeSurveyViewModel by lazy {
+        LimeSurveyViewModel(
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID)
+        )
+    }
     var webView: WebView? = null
     var webClientListener: WebClient? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel
         onBackPressedDispatcher.addCallback(this) {
             viewModel.onFinish()
             finish()
@@ -107,11 +109,6 @@ class LimeSurveyActivity : ComponentActivity() {
         webClientListener?.removeListener()
         webView?.destroy()
 
-    }
-
-    override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
-        viewModel.onFinish()
-        return super.getOnBackInvokedDispatcher()
     }
 
     companion object {
