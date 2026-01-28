@@ -34,12 +34,14 @@ import io.redlink.umm.participant.services.store.SharedStorageRepository
 import io.redlink.umm.participant.viewModels.ViewManager
 import io.redlink.umm.participant.viewModels.bluetoothConnection.BluetoothController
 import io.redlink.umm.participant.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -83,6 +85,7 @@ class Shared(
 
     private val mutex = Mutex()
     private val konnection = Konnection.instance
+
     // Simple re-entrancy guard: true while updateStudyInternal is running
     @OptIn(ExperimentalAtomicApi::class)
     private val studyUpdateRunning = AtomicBoolean(false)
@@ -109,6 +112,9 @@ class Shared(
                                 notificationManager.createNewFCMIfNecessary()
                                 notificationManager.clearAllNotifications()
                                 notificationManager.downloadMissedNotifications()
+                                withContext(Dispatchers.Main) {
+                                    observationDataManager.listenToDatapointCountChanges()
+                                }
                                 dataRecorder.restartAll()
                                 garminLogin()
                             } else {
@@ -121,7 +127,9 @@ class Shared(
                         Napier.d(tag = "Shared::init") { "Study state changed: $prevState -> $state" }
                         if (state) {
                             updateStudy()
-                            observationDataManager.listenToDatapointCountChanges()
+                            withContext(Dispatchers.Main) {
+                                observationDataManager.listenToDatapointCountChanges()
+                            }
                             observationManager.activateScheduleUpdate()
                             Scope.launch {
                                 observationManager.updateTaskStates()
@@ -144,9 +152,8 @@ class Shared(
     suspend fun updateStudy(
         oldStudyState: StudyState? = null,
         newStudyState: StudyState? = null
-    )
-    {
-        if (!credentialRepository.hasCredentials.value){
+    ) {
+        if (!credentialRepository.hasCredentials.value) {
             return
         }
         if (!studyUpdateRunning.compareAndSet(expectedValue = false, newValue = true)) {

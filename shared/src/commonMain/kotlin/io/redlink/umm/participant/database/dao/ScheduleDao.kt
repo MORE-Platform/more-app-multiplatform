@@ -101,7 +101,4 @@ interface ScheduleDao : BaseDao<ScheduleEntity> {
 
     @Query("UPDATE schedules SET state = :state WHERE scheduleId = :scheduleId")
     suspend fun updateState(scheduleId: String, state: String)
-
-    @Query("UPDATE schedules SET hidden = :hidden WHERE scheduleId = :scheduleId")
-    suspend fun updateHidden(scheduleId: String, hidden: Boolean)
 }
