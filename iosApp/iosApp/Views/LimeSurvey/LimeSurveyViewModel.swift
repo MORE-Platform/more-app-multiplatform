@@ -26,8 +26,7 @@ class LimeSurveyViewModel: ObservableObject {
     @Published var limeSurveyLink: URL?
     @Published var dataLoading = false
     @Published var wasAnswered = false
-
-    private var navigationModalState: NavigationModalState?
+    @Published var shouldClose = false
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -64,13 +63,14 @@ class LimeSurveyViewModel: ObservableObject {
         coreViewModel.viewDidDisappear()
     }
 
+    @MainActor
     func onFinish() {
         if wasAnswered {
             coreViewModel.finish()
         } else {
             coreViewModel.cancel()
         }
-        navigationModalState?.closeView(screen: .limeSurvey)
+        shouldClose = true
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {
