@@ -14,6 +14,7 @@ import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.entities.ObservationDataEntity
 import io.redlink.umm.participant.database.repository.MainRepository
+import io.redlink.umm.participant.models.StudyState
 import io.redlink.umm.participant.scopes.Scope
 import io.redlink.umm.participant.scopes.StudyScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,9 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
             Napier.i(tag = "ObservationDataManager::add") { "Adding ${dataList.size} observations for schedule IDs: $scheduleIdList" }
             repository.observationData.addData(dataList)
             repository.dataPointCount.incrementCount(scheduleIdList, dataList.size.toLong())
+            if (countJob == null && repository.study.studyState.value == StudyState.ACTIVE) {
+                listenToDatapointCountChanges()
+            }
         }
     }
 

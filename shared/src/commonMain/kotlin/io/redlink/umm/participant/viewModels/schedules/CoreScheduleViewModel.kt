@@ -29,6 +29,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Instant
@@ -77,9 +78,11 @@ class CoreScheduleViewModel(
                     ScheduleState.DEACTIVATED, ScheduleState.ACTIVE,
                     ScheduleState.RUNNING, ScheduleState.PAUSED
                 )
+
                 ScheduleListType.RUNNING -> {
                     setOf(ScheduleState.RUNNING)
                 }
+
                 else -> {
                     setOf(ScheduleState.DONE, ScheduleState.ENDED)
                 }
@@ -106,7 +109,7 @@ class CoreScheduleViewModel(
         launchScope {
             repos.schedule.allSchedulesWithStates(scheduleStates)
                 .cancellable()
-                .collect { schedules ->
+                .collectLatest { schedules ->
                     val newList = when (scheduleListType) {
                         ScheduleListType.COMPLETED -> createCompletedModels(schedules)
                         ScheduleListType.RUNNING -> createRunningModels(schedules)
