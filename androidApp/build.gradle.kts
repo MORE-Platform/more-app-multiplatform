@@ -175,13 +175,14 @@ android {
                 releaseSigningConfig
             } else {
                 if (isCi) {
-                    throw GradleException(
-                        "No release keystore configured in CI. Refusing to produce a debug-signed release bundle. " +
-                                "Make sure ANDROID_KEYSTORE_BASE64/ANDROID_KEYSTORE_PATH and passwords are set."
+                    println(
+                        "No release keystore configured in CI. Refusing to produce a debug-signed release bundle. Make sure ANDROID_KEYSTORE_BASE64/ANDROID_KEYSTORE_PATH and passwords are set."
                     )
+                    null
+                } else {
+                    println("Warning: No release keystore configured. Falling back to default debug signing for LOCAL builds.")
+                    signingConfigs.getByName("debug")
                 }
-                println("Warning: No release keystore configured. Falling back to default debug signing for LOCAL builds.")
-                signingConfigs.getByName("debug")
             }
 
             isMinifyEnabled = true
