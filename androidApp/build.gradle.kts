@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.security.KeyStore
-import java.security.MessageDigest
 import java.util.Base64
 import java.util.Properties
 
@@ -43,32 +40,6 @@ fun getEnvOrProperty(key: String, envProps: Properties): String? {
     return System.getenv(key) ?: envProps.getProperty(key)
 }
 
-fun sha1OfSigningCert(
-    keystoreFile: File,
-    storePassword: String,
-    keyAlias: String,
-    keyPassword: String
-): String? {
-    return try {
-        val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-        FileInputStream(keystoreFile).use { fis ->
-            ks.load(fis, storePassword.toCharArray())
-        }
-
-        val entry = ks.getEntry(
-            keyAlias,
-            KeyStore.PasswordProtection(keyPassword.toCharArray())
-        ) as? KeyStore.PrivateKeyEntry ?: return null
-
-        val cert = entry.certificate
-        val digest = MessageDigest.getInstance("SHA-1").digest(cert.encoded)
-        digest.joinToString(":") { b -> "%02X".format(b) }
-    } catch (e: Exception) {
-        println("Failed to compute signing cert SHA1: ${e.message}")
-        null
-    }
-}
-
 val envProps = loadEnvFromFile()
 
 android {
@@ -105,10 +76,7 @@ android {
             this.keyAlias = getEnvOrProperty("ANDROID_KEY_ALIAS", envProps) ?: ""
             this.keyPassword = getEnvOrProperty("ANDROID_KEY_PASSWORD", envProps) ?: ""
 
-            println(
-                "Release signing config present? pathLen=${keystorePath.length} base64Len=${keystoreBase64.length} " +
-                        "storePwLen=${this.storePassword?.length} aliasLen=${this.keyAlias?.length} keyPwLen=${this.keyPassword?.length}"
-            )
+            println("Keystore path: ${keystorePath.length}\n keystoreBase64: ${keystoreBase64.length}\n keystorePassword: ${this.storePassword?.length}\n keyAlias: ${this.keyAlias?.length}\n keyPassword: ${this.keyPassword?.length}")
 
             val storeFile: File? = if (keystorePath.isNotEmpty()) {
                 val keystoreFile = File(keystorePath)
@@ -144,18 +112,6 @@ android {
                 this.keyAlias = null
                 this.keyPassword = null
             }
-
-            if (this.storeFile != null && this.storePassword != null && this.keyAlias != null && this.keyPassword != null) {
-                val sha1 = sha1OfSigningCert(
-                    this.storeFile!!,
-                    this.storePassword!!,
-                    this.keyAlias!!,
-                    this.keyPassword!!
-                )
-                println("Release keystore cert SHA1 (as used by Gradle): ${sha1 ?: "<unknown>"}")
-            } else {
-                println("Release signing not configured (storeFile/password/alias missing).")
-            }
         }
     }
 
@@ -169,20 +125,11 @@ android {
             buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
 
             val releaseSigningConfig = signingConfigs.getByName("release")
-            val isCi = System.getenv("CI")?.toBoolean() == true
-
             signingConfig = if (releaseSigningConfig.storeFile != null) {
                 releaseSigningConfig
             } else {
-                if (isCi) {
-                    println(
-                        "No release keystore configured in CI. Refusing to produce a debug-signed release bundle. Make sure ANDROID_KEYSTORE_BASE64/ANDROID_KEYSTORE_PATH and passwords are set."
-                    )
-                    null
-                } else {
-                    println("Warning: No release keystore configured. Falling back to default debug signing for LOCAL builds.")
-                    signingConfigs.getByName("debug")
-                }
+                println("Warning: No release keystore configured. Falling back to default debug signing.")
+                signingConfigs.getByName("debug")
             }
 
             isMinifyEnabled = true
