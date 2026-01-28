@@ -49,9 +49,7 @@ platform :ios do
   private_lane :generate_openapi do
     gradle(
       task: ":shared:generateOpenApiClasses",
-      project_dir: "..",
-      flags: "--stacktrace --info",
-      print_command: true
+      project_dir: ".."
     )
   end
 
