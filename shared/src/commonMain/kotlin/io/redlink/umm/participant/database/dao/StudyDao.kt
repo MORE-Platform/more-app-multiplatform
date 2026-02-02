@@ -30,11 +30,11 @@ interface StudyDao : BaseDao<StudyEntity> {
     @Query("SELECT * FROM studies WHERE studyId = :studyId")
     fun getByIdFlow(studyId: String): Flow<StudyEntity?>
 
-    @Query("SELECT * FROM studies")
-    suspend fun getAll(): List<StudyEntity>
+    @Query("SELECT * FROM studies LIMIT 1")
+    suspend fun get(): StudyEntity?
 
-    @Query("SELECT * FROM studies")
-    fun getAllFlow(): Flow<List<StudyEntity>>
+    @Query("SELECT * FROM studies LIMIT 1")
+    fun getFlow(): Flow<StudyEntity?>
 
     @Query("SELECT * FROM studies WHERE active = :active")
     suspend fun getByActive(active: Boolean): List<StudyEntity>

@@ -23,6 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <!-- use of camera for qr code scan in login -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -103,7 +104,7 @@
             android:name=".services.ObservationRecordingService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location|connectedDevice" />
+            android:foregroundServiceType="dataSync" />
         <service
             android:name=".firebase.FCMService"
             android:exported="false"
@@ -121,7 +122,8 @@
             android:name=".broadcasts.NotificationBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="${applicationId}.NOTIFICATION_ACTION_READ" />
+                <action android:name="io.redlink.umm.blendedcare.app.android.NOTIFICATION_ACTION_READ" />
+                <action android:name="io.redlink.umm.blendedcare.app.android.SCHEDULED_NOTIFICATION" />
             </intent-filter>
         </receiver>
     </application>

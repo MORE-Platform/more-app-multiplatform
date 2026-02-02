@@ -96,6 +96,20 @@ interface NotificationDao : BaseDao<NotificationEntity> {
     @Query("SELECT * FROM notifications ORDER BY timestamp DESC LIMIT :limit")
     suspend fun getLatest(limit: Int): List<NotificationEntity>
 
+    @Query("SELECT * FROM notifications WHERE userFacing = :userFacing")
+    fun getByPastUserFacingFlow(
+        userFacing: Boolean
+    ): Flow<List<NotificationEntity>>
+
+    @Query("SELECT COUNT(*) FROM notifications WHERE read = 0 AND userFacing = 1")
+    fun getUnreadUserFacingFromPastFlow(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM notifications WHERE timestamp > :currentTimestamp")
+    suspend fun getScheduledNotificationCount(currentTimestamp: Long): Int
+
+    @Query("SELECT * FROM notifications WHERE timestamp > :currentTimestamp")
+    suspend fun getScheduledNotifications(currentTimestamp: Long): List<NotificationEntity>
+
     @Query("SELECT * FROM notifications ORDER BY timestamp DESC LIMIT :limit")
     fun getLatestFlow(limit: Int): Flow<List<NotificationEntity>>
 

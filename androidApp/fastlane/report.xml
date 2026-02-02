@@ -5,27 +5,32 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000224">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000187">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: google_play_track_version_codes" time="1.004215">
+      <testcase classname="fastlane.lanes" name="1: Switch to android generate_openapi lane" time="6.6e-05">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: Switch to android generate_openapi lane" time="0.00023">
+      <testcase classname="fastlane.lanes" name="2: :shared:generateOpenApiClasses" time="1.86012">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: :shared:GenerateMobileAppApi" time="1.345519">
+      <testcase classname="fastlane.lanes" name="3: Switch to android generate_MR_resources lane" time="0.000118">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: bundleRelease" time="91.164867">
+      <testcase classname="fastlane.lanes" name="4: :shared:generateMRcommonMain" time="0.817804">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: assembleDebug" time="80.140328">
         
       </testcase>
     

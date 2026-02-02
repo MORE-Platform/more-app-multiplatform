@@ -102,7 +102,7 @@ fun StudyClosedView() {
                         text = getStringResource(id = R.string.more_settings_exit_dialog_title)
                     ) {
                         loading = true
-                        BlendedCareApplication.Companion.shared!!.exitStudy {
+                        BlendedCareApplication.shared!!.exitStudy {
                             loading = false
                             (context as? Activity)?.let { activity ->
                                 activity.finish()

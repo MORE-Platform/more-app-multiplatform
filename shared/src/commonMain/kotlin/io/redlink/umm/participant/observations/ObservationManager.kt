@@ -52,7 +52,7 @@ class ObservationManager(
         }
         val firstCall = ceil(Clock.System.now().toEpochMilliseconds() / 60_000.0).toLong() * 60_000
         val initialDelay = firstCall - Clock.System.now().toEpochMilliseconds()
-        StudyScope.repeatedLaunch(30000L, Dispatchers.IO, initialDelay) {
+        StudyScope.repeatedLaunch(60000L, Dispatchers.IO, initialDelay) {
             updateTaskStates()
         }
         StudyScope.launch(Dispatchers.IO) {
@@ -245,9 +245,8 @@ class ObservationManager(
 
     private suspend fun findOrCreateObservation(scheduleId: String): ScheduleEntity? {
         return repositories.schedule.scheduleWithId(scheduleId).firstOrNull()?.let {
-            val fixedScheduleSchema = it
             Napier.d(tag = "ObservationManager::findOrCreateObservation") { "Found Schema $it" }
-            if (findOrCreateObservation(fixedScheduleSchema)) fixedScheduleSchema else null
+            if (findOrCreateObservation(it)) it else null
         }
     }
 

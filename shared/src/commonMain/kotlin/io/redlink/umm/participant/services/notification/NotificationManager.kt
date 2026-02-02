@@ -14,15 +14,16 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.Shared
 import io.redlink.umm.participant.database.entities.NotificationEntity
+import io.redlink.umm.participant.database.entities.ScheduleEntity
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.extensions.mapQueryParams
+import io.redlink.umm.participant.extensions.toNotificationEntity
 import io.redlink.umm.participant.models.NotificationModel
 import io.redlink.umm.participant.models.NotificationStatusType
 import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.models.StudyState
 import io.redlink.umm.participant.navigation.DeeplinkManager
 import io.redlink.umm.participant.scopes.Scope
-import io.redlink.umm.participant.scopes.StudyScope
 import io.redlink.umm.participant.services.network.NetworkService
 import io.redlink.umm.participant.services.store.SharedStorageRepository
 import kotlinx.coroutines.Dispatchers
@@ -31,13 +32,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 interface LocalNotificationListener {
-    fun displayNotification(notification: NotificationEntity)
+    fun displayNotification(notification: NotificationEntity, badgeCount: Int = 0)
+
+    fun clearScheduledNotifications(notifications: List<NotificationEntity>)
 
     fun deleteNotificationFromSystem(notificationId: String)
 
@@ -60,13 +63,14 @@ class NotificationManager(
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
 
     init {
-        Scope.launch(Dispatchers.IO) {
-            repository.notification.getUnreadUserNotifications().collect { notificationList ->
-                _unreadUserCount.update { notificationList.count() }
-                withContext(Dispatchers.Main) {
-                    localNotificationListener.updateBadgeCount(notificationList.count())
+        Scope.launch {
+            repository.notification.getAllUserFacingNotifications()
+                .collectLatest { notifications ->
+                    withContext(Dispatchers.Main) {
+                        _unreadUserCount.value = notifications.size
+                        localNotificationListener.updateBadgeCount(notifications.size)
+                    }
                 }
-            }
         }
     }
 
@@ -117,20 +121,24 @@ class NotificationManager(
         displayNotification: Boolean
     ) {
         if (notification.title != null && notification.notificationBody != null) {
-            StudyScope.launch(Dispatchers.IO) {
+            Scope.launch(Dispatchers.IO) {
                 repository.notification.storeNotification(notification)
             }
             if (displayNotification) {
                 Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
-                localNotificationListener.displayNotification(notification)
+                localNotificationListener.displayNotification(notification, unreadUserCount.value)
             }
         }
     }
 
     fun storeNotifications(notifications: List<NotificationEntity>) {
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.IO) {
             repository.notification.storeNotifications(notifications)
         }
+    }
+
+    fun displayNotification(notification: NotificationEntity) {
+        localNotificationListener.displayNotification(notification, unreadUserCount.value)
     }
 
     suspend fun downloadMissedNotifications() {
@@ -309,13 +317,26 @@ class NotificationManager(
         localNotificationListener.updateBadgeCount(0)
     }
 
-    fun updateNotificationBadgeCount() {
-        Scope.launch {
-            repository.notification.getUnreadUserNotifications().firstOrNull().let {
-                withContext(Dispatchers.Main) {
-                    localNotificationListener.updateBadgeCount(it?.count() ?: 0)
-                }
+    suspend fun scheduleObservationReminders(schedules: List<ScheduleEntity>) {
+        val notifications = schedules.map {
+            it.toNotificationEntity(true, deeplinkManager.createDeeplinkForSchedule(it))
+        }
+        withContext(Dispatchers.Main) {
+            storeNotifications(notifications)
+            notifications.forEach {
+                displayNotification(it)
             }
+        }
+    }
+
+    suspend fun clearScheduledNotifications() {
+        try {
+            val notifications = repository.notification.scheduledNotifications()
+            if (notifications.isNotEmpty()) {
+                localNotificationListener.clearScheduledNotifications(notifications)
+            }
+        } catch (e: Exception) {
+            Napier.e { e.toString() }
         }
     }
 
