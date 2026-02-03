@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -65,10 +64,12 @@ class NotificationManager(
     init {
         Scope.launch {
             repository.notification.getAllUserFacingNotifications()
-                .collectLatest { notifications ->
-                    withContext(Dispatchers.Main) {
-                        _unreadUserCount.value = notifications.size
-                        localNotificationListener.updateBadgeCount(notifications.size)
+                .collect { notifications ->
+                    notifications.filter { !it.read }.let {
+                        withContext(Dispatchers.Main) {
+                            _unreadUserCount.value = it.size
+                            localNotificationListener.updateBadgeCount(it.size)
+                        }
                     }
                 }
         }

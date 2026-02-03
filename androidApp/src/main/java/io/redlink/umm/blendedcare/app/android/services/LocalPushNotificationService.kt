@@ -34,9 +34,6 @@ import io.redlink.umm.participant.services.notification.NotificationManager.Comp
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
     private val defaultChannelId = context.getString(R.string.default_channel_id)
-    private val unreadChannelId = context.getString(R.string.unread_channel_id)
-    private val unreadNotificationId = 0x6FFF_FF10
-
     override fun displayNotification(notification: NotificationEntity, badgeCount: Int) {
         notification.title?.let { title ->
             notification.notificationBody?.let { messageKeyOrText ->
@@ -157,7 +154,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
 
     override fun updateBadgeCount(count: Int) {
         if (count <= 0) {
-            context.getSystemService(NotificationManager::class.java)?.cancel(unreadNotificationId)
+            context.getSystemService(NotificationManager::class.java)?.cancelAll()
         }
     }
 
