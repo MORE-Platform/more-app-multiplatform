@@ -21,9 +21,9 @@ class ObservationService(
 ) {
     suspend fun scheduleObservationReminder() {
         Napier.i(tag = "ObservationService::scheduleObservationReminder") { "Starting scheduleObservationReminder()" }
-        val scheduledNotificationCount = repositories.notification.scheduledNotificationCount()
-        if (scheduledNotificationCount >= MAX_SCHEDULE_COUNT) {
-            Napier.i(tag = "ObservationService::scheduleObservationReminder") { "Already scheduled enough observation reminders: $scheduledNotificationCount" }
+        val scheduledNotification = repositories.notification.scheduledNotifications()
+        if (scheduledNotification.size >= MAX_SCHEDULE_COUNT) {
+            Napier.i(tag = "ObservationService::scheduleObservationReminder") { "Already scheduled enough observation reminders: $scheduledNotification" }
             return
         }
         val now = Clock.System.now()
@@ -37,13 +37,14 @@ class ObservationService(
         if (minTimestamp >= daysFromNow) {
             return
         }
+        val scheduleIds = scheduledNotification.map { it.notificationId }.toSet()
         repositories.schedule.getVisibleSchedulesUntilDate(
             setOf(ScheduleState.DEACTIVATED),
             minTimestamp,
             daysFromNow,
-            MAX_SCHEDULE_COUNT - scheduledNotificationCount
+            MAX_SCHEDULE_COUNT - scheduledNotification.size
         ).firstOrNull()
-            ?.filter { it.start != null }
+            ?.filter { it.start != null && "reminder_${it.scheduleId}" !in scheduleIds }
             ?.let { schedules: List<ScheduleEntity> ->
                 if (schedules.isNotEmpty()) {
                     notificationManager.scheduleObservationReminders(schedules)
@@ -68,6 +69,6 @@ class ObservationService(
         private const val OBSERVATION_REMINDER_LATEST_TIMESTAMP_KEY =
             "observation_reminder_timestamp"
         private const val MAX_SCHEDULE_COUNT = 10
-        private const val DAYS_INTO_FUTURE = 3
+        private const val DAYS_INTO_FUTURE = 7
     }
 }
