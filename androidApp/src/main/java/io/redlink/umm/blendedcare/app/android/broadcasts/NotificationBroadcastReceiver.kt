@@ -27,6 +27,25 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         Napier.d(tag = "NotificationBroadcastReceiver") { "onReceive: ${intent?.action}" }
+        if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
+            Napier.i(tag = "NotificationBroadcastReceiver") { "Boot completed. Rescheduling observation reminders." }
+            val pendingResult = goAsync()
+            scope.launch {
+                try {
+                    BlendedCareApplication.initShared(context)
+                    BlendedCareApplication.shared?.observationService?.rescheduleObservationRemindersAfterBoot()
+                    Napier.i(tag = "NotificationBroadcastReceiver") { "Observation reminders rescheduled after boot." }
+                } catch (t: Throwable) {
+                    Napier.e(tag = "NotificationBroadcastReceiver", throwable = t) {
+                        "Failed rescheduling reminders after boot."
+                    }
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+            return
+        }
+
         if (intent?.action == SCHEDULED_NOTIFICATION_ACTION) {
             val notificationId = intent.getStringExtra(EXTRA_NOTIFICATION_ID) ?: return
             val channelId = intent.getStringExtra(EXTRA_CHANNEL_ID)

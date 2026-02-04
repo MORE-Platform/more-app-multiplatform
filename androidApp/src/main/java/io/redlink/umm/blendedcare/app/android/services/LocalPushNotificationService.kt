@@ -17,6 +17,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.tasks.OnCompleteListener
@@ -78,7 +79,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                     .setAutoCancel(true)
                     .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                     .setContentIntent(pendingIntent)
-                    .setNumber(if (badgeCount >= 0) badgeCount else 0)
+                    .setNumber(1)
 
                 val notificationManager = context.getSystemService(NotificationManager::class.java)
                 if (notificationManager != null) {
@@ -116,13 +117,17 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
             Napier.e(tag = "NotificationError") { "AlarmManager is null" }
             return
         }
-        notifications.forEach { notification ->
-            createNotificationIntent(
-                notification,
-                notification.channelId ?: defaultChannelId
-            )?.let {
-                AlarmUtils.cancelAlarm(context, it, notification.notificationId.hashCode())
-                Napier.i { "Cleared scheduled notification for ID: ${notification.notificationId}" }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            alarmManager.cancelAll()
+        } else {
+            notifications.forEach { notification ->
+                createNotificationIntent(
+                    notification,
+                    notification.channelId ?: defaultChannelId
+                )?.let {
+                    AlarmUtils.cancelAllAlarms(context, it)
+                    Napier.i { "Cleared scheduled notifications for ID: ${notification.notificationId}" }
+                }
             }
         }
     }

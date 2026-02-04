@@ -24,7 +24,7 @@ object AlarmUtils {
             context,
             notificationId.hashCode(),
             intent,
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

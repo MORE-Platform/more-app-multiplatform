@@ -35,6 +35,7 @@
 
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".BlendedCareApplication"
@@ -120,8 +121,9 @@
 
         <receiver
             android:name=".broadcasts.NotificationBroadcastReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="io.redlink.umm.blendedcare.app.android.NOTIFICATION_ACTION_READ" />
                 <action android:name="io.redlink.umm.blendedcare.app.android.SCHEDULED_NOTIFICATION" />
             </intent-filter>

@@ -70,6 +70,8 @@ class LocalPushNotifications: LocalNotificationListener {
 
             content.sound = .default
             if let scheduledDate = notification.timestamp?.toInt64().toDate(), Date.now < scheduledDate {
+                content.badge = NSNumber(value: 1)
+
                 requestLocalNotification(identifier: notification.notificationId, content: content, on: scheduledDate)
             } else {
                 requestLocalNotification(identifier: notification.notificationId, content: content)
@@ -78,21 +80,49 @@ class LocalPushNotifications: LocalNotificationListener {
     }
 
     func clearScheduledNotifications(notifications: [NotificationEntity]) {
-        let identifiers = notifications.map {
-            $0.notificationId
-        }
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: identifiers)
-        center.removeDeliveredNotifications(withIdentifiers: identifiers)
+        let identifiers = notifications.map { $0.notificationId }
+
+        if identifiers.isEmpty {
+            center.getPendingNotificationRequests { requests in
+                let allIDs = requests.map { $0.identifier }
+                if !allIDs.isEmpty {
+                    center.removePendingNotificationRequests(withIdentifiers: allIDs)
+                }
+                center.removeAllDeliveredNotifications()
+
+                center.getPendingNotificationRequests { remaining in
+                    if remaining.isEmpty {
+                        Napier.i("All pending notifications cleared")
+                    } else {
+                        Napier.w("Pending notifications still present after clear: \(remaining.map { $0.identifier })")
+                    }
+                }
+            }
+        } else {
+            center.removePendingNotificationRequests(withIdentifiers: identifiers)
+            center.removeDeliveredNotifications(withIdentifiers: identifiers)
+
+            center.getPendingNotificationRequests { remaining in
+                let stillPending = remaining.map { $0.identifier }.filter { identifiers.contains($0) }
+                if stillPending.isEmpty {
+                    Napier.i("Cleared scheduled notifications: \(identifiers)")
+                } else {
+                    Napier.w("Some notifications still pending after clear: \(stillPending)")
+                }
+            }
+        }
     }
 
 
     func updateBadgeCount(count: Int32) {
-        AppDelegate.appGroupUserDefaults?.set(Int(count), forKey: LocalPushNotifications.notificationCountKey)
+        setAppGroupNotificiationCount(Int(count))
         UNUserNotificationCenter.current().setBadgeCount(Int(count)) { error in
             Napier.e(error?.localizedDescription ?? "Error setting badge count")
         }
     }
+    
+    
 
     private func requestLocalNotification(identifier: String, content: UNMutableNotificationContent, timeInterval: TimeInterval = 0, repeats: Bool = false) {
 
@@ -123,6 +153,10 @@ class LocalPushNotifications: LocalNotificationListener {
                 Napier.i("Scheduled Local Notification \(identifier) for \(date)")
             }
         }
+    }
+    
+    private func setAppGroupNotificiationCount(_ count: Int) {
+        AppDelegate.appGroupUserDefaults?.set(count, forKey: LocalPushNotifications.notificationCountKey)
     }
 }
 

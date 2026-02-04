@@ -15,6 +15,5 @@ class MainRepository(appDatabase: AppDatabase) {
     suspend fun deleteAll() {
         study.deleteStudy()
         notification.deleteAll()
-
     }
 }

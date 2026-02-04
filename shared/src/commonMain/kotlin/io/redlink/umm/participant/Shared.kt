@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.cancellation.CancellationException
 
 class Shared(
     localNotificationListener: LocalNotificationListener,
@@ -84,8 +83,7 @@ class Shared(
         )
             .also { observationFactory.setNotificationManager(it) }
 
-    val observationService =
-        ObservationService(sharedStorageRepository, repositories, notificationManager)
+    val observationService = ObservationService(repositories, notificationManager)
 
     private val mutex = Mutex()
     private val konnection = Konnection.instance
@@ -121,15 +119,7 @@ class Shared(
                             updateStudy()
                             if (state) {
                                 Napier.d(tag = "Shared::init") { "Launching updateSchedules()" }
-                                try {
-                                    updateSchedules()
-                                    Napier.d(tag = "Shared::init") { "updateSchedules() finished" }
-                                } catch (ce: CancellationException) {
-                                    Napier.w(tag = "Shared::init") { "updateSchedules() cancelled" }
-                                    throw ce
-                                } catch (t: Throwable) {
-                                    Napier.e(tag = "Shared::init") { "updateSchedules() failed: ${t.message ?: t}" }
-                                }
+                                updateSchedules()
                                 notificationManager.createNewFCMIfNecessary()
                                 notificationManager.clearAllNotifications()
                                 notificationManager.downloadMissedNotifications()
@@ -151,15 +141,7 @@ class Shared(
                             if (fg) {
                                 updateStudy()
                                 Napier.d(tag = "Shared::init") { "Launching updateSchedules() 2" }
-                                try {
-                                    updateSchedules()
-                                    Napier.d(tag = "Shared::init") { "updateSchedules() finished 2" }
-                                } catch (ce: CancellationException) {
-                                    Napier.w(tag = "Shared::init") { "updateSchedules() cancelled 2" }
-                                    throw ce
-                                } catch (t: Throwable) {
-                                    Napier.e(tag = "Shared::init") { "updateSchedules() 2 failed: ${t.message ?: t}" }
-                                }
+                                updateSchedules()
                                 withContext(Dispatchers.Main) {
                                     observationDataManager.listenToDatapointCountChanges()
                                     observationManager.activateScheduleUpdate()
@@ -217,8 +199,8 @@ class Shared(
             Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
             repositories.study.updateStudyState(newStudyState)
             StudyScope.cancel()
-            notificationManager.clearAllNotifications()
             observationService.clearReminders()
+            notificationManager.clearAllNotifications()
             return
         }
 
@@ -333,8 +315,8 @@ class Shared(
             try {
                 StudyScope.cancel()
                 observationFactory.clearNeededObservationTypes()
-                notificationManager.clearAllNotifications()
                 observationService.clearReminders()
+                notificationManager.clearAllNotifications()
                 repositories.notification.deleteAll()
 
                 val s = study as io.redlink.umm.blendedcare.services.network.openapi.model.Study
@@ -378,14 +360,13 @@ class Shared(
         bluetoothController.resetAll()
         Scope.launch {
             networkService.deleteParticipation()
+            notificationManager.deleteFCMToken()
+            observationService.clearReminders()
+            notificationManager.clearAllNotifications()
+            removeStudyData()
+            observationFactory.clearNeededObservationTypes()
             onDeletion()
             ViewManager.resetAll()
-            notificationManager.deleteFCMToken()
-            removeStudyData()
-            repositories.notification.deleteAll()
-            observationFactory.clearNeededObservationTypes()
-            notificationManager.clearAllNotifications()
-            observationService.clearReminders()
             clearSharedStorage()
         }
     }

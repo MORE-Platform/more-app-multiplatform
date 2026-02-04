@@ -330,12 +330,18 @@ class NotificationManager(
         }
     }
 
+    suspend fun rescheduleNotifications(notifications: List<NotificationEntity>) {
+        withContext(Dispatchers.Main) {
+            notifications.forEach {
+                displayNotification(it)
+            }
+        }
+    }
+
     suspend fun clearScheduledNotifications() {
         try {
             val notifications = repository.notification.scheduledNotifications()
-            if (notifications.isNotEmpty()) {
-                localNotificationListener.clearScheduledNotifications(notifications)
-            }
+            localNotificationListener.clearScheduledNotifications(notifications)
         } catch (e: Exception) {
             Napier.e { e.toString() }
         }
