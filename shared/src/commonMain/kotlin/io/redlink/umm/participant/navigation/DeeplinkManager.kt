@@ -29,17 +29,35 @@ class DeeplinkManager(
     ): Flow<String?> = flow {
         deepLink?.let { deepLink ->
             val queryParams = deepLink.mapQueryParams()
-            val observationId = queryParams["observationId"]
-            if (observationId.isNullOrEmpty()
-                || repos.observation.observationById(observationId.first())
+            val observationIdParam = queryParams["observationId"]?.firstOrNull()
+            val scheduleIdParam = queryParams["scheduleId"]?.firstOrNull()
+
+            val schedule = scheduleIdParam?.let { id ->
+                repos.schedule.scheduleWithId(id).cancellable().firstOrNull()
+            } ?: observationIdParam?.let { id ->
+                repos.schedule.firstScheduleAvailableForObservationId(id)
+                    .cancellable().firstOrNull()
+            }
+
+            val observationIdToUse = observationIdParam ?: schedule?.observationId
+
+            if (scheduleIdParam != null && schedule == null) {
+                emit(null)
+                return@flow
+            }
+
+            if (observationIdToUse.isNullOrEmpty()
+                || repos.observation.observationById(observationIdToUse)
                     .firstOrNull() == null
             ) {
                 emit(null)
                 return@flow
             }
-            val schedule =
-                repos.schedule.firstScheduleAvailableForObservationId(observationId.first())
-                    .cancellable().firstOrNull()
+
+            if (schedule != null && observationIdParam != null && schedule.observationId != observationIdParam) {
+                emit(null)
+                return@flow
+            }
 
             emit(deepLinkModifier(deepLink, schedule, protocolReplacement, hostReplacement))
         } ?: run {
@@ -133,9 +151,52 @@ class DeeplinkManager(
         newState: (String?) -> Unit
     ) = modifyDeepLink(deepLink, protocolReplacement, hostReplacement).asClosure(newState)
 
+    /**
+     * Creates a deep link for a given [ScheduleEntity].
+     *
+     * Expected format:
+     *   <baseDeeplink>/<route>?observationId=<id>&scheduleId=<id>
+     *
+     * `baseDeeplink` should look like: "<scheme>://<host>/" (including the trailing slash).
+     */
+    fun createDeeplinkForSchedule(
+        schedule: ScheduleEntity,
+        baseDeeplink: String? = null
+    ): String {
+        val host = baseDeeplink ?: BASE_HOST
+        val base = if (host.endsWith("/")) host else "$host/"
+
+        val observationRoute = observationFactory.observationTypes().firstOrNull {
+            it == schedule.observationType || it.contains(schedule.observationType)
+        }
+
+        val now = Clock.System.now().epochSeconds
+        val route = if ((schedule.start ?: 0L) <= now) {
+            observationRoute ?: TASK_DETAILS
+        } else {
+            TASK_DETAILS
+        }
+
+        val finalRoute = if (deepLinks.isEmpty() || deepLinks.any { it.contains(route) }) {
+            route
+        } else {
+            TASK_DETAILS
+        }
+
+        return buildString {
+            append(base)
+            append(finalRoute)
+            append("?observationId=")
+            append(schedule.observationId)
+            append("&scheduleId=")
+            append(schedule.scheduleId)
+        }
+    }
+
+
     companion object {
         const val TASK_DETAILS = "task-details"
         const val OBSERVATION_DETAILS = "observation-details"
-        const val DASHBOARD = "dashboard"
+        private const val BASE_HOST = "app://io.redlink.umm.blendedcare/"
     }
 }

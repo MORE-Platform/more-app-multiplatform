@@ -40,7 +40,7 @@ struct NotificationItem: View {
 
             HStack(alignment: .center) {
                 VStack(alignment: .leading) {
-                    BasicText(text: notificationModel.notificationBody.applyHyperlinks().trimmingCharacters(in: .whitespacesAndNewlines), color: .more.secondary)
+                    BasicText(text: NotificationTextLocalization.shared.localize(raw: notificationModel.notificationBody, fallback: nil).applyHyperlinks().trimmingCharacters(in: .whitespacesAndNewlines), color: .more.secondary)
 
                     BasicText(text: (notificationModel.timestamp).toDateString(dateFormat: "dd.MM.yyyy HH:mm:ss"))
                         .padding(.top, 4)

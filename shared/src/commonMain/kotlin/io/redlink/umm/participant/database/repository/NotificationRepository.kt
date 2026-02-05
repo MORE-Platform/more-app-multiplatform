@@ -14,11 +14,15 @@ import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.NotificationEntity
 import io.redlink.umm.participant.scopes.Scope
+import io.redlink.umm.participant.util.alignedNowFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 
 class NotificationRepository(private val appDatabase: AppDatabase) {
     private val readNotificationIds = mutableSetOf<String>()
@@ -99,13 +103,16 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
         }
     }
 
-    fun getCount(): Flow<Long> = appDatabase.notificationDao().getCount()
+    fun getAllUserFacingNotifications(): Flow<List<NotificationEntity>> {
+        val dbFlow = appDatabase.notificationDao().getByPastUserFacingFlow(true)
 
-    fun getAllNotifications() = appDatabase.notificationDao().getAllFlow()
-
-    fun getAllUserFacingNotifications() = appDatabase.notificationDao().getByUserFacingFlow(true)
-
-    fun getUnreadUserNotifications() = appDatabase.notificationDao().getUnreadUserFacingFlow()
+        return combine(
+            dbFlow,
+            alignedNowFlow(periodMs = 30_000L)
+        ) { list, now ->
+            list.filter { it.timestamp != null && it.timestamp <= now }
+        }.distinctUntilChanged()
+    }
 
     suspend fun update(notificationId: String, read: Boolean? = null, priority: Long? = null) {
         mutex.withLock {
@@ -119,11 +126,6 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
             }
         }
     }
-
-    fun allUserFacingNotifications() = appDatabase.notificationDao().getByUserFacingFlow(true)
-
-    fun countUserFacingNotifications(): Flow<Long> =
-        appDatabase.notificationDao().getCountByUserFacing(true)
 
     fun setNotificationReadStatus(key: String, read: Boolean = true) {
         if (read) {
@@ -159,6 +161,17 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
             }
         }
     }
+
+    suspend fun scheduledNotificationCount(): Int {
+        return appDatabase.notificationDao()
+            .getScheduledNotificationCount(Clock.System.now().epochSeconds)
+    }
+
+    suspend fun scheduledNotifications(): List<NotificationEntity> {
+        return appDatabase.notificationDao()
+            .getScheduledNotifications(Clock.System.now().epochSeconds)
+    }
+
 
     fun deleteNotification(notificationId: String) {
         Scope.launch(Dispatchers.IO) {

@@ -19,10 +19,12 @@ import io.redlink.umm.participant.observations.ObservationFactory
 import io.redlink.umm.participant.observations.observationTypes.ObservationType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -37,7 +39,27 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
     }
 
     fun allSchedulesWithStates(states: Set<ScheduleState>): Flow<List<ScheduleEntity>> {
+        if (states.isEmpty()) {
+            return flowOf(emptyList())
+        }
         return appDatabase.scheduleDao().getByStatesFlow(states.map { it.name })
+    }
+
+    fun getVisibleSchedulesUntilDate(
+        states: Set<ScheduleState>,
+        minTimestamp: Instant,
+        maxTimestamp: Instant,
+        limit: Int = 100
+    ): Flow<List<ScheduleEntity>> {
+        if (states.isEmpty()) {
+            return flowOf(emptyList())
+        }
+        return appDatabase.scheduleDao().getAllVisibleWithStatesAndMaxTimestamp(
+            states.map { it.name },
+            minTimestamp.epochSeconds,
+            maxTimestamp.epochSeconds,
+            limit
+        )
     }
 
     fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING): Flow<List<ScheduleEntity>> =
@@ -145,6 +167,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
                 }
 
                 stateUpdates.forEach { (scheduleId, newState) ->
+                    Napier.d { "Updating the schedule with $scheduleId to state: $newState" }
                     appDatabase.scheduleDao().updateState(scheduleId, newState.name)
                 }
 

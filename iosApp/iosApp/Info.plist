@@ -4,7 +4,9 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>io.redlink.more.app.multiplatform.data-upload</string>
+		<string>io.redlink.umm.blendedcare.data-upload</string>
+		<string>io.redlink.umm.blendedcare.dailyRefresh</string>
+		<string>io.redlink.umm.blendedcare.observation-reminder-refresh</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -92,6 +94,11 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>de</string>
 	</array>
 </dict>
 </plist>

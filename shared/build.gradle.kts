@@ -7,6 +7,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.rickclephas.kmp.nativecoroutines")
     id("org.openapi.generator").version("7.17.0").apply(true)
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -25,7 +26,8 @@ val gsonVersion = "2.13.2"
 val roomVersion = "2.7.2"
 val sqliteVersion = "2.5.2"
 
-
+val mokoResVersion = "0.25.2"
+val mokoGraphicsVersion = "0.10.1"
 
 kotlin {
     androidTarget {
@@ -42,6 +44,8 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            export("dev.icerock.moko:resources:$mokoResVersion")
+            export("dev.icerock.moko:graphics:$mokoGraphicsVersion")
         }
     }
     sourceSets {
@@ -113,6 +117,18 @@ dependencies {
     add("kspIosArm64", "androidx.room:room-compiler:$roomVersion")
     add("kspIosSimulatorArm64", "androidx.room:room-compiler:$roomVersion")
     add("kspIosX64", "androidx.room:room-compiler:$roomVersion")
+
+    commonMainApi("dev.icerock.moko:resources:$mokoResVersion")
+    commonMainApi("dev.icerock.moko:graphics:$mokoGraphicsVersion")
+
+    commonTestImplementation("dev.icerock.moko:resources-test:$mokoResVersion")
+}
+
+multiplatformResources {
+    resourcesPackage.set("io.redlink.umm.participant")
+    resourcesClassName.set("SharedRes")
+    iosBaseLocalizationRegion.set("en")
+    iosMinimalDeploymentTarget.set("16.2")
 }
 
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(

@@ -29,6 +29,7 @@ import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.getDatabaseBuilder
 import io.redlink.umm.participant.database.getRoomDatabase
 import io.redlink.umm.participant.database.repository.MainRepository
+import io.redlink.umm.participant.models.NotificationTextLocalization
 import io.redlink.umm.participant.napierDebugBuild
 import io.redlink.umm.participant.services.store.SharedPreferencesRepository
 import io.redlink.umm.participant.viewModels.ViewManager
@@ -42,6 +43,7 @@ class BlendedCareApplication : Application(), DefaultLifecycleObserver {
         napierDebugBuild(FirebaseCrashlyticsAntilog())
         napierDebugBuild()
         appContext = this
+        NotificationTextLocalization.init(this)
 
         initShared(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
@@ -56,7 +58,6 @@ class BlendedCareApplication : Application(), DefaultLifecycleObserver {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
         ViewManager.appIsInForeground(true)
-        shared?.notificationManager?.updateNotificationBadgeCount()
     }
 
     override fun onPause(owner: LifecycleOwner) {

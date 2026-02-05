@@ -12,7 +12,7 @@ package io.redlink.umm.participant.database.repository
 
 import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.DataPointEntity
-import io.redlink.umm.participant.scopes.StudyScope
+import io.redlink.umm.participant.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 class DataPointCountRepository(private val appDatabase: AppDatabase) {
     private val mutex = Mutex()
@@ -32,18 +33,20 @@ class DataPointCountRepository(private val appDatabase: AppDatabase) {
 
     fun incrementCount(scheduleIdSet: Set<String>, addCount: Long = 1) {
         if (scheduleIdSet.isNotEmpty()) {
-            StudyScope.launch(Dispatchers.IO) {
+            Scope.launch(Dispatchers.IO) {
                 mutex.withLock {
                     scheduleIdSet.forEach { scheduleId ->
                         countQueue[scheduleId] = countQueue.getOrElse(scheduleId) { 0 } + addCount
                     }
                 }
                 if (storeJob == null || storeJob?.isActive == false) {
-                    storeJob = StudyScope.repeatedLaunch(5000L, Dispatchers.IO) {
-                        storeCounts()
-                    }.second
-                    storeJob?.invokeOnCompletion {
-                        storeJob = null
+                    withContext(Dispatchers.Main) {
+                        storeJob = Scope.repeatedLaunch(5000L, Dispatchers.IO) {
+                            storeCounts()
+                        }.second
+                        storeJob?.invokeOnCompletion {
+                            storeJob = null
+                        }
                     }
                 }
             }
@@ -57,7 +60,7 @@ class DataPointCountRepository(private val appDatabase: AppDatabase) {
             countQueue.clear()
         }
         if (countsToStore.isNotEmpty()) {
-            StudyScope.launch(Dispatchers.IO) {
+            Scope.launch(Dispatchers.IO) {
                 val allDataPoints = appDatabase.dataPointDao().getAll()
                 val dataPointScheduleIds = allDataPoints.map { it.scheduleId }.toSet()
                 val (existing, nonExisting) = countsToStore.keys.partition { it in dataPointScheduleIds }
@@ -87,7 +90,7 @@ class DataPointCountRepository(private val appDatabase: AppDatabase) {
     }
 
     fun delete(scheduleId: String) {
-        StudyScope.launch {
+        Scope.launch {
             appDatabase.dataPointDao().deleteByScheduleId(scheduleId)
         }
     }

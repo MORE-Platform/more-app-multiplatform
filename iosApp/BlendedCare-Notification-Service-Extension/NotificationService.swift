@@ -21,13 +21,26 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        let dict = bestAttemptContent?.userInfo.notNilStringDictionary() ?? [:]
-        var notificationCount = defaults?.integer(forKey: NotificationService.notificationCountKey) ?? 0
-        
+
+        let storedCount = defaults?.integer(forKey: NotificationService.notificationCountKey) ?? 0
+
+        let payload = bestAttemptContent?.userInfo as? [AnyHashable: Any]
+        let serverBadge = (payload?["badge"] as? NSNumber)?.intValue
+            ?? (payload?["unread_count"] as? NSNumber)?.intValue
+            ?? Int((payload?["unread_count"] as? String) ?? "")
+
+        let proposedCount: Int
+        if let serverBadge {
+            proposedCount = max(storedCount, serverBadge)
+        } else {
+            proposedCount = storedCount + 1
+        }
+
+        let adjusted = max(0, proposedCount)
+
         if let bestAttemptContent {
-            bestAttemptContent.badge = (notificationCount + 1) as NSNumber
-            
-            defaults?.set(notificationCount + 1, forKey: NotificationService.notificationCountKey)
+            bestAttemptContent.badge = NSNumber(value: adjusted)
+            defaults?.set(adjusted, forKey: NotificationService.notificationCountKey)
             contentHandler(bestAttemptContent)
         }
     }
@@ -40,17 +53,4 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-}
-
-extension Dictionary where Key == AnyHashable {
-    func notNilStringDictionary() -> [String: String] {
-        var data = [String: String]()
-        
-        for (key, value) in self {
-            if let value = value as? String {
-                data[String(describing: key)] = value
-            }
-        }
-        return data
-    }
 }

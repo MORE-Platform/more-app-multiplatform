@@ -14,7 +14,6 @@ import io.redlink.umm.participant.getPlatform
 import io.redlink.umm.participant.models.CredentialModel
 import io.redlink.umm.participant.models.LoginModel
 import io.redlink.umm.participant.scopes.Scope
-import io.redlink.umm.participant.scopes.StudyScope
 import io.redlink.umm.participant.services.store.EndpointRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -110,7 +109,7 @@ class RegistrationService(
         studyConsent: StudyConsent,
     ) {
         _isLoading.value = true
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.IO) {
             val (config, networkError) = shared.networkService.sendConsent(
                 _validLoginModel.value!!,
                 studyConsent

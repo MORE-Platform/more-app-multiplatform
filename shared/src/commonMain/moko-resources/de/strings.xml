@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="observation_is_active">Diese Beobachtung wurde soeben aktiviert! Bitte öffne die
+        App und starte die Beobachtung!
+    </string>
+</resources>
