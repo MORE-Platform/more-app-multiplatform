@@ -52,56 +52,60 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                             triggerAtMillis
                         )
                         Napier.i(tag = "LocalPushNotificationService::displayNotification") {
-                            "Notification scheduled for ${triggerAtMillis.jvmLocalDateTimeFromMilliseconds()}"
+                            "Notification scheduled for ${triggerAtMillis.jvmLocalDateTimeFromMilliseconds()} with id ${notification.notificationId}"
                         }
                     }
-
-                    return
-                }
-
-                val intent = Intent(context, ContentActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
-                    putExtra(MSG_ID, notification.notificationId)
-                    notification.deepLink()?.let { data = Uri.parse(it) }
-                }
-
-                val pendingIntent = PendingIntent.getActivity(
-                    context, 0, intent,
-                    PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                val channelId = notification.channelId ?: defaultChannelId
-                val notificationBuilder = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
-                    .setContentTitle(title)
-                    .setContentText(messageKeyOrText.localize())
-                    .setAutoCancel(true)
-                    .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                    .setContentIntent(pendingIntent)
-                    .setNumber(1)
-
-                val notificationManager = context.getSystemService(NotificationManager::class.java)
-                if (notificationManager != null) {
-                    val channel = notificationManager.getNotificationChannel(channelId)
-                    if (channel == null) {
-                        val name = context.getString(R.string.notification_channel_name)
-                        val descriptionText =
-                            context.getString(R.string.notification_channel_description)
-                        val importance = NotificationManager.IMPORTANCE_DEFAULT
-                        val mChannel = NotificationChannel(channelId, name, importance).apply {
-                            description = descriptionText
-                        }
-                        notificationManager.createNotificationChannel(mChannel)
-                    }
-
-                    notificationManager.notify(
-                        notification.notificationId.hashCode(),
-                        notificationBuilder.build()
-                    )
-                    Napier.i { "Sent Notification to device" }
                 } else {
-                    Napier.e(tag = "NotificationError") { "Notification Manager is null" }
+                    val intent = Intent(context, ContentActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        action = NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
+                        putExtra(MSG_ID, notification.notificationId)
+                        notification.deepLink()?.let { data = Uri.parse(it) }
+                    }
+
+                    val pendingIntent = PendingIntent.getActivity(
+                        context, 0, intent,
+                        PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                    val channelId = notification.channelId ?: defaultChannelId
+                    val notificationBuilder = NotificationCompat.Builder(context, channelId)
+                        .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
+                        .setContentTitle(title)
+                        .setContentText(messageKeyOrText.localize())
+                        .setAutoCancel(true)
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setContentIntent(pendingIntent)
+                        .setNumber(1)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE)
+                        .setCategory(NotificationCompat.CATEGORY_REMINDER)
+
+                    val notificationManager =
+                        context.getSystemService(NotificationManager::class.java)
+                    if (notificationManager != null) {
+                        val channel = notificationManager.getNotificationChannel(channelId)
+                        if (channel == null) {
+                            val name = context.getString(R.string.notification_channel_name)
+                            val descriptionText =
+                                context.getString(R.string.notification_channel_description)
+                            val importance = NotificationManager.IMPORTANCE_HIGH
+                            val mChannel = NotificationChannel(channelId, name, importance).apply {
+                                description = descriptionText
+                                enableVibration(true)
+                                setShowBadge(true)
+                            }
+                            notificationManager.createNotificationChannel(mChannel)
+                        }
+
+                        notificationManager.notify(
+                            notification.notificationId.hashCode(),
+                            notificationBuilder.build()
+                        )
+                        Napier.i { "Sent Notification to device" }
+                    } else {
+                        Napier.e(tag = "NotificationError") { "Notification Manager is null" }
+                    }
                 }
             } ?: run {
                 Napier.e(tag = "NotificationError") { "Notification message is null" }
