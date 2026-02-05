@@ -26,11 +26,10 @@ open class ObservationType(
     }
 
     fun matches(type: String): Boolean {
-        if (type == observationType) return true
-        if (prefix != null && type.startsWith(prefix)) return true
-        if (suffix != null && type.endsWith(suffix)) return true
-        if (includes != null && type.contains(includes)) return true
-        return false
+        return type == observationType
+                || (prefix != null && type.startsWith(prefix))
+                || (suffix != null && type.endsWith(suffix))
+                || (includes != null && type.contains(includes))
     }
 
     fun matchesAny(types: Set<String>): Boolean = types.any { matches(it) }
