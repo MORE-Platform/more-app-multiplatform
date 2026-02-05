@@ -72,6 +72,23 @@ interface ScheduleDao : BaseDao<ScheduleEntity> {
     @Query("SELECT * FROM schedules WHERE state = :state")
     fun getByStateFlow(state: String): Flow<List<ScheduleEntity>>
 
+    @Query(
+        "SELECT * " +
+                "FROM schedules " +
+                "WHERE state IN (:states) " +
+                "AND hidden = 0" +
+                " AND start >= :minTimestamp" +
+                " AND start <= :maxTimestamp " +
+                "ORDER BY start ASC" +
+                " LIMIT :limit"
+    )
+    fun getAllVisibleWithStatesAndMaxTimestamp(
+        states: List<String>,
+        minTimestamp: Long,
+        maxTimestamp: Long,
+        limit: Int
+    ): Flow<List<ScheduleEntity>>
+
     @Query("SELECT * FROM schedules WHERE start <= :timestamp AND `end` >= :timestamp")
     suspend fun getActiveSchedulesAtTime(timestamp: Long): List<ScheduleEntity>
 

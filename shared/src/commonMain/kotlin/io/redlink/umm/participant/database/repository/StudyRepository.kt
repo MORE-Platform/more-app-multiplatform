@@ -19,7 +19,6 @@ import io.redlink.umm.participant.database.entities.StudyEntity
 import io.redlink.umm.participant.extensions.mapState
 import io.redlink.umm.participant.models.StudyState
 import io.redlink.umm.participant.scopes.Scope
-import io.redlink.umm.participant.scopes.StudyScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -27,7 +26,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 
 class StudyRepository(private val appDatabase: AppDatabase) {
@@ -47,8 +46,8 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     val finishText: StateFlow<String?> = _finishText
 
     init {
-        Scope.launch(Dispatchers.IO) {
-            getStudy().collect {
+        Scope.launch {
+            getStudy().collectLatest {
                 withContext(Dispatchers.Main) {
                     _study.value = it
                     it?.let {
@@ -60,20 +59,19 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     }
 
     suspend fun upsert(study: Study) {
-
         deleteStudy()
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.IO) {
             val studyEntity = StudyEntity.fromStudy(study)
             appDatabase.studyDao().insert(studyEntity)
             _finishText.value = study.finishText
         }
 
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.IO) {
             val observationEntities = study.observations.map { ObservationEntity.toEntity(it) }
             appDatabase.observationDao().insertAll(observationEntities)
         }
 
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch(Dispatchers.IO) {
             val scheduleEntities = study.observations.flatMap { observation ->
                 observation.schedule.mapNotNull {
                     ScheduleEntity.fromObservationSchedule(
@@ -90,7 +88,7 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     }
 
     fun getStudy(): Flow<StudyEntity?> {
-        return appDatabase.studyDao().getAllFlow().transform { emit(it.firstOrNull()) }
+        return appDatabase.studyDao().getFlow()
     }
 
     suspend fun updateStudyState(state: StudyState) {
@@ -100,12 +98,10 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     }
 
     suspend fun deleteStudy() {
-        study.value?.let {
-            appDatabase.studyDao().deleteAll()
-            appDatabase.observationDao().deleteAll()
-            appDatabase.observationDataDao().deleteAll()
-            appDatabase.scheduleDao().deleteAll()
-            appDatabase.dataPointDao().deleteAll()
-        }
+        appDatabase.studyDao().deleteAll()
+        appDatabase.observationDao().deleteAll()
+        appDatabase.observationDataDao().deleteAll()
+        appDatabase.scheduleDao().deleteAll()
+        appDatabase.dataPointDao().deleteAll()
     }
 }

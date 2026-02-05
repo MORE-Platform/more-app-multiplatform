@@ -32,7 +32,6 @@ import io.redlink.umm.blendedcare.app.android.util.ActivityProvider
 import io.redlink.umm.participant.observations.ObservationFactory
 import io.redlink.umm.participant.observations.ObservationManager
 import io.redlink.umm.participant.scopes.Scope
-import io.redlink.umm.participant.scopes.StudyScope
 import io.redlink.umm.participant.viewModels.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -313,7 +312,7 @@ class ObservationRecordingService : Service() {
     private fun stopObservation(scheduleId: String) {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
-        StudyScope.launch(Dispatchers.IO) {
+        Scope.launch {
             BlendedCareApplication.shared!!.repositories.schedule.setCompletionStateFor(
                 scheduleId,
                 true
@@ -589,31 +588,31 @@ class ObservationRecordingService : Service() {
          * @param scheduleIds The schedule IDs to start
          */
         private fun startWithoutPermissionCheck(scheduleIds: Set<String>) {
-            Scope.launch(Dispatchers.IO) {
-                if (scheduleIds.isNotEmpty()) {
-                    val serviceIntent =
-                        Intent(
-                            BlendedCareApplication.appContext,
-                            ObservationRecordingService::class.java
-                        )
-                    serviceIntent.action = SERVICE_RECEIVER_START_ACTION
-                    serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(scheduleIds))
-                    try {
-                        Handler(Looper.getMainLooper()).post {
-                            if (running) {
-                                BlendedCareApplication.appContext?.startService(
-                                    serviceIntent
-                                )
-                            } else {
-                                BlendedCareApplication.appContext?.startForegroundService(
-                                    serviceIntent
-                                )
-                            }
+            if (ViewManager.appInForeground.value && scheduleIds.isNotEmpty()) {
+                val serviceIntent =
+                    Intent(
+                        BlendedCareApplication.appContext,
+                        ObservationRecordingService::class.java
+                    )
+                serviceIntent.action = SERVICE_RECEIVER_START_ACTION
+                serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(scheduleIds))
+                try {
+                    Handler(Looper.getMainLooper()).post {
+                        if (running) {
+                            BlendedCareApplication.appContext?.startService(
+                                serviceIntent
+                            )
+                        } else {
+                            BlendedCareApplication.appContext?.startForegroundService(
+                                serviceIntent
+                            )
                         }
-                    } catch (e: Exception) {
-                        Napier.e(e.stackTraceToString())
                     }
+                } catch (e: Exception) {
+                    Napier.e(e.stackTraceToString())
                 }
+            } else if (!ViewManager.appInForeground.value) {
+                Napier.w { "Could not start Foreground service: App is not open!" }
             }
         }
 

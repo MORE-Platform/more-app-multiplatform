@@ -56,6 +56,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         AppDelegate.registerForNotifications()
 
         DataUploadBackgroundTask.setupBackgroundTasks()
+        DailyBackgroundTask.setupBackgroundTasks()
+        ObservationReminderBackgroundTask.setupBackgroundTasks()
 
         AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreen.allCases.map { $0.values.navigationLink }))
 
@@ -80,10 +82,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func cancelBackgroundTasks() {
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DataUploadBackgroundTask.taskID)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DailyBackgroundTask.taskID)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: ObservationReminderBackgroundTask.taskID)
     }
 
     func scheduleTasks() {
         DataUploadBackgroundTask.schedule()
+        DailyBackgroundTask.schedule()
+        ObservationReminderBackgroundTask.schedule()
     }
 
     static func registerForNotifications() {

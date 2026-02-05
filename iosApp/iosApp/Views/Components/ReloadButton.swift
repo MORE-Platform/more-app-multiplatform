@@ -22,16 +22,8 @@ struct ReloadButton: View {
     
     private func reload() {
         isLoading = true
-        Task {
-            do {
-                try await AppDelegate.shared.updateStudy(oldStudyState: nil, newStudyState: nil)
-            } catch {
-                NapierAntilog().log(priority: .error, tag: "ReloadButton", throwable: KotlinThrowable(message: error.localizedDescription), message: "Failed to reload study")
-            }
-            await MainActor.run {
-                isLoading = false
-            }
-        }
+        AppDelegate.shared.updateStudyAsync()
+        isLoading = false
     }
 }
 

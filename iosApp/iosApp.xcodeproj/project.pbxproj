@@ -24,6 +24,7 @@
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */; };
 		1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */; };
+		1F0A11C82F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0A11C72F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift */; };
 		1F0FA80929EFE67300B8D80E /* IOSBluetoothConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */; };
 		1F13BA432993951200938C1E /* ConsentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA422993951200938C1E /* ConsentList.swift */; };
 		1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13BA44299396B200938C1E /* ConsentListHeader.swift */; };
@@ -105,6 +106,8 @@
 		1F8EA2D12A0CC2EA00F32602 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D02A0CC2EA00F32602 /* WebView.swift */; };
 		1F8EA2D32A0CC7D600F32602 /* ObservationActionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */; };
 		1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */; };
+		1F988B3D2F2B93E60094F99F /* Napier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F988B3C2F2B93E60094F99F /* Napier.swift */; };
+		1F988B3F2F2BA0CA0094F99F /* DailyBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */; };
 		1F9C3E8E298AAC1A00B9AC82 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */; };
 		1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */; };
 		1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9DB19F298CF44000DBB7DB /* MoreColor.swift */; };
@@ -237,6 +240,7 @@
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionView.swift; sourceTree = "<group>"; };
 		1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionViewModel.swift; sourceTree = "<group>"; };
+		1F0A11C72F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationReminderBackgroundTask.swift; sourceTree = "<group>"; };
 		1F0FA80829EFE67300B8D80E /* IOSBluetoothConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSBluetoothConnector.swift; sourceTree = "<group>"; };
 		1F13BA422993951200938C1E /* ConsentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentList.swift; sourceTree = "<group>"; };
 		1F13BA44299396B200938C1E /* ConsentListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentListHeader.swift; sourceTree = "<group>"; };
@@ -315,6 +319,8 @@
 		1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationActionDelegate.swift; sourceTree = "<group>"; };
 		1F8EA2D42A0CE5EE00F32602 /* ModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
 		1F9283C02BC512E500D459A7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1F988B3C2F2B93E60094F99F /* Napier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Napier.swift; sourceTree = "<group>"; };
+		1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyBackgroundTask.swift; sourceTree = "<group>"; };
 		1F9C3E8D298AAC1A00B9AC82 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		1F9C3E8F298AACC100B9AC82 /* MoreMainBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreMainBackgroundView.swift; sourceTree = "<group>"; };
 		1F9DB19F298CF44000DBB7DB /* MoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreColor.swift; sourceTree = "<group>"; };
@@ -471,6 +477,8 @@
 		1F27536929CC53FE00324417 /* BackgroundTasks */ = {
 			isa = PBXGroup;
 			children = (
+				1F0A11C72F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift */,
+				1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */,
 				1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */,
 				1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */,
 			);
@@ -678,6 +686,14 @@
 			path = LimeSurvey;
 			sourceTree = "<group>";
 		};
+		1F988B3B2F2B93BF0094F99F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				1F988B3C2F2B93E60094F99F /* Napier.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -792,6 +808,7 @@
 				1F8847CB299154650023EF10 /* Extensions */,
 				1F9DB1A1298CF57600DBB7DB /* Style */,
 				1F9C3E8B298AAC0000B9AC82 /* Views */,
+				1F988B3B2F2B93BF0094F99F /* Utils */,
 				7555FF82242A565900829871 /* ContentView.swift */,
 				1F13BA4E2993A2A600938C1E /* ContentViewModel.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
@@ -976,6 +993,7 @@
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				1FC957532C072B7900EB92D6 /* Embed Foundation Extensions */,
 				1F8E9DB22A80D31D006E4AF4 /* ShellScript */,
+				1F988B402F30941C0094F99F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1087,6 +1105,23 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
+		1F988B402F30941C0094F99F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :shared:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.PLATFORM_NAME=\"$PLATFORM_NAME\" \\\n    -Pmoko.resources.CONFIGURATION=\"${KOTLIN_FRAMEWORK_BUILD_TYPE:-$CONFIGURATION}\" \\\n    -Pmoko.resources.ARCHS=\"$ARCHS\" \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\" \n";
+		};
 		7555FFB5242A651A00829871 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1128,6 +1163,7 @@
 				B748DF4E29D1CAE50026C348 /* RadioButtonField.swift in Sources */,
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
+				1F0A11C82F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift in Sources */,
 				EDD1DEFF29F7B595009BC8FB /* ScheduleListHeader.swift in Sources */,
 				1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */,
 				B79DBA3929D3130600A1F547 /* ExpandableInput.swift in Sources */,
@@ -1189,11 +1225,13 @@
 				1F43997B29B8D70800687906 /* ObservationButton.swift in Sources */,
 				07190FEA29E80A7C00A8CB1F /* LeaveStudyView.swift in Sources */,
 				1F8847B729911E6E0023EF10 /* LoginViewModel.swift in Sources */,
+				1F988B3D2F2B93E60094F99F /* Napier.swift in Sources */,
 				1F13BA4D29939E4F00938C1E /* MoreListStyleEdgeInsets.swift in Sources */,
 				1F8EA2D52A0CE5EE00F32602 /* ModalView.swift in Sources */,
 				1F8847D2299158880023EF10 /* UIToggleFoldViewButton.swift in Sources */,
 				1F13BA45299396B200938C1E /* ConsentListHeader.swift in Sources */,
 				1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */,
+				1F988B3F2F2BA0CA0094F99F /* DailyBackgroundTask.swift in Sources */,
 				1F43997129B8D6FB00687906 /* ScheduleViewModel.swift in Sources */,
 				B784169829CA08850035D830 /* CircleActivityIndicator.swift in Sources */,
 				B748DF3C29CC6B380026C348 /* ObservatinoDetailsData.swift in Sources */,

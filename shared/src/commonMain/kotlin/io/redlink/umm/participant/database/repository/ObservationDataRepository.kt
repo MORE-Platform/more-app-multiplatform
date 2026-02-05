@@ -16,7 +16,6 @@ import io.redlink.umm.participant.database.AppDatabase
 import io.redlink.umm.participant.database.entities.ObservationDataEntity
 import io.redlink.umm.participant.extensions.mapAsBulkData
 import io.redlink.umm.participant.scopes.Scope
-import io.redlink.umm.participant.scopes.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
@@ -35,7 +34,7 @@ class ObservationDataRepository(private val appDatabase: AppDatabase) {
     }
 
     fun addData(dataList: List<ObservationDataEntity>) {
-        StudyScope.launch {
+        Scope.launch {
             mutex.withLock {
                 queue.addAll(dataList)
             }
