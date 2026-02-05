@@ -60,8 +60,8 @@ abstract class ObservationFactory(
     }
 
     fun studySensorPermissions() =
-        observations.filter { it.observationType.observationType in studyObservationTypes.value }
-            .map { it.observationType.sensorPermissions }.flatten().toSet()
+        observations.filter { observationMatchesStudyTypes(it, studyObservationTypes.value) }
+            .flatMap { it.observationType.sensorPermissions }.toSet()
 
     fun setNotificationManager(notificationManager: NotificationManager) {
         observations.forEach { it.setNotificationManager(notificationManager) }
@@ -75,7 +75,7 @@ abstract class ObservationFactory(
     fun bleDevicesNeeded(): Set<String> {
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "Filtering types for BLE: ${studyObservationTypes.value}" }
         val bleTypes =
-            observations.filter { it.observationType.observationType in studyObservationTypes.value }
+            observations.filter { observationMatchesStudyTypes(it, studyObservationTypes.value) }
                 .flatMap { it.bleDevicesNeeded() }.toSet()
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "BLE observation types: $bleTypes" }
         return bleTypes
@@ -96,7 +96,9 @@ abstract class ObservationFactory(
 
     fun observation(type: String): Observation? {
         Napier.i(tag = "ObservationFactory::observation") { "Fetching observation of type: $type" }
-        return observations.firstOrNull { it.observationType.observationType == type }?.apply {
+        return observations.firstOrNull {
+            it.observationType.matches(type)
+        }?.apply {
             if (!this.observationDataManagerAdded()) {
                 Napier.i(tag = "ObservationFactory::observation") { "Adding data manager to observation of type: $type" }
                 setDataManager(dataManager)
@@ -105,6 +107,9 @@ abstract class ObservationFactory(
     }
 
     private fun studyObservations() =
-        observations.filter { it.observationType.observationType in studyObservationTypes.value }
+        observations.filter { it.observationType.matchesAny(studyObservationTypes.value) }
+
+    private fun observationMatchesStudyTypes(obs: Observation, types: Set<String>): Boolean =
+        obs.observationType.matchesAny(types)
 
 }

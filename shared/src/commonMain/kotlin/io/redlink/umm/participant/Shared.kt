@@ -344,15 +344,17 @@ class Shared(
     }
 
     private fun garminLogin() {
-        Napier.d(tag = "Shared::garminLogin") { "Checking Garmin login" }
-        if (observationFactory.studyObservationTypes.value
-                .contains(GarminType().observationType)
-            && !sharedStorageRepository.load(
-                CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN,
-                false
-            )
-        ) {
-            ViewManager.requestGarminConnectView(true)
+        Scope.launch {
+            Napier.d(tag = "Shared::garminLogin") { "Checking Garmin login" }
+            val garminType = GarminType()
+            if (garminType.matchesAny(observationFactory.studyObservationTypes.value)
+                && !sharedStorageRepository.load(
+                    CoreGarminConnectViewModel.GARMIN_CONNECT_SUCCESSFUL_LOGIN,
+                    false
+                )
+            ) {
+                ViewManager.requestGarminConnectView(true)
+            }
         }
     }
 

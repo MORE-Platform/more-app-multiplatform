@@ -8,7 +8,7 @@ captures
 .cxx
 local.properties
 xcuserdata
-shared/src/commonMain/kotlin/generated
+/shared/src/commonMain/kotlin/generated
 /androidApp/release/
 *.ipa
 .env
@@ -19,3 +19,7 @@ shared/src/commonMain/kotlin/generated
 *.p8
 .kotlin
 *.db
+*.apk
+*.aab
+/androidApp/debug
+/shared/schemas
