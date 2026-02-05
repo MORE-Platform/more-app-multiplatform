@@ -323,6 +323,7 @@ class Shared(
                 withContext(Dispatchers.Main) {
                     repositories.study.upsert(s)
                 }
+                updateSchedules()
             } catch (e: Exception) {
                 Napier.e(tag = "Shared::updateStudy") { "Exception during updating study: $e" }
                 if (repositories.study.study.value == null) {
