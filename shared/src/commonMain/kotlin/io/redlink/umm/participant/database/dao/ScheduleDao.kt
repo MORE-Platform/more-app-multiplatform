@@ -76,13 +76,13 @@ interface ScheduleDao : BaseDao<ScheduleEntity> {
         "SELECT * " +
                 "FROM schedules " +
                 "WHERE state IN (:states) " +
-                "AND hidden = 0" +
+                "AND reminder = 1" +
                 " AND start >= :minTimestamp" +
                 " AND start <= :maxTimestamp " +
                 "ORDER BY start ASC" +
                 " LIMIT :limit"
     )
-    fun getAllVisibleWithStatesAndMaxTimestamp(
+    fun getSchedulesWithReminder(
         states: List<String>,
         minTimestamp: Long,
         maxTimestamp: Long,

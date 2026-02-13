@@ -37,10 +37,7 @@ class LimeSurveyObservation(repos: MainRepository) :
         val limeSurveyId = settings[LIMESURVEY_ID]?.toString()?.trim('\"')
         val token = settings[LIMESURVEY_TOKEN]?.toString()?.trim('\"')
         val limeSurveyLink = (settings[LIMESURVEY_URL]?.toString()?.trim('\"')
-            ?: "https://lime.platform-test.more.redlink.io").replaceFirst(
-            Regex("^(http://|https://)"),
-            ""
-        )
+            ?: "https://lime.platform-test.umm.redlink.io")
         if (token != null && limeSurveyId != null) {
             val url = configToLink(limeSurveyLink, limeSurveyId, token)
             Napier.i { "LimeSurvey link: $url" }
@@ -57,9 +54,17 @@ class LimeSurveyObservation(repos: MainRepository) :
     }
 
     private fun configToLink(url: String, surveyId: String, token: String): String {
+        val protocol = when {
+            url.startsWith("http://", ignoreCase = true) -> URLProtocol.HTTP
+            url.startsWith("https://", ignoreCase = true) -> URLProtocol.HTTPS
+            else -> URLProtocol.HTTPS
+        }
+
+        val cleanUrl = url.replaceFirst(Regex("^(http://|https://)", RegexOption.IGNORE_CASE), "")
+
         return URLBuilder(
-            URLProtocol.HTTPS,
-            url,
+            protocol,
+            cleanUrl,
             pathSegments = listOf(surveyId),
             parameters = parametersOf("token", token)
         ).build().toString()

@@ -79,7 +79,8 @@ class StudyRepository(private val appDatabase: AppDatabase) {
                         observation.observationId,
                         observation.observationType,
                         observation.observationTitle,
-                        observation.hidden ?: observation.noSchedule ?: false
+                        observation.hidden ?: observation.noSchedule ?: false,
+                        observation.reminder ?: false
                     )
                 }
             }

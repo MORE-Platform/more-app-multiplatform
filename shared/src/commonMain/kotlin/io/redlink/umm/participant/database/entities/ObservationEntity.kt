@@ -30,6 +30,7 @@ data class ObservationEntity(
     val configuration: String? = null,
     val hidden: Boolean? = null,
     val scheduleLess: Boolean = false,
+    val reminder: Boolean = false,
     val version: Long = 0,
     val required: Boolean = false,
     val collectionTimestamp: Long = Clock.System.now().toEpochMilliseconds()
@@ -57,6 +58,7 @@ data class ObservationEntity(
                 configuration = observation.configuration.toString(),
                 hidden = observation.hidden,
                 scheduleLess = observation.noSchedule ?: false,
+                reminder = observation.reminder ?: false,
                 required = observation.required,
                 version = observation.version
             )
