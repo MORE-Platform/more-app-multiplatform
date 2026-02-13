@@ -39,7 +39,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
-            dataRecorder: IOSDataRecorder()
+            dataRecorder: IOSDataRecorder(),
+            reminderNotificationSchedulingLimit: 30
         )
     }()
 

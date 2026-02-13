@@ -2,7 +2,6 @@ package io.redlink.umm.participant.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.aakira.napier.Napier
 import io.redlink.umm.blendedcare.services.network.openapi.model.ObservationSchedule
 import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.util.createUUID
@@ -20,6 +19,7 @@ data class ScheduleEntity(
     val end: Long? = null,
     val done: Boolean = false,
     val hidden: Boolean = false,
+    val reminder: Boolean = false,
     val state: String = ScheduleState.DEACTIVATED.name
 ) {
     fun getState() = ScheduleState.getState(state)
@@ -62,6 +62,7 @@ data class ScheduleEntity(
             observationType: String,
             observationTitle: String,
             hidden: Boolean,
+            reminder: Boolean
         ): ScheduleEntity? {
             return if (schedule.start != null && schedule.end != null) {
                 val now = Clock.System.now().epochSeconds
@@ -78,7 +79,8 @@ data class ScheduleEntity(
                     start = schedule.start.epochSeconds,
                     end = schedule.end.epochSeconds,
                     hidden = hidden,
-                    state = scheduleState.name
+                    state = scheduleState.name,
+                    reminder = reminder
                 )
             } else null
         }

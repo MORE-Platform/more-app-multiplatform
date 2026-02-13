@@ -54,6 +54,7 @@ class Shared(
     mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder,
+    reminderNotificationSchedulingLimit: Int? = null,
 ) {
     val deeplinkManager = DeeplinkManager(repositories, observationFactory)
     val endpointRepository = EndpointRepository(sharedStorageRepository)
@@ -83,7 +84,8 @@ class Shared(
         )
             .also { observationFactory.setNotificationManager(it) }
 
-    val observationService = ObservationService(repositories, notificationManager)
+    val observationService =
+        ObservationService(repositories, notificationManager, reminderNotificationSchedulingLimit)
 
     private val mutex = Mutex()
     private val konnection = Konnection.instance
@@ -237,7 +239,6 @@ class Shared(
                 }
 
                 val msg = when (error) {
-                    is Throwable -> error.message
                     null -> "Study is null"
                     else -> error.toString()
                 }

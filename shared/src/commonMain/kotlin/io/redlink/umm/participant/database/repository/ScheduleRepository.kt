@@ -45,7 +45,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         return appDatabase.scheduleDao().getByStatesFlow(states.map { it.name })
     }
 
-    fun getVisibleSchedulesUntilDate(
+    fun getSchedulesWithReminder(
         states: Set<ScheduleState>,
         minTimestamp: Instant,
         maxTimestamp: Instant,
@@ -54,7 +54,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         if (states.isEmpty()) {
             return flowOf(emptyList())
         }
-        return appDatabase.scheduleDao().getAllVisibleWithStatesAndMaxTimestamp(
+        return appDatabase.scheduleDao().getSchedulesWithReminder(
             states.map { it.name },
             minTimestamp.epochSeconds,
             maxTimestamp.epochSeconds,

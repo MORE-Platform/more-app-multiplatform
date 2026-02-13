@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Base64
 import java.util.Properties
 
@@ -49,8 +50,8 @@ android {
         applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 11
-        versionName = "0.0.11"
+        versionCode = 12
+        versionName = "0.0.12"
     }
     buildFeatures {
         compose = true
@@ -143,8 +144,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
@@ -154,8 +158,8 @@ val composeVersion = "1.6.0"
 val workVersion = "2.10.3"
 val navVersion = "2.9.3"
 val polarSDKVersion = "6.7.0"
-val ktorVersion = "3.2.3"
-val roomVersion = "2.7.2"
+val ktorVersion = "3.4.0"
+val roomVersion = "2.8.4"
 val koinVersion = "4.1.1"
 val cameraVersion = "1.4.2"
 

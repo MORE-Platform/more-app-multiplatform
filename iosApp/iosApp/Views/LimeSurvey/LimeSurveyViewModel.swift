@@ -42,6 +42,7 @@ class LimeSurveyViewModel: ObservableObject {
             .store(in: &cancellables)
         
         createPublisher(for: coreViewModel.limeSurveyLink)
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: {_ in}) { [weak self] in
                 self?.limeSurveyLink = if let link = $0 {

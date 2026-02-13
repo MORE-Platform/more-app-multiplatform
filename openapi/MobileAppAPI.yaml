@@ -390,6 +390,9 @@ components:
         noSchedule:
           type: boolean
           default: false
+        reminder:
+          type: boolean
+          default: false
         version:
           $ref: '#/components/schemas/VersionTag'
       required:

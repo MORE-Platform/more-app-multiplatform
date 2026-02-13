@@ -28,7 +28,7 @@ import io.redlink.umm.participant.database.entities.StudyEntity
         BluetoothDeviceEntity::class,
         DataPointEntity::class
     ],
-    version = 1
+    version = 2
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

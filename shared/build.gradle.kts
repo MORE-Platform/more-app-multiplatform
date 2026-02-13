@@ -19,11 +19,11 @@ val mobileAppApiPackage = "io.redlink.umm.blendedcare.services.network.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 val coroutinesVersion = "1.10.2"
-val ktorVersion = "3.2.3"
+val ktorVersion = "3.4.0"
 val napierVersion = "2.7.1"
 val serializationVersion = "1.9.0"
 val gsonVersion = "2.13.2"
-val roomVersion = "2.7.2"
+val roomVersion = "2.8.4"
 val sqliteVersion = "2.5.2"
 
 val mokoResVersion = "0.25.2"

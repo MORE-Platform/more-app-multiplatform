@@ -14,24 +14,27 @@ import kotlinx.datetime.plus
 
 class ObservationService(
     private val repositories: MainRepository,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val schedulingLimit: Int? = null
 ) {
     suspend fun scheduleObservationReminder() {
         Napier.i(tag = "ObservationService::scheduleObservationReminder") { "Starting scheduleObservationReminder()" }
         val now = Clock.System.now()
         val daysFromNow: Instant =
             now.plus(DateTimePeriod(days = DAYS_INTO_FUTURE), TimeZone.currentSystemDefault())
-        repositories.schedule.getVisibleSchedulesUntilDate(
+        repositories.schedule.getSchedulesWithReminder(
             setOf(ScheduleState.DEACTIVATED),
             now,
             daysFromNow,
-            MAX_SCHEDULE_COUNT
+            schedulingLimit ?: MAX_SCHEDULE_COUNT
         ).firstOrNull()
             ?.filter { it.start != null }
             ?.let { schedules: List<ScheduleEntity> ->
                 if (schedules.isNotEmpty()) {
                     notificationManager.scheduleObservationReminders(schedules)
                     Napier.i(tag = "ObservationService::scheduleObservationReminder") { "Scheduled ${schedules.size} notifications!" }
+                } else {
+                    Napier.i(tag = "ObservationService::scheduleObservationReminder") { "No schedules with reminder found." }
                 }
             }
     }
