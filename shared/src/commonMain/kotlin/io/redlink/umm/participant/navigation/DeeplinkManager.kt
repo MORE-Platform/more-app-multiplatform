@@ -165,20 +165,15 @@ class DeeplinkManager(
     ): String {
         val host = baseDeeplink ?: BASE_HOST
         val base = if (host.endsWith("/")) host else "$host/"
+        val now = Clock.System.now().epochSeconds
 
         val observationRoute = observationFactory.observationTypes().firstOrNull {
-            it == schedule.observationType || it.contains(schedule.observationType)
-        }
+            (it == schedule.observationType || it.contains(schedule.observationType))
+                    && (schedule.end ?: 0L) >= now
+        } ?: TASK_DETAILS
 
-        val now = Clock.System.now().epochSeconds
-        val route = if ((schedule.start ?: 0L) <= now) {
-            observationRoute ?: TASK_DETAILS
-        } else {
-            TASK_DETAILS
-        }
-
-        val finalRoute = if (deepLinks.isEmpty() || deepLinks.any { it.contains(route) }) {
-            route
+        val finalRoute = if (deepLinks.any { it.contains(observationRoute) }) {
+            observationRoute
         } else {
             TASK_DETAILS
         }
