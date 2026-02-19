@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import io.github.aakira.napier.Napier
 import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.consent.ConsentView
@@ -38,6 +39,7 @@ class ContentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
             var deepLink = it
+            Napier.d { "Received deep link: $deepLink" }
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
                 if (!deepLink.contains(NavigationScreen.NavigationNotificationIDKey)) {
                     deepLink += if (deepLink.contains("?")) {

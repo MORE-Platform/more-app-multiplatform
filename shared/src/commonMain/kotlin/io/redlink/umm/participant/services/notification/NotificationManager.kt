@@ -325,6 +325,7 @@ class NotificationManager(
         withContext(Dispatchers.Main) {
             storeNotifications(notifications)
             notifications.forEach {
+                Napier.i { "Scheduling notification ${it.notificationId} at ${it.timestamp} with deeplink: ${it.deepLink}" }
                 displayNotification(it)
             }
         }
