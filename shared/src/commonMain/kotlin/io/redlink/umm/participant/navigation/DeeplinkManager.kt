@@ -1,5 +1,6 @@
 package io.redlink.umm.participant.navigation
 
+import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.entities.ScheduleEntity
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.extensions.asClosure
@@ -39,6 +40,8 @@ class DeeplinkManager(
                     .cancellable().firstOrNull()
             }
 
+            Napier.d { "Schedule: $schedule, observationId: $observationIdParam" }
+
             val observationIdToUse = observationIdParam ?: schedule?.observationId
 
             if (scheduleIdParam != null && schedule == null) {
@@ -72,6 +75,7 @@ class DeeplinkManager(
         hostReplacement: String?
     ): String {
         val selectedRoute = selectRoute(deepLink, schedule)
+        Napier.d { "Selected route: $selectedRoute, schedule: $schedule, observationId: ${schedule?.observationId}" }
         return replaceRoute(deepLink, selectedRoute, schedule, protocolReplacement, hostReplacement)
     }
 
@@ -100,6 +104,8 @@ class DeeplinkManager(
             ) {
                 routeForObservation(deepLink)
             } else {
+                Napier.d { "Schedule is not active, using default route" }
+                Napier.d { "Schedule start: ${scheduleSchema.start}, end: ${scheduleSchema.end}, currentTime: ${now.epochSeconds}" }
                 TASK_DETAILS
             }
         } ?: OBSERVATION_DETAILS
@@ -136,7 +142,6 @@ class DeeplinkManager(
         val newQueryParams = paramsMap.entries.flatMap { entry ->
             entry.value.map { "${entry.key}=${it}" }
         }.joinToString("&")
-
 
         return buildString {
             append(protocolAndHost)

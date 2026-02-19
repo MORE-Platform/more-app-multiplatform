@@ -61,7 +61,7 @@ class ContentViewModel : ViewModel() {
         }
     }
 
-    fun openMainActivity(context: Context) {
+    suspend fun openMainActivity(context: Context) {
         (context as? Activity)?.let { activity ->
             schedulePeriodicWorker(activity)
             handleDeepLinkAndOpenMain(activity)
@@ -78,44 +78,45 @@ class ContentViewModel : ViewModel() {
         )
     }
 
-    private fun handleDeepLinkAndOpenMain(activity: Activity) {
+    private suspend fun handleDeepLinkAndOpenMain(activity: Activity) {
         val rawDeepLink =
             activity.intent.getStringExtra("deepLink") ?: activity.intent.data?.toString()
+        Napier.d { "Attached deeplink: $rawDeepLink" }
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val modifiedDeepLink = rawDeepLink?.let { link ->
-                val sharedInstance = BlendedCareApplication.shared
-                    ?: throw IllegalStateException("MoreApplication.shared is not initialized")
-                sharedInstance.deeplinkManager
-                    .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
-                    .firstOrNull()
-            }
+        val modifiedDeepLink = rawDeepLink?.let { link ->
+            val sharedInstance = BlendedCareApplication.shared
+                ?: throw IllegalStateException("MoreApplication.shared is not initialized")
+            sharedInstance.deeplinkManager
+                .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
+                .firstOrNull()
+        }
 
-            val finalUri = when {
-                modifiedDeepLink != null -> {
-                    notificationId?.let {
-                        val sharedInstance = BlendedCareApplication.shared
-                            ?: throw IllegalStateException("MoreApplication.shared is not initialized")
-                        sharedInstance.notificationManager.handleNotificationInteraction(
-                            it, modifiedDeepLink
-                        )
-                    }
-                    modifiedDeepLink.toUri()
+        Napier.d { "Modified deeplink: $modifiedDeepLink" }
+
+        val finalUri = when {
+            modifiedDeepLink != null -> {
+                notificationId?.let {
+                    val sharedInstance = BlendedCareApplication.shared
+                        ?: throw IllegalStateException("MoreApplication.shared is not initialized")
+                    sharedInstance.notificationManager.handleNotificationInteraction(
+                        it, modifiedDeepLink
+                    )
                 }
-
-                notificationId != null -> {
-                    (ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters()).toUri()
-                }
-
-                else -> null
+                modifiedDeepLink.toUri()
             }
 
-            Napier.d { finalUri.toString() }
-            withContext(Dispatchers.Main) {
-                activity.intent.data = finalUri
-                openMain(activity)
+            notificationId != null -> {
+                (ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters()).toUri()
             }
+
+            else -> null
+        }
+
+        Napier.d { "Final deeplink: ${finalUri?.toString()}" }
+        withContext(Dispatchers.Main) {
+            activity.intent.data = finalUri
+            openMain(activity)
         }
     }
 
