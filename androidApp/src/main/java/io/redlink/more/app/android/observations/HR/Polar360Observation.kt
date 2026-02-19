@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.model.PolarAccelerometerData
 import com.polar.sdk.api.model.PolarFirstTimeUseConfig
-import com.polar.sdk.api.model.PolarHrData
 import com.polar.sdk.api.model.PolarOfflineRecordingData
 import com.polar.sdk.api.model.PolarPpiData
 import com.polar.sdk.api.model.PolarSensorSetting
@@ -40,17 +39,6 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import kotlin.collections.filter
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.isNotEmpty
-import kotlin.let
-import kotlin.run
-import kotlin.stackTraceToString
-import kotlin.text.contains
-import kotlin.text.lowercase
-import kotlin.to
-import kotlinx.serialization.json.Json
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -93,7 +81,7 @@ class Polar360Observation(repos: MainRepository):
     private var accQueue: BoundedQueue<List<accItem>>? = BoundedQueue<List<accItem>>(10)
 
     private var ppiQueue: BoundedQueue<ppi_data>? = BoundedQueue<ppi_data>(10)
-    private var firstimeUseDisposable:Disposable? = null
+    private var firstTimeUseDisposable:Disposable? = null
     private val mutableStatDeviceId: MutableStateFlow<String> = MutableStateFlow("")
 
     private var samplingRate : Int = 1
@@ -217,10 +205,6 @@ class Polar360Observation(repos: MainRepository):
 
     }
 
-    fun toJson(): String {
-        return Json.encodeToString(this)
-    }
-
     private var packet: Offline_recording_packet = Offline_recording_packet(
         hr_data = emptyList(),
         ppi_data = emptyList(),
@@ -266,7 +250,7 @@ class Polar360Observation(repos: MainRepository):
 
                     if (OfflineRecording) {
 
-                        firstimeUseDisposable = checkIfDeviceIsSetup(it.deviceId!!)
+                        firstTimeUseDisposable = checkIfDeviceIsSetup(it.deviceId!!)
                             .subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
                             .subscribe({ setupDone ->
@@ -275,9 +259,9 @@ class Polar360Observation(repos: MainRepository):
                                     Napier.e(tag = "Polar360:Start") { "Device setup failed, aborting start" }
                                     return@subscribe
                                 }
-                                //Starting offline recording, if already recodring just throws error
-                                // Inteded way
-                                val sdk_enabled = startOfflineRecordings()
+                                // Starting offline recording, if already recording just throws error
+                                // Intended way
+                                startOfflineRecordings()
 
                             }, { error ->
                                 Napier.e(tag = "Polar360:Start") { "Setup check failed: ${error.localizedMessage}" }
@@ -287,7 +271,7 @@ class Polar360Observation(repos: MainRepository):
 
                     else{
 
-                    firstimeUseDisposable = checkIfDeviceIsSetup(it.deviceId!!)
+                    firstTimeUseDisposable = checkIfDeviceIsSetup(it.deviceId!!)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe({ setupDone ->
@@ -343,137 +327,93 @@ class Polar360Observation(repos: MainRepository):
     }
 
     override fun stop(onCompletion: () -> Unit) {
-
-
-        var streamDisposable1 : Disposable? = null
-        var streamDisposable2 : Disposable? = null
-
+        Napier.d(tag = "Polar360::stop") { "Stop called, OfflineRecording=$OfflineRecording" }
 
         if (OfflineRecording) {
+            val deviceId = mutableStatDeviceId.value
 
-            streamDisposable1 = polarConnector.polarApi.stopOfflineRecording(
-                mutableStatDeviceId.value,
-                PolarBleApi.PolarDeviceDataType.TEMPERATURE
-            )
-                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
-                    {
-                        Napier.d(tag = TAG, message = "Sucessfully stopped temp stream")
-                    },
-                    {
-                        Napier.d(tag = TAG, message = "could not stop the tmp stream")
+            // Wait for all stop calls to complete before fetching data
+            try {
+                Completable.mergeArray(
+                    polarConnector.polarApi.stopOfflineRecording(deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE)
+                        .subscribeOn(Schedulers.io())
+                        .doOnComplete { Napier.d(tag = TAG, message = "Successfully stopped temp stream") }
+                        .onErrorComplete { Napier.d(tag = TAG, message = "Could not stop temp stream: ${it.message}"); true },
+                    polarConnector.polarApi.stopOfflineRecording(deviceId, PolarBleApi.PolarDeviceDataType.ACC)
+                        .subscribeOn(Schedulers.io())
+                        .doOnComplete { Napier.d(tag = TAG, message = "Successfully stopped ACC stream") }
+                        .onErrorComplete { Napier.d(tag = TAG, message = "Could not stop ACC stream: ${it.message}"); true },
+                    polarConnector.polarApi.stopOfflineRecording(deviceId, PolarBleApi.PolarDeviceDataType.HR)
+                        .subscribeOn(Schedulers.io())
+                        .doOnComplete { Napier.d(tag = TAG, message = "Successfully stopped HR stream") }
+                        .onErrorComplete { Napier.d(tag = TAG, message = "Could not stop HR stream: ${it.message}"); true },
+                    polarConnector.polarApi.stopOfflineRecording(deviceId, PolarBleApi.PolarDeviceDataType.PPI)
+                        .subscribeOn(Schedulers.io())
+                        .doOnComplete { Napier.d(tag = TAG, message = "Successfully stopped PPI stream") }
+                        .onErrorComplete { Napier.d(tag = TAG, message = "Could not stop PPI stream: ${it.message}"); true }
+                ).blockingAwait()
+            } catch (e: Exception) {
+                Napier.e(tag = "Polar360::stop") { "Error stopping offline recordings: ${e.message}" }
+            }
 
-                    }
-                )
-            streamDisposable2 = polarConnector.polarApi.stopOfflineRecording(
-                mutableStatDeviceId.value,
-                PolarBleApi.PolarDeviceDataType.ACC
-            )
-                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
-                    {
-                        Napier.d(tag = TAG, message = "Sucessfully stopped ACC stream")
-                    },
-                    {
-                        Napier.d(tag = TAG, message = "could not stop the acc stream")
+            Napier.d(tag = "Polar360::stop") { "All offline recordings stopped, fetching data from device: $deviceId" }
 
-                    }
-                )
-            val streamDisposable3 = polarConnector.polarApi.stopOfflineRecording(
-                mutableStatDeviceId.value,
-                PolarBleApi.PolarDeviceDataType.HR
-            )
-                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
-                    {
-                        Napier.d(tag = TAG, message = "Sucessfully stopped ACC stream")
-                    },
-                    {
-                        Napier.d(tag = TAG, message = "could not stop the acc stream")
-
-                    }
-                )
-
-            val streamDisposable4 = polarConnector.polarApi.stopOfflineRecording(
-                mutableStatDeviceId.value,
-                PolarBleApi.PolarDeviceDataType.PPI
-            )
-                .observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(
-                    {
-                        Napier.d(tag = TAG, message = "Sucessfully stopped ACC stream")
-                    },
-                    {
-                        Napier.d(tag = TAG, message = "could not stop the acc stream")
-
-                    }
-                )
-
-            var temp_records : List<PolarTemperatureData.PolarTemperatureDataSample> = emptyList()
-            var ppi_records : List<PolarPpiData.PolarPpiSample> = emptyList()
-            var acc_records : List<PolarAccelerometerData.PolarAccelerometerDataSample> =emptyList()
-            var hr_records : List<PolarHrData.PolarHrSample> = emptyList()
-
-            val g = polarConnector.polarApi
-                .listOfflineRecordings(mutableStatDeviceId.value) // Flowable<PolarOfflineRecordingEntry>
+            // Fetch offline recordings — store whatever we get, even on error
+            polarConnector.polarApi
+                .listOfflineRecordings(deviceId)
                 .subscribeOn(Schedulers.io())
                 .concatMap { entry ->
-                    polarConnector.polarApi.getOfflineRecord(mutableStatDeviceId.value, entry, secret = null)
+                    polarConnector.polarApi.getOfflineRecord(deviceId, entry, secret = null)
                         .subscribeOn(Schedulers.io())
                         .flatMap { data ->
-                            // process data here
                             when (data) {
                                 is PolarOfflineRecordingData.PpiOfflineRecording -> {
-                                    ppi_records = data.data.samples
                                     if(Ppi){
-                                    packet.ppi_data = processPpiSamples(data.data.samples)}
-                                    else{
-                                        //we use ppi for hr too since it stores the timestamp
+                                        packet.ppi_data = processPpiSamples(data.data.samples)
+                                    } else {
                                         packet.hr_data = processHrSamples(data.data.samples)
                                     }
-                                    Napier.d("PPI samples: ${ppi_records.size}")
+                                    Napier.d("PPI samples: ${data.data.samples.size}")
                                 }
                                 is PolarOfflineRecordingData.TemperatureOfflineRecording -> {
-                                    temp_records = data.data.samples
                                     packet.temp_data = processTemperatureSamples(data.data.samples)
-                                    Napier.d("TEMP samples: ${temp_records.size}")
+                                    Napier.d("TEMP samples: ${data.data.samples.size}")
                                 }
                                 is PolarOfflineRecordingData.AccOfflineRecording -> {
-                                    acc_records = data.data.samples
                                     packet.acc_data = processAccSamples(data.data.samples)
-                                    Napier.d("ACC samples: ${acc_records.size}")
+                                    Napier.d("ACC samples: ${data.data.samples.size}")
                                 }
                                 else -> {
-                                    Napier.e { "data nor supported" }
+                                    Napier.e { "data not supported" }
                                 }
                             }
 
-                            // Remove record but continue emitting the original data
-                            polarConnector.polarApi.removeOfflineRecord(mutableStatDeviceId.value, entry)
+                            polarConnector.polarApi.removeOfflineRecord(deviceId, entry)
                                 .subscribeOn(Schedulers.io())
-                                .andThen(Single.just(data)
-                                    ) // emit the data after removal
+                                .andThen(Single.just(data))
                         }
                         .toFlowable()
                 }
                 .observeOn(Schedulers.io())
-
                 .blockingSubscribe(
                     { data ->
                         Napier.d("Data emitted: $data")
-
                     },
                     { error ->
                         Napier.e("Error processing offline records: $error")
+                        // Store whatever partial data we collected before the error
+                        Napier.d(tag = "Polar360::stop") { "Storing partial data after error" }
+                        storeData(packet, -1)
                     },
                     {
-                        // All recordings processed
                         Napier.d("All offline recordings processed")
-                        Napier.d("${packet.hr_data!!.size} ${packet.temp_data!!.size} and ${packet.acc_data!!.size} ### ${packet.ppi_data!!.size}")
-                        storeData(packet,-1)
+                        storeData(packet, -1)
                     }
                 )
 
             if(Continous_recording){
-                    // Restarting offline recording for continous recording of data on device
-                    val restart_streams = startOfflineRecordings()
-                }
+                startOfflineRecordings()
+            }
             saveAndSend()
             onCompletion()
 
@@ -486,10 +426,8 @@ class Polar360Observation(repos: MainRepository):
         }
         //Shared disposables
         deviceConnectionListener?.cancel()
-        firstimeUseDisposable?.dispose()
+        firstTimeUseDisposable?.dispose()
         deviceConnectionListener = null
-
-
     }
 
 
@@ -719,7 +657,6 @@ class Polar360Observation(repos: MainRepository):
                 { data: PolarTemperatureData ->
                     if (data.samples.isNotEmpty()) {
                         val sample = data.samples[0]
-                        val temp = sample.temperature
                         tmpQueue!!.add(tmpItem(sample.temperature,sample.timeStamp))
                         tryBuildPacket()?.let { sendOut(it) }
                     }
@@ -746,7 +683,7 @@ class Polar360Observation(repos: MainRepository):
                 else{
                     ppiQueue!!.add(ppi_data(polarData.samples[0].hr,polarData.samples[0].timeStamp.toLong(),polarData.samples[0].ppi,polarData.samples[0].errorEstimate))
                 }
-                tryBuildPacket()?.let { println(it) }
+                tryBuildPacket()?.let { sendOut(it) }
             },
             { error ->
                 Napier.e(
@@ -934,10 +871,5 @@ class Polar360Observation(repos: MainRepository):
             }, { error ->
                 Napier.e(tag = "Polar360:OfflineStart") { "Error starting offline recordings: $error" }
             })
-    }
-
-
-    private fun stopOfflineRecording(deviceId: String,feature: PolarBleApi.PolarDeviceDataType): Completable{
-        return polarConnector.polarApi.stopOfflineRecording(deviceId,feature)
     }
 }

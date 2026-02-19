@@ -360,49 +360,68 @@ class Polar360Observation: Observation_{
     
 
     override func stop(onCompletion: @escaping () -> Void) {
+        print("Polar360::stop - Stop called, OfflineRecording=\(OfflineRecording)")
 
-        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .acc)
-        .subscribe(
-            onCompleted: {
-                print("stopped acc")
-            }
-        ).disposed(by: disposeBag)
-        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "" , feature: .temperature)
-            .subscribe(onCompleted: {print("stopped temp")})
-            .disposed(by: disposeBag)
-
-        self.polarConnector.polarApi.stopOfflineRecording(self.deviceid ?? "", feature: .ppi)
-            .subscribe(onCompleted: {print("stopped ppi")})
-            .disposed(by: disposeBag)
         if(OfflineRecording){
-            Task(priority: .background) {
-                do {
-                    // CPU / IO heavy work happens in background
-                    let pack = try await processOfflineRecordings()
-                    print("pack size")
-                    print(pack.acc_data?.count, pack.ppi_data?.count, pack.temp_data?.count)
+            let deviceId = self.deviceid ?? ""
 
-                    // Hop back to the MainActor for storeData (if it touches CoreData/UI)
-                    await MainActor.run {
-                        self.storeData(data: pack.toJSON(), timestamp: -1) {
-                            print("data stored, sending to backend")
+            // Wait for all stop calls to complete before fetching data
+            let stopGroup = DispatchGroup()
+
+            stopGroup.enter()
+            self.polarConnector.polarApi.stopOfflineRecording(deviceId, feature: .acc)
+                .subscribe(
+                    onCompleted: { print("Polar360::stop - Stopped acc"); stopGroup.leave() },
+                    onError: { error in print("Polar360::stop - Could not stop acc: \(error)"); stopGroup.leave() }
+                ).disposed(by: disposeBag)
+
+            stopGroup.enter()
+            self.polarConnector.polarApi.stopOfflineRecording(deviceId, feature: .temperature)
+                .subscribe(
+                    onCompleted: { print("Polar360::stop - Stopped temp"); stopGroup.leave() },
+                    onError: { error in print("Polar360::stop - Could not stop temp: \(error)"); stopGroup.leave() }
+                ).disposed(by: disposeBag)
+
+            stopGroup.enter()
+            self.polarConnector.polarApi.stopOfflineRecording(deviceId, feature: .ppi)
+                .subscribe(
+                    onCompleted: { print("Polar360::stop - Stopped ppi"); stopGroup.leave() },
+                    onError: { error in print("Polar360::stop - Could not stop ppi: \(error)"); stopGroup.leave() }
+                ).disposed(by: disposeBag)
+
+            stopGroup.enter()
+            self.polarConnector.polarApi.stopOfflineRecording(deviceId, feature: .hr)
+                .subscribe(
+                    onCompleted: { print("Polar360::stop - Stopped hr"); stopGroup.leave() },
+                    onError: { error in print("Polar360::stop - Could not stop hr: \(error)"); stopGroup.leave() }
+                ).disposed(by: disposeBag)
+
+            stopGroup.notify(queue: .global(qos: .background)) {
+                print("Polar360::stop - All offline recordings stopped, fetching data from device")
+
+                Task(priority: .background) {
+                    do {
+                        let pack = try await self.processOfflineRecordings()
+                        print("Polar360::stop - Fetched offline data: acc=\(pack.acc_data?.count ?? 0), ppi=\(pack.ppi_data?.count ?? 0), temp=\(pack.temp_data?.count ?? 0)")
+
+                        await MainActor.run {
+                            self.storeData(data: pack.toJSON(), timestamp: -1) {
+                                print("Polar360::stop - Data stored")
+                            }
                         }
+
+                        if self.Continous_recording {
+                            print("Polar360::stop - Restarting continuous recording")
+                            _ = self.startOfflineRecordings(identifier: deviceId)
+                        }
+                    } catch {
+                        print("Polar360::stop - Error fetching offline recordings: \(error)")
                     }
 
-                    // Restart offline recordings if needed (background OK)
-                    if Continous_recording {
-                        print("continous recording triggered")
-                        _ = self.startOfflineRecordings(identifier: self.deviceid ?? "")
-                    }
-                    print("before oncomplete")
+                    self.saveAndSend()
                     onCompletion()
-
-                } catch {
-                    print("Error: \(error)")
                 }
             }
-            
-            
         }
         else{
             self.ppiObservation?.dispose()
@@ -410,10 +429,7 @@ class Polar360Observation: Observation_{
             self.hrObservation?.dispose()
             deviceListener?.cancel()
             onCompletion()
-            
         }
-        
-        
     }
     
     

@@ -196,7 +196,12 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
                 }
 
                 stateUpdates.forEach { (scheduleId, newState) ->
-                    appDatabase.scheduleDao().updateState(scheduleId, newState.name)
+                    if (newState == ScheduleState.DONE || newState == ScheduleState.ENDED) {
+                        appDatabase.scheduleDao().updateState(scheduleId, newState.name)
+                        appDatabase.scheduleDao().updateDoneStatus(scheduleId, true)
+                    } else {
+                        appDatabase.scheduleDao().updateState(scheduleId, newState.name)
+                    }
                 }
 
                 if (activeIds.isNotEmpty()) {
