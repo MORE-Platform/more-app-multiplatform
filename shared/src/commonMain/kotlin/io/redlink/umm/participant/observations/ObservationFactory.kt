@@ -14,7 +14,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.observations.garmin.GarminObservation
 import io.redlink.umm.participant.observations.limesurvey.LimeSurveyObservation
-import io.redlink.umm.participant.observations.simpleQuestionObservation.SimpleQuestionObservation
+import io.redlink.umm.participant.observations.questionObservation.QuestionObservation
 import io.redlink.umm.participant.scopes.Scope
 import io.redlink.umm.participant.services.notification.NotificationManager
 import io.redlink.umm.participant.services.store.CredentialRepository
@@ -34,7 +34,7 @@ abstract class ObservationFactory(
     val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
 
     init {
-        observations.add(SimpleQuestionObservation(repository))
+        observations.add(QuestionObservation(repository))
         observations.add(LimeSurveyObservation(repository))
         observations.add(GarminObservation(repository))
         Scope.launch(Dispatchers.IO) {

@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.ktor.util.collections.getValue
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.stringResource
 import io.redlink.umm.blendedcare.app.android.shared_composables.HeaderDescription
@@ -36,8 +35,8 @@ import io.redlink.umm.blendedcare.app.android.shared_composables.HeaderTitle
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 
 @Composable
-fun QuestionnaireHeader(model: QuestionnaireViewModel) {
-    val observation by model.coreViewModel.simpleQuestionModel.collectAsStateWithLifecycle(null)
+fun QuestionnaireHeader(model: QuestionViewModel) {
+    val observation by model.coreViewModel.questionModel.collectAsStateWithLifecycle(null)
     val title = observation?.observationTitle ?: ""
     val info = observation?.participantInfo ?: ""
     Column(

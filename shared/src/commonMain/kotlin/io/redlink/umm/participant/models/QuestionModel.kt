@@ -16,7 +16,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 
-class SimpleQuestionModel(
+class QuestionModel(
+    var type: QuestionType,
     var question: String = "",
     val answers: List<String> = listOf(),
     var participantInfo: String = "",
@@ -24,16 +25,21 @@ class SimpleQuestionModel(
     var observationTitle: String = "",
     var scheduleId: String = ""
 ) {
+    fun isValidModel() = type != QuestionType.NON
+
     companion object {
         fun createModelFrom(
             observationSchema: ObservationEntity,
             scheduleId: String
-        ): SimpleQuestionModel {
+        ): QuestionModel {
             val config: Map<String, JsonElement> =
                 observationSchema.configuration?.let { config ->
                     Json.decodeFromString<JsonObject>(config).toMap()
                 } ?: emptyMap()
-            return SimpleQuestionModel(
+            val questionType =
+                QuestionType.questionTypeForObservationType(observationSchema.observationType)
+            return QuestionModel(
+                questionType,
                 config["question"]?.toString()?.trim('\"') ?: "",
                 config["answers"]?.jsonArray?.map {
                     it.toString().trim('\"')

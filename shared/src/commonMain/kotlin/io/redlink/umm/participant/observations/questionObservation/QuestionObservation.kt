@@ -8,14 +8,14 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.umm.participant.observations.simpleQuestionObservation
+package io.redlink.umm.participant.observations.questionObservation
 
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.observations.Observation
-import io.redlink.umm.participant.observations.observationTypes.SimpleQuestionType
+import io.redlink.umm.participant.observations.observationTypes.QuestionType
 
-class SimpleQuestionObservation(repos: MainRepository) :
-    Observation(repos, observationType = SimpleQuestionType()) {
+class QuestionObservation(repos: MainRepository) :
+    Observation(repos, observationType = QuestionType()) {
     override fun start(): Boolean {
         return true
     }

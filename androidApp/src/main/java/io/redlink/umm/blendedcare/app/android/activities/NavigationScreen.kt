@@ -22,7 +22,7 @@ import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
 import io.redlink.umm.participant.observations.observationTypes.GarminType
 import io.redlink.umm.participant.observations.observationTypes.LimeSurveyType
-import io.redlink.umm.participant.observations.observationTypes.SimpleQuestionType
+import io.redlink.umm.participant.observations.observationTypes.QuestionType
 
 data class NavigationParameter(
     val type: NavType<*>,
@@ -55,15 +55,15 @@ enum class NavigationScreen(
             "scheduleListType" to NavigationParameter(type = NavType.StringType, "")
         ), stringResource = R.string.nav_observation_filter
     ),
-    SIMPLE_QUESTION(
-        SimpleQuestionType().observationType,
+    Question(
+        QuestionType().observationType,
         parameters = mapOf(
             "scheduleId" to NavigationParameter(type = NavType.StringType, ""),
             "observationId" to NavigationParameter(type = NavType.StringType, "")
         ), stringResource = R.string.nav_simple_question
     ),
     QUESTIONNAIRE_RESPONSE(
-        "${SimpleQuestionType().observationType}_response",
+        "${QuestionType().observationType}_response",
         stringResource = R.string.nav_simple_question
     ),
     BLUETOOTH_CONNECTION("devices", stringResource = R.string.more_ble_view_title),

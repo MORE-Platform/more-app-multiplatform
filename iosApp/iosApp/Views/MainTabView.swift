@@ -70,7 +70,7 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
             if let navigationState = navigationModalState.navigationState(for: .questionObservation) {
                 Navigation {
-                    SimpleQuetionObservationView(navigationState: navigationState)
+                    QuestionObservationView(navigationState: navigationState)
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 .onDisappear {
@@ -80,7 +80,7 @@ struct MainTabView: View {
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
             Navigation {
-                SimpleQuestionThankYouView()
+                QuestionThankYouView()
                     .navigationBarTitleDisplayMode(.inline)
             }
             .onDisappear {
