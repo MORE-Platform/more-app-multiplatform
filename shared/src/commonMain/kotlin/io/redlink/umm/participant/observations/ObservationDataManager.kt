@@ -20,6 +20,8 @@ import io.redlink.umm.participant.scopes.StudyScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 abstract class ObservationDataManager(private val repository: MainRepository) {
     private var countJob: Job? = null
@@ -61,7 +63,15 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         scheduleCount.remove(scheduleId)
     }
 
-    abstract fun sendData(onCompletion: (Boolean) -> Unit = {})
+    abstract fun sendData(immediately: Boolean = false, onCompletion: (Boolean) -> Unit = {})
+
+    suspend fun sendData(immediately: Boolean): Boolean {
+        return suspendCancellableCoroutine { cont ->
+            sendData(immediately) { success ->
+                if (cont.isActive) cont.resume(success)
+            }
+        }
+    }
 
     fun listenToDatapointCountChanges() {
         if (countJob == null) {
