@@ -41,6 +41,7 @@ import io.redlink.umm.blendedcare.app.android.shared_composables.TimeframeHours
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 import io.redlink.umm.participant.models.ScheduleModel
 import io.redlink.umm.participant.models.ScheduleState
+import io.redlink.umm.participant.observations.observationTypes.QuestionType
 
 @Composable
 fun ScheduleListItem(
@@ -110,44 +111,39 @@ fun ScheduleListItem(
             modifier = Modifier.padding(vertical = 8.dp)
         )
         if (showButton && !scheduleModel().hidden) {
-            when (scheduleModel().observationType) {
-                "question-observation" -> {
-                    SmallTextButton(
-                        text = getStringResource(id = R.string.more_questionnaire_start),
-                        enabled = scheduleModel().scheduleState.active()
-                    ) {
-                        navController.navigate(
-                            NavigationScreen.SIMPLE_QUESTION.navigationRoute("scheduleId" to scheduleModel().scheduleId)
-                        )
-                    }
+            val text = scheduleModel().observationType
+            if (QuestionType().matches(text)) {
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_questionnaire_start),
+                    enabled = scheduleModel().scheduleState.active()
+                ) {
+                    navController.navigate(
+                        NavigationScreen.QUESTION.navigationRoute("scheduleId" to scheduleModel().scheduleId)
+                    )
                 }
-
-                "lime-survey-observation" -> {
-                    SmallTextButton(
-                        text = getStringResource(id = R.string.more_limesurvey_start),
-                        enabled = scheduleModel().scheduleState.active()
-                    ) {
-                        navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel().scheduleId))
-                    }
+            } else if (text == "lime-survey-observation") {
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_limesurvey_start),
+                    enabled = scheduleModel().scheduleState.active()
+                ) {
+                    navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel().scheduleId))
                 }
-
-                else -> {
-                    SmallTextButton(
-                        text = if (scheduleModel().scheduleState == ScheduleState.RUNNING) getStringResource(
-                            id = R.string.more_observation_pause
-                        ) else getStringResource(
-                            id = R.string.more_observation_start
-                        ),
-                        enabled = scheduleModel().scheduleState.active() && if (scheduleModel().observationType == "polar-verity-observation")
-                            viewModel.polarHrReady.value else true
-                    ) {
-                        if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
-                            viewModel.pauseObservation(scheduleModel().scheduleId)
-                        } else {
-                            viewModel.startObservation(scheduleModel().scheduleId)
-                        }
-
+            } else {
+                SmallTextButton(
+                    text = if (scheduleModel().scheduleState == ScheduleState.RUNNING) getStringResource(
+                        id = R.string.more_observation_pause
+                    ) else getStringResource(
+                        id = R.string.more_observation_start
+                    ),
+                    enabled = scheduleModel().scheduleState.active() && if (scheduleModel().observationType == "polar-verity-observation")
+                        viewModel.polarHrReady.value else true
+                ) {
+                    if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
+                        viewModel.pauseObservation(scheduleModel().scheduleId)
+                    } else {
+                        viewModel.startObservation(scheduleModel().scheduleId)
                     }
+
                 }
             }
         }

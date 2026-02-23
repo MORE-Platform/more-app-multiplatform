@@ -13,8 +13,8 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct ObservationButton: View {
     @EnvironmentObject var navigationModalState: NavigationModalState
@@ -27,30 +27,39 @@ struct ObservationButton: View {
 
     var body: some View {
         VStack {
-            if observationType == "question-observation" {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
-                }) {
+            if QuestionType_().matches(type: observationType) {
+                MoreActionButton(
+                    disabled: .constant(disabled),
+                    action: {
+                        navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
+                    }
+                ) {
                     VStack {
                         Text("start_questionnaire")
                     }
                 }
             } else if observationType == "lime-survey-observation" {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
-                }) {
+                MoreActionButton(
+                    disabled: .constant(disabled),
+                    action: {
+                        navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
+                    }
+                ) {
                     VStack {
                         Text("Button to start a limesurvey")
                     }
                 }
             } else {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    if state == .running {
-                        observationActionDelegate.pause(scheduleId: scheduleId)
-                    } else {
-                        observationActionDelegate.start(scheduleId: scheduleId)
+                MoreActionButton(
+                    disabled: .constant(disabled),
+                    action: {
+                        if state == .running {
+                            observationActionDelegate.pause(scheduleId: scheduleId)
+                        } else {
+                            observationActionDelegate.start(scheduleId: scheduleId)
+                        }
                     }
-                }) {
+                ) {
                     VStack {
                         if state == ScheduleState.running {
                             Text("pause_observation")

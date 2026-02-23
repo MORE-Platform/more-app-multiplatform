@@ -49,7 +49,7 @@ import io.redlink.umm.blendedcare.app.android.theme.moreSecondary2
 import io.redlink.umm.participant.models.ScheduleState
 import io.redlink.umm.participant.observations.observationTypes.LimeSurveyType
 import io.redlink.umm.participant.observations.observationTypes.PolarVerityHeartRateType
-import io.redlink.umm.participant.observations.observationTypes.SimpleQuestionType
+import io.redlink.umm.participant.observations.observationTypes.QuestionType
 
 @Composable
 fun TaskDetailsView(
@@ -170,7 +170,7 @@ fun TaskDetailsView(
                         text = if (taskDetails.state == ScheduleState.RUNNING) getStringResource(
                             id = R.string.more_observation_pause
                         )
-                        else if (taskDetails.observationType == SimpleQuestionType().observationType) getStringResource(
+                        else if (taskDetails.observationType == QuestionType().observationType) getStringResource(
                             id = R.string.more_questionnaire_start
                         )
                         else if (taskDetails.observationType == LimeSurveyType().observationType) getStringResource(
@@ -184,9 +184,9 @@ fun TaskDetailsView(
                             ).observationType
                         ) viewModel.polarHrReady.value else true
                     ) {
-                        if (taskDetails.observationType == SimpleQuestionType().observationType) {
+                        if (taskDetails.observationType == QuestionType().observationType) {
                             navController.navigate(
-                                NavigationScreen.SIMPLE_QUESTION.navigationRoute(
+                                NavigationScreen.QUESTION.navigationRoute(
                                     "scheduleId" to scheduleId
                                 )
                             )

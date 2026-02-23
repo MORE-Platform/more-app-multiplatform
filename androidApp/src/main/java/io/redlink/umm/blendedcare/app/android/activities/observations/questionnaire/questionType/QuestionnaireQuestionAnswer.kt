@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire
+package io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.questionType
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,18 +26,29 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionViewModel
+import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireRadioButtons
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
+import io.redlink.umm.participant.models.QuestionType
 
 @Composable
-fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
-    val observation by model.coreViewModel.simpleQuestionModel.collectAsStateWithLifecycle(null)
+fun QuestionnaireQuestionAnswer(
+    model: QuestionViewModel,
+    selectedAnswer: Any?,
+    onAnswerSelected: (Any) -> Unit
+) {
+    val observation by model.coreViewModel.questionModel.collectAsStateWithLifecycle(null)
     val question = observation?.question ?: ""
+    val type = observation?.type ?: QuestionType.NON
+
     Spacer(Modifier.height(16.dp))
 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
     ) {
         Text(
             text = question,
@@ -45,13 +56,29 @@ fun QuestionnaireQuestionAnswer(model: QuestionnaireViewModel) {
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
-            color = MoreColors.Companion.Primary
+            color = MoreColors.Primary
         )
     }
 
     Spacer(Modifier.height(12.dp))
 
-    QuestionnaireRadioButtons(model = model)
+    when (type) {
+        QuestionType.SINGLE_CHOICE -> QuestionnaireRadioButtons(
+            model = model,
+            selectedAnswer = selectedAnswer,
+            onAnswerSelected = onAnswerSelected
+        )
+
+        QuestionType.MULTIPLE_CHOICE -> QuestionnaireCheckboxes(
+            model,
+            selectedAnswer = selectedAnswer,
+            onAnswerSelected = onAnswerSelected
+        )
+
+        else -> {
+            // Keep dynamic: each new subview should call onAnswerSelected(...) with the correct type.
+        }
+    }
 
     Spacer(Modifier.height(4.dp))
 }

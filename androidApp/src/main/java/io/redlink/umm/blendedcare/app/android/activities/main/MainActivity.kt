@@ -45,9 +45,9 @@ import io.redlink.umm.blendedcare.app.android.activities.info.InfoView
 import io.redlink.umm.blendedcare.app.android.activities.notification.NotificationView
 import io.redlink.umm.blendedcare.app.android.activities.notification.filter.NotificationFilterView
 import io.redlink.umm.blendedcare.app.android.activities.observationErrors.ObservationErrorView
+import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionViewModel
 import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireResponseView
 import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireView
-import io.redlink.umm.blendedcare.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.umm.blendedcare.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.umm.blendedcare.app.android.activities.setting.SettingsView
 import io.redlink.umm.blendedcare.app.android.activities.setting.leave_study.LeaveStudyConfirmView
@@ -170,7 +170,8 @@ fun MainView(
 ) {
     val currentContext = rememberUpdatedState(LocalContext.current)
     val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
-    val notificationCount = BlendedCareApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
+    val notificationCount =
+        BlendedCareApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
@@ -324,7 +325,7 @@ fun MainView(
                 }
             }
 
-            NavigationScreen.SIMPLE_QUESTION.let { screen ->
+            NavigationScreen.QUESTION.let { screen ->
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),
@@ -341,12 +342,12 @@ fun MainView(
                     }
 
                     viewModel.showBackButton.value = true
-                    val questionnaireViewModel = remember(scheduleId, notificationId, observationId) {
-                        QuestionnaireViewModel(scheduleId, notificationId, observationId)
+                    val questionViewModel = remember(scheduleId, notificationId, observationId) {
+                        QuestionViewModel(scheduleId, notificationId, observationId)
                     }
                     QuestionnaireView(
                         navController,
-                        questionnaireViewModel
+                        questionViewModel
                     )
                 }
             }

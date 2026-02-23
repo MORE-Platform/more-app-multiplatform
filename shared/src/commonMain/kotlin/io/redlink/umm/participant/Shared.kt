@@ -199,6 +199,9 @@ class Shared(
 
         if (newStudyState != null && (newStudyState == StudyState.CLOSED || newStudyState == StudyState.PAUSED)) {
             Napier.d(tag = "Shared::updateStudy") { "New study State is $newStudyState" }
+            if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                observationDataManager.sendData(true)
+            }
             repositories.study.updateStudyState(newStudyState)
             StudyScope.cancel()
             observationService.clearReminders()
@@ -314,6 +317,9 @@ class Shared(
 
             ViewManager.studyIsUpdating(true)
             try {
+                if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    observationDataManager.sendData(true)
+                }
                 StudyScope.cancel()
                 observationFactory.clearNeededObservationTypes()
                 observationService.clearReminders()

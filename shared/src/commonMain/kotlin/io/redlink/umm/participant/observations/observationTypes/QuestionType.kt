@@ -10,6 +10,6 @@
  */
 package io.redlink.umm.participant.observations.observationTypes
 
-class SimpleQuestionType() :
-    ObservationType("question-observation", setOf()) {
+class QuestionType :
+    ObservationType("question-observation", setOf(), suffix = "question-observation") {
 }

@@ -18,22 +18,21 @@ import shared
 import Combine
 import KMPNativeCoroutinesCombine
 
-class SimpleQuestionObservationViewModel: ObservableObject {
-    private let coreModel: SimpleQuestionCoreViewModel
+class QuestionViewModel: ObservableObject {
+    private let coreModel: QuestionCoreViewModel
 
-    @Published var simpleQuestoinModel: SimpleQuestionModel?
+    @Published var questionModel: QuestionModel?
     @Published var answers: [String] = []
-    @Published var answerSet: String = ""
     
     private var cancellables = Set<AnyCancellable>()
 
     init(navigationState: NavigationState) {
-        coreModel = SimpleQuestionCoreViewModel(repository: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory, scheduleId: navigationState.scheduleId, notificationId: navigationState.notificationId, observationId: navigationState.observationId)
+        coreModel = QuestionCoreViewModel(repository: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory, scheduleId: navigationState.scheduleId, notificationId: navigationState.notificationId, observationId: navigationState.observationId)
         
-        createPublisher(for: coreModel.simpleQuestionModel)
+        createPublisher(for: coreModel.questionModel)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: {_ in}) { [weak self] model in
-                self?.simpleQuestoinModel = model
+                self?.questionModel = model
                 self?.answers = (model?.answers as? [NSString])?.map { $0 as String } ?? []
             }
             .store(in: &cancellables)
@@ -45,17 +44,10 @@ class SimpleQuestionObservationViewModel: ObservableObject {
 
     func viewDidDisappear() {
         coreModel.viewDidDisappear()
-        answerSet = ""
     }
-
-    func setAnswer(answer: String) {
-        answerSet = answer
-    }
-
-    func finish() {
-        if !answerSet.isEmpty {
-            coreModel.finishQuestion(data: answerSet, setObservationToDone: true)
-        }
+    
+    func finish(data: AnyObject) {
+        coreModel.finishQuestion(data: data)
     }
 }
 

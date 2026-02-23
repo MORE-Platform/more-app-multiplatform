@@ -15,10 +15,8 @@
 
 import SwiftUI
 
-struct SimpleQuestionThankYouView: View {
+struct QuestionThankYouView: View {
     @EnvironmentObject var questionModelState: NavigationModalState
-    private let navigationStrings = "Navigation"
-    private let simpleQuestionStrings = "SimpleQuestionObservation"
 
     var body: some View {
         MoreMainBackgroundView {

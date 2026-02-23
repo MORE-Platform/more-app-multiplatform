@@ -44,9 +44,9 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-    override fun sendData(onCompletion: (Boolean) -> Unit) {
+    override fun sendData(immediately: Boolean, onCompletion: (Boolean) -> Unit) {
         Scope.launch {
-            if (workManager != null) {
+            if (!immediately && workManager != null) {
                 onCompletion(tryWorkManagerThenFallback())
             } else {
                 Napier.w { "WorkManager not available, falling back to direct upload..." }
@@ -64,11 +64,11 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
                         setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     }
                 }
-                .addTag(DataUploadWorker.Companion.WORKER_TAG)
+                .addTag(DataUploadWorker.WORKER_TAG)
                 .build()
 
             workManager.enqueueUniqueWork(
-                DataUploadWorker.Companion.WORKER_TAG,
+                DataUploadWorker.WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
                 request
             )

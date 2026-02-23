@@ -11,13 +11,11 @@
 package io.redlink.umm.participant.viewModels.simpleQuestion
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import io.ktor.utils.io.core.Closeable
 import io.redlink.umm.participant.database.repository.MainRepository
-import io.redlink.umm.participant.extensions.asClosure
-import io.redlink.umm.participant.models.SimpleQuestionModel
+import io.redlink.umm.participant.models.QuestionModel
 import io.redlink.umm.participant.observations.Observation
 import io.redlink.umm.participant.observations.ObservationFactory
-import io.redlink.umm.participant.observations.observationTypes.SimpleQuestionType
+import io.redlink.umm.participant.observations.observationTypes.QuestionType
 import io.redlink.umm.participant.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,19 +23,19 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 
-class SimpleQuestionCoreViewModel(
+class QuestionCoreViewModel(
     private val repository: MainRepository,
     observationFactory: ObservationFactory,
     private var scheduleId: String? = null,
     private val notificationId: String? = null,
     private val observationId: String? = null
 ) : CoreViewModel() {
-    private val _simpleQuestionModel = MutableStateFlow<SimpleQuestionModel?>(null)
+    private val _questionModel = MutableStateFlow<QuestionModel?>(null)
 
     @NativeCoroutines
-    val simpleQuestionModel: StateFlow<SimpleQuestionModel?> = _simpleQuestionModel
+    val questionModel: StateFlow<QuestionModel?> = _questionModel
     private var observation: Observation? =
-        observationFactory.observation(SimpleQuestionType().observationType)
+        observationFactory.observation(QuestionType().observationType)
 
     init {
         launchScope {
@@ -53,8 +51,8 @@ class SimpleQuestionCoreViewModel(
                     ?.let { scheduleSchema ->
                         repository.observation.observationById(scheduleSchema.observationId)
                             .cancellable().firstOrNull()?.let { observationSchema ->
-                                _simpleQuestionModel.update {
-                                    SimpleQuestionModel.createModelFrom(
+                                _questionModel.update {
+                                    QuestionModel.createModelFrom(
                                         observationSchema,
                                         scheduleId
                                     )
@@ -65,11 +63,15 @@ class SimpleQuestionCoreViewModel(
         }
     }
 
-    fun finishQuestion(data: String, setObservationToDone: Boolean) {
-        _simpleQuestionModel.value?.let {
+    fun finishQuestion(data: Any) {
+        _questionModel.value?.let { questionModel ->
             observation?.let { observation ->
-                observation.start(it.observationId, it.scheduleId, notificationId)
-                observation.storeData(mapOf("answer" to data)) {
+                observation.start(
+                    questionModel.observationId,
+                    questionModel.scheduleId,
+                    notificationId
+                )
+                observation.storeData(mapOf(questionModel.type.observationDataResponseKey to data)) {
                     scheduleId?.let {
                         observation.stopAndSetDone(it)
                     }
