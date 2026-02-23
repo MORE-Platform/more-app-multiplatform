@@ -55,16 +55,16 @@ enum class NavigationScreen(
             "scheduleListType" to NavigationParameter(type = NavType.StringType, "")
         ), stringResource = R.string.nav_observation_filter
     ),
-    Question(
+    QUESTION(
         QuestionType().observationType,
         parameters = mapOf(
             "scheduleId" to NavigationParameter(type = NavType.StringType, ""),
             "observationId" to NavigationParameter(type = NavType.StringType, "")
-        ), stringResource = R.string.nav_simple_question
+        ), stringResource = R.string.nav_question
     ),
     QUESTIONNAIRE_RESPONSE(
         "${QuestionType().observationType}_response",
-        stringResource = R.string.nav_simple_question
+        stringResource = R.string.nav_question
     ),
     BLUETOOTH_CONNECTION("devices", stringResource = R.string.more_ble_view_title),
     RUNNING_SCHEDULES("running-observations", stringResource = R.string.nav_running_schedules),

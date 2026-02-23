@@ -68,7 +68,7 @@ private val AnswerValueSaver: Saver<Any?, Bundle> = Saver(
 fun QuestionnaireView(navController: NavController, viewModel: QuestionViewModel) {
     val backStackEntry = remember { navController.currentBackStackEntry }
     val route = backStackEntry?.arguments?.getString(
-        NavigationScreen.Question.routeWithParameters()
+        NavigationScreen.QUESTION.routeWithParameters()
     )
 
     LaunchedEffect(route) {

@@ -186,7 +186,7 @@ fun TaskDetailsView(
                     ) {
                         if (taskDetails.observationType == QuestionType().observationType) {
                             navController.navigate(
-                                NavigationScreen.Question.navigationRoute(
+                                NavigationScreen.QUESTION.navigationRoute(
                                     "scheduleId" to scheduleId
                                 )
                             )

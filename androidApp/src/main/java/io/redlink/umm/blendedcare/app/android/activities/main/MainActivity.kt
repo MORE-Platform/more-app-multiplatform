@@ -325,7 +325,7 @@ fun MainView(
                 }
             }
 
-            NavigationScreen.Question.let { screen ->
+            NavigationScreen.QUESTION.let { screen ->
                 composable(
                     screen.routeWithParameters(),
                     screen.createListOfNavArguments(),

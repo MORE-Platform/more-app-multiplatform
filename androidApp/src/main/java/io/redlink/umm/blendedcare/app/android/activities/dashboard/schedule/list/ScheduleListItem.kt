@@ -118,7 +118,7 @@ fun ScheduleListItem(
                     enabled = scheduleModel().scheduleState.active()
                 ) {
                     navController.navigate(
-                        NavigationScreen.Question.navigationRoute("scheduleId" to scheduleModel().scheduleId)
+                        NavigationScreen.QUESTION.navigationRoute("scheduleId" to scheduleModel().scheduleId)
                     )
                 }
             } else if (text == "lime-survey-observation") {
