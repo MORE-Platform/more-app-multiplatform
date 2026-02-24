@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -8,6 +11,7 @@ plugins {
     id("com.rickclephas.kmp.nativecoroutines")
     id("org.openapi.generator").version("7.17.0").apply(true)
     id("dev.icerock.mobile.multiplatform-resources")
+    id("maven-publish")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -29,10 +33,31 @@ val sqliteVersion = "2.5.2"
 val mokoResVersion = "0.25.2"
 val mokoGraphicsVersion = "0.10.1"
 
+// Maven coordinates for publishing
+// Adjust group/artifact to your org conventions
+val publishedGroupId = "io.redlink.umm"
+val publishedArtifactId = "blendedcare-shared"
+
+// Versioning strategy:
+// - If GITHUB_REF_NAME is a tag like 1.2.3, publish that
+// - Otherwise publish a CI snapshot like 0.0.15-main.<run_number>
+val ciRefName: String? = System.getenv("GITHUB_REF_NAME")
+val ciRunNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+val defaultBaseVersion = "0.0.15"
+val publishedVersion = when {
+    ciRefName != null && Regex("\\d+\\.\\d+\\.\\d+").matches(ciRefName) -> ciRefName
+    ciRunNumber != null -> "$defaultBaseVersion-main.$ciRunNumber"
+    else -> "$defaultBaseVersion-SNAPSHOT"
+}
+
+group = publishedGroupId
+version = publishedVersion
+
+
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_11)
         }
         publishLibraryVariants("release")
     }
@@ -131,7 +156,7 @@ multiplatformResources {
     iosMinimalDeploymentTarget.set("16.2")
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
+tasks.register<GenerateTask>(
     "generateOpenApiClasses",
 ) {
     generatorName.set("kotlin")
@@ -176,4 +201,31 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
     // Let Gradle cache this so it only runs when the YAML changes
     inputs.file(mobileAppApiInput)
     outputs.dir(mobileAppApiOutputDir)
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            // Uses the current repo by default, e.g. https://maven.pkg.github.com/OWNER/REPO
+            val repo = System.getenv("GITHUB_REPOSITORY")
+            url = uri("https://maven.pkg.github.com/$repo")
+
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
+    publications.withType<MavenPublication>().configureEach {
+        // Ensure stable artifactId for all variants/publications
+        artifactId = publishedArtifactId
+
+        pom {
+            name.set("blendedcare-shared")
+            description.set("Shared KMM module for BlendedCare")
+        }
+    }
 }
