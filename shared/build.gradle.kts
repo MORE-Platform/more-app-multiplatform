@@ -43,6 +43,7 @@ val publishedArtifactId = "blendedcare-shared"
 // - Otherwise publish a CI snapshot like 0.0.15-main.<run_number>
 val ciRefName: String? = System.getenv("GITHUB_REF_NAME")
 val ciRunNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+val ciRunAttempt: String? = System.getenv("GITHUB_RUN_ATTEMPT")
 val defaultBaseVersion = "0.0.15"
 val publishedVersion = when {
     ciRefName != null && Regex("\\d+\\.\\d+\\.\\d+").matches(ciRefName) -> ciRefName
@@ -222,10 +223,13 @@ publishing {
     }
 
     publications.withType<MavenPublication>().configureEach {
+        val pubSuffix = name
+            .lowercase()
+            .replace(Regex("[^a-z0-9._-]"), "-")
         artifactId = if (name == "kotlinMultiplatform") {
             publishedArtifactId
         } else {
-            "$publishedArtifactId-$name"
+            "$publishedArtifactId-$pubSuffix"
         }
 
         pom {
