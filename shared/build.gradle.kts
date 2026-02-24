@@ -220,8 +220,11 @@ publishing {
     }
 
     publications.withType<MavenPublication>().configureEach {
-        // Ensure stable artifactId for all variants/publications
-        artifactId = publishedArtifactId
+        artifactId = if (name == "kotlinMultiplatform") {
+            publishedArtifactId
+        } else {
+            "$publishedArtifactId-$name"
+        }
 
         pom {
             name.set("blendedcare-shared")
