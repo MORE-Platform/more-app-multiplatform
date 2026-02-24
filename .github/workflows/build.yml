@@ -6,26 +6,6 @@ on:
       - develop
 
 jobs:
-  publish_shared:
-    name: Publish shared module (GitHub Packages)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Publish shared module
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew :shared:publishAllPublicationsToGitHubPackagesRepository
   ios:
     name: iOS
     runs-on: macos-26

@@ -25,7 +25,7 @@ It's recommended that you install the latest stable versions for compatibility a
 performance. In order to build the iOS application the version of **iOS** should be at least 14.
 
 * [Android Studio](https://developer.android.com/studio)
-* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 16.0 or higher)
+* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 26.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK 21](https://www.oracle.com/java/technologies/downloads/)
 * [Gradle 8.14.3](https://gradle.org)
