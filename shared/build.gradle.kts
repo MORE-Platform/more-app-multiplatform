@@ -213,8 +213,10 @@ publishing {
             url = uri("https://maven.pkg.github.com/$repo")
 
             credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                username = findProperty("io.redlink-gmbh.mvn.user") as String?
+                    ?: System.getenv("GITHUB_ACTOR")
+                password = findProperty("io.redlink-gmbh.mvn.key") as String?
+                    ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
