@@ -8,7 +8,7 @@ import shared
 // iOS ultimately decides exact run frequency; we request the minimum practical interval.
 enum ObservationReminderBackgroundTask {
     // IMPORTANT: Add this identifier to Info.plist -> BGTaskSchedulerPermittedIdentifiers
-    static let taskID = "io.redlink.umm.blendedcare.observation-reminder-refresh"
+    static let taskID = AppDelegate.bundleId + ".observation-reminder-refresh"
 
     // Smallest practical interval you can request for BGAppRefresh (system may delay)
     static let minimumInterval: TimeInterval = 15 * 60

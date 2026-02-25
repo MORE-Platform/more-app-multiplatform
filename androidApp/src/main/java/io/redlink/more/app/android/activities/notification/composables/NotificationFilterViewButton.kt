@@ -1,0 +1,63 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.more.app.android.activities.notification.composables
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.notification.NotificationViewModel
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.theme.MoreColors
+
+@Composable
+fun NotificationFilterViewButton(navController: NavController, viewModel: NotificationViewModel) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 19.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = { navController.navigate(NavigationScreen.NOTIFICATION_FILTER.routeWithParameters()) })
+    ) {
+        Text(
+            text = viewModel.getFilterString(),
+            color = MoreColors.Primary,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+        )
+        Icon(
+            Icons.Default.Tune,
+            contentDescription = getStringResource(id = R.string.more_main_tab_filters),
+            tint = MoreColors.Secondary,
+            modifier = Modifier
+                .padding(start = 8.dp)
+        )
+    }
+}

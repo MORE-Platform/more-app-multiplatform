@@ -22,7 +22,8 @@ import UIKit
 import shared
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.ac.at.lbg.dhp.more.group"
+    static let bundleId = Bundle.main.bundleIdentifier ?? "ac.at.lbg.dhp.more.group"
+    static let appGroup = "group." + bundleId
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)

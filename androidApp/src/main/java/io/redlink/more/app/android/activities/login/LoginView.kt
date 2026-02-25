@@ -1,0 +1,81 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.more.app.android.activities.login
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.login.composables.EndpointView
+import io.redlink.more.app.android.activities.login.composables.ParticipationKeyInput
+import io.redlink.more.app.android.extensions.Image
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.AppVersion
+import io.redlink.more.registration.RegistrationService
+
+@Composable
+fun LoginView(registrationService: RegistrationService) {
+    val model = remember { LoginViewModel(registrationService) }
+    Column(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize(0.95f)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                id = R.drawable.welcome_to_more,
+                contentDescription = getStringResource(id = R.string.more_welcome_title)
+            )
+
+            LoginForm(model = model)
+            AppVersion()
+        }
+    }
+}
+
+@Composable
+fun LoginForm(model: LoginViewModel) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            ParticipationKeyInput(
+                model = model,
+                focusRequester = focusRequester,
+                focusManager = focusManager
+            )
+        }
+        EndpointView(
+            model = model,
+            focusRequester = focusRequester,
+            focusManager = focusManager
+        )
+    }
+}

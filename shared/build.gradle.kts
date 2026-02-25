@@ -18,7 +18,7 @@ val openApiInputDir = "$rootDir/openapi"
 val openApiOutputDir = "$generated/open_api"
 val mobileAppApiInput = "$openApiInputDir/MobileAppAPI.yaml"
 val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
-val mobileAppApiPackage = "io.redlink.umm.blendedcare.services.network.openapi"
+val mobileAppApiPackage = "io.redlink.more.services.network.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 val coroutinesVersion = "1.10.2"
@@ -94,7 +94,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.redlink.more.more_app_multiplatform"
+    namespace = "io.redlink.more"
     compileSdk = 36
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
@@ -128,7 +128,7 @@ dependencies {
 }
 
 multiplatformResources {
-    resourcesPackage.set("io.redlink.umm.participant")
+    resourcesPackage.set("io.redlink.more")
     resourcesClassName.set("SharedRes")
     iosBaseLocalizationRegion.set("en")
     iosMinimalDeploymentTarget.set("16.2")
