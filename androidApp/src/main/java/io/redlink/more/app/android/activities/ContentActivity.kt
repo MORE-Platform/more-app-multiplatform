@@ -1,0 +1,100 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.more.app.android.activities
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.activities.consent.ConsentView
+import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
+import io.redlink.more.app.android.extensions.applicationId
+import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.shared_composables.AppVersion
+import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.viewModels.ViewManager
+import io.redlink.umm.blendedcare.app.android.R
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+
+class ContentActivity : ComponentActivity() {
+    private val viewModel = ContentViewModel()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
+            var deepLink = it
+            Napier.d { "Received deep link: $deepLink" }
+            intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
+                if (!deepLink.contains(NavigationScreen.NavigationNotificationIDKey)) {
+                    deepLink += if (deepLink.contains("?")) {
+                        "&${NavigationScreen.NavigationNotificationIDKey}=$msgId"
+                    } else {
+                        "?${NavigationScreen.NavigationNotificationIDKey}=$msgId"
+                    }
+                }
+            }
+            intent.putExtra(NotificationManager.DEEP_LINK, deepLink)
+        }
+
+        lifecycleScope.launch {
+            combine(
+                MoreApplication.Companion.shared!!.credentialRepository.hasCredentials,
+                viewModel.registrationService.isLoading
+            ) { hasCredentials, isLoading ->
+                hasCredentials && !isLoading
+            }.collect { shouldNavigateToMain ->
+                if (shouldNavigateToMain) {
+                    viewModel.openMainActivity(this@ContentActivity)
+                }
+            }
+        }
+
+
+        setContent {
+            ContentView(viewModel = viewModel)
+        }
+    }
+
+    companion object {
+        val DEEPLINK = stringResource(R.string.app_scheme) + "://" + applicationId + "/"
+    }
+}
+
+@Composable
+fun ContentView(viewModel: ContentViewModel) {
+    val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
+    val hasCredentials by MoreApplication.Companion.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
+    val credentialsLoaded by MoreApplication.Companion.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
+    val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
+
+    MoreBackground(showBackButton = false) {
+        if (credentialsLoaded && !hasCredentials) {
+            if (validLogin != null) {
+                ConsentView(viewModel.registrationService)
+            } else {
+                LoginView(viewModel.registrationService)
+                AppVersion()
+            }
+        } else if (studyLoadingError) {
+            StudyLoadingErrorView()
+        } else {
+            StudyLoadingView()
+        }
+    }
+}
