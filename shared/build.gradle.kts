@@ -223,14 +223,14 @@ publishing {
     }
 
     publications.withType<MavenPublication>().configureEach {
-        val pubSuffix = name
-            .lowercase()
-            .replace(Regex("[^a-z0-9._-]"), "-")
-        artifactId = if (name == "kotlinMultiplatform") {
-            publishedArtifactId
-        } else {
-            "$publishedArtifactId-$pubSuffix"
-        }
+//        val pubSuffix = name
+//            .lowercase()
+//            .replace(Regex("[^a-z0-9._-]"), "-")
+//        artifactId = if (name == "kotlinMultiplatform") {
+//            publishedArtifactId
+//        } else {
+//            "$publishedArtifactId-$pubSuffix"
+//        }
 
         pom {
             name.set("blendedcare-shared")
