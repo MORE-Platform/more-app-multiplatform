@@ -15,7 +15,7 @@ import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.activities.web.WebClientListener
 import io.redlink.umm.participant.AlertController
 import io.redlink.umm.participant.models.AlertDialogModel
@@ -26,10 +26,11 @@ import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
 
-class LimeSurveyViewModel(scheduleId: String?, notificationId: String?, observationId: String?) : ViewModel(), WebClientListener {
+class LimeSurveyViewModel(scheduleId: String?, notificationId: String?, observationId: String?) :
+    ViewModel(), WebClientListener {
     val coreViewModel = CoreLimeSurveyViewModel(
-        BlendedCareApplication.shared!!.repositories,
-        BlendedCareApplication.shared!!.observationFactory,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory,
         scheduleId,
         notificationId,
         observationId

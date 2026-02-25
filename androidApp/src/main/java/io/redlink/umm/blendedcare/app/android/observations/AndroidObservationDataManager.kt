@@ -20,7 +20,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.workers.DataUploadWorker
 import io.redlink.umm.participant.database.repository.MainRepository
 import io.redlink.umm.participant.observations.ObservationDataManager
@@ -100,7 +100,7 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
         maxAttempts: Int = 3,
         baseDelayMs: Long = 1_000L
     ): Boolean = withContext(Dispatchers.IO) {
-        val networkService = BlendedCareApplication.Companion.shared?.networkService
+        val networkService = MoreApplication.Companion.shared?.networkService
         if (networkService == null) {
             Napier.e(tag = "AndroidObservationDataManager::directUploadFallback") {
                 "NetworkService not available"

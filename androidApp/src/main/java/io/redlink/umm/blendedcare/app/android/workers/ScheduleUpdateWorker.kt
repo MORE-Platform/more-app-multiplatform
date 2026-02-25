@@ -14,7 +14,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.Shared
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,10 +25,10 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
     private val shared: Shared
 
     init {
-        if (BlendedCareApplication.shared == null) {
-            BlendedCareApplication.initShared(applicationContext)
+        if (MoreApplication.shared == null) {
+            MoreApplication.initShared(applicationContext)
         }
-        shared = BlendedCareApplication.shared!!
+        shared = MoreApplication.shared!!
     }
 
     override suspend fun doWork() = withContext(Dispatchers.IO) {

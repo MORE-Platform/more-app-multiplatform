@@ -17,7 +17,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
 import io.redlink.umm.participant.observations.observationTypes.GarminType
@@ -164,7 +164,7 @@ enum class NavigationScreen(
             cachedDeepLinks =
                 listOf(navDeepLink { uriPattern = deepLinkHost + routeWithParameters() })
             cachedDeepLinks?.let { list ->
-                BlendedCareApplication.shared!!.deeplinkManager.addAvailableDeepLinks(list.mapNotNull { it.uriPattern }
+                MoreApplication.shared!!.deeplinkManager.addAvailableDeepLinks(list.mapNotNull { it.uriPattern }
                     .toSet())
             }
         }

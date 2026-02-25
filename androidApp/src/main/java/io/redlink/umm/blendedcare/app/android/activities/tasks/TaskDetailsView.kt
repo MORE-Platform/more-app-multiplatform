@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.NavigationScreen
 import io.redlink.umm.blendedcare.app.android.activities.observationErrors.ObservationErrorListView
@@ -59,8 +59,8 @@ fun TaskDetailsView(
     val viewModel =
         remember {
             TaskDetailsViewModel(
-                BlendedCareApplication.shared!!.dataRecorder,
-                BlendedCareApplication.shared!!.observationFactory,
+                MoreApplication.shared!!.dataRecorder,
+                MoreApplication.shared!!.observationFactory,
                 scheduleId
             )
         }

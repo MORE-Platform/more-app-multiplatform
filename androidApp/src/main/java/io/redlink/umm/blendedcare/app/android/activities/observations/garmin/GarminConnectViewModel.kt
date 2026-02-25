@@ -3,7 +3,7 @@ package io.redlink.umm.blendedcare.app.android.activities.observations.garmin
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.activities.web.WebClientListener
 import io.redlink.umm.participant.AlertController
 import io.redlink.umm.participant.models.AlertDialogModel
@@ -12,8 +12,8 @@ import kotlinx.coroutines.runBlocking
 
 class GarminConnectViewModel : WebClientListener {
     val coreViewModel = CoreGarminConnectViewModel(
-        BlendedCareApplication.Companion.shared!!.networkService,
-        BlendedCareApplication.Companion.shared!!.sharedStorageRepository
+        MoreApplication.Companion.shared!!.networkService,
+        MoreApplication.Companion.shared!!.sharedStorageRepository
     )
 
     private var allowedHost: String? = coreViewModel.garminSSOUrl()?.host

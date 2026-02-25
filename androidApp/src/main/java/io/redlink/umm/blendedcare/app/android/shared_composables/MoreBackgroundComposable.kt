@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.activities.main.MainTabView
 import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 import io.redlink.umm.blendedcare.app.android.theme.MorePlatformTheme
@@ -61,12 +61,12 @@ fun MoreBackground(
 ) {
     val context = LocalContext.current
     val alertDialogModel by AlertController.alertDialogModel.collectAsStateWithLifecycle(null)
-    if (BlendedCareApplication.openSettings.value) {
+    if (MoreApplication.openSettings.value) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
         }
         context.startActivity(intent)
-        BlendedCareApplication.Companion.openSettings.value = false
+        MoreApplication.Companion.openSettings.value = false
     }
     MorePlatformTheme {
         Scaffold(

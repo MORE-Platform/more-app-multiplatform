@@ -18,7 +18,7 @@ import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.observations.HR.PolarConnectorListener
 import io.redlink.umm.blendedcare.app.android.observations.HR.PolarObserverCallback
 import io.redlink.umm.participant.database.entities.BluetoothDeviceEntity
@@ -56,7 +56,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     init {
         polarObserverCallback.connectionListener = this
-        (BlendedCareApplication.appContext!!.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter?.let {
+        (MoreApplication.appContext!!.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter?.let {
             val state = when (it.state) {
                 BluetoothAdapter.STATE_ON -> BluetoothState.ON
                 BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.ON

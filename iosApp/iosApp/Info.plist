@@ -4,9 +4,9 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>io.redlink.umm.blendedcare.data-upload</string>
-		<string>io.redlink.umm.blendedcare.dailyRefresh</string>
-		<string>io.redlink.umm.blendedcare.observation-reminder-refresh</string>
+		<string>io.redlink.more.app.multiplatform.data-upload</string>
+		<string>io.redlink.more.app.multiplatform.dailyRefresh</string>
+		<string>io.redlink.more.app.multiplatform.observation-reminder-refresh</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -16,12 +16,17 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>de</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.11</string>
+	<string>5.0.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -33,12 +38,12 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>umm-app</string>
+				<string>more-app</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0.0.11</string>
+	<string>5.0.0</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -46,21 +51,35 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health devices</string>
+	<string>$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health
+            devices
+        </string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>$(PRODUCT_NAME)  needs access to Bluetooth to find and connect to supported health devices</string>
+	<string>$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health
+            devices
+        </string>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME)  needs your camera to scan QR-Code</string>
+	<string>$(PRODUCT_NAME) needs your camera to scan QR-Code</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain
+            studies
+        </string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>$(PRODUCT_NAME)  always needs access to you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) always needs access to you location to track your position for
+            certain studies
+        </string>
 	<key>NSLocationUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain
+            studies
+        </string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your location to track your position for certain studies</string>
+	<string>$(PRODUCT_NAME) needs access to your location to track your position for certain
+            studies
+        </string>
 	<key>NSMotionUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your motion data to record your movement data in the background</string>
+	<string>$(PRODUCT_NAME) needs access to your motion data to record your movement data in the
+            background
+        </string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -94,11 +113,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	</array>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>de</string>
 	</array>
 </dict>
 </plist>

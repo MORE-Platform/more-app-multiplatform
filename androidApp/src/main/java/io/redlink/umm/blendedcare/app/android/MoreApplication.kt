@@ -37,7 +37,7 @@ import io.redlink.umm.participant.viewModels.ViewManager
 /**
  * Main Application class of the project.
  */
-class BlendedCareApplication : Application(), DefaultLifecycleObserver {
+class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
         napierDebugBuild(FirebaseCrashlyticsAntilog())

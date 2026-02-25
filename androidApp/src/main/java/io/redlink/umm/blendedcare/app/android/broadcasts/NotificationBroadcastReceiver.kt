@@ -14,7 +14,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.util.AlarmUtils
 import io.redlink.umm.participant.database.entities.NotificationEntity
 import io.redlink.umm.participant.services.notification.NotificationManager
@@ -32,8 +32,8 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             val pendingResult = goAsync()
             scope.launch {
                 try {
-                    BlendedCareApplication.initShared(context)
-                    BlendedCareApplication.shared?.observationService?.rescheduleObservationRemindersAfterBoot()
+                    MoreApplication.initShared(context)
+                    MoreApplication.shared?.observationService?.rescheduleObservationRemindersAfterBoot()
                     Napier.i(tag = "NotificationBroadcastReceiver") { "Observation reminders rescheduled after boot." }
                 } catch (t: Throwable) {
                     Napier.e(tag = "NotificationBroadcastReceiver", throwable = t) {
@@ -67,7 +67,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             val pendingResult = goAsync()
             scope.launch {
                 try {
-                    BlendedCareApplication.shared?.notificationManager?.displayNotification(
+                    MoreApplication.shared?.notificationManager?.displayNotification(
                         notification
                     )
                     Napier.d(tag = "NotificationBroadcastReceiver") {
@@ -75,7 +75,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
                     }
 
                     Napier.d(tag = "NotificationBroadcastReceiver") { "Calling scheduleObservationReminder()" }
-                    BlendedCareApplication.shared?.observationService?.scheduleObservationReminder()
+                    MoreApplication.shared?.observationService?.scheduleObservationReminder()
                     Napier.d(tag = "NotificationBroadcastReceiver") { "scheduleObservationReminder() returned" }
                 } catch (t: Throwable) {
                     Napier.e(tag = "NotificationBroadcastReceiver", throwable = t) {
@@ -94,7 +94,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
                 val pendingResult = goAsync()
                 scope.launch {
                     try {
-                        BlendedCareApplication.shared?.repositories?.notification
+                        MoreApplication.shared?.repositories?.notification
                             ?.setNotificationReadStatus(key, true)
                     } finally {
                         pendingResult.finish()

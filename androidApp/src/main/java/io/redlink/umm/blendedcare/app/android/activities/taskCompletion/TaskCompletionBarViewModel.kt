@@ -14,7 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.models.TaskCompletion
 import io.redlink.umm.participant.viewModels.taskCompletionBar.CoreTaskCompletionBarViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 
 class TaskCompletionBarViewModel : ViewModel() {
     private val coreViewModel =
-        CoreTaskCompletionBarViewModel(BlendedCareApplication.Companion.shared!!.repositories)
+        CoreTaskCompletionBarViewModel(MoreApplication.Companion.shared!!.repositories)
     val taskCompletion: MutableState<TaskCompletion> = mutableStateOf(TaskCompletion())
 
     init {

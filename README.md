@@ -1,4 +1,4 @@
-# UMM Participant App
+# More App Multiplatform
 
 This document provides detailed description of how to install, prepare and contribute to the App
 development as part of the "MORE"-Project.

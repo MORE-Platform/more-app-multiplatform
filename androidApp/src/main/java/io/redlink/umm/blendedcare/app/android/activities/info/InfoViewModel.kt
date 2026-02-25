@@ -11,9 +11,9 @@
 package io.redlink.umm.blendedcare.app.android.activities.info
 
 import androidx.lifecycle.ViewModel
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.viewModels.studydetails.CoreStudyDetailsViewModel
 
 class InfoViewModel : ViewModel() {
-    val coreViewModel = CoreStudyDetailsViewModel(BlendedCareApplication.shared!!)
+    val coreViewModel = CoreStudyDetailsViewModel(MoreApplication.shared!!)
 }

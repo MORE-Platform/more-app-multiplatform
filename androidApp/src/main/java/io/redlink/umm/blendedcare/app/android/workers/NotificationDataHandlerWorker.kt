@@ -16,7 +16,7 @@ import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.Shared
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,10 +34,10 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
     private val shared: Shared
 
     init {
-        if (BlendedCareApplication.shared == null) {
-            BlendedCareApplication.initShared(applicationContext)
+        if (MoreApplication.shared == null) {
+            MoreApplication.initShared(applicationContext)
         }
-        shared = BlendedCareApplication.shared!!
+        shared = MoreApplication.shared!!
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {

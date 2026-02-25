@@ -15,7 +15,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.services.network.openapi.model.DataBulk
 import io.redlink.umm.participant.services.network.NetworkService
 import io.redlink.umm.participant.services.store.CredentialRepository
@@ -36,11 +36,11 @@ class DataUploadWorker(
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
     private val credentialRepository: CredentialRepository =
-        BlendedCareApplication.shared?.credentialRepository ?: CredentialRepository(
+        MoreApplication.shared?.credentialRepository ?: CredentialRepository(
             sharedPreferences
         )
     private val networkService =
-        BlendedCareApplication.shared?.networkService ?: NetworkService(
+        MoreApplication.shared?.networkService ?: NetworkService(
             EndpointRepository(sharedPreferences), credentialRepository
         )
     private var stopped = false
@@ -55,7 +55,7 @@ class DataUploadWorker(
 
         try {
             Napier.i { "Worker started!" }
-            return@withContext BlendedCareApplication.shared!!.repositories.observationData.allAsBulk()
+            return@withContext MoreApplication.shared!!.repositories.observationData.allAsBulk()
                 ?.let { bulk ->
                     if (bulk.dataPoints.isNotEmpty()) {
                         return@withContext uploadDataBulk(bulk)
@@ -86,7 +86,7 @@ class DataUploadWorker(
             Result.retry()
         } else {
             Napier.i { "Deleting observation data..." }
-            BlendedCareApplication.shared!!.repositories.observationData.deleteAllWithId(
+            MoreApplication.shared!!.repositories.observationData.deleteAllWithId(
                 ids
             )
             Napier.i { "Deleted ${ids.size} observation data points, success" }

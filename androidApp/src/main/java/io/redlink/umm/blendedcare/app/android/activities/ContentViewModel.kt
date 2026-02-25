@@ -20,7 +20,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.main.MainActivity
 import io.redlink.umm.blendedcare.app.android.extensions.applicationId
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel() {
     val registrationService: RegistrationService =
-        RegistrationService(BlendedCareApplication.shared!!)
+        RegistrationService(MoreApplication.shared!!)
 
     val hasCredentials = mutableStateOf(false)
 
@@ -48,7 +48,7 @@ class ContentViewModel : ViewModel() {
     init {
         NavigationScreen.createDeepLinksForAllRoutes()
         viewModelScope.launch(Dispatchers.IO) {
-            BlendedCareApplication.shared!!.credentialRepository.hasCredentials.collect {
+            MoreApplication.shared!!.credentialRepository.hasCredentials.collect {
                 hasCredentials.value = it
             }
         }
@@ -85,7 +85,7 @@ class ContentViewModel : ViewModel() {
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
 
         val modifiedDeepLink = rawDeepLink?.let { link ->
-            val sharedInstance = BlendedCareApplication.shared
+            val sharedInstance = MoreApplication.shared
                 ?: throw IllegalStateException("MoreApplication.shared is not initialized")
             sharedInstance.deeplinkManager
                 .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
@@ -97,7 +97,7 @@ class ContentViewModel : ViewModel() {
         val finalUri = when {
             modifiedDeepLink != null -> {
                 notificationId?.let {
-                    val sharedInstance = BlendedCareApplication.shared
+                    val sharedInstance = MoreApplication.shared
                         ?: throw IllegalStateException("MoreApplication.shared is not initialized")
                     sharedInstance.notificationManager.handleNotificationInteraction(
                         it, modifiedDeepLink

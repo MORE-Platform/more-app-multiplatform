@@ -47,11 +47,11 @@ android {
     namespace = "io.redlink.umm.blendedcare.app.android"
     compileSdk = 36
     defaultConfig {
-        applicationId = "io.redlink.umm.blendedcare"
+        applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 36
-        versionCode = 15
-        versionName = "0.0.15"
+        versionCode = 37
+        versionName = "5.0.0"
     }
     buildFeatures {
         compose = true

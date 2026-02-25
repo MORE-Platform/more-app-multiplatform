@@ -11,7 +11,6 @@ plugins {
     id("com.rickclephas.kmp.nativecoroutines")
     id("org.openapi.generator").version("7.17.0").apply(true)
     id("dev.icerock.mobile.multiplatform-resources")
-    id("maven-publish")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -32,28 +31,6 @@ val sqliteVersion = "2.5.2"
 
 val mokoResVersion = "0.25.2"
 val mokoGraphicsVersion = "0.10.1"
-
-// Maven coordinates for publishing
-// Adjust group/artifact to your org conventions
-val publishedGroupId = "io.redlink.umm"
-val publishedArtifactId = "blendedcare-shared"
-
-// Versioning strategy:
-// - If GITHUB_REF_NAME is a tag like 1.2.3, publish that
-// - Otherwise publish a CI snapshot like 0.0.15-main.<run_number>
-val ciRefName: String? = System.getenv("GITHUB_REF_NAME")
-val ciRunNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
-val ciRunAttempt: String? = System.getenv("GITHUB_RUN_ATTEMPT")
-val defaultBaseVersion = "0.0.15"
-val publishedVersion = when {
-    ciRefName != null && Regex("\\d+\\.\\d+\\.\\d+").matches(ciRefName) -> ciRefName
-    ciRunNumber != null -> "$defaultBaseVersion-main.$ciRunNumber"
-    else -> "$defaultBaseVersion-SNAPSHOT"
-}
-
-group = publishedGroupId
-version = publishedVersion
-
 
 kotlin {
     androidTarget {
@@ -202,39 +179,4 @@ tasks.register<GenerateTask>(
     // Let Gradle cache this so it only runs when the YAML changes
     inputs.file(mobileAppApiInput)
     outputs.dir(mobileAppApiOutputDir)
-}
-
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            // Uses the current repo by default, e.g. https://maven.pkg.github.com/OWNER/REPO
-            val repo = System.getenv("GITHUB_REPOSITORY")
-            url = uri("https://maven.pkg.github.com/$repo")
-
-            credentials {
-                username = findProperty("io.redlink-gmbh.mvn.user") as String?
-                    ?: System.getenv("GITHUB_ACTOR")
-                password = findProperty("io.redlink-gmbh.mvn.key") as String?
-                    ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-
-    publications.withType<MavenPublication>().configureEach {
-//        val pubSuffix = name
-//            .lowercase()
-//            .replace(Regex("[^a-z0-9._-]"), "-")
-//        artifactId = if (name == "kotlinMultiplatform") {
-//            publishedArtifactId
-//        } else {
-//            "$publishedArtifactId-$pubSuffix"
-//        }
-
-        pom {
-            name.set("blendedcare-shared")
-            description.set("Shared KMM module for BlendedCare")
-        }
-    }
 }

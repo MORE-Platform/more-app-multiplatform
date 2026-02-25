@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.consent.ConsentViewModel
 import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
@@ -134,7 +134,7 @@ fun checkAndRequestPermissions(
     extraPermissions: Set<String> = emptySet()
 ) {
     val permissions =
-        BlendedCareApplication.shared!!.observationFactory.studySensorPermissions()
+        MoreApplication.shared!!.observationFactory.studySensorPermissions()
             .toMutableSet()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -144,7 +144,7 @@ fun checkAndRequestPermissions(
     permissions.addAll(extraPermissions)
 
     permissions.addAll(
-        BlendedCareApplication.Companion.shared?.observationFactory?.studySensorPermissions()
+        MoreApplication.Companion.shared?.observationFactory?.studySensorPermissions()
             ?: emptySet()
     )
 

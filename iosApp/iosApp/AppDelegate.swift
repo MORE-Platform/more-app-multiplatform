@@ -18,11 +18,11 @@ import FirebaseCore
 import FirebaseCrashlyticsSwift
 import FirebaseMessaging
 import Foundation
-import shared
 import UIKit
+import shared
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.io.redlink.umm.blendedcare.ios"
+    static let appGroup = "group.ac.at.lbg.dhp.more.group"
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)
@@ -48,7 +48,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         #if DEBUG
-            NapierProxyKt.napierDebugBuild(antilog: nil)
+        NapierProxyKt.napierDebugBuild(antilog: nil)
         #endif
 
         FirebaseApp.configure()

@@ -9,11 +9,11 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-    private static let appGroup = "group.io.redlink.umm.blendedcare.ios"
+    private static let appGroup = "group.ac.at.lbg.dhp.more.group"
     private static let notificationCountKey = "notification_count"
     private static let STUDY_UPDATE_NOTIFICATION_KEY = "key"
     private static let STUDY_UPDATE_NOTIFICATION_VALUE = "STUDY_STATE_CHANGED"
-    
+
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     let defaults = UserDefaults(suiteName: appGroup)
@@ -25,7 +25,8 @@ class NotificationService: UNNotificationServiceExtension {
         let storedCount = defaults?.integer(forKey: NotificationService.notificationCountKey) ?? 0
 
         let payload = bestAttemptContent?.userInfo as? [AnyHashable: Any]
-        let serverBadge = (payload?["badge"] as? NSNumber)?.intValue
+        let serverBadge =
+            (payload?["badge"] as? NSNumber)?.intValue
             ?? (payload?["unread_count"] as? NSNumber)?.intValue
             ?? Int((payload?["unread_count"] as? String) ?? "")
 
@@ -44,11 +45,11 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(bestAttemptContent)
         }
     }
-    
+
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
     }

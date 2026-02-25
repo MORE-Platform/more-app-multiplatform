@@ -13,7 +13,7 @@ package io.redlink.umm.blendedcare.app.android.activities.setting
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.database.entities.StudyEntity
 import io.redlink.umm.participant.models.PermissionModel
 import io.redlink.umm.participant.viewModels.settings.CoreSettingsViewModel
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel : ViewModel() {
     private var coreSettingsViewModel =
-        CoreSettingsViewModel(BlendedCareApplication.shared!!)
+        CoreSettingsViewModel(MoreApplication.shared!!)
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 

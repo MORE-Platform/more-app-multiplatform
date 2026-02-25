@@ -13,7 +13,7 @@ package io.redlink.umm.blendedcare.app.android.activities.studyDetails.observati
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.models.ObservationDetailsModel
 import io.redlink.umm.participant.viewModels.observationDetails.CoreObservationDetailsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,7 @@ class ObservationDetailsViewModel(
 
     private val coreViewModel: CoreObservationDetailsViewModel =
         CoreObservationDetailsViewModel(
-            BlendedCareApplication.Companion.shared!!.repositories,
+            MoreApplication.Companion.shared!!.repositories,
             observationId
         )
     val observationDetailsModel = mutableStateOf(

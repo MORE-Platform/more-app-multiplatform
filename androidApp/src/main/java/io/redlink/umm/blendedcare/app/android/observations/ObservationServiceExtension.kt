@@ -1,7 +1,7 @@
 package io.redlink.umm.blendedcare.app.android.observations
 
 import android.app.Activity
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.services.ObservationRecordingService
 
 /**
@@ -13,7 +13,7 @@ fun startObservationsWithPermissionCheck(
     scheduleIds: Set<String>,
     activity: Activity
 ) {
-    val observations = BlendedCareApplication.shared?.observationFactory?.observations ?: emptySet()
+    val observations = MoreApplication.shared?.observationFactory?.observations ?: emptySet()
 
     if (observations.isEmpty()) {
         ObservationRecordingService.start(scheduleIds)

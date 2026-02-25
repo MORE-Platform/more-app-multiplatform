@@ -1,6 +1,6 @@
 package io.redlink.umm.blendedcare.app.android.observations
 
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.stringResource
 import io.redlink.umm.participant.AlertController
@@ -16,13 +16,13 @@ fun Observation.showPermissionAlertDialog() {
             confirmLabel = stringResource(R.string.proceed_to_settings_button),
             cancelLabel = stringResource(R.string.proceed_without_granting_button),
             onConfirm = {
-                BlendedCareApplication.openSettings.value = true
+                MoreApplication.openSettings.value = true
             }
         ))
 }
 
 fun Observation.Companion.pauseObservation(observationType: ObservationType) {
-    BlendedCareApplication.shared!!.observationManager.pauseObservationType(
+    MoreApplication.shared!!.observationManager.pauseObservationType(
         observationType.observationType
     )
 }

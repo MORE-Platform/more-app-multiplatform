@@ -3,7 +3,7 @@ package io.redlink.umm.blendedcare.app.android.activities.observations.questionn
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.models.QuestionType
 import io.redlink.umm.participant.viewModels.simpleQuestion.QuestionCoreViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,8 +17,8 @@ class QuestionViewModel(
 ) :
     ViewModel() {
     val coreViewModel: QuestionCoreViewModel = QuestionCoreViewModel(
-        BlendedCareApplication.shared!!.repositories,
-        BlendedCareApplication.shared!!.observationFactory,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory,
         scheduleId,
         notificationId,
         observationId

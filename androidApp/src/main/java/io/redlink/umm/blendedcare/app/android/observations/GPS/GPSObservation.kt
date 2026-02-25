@@ -19,7 +19,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.observations.showPermissionAlertDialog
 import io.redlink.umm.blendedcare.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.umm.participant.database.repository.MainRepository
@@ -115,7 +115,7 @@ class GPSObservation(
     }
 
     private fun hasPermission(): Boolean {
-        return this.hasPermissions(BlendedCareApplication.Companion.appContext!!)
+        return this.hasPermissions(MoreApplication.Companion.appContext!!)
     }
 
     private fun hasPermissions(context: Context): Boolean {

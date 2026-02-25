@@ -14,7 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.models.ScheduleListType
 import io.redlink.umm.participant.services.bluetooth.polar.PolarStates
 import io.redlink.umm.participant.viewModels.dashboard.CoreDashboardFilterViewModel
@@ -27,11 +27,11 @@ class ScheduleViewModel(
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
     private val coreDashboardFilterViewModel =
-        CoreDashboardFilterViewModel(BlendedCareApplication.shared!!.repositories)
+        CoreDashboardFilterViewModel(MoreApplication.shared!!.repositories)
 
     val coreViewModel = CoreScheduleViewModel(
-        BlendedCareApplication.shared!!.repositories,
-        BlendedCareApplication.shared!!.dataRecorder,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.dataRecorder,
         scheduleListType = scheduleListType,
         coreFilterModel = coreDashboardFilterViewModel
     )

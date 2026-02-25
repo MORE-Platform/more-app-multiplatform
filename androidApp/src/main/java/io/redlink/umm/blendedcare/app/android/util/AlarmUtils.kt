@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import org.json.JSONArray
 
 object AlarmUtils {
@@ -102,7 +102,7 @@ object AlarmUtils {
 
     private fun getAlarmIds(context: Context): List<Int> {
         return try {
-            val prefs = BlendedCareApplication.shared!!.sharedStorageRepository
+            val prefs = MoreApplication.shared!!.sharedStorageRepository
             val key = context.packageName + TAG_ALARMS
             val json = prefs.load(key, "[]")
             val jsonArray = JSONArray(json)
@@ -121,7 +121,7 @@ object AlarmUtils {
         val jsonArray = JSONArray()
         ids.forEach { idAlarm -> jsonArray.put(idAlarm) }
 
-        val prefs = BlendedCareApplication.shared!!.sharedStorageRepository
+        val prefs = MoreApplication.shared!!.sharedStorageRepository
         prefs.store(context.packageName + TAG_ALARMS, jsonArray.toString())
     }
 }

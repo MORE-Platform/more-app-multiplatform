@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="default_channel_id" translatable="false">io.redlink.umm.blendedcare.app.android.urgent</string>
+    <string name="default_channel_id" translatable="false">io.redlink.more.app.android.urgent</string>
     <string name="unread_channel_id" translatable="false">unread_notifications_channel</string>
     <string name="notification_title">More Project</string>
     <string name="notification_channel_name">More Project Notification</string>

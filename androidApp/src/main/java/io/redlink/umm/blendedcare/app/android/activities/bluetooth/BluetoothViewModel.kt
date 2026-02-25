@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.umm.blendedcare.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.umm.participant.AlertController
@@ -30,8 +30,8 @@ import kotlinx.coroutines.withContext
 
 class BluetoothViewModel : ViewModel() {
     private val coreBluetoothViewModel = CoreBluetoothViewModel(
-        BlendedCareApplication.shared!!.observationFactory,
-        BlendedCareApplication.shared!!.bluetoothController
+        MoreApplication.shared!!.observationFactory,
+        MoreApplication.shared!!.bluetoothController
     )
     val discoveredDevices = mutableStateListOf<BluetoothDeviceEntity>()
     val connectedDevices = mutableStateListOf<BluetoothDeviceEntity>()
@@ -89,7 +89,7 @@ class BluetoothViewModel : ViewModel() {
             coreBluetoothViewModel.devicesNeededToConnectTo.collect {
                 withContext(Dispatchers.Main) {
                     neededDevices.clear()
-                    neededDevices.addAll(BlendedCareApplication.shared!!.observationFactory.bleDevicesNeeded())
+                    neededDevices.addAll(MoreApplication.shared!!.observationFactory.bleDevicesNeeded())
                 }
             }
         }

@@ -17,7 +17,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.extensions.stringResource
 import io.redlink.umm.blendedcare.app.android.observations.pauseObservation
@@ -64,7 +64,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
     ) {
     private val bleManager = BluetoothStateManagement
     private val deviceIdentifier = setOf("Polar")
-    private val polarConnector = BlendedCareApplication.Companion.polarConnector!!
+    private val polarConnector = MoreApplication.Companion.polarConnector!!
     private var heartRateDisposable: Disposable? = null
     private var deviceConnectionListener: Job? = null
 
@@ -75,7 +75,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
             polarController.hrFeatureChange.collect { (studyActive, hrReady) ->
                 if (studyActive) {
                     if (hrReady) {
-                        BlendedCareApplication.Companion.shared!!.observationManager.updateTaskStates()
+                        MoreApplication.Companion.shared!!.observationManager.updateTaskStates()
                     } else {
                         Observation.pauseObservation(
                             super.observationType
@@ -147,7 +147,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
 
     override fun observerErrors(): Set<String> {
         val errors = mutableSetOf<String>()
-        if (!hasPermissions(BlendedCareApplication.Companion.appContext!!)) {
+        if (!hasPermissions(MoreApplication.Companion.appContext!!)) {
             errors.add("error_access_bluetooth")
             showPermissionAlertDialog()
             PolarStates.hrFeatureReady(false)
@@ -156,7 +156,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
             errors.add("bluetooth_disabled")
             PolarStates.hrFeatureReady(false)
         }
-        if (!BlendedCareApplication.Companion.shared!!.bluetoothController.observerDeviceAccessible(
+        if (!MoreApplication.Companion.shared!!.bluetoothController.observerDeviceAccessible(
                 deviceIdentifier
             )
         ) {

@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.ContentActivity
 import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
@@ -51,7 +51,7 @@ import io.redlink.umm.blendedcare.app.android.theme.MoreColors
 fun StudyClosedView() {
     val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
-    val finishText by BlendedCareApplication.shared!!.repositories.study.finishText.collectAsStateWithLifecycle()
+    val finishText by MoreApplication.shared!!.repositories.study.finishText.collectAsStateWithLifecycle()
     MoreBackground {
         Box(
             modifier = Modifier
@@ -102,7 +102,7 @@ fun StudyClosedView() {
                         text = getStringResource(id = R.string.more_settings_exit_dialog_title)
                     ) {
                         loading = true
-                        BlendedCareApplication.shared!!.exitStudy {
+                        MoreApplication.shared!!.exitStudy {
                             loading = false
                             (context as? Activity)?.let { activity ->
                                 activity.finish()

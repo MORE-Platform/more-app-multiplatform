@@ -13,16 +13,16 @@ package io.redlink.umm.blendedcare.app.android.extensions
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
 import io.redlink.umm.blendedcare.app.android.BuildConfig
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 
-fun stringResource(id: Int) = BlendedCareApplication.appContext?.getString(id) ?: ""
+fun stringResource(id: Int) = MoreApplication.appContext?.getString(id) ?: ""
 
 fun getQuantityString(id: Int, count: Int, formatArgs: Any) =
-    BlendedCareApplication.appContext?.resources?.getQuantityString(id, count, formatArgs) ?: ""
+    MoreApplication.appContext?.resources?.getQuantityString(id, count, formatArgs) ?: ""
 
 fun <T> getSystemService(serviceClass: Class<T>): T? =
-    BlendedCareApplication.appContext?.getSystemService(serviceClass)
+    MoreApplication.appContext?.getSystemService(serviceClass)
 
 fun getSecureID(context: Context) =
     Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)

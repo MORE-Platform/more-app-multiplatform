@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.work.WorkManager
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.ContentActivity
 import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
@@ -38,7 +38,7 @@ fun ExitButton(
                 cancelLabel = context.getString(R.string.more_settings_continue),
                 onConfirm = {
                     WorkManager.getInstance(context).cancelAllWork()
-                    BlendedCareApplication.shared!!.exitStudy {
+                    MoreApplication.shared!!.exitStudy {
                         (context as? Activity)?.let { activity ->
                             activity.finish()
                             showNewActivityAndClearStack(

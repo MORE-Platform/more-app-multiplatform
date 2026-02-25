@@ -13,7 +13,7 @@ package io.redlink.umm.blendedcare.app.android.firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.database.entities.NotificationEntity
 import java.util.UUID
 
@@ -24,7 +24,7 @@ Service to handle push notifications and firebase connections
 class FCMService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         Napier.i("Refreshed token: $token", tag = "FCMService::onNewToken")
-        BlendedCareApplication.shared!!.notificationManager.newFCMToken(token)
+        MoreApplication.shared!!.notificationManager.newFCMToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -32,8 +32,8 @@ class FCMService : FirebaseMessagingService() {
             Napier.i(tag = "FCMService::onMessageReceived") {
                 message.daoFromRemoteMessage().toString()
             }
-            BlendedCareApplication.shared!!.notificationManager.storeAndHandleNotification(
-                BlendedCareApplication.shared!!,
+            MoreApplication.shared!!.notificationManager.storeAndHandleNotification(
+                MoreApplication.shared!!,
                 message.daoFromRemoteMessage(),
                 true
             )

@@ -23,7 +23,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import io.github.aakira.napier.Napier
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.ContentActivity
 import io.redlink.umm.blendedcare.app.android.observations.PermissionUtils
@@ -74,14 +74,14 @@ class ObservationRecordingService : Service() {
         }
 
         if (observationFactory == null) {
-            if (BlendedCareApplication.shared == null) {
-                BlendedCareApplication.initShared(applicationContext)
+            if (MoreApplication.shared == null) {
+                MoreApplication.initShared(applicationContext)
             }
-            observationFactory = BlendedCareApplication.shared!!.observationFactory
+            observationFactory = MoreApplication.shared!!.observationFactory
         }
         observationFactory?.let {
             if (observationManager == null) {
-                observationManager = BlendedCareApplication.shared!!.observationManager
+                observationManager = MoreApplication.shared!!.observationManager
             }
         }
         return intent?.action?.let { action ->
@@ -263,7 +263,7 @@ class ObservationRecordingService : Service() {
             startForegroundService()
             scope.launch {
                 try {
-                    if (BlendedCareApplication.shared!!.repositories.study.study.value?.active == true) {
+                    if (MoreApplication.shared!!.repositories.study.study.value?.active == true) {
                         scheduleId.forEach { id ->
                             try {
                                 if (observationManager?.start(id) == true) {
@@ -313,7 +313,7 @@ class ObservationRecordingService : Service() {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
         Scope.launch {
-            BlendedCareApplication.shared!!.repositories.schedule.setCompletionStateFor(
+            MoreApplication.shared!!.repositories.schedule.setCompletionStateFor(
                 scheduleId,
                 true
             )
@@ -544,7 +544,7 @@ class ObservationRecordingService : Service() {
             activity: Activity
         ) {
             val observations =
-                BlendedCareApplication.shared?.observationFactory?.observations
+                MoreApplication.shared?.observationFactory?.observations
                     ?: emptySet()
 
             if (observations.isEmpty()) {
@@ -591,7 +591,7 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value && scheduleIds.isNotEmpty()) {
                 val serviceIntent =
                     Intent(
-                        BlendedCareApplication.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_START_ACTION
@@ -599,11 +599,11 @@ class ObservationRecordingService : Service() {
                 try {
                     Handler(Looper.getMainLooper()).post {
                         if (running) {
-                            BlendedCareApplication.appContext?.startService(
+                            MoreApplication.appContext?.startService(
                                 serviceIntent
                             )
                         } else {
-                            BlendedCareApplication.appContext?.startForegroundService(
+                            MoreApplication.appContext?.startForegroundService(
                                 serviceIntent
                             )
                         }
@@ -620,14 +620,14 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        BlendedCareApplication.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-                BlendedCareApplication.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                BlendedCareApplication.shared?.observationManager?.pause(scheduleId)
+                MoreApplication.shared?.observationManager?.pause(scheduleId)
             }
         }
 
@@ -635,14 +635,14 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        BlendedCareApplication.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-                BlendedCareApplication.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                BlendedCareApplication.shared?.observationManager?.stop(scheduleId)
+                MoreApplication.shared?.observationManager?.stop(scheduleId)
             }
         }
 
@@ -650,26 +650,26 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        BlendedCareApplication.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
-                BlendedCareApplication.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                BlendedCareApplication.shared?.observationManager?.stopAll()
+                MoreApplication.shared?.observationManager?.stopAll()
             }
         }
 
         fun restartAll() {
             val serviceIntent =
                 Intent(
-                    BlendedCareApplication.appContext,
+                    MoreApplication.appContext,
                     ObservationRecordingService::class.java
                 )
             serviceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
             try {
                 Handler(Looper.getMainLooper()).post {
-                    BlendedCareApplication.appContext?.startForegroundService(
+                    MoreApplication.appContext?.startForegroundService(
                         serviceIntent
                     )
                 }

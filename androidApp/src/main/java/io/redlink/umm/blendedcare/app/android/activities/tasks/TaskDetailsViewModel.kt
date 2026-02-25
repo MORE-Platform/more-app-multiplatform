@@ -13,7 +13,7 @@ package io.redlink.umm.blendedcare.app.android.activities.tasks
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.participant.observations.DataRecorder
 import io.redlink.umm.participant.observations.ObservationFactory
 import io.redlink.umm.participant.services.bluetooth.polar.PolarStates
@@ -29,7 +29,7 @@ class TaskDetailsViewModel(
 ) : ViewModel() {
     val coreViewModel: CoreTaskDetailsViewModel =
         CoreTaskDetailsViewModel(
-            BlendedCareApplication.shared!!.repositories,
+            MoreApplication.shared!!.repositories,
             dataRecorder,
             scheduleId
         )

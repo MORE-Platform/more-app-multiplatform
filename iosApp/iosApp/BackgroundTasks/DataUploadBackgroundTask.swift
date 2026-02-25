@@ -1,7 +1,7 @@
 import BackgroundTasks
 
 class DataUploadBackgroundTask {
-    static let taskID = "io.redlink.umm.blendedcare.data-upload"
+    static let taskID = "io.redlink.more.app.multiplatform.data-upload"
     static let defaultInterval: TimeInterval = 15 * 60
 
     static func schedule(earliestBeginDate: Date? = nil) {
@@ -87,4 +87,3 @@ extension DataUploadBackgroundTask: @preconcurrency BackgroundTaskHandler {
         }
     }
 }
-

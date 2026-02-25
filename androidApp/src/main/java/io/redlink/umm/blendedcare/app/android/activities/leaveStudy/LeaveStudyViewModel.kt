@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.activities.ContentActivity
 import io.redlink.umm.blendedcare.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.umm.participant.database.entities.StudyEntity
@@ -28,7 +28,7 @@ import kotlinx.coroutines.withContext
 
 class LeaveStudyViewModel : ViewModel() {
     private var coreSettingsViewModel =
-        CoreSettingsViewModel(BlendedCareApplication.shared!!)
+        CoreSettingsViewModel(MoreApplication.shared!!)
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 

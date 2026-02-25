@@ -35,7 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.MoreApplication
 import io.redlink.umm.blendedcare.app.android.activities.NavigationScreen
 import io.redlink.umm.blendedcare.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.umm.blendedcare.app.android.activities.completedSchedules.CompletedSchedulesView
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             navHostController = rememberNavController()
 
-            val studyState by BlendedCareApplication.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
+            val studyState by MoreApplication.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
             val studyIsUpdating by ViewManager.studyIsUpdating.collectAsStateWithLifecycle(false)
             val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle(false)
 
@@ -171,7 +171,7 @@ fun MainView(
     val currentContext = rememberUpdatedState(LocalContext.current)
     val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
     val notificationCount =
-        BlendedCareApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
+        MoreApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,
