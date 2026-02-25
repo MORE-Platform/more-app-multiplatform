@@ -71,8 +71,8 @@ class AccelerometerBackgroundObservation: Observation_ {
     }
 
     override func applyObservationConfig(settings: [String: Any]) {
-        if var start = settings[Observation_().CONFIG_TASK_START] as? Int64,
-            let end = settings[Observation_().CONFIG_TASK_STOP] as? Int64,
+        if var start = settings[Observation_.companion.CONFIG_TASK_START] as? Int64,
+           let end = settings[Observation_.companion.CONFIG_TASK_STOP] as? Int64,
             Date(timeIntervalSince1970: TimeInterval(end)) > Date()
         {
             let startDate = Date(timeIntervalSince1970: TimeInterval(start))

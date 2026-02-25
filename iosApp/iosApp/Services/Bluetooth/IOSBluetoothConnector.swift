@@ -254,7 +254,7 @@ extension IOSBluetoothConnector: CBPeripheralDelegate {
 
 extension CBPeripheral {
     func toBluetoothDevice() -> BluetoothDeviceEntity {
-        BluetoothDeviceEntity().create(
+        BluetoothDeviceEntity.companion.create(
             deviceId: identifier.uuidString,
             deviceName: name ?? "Unknown",
             address: identifier.uuidString
