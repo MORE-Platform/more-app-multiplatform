@@ -1,7 +1,6 @@
 package io.redlink.more.models
 
 import android.content.Context
-import dev.icerock.moko.resources.desc.Raw
 import dev.icerock.moko.resources.desc.StringDesc
 import java.lang.ref.WeakReference
 
@@ -18,7 +17,7 @@ actual object NotificationTextLocalization {
             localizeToStringDesc(raw)?.toString(context)
         } else {
             fallback
-        } ?: StringDesc.Raw(raw).toString()
+        } ?: raw
     }
 
     actual fun localizeToStringDesc(raw: String): StringDesc? {
