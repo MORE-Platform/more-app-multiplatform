@@ -1,8 +1,8 @@
-git_url("https://github.com/redlink-gmbh/umm-platform-signing-certificates")
+git_url("https://github.com/MORE-Platform/more_platform_signing_certificates.git")
 
 storage_mode("git")
 
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
-app_identifier(["io.redlink.umm.blendedcare.ios.app.participant", "io.redlink.umm.blendedcare.ios.app.participant.BlendedCare-Notification-Service-Extension"])
+app_identifier(["ac.at.lbg.dhp.more", "ac.at.lbg.dhp.more.More-Notification-Service-Extension"])
 username("jan.cortiel@icloud.com")
