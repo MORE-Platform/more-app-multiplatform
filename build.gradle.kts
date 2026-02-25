@@ -6,16 +6,6 @@ buildscript {
     repositories {
         google()  // Google's Maven repository
         mavenCentral()  // Maven Central repository
-
-        maven {
-            url = uri("https://maven.pkg.github.com/redlink-gmbh/ignored")
-            credentials {
-                username = findProperty("io.redlink-gmbh.mvn.user") as String?
-                    ?: System.getenv("GITHUB_ACTOR")
-                password = findProperty("io.redlink-gmbh.mvn.key") as String?
-                    ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
     }
 }
 
