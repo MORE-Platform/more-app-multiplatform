@@ -19,6 +19,6 @@ import shared
 
 extension BluetoothDeviceEntity {
     static func fromPolarDevice(polarInfo: PolarDeviceInfo) -> BluetoothDeviceEntity {
-        BluetoothDeviceEntity().create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString)
+        BluetoothDeviceEntity.companion.create(deviceId: polarInfo.deviceId, deviceName: polarInfo.name, address: polarInfo.address.uuidString)
     }
 }
