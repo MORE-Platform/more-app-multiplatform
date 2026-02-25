@@ -10,10 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://www.jitpack.io" )}
+        maven { url = uri("https://www.jitpack.io") }
     }
 }
 
-rootProject.name = "More_app_mutliplatform"
+rootProject.name = "UMM_BlendedCare_Participant_App"
 include(":androidApp")
 include(":shared")

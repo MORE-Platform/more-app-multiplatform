@@ -1,0 +1,28 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.umm.blendedcare.app.android.shared_composables
+
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import io.redlink.umm.blendedcare.app.android.theme.MoreColors
+
+@Composable
+fun HeaderDescription(description: String, color: Color = MoreColors.Companion.Primary) {
+    Text(
+        text = description,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = color
+    )
+}

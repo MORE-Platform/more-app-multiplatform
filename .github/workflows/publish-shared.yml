@@ -1,0 +1,37 @@
+name: Publish shared
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  publish_shared:
+    name: Publish shared module (GitHub Packages)
+    runs-on: macos-26
+    permissions:
+      contents: read
+      packages: write
+    env:
+      JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Generate OpenAPI sources
+        run: ./gradlew :shared:generateOpenApiClasses
+
+      - name: Publish shared module
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :shared:publishAllPublicationsToGitHubPackagesRepository

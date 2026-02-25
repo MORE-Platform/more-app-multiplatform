@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Base64
 import java.util.Properties
 
@@ -43,14 +44,14 @@ fun getEnvOrProperty(key: String, envProps: Properties): String? {
 val envProps = loadEnvFromFile()
 
 android {
-    namespace = "io.redlink.more.app.android"
+    namespace = "io.redlink.umm.blendedcare.app.android"
     compileSdk = 36
     defaultConfig {
-        applicationId = "ac.at.lbg.dhp.more"
+        applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 36
-        versionName = "4.1.8"
+        versionCode = 15
+        versionName = "0.0.15"
     }
     buildFeatures {
         compose = true
@@ -106,11 +107,11 @@ android {
             storeFile?.let {
                 this.storeFile = it
             } ?: run {
-                println("Keystore file not found, falling back to debug keystore")
-                this.storeFile = File(System.getProperty("user.home"), ".android/debug.keystore")
-                this.storePassword = "android"
-                this.keyAlias = "androiddebugkey"
-                this.keyPassword = "android"
+                println("Keystore file not found for release signing. Leaving release signing unconfigured.")
+                this.storeFile = null
+                this.storePassword = null
+                this.keyAlias = null
+                this.keyPassword = null
             }
         }
     }
@@ -125,10 +126,11 @@ android {
             buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
 
             val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile != null) {
-                signingConfig = releaseSigningConfig
+            signingConfig = if (releaseSigningConfig.storeFile != null) {
+                releaseSigningConfig
             } else {
-                println("Warning: No signing configuration available. Using debug signing.")
+                println("Warning: No release keystore configured. Falling back to default debug signing.")
+                signingConfigs.getByName("debug")
             }
 
             isMinifyEnabled = true
@@ -139,11 +141,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -153,8 +158,8 @@ val composeVersion = "1.6.0"
 val workVersion = "2.10.3"
 val navVersion = "2.9.3"
 val polarSDKVersion = "6.7.0"
-val ktorVersion = "3.2.3"
-val roomVersion = "2.7.2"
+val ktorVersion = "3.4.0"
+val roomVersion = "2.8.4"
 val koinVersion = "4.1.1"
 val cameraVersion = "1.4.2"
 

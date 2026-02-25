@@ -30,7 +30,7 @@ struct iOSApp: App {
                 switch newPhase {
                 case .background:
                     ViewManager.shared.appIsInForeground(state: false)
-                    if AppDelegate.shared.observationManager.hasRunningTasks() {
+                    if AppDelegate.shared.credentialRepository.hasCredentialsValue {
                         appDelegate.scheduleTasks()
                     }
                 case .inactive:

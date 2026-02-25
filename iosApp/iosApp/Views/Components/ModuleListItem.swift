@@ -38,6 +38,6 @@ struct ModuleListItem: View {
 
 struct ModuleListItem_Previews: PreviewProvider {
     static var previews: some View {
-        ModuleListItem(observation: ObservationEntity(observationId: "1", observationType: "gps", observationTitle: "GPS", participantInfo: "123", configuration: nil, hidden: false, scheduleLess: false, version: 0, required: true, collectionTimestamp: Date().timeIntervalSince1970.asTimestamp()))
+        ModuleListItem(observation: ObservationEntity(observationId: "1", observationType: "gps", observationTitle: "GPS", participantInfo: "123", configuration: nil, hidden: false, scheduleLess: false, reminder: false, version: 0, required: true, collectionTimestamp: Date().timeIntervalSince1970.asTimestamp()))
     }
 }

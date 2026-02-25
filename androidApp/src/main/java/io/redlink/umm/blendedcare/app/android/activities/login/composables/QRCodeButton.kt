@@ -1,0 +1,77 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.umm.blendedcare.app.android.activities.login.composables
+
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import io.redlink.umm.blendedcare.app.android.R
+import io.redlink.umm.blendedcare.app.android.activities.login.LoginViewModel
+import io.redlink.umm.blendedcare.app.android.activities.qrScanner.QRScannerActivity
+import io.redlink.umm.blendedcare.app.android.extensions.getStringResource
+import io.redlink.umm.blendedcare.app.android.theme.MoreColors
+import io.redlink.umm.blendedcare.app.android.theme.moreSecondary
+
+@Composable
+fun QRCodeButton(model: LoginViewModel) {
+
+    val context = rememberUpdatedState(LocalContext.current)
+    val qrScannerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val scanned =
+            result.data?.getStringExtra("qrResult") ?: return@rememberLauncherForActivityResult
+        model.extractValuesFromQRCode(scanned)
+    }
+
+    OutlinedButton(
+        onClick = {
+            val intent = Intent(context.value, QRScannerActivity::class.java)
+            qrScannerLauncher.launch(intent)
+        },
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .height(60.dp),
+        colors = ButtonDefaults.moreSecondary(),
+        border = MoreColors.borderPrimary(true)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = getStringResource(id = R.string.more_qr_code_button))
+            Icon(
+                Icons.Default.QrCode,
+                tint = MoreColors.White,
+                contentDescription = getStringResource(id = R.string.more_qr_code_button_description),
+                modifier = Modifier.fillMaxHeight(0.6f)
+            )
+        }
+    }
+}

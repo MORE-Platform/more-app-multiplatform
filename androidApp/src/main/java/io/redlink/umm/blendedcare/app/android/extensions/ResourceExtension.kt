@@ -1,0 +1,32 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+package io.redlink.umm.blendedcare.app.android.extensions
+
+import android.content.Context
+import android.os.Build
+import android.provider.Settings
+import io.redlink.umm.blendedcare.app.android.BlendedCareApplication
+import io.redlink.umm.blendedcare.app.android.BuildConfig
+
+fun stringResource(id: Int) = BlendedCareApplication.appContext?.getString(id) ?: ""
+
+fun getQuantityString(id: Int, count: Int, formatArgs: Any) =
+    BlendedCareApplication.appContext?.resources?.getQuantityString(id, count, formatArgs) ?: ""
+
+fun <T> getSystemService(serviceClass: Class<T>): T? =
+    BlendedCareApplication.appContext?.getSystemService(serviceClass)
+
+fun getSecureID(context: Context) =
+    Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+
+fun getProductName() = Build.PRODUCT
+
+const val applicationId = BuildConfig.APPLICATION_ID
