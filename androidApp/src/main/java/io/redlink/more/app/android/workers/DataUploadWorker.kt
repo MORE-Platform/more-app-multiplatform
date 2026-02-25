@@ -74,7 +74,7 @@ class DataUploadWorker(
         }
     }
 
-    private suspend fun uploadDataBulk(bulk: io.redlink.more.model.DataBulk): Result {
+    private suspend fun uploadDataBulk(bulk: DataBulk): Result {
         val (ids, error) = networkService.sendData(bulk)
         return if (error != null) {
             Napier.e { "Error while sending data: ${error.message}" }

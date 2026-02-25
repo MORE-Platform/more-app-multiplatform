@@ -49,7 +49,7 @@ data class ObservationEntity(
     } ?: emptyMap()
 
     companion object {
-        fun toEntity(observation: io.redlink.more.model.Observation): ObservationEntity {
+        fun toEntity(observation: Observation): ObservationEntity {
             return ObservationEntity(
                 observationId = observation.observationId,
                 observationTitle = observation.observationTitle,

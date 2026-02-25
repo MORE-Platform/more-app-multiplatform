@@ -4,9 +4,9 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>io.redlink.umm.blendedcare.data-upload</string>
-		<string>io.redlink.umm.blendedcare.dailyRefresh</string>
-		<string>io.redlink.umm.blendedcare.observation-reminder-refresh</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).data-upload</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).dailyRefresh</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).observation-reminder-refresh</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

@@ -16,14 +16,14 @@ import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.services.network.openapi.model.DataBulk
 import io.redlink.more.util.createUUID
 
-fun Collection<ObservationDataEntity>.mapAsBulkData(): io.redlink.more.model.DataBulk? {
+fun Collection<ObservationDataEntity>.mapAsBulkData(): DataBulk? {
     val dataPoints = this.map { it.asObservationData() }
     val bulkId = createUUID()
     if (dataPoints.isEmpty() || dataPoints.firstOrNull() == null) {
         return null
     }
     Napier.i { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size} with first being: ${dataPoints.first()}" }
-    return io.redlink.more.model.DataBulk(
+    return DataBulk(
         bulkId = bulkId,
         dataPoints = dataPoints
     )

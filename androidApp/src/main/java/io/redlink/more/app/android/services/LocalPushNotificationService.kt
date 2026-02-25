@@ -23,6 +23,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import io.github.aakira.napier.Napier
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
 import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
@@ -31,7 +32,6 @@ import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.models.localize
 import io.redlink.more.services.notification.LocalNotificationListener
 import io.redlink.more.services.notification.NotificationManager.Companion.MSG_ID
-import io.redlink.umm.blendedcare.app.android.R
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
     private val defaultChannelId = context.getString(R.string.default_channel_id)

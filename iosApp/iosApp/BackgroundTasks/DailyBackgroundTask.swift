@@ -11,7 +11,7 @@ import shared
 enum DailyBackgroundTask {
     // IMPORTANT: Add this identifier to Info.plist under BGTaskSchedulerPermittedIdentifiers
     // and ensure it matches your app's bundle identifier conventions if needed.
-    static let taskID = "io.redlink.umm.blendedcare.dailyRefresh"
+    static let taskID = AppDelegate.bundleId + ".dailyRefresh"
 
     static func setupBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: taskID, using: nil) { task in

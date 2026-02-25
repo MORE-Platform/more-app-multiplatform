@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
@@ -47,7 +48,6 @@ import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.NotificationModel
 import io.redlink.more.models.localize
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun NotificationItem(

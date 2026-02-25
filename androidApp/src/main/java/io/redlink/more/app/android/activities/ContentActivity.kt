@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import io.github.aakira.napier.Napier
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
@@ -29,7 +30,6 @@ import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.viewModels.ViewManager
-import io.redlink.umm.blendedcare.app.android.R
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 

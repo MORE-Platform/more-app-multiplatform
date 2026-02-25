@@ -29,13 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.AccordionReadMore
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.registration.RegistrationService
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun ConsentView(registrationService: RegistrationService) {

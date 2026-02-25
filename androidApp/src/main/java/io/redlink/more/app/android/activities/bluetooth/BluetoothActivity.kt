@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
@@ -51,7 +52,6 @@ import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.umm.blendedcare.app.android.R
 
 class BLEConnectionActivity : ComponentActivity() {
     val viewModel = BluetoothViewModel()

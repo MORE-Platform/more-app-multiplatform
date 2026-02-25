@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.work.WorkManager
+import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.ContentActivity
@@ -17,7 +18,6 @@ import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreImportant
 import io.redlink.more.models.AlertDialogModel
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun ExitButton(

@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.composables.FilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
@@ -35,7 +36,6 @@ import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarVi
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreImportant
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun ScheduleListHeader(

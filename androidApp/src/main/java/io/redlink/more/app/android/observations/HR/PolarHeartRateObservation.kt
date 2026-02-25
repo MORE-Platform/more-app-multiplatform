@@ -17,6 +17,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
@@ -30,7 +31,6 @@ import io.redlink.more.scopes.Scope
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
 import io.redlink.more.services.bluetooth.polar.PolarStates
 import io.redlink.more.viewModels.bluetoothConnection.PolarController
-import io.redlink.umm.blendedcare.app.android.R
 import kotlinx.coroutines.Job
 
 private val permissions =

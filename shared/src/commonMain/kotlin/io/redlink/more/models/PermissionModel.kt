@@ -21,7 +21,7 @@ data class PermissionModel(
     val consentInfo: List<PermissionConsentModel>
 ) {
     companion object {
-        fun create(study: io.redlink.more.model.Study, studyConsentTitle: String): PermissionModel {
+        fun create(study: Study, studyConsentTitle: String): PermissionModel {
             val observationConsent = mutableListOf<PermissionConsentModel>()
             observationConsent.add(PermissionConsentModel(studyConsentTitle, study.consentInfo))
             observationConsent.addAll(

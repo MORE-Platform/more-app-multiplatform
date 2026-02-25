@@ -22,10 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.io.more.app.android.BuildConfig
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.umm.blendedcare.app.android.BuildConfig
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun AppVersion() {

@@ -114,7 +114,7 @@ data class NotificationEntity(
             )
         }
 
-        fun toEntity(notification: io.redlink.more.model.PushNotification): NotificationEntity {
+        fun toEntity(notification: PushNotification): NotificationEntity {
             return toEntity(
                 notificationId = notification.msgId ?: createUUID(),
                 channelId = null,
@@ -130,7 +130,7 @@ data class NotificationEntity(
             )
         }
 
-        fun toEntityList(notifications: List<io.redlink.more.model.PushNotification>): List<NotificationEntity> =
+        fun toEntityList(notifications: List<PushNotification>): List<NotificationEntity> =
             notifications.map { toEntity(it) }
 
         private fun extractDeepLink(data: Map<String, String>) =

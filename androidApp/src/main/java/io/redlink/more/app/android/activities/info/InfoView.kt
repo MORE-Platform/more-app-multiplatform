@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
@@ -47,7 +48,6 @@ import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun InfoView(navController: NavController) {

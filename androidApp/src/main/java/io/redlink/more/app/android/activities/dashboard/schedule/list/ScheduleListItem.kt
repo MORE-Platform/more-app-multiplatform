@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.extensions.getStringResource
@@ -41,7 +42,6 @@ import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.ScheduleModel
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.observations.observationTypes.QuestionType
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun ScheduleListItem(

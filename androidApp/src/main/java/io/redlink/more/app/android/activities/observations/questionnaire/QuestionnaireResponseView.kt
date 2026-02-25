@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
@@ -33,7 +34,6 @@ import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.theme.morePrimary
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun QuestionnaireResponseView(navController: NavController) {

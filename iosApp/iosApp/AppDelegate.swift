@@ -22,7 +22,8 @@ import shared
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.io.redlink.umm.blendedcare.ios"
+    static let bundleId = Bundle.main.bundleIdentifier ?? "io.redlink.umm.blendedcare.ios"
+    static let appGroup = "group." + bundleId
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)

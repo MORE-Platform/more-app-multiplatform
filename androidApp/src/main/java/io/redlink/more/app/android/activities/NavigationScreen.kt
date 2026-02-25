@@ -17,12 +17,12 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.observations.observationTypes.GarminType
 import io.redlink.more.observations.observationTypes.LimeSurveyType
 import io.redlink.more.observations.observationTypes.QuestionType
-import io.redlink.umm.blendedcare.app.android.R
 
 data class NavigationParameter(
     val type: NavType<*>,

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.getStringResource
@@ -45,7 +46,6 @@ import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.Title
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun StudyClosedView() {

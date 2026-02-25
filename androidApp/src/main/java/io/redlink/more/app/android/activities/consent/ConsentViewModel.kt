@@ -12,6 +12,7 @@ package io.redlink.more.app.android.activities.consent
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.getSecureID
@@ -19,7 +20,6 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.permission.CoreConsentViewModel
-import io.redlink.umm.blendedcare.app.android.R
 
 class ConsentViewModel(
     val registrationService: RegistrationService

@@ -285,7 +285,7 @@ class Shared(
         var versionChanged = false
 
         currentStudy?.let { current ->
-            val s = study as? io.redlink.more.model.Study
+            val s = study as? Study
             val newState = s?.studyState?.toStudyState()
             val currentState = current.getState()
 
@@ -327,7 +327,7 @@ class Shared(
                 notificationManager.clearAllNotifications()
                 repositories.notification.deleteAll()
 
-                val s = study as io.redlink.more.model.Study
+                val s = study as Study
                 withContext(Dispatchers.Main) {
                     repositories.study.upsert(s)
                 }

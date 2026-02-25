@@ -58,7 +58,7 @@ class StudyRepository(private val appDatabase: AppDatabase) {
         }
     }
 
-    suspend fun upsert(study: io.redlink.more.model.Study) {
+    suspend fun upsert(study: Study) {
         deleteStudy()
         Scope.launch(Dispatchers.IO) {
             val studyEntity = StudyEntity.Companion.fromStudy(study)

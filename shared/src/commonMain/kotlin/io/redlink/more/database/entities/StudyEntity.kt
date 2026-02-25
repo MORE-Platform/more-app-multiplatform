@@ -41,7 +41,7 @@ data class StudyEntity(
     fun endInstant() = end?.let { Instant.fromEpochSeconds(it) }
 
     companion object {
-        fun fromStudy(study: io.redlink.more.model.Study): StudyEntity {
+        fun fromStudy(study: Study): StudyEntity {
             val active = study.active ?: false
             return StudyEntity(
                 studyTitle = study.studyTitle,

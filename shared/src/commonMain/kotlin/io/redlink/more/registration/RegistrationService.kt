@@ -28,10 +28,10 @@ class RegistrationService(
 
     @NativeCoroutines
     val validLoginModel: StateFlow<LoginModel?> = _validLoginModel
-    private val _study = MutableStateFlow<io.redlink.more.model.Study?>(null)
+    private val _study = MutableStateFlow<Study?>(null)
 
     @NativeCoroutines
-    val study: StateFlow<io.redlink.more.model.Study?> = _study
+    val study: StateFlow<Study?> = _study
 
     private val _error = MutableStateFlow<NetworkServiceError?>(null)
 
@@ -91,10 +91,10 @@ class RegistrationService(
         clearError()
         validLoginModel.value?.let { loginModel ->
             study.value?.let { study ->
-                val studyConsent = io.redlink.more.model.StudyConsent(
+                val studyConsent = StudyConsent(
                     consent = true,
                     observations = study.observations.map {
-                        io.redlink.more.model.ObservationConsent(
+                        ObservationConsent(
                             observationId = it.observationId,
                             active = true
                         )
@@ -109,7 +109,7 @@ class RegistrationService(
     }
 
     private fun sendConsent(
-        studyConsent: io.redlink.more.model.StudyConsent,
+        studyConsent: StudyConsent,
     ) {
         _isLoading.value = true
         Scope.launch(Dispatchers.IO) {
@@ -162,7 +162,7 @@ class RegistrationService(
         clearError()
     }
 
-    private fun addObservationPermissions(study: io.redlink.more.model.Study) {
+    private fun addObservationPermissions(study: Study) {
         shared.observationFactory
             .addNeededObservationTypes(study.observations.map { it.observationType }.toSet())
     }

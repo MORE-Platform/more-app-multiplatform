@@ -13,6 +13,7 @@ package io.redlink.more.app.android.activities.notification
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
@@ -20,7 +21,6 @@ import io.redlink.more.models.NotificationModel
 import io.redlink.more.services.notification.NotificationActionHandler
 import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 import io.redlink.more.viewModels.notifications.CoreNotificationViewModel
-import io.redlink.umm.blendedcare.app.android.R
 
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {

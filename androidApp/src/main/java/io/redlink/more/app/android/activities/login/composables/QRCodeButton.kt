@@ -30,11 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreSecondary
-import io.redlink.umm.blendedcare.app.android.R
 import io.redlink.umm.blendedcare.app.android.activities.qrScanner.QRScannerActivity
 
 @Composable

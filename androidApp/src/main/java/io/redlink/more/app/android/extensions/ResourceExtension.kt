@@ -13,8 +13,8 @@ package io.redlink.more.app.android.extensions
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import io.redlink.io.more.app.android.BuildConfig
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.umm.blendedcare.app.android.BuildConfig
 
 fun stringResource(id: Int) = MoreApplication.Companion.appContext?.getString(id) ?: ""
 

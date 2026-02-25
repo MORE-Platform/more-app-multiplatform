@@ -41,6 +41,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.web.WebClient
 import io.redlink.more.app.android.extensions.getStringResource
@@ -48,7 +49,6 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.umm.blendedcare.app.android.R
 
 class LimeSurveyActivity : ComponentActivity() {
     private val viewModel: LimeSurveyViewModel by lazy {

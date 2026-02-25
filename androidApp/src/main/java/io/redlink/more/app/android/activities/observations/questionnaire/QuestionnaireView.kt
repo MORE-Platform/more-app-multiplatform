@@ -28,12 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.observations.questionnaire.questionType.QuestionnaireQuestionAnswer
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.ErrorMessage
 import io.redlink.more.models.QuestionType
-import io.redlink.umm.blendedcare.app.android.R
 
 /**
  * Saves the *answer value* (not the question). Extend this when you add new answer shapes.

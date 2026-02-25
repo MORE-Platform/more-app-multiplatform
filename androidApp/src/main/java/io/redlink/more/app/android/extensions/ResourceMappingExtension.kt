@@ -10,8 +10,8 @@
  */
 package io.redlink.more.app.android.extensions
 
+import io.redlink.io.more.app.android.R
 import io.redlink.more.models.DateFilterModel
-import io.redlink.umm.blendedcare.app.android.R
 
 fun String.formatDateFilterString(): String {
     return when (this) {

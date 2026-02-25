@@ -128,7 +128,7 @@ dependencies {
 }
 
 multiplatformResources {
-    resourcesPackage.set("io.redlink.umm.participant")
+    resourcesPackage.set("io.redlink.more")
     resourcesClassName.set("SharedRes")
     iosBaseLocalizationRegion.set("en")
     iosMinimalDeploymentTarget.set("16.2")

@@ -25,10 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.ScheduleState
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun DatapointCollectionView(datapoints: Long, scheduleState: ScheduleState?) {

@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.ActivityProgressView
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun TaskCompletionBarView(viewModel: TaskCompletionBarViewModel) {

@@ -2,7 +2,7 @@ package io.redlink.more.models
 
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
-import io.redlink.umm.more_app_multiplatform.SharedRes
+import io.redlink.more.SharedRes
 
 enum class NotificationTextKey(val raw: String) {
     OBSERVATION_ACTIVATED("observation_is_active");

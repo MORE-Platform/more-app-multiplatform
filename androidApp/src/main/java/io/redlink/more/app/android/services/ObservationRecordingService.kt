@@ -23,6 +23,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import io.github.aakira.napier.Napier
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.PermissionUtils
@@ -32,7 +33,6 @@ import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.observations.ObservationManager
 import io.redlink.more.scopes.Scope
 import io.redlink.more.viewModels.ViewManager
-import io.redlink.umm.blendedcare.app.android.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

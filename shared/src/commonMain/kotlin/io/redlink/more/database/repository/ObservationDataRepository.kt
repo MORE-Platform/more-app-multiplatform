@@ -54,7 +54,7 @@ class ObservationDataRepository(private val appDatabase: AppDatabase) {
 
     suspend fun getCount(): Int = appDatabase.observationDataDao().getCount()
 
-    suspend fun allAsBulk(): io.redlink.more.model.DataBulk? {
+    suspend fun allAsBulk(): DataBulk? {
         return mutex.withLock {
             val observationDataEntities = appDatabase.observationDataDao().getLatest(5000)
             if (observationDataEntities.isNotEmpty()) {

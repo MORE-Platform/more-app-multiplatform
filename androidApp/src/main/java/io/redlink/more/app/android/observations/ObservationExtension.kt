@@ -1,12 +1,12 @@
 package io.redlink.more.app.android.observations
 
+import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.observationTypes.ObservationType
-import io.redlink.umm.blendedcare.app.android.R
 
 fun Observation.showPermissionAlertDialog() {
     AlertController.openAlertDialog(

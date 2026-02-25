@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.web.WebClient
 import io.redlink.more.app.android.extensions.getStringResource
@@ -38,7 +39,6 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.viewModels.ViewManager
-import io.redlink.umm.blendedcare.app.android.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

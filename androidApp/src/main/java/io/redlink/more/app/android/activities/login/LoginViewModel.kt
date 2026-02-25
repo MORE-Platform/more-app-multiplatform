@@ -12,13 +12,13 @@ package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.util.validateAndNormalizeUrl
-import io.redlink.umm.blendedcare.app.android.R
 
 class LoginViewModel(
     val registrationService: RegistrationService

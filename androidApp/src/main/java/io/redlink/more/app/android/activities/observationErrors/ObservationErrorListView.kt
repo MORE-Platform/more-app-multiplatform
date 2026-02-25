@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
@@ -27,7 +28,6 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextIconButton
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.observations.Observation
-import io.redlink.umm.blendedcare.app.android.R
 
 @Composable
 fun ObservationErrorListView(

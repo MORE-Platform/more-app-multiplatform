@@ -57,7 +57,7 @@ data class ScheduleEntity(
 
     companion object {
         fun fromObservationSchedule(
-            schedule: io.redlink.more.model.ObservationSchedule,
+            schedule: ObservationSchedule,
             observationId: String,
             observationType: String,
             observationTitle: String,

@@ -37,8 +37,8 @@ data class ObservationDataEntity(
     fun timestampInstant() = Instant.fromEpochMilliseconds(timestamp)
 
     @Ignore
-    fun asObservationData(): io.redlink.more.model.ObservationData =
-        io.redlink.more.model.ObservationData(
+    fun asObservationData(): ObservationData =
+        ObservationData(
             dataId = this.dataId,
             observationId = this.observationId,
             observationType = this.observationType,
@@ -56,7 +56,7 @@ data class ObservationDataEntity(
     }
 
     companion object {
-        fun fromObservationData(observationData: io.redlink.more.model.ObservationData): ObservationDataEntity {
+        fun fromObservationData(observationData: ObservationData): ObservationDataEntity {
             return ObservationDataEntity(
                 dataId = observationData.dataId,
                 observationId = observationData.observationId,

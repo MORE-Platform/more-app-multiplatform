@@ -14,13 +14,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.extensions.formatDateFilterString
 import io.redlink.more.app.android.extensions.getQuantityString
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.DateFilterModel
 import io.redlink.more.scopes.Scope.launch
 import io.redlink.more.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.umm.blendedcare.app.android.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
