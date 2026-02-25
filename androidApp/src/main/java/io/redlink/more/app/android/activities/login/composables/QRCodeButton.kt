@@ -30,12 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
+import io.redlink.more.app.android.activities.qrScanner.QRScannerActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreSecondary
-import io.redlink.umm.blendedcare.app.android.activities.qrScanner.QRScannerActivity
 
 @Composable
 fun QRCodeButton(model: LoginViewModel) {
@@ -58,7 +58,7 @@ fun QRCodeButton(model: LoginViewModel) {
             .fillMaxWidth(1f)
             .height(60.dp),
         colors = ButtonDefaults.moreSecondary(),
-        border = MoreColors.Companion.borderPrimary(true)
+        border = MoreColors.borderPrimary(true)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,7 +68,7 @@ fun QRCodeButton(model: LoginViewModel) {
             Text(text = getStringResource(id = R.string.more_qr_code_button))
             Icon(
                 Icons.Default.QrCode,
-                tint = MoreColors.Companion.White,
+                tint = MoreColors.White,
                 contentDescription = getStringResource(id = R.string.more_qr_code_button_description),
                 modifier = Modifier.fillMaxHeight(0.6f)
             )

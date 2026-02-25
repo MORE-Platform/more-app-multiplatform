@@ -57,7 +57,7 @@ fun InfoItem(
                 Icon(
                     imageVector,
                     contentDescription = contentDescription,
-                    tint = MoreColors.Companion.Secondary,
+                    tint = MoreColors.Secondary,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 NavigationText(text = title)

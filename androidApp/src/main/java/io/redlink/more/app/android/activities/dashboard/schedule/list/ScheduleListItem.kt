@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.extensions.getStringResource
@@ -64,11 +64,11 @@ fun ScheduleListItem(
         ) {
             SmallTitle(
                 text = scheduleModel().observationTitle,
-                color = MoreColors.Companion.Primary
+                color = MoreColors.Primary
             )
             if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
                 CircularProgressIndicator(
-                    color = MoreColors.Companion.Approved,
+                    color = MoreColors.Approved,
                     strokeWidth = 2.dp,
                     modifier = Modifier
                         .padding(horizontal = 10.dp)
@@ -83,7 +83,7 @@ fun ScheduleListItem(
         ) {
             BasicText(
                 text = scheduleModel().observationType,
-                color = MoreColors.Companion.Secondary
+                color = MoreColors.Secondary
             )
             Row(horizontalArrangement = Arrangement.End) {
                 if ((observationErrors[scheduleModel().observationType]?.count()
@@ -93,14 +93,14 @@ fun ScheduleListItem(
                     Icon(
                         Icons.Default.Warning,
                         contentDescription = null,
-                        tint = MoreColors.Companion.Important,
+                        tint = MoreColors.Important,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
                 Icon(
                     Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                     contentDescription = getStringResource(id = R.string.more_schedule_details),
-                    tint = MoreColors.Companion.Primary
+                    tint = MoreColors.Primary
                 )
             }
         }

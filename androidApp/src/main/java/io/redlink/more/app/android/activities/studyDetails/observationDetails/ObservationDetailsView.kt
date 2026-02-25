@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDate
@@ -76,7 +76,7 @@ fun ObservationDetailsView(
             }
             BasicText(
                 text = viewModel.observationDetailsModel.value.observationType,
-                color = MoreColors.Companion.Secondary,
+                color = MoreColors.Secondary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 14.dp)

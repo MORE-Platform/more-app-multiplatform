@@ -1,8 +1,8 @@
 package io.redlink.more.app.android.observations
 
-import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.observations.Observation
@@ -16,13 +16,13 @@ fun Observation.showPermissionAlertDialog() {
             confirmLabel = stringResource(R.string.proceed_to_settings_button),
             cancelLabel = stringResource(R.string.proceed_without_granting_button),
             onConfirm = {
-                MoreApplication.Companion.openSettings.value = true
+                MoreApplication.openSettings.value = true
             }
         ))
 }
 
-fun Observation.Companion.pauseObservation(observationType: ObservationType) {
-    MoreApplication.Companion.shared!!.observationManager.pauseObservationType(
+fun Observation.pauseObservation(observationType: ObservationType) {
+    MoreApplication.shared!!.observationManager.pauseObservationType(
         observationType.observationType
     )
 }

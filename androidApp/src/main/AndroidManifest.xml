@@ -124,8 +124,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="io.redlink.umm.blendedcare.app.android.NOTIFICATION_ACTION_READ" />
-                <action android:name="io.redlink.umm.blendedcare.app.android.SCHEDULED_NOTIFICATION" />
+                <action android:name="io.redlink.more.app.android.NOTIFICATION_ACTION_READ" />
+                <action android:name="io.redlink.more.app.android.SCHEDULED_NOTIFICATION" />
             </intent-filter>
         </receiver>
     </application>

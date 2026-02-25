@@ -115,7 +115,7 @@ class GPSObservation(
     }
 
     private fun hasPermission(): Boolean {
-        return this.hasPermissions(MoreApplication.Companion.appContext!!)
+        return this.hasPermissions(MoreApplication.appContext!!)
     }
 
     private fun hasPermissions(context: Context): Boolean {

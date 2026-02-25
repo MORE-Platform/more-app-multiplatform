@@ -43,6 +43,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         napierDebugBuild(FirebaseCrashlyticsAntilog())
         napierDebugBuild()
         appContext = this
+        packagePath = this.packageName
         NotificationTextLocalization.init(this)
 
         initShared(this)
@@ -68,6 +69,9 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
     companion object {
         var appContext: Context? = null
+            private set
+
+        var packagePath: String? = null
             private set
 
         var firebaseAnalytics: FirebaseAnalytics? = null

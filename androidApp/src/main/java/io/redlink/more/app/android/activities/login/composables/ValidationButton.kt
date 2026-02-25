@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
@@ -41,9 +41,9 @@ fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
             enabled = model.participationKeyNotBlank(),
             colors = ButtonDefaults.morePrimary(),
             border = if (model.participationKeyNotBlank())
-                BorderStroke(0.dp, MoreColors.Companion.Primary)
+                BorderStroke(0.dp, MoreColors.Primary)
             else
-                BorderStroke(2.dp, MoreColors.Companion.SecondaryMedium),
+                BorderStroke(2.dp, MoreColors.SecondaryMedium),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp)
@@ -51,7 +51,7 @@ fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {
             Text(text = getStringResource(id = R.string.more_login_button_label))
         }
     } else {
-        CircularProgressIndicator(strokeWidth = 2.dp, color = MoreColors.Companion.Primary)
+        CircularProgressIndicator(strokeWidth = 2.dp, color = MoreColors.Primary)
     }
 
 }

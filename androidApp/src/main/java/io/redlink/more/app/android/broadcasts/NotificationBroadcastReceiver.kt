@@ -32,8 +32,8 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             val pendingResult = goAsync()
             scope.launch {
                 try {
-                    MoreApplication.Companion.initShared(context)
-                    MoreApplication.Companion.shared?.observationService?.rescheduleObservationRemindersAfterBoot()
+                    MoreApplication.initShared(context)
+                    MoreApplication.shared?.observationService?.rescheduleObservationRemindersAfterBoot()
                     Napier.i(tag = "NotificationBroadcastReceiver") { "Observation reminders rescheduled after boot." }
                 } catch (t: Throwable) {
                     Napier.e(tag = "NotificationBroadcastReceiver", throwable = t) {
@@ -67,7 +67,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             val pendingResult = goAsync()
             scope.launch {
                 try {
-                    MoreApplication.Companion.shared?.notificationManager?.displayNotification(
+                    MoreApplication.shared?.notificationManager?.displayNotification(
                         notification
                     )
                     Napier.d(tag = "NotificationBroadcastReceiver") {
@@ -75,7 +75,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
                     }
 
                     Napier.d(tag = "NotificationBroadcastReceiver") { "Calling scheduleObservationReminder()" }
-                    MoreApplication.Companion.shared?.observationService?.scheduleObservationReminder()
+                    MoreApplication.shared?.observationService?.scheduleObservationReminder()
                     Napier.d(tag = "NotificationBroadcastReceiver") { "scheduleObservationReminder() returned" }
                 } catch (t: Throwable) {
                     Napier.e(tag = "NotificationBroadcastReceiver", throwable = t) {
@@ -94,7 +94,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
                 val pendingResult = goAsync()
                 scope.launch {
                     try {
-                        MoreApplication.Companion.shared?.repositories?.notification
+                        MoreApplication.shared?.repositories?.notification
                             ?.setNotificationReadStatus(key, true)
                     } finally {
                         pendingResult.finish()
@@ -106,9 +106,9 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         const val NOTIFICATION_SET_ON_READ_ACTION =
-            "io.redlink.umm.blendedcare.app.android.NOTIFICATION_ACTION_READ"
+            "io.redlink.more.app.android.NOTIFICATION_ACTION_READ"
         const val SCHEDULED_NOTIFICATION_ACTION =
-            "io.redlink.umm.blendedcare.app.android.SCHEDULED_NOTIFICATION"
+            "io.redlink.more.app.android.SCHEDULED_NOTIFICATION"
         const val EXTRA_NOTIFICATION_ID = "extra_notification_id"
         const val EXTRA_CHANNEL_ID = "extra_channel_id"
         const val EXTRA_TITLE = "extra_title"

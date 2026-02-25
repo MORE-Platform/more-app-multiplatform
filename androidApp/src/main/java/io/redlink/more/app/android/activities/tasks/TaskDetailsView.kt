@@ -29,8 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.observationErrors.ObservationErrorListView
 import io.redlink.more.app.android.extensions.getStringResource
@@ -59,8 +59,8 @@ fun TaskDetailsView(
     val viewModel =
         remember {
             TaskDetailsViewModel(
-                MoreApplication.Companion.shared!!.dataRecorder,
-                MoreApplication.Companion.shared!!.observationFactory,
+                MoreApplication.shared!!.dataRecorder,
+                MoreApplication.shared!!.observationFactory,
                 scheduleId
             )
         }
@@ -98,8 +98,8 @@ fun TaskDetailsView(
                                 text = getStringResource(id = R.string.more_abort),
                                 imageText = getStringResource(id = R.string.more_abort),
                                 image = Icons.Rounded.Square,
-                                imageTint = MoreColors.Companion.Important,
-                                borderStroke = MoreColors.Companion.borderDefault(),
+                                imageTint = MoreColors.Important,
+                                borderStroke = MoreColors.borderDefault(),
                                 buttonColors = ButtonDefaults.moreSecondary2()
                             ) {
                                 viewModel.stopObservation()
@@ -107,7 +107,7 @@ fun TaskDetailsView(
                     }
                     BasicText(
                         text = taskDetails.observationType,
-                        color = MoreColors.Companion.Secondary,
+                        color = MoreColors.Secondary,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 14.dp)

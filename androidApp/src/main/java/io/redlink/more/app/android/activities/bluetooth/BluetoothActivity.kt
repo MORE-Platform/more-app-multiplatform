@@ -39,7 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
@@ -120,7 +120,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                 SmallTitle(
                     text = "- $item",
                     fontSize = 16.sp,
-                    color = MoreColors.Companion.PrimaryDark
+                    color = MoreColors.PrimaryDark
                 )
             }
             if (showDescrPart2) {
@@ -238,7 +238,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                                 if (device.address in viewModel.connectingDevices) {
                                     CircularProgressIndicator(
                                         strokeWidth = 2.dp,
-                                        color = MoreColors.Companion.Primary,
+                                        color = MoreColors.Primary,
                                         modifier = Modifier
                                             .width(progressSize)
                                             .height(progressSize)
@@ -259,7 +259,7 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                         ) {
                             CircularProgressIndicator(
                                 strokeWidth = 2.dp,
-                                color = MoreColors.Companion.Primary,
+                                color = MoreColors.Primary,
                                 modifier = Modifier
                                     .height(progressSize)
                                     .width(progressSize)
@@ -283,11 +283,11 @@ fun LoginBLESetupView(viewModel: BluetoothViewModel, showDescrPart2: Boolean) {
                             Icon(
                                 Icons.Default.BluetoothDisabled,
                                 contentDescription = getStringResource(id = R.string.more_ble_disabled),
-                                tint = MoreColors.Companion.Important
+                                tint = MoreColors.Important
                             )
                             SmallTitle(
                                 text = getStringResource(id = R.string.more_ble_disabled),
-                                color = MoreColors.Companion.Important
+                                color = MoreColors.Important
                             )
                         }
                     }

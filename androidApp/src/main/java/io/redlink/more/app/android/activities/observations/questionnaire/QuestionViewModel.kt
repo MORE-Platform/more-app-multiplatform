@@ -17,8 +17,8 @@ class QuestionViewModel(
 ) :
     ViewModel() {
     val coreViewModel: QuestionCoreViewModel = QuestionCoreViewModel(
-        MoreApplication.Companion.shared!!.repositories,
-        MoreApplication.Companion.shared!!.observationFactory,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory,
         scheduleId,
         notificationId,
         observationId

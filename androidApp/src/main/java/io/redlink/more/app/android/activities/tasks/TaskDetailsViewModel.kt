@@ -29,7 +29,7 @@ class TaskDetailsViewModel(
 ) : ViewModel() {
     val coreViewModel: CoreTaskDetailsViewModel =
         CoreTaskDetailsViewModel(
-            MoreApplication.Companion.shared!!.repositories,
+            MoreApplication.shared!!.repositories,
             dataRecorder,
             scheduleId
         )

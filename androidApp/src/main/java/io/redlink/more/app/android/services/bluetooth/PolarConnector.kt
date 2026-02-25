@@ -56,7 +56,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     init {
         polarObserverCallback.connectionListener = this
-        (MoreApplication.Companion.appContext!!.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter?.let {
+        (MoreApplication.appContext!!.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter?.let {
             val state = when (it.state) {
                 BluetoothAdapter.STATE_ON -> BluetoothState.ON
                 BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.ON

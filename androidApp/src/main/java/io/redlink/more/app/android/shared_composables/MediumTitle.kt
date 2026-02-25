@@ -28,7 +28,7 @@ fun MediumTitle(
         text = text,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
-        color = MoreColors.Companion.Primary,
+        color = MoreColors.Primary,
         textAlign = textAlign,
         modifier = modifier
     )

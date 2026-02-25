@@ -10,7 +10,7 @@
  */
 package io.redlink.more.app.android.extensions
 
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.models.DateFilterModel
 
 fun String.formatDateFilterString(): String {
@@ -21,14 +21,4 @@ fun String.formatDateFilterString(): String {
         else -> stringResource(R.string.more_filter_entire_time)
     }
 
-}
-
-fun String.formatObservationTypeString(): String {
-    return when (this) {
-        "question-observation" -> stringResource(R.string.more_filter_question)
-        "gps-mobile-observation" -> stringResource(R.string.more_filter_gps)
-        "acc-mobile-observation" -> stringResource(R.string.more_filter_accelerometer)
-        "polar-verity-observation" -> stringResource(R.string.more_filter_polar)
-        else -> "Unknown Type Filter"
-    }
 }

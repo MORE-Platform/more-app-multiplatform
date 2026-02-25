@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
-fun HeaderDescription(description: String, color: Color = MoreColors.Companion.Primary) {
+fun HeaderDescription(description: String, color: Color = MoreColors.Primary) {
     Text(
         text = description,
         fontWeight = FontWeight.Medium,

@@ -102,7 +102,7 @@ object AlarmUtils {
 
     private fun getAlarmIds(context: Context): List<Int> {
         return try {
-            val prefs = MoreApplication.Companion.shared!!.sharedStorageRepository
+            val prefs = MoreApplication.shared!!.sharedStorageRepository
             val key = context.packageName + TAG_ALARMS
             val json = prefs.load(key, "[]")
             val jsonArray = JSONArray(json)
@@ -121,7 +121,7 @@ object AlarmUtils {
         val jsonArray = JSONArray()
         ids.forEach { idAlarm -> jsonArray.put(idAlarm) }
 
-        val prefs = MoreApplication.Companion.shared!!.sharedStorageRepository
+        val prefs = MoreApplication.shared!!.sharedStorageRepository
         prefs.store(context.packageName + TAG_ALARMS, jsonArray.toString())
     }
 }

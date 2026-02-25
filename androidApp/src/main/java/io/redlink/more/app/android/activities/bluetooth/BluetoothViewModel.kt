@@ -30,8 +30,8 @@ import kotlinx.coroutines.withContext
 
 class BluetoothViewModel : ViewModel() {
     private val coreBluetoothViewModel = CoreBluetoothViewModel(
-        MoreApplication.Companion.shared!!.observationFactory,
-        MoreApplication.Companion.shared!!.bluetoothController
+        MoreApplication.shared!!.observationFactory,
+        MoreApplication.shared!!.bluetoothController
     )
     val discoveredDevices = mutableStateListOf<BluetoothDeviceEntity>()
     val connectedDevices = mutableStateListOf<BluetoothDeviceEntity>()
@@ -89,7 +89,7 @@ class BluetoothViewModel : ViewModel() {
             coreBluetoothViewModel.devicesNeededToConnectTo.collect {
                 withContext(Dispatchers.Main) {
                     neededDevices.clear()
-                    neededDevices.addAll(MoreApplication.Companion.shared!!.observationFactory.bleDevicesNeeded())
+                    neededDevices.addAll(MoreApplication.shared!!.observationFactory.bleDevicesNeeded())
                 }
             }
         }

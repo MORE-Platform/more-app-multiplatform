@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.formattedString
@@ -85,7 +85,7 @@ fun NotificationItem(
                         text = notificationModel.title,
                         fontWeight = if (notificationModel.read) FontWeight.Normal else FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = if (it.toInt() == 2) MoreColors.Companion.Important else MoreColors.Companion.Primary,
+                        color = if (it.toInt() == 2) MoreColors.Important else MoreColors.Primary,
                         modifier = Modifier.fillMaxWidth(0.96f)
                     )
                 }
@@ -94,7 +94,7 @@ fun NotificationItem(
             if (!notificationModel.read) {
                 IconInline(
                     icon = Icons.Filled.Circle,
-                    color = MoreColors.Companion.Important,
+                    color = MoreColors.Important,
                     contentDescription = getStringResource(id = R.string.more_notification_view_show_unread),
                 )
             }
@@ -140,7 +140,7 @@ fun NotificationItem(
                         .formattedString("dd.MM.yyyy HH:mm:ss"),
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = MoreColors.Companion.Secondary,
+                    color = MoreColors.Secondary,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -150,7 +150,7 @@ fun NotificationItem(
                     Icon(
                         if (notificationModel.completed) Icons.Default.Done else Icons.AutoMirrored.Filled.ArrowForwardIos,
                         contentDescription = getStringResource(id = R.string.more_observation_open),
-                        tint = if (notificationModel.read) MoreColors.Companion.Approved else MoreColors.Companion.Primary
+                        tint = if (notificationModel.read) MoreColors.Approved else MoreColors.Primary
                     )
                 }
             }

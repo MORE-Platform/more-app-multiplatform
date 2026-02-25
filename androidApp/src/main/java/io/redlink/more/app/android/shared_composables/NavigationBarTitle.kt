@@ -20,7 +20,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun NavigationBarTitle(text: String) {
     Text(
         text = text,
-        color = MoreColors.Companion.PrimaryDark,
+        color = MoreColors.PrimaryDark,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp
     )

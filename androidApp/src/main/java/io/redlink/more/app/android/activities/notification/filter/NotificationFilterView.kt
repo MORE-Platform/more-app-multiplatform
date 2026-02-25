@@ -27,7 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
@@ -56,7 +56,7 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
                 if (entry.value)
                     IconInline(
                         icon = Icons.Rounded.Done,
-                        color = MoreColors.Companion.Approved,
+                        color = MoreColors.Approved,
                         contentDescription = getStringResource(id = R.string.more_filter_selected)
                     )
                 Box(
@@ -71,7 +71,7 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
                 ) {
                     HeaderDescription(
                         description = entry.key.type,
-                        color = MoreColors.Companion.Secondary
+                        color = MoreColors.Secondary
                     )
                 }
             }

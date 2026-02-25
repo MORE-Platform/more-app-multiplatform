@@ -22,7 +22,7 @@ import io.redlink.more.app.android.theme.MoreColors
 @Composable
 fun IconInline(
     icon: ImageVector,
-    color: Color = MoreColors.Companion.Primary,
+    color: Color = MoreColors.Primary,
     contentDescription: String,
     modifier: Modifier = Modifier
 ) {

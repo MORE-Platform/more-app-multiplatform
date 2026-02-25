@@ -36,11 +36,11 @@ class DataUploadWorker(
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
     private val credentialRepository: CredentialRepository =
-        MoreApplication.Companion.shared?.credentialRepository ?: CredentialRepository(
+        MoreApplication.shared?.credentialRepository ?: CredentialRepository(
             sharedPreferences
         )
     private val networkService =
-        MoreApplication.Companion.shared?.networkService ?: NetworkService(
+        MoreApplication.shared?.networkService ?: NetworkService(
             EndpointRepository(sharedPreferences), credentialRepository
         )
     private var stopped = false
@@ -55,7 +55,7 @@ class DataUploadWorker(
 
         try {
             Napier.i { "Worker started!" }
-            return@withContext MoreApplication.Companion.shared!!.repositories.observationData.allAsBulk()
+            return@withContext MoreApplication.shared!!.repositories.observationData.allAsBulk()
                 ?.let { bulk ->
                     if (bulk.dataPoints.isNotEmpty()) {
                         return@withContext uploadDataBulk(bulk)
@@ -86,7 +86,7 @@ class DataUploadWorker(
             Result.retry()
         } else {
             Napier.i { "Deleting observation data..." }
-            MoreApplication.Companion.shared!!.repositories.observationData.deleteAllWithId(
+            MoreApplication.shared!!.repositories.observationData.deleteAllWithId(
                 ids
             )
             Napier.i { "Deleted ${ids.size} observation data points, success" }

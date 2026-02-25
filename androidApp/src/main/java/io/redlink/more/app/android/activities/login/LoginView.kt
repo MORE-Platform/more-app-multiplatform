@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.composables.EndpointView
 import io.redlink.more.app.android.activities.login.composables.ParticipationKeyInput
 import io.redlink.more.app.android.extensions.Image

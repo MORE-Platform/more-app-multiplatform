@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
@@ -132,19 +132,19 @@ fun InfoView(navController: NavController) {
                             if (it.study.participantId != null) {
                                 SmallTitle(
                                     text = getStringResource(id = R.string.info_participant_credentials),
-                                    color = MoreColors.Companion.Secondary
+                                    color = MoreColors.Secondary
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
                                 SmallTitle(
                                     text = it.study.participantId.toString(),
-                                    color = MoreColors.Companion.Secondary
+                                    color = MoreColors.Secondary
                                 )
-                                SmallTitle(text = ": ", color = MoreColors.Companion.Secondary)
+                                SmallTitle(text = ": ", color = MoreColors.Secondary)
                             }
                             if (it.study.participantAlias != null) {
                                 BasicText(
                                     text = it.study.participantAlias.toString(),
-                                    color = MoreColors.Companion.Secondary
+                                    color = MoreColors.Secondary
                                 )
                             }
                         }
@@ -162,7 +162,7 @@ fun InfoView(navController: NavController) {
                         if (it.study.contactPerson != null || it.study.contactEmail != null || it.study.contactPhoneNumber != null) {
                             SmallTitle(
                                 text = getStringResource(id = R.string.info_contact_data),
-                                color = MoreColors.Companion.PrimaryDark,
+                                color = MoreColors.PrimaryDark,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 10.dp),
@@ -186,7 +186,7 @@ fun InfoView(navController: NavController) {
                             SmallTitle(
                                 text = it.study.contactPerson as String,
                                 modifier = Modifier.fillMaxWidth(),
-                                color = MoreColors.Companion.Secondary,
+                                color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -197,7 +197,7 @@ fun InfoView(navController: NavController) {
                                 text = it.study.contactEmail as String,
                                 fontSize = 14.sp,
                                 modifier = Modifier.fillMaxWidth(),
-                                color = MoreColors.Companion.Secondary,
+                                color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -207,7 +207,7 @@ fun InfoView(navController: NavController) {
                                 text = it.study.contactPhoneNumber as String,
                                 fontSize = 14.sp,
                                 modifier = Modifier.fillMaxWidth(),
-                                color = MoreColors.Companion.Secondary,
+                                color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center
                             )
 
@@ -217,7 +217,7 @@ fun InfoView(navController: NavController) {
 
                             BasicText(
                                 text = getStringResource(id = R.string.info_disclaimer),
-                                color = MoreColors.Companion.Secondary,
+                                color = MoreColors.Secondary,
                                 textAlign = TextAlign.Center,
                                 fontSize = 14.sp,
                                 modifier = Modifier

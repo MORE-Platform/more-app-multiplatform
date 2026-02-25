@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.work.WorkManager
-import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
@@ -26,7 +26,7 @@ fun ExitButton(
     SmallTextButton(
         text = getStringResource(id = R.string.more_settings_resign_confirm),
         buttonColors = ButtonDefaults.moreImportant(),
-        borderStroke = MoreColors.Companion.borderImportant(),
+        borderStroke = MoreColors.borderImportant(),
         modifier = Modifier
             .padding(bottom = 24.dp)
     ) {
@@ -38,7 +38,7 @@ fun ExitButton(
                 cancelLabel = context.getString(R.string.more_settings_continue),
                 onConfirm = {
                     WorkManager.getInstance(context).cancelAllWork()
-                    MoreApplication.Companion.shared!!.exitStudy {
+                    MoreApplication.shared!!.exitStudy {
                         (context as? Activity)?.let { activity ->
                             activity.finish()
                             showNewActivityAndClearStack(

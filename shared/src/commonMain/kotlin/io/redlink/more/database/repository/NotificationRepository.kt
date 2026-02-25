@@ -46,7 +46,7 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
             mutex.withLock {
                 if (key !in deletedNotificationIds) {
                     storeNotification(
-                        NotificationEntity.Companion.toEntity(
+                        NotificationEntity.toEntity(
                             key,
                             channelId,
                             title,

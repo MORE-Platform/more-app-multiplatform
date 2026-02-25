@@ -19,7 +19,7 @@ import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
@@ -35,17 +35,17 @@ fun TimeframeHours(
         Icon(
             Icons.Default.AccessTimeFilled,
             contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
-            tint = MoreColors.Companion.Primary,
+            tint = MoreColors.Primary,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = getStringResource(id = R.string.more_schedule_timeframe),
-            color = MoreColors.Companion.Primary,
+            color = MoreColors.Primary,
             modifier = Modifier.padding(end = 8.dp)
         )
         Text(
             text = "${startTime.formattedString("HH:mm")} - ${endTime.formattedString("HH:mm")}",
-            color = MoreColors.Companion.Secondary
+            color = MoreColors.Secondary
         )
     }
 }

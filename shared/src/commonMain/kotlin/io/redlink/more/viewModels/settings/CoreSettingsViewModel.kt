@@ -46,7 +46,7 @@ class CoreSettingsViewModel(
                     _study.value = it.first
                     it.first?.let { study ->
                         _permissionModel.value =
-                            PermissionModel.Companion.createFromSchema(study, it.second)
+                            PermissionModel.createFromSchema(study, it.second)
                     }
                 }
             }

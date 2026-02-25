@@ -28,7 +28,7 @@ import kotlinx.coroutines.withContext
 
 class LeaveStudyViewModel : ViewModel() {
     private var coreSettingsViewModel =
-        CoreSettingsViewModel(MoreApplication.Companion.shared!!)
+        CoreSettingsViewModel(MoreApplication.shared!!)
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 

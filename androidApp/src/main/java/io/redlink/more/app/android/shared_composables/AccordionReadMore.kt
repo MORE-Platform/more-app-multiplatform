@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 
@@ -80,7 +80,7 @@ fun AccordionReadMore(title: String, description: String, modifier: Modifier = M
             if (overflow) {
                 Icon(
                     Icons.Rounded.ExpandMore,
-                    tint = MoreColors.Companion.Primary,
+                    tint = MoreColors.Primary,
                     contentDescription = "View observation modules of the study",
                     modifier = Modifier.rotate(angle)
                 )
@@ -91,7 +91,7 @@ fun AccordionReadMore(title: String, description: String, modifier: Modifier = M
 
         Text(
             text = description,
-            color = MoreColors.Companion.Secondary,
+            color = MoreColors.Secondary,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
             maxLines = if (open.value) Int.MAX_VALUE else 4,
@@ -119,7 +119,7 @@ fun AccordionReadMore(title: String, description: String, modifier: Modifier = M
                     text = if (open.value) getStringResource(id = R.string.more_read_less) else getStringResource(
                         id = R.string.more_read_more
                     ),
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     fontWeight = FontWeight.SemiBold,
                 )
             }

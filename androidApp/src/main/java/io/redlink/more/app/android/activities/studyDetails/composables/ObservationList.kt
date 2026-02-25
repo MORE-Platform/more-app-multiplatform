@@ -66,13 +66,13 @@ fun ObservationList(navController: NavController, observations: List<Observation
                     MediumTitle(text = observation.observationTitle)
                     BasicText(
                         text = observation.observationType,
-                        color = MoreColors.Companion.Secondary
+                        color = MoreColors.Secondary
                     )
                 }
                 Icon(
                     Icons.Default.ArrowForwardIos,
                     contentDescription = "View observation details",
-                    tint = MoreColors.Companion.Primary,
+                    tint = MoreColors.Primary,
                     modifier = Modifier
                         .size(16.dp)
                 )

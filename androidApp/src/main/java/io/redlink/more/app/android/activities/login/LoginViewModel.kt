@@ -12,8 +12,8 @@ package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.models.LoginModel

@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
@@ -54,7 +54,7 @@ fun ConsentView(registrationService: RegistrationService) {
                     text = permissionModel.studyTitle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.padding(8.dp))

@@ -24,7 +24,7 @@ Service to handle push notifications and firebase connections
 class FCMService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         Napier.i("Refreshed token: $token", tag = "FCMService::onNewToken")
-        MoreApplication.Companion.shared!!.notificationManager.newFCMToken(token)
+        MoreApplication.shared!!.notificationManager.newFCMToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -32,8 +32,8 @@ class FCMService : FirebaseMessagingService() {
             Napier.i(tag = "FCMService::onMessageReceived") {
                 message.daoFromRemoteMessage().toString()
             }
-            MoreApplication.Companion.shared!!.notificationManager.storeAndHandleNotification(
-                MoreApplication.Companion.shared!!,
+            MoreApplication.shared!!.notificationManager.storeAndHandleNotification(
+                MoreApplication.shared!!,
                 message.daoFromRemoteMessage(),
                 true
             )

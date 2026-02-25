@@ -62,9 +62,9 @@ fun QuestionnaireCheckboxes(
                     checked = checked,
                     onCheckedChange = null,
                     colors = CheckboxDefaults.colors(
-                        checkedColor = MoreColors.Companion.Primary,
-                        uncheckedColor = MoreColors.Companion.Primary,
-                        disabledColor = MoreColors.Companion.SecondaryMedium
+                        checkedColor = MoreColors.Primary,
+                        uncheckedColor = MoreColors.Primary,
+                        disabledColor = MoreColors.SecondaryMedium
                     ),
                     modifier = Modifier.padding(4.dp)
                 )

@@ -25,10 +25,10 @@ class ScheduleUpdateWorker(context: Context, workerParameters: WorkerParameters)
     private val shared: Shared
 
     init {
-        if (MoreApplication.Companion.shared == null) {
-            MoreApplication.Companion.initShared(applicationContext)
+        if (MoreApplication.shared == null) {
+            MoreApplication.initShared(applicationContext)
         }
-        shared = MoreApplication.Companion.shared!!
+        shared = MoreApplication.shared!!
     }
 
     override suspend fun doWork() = withContext(Dispatchers.IO) {

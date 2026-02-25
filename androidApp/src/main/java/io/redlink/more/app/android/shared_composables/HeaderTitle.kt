@@ -25,7 +25,7 @@ fun HeaderTitle(
     title: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,
-    color: Color = MoreColors.Companion.Primary,
+    color: Color = MoreColors.Primary,
     maxLines: Int = 3,
 ) {
     Text(

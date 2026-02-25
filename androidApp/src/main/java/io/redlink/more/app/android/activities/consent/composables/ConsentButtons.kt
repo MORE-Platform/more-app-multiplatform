@@ -34,8 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.observations.PermissionUtils
@@ -86,8 +86,8 @@ fun ConsentButtons(model: ConsentViewModel) {
                 },
                 colors = ButtonDefaults
                     .buttonColors(
-                        backgroundColor = MoreColors.Companion.Primary,
-                        contentColor = MoreColors.Companion.White
+                        backgroundColor = MoreColors.Primary,
+                        contentColor = MoreColors.White
                     ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,8 +103,8 @@ fun ConsentButtons(model: ConsentViewModel) {
                 },
                 colors = ButtonDefaults
                     .buttonColors(
-                        backgroundColor = MoreColors.Companion.Important,
-                        contentColor = MoreColors.Companion.White
+                        backgroundColor = MoreColors.Important,
+                        contentColor = MoreColors.White
                     ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,7 +121,7 @@ fun ConsentButtons(model: ConsentViewModel) {
         ) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
-                color = MoreColors.Companion.Primary
+                color = MoreColors.Primary
             )
         }
     }
@@ -134,7 +134,7 @@ fun checkAndRequestPermissions(
     extraPermissions: Set<String> = emptySet()
 ) {
     val permissions =
-        MoreApplication.Companion.shared!!.observationFactory.studySensorPermissions()
+        MoreApplication.shared!!.observationFactory.studySensorPermissions()
             .toMutableSet()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -144,7 +144,7 @@ fun checkAndRequestPermissions(
     permissions.addAll(extraPermissions)
 
     permissions.addAll(
-        MoreApplication.Companion.shared?.observationFactory?.studySensorPermissions()
+        MoreApplication.shared?.observationFactory?.studySensorPermissions()
             ?: emptySet()
     )
 

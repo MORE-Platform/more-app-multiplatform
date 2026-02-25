@@ -41,7 +41,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.web.WebClient
 import io.redlink.more.app.android.extensions.getStringResource
@@ -133,7 +133,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
         maxWidth = 1f,
         leftCornerContent = {
             if (viewModel.networkLoading.value) {
-                CircularProgressIndicator(color = MoreColors.Companion.Primary, strokeWidth = 2.dp)
+                CircularProgressIndicator(color = MoreColors.Primary, strokeWidth = 2.dp)
             }
         },
         rightCornerContent = {

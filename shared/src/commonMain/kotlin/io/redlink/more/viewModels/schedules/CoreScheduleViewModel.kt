@@ -59,7 +59,7 @@ class CoreScheduleViewModel(
             CoroutineScope(parentJob)
         ) {
             it.mapValues { entry ->
-                entry.value.filter { it != Observation.Companion.ERROR_DEVICE_NOT_CONNECTED }
+                entry.value.filter { it != Observation.ERROR_DEVICE_NOT_CONNECTED }
                     .toSet()
             }
         }
@@ -144,7 +144,7 @@ class CoreScheduleViewModel(
 
     private fun createModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
         return scheduleList
-            .mapNotNull { ScheduleModel.Companion.createModel(it) }
+            .mapNotNull { ScheduleModel.createModel(it) }
     }
 
     private fun createCompletedModels(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {

@@ -26,7 +26,7 @@ class ObservationDetailsViewModel(
 
     private val coreViewModel: CoreObservationDetailsViewModel =
         CoreObservationDetailsViewModel(
-            MoreApplication.Companion.shared!!.repositories,
+            MoreApplication.shared!!.repositories,
             observationId
         )
     val observationDetailsModel = mutableStateOf(

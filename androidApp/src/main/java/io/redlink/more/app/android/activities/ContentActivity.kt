@@ -18,8 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import io.github.aakira.napier.Napier
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
@@ -54,7 +54,7 @@ class ContentActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             combine(
-                MoreApplication.Companion.shared!!.credentialRepository.hasCredentials,
+                MoreApplication.shared!!.credentialRepository.hasCredentials,
                 viewModel.registrationService.isLoading
             ) { hasCredentials, isLoading ->
                 hasCredentials && !isLoading
@@ -79,8 +79,8 @@ class ContentActivity : ComponentActivity() {
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
     val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
-    val hasCredentials by MoreApplication.Companion.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
-    val credentialsLoaded by MoreApplication.Companion.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
+    val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
+    val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
     val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
 
     MoreBackground(showBackButton = false) {

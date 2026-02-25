@@ -28,7 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
@@ -57,7 +57,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 if (item.value)
                     IconInline(
                         icon = Icons.Rounded.Done,
-                        color = MoreColors.Companion.Approved,
+                        color = MoreColors.Approved,
                         contentDescription = getStringResource(id = R.string.more_filter_selected)
                     )
                 Box(
@@ -73,7 +73,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                     HeaderDescription(
                         description = viewModel.dateFilters[item.key]
                             ?: getStringResource(id = R.string.more_filter_all),
-                        color = if (item.value) MoreColors.Companion.Primary else MoreColors.Companion.Secondary
+                        color = if (item.value) MoreColors.Primary else MoreColors.Secondary
                     )
                 }
             }
@@ -95,7 +95,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 if (!viewModel.typeFilterActive.value)
                     IconInline(
                         icon = Icons.Rounded.Done,
-                        color = MoreColors.Companion.Approved,
+                        color = MoreColors.Approved,
                         contentDescription = getStringResource(id = R.string.more_filter_selected)
                     )
                 Box(
@@ -110,7 +110,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 ) {
                     HeaderDescription(
                         description = stringResource(R.string.more_filter_all),
-                        color = if (!viewModel.typeFilterActive.value) MoreColors.Companion.Primary else MoreColors.Companion.Secondary
+                        color = if (!viewModel.typeFilterActive.value) MoreColors.Primary else MoreColors.Secondary
                     )
                 }
             }
@@ -126,7 +126,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 )
                     IconInline(
                         icon = Icons.Rounded.Done,
-                        color = MoreColors.Companion.Approved,
+                        color = MoreColors.Approved,
                         contentDescription = getStringResource(id = R.string.more_filter_selected)
                     )
                 Box(
@@ -141,7 +141,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 ) {
                     HeaderDescription(
                         description = item.key,
-                        color = if (item.value) MoreColors.Companion.Primary else MoreColors.Companion.Secondary
+                        color = if (item.value) MoreColors.Primary else MoreColors.Secondary
                     )
                 }
             }

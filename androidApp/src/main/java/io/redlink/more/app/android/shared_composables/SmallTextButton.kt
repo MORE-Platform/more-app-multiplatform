@@ -29,7 +29,7 @@ import io.redlink.more.app.android.theme.morePrimary
 fun SmallTextButton(
     text: String,
     enabled: Boolean = true,
-    borderStroke: BorderStroke = MoreColors.Companion.borderPrimary(enabled),
+    borderStroke: BorderStroke = MoreColors.borderPrimary(enabled),
     buttonColors: ButtonColors = ButtonDefaults.morePrimary(),
     fontSize: TextUnit = TextUnit.Unspecified,
     modifier: Modifier = Modifier

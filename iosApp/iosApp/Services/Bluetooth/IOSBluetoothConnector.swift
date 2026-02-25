@@ -168,16 +168,20 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
 
     private func connectToSpecificDevice(device: BluetoothDeviceEntity) -> (Bool, KotlinError?) {
-        if let connector = specificBluetoothConnectors
-            .first(where: { device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false })?.value as? BluetoothConnector {
+        if let connector =
+            specificBluetoothConnectors
+            .first(where: { device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false })?.value as? BluetoothConnector
+        {
             return (true, connector.connect(device: device))
         }
         return (false, nil)
     }
 
     private func disconnectFromSpecificDevice(device: BluetoothDeviceEntity) -> Bool {
-        if let connector = specificBluetoothConnectors
-            .first(where: { device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false })?.value as? BluetoothConnector {
+        if let connector =
+            specificBluetoothConnectors
+            .first(where: { device.deviceName?.lowercased().contains(($0.key as? String)?.lowercased() ?? "") ?? false })?.value as? BluetoothConnector
+        {
             connector.disconnect(device: device)
             return true
         }
@@ -250,7 +254,7 @@ extension IOSBluetoothConnector: CBPeripheralDelegate {
 
 extension CBPeripheral {
     func toBluetoothDevice() -> BluetoothDeviceEntity {
-        BluetoothDeviceEntity.Companion().create(
+        BluetoothDeviceEntity().create(
             deviceId: identifier.uuidString,
             deviceName: name ?? "Unknown",
             address: identifier.uuidString

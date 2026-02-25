@@ -19,7 +19,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
@@ -31,7 +31,7 @@ fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier =
         Icon(
             Icons.Default.CalendarMonth,
             contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
-            tint = MoreColors.Companion.Primary,
+            tint = MoreColors.Primary,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
@@ -44,7 +44,7 @@ fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier =
                     start
                 }
             },
-            color = MoreColors.Companion.Secondary
+            color = MoreColors.Secondary
         )
     }
 }

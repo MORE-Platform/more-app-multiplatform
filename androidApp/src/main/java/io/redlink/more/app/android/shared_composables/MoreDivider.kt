@@ -22,7 +22,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun MoreDivider(
     modifier: Modifier = Modifier,
     thickness: Dp = 1.dp,
-    color: Color = MoreColors.Companion.Divider
+    color: Color = MoreColors.Divider
 ) {
     Divider(modifier = modifier, thickness = thickness, color = color)
 }

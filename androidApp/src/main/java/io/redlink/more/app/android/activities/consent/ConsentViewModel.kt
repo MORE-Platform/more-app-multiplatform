@@ -12,9 +12,9 @@ package io.redlink.more.app.android.activities.consent
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.AlertDialogModel
@@ -41,7 +41,7 @@ class ConsentViewModel(
                 confirmLabel = stringResource(R.string.proceed_to_settings_button),
                 cancelLabel = stringResource(R.string.proceed_without_granting_button),
                 onConfirm = {
-                    MoreApplication.Companion.openSettings.value = true
+                    MoreApplication.openSettings.value = true
                 },
                 onDecline = {
                     acceptConsent(context)
@@ -57,7 +57,7 @@ class ConsentViewModel(
                 confirmLabel = stringResource(R.string.proceed_to_settings_button),
                 cancelLabel = stringResource(R.string.proceed_without_granting_button),
                 onConfirm = {
-                    MoreApplication.Companion.openSettings.value = true
+                    MoreApplication.openSettings.value = true
                 },
                 onDecline = {
                     acceptConsent(context)

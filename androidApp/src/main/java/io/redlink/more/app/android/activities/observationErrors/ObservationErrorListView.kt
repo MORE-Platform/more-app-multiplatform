@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.extensions.getStringResource
@@ -52,13 +52,13 @@ fun ObservationErrorListView(
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "Error",
-                        tint = MoreColors.Companion.Important,
+                        tint = MoreColors.Important,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                     BasicText(
                         text = "${getStringResourceByName(error)}!",
                         fontSize = 16.sp,
-                        color = MoreColors.Companion.Important
+                        color = MoreColors.Important
                     )
                 }
             }
@@ -69,7 +69,7 @@ fun ObservationErrorListView(
                             text = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
                             imageText = getStringResource(id = R.string.more_ble_icon_description),
                             image = Icons.Default.Watch,
-                            imageTint = MoreColors.Companion.White
+                            imageTint = MoreColors.White
                         ) {
                             (context as? Activity)?.let {
                                 showNewActivity(it, BLEConnectionActivity::class.java)

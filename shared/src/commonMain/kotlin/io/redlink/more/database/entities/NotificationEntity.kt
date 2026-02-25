@@ -134,6 +134,6 @@ data class NotificationEntity(
             notifications.map { toEntity(it) }
 
         private fun extractDeepLink(data: Map<String, String>) =
-            data[NotificationManager.Companion.DEEP_LINK]
+            data[NotificationManager.DEEP_LINK]
     }
 }

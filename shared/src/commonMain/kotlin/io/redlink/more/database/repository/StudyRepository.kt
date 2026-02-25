@@ -38,7 +38,7 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     @NativeCoroutines
     val studyState: StateFlow<StudyState> =
         study.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)) {
-            it?.let { StudyState.Companion.getState(it.state) } ?: StudyState.NONE
+            it?.let { StudyState.getState(it.state) } ?: StudyState.NONE
         }
     private val _finishText = MutableStateFlow<String?>(null)
 
@@ -61,21 +61,21 @@ class StudyRepository(private val appDatabase: AppDatabase) {
     suspend fun upsert(study: Study) {
         deleteStudy()
         Scope.launch(Dispatchers.IO) {
-            val studyEntity = StudyEntity.Companion.fromStudy(study)
+            val studyEntity = StudyEntity.fromStudy(study)
             appDatabase.studyDao().insert(studyEntity)
             _finishText.value = study.finishText
         }
 
         Scope.launch(Dispatchers.IO) {
             val observationEntities =
-                study.observations.map { ObservationEntity.Companion.toEntity(it) }
+                study.observations.map { ObservationEntity.toEntity(it) }
             appDatabase.observationDao().insertAll(observationEntities)
         }
 
         Scope.launch(Dispatchers.IO) {
             val scheduleEntities = study.observations.flatMap { observation ->
                 observation.schedule.mapNotNull {
-                    ScheduleEntity.Companion.fromObservationSchedule(
+                    ScheduleEntity.fromObservationSchedule(
                         it,
                         observation.observationId,
                         observation.observationType,

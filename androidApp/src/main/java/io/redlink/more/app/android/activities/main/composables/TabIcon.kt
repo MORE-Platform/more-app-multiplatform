@@ -37,8 +37,8 @@ fun TabItem(
     selected: Boolean,
     badgeCount: Int = 0
 ) {
-    val selectedColor = MoreColors.Companion.PrimaryDark
-    val unselectedColor = MoreColors.Companion.Primary
+    val selectedColor = MoreColors.PrimaryDark
+    val unselectedColor = MoreColors.Primary
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -50,7 +50,7 @@ fun TabItem(
             Icon(
                 icon,
                 contentDescription = iconDescription,
-                tint = MoreColors.Companion.White
+                tint = MoreColors.White
             )
             if (badgeCount > 0) {
                 Badge(
@@ -66,7 +66,7 @@ fun TabItem(
 
         Text(
             text = text,
-            color = MoreColors.Companion.White
+            color = MoreColors.White
         )
     }
 }

@@ -50,7 +50,7 @@ class CoreNotificationViewModel(
                 .cancellable()
                 .collect {
                     originalNotificationList.clear()
-                    originalNotificationList.addAll(NotificationModel.Companion.createModelsFrom(it))
+                    originalNotificationList.addAll(NotificationModel.createModelsFrom(it))
                     if (originalNotificationList.isNotEmpty() && coreFilterModel.filterActive()) {
                         _notificationList.set(coreFilterModel.applyFilter(originalNotificationList))
                     } else {

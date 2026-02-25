@@ -22,7 +22,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun BasicText(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = MoreColors.Companion.Primary,
+    color: Color = MoreColors.Primary,
     textAlign: TextAlign? = null,
     fontSize: TextUnit = TextUnit.Unspecified,
 ) {

@@ -14,6 +14,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Url
+import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.openapi.model.AppConfiguration
@@ -25,7 +26,6 @@ import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
 import io.redlink.more.services.store.CredentialRepository
 import io.redlink.more.services.store.EndpointRepository
-import io.redlink.umm.blendedcare.app.android.services.network.errors.NetworkServiceError
 
 private const val TAG = "NetworkService"
 

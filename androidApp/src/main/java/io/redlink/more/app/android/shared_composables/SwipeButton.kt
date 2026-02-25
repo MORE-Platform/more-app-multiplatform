@@ -65,7 +65,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SwipeIndicator(
     modifier: Modifier = Modifier,
-    color: Color = MoreColors.Companion.Important,
+    color: Color = MoreColors.Important,
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -89,11 +89,11 @@ fun SwipeButton(
     isComplete: Boolean,
     doneImageVector: ImageVector = Icons.Rounded.Done,
     modifier: Modifier = Modifier,
-    borderStroke: BorderStroke = MoreColors.Companion.borderImportant(),
-    backgroundColor: Color = MoreColors.Companion.ImportantMedium,
-    swipeBtnColor: Color = MoreColors.Companion.Important,
-    textColor: Color = MoreColors.Companion.Important,
-    iconColor: Color = MoreColors.Companion.White,
+    borderStroke: BorderStroke = MoreColors.borderImportant(),
+    backgroundColor: Color = MoreColors.ImportantMedium,
+    swipeBtnColor: Color = MoreColors.Important,
+    textColor: Color = MoreColors.Important,
+    iconColor: Color = MoreColors.White,
     onSwipeComplete: () -> Unit,
 ) {
     val width = 220.dp

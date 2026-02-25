@@ -6,6 +6,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
 import io.redlink.more.Shared
+import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.getPlatform
 import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
@@ -14,7 +15,6 @@ import io.redlink.more.services.network.openapi.model.ObservationConsent
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
 import io.redlink.more.services.store.EndpointRepository
-import io.redlink.umm.blendedcare.app.android.services.network.errors.NetworkServiceError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow

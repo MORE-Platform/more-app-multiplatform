@@ -8,6 +8,6 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.umm.blendedcare.app.android.services.network.errors
+package io.redlink.more.app.android.services.network.errors
 
 data class NetworkServiceError(val code: Int?, val message: String)

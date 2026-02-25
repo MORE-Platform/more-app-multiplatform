@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.ScheduleState
@@ -42,7 +42,7 @@ fun DatapointCollectionView(datapoints: Long, scheduleState: ScheduleState?) {
     ) {
         if (scheduleState == ScheduleState.RUNNING) {
             CircularProgressIndicator(
-                color = MoreColors.Companion.Approved,
+                color = MoreColors.Approved,
                 modifier = Modifier
                     .height(50.dp)
                     .width(50.dp)
@@ -57,7 +57,7 @@ fun DatapointCollectionView(datapoints: Long, scheduleState: ScheduleState?) {
                 text = datapoints.toString(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = MoreColors.Companion.Secondary
+                color = MoreColors.Secondary
             )
         }
     }

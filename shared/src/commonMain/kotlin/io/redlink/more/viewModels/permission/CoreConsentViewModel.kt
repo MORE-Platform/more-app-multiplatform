@@ -24,6 +24,6 @@ class CoreConsentViewModel(
     @NativeCoroutines
     val permissions: StateFlow<PermissionModel?> =
         registrationService.study.mapState(viewModelScope, null) { study ->
-            study?.let { PermissionModel.Companion.create(it, studyConsentTitle) }
+            study?.let { PermissionModel.create(it, studyConsentTitle) }
         }
 }

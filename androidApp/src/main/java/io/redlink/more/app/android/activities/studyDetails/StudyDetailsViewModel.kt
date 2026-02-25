@@ -15,5 +15,5 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.viewModels.studydetails.CoreStudyDetailsViewModel
 
 class StudyDetailsViewModel : ViewModel() {
-    val coreViewModel = CoreStudyDetailsViewModel(MoreApplication.Companion.shared!!)
+    val coreViewModel = CoreStudyDetailsViewModel(MoreApplication.shared!!)
 }

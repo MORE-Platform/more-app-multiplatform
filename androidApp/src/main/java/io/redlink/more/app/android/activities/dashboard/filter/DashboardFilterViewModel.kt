@@ -14,7 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formatDateFilterString
 import io.redlink.more.app.android.extensions.getQuantityString
 import io.redlink.more.app.android.extensions.stringResource

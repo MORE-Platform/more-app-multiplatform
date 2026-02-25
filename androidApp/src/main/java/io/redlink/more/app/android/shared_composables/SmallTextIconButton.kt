@@ -32,7 +32,7 @@ fun SmallTextIconButton(
     imageTint: Color,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    borderStroke: BorderStroke = MoreColors.Companion.borderPrimary(enabled),
+    borderStroke: BorderStroke = MoreColors.borderPrimary(enabled),
     buttonColors: ButtonColors = ButtonDefaults.morePrimary(),
     onClick: (() -> Unit)
 ) {

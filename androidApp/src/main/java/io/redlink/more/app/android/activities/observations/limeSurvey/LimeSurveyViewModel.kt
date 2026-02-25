@@ -29,8 +29,8 @@ import java.net.URL
 class LimeSurveyViewModel(scheduleId: String?, notificationId: String?, observationId: String?) :
     ViewModel(), WebClientListener {
     val coreViewModel = CoreLimeSurveyViewModel(
-        MoreApplication.Companion.shared!!.repositories,
-        MoreApplication.Companion.shared!!.observationFactory,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.observationFactory,
         scheduleId,
         notificationId,
         observationId

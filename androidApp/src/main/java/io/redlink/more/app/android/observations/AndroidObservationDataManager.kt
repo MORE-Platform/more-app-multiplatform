@@ -64,11 +64,11 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
                         setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     }
                 }
-                .addTag(DataUploadWorker.Companion.WORKER_TAG)
+                .addTag(DataUploadWorker.WORKER_TAG)
                 .build()
 
             workManager.enqueueUniqueWork(
-                DataUploadWorker.Companion.WORKER_TAG,
+                DataUploadWorker.WORKER_TAG,
                 ExistingWorkPolicy.KEEP,
                 request
             )
@@ -100,7 +100,7 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
         maxAttempts: Int = 3,
         baseDelayMs: Long = 1_000L
     ): Boolean = withContext(Dispatchers.IO) {
-        val networkService = MoreApplication.Companion.shared?.networkService
+        val networkService = MoreApplication.shared?.networkService
         if (networkService == null) {
             Napier.e(tag = "AndroidObservationDataManager::directUploadFallback") {
                 "NetworkService not available"

@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource

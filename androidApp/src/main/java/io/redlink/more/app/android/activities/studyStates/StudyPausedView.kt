@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.subcomponents.ExitButton
 import io.redlink.more.app.android.activities.subcomponents.ReloadButton
 import io.redlink.more.app.android.extensions.getStringResource

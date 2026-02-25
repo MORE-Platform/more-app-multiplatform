@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.shared_composables.Title
@@ -43,7 +43,7 @@ fun StudyLoadingView() {
                 textAlign = TextAlign.Center
             )
             CircularProgressIndicator(
-                color = MoreColors.Companion.Primary,
+                color = MoreColors.Primary,
                 strokeWidth = 2.dp,
                 modifier = Modifier
                     .width(progressSize)

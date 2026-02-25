@@ -24,7 +24,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun SmallTitle(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = MoreColors.Companion.Primary,
+    color: Color = MoreColors.Primary,
     textAlign: TextAlign? = null,
     fontSize: TextUnit = 16.sp,
     maxLines: Int = Int.MAX_VALUE

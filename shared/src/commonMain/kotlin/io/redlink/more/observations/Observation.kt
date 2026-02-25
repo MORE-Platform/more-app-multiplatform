@@ -174,7 +174,7 @@ abstract class Observation(
     open fun ableToAutomaticallyStart() = true
 
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
-        val dataSchemas = ObservationDataEntity.Companion.fromData(
+        val dataSchemas = ObservationDataEntity.fromData(
             observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
         ).map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
@@ -183,7 +183,7 @@ abstract class Observation(
     }
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
-        val dataSchemas = ObservationDataEntity.Companion.fromData(observationIds.toSet(), data)
+        val dataSchemas = ObservationDataEntity.fromData(observationIds.toSet(), data)
             .map { observationType.addObservationType(it) }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
@@ -264,7 +264,7 @@ abstract class Observation(
     }
 
     protected fun showNotification(title: String, notificationBody: String) {
-        val notification = NotificationEntity.Companion.build(title, notificationBody)
+        val notification = NotificationEntity.build(title, notificationBody)
         Napier.d(tag = "Observation::showNotification") { "Showing notification: $notification" }
         notificationManager?.storeAndDisplayNotification(notification, true)
     }

@@ -23,7 +23,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import io.github.aakira.napier.Napier
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
 import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromMilliseconds
@@ -59,7 +59,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                     val intent = Intent(context, ContentActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         action =
-                            NotificationBroadcastReceiver.Companion.NOTIFICATION_SET_ON_READ_ACTION
+                            NotificationBroadcastReceiver.NOTIFICATION_SET_ON_READ_ACTION
                         putExtra(MSG_ID, notification.notificationId)
                         notification.deepLink()?.let { data = Uri.parse(it) }
                     }
@@ -175,16 +175,16 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
         return notification.title?.let { title ->
             notification.notificationBody?.let { body ->
                 Intent(context, NotificationBroadcastReceiver::class.java).apply {
-                    action = NotificationBroadcastReceiver.Companion.SCHEDULED_NOTIFICATION_ACTION
+                    action = NotificationBroadcastReceiver.SCHEDULED_NOTIFICATION_ACTION
                     putExtra(
-                        NotificationBroadcastReceiver.Companion.EXTRA_NOTIFICATION_ID,
+                        NotificationBroadcastReceiver.EXTRA_NOTIFICATION_ID,
                         notification.notificationId
                     )
-                    putExtra(NotificationBroadcastReceiver.Companion.EXTRA_CHANNEL_ID, channelId)
-                    putExtra(NotificationBroadcastReceiver.Companion.EXTRA_TITLE, title)
-                    putExtra(NotificationBroadcastReceiver.Companion.EXTRA_MESSAGE, body)
+                    putExtra(NotificationBroadcastReceiver.EXTRA_CHANNEL_ID, channelId)
+                    putExtra(NotificationBroadcastReceiver.EXTRA_TITLE, title)
+                    putExtra(NotificationBroadcastReceiver.EXTRA_MESSAGE, body)
                     putExtra(
-                        NotificationBroadcastReceiver.Companion.EXTRA_DEEP_LINK,
+                        NotificationBroadcastReceiver.EXTRA_DEEP_LINK,
                         notification.deepLink()
                     )
                 }

@@ -61,12 +61,12 @@ fun MoreBackground(
 ) {
     val context = LocalContext.current
     val alertDialogModel by AlertController.alertDialogModel.collectAsStateWithLifecycle(null)
-    if (MoreApplication.Companion.openSettings.value) {
+    if (MoreApplication.openSettings.value) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
         }
         context.startActivity(intent)
-        MoreApplication.Companion.openSettings.value = false
+        MoreApplication.openSettings.value = false
     }
     MorePlatformTheme {
         Scaffold(
@@ -93,7 +93,7 @@ fun MoreBackground(
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize(),
-                color = MoreColors.Companion.PrimaryLight
+                color = MoreColors.PrimaryLight
             ) {
                 Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -174,7 +174,7 @@ fun MoreTopAppBar(
 
 @Composable
 fun MoreBottomAppBar(selectedIndex: Int, unreadNotificationCount: Int, onTabChange: (Int) -> Unit) {
-    BottomAppBar(elevation = 2.dp, backgroundColor = MoreColors.Companion.PrimaryDark) {
+    BottomAppBar(elevation = 2.dp, backgroundColor = MoreColors.PrimaryDark) {
         MainTabView(selectedIndex, unreadNotificationCount, onTabChange)
     }
 }

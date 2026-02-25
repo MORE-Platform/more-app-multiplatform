@@ -52,7 +52,7 @@ class QuestionCoreViewModel(
                         repository.observation.observationById(scheduleSchema.observationId)
                             .cancellable().firstOrNull()?.let { observationSchema ->
                                 _questionModel.update {
-                                    QuestionModel.Companion.createModelFrom(
+                                    QuestionModel.createModelFrom(
                                         observationSchema,
                                         scheduleId
                                     )

@@ -51,7 +51,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
@@ -98,13 +98,13 @@ fun EndpointView(
                     text = getStringResource(id = R.string.more_endpoint_label),
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
-                    color = MoreColors.Companion.Primary
+                    color = MoreColors.Primary
                 )
                 IconButton(onClick = { isOpen = !isOpen }) {
                     Icon(
                         Icons.Rounded.ExpandMore,
                         getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                        tint = MoreColors.Companion.Primary,
+                        tint = MoreColors.Primary,
                         modifier = Modifier
                             .rotate(angle)
                     )
@@ -137,7 +137,7 @@ fun EndpointInput(
         textStyle = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Center),
         trailingIcon = {
             if (model.isEndpointError()) {
-                Icon(Icons.Filled.Error, "URL Error", tint = MoreColors.Companion.Important)
+                Icon(Icons.Filled.Error, "URL Error", tint = MoreColors.Important)
             }
         },
         placeholder = {
@@ -155,17 +155,17 @@ fun EndpointInput(
         isError = model.isEndpointError(),
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MoreColors.Companion.Secondary,
-            focusedLabelColor = MoreColors.Companion.Secondary,
-            backgroundColor = MoreColors.Companion.PrimaryLight,
-            unfocusedLabelColor = MoreColors.Companion.Secondary,
-            errorLabelColor = MoreColors.Companion.Important,
-            cursorColor = MoreColors.Companion.Primary,
-            errorBorderColor = MoreColors.Companion.Important,
-            errorCursorColor = MoreColors.Companion.Important,
-            errorLeadingIconColor = MoreColors.Companion.Important,
-            errorTrailingIconColor = MoreColors.Companion.Important,
-            placeholderColor = MoreColors.Companion.TextInactive
+            textColor = MoreColors.Secondary,
+            focusedLabelColor = MoreColors.Secondary,
+            backgroundColor = MoreColors.PrimaryLight,
+            unfocusedLabelColor = MoreColors.Secondary,
+            errorLabelColor = MoreColors.Important,
+            cursorColor = MoreColors.Primary,
+            errorBorderColor = MoreColors.Important,
+            errorCursorColor = MoreColors.Important,
+            errorLeadingIconColor = MoreColors.Important,
+            errorTrailingIconColor = MoreColors.Important,
+            placeholderColor = MoreColors.TextInactive
         ),
         modifier = Modifier
             .focusRequester(focusRequester)

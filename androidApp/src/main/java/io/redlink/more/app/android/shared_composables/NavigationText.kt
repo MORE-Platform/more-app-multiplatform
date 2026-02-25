@@ -20,7 +20,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun NavigationText(text: String) {
     Text(
         text = text,
-        color = MoreColors.Companion.Secondary,
+        color = MoreColors.Secondary,
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold
     )

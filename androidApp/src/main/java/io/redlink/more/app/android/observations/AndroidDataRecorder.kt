@@ -17,31 +17,31 @@ import io.redlink.more.observations.DataRecorder
 class AndroidDataRecorder : DataRecorder {
     override fun start(scheduleId: String) {
         Napier.i { "Starting scheduleId: $scheduleId" }
-        ObservationRecordingService.Companion.start(setOf(scheduleId))
+        ObservationRecordingService.start(setOf(scheduleId))
     }
 
     override fun startMultiple(scheduleIds: Set<String>) {
         Napier.i { "Starting schedule Ids: $scheduleIds" }
-        ObservationRecordingService.Companion.start(scheduleIds)
+        ObservationRecordingService.start(scheduleIds)
     }
 
     override fun pause(scheduleId: String) {
         Napier.i { "Pause schedule Id: $scheduleId" }
-        ObservationRecordingService.Companion.pause(scheduleId)
+        ObservationRecordingService.pause(scheduleId)
     }
 
     override fun stop(scheduleId: String) {
         Napier.i { "Stopping schedule Id: $scheduleId" }
-        ObservationRecordingService.Companion.stop(scheduleId)
+        ObservationRecordingService.stop(scheduleId)
     }
 
     override fun stopAll() {
         Napier.i { "Stopping all Schedules!" }
-        ObservationRecordingService.Companion.stopAll()
+        ObservationRecordingService.stopAll()
     }
 
     override fun restartAll() {
         Napier.i { "Restarting all schedules!" }
-        ObservationRecordingService.Companion.restartAll()
+        ObservationRecordingService.restartAll()
     }
 }

@@ -88,7 +88,7 @@ class NotificationManager(
     ) {
         storeAndHandleNotification(
             shared,
-            NotificationEntity.Companion.toEntity(
+            NotificationEntity.toEntity(
                 notificationId = key,
                 channelId = null,
                 title = title,
@@ -144,7 +144,7 @@ class NotificationManager(
 
     suspend fun downloadMissedNotifications() {
         Napier.d { "Updating notifications" }
-        storeNotifications(NotificationEntity.Companion.toEntityList(networkService.downloadMissedNotifications()))
+        storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
     }
 
     fun deleteNotificationFromRepository(notificationId: String) {
@@ -200,8 +200,8 @@ class NotificationManager(
         notificationId: String,
         deeplink: String? = null
     ) {
-        if (deeplink == null || deeplink.contains(DeeplinkManager.Companion.TASK_DETAILS) || deeplink.contains(
-                DeeplinkManager.Companion.OBSERVATION_DETAILS
+        if (deeplink == null || deeplink.contains(DeeplinkManager.TASK_DETAILS) || deeplink.contains(
+                DeeplinkManager.OBSERVATION_DETAILS
             )
         ) {
             markNotificationAsRead(notificationId)
@@ -232,8 +232,8 @@ class NotificationManager(
 
                 deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
                     .firstOrNull()?.let { modifiedDeepLink ->
-                        if (modifiedDeepLink.contains(DeeplinkManager.Companion.TASK_DETAILS) || modifiedDeepLink.contains(
-                                DeeplinkManager.Companion.OBSERVATION_DETAILS
+                        if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
+                                DeeplinkManager.OBSERVATION_DETAILS
                             )
                         ) {
                             withContext(Dispatchers.Main) {
@@ -350,9 +350,9 @@ class NotificationManager(
 
     private suspend fun updateStudy(shared: Shared, data: Map<String, String>) {
         val oldStudyState =
-            data[STUDY_OLD_STATE]?.let { StudyState.Companion.getState(it) }
+            data[STUDY_OLD_STATE]?.let { StudyState.getState(it) }
         val newStudyState =
-            data[STUDY_NEW_STATE]?.let { StudyState.Companion.getState(it) }
+            data[STUDY_NEW_STATE]?.let { StudyState.getState(it) }
         shared.updateStudy(oldStudyState, newStudyState)
     }
 

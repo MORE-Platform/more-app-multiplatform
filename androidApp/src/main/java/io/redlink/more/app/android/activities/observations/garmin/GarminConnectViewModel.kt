@@ -12,8 +12,8 @@ import kotlinx.coroutines.runBlocking
 
 class GarminConnectViewModel : WebClientListener {
     val coreViewModel = CoreGarminConnectViewModel(
-        MoreApplication.Companion.shared!!.networkService,
-        MoreApplication.Companion.shared!!.sharedStorageRepository
+        MoreApplication.shared!!.networkService,
+        MoreApplication.shared!!.sharedStorageRepository
     )
 
     private var allowedHost: String? = coreViewModel.garminSSOUrl()?.host

@@ -32,7 +32,7 @@ data class StudyEntity(
     val finishText: String? = null
 ) {
     @Ignore
-    fun getState() = StudyState.Companion.getState(state)
+    fun getState() = StudyState.getState(state)
 
     @Ignore
     fun startInstant() = start?.let { Instant.fromEpochSeconds(it) }

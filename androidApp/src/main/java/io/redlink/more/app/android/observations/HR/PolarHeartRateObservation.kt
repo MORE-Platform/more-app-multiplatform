@@ -17,8 +17,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
@@ -64,7 +64,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
     ) {
     private val bleManager = BluetoothStateManagement
     private val deviceIdentifier = setOf("Polar")
-    private val polarConnector = MoreApplication.Companion.polarConnector!!
+    private val polarConnector = MoreApplication.polarConnector!!
     private var heartRateDisposable: Disposable? = null
     private var deviceConnectionListener: Job? = null
 
@@ -75,9 +75,9 @@ class PolarHeartRateObservation(repos: MainRepository) :
             polarController.hrFeatureChange.collect { (studyActive, hrReady) ->
                 if (studyActive) {
                     if (hrReady) {
-                        MoreApplication.Companion.shared!!.observationManager.updateTaskStates()
+                        MoreApplication.shared!!.observationManager.updateTaskStates()
                     } else {
-                        Companion.pauseObservation(
+                        pauseObservation(
                             super.observationType
                         )
                     }
@@ -147,7 +147,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
 
     override fun observerErrors(): Set<String> {
         val errors = mutableSetOf<String>()
-        if (!hasPermissions(MoreApplication.Companion.appContext!!)) {
+        if (!hasPermissions(MoreApplication.appContext!!)) {
             errors.add("error_access_bluetooth")
             showPermissionAlertDialog()
             PolarStates.hrFeatureReady(false)
@@ -156,7 +156,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
             errors.add("bluetooth_disabled")
             PolarStates.hrFeatureReady(false)
         }
-        if (!MoreApplication.Companion.shared!!.bluetoothController.observerDeviceAccessible(
+        if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(
                 deviceIdentifier
             )
         ) {
@@ -201,7 +201,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
                 if (!deviceIdentifier.anyNameIn(devices)) {
                     pauseObservation(PolarVerityHeartRateType(emptySet()))
                     PolarStates.hrFeatureReady(false)
-                    Napier.d(tag = "PolarHeartRateObservation::Companion::listenToDeviceConnection") { "HR Feature removed!" }
+                    Napier.d(tag = "PolarHeartRateObservation:::listenToDeviceConnection") { "HR Feature removed!" }
                 }
             }
         }.second

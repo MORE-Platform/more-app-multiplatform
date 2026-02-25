@@ -33,7 +33,7 @@ fun ErrorMessage(hasError: Boolean, errorMsg: String) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = errorMsg,
-                color = MoreColors.Companion.Important,
+                color = MoreColors.Important,
                 textAlign = TextAlign.Center
             )
         }

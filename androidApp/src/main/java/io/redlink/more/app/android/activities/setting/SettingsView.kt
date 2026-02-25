@@ -22,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
@@ -46,7 +46,7 @@ fun SettingsView() {
             item {
                 BasicText(
                     text = getStringResource(id = R.string.more_settings_permission_information),
-                    color = MoreColors.Companion.TextDefault,
+                    color = MoreColors.TextDefault,
                 )
 
                 Spacer(Modifier.height(24.dp))

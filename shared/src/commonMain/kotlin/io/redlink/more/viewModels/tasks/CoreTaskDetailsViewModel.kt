@@ -47,7 +47,7 @@ class CoreTaskDetailsViewModel(
                     repository.observation.observationById(schedule.observationId).cancellable()
                         .firstOrNull()?.let {
                             _taskDetailsModel.emit(
-                                TaskDetailsModel.Companion.createModelFrom(
+                                TaskDetailsModel.createModelFrom(
                                     it,
                                     schedule
                                 )
@@ -71,7 +71,7 @@ class CoreTaskDetailsViewModel(
                         _taskObservationErrors.value = emptyList()
                         _taskObservationErrorActions.value = emptyList()
                         observationErrors.value[taskDetails.observationType]?.let { errors ->
-                            val (actions, messages) = errors.partition { it == Observation.Companion.ERROR_DEVICE_NOT_CONNECTED }
+                            val (actions, messages) = errors.partition { it == Observation.ERROR_DEVICE_NOT_CONNECTED }
                             _taskObservationErrors.value = messages.toList()
                             _taskObservationErrorActions.value = actions.toList()
                         }

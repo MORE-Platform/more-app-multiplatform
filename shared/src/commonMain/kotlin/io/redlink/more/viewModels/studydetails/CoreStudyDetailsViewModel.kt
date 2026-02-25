@@ -37,7 +37,7 @@ class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
                     val taskCount: Int =
                         shared.repositories.schedule.count().cancellable().firstOrNull() ?: 0
                     study?.let {
-                        StudyDetailsModel.Companion.createModelFrom(
+                        StudyDetailsModel.createModelFrom(
                             it,
                             observations.sortedBy { obs -> obs.observationTitle },
                             taskCount.toLong(),

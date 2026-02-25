@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -71,7 +71,7 @@ fun StudyDetailsView(
                                 } - ${
                                     it.study.end!!.jvmLocalDateTime().formattedString()
                                 }",
-                                color = MoreColors.Companion.Secondary
+                                color = MoreColors.Secondary
                             )
                         }
 

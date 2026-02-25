@@ -27,11 +27,11 @@ class ScheduleViewModel(
     val scheduleListType: ScheduleListType
 ) : ViewModel() {
     private val coreDashboardFilterViewModel =
-        CoreDashboardFilterViewModel(MoreApplication.Companion.shared!!.repositories)
+        CoreDashboardFilterViewModel(MoreApplication.shared!!.repositories)
 
     val coreViewModel = CoreScheduleViewModel(
-        MoreApplication.Companion.shared!!.repositories,
-        MoreApplication.Companion.shared!!.dataRecorder,
+        MoreApplication.shared!!.repositories,
+        MoreApplication.shared!!.dataRecorder,
         scheduleListType = scheduleListType,
         coreFilterModel = coreDashboardFilterViewModel
     )

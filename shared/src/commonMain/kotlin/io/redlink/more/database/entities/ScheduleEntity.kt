@@ -22,7 +22,7 @@ data class ScheduleEntity(
     val reminder: Boolean = false,
     val state: String = ScheduleState.DEACTIVATED.name
 ) {
-    fun getState() = ScheduleState.Companion.getState(state)
+    fun getState() = ScheduleState.getState(state)
     fun startInstant() = start?.let { Instant.fromEpochSeconds(it) }
     fun endInstant() = end?.let { Instant.fromEpochSeconds(it) }
 
@@ -44,10 +44,10 @@ data class ScheduleEntity(
 
                         now < startTime -> ScheduleState.DEACTIVATED
                         startTime <= now && !getState().active() -> ScheduleState.ACTIVE
-                        else -> ScheduleState.Companion.getState(state)
+                        else -> ScheduleState.getState(state)
                     }
                 }
-            } ?: ScheduleState.Companion.getState(state)
+            } ?: ScheduleState.getState(state)
         }
     }
 

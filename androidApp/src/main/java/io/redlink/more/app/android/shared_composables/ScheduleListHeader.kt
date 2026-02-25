@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.composables.FilterView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
@@ -58,7 +58,7 @@ fun ScheduleListHeader(
                     text = "$errorCount ${getStringResource(id = R.string.error)}",
                     imageText = "Error",
                     image = Icons.Default.Warning,
-                    imageTint = MoreColors.Companion.White,
+                    imageTint = MoreColors.White,
                     buttonColors = ButtonDefaults.moreImportant(),
                 ) {
                     navController.navigate(NavigationScreen.OBSERVATION_ERRORS.navigationRoute())

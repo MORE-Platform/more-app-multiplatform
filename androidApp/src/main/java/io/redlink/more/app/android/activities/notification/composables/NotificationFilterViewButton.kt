@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.notification.NotificationViewModel
 import io.redlink.more.app.android.extensions.getStringResource
@@ -48,14 +48,14 @@ fun NotificationFilterViewButton(navController: NavController, viewModel: Notifi
     ) {
         Text(
             text = viewModel.getFilterString(),
-            color = MoreColors.Companion.Primary,
+            color = MoreColors.Primary,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
         )
         Icon(
             Icons.Default.Tune,
             contentDescription = getStringResource(id = R.string.more_main_tab_filters),
-            tint = MoreColors.Companion.Secondary,
+            tint = MoreColors.Secondary,
             modifier = Modifier
                 .padding(start = 8.dp)
         )

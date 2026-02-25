@@ -73,15 +73,15 @@ class MainViewModel(context: Context) : ViewModel() {
         (context as? Activity)?.let { activity ->
             val intent = Intent(activity, LimeSurveyActivity::class.java)
             intent.putExtra(
-                LimeSurveyActivity.Companion.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_SCHEDULE_ID,
                 scheduleId
             )
             intent.putExtra(
-                LimeSurveyActivity.Companion.LIME_SURVEY_ACTIVITY_OBSERVATION_ID,
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID,
                 observationId
             )
             intent.putExtra(
-                LimeSurveyActivity.Companion.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID,
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID,
                 notificationId
             )
             activityResultLauncher.launch(intent)
@@ -112,7 +112,7 @@ class MainViewModel(context: Context) : ViewModel() {
     private fun openBLESetupActivity(context: Context) {
         (context as? Activity)?.let {
             val intent = Intent(context, BLEConnectionActivity::class.java)
-            intent.putExtra(BLEConnectionActivity.Companion.SHOW_DESCR_PART2, true)
+            intent.putExtra(BLEConnectionActivity.SHOW_DESCR_PART2, true)
             it.startActivity(intent)
         }
     }

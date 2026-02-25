@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.observations.questionnaire.questionType.QuestionnaireQuestionAnswer
 import io.redlink.more.app.android.extensions.getStringResource

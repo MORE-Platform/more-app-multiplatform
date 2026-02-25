@@ -14,10 +14,10 @@ fun startObservationsWithPermissionCheck(
     activity: Activity
 ) {
     val observations =
-        MoreApplication.Companion.shared?.observationFactory?.observations ?: emptySet()
+        MoreApplication.shared?.observationFactory?.observations ?: emptySet()
 
     if (observations.isEmpty()) {
-        ObservationRecordingService.Companion.start(scheduleIds)
+        ObservationRecordingService.start(scheduleIds)
         return
     }
 
@@ -26,7 +26,7 @@ fun startObservationsWithPermissionCheck(
     }
 
     if (allPermissionsGranted) {
-        ObservationRecordingService.Companion.start(scheduleIds)
+        ObservationRecordingService.start(scheduleIds)
     } else {
         val observationNeedingPermissions = observations.firstOrNull { observation ->
             !PermissionUtils.hasAllPermissions(observation, activity)
@@ -44,7 +44,7 @@ fun startObservationsWithPermissionCheck(
                 }
             }
         } else {
-            ObservationRecordingService.Companion.start(scheduleIds)
+            ObservationRecordingService.start(scheduleIds)
         }
     }
 }

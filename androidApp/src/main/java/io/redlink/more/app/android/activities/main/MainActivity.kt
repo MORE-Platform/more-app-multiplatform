@@ -50,6 +50,8 @@ import io.redlink.more.app.android.activities.observations.questionnaire.Questio
 import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireView
 import io.redlink.more.app.android.activities.runningSchedules.RunningSchedulesView
 import io.redlink.more.app.android.activities.setting.SettingsView
+import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyConfirmView
+import io.redlink.more.app.android.activities.setting.leave_study.LeaveStudyView
 import io.redlink.more.app.android.activities.studyDetails.StudyDetailsView
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsView
 import io.redlink.more.app.android.activities.studyStates.StudyClosedView
@@ -64,8 +66,6 @@ import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.models.ScheduleListType
 import io.redlink.more.models.StudyState
 import io.redlink.more.viewModels.ViewManager
-import io.redlink.umm.blendedcare.app.android.activities.setting.leave_study.LeaveStudyConfirmView
-import io.redlink.umm.blendedcare.app.android.activities.setting.leave_study.LeaveStudyView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
         val destinationChangeListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
                 val route = destination.route?.split("?")?.firstOrNull() ?: ""
-                NavigationScreen.Companion.byRoute(route)?.let { screen ->
+                NavigationScreen.byRoute(route)?.let { screen ->
                     viewModel.navigationBarTitle.value = getString(screen.stringResource)
                 }
             }
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             navHostController = rememberNavController()
 
-            val studyState by MoreApplication.Companion.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
+            val studyState by MoreApplication.shared!!.repositories.study.studyState.collectAsStateWithLifecycle()
             val studyIsUpdating by ViewManager.studyIsUpdating.collectAsStateWithLifecycle(false)
             val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle(false)
 
@@ -171,7 +171,7 @@ fun MainView(
     val currentContext = rememberUpdatedState(LocalContext.current)
     val taskCompletionBarViewModel = remember { TaskCompletionBarViewModel() }
     val notificationCount =
-        MoreApplication.Companion.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
+        MoreApplication.shared!!.notificationManager.unreadUserCount.collectAsStateWithLifecycle()
     MoreBackground(
         navigationTitle = navigationTitle,
         showBackButton = viewModel.showBackButton.value,

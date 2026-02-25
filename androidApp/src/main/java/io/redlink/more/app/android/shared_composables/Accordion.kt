@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 
@@ -102,7 +102,7 @@ fun Accordion(
                     if (hasCheck) {
                         IconInline(
                             icon = Icons.Rounded.Done,
-                            color = MoreColors.Companion.Approved,
+                            color = MoreColors.Approved,
                             contentDescription = getStringResource(id = R.string.more_approved)
                         )
                     }
@@ -115,7 +115,7 @@ fun Accordion(
                     Icon(
                         Icons.Rounded.ExpandMore,
                         contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                        tint = MoreColors.Companion.Primary,
+                        tint = MoreColors.Primary,
                         modifier = Modifier.rotate(angle)
                     )
                 }
@@ -123,7 +123,7 @@ fun Accordion(
 
             Column {
                 Divider(
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     modifier = Modifier.padding(4.dp)
                 )
             }
@@ -131,7 +131,7 @@ fun Accordion(
             if (hasPreview) {
                 Text(
                     text = description,
-                    color = if (open.value) MoreColors.Companion.Primary else MoreColors.Companion.TextInactive,
+                    color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
                     maxLines = if (open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = if (open.value) TextUnit.Unspecified else 14.sp
@@ -140,7 +140,7 @@ fun Accordion(
             } else if (open.value) {
                 Text(
                     text = description,
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = TextUnit.Unspecified

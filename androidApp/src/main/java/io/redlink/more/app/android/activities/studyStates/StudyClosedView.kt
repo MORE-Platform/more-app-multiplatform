@@ -33,8 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
@@ -51,7 +51,7 @@ import io.redlink.more.app.android.theme.MoreColors
 fun StudyClosedView() {
     val context = LocalContext.current
     var loading by remember { mutableStateOf(false) }
-    val finishText by MoreApplication.Companion.shared!!.repositories.study.finishText.collectAsStateWithLifecycle()
+    val finishText by MoreApplication.shared!!.repositories.study.finishText.collectAsStateWithLifecycle()
     MoreBackground {
         Box(
             modifier = Modifier
@@ -80,11 +80,11 @@ fun StudyClosedView() {
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
                     finishText?.let {
-                        BasicText(text = it, color = MoreColors.Companion.Secondary)
+                        BasicText(text = it, color = MoreColors.Secondary)
                     } ?: run {
                         BasicText(
                             text = getStringResource(id = R.string.study_closed),
-                            color = MoreColors.Companion.Secondary
+                            color = MoreColors.Secondary
                         )
                     }
                 }
@@ -102,7 +102,7 @@ fun StudyClosedView() {
                         text = getStringResource(id = R.string.more_settings_exit_dialog_title)
                     ) {
                         loading = true
-                        MoreApplication.Companion.shared!!.exitStudy {
+                        MoreApplication.shared!!.exitStudy {
                             loading = false
                             (context as? Activity)?.let { activity ->
                                 activity.finish()

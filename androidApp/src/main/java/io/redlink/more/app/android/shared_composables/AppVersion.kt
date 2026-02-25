@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.redlink.io.more.app.android.BuildConfig
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.BuildConfig
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.theme.MoreColors
 
@@ -39,7 +39,7 @@ fun AppVersion() {
         Text(
             text = "${getStringResource(R.string.app_version)}: ${BuildConfig.VERSION_NAME}",
             fontSize = 10.sp,
-            color = MoreColors.Companion.Primary,
+            color = MoreColors.Primary,
             fontWeight = FontWeight.Medium
         )
     }

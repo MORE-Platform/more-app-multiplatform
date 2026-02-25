@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -60,7 +60,7 @@ fun QuestionnaireHeader(model: QuestionViewModel) {
                     text = stringResource(R.string.more_questionnaire_type),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = MoreColors.Companion.Primary,
+                    color = MoreColors.Primary,
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
             }

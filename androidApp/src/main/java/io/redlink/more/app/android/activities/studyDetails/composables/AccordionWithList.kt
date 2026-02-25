@@ -80,7 +80,7 @@ fun AccordionWithList(
             )
             Icon(
                 Icons.Rounded.ExpandMore,
-                tint = MoreColors.Companion.Primary,
+                tint = MoreColors.Primary,
                 contentDescription = "View observation modules of the study",
                 modifier = Modifier.rotate(angle)
             )

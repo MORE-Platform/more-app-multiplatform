@@ -37,7 +37,7 @@ class CoreObservationDetailsViewModel(
                 }.cancellable().collect { triple ->
                     triple.first?.let { observation ->
                         observationDetailsModel.value =
-                            ObservationDetailsModel.Companion.createModelFrom(
+                            ObservationDetailsModel.createModelFrom(
                                 observation,
                                 triple.second,
                                 triple.third

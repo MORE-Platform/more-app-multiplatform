@@ -56,7 +56,7 @@ fun QuestionnaireQuestionAnswer(
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
-            color = MoreColors.Companion.Primary
+            color = MoreColors.Primary
         )
     }
 

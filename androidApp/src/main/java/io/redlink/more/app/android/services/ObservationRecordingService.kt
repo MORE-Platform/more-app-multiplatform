@@ -23,8 +23,8 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import io.github.aakira.napier.Napier
-import io.redlink.io.more.app.android.R
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
@@ -74,14 +74,14 @@ class ObservationRecordingService : Service() {
         }
 
         if (observationFactory == null) {
-            if (MoreApplication.Companion.shared == null) {
-                MoreApplication.Companion.initShared(applicationContext)
+            if (MoreApplication.shared == null) {
+                MoreApplication.initShared(applicationContext)
             }
-            observationFactory = MoreApplication.Companion.shared!!.observationFactory
+            observationFactory = MoreApplication.shared!!.observationFactory
         }
         observationFactory?.let {
             if (observationManager == null) {
-                observationManager = MoreApplication.Companion.shared!!.observationManager
+                observationManager = MoreApplication.shared!!.observationManager
             }
         }
         return intent?.action?.let { action ->
@@ -116,7 +116,7 @@ class ObservationRecordingService : Service() {
 
                 SERVICE_RECEIVER_RESTART_ALL_STATES -> {
                     restartAll()
-                    return START_REDELIVER_INTENT
+                    START_REDELIVER_INTENT
                 }
 
                 else -> {
@@ -263,7 +263,7 @@ class ObservationRecordingService : Service() {
             startForegroundService()
             scope.launch {
                 try {
-                    if (MoreApplication.Companion.shared!!.repositories.study.study.value?.active == true) {
+                    if (MoreApplication.shared!!.repositories.study.study.value?.active == true) {
                         scheduleId.forEach { id ->
                             try {
                                 if (observationManager?.start(id) == true) {
@@ -313,7 +313,7 @@ class ObservationRecordingService : Service() {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
         Scope.launch {
-            MoreApplication.Companion.shared!!.repositories.schedule.setCompletionStateFor(
+            MoreApplication.shared!!.repositories.schedule.setCompletionStateFor(
                 scheduleId,
                 true
             )
@@ -462,7 +462,7 @@ class ObservationRecordingService : Service() {
                 channelId,
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "More observation service notifications"
+                description = "PraeCura observation service notifications"
                 enableLights(false)
                 enableVibration(false)
             }
@@ -491,7 +491,7 @@ class ObservationRecordingService : Service() {
         } catch (e: Exception) {
             Napier.e("Failed to build notification: ${e.message}")
             return Notification.Builder(applicationContext, "default")
-                .setContentTitle("More Service")
+                .setContentTitle("PraeCura Service")
                 .setContentText("Running")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setOngoing(true)
@@ -501,16 +501,16 @@ class ObservationRecordingService : Service() {
 
     companion object {
         private const val SCHEDULE_ID = "SCHEDULE_ID"
-        private const val SERVICE_RECEIVER_START_ACTION =
-            "io.redlink.umm.blendedcare.app.android.START_SERVICE"
-        private const val SERVICE_RECEIVER_PAUSE_ACTION =
-            "io.redlink.umm.blendedcare.app.android.PAUSE_SERVICE"
-        private const val SERVICE_RECEIVER_STOP_ACTION =
-            "io.redlink.umm.blendedcare.app.android.STOP_SERVICE"
-        private const val SERVICE_RECEIVER_STOP_ALL_ACTION =
-            "io.redlink.umm.blendedcare.app.android.STOP_ALL_SERVICE"
-        private const val SERVICE_RECEIVER_RESTART_ALL_STATES =
-            "io.redlink.umm.blendedcare.app.android.RESTART_ALL"
+        private val SERVICE_RECEIVER_START_ACTION =
+            "${MoreApplication.packagePath}.START_SERVICE"
+        private val SERVICE_RECEIVER_PAUSE_ACTION =
+            "${MoreApplication.packagePath}.PAUSE_SERVICE"
+        private val SERVICE_RECEIVER_STOP_ACTION =
+            "${MoreApplication.packagePath}.STOP_SERVICE"
+        private val SERVICE_RECEIVER_STOP_ALL_ACTION =
+            "${MoreApplication.packagePath}.STOP_ALL_SERVICE"
+        private val SERVICE_RECEIVER_RESTART_ALL_STATES =
+            "${MoreApplication.packagePath}.RESTART_ALL"
 
         private const val MAX_RETRIES = 100
 
@@ -544,7 +544,7 @@ class ObservationRecordingService : Service() {
             activity: Activity
         ) {
             val observations =
-                MoreApplication.Companion.shared?.observationFactory?.observations
+                MoreApplication.shared?.observationFactory?.observations
                     ?: emptySet()
 
             if (observations.isEmpty()) {
@@ -591,7 +591,7 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value && scheduleIds.isNotEmpty()) {
                 val serviceIntent =
                     Intent(
-                        MoreApplication.Companion.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_START_ACTION
@@ -599,11 +599,11 @@ class ObservationRecordingService : Service() {
                 try {
                     Handler(Looper.getMainLooper()).post {
                         if (running) {
-                            MoreApplication.Companion.appContext?.startService(
+                            MoreApplication.appContext?.startService(
                                 serviceIntent
                             )
                         } else {
-                            MoreApplication.Companion.appContext?.startForegroundService(
+                            MoreApplication.appContext?.startForegroundService(
                                 serviceIntent
                             )
                         }
@@ -620,14 +620,14 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        MoreApplication.Companion.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-                MoreApplication.Companion.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                MoreApplication.Companion.shared?.observationManager?.pause(scheduleId)
+                MoreApplication.shared?.observationManager?.pause(scheduleId)
             }
         }
 
@@ -635,14 +635,14 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        MoreApplication.Companion.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
-                MoreApplication.Companion.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                MoreApplication.Companion.shared?.observationManager?.stop(scheduleId)
+                MoreApplication.shared?.observationManager?.stop(scheduleId)
             }
         }
 
@@ -650,26 +650,26 @@ class ObservationRecordingService : Service() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
                     Intent(
-                        MoreApplication.Companion.appContext,
+                        MoreApplication.appContext,
                         ObservationRecordingService::class.java
                     )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
-                MoreApplication.Companion.appContext?.startService(serviceIntent)
+                MoreApplication.appContext?.startService(serviceIntent)
             } else {
-                MoreApplication.Companion.shared?.observationManager?.stopAll()
+                MoreApplication.shared?.observationManager?.stopAll()
             }
         }
 
         fun restartAll() {
             val serviceIntent =
                 Intent(
-                    MoreApplication.Companion.appContext,
+                    MoreApplication.appContext,
                     ObservationRecordingService::class.java
                 )
             serviceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
             try {
                 Handler(Looper.getMainLooper()).post {
-                    MoreApplication.Companion.appContext?.startForegroundService(
+                    MoreApplication.appContext?.startForegroundService(
                         serviceIntent
                     )
                 }

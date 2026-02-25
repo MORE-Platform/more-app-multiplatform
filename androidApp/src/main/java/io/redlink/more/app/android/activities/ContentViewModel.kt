@@ -20,9 +20,9 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
-import io.redlink.io.more.app.android.R
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel() {
     val registrationService: RegistrationService =
-        RegistrationService(MoreApplication.Companion.shared!!)
+        RegistrationService(MoreApplication.shared!!)
 
     val hasCredentials = mutableStateOf(false)
 
@@ -48,7 +48,7 @@ class ContentViewModel : ViewModel() {
     init {
         NavigationScreen.createDeepLinksForAllRoutes()
         viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.Companion.shared!!.credentialRepository.hasCredentials.collect {
+            MoreApplication.shared!!.credentialRepository.hasCredentials.collect {
                 hasCredentials.value = it
             }
         }
@@ -72,7 +72,7 @@ class ContentViewModel : ViewModel() {
         val workManager = WorkManager.getInstance(activity)
         val worker = PeriodicWorkRequestBuilder<ScheduleUpdateWorker>(15, TimeUnit.MINUTES).build()
         workManager.enqueueUniquePeriodicWork(
-            ScheduleUpdateWorker.Companion.WORKER_TAG,
+            ScheduleUpdateWorker.WORKER_TAG,
             ExistingPeriodicWorkPolicy.KEEP,
             worker
         )
@@ -85,7 +85,7 @@ class ContentViewModel : ViewModel() {
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
 
         val modifiedDeepLink = rawDeepLink?.let { link ->
-            val sharedInstance = MoreApplication.Companion.shared
+            val sharedInstance = MoreApplication.shared
                 ?: throw IllegalStateException("MoreApplication.shared is not initialized")
             sharedInstance.deeplinkManager
                 .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
@@ -97,7 +97,7 @@ class ContentViewModel : ViewModel() {
         val finalUri = when {
             modifiedDeepLink != null -> {
                 notificationId?.let {
-                    val sharedInstance = MoreApplication.Companion.shared
+                    val sharedInstance = MoreApplication.shared
                         ?: throw IllegalStateException("MoreApplication.shared is not initialized")
                     sharedInstance.notificationManager.handleNotificationInteraction(
                         it, modifiedDeepLink

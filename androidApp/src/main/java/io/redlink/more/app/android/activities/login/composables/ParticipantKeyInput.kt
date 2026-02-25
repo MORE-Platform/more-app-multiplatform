@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.io.more.app.android.R
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreDivider
@@ -58,7 +58,7 @@ fun ParticipationKeyInput(
             text = getStringResource(id = R.string.more_registration_token_label),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
-            color = MoreColors.Companion.Primary,
+            color = MoreColors.Primary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -76,7 +76,7 @@ fun ParticipationKeyInput(
                 },
                 trailingIcon = {
                     if (networkError != null && !networkError?.message.isNullOrBlank()) {
-                        Icon(Icons.Filled.Error, "Error", tint = MoreColors.Companion.Important)
+                        Icon(Icons.Filled.Error, "Error", tint = MoreColors.Important)
                     }
                 },
                 textStyle = TextStyle(fontSize = 16.sp),
@@ -96,19 +96,19 @@ fun ParticipationKeyInput(
                 isError = networkError != null && !networkError?.message.isNullOrBlank(),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MoreColors.Companion.Primary,
-                    focusedLabelColor = MoreColors.Companion.Primary,
+                    textColor = MoreColors.Primary,
+                    focusedLabelColor = MoreColors.Primary,
                     backgroundColor = Color.Transparent,
-                    unfocusedLabelColor = MoreColors.Companion.Primary,
-                    errorLabelColor = MoreColors.Companion.Important,
-                    cursorColor = MoreColors.Companion.Primary,
-                    errorBorderColor = MoreColors.Companion.Important,
-                    errorCursorColor = MoreColors.Companion.Important,
-                    errorLeadingIconColor = MoreColors.Companion.Important,
-                    errorTrailingIconColor = MoreColors.Companion.Important,
-                    placeholderColor = MoreColors.Companion.TextInactive,
-                    unfocusedBorderColor = MoreColors.Companion.Primary,
-                    focusedBorderColor = MoreColors.Companion.Primary
+                    unfocusedLabelColor = MoreColors.Primary,
+                    errorLabelColor = MoreColors.Important,
+                    cursorColor = MoreColors.Primary,
+                    errorBorderColor = MoreColors.Important,
+                    errorCursorColor = MoreColors.Important,
+                    errorLeadingIconColor = MoreColors.Important,
+                    errorTrailingIconColor = MoreColors.Important,
+                    placeholderColor = MoreColors.TextInactive,
+                    unfocusedBorderColor = MoreColors.Primary,
+                    focusedBorderColor = MoreColors.Primary
                 ),
                 modifier = Modifier
                     .focusRequester(focusRequester)
