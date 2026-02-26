@@ -44,6 +44,8 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         napierDebugBuild()
         appContext = this
         packagePath = this.packageName
+        appName = this.getString(R.string.app_name)
+        DEFAULT_CHANNEL_ID = packagePath + appName!!.lowercase() + ".urgent"
         NotificationTextLocalization.init(this)
 
         initShared(this)
@@ -71,7 +73,13 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         var appContext: Context? = null
             private set
 
+        var appName: String? = null
+            private set
+
         var packagePath: String? = null
+            private set
+
+        var DEFAULT_CHANNEL_ID: String? = null
             private set
 
         var firebaseAnalytics: FirebaseAnalytics? = null

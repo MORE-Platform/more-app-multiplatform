@@ -137,6 +137,9 @@ class Shared(
                             }
                         } else {
                             ViewManager.showBLEView(false)
+                            if (state) {
+                                observationDataManager.sendData(true)
+                            }
                         }
                     } else if (fg == prevFg && prevState != null && state != prevState) {
                         Napier.d(tag = "Shared::init") { "Study state changed: $prevState -> $state" }

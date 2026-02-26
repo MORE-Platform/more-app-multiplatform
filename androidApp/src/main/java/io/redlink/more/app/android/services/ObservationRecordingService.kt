@@ -60,7 +60,7 @@ class ObservationRecordingService : Service() {
             Napier.e("Failed to start foreground service: ${e.message}")
             try {
                 val basicNotification = Notification.Builder(this, "default")
-                    .setContentTitle("More Observation Service")
+                    .setContentTitle("${MoreApplication.appName} Observation Service")
                     .setContentText("Service is running")
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .build()
@@ -419,16 +419,10 @@ class ObservationRecordingService : Service() {
     private fun startForegroundService() {
         Napier.d { "Starting the foreground service..." }
         try {
-            val channelId = try {
-                getString(R.string.default_channel_id)
-            } catch (e: Exception) {
-                "default"
-            }
-
             val notificationTitle = try {
                 getString(R.string.more_observation_running)
             } catch (e: Exception) {
-                "More Observation Service"
+                "${MoreApplication.appName} Observation Service"
             }
 
             val notificationText = try {
@@ -438,7 +432,7 @@ class ObservationRecordingService : Service() {
             }
 
             val notification = buildNotification(
-                channelId = channelId,
+                channelId = MoreApplication.DEFAULT_CHANNEL_ID!!,
                 notificationTitle = notificationTitle,
                 notificationText = notificationText
             )
@@ -462,7 +456,7 @@ class ObservationRecordingService : Service() {
                 channelId,
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "PraeCura observation service notifications"
+                description = "${MoreApplication.appName} observation service notifications"
                 enableLights(false)
                 enableVibration(false)
             }
@@ -491,7 +485,7 @@ class ObservationRecordingService : Service() {
         } catch (e: Exception) {
             Napier.e("Failed to build notification: ${e.message}")
             return Notification.Builder(applicationContext, "default")
-                .setContentTitle("PraeCura Service")
+                .setContentTitle("${MoreApplication.appName} Service")
                 .setContentText("Running")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setOngoing(true)
