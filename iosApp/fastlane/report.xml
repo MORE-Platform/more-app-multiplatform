@@ -5,42 +5,42 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000192">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000184">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: create_keychain" time="0.072715">
+      <testcase classname="fastlane.lanes" name="1: create_keychain" time="0.081325">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.002185">
+      <testcase classname="fastlane.lanes" name="2: app_store_connect_api_key" time="0.002404">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: match" time="4.3025">
+      <testcase classname="fastlane.lanes" name="3: match" time="3.885904">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: Switch to ios generate_openapi lane" time="0.000165">
+      <testcase classname="fastlane.lanes" name="4: Switch to ios generate_openapi lane" time="9.2e-05">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: :shared:generateOpenApiClasses" time="1.858489">
+      <testcase classname="fastlane.lanes" name="5: :shared:generateOpenApiClasses" time="2.715979">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: build_app" time="222.44313">
+      <testcase classname="fastlane.lanes" name="6: build_app" time="148.560076">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: delete_keychain" time="0.034712">
+      <testcase classname="fastlane.lanes" name="7: delete_keychain" time="0.037171">
         
       </testcase>
     
