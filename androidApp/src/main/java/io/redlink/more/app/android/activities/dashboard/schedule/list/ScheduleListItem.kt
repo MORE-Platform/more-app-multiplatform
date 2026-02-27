@@ -30,18 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.tasks.ObservationActionButton
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.TimeframeHours
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.models.ScheduleModel
 import io.redlink.more.models.ScheduleState
-import io.redlink.more.observations.observationTypes.QuestionType
+import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
 
 @Composable
 fun ScheduleListItem(
@@ -111,39 +110,22 @@ fun ScheduleListItem(
             modifier = Modifier.padding(vertical = 8.dp)
         )
         if (showButton && !scheduleModel().hidden) {
-            val text = scheduleModel().observationType
-            if (QuestionType().matches(text)) {
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_questionnaire_start),
-                    enabled = scheduleModel().scheduleState.active()
-                ) {
-                    navController.navigate(
-                        NavigationScreen.QUESTION.navigationRoute("scheduleId" to scheduleModel().scheduleId)
+            ObservationActionButton(
+                navController,
+                scheduleModel().scheduleId,
+                scheduleModel().observationType,
+                scheduleModel().scheduleState,
+                additionalEnableCondition = if (PolarVerityHeartRateType(
+                        setOf()
+                    ).matches(
+                        scheduleModel().observationType
                     )
-                }
-            } else if (text == "lime-survey-observation") {
-                SmallTextButton(
-                    text = getStringResource(id = R.string.more_limesurvey_start),
-                    enabled = scheduleModel().scheduleState.active()
-                ) {
-                    navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel().scheduleId))
-                }
-            } else {
-                SmallTextButton(
-                    text = if (scheduleModel().scheduleState == ScheduleState.RUNNING) getStringResource(
-                        id = R.string.more_observation_pause
-                    ) else getStringResource(
-                        id = R.string.more_observation_start
-                    ),
-                    enabled = scheduleModel().scheduleState.active() && if (scheduleModel().observationType == "polar-verity-observation")
-                        viewModel.polarHrReady.value else true
-                ) {
-                    if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
-                        viewModel.pauseObservation(scheduleModel().scheduleId)
-                    } else {
-                        viewModel.startObservation(scheduleModel().scheduleId)
-                    }
-
+                ) viewModel.polarHrReady.value else true
+            ) {
+                if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
+                    viewModel.pauseObservation(scheduleModel().scheduleId)
+                } else {
+                    viewModel.startObservation(scheduleModel().scheduleId)
                 }
             }
         }

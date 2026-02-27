@@ -18,11 +18,13 @@ import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.mapQueryParams
 import io.redlink.more.extensions.toNotificationEntity
-import io.redlink.more.models.NotificationModel
 import io.redlink.more.models.NotificationStatusType
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.models.StudyState
 import io.redlink.more.navigation.DeeplinkManager
+import io.redlink.more.navigation.model.DeepLinkData
+import io.redlink.more.navigation.model.NavigationRoute
+import io.redlink.more.navigation.model.NavigationRouteParameter
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.store.SharedStorageRepository
@@ -101,6 +103,44 @@ class NotificationManager(
             ),
             displayNotification
         )
+    }
+
+    fun storeAndHandleNotificationInteraction(
+        key: String,
+        title: String?,
+        body: String?,
+        priority: Long = 1,
+        read: Boolean = false,
+        completed: Boolean = false,
+        data: Map<String, String>? = null,
+        protocolReplacement: String? = null,
+        hostReplacement: String? = null,
+        handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
+    ) {
+        Scope.launch {
+            val notification = repository.notification.getNotification(key) ?: run {
+                val newNotification = NotificationEntity.toEntity(
+                    notificationId = key,
+                    channelId = null,
+                    title = title,
+                    notificationBody = body,
+                    priority = priority,
+                    read = read,
+                    completed = completed,
+                    userFacing = title != null,
+                    notificationData = data
+                )
+                storeNotifications(listOf(newNotification))
+                newNotification
+            }
+            handleNotificationInteraction(
+                notification.notificationId,
+                notification.deepLink,
+                protocolReplacement,
+                hostReplacement,
+                handler
+            )
+        }
     }
 
     fun storeAndHandleNotification(
@@ -200,44 +240,47 @@ class NotificationManager(
         notificationId: String,
         deeplink: String? = null
     ) {
-        if (deeplink == null || deeplink.contains(DeeplinkManager.TASK_DETAILS) || deeplink.contains(
-                DeeplinkManager.OBSERVATION_DETAILS
+        if (deeplink == null || deeplink.contains(NavigationRoute.SCHEDULE_DETAILS.route) || deeplink.contains(
+                NavigationRoute.OBSERVATION_DETAILS.route
             )
         ) {
             markNotificationAsRead(notificationId)
         }
     }
 
+
     fun handleNotificationInteraction(
-        notification: NotificationModel,
+        notificationId: String,
+        deepLink: String?,
         protocolReplacement: String? = null,
         hostReplacement: String? = null,
-        handler: ((NotificationActionHandler, String) -> Unit)
+        handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
     ) {
-        notification.deepLink?.let { deepLink ->
+        deepLink?.let {
             Scope.launch {
 
                 val state = checkIfCompletedOrRead(deepLink).cancellable().firstOrNull()
 
                 if (state != null) {
                     if (NotificationStatusType.READ == state) repository.notification.setNotificationReadStatus(
-                        notification.notificationId,
+                        notificationId,
                         true
                     )
                     if (NotificationStatusType.COMPLETED == state) repository.notification.setNotificationCompletedStatus(
-                        notification.notificationId,
+                        notificationId,
                         true
                     )
                 }
 
                 deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
-                    .firstOrNull()?.let { modifiedDeepLink ->
-                        if (modifiedDeepLink.contains(DeeplinkManager.TASK_DETAILS) || modifiedDeepLink.contains(
-                                DeeplinkManager.OBSERVATION_DETAILS
+                    .firstOrNull()
+                    ?.let { modifiedDeepLink ->
+                        if (modifiedDeepLink.route.contains(NavigationRoute.SCHEDULE_DETAILS.route) || modifiedDeepLink.route.contains(
+                                NavigationRoute.OBSERVATION_DETAILS.route
                             )
                         ) {
                             withContext(Dispatchers.Main) {
-                                markNotificationAsRead(notification.notificationId)
+                                markNotificationAsRead(notificationId)
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -245,12 +288,12 @@ class NotificationManager(
                         }
                     } ?: run {
                     withContext(Dispatchers.Main) {
-                        markNotificationAsRead(notification.notificationId)
+                        markNotificationAsRead(notificationId)
                     }
                 }
             }
         } ?: run {
-            markNotificationAsRead(notification.notificationId)
+            markNotificationAsRead(notificationId)
         }
     }
 
@@ -258,10 +301,10 @@ class NotificationManager(
         notificationDeeplink: String,
     ): Flow<NotificationStatusType?> = flow {
 
-        var state: NotificationStatusType? = null
+        var state: NotificationStatusType?
 
         val queryParams = notificationDeeplink.mapQueryParams()
-        val observationId = queryParams["observationId"]
+        val observationId = queryParams[NavigationRouteParameter.OBSERVATION_ID.key]
         if (observationId.isNullOrEmpty()
             || repository.observation.observationById(observationId.first())
                 .firstOrNull() == null

@@ -34,8 +34,11 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
 
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
         coreViewModel.handleNotificationAction(notification) { actionType, data ->
-            when (actionType) {
-                NotificationActionHandler.DEEPLINK -> navController.navigate(data.toUri())
+            data?.let {
+                when (actionType) {
+                    NotificationActionHandler.DEEPLINK -> navController.navigate(data.route.toUri())
+                    else -> {}
+                }
             }
         }
     }

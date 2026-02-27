@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +33,7 @@ import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.database.entities.ObservationEntity
+import io.redlink.more.navigation.model.NavigationRouteParameter
 
 @Composable
 fun ObservationList(navController: NavController, observations: List<ObservationEntity>) {
@@ -50,7 +51,7 @@ fun ObservationList(navController: NavController, observations: List<Observation
                     ) {
                         navController.navigate(
                             NavigationScreen.OBSERVATION_DETAILS.navigationRoute(
-                                "observationId" to observation.observationId
+                                NavigationRouteParameter.OBSERVATION_ID.key to observation.observationId
                             )
                         )
                     }
@@ -70,7 +71,7 @@ fun ObservationList(navController: NavController, observations: List<Observation
                     )
                 }
                 Icon(
-                    Icons.Default.ArrowForwardIos,
+                    Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = "View observation details",
                     tint = MoreColors.Primary,
                     modifier = Modifier

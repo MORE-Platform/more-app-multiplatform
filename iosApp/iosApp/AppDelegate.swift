@@ -60,8 +60,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DataUploadBackgroundTask.setupBackgroundTasks()
         DailyBackgroundTask.setupBackgroundTasks()
         ObservationReminderBackgroundTask.setupBackgroundTasks()
+        
+        let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
-        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreen.allCases.map { $0.values.navigationLink }))
+        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: routes)
 
         return true
     }

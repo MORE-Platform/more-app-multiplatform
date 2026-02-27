@@ -53,16 +53,30 @@ extension FCMService: UNUserNotificationCenterDelegate {
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         ViewManager.shared.appIsInForeground(state: true)
-        let data = response.notification.request.content.userInfo.notNilStringDictionary()
+        let content = response.notification.request.content
+        let data = content.userInfo.notNilStringDictionary()
         let msgId = data[NotificationManager.companion.MSG_ID] ?? response.notification.request.identifier
-        if let deepLinkString = data[NotificationManager.companion.DEEP_LINK] {
-            if let deepLink = URL(string: deepLinkString) {
-                AppDelegate.navigationScreenHandler.openWithDeepLink(url: deepLink, notificationId: msgId)
+
+        // Use the shared manager to store and handle the notification interaction, including deep link modification.
+        AppDelegate.shared.notificationManager.storeAndHandleNotificationInteraction(
+            key: msgId,
+            title: content.title,
+            body: content.body,
+            priority: 1,
+            read: true,
+            completed: false,
+            data: data,
+            protocolReplacement: nil,
+            hostReplacement: nil
+        ) { (actionHandler, deepLinkData) in
+            if let deepLinkData {
+                switch actionHandler {
+                case NotificationActionHandler.deeplink:
+                    AppDelegate.navigationScreenHandler.openRoute(to: deepLinkData)
+                default:
+                    break
+                }
             }
-        } else {
-            AppDelegate.navigationScreenHandler.clearViews()
-            AppDelegate.navigationScreenHandler.tagState = 1
-            AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: msgId)
         }
     }
 }
@@ -79,3 +93,4 @@ extension Dictionary where Key == AnyHashable {
         return data
     }
 }
+

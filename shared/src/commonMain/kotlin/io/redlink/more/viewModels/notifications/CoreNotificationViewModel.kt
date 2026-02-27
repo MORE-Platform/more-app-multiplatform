@@ -13,6 +13,7 @@ package io.redlink.more.viewModels.notifications
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.extensions.set
 import io.redlink.more.models.NotificationModel
+import io.redlink.more.navigation.model.DeepLinkData
 import io.redlink.more.services.notification.NotificationActionHandler
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.viewModels.CoreViewModel
@@ -62,10 +63,11 @@ class CoreNotificationViewModel(
 
     fun handleNotificationAction(
         notification: NotificationModel,
-        handler: ((NotificationActionHandler, String) -> Unit)
+        handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
     ) {
         notificationManager.handleNotificationInteraction(
-            notification,
+            notification.notificationId,
+            notification.deepLink,
             protocolReplacement,
             hostReplacement,
             handler

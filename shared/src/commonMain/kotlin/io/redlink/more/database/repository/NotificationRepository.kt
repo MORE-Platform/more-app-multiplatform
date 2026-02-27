@@ -103,6 +103,10 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
         }
     }
 
+    suspend fun getNotification(notificationId: String): NotificationEntity? {
+        return appDatabase.notificationDao().getById(notificationId)
+    }
+
     fun getAllUserFacingNotifications(): Flow<List<NotificationEntity>> {
         val dbFlow = appDatabase.notificationDao().getByPastUserFacingFlow(true)
 

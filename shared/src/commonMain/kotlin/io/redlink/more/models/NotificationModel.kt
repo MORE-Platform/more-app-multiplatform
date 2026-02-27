@@ -27,28 +27,29 @@ data class NotificationModel(
 ) {
 
     companion object {
+        fun createModelFrom(entity: NotificationEntity): NotificationModel? {
+            val channelId = entity.channelId
+            val title = entity.title ?: return null
+            val notificationBody = entity.notificationBody ?: return null
+            val timestamp = entity.timestamp ?: return null
+            return NotificationModel(
+                notificationId = entity.notificationId,
+                channelId = channelId,
+                title = title,
+                notificationBody = notificationBody,
+                timestamp = timestamp,
+                priority = entity.priority,
+                read = entity.read,
+                completed = entity.completed,
+                userFacing = entity.userFacing,
+                deepLink = entity.deepLink(),
+                notificationData = entity.getNotificationDataMap()
+            )
+        }
+
         fun createModelsFrom(notifications: List<NotificationEntity?>): List<NotificationModel> {
             return notifications.mapNotNull {
-                it?.let {
-                    val channelId = it.channelId
-                    val title = it.title ?: return@mapNotNull null
-                    val notificationBody = it.notificationBody ?: return@mapNotNull null
-                    val timestamp = it.timestamp ?: return@mapNotNull null
-                    val notificationData = it.notificationData
-                    NotificationModel(
-                        notificationId = it.notificationId,
-                        channelId = channelId,
-                        title = title,
-                        notificationBody = notificationBody,
-                        timestamp = timestamp,
-                        priority = it.priority,
-                        read = it.read,
-                        completed = it.completed,
-                        userFacing = it.userFacing,
-                        deepLink = it.deepLink(),
-                        notificationData = it.getNotificationDataMap()
-                    )
-                }
+                it?.let { createModelFrom(it) }
             }
         }
     }

@@ -26,7 +26,6 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
-import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.registration.RegistrationService
@@ -88,7 +87,7 @@ class ContentViewModel : ViewModel() {
             val sharedInstance = MoreApplication.shared
                 ?: throw IllegalStateException("MoreApplication.shared is not initialized")
             sharedInstance.deeplinkManager
-                .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
+                .modifyDeepLink(link, activity.getString(R.string.app_scheme), applicationId)
                 .firstOrNull()
         }
 
@@ -100,10 +99,10 @@ class ContentViewModel : ViewModel() {
                     val sharedInstance = MoreApplication.shared
                         ?: throw IllegalStateException("MoreApplication.shared is not initialized")
                     sharedInstance.notificationManager.handleNotificationInteraction(
-                        it, modifiedDeepLink
+                        it, modifiedDeepLink.route
                     )
                 }
-                modifiedDeepLink.toUri()
+                modifiedDeepLink.route.toUri()
             }
 
             notificationId != null -> {

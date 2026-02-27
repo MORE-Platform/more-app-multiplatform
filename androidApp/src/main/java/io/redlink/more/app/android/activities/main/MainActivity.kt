@@ -37,7 +37,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.NavigationScreen
-import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.completedSchedules.CompletedSchedulesView
 import io.redlink.more.app.android.activities.dashboard.DashboardView
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterView
@@ -65,6 +64,7 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.models.ScheduleListType
 import io.redlink.more.models.StudyState
+import io.redlink.more.navigation.model.NavigationRouteParameter
 import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -254,7 +254,7 @@ fun MainView(
                 ) {
                     val arguments = requireNotNull(it.arguments)
                     val scheduleId by remember {
-                        mutableStateOf(requireNotNull(arguments.getString("scheduleId")))
+                        mutableStateOf(requireNotNull(arguments.getString(NavigationRouteParameter.SCHEDULE_ID.key)))
                     }
 
                     viewModel.showBackButton.value = true
@@ -273,7 +273,8 @@ fun MainView(
 
                 ) {
                     val arguments = requireNotNull(it.arguments)
-                    val observationId = arguments.getString("observationId")
+                    val observationId =
+                        arguments.getString(NavigationRouteParameter.OBSERVATION_ID.key)
                     viewModel.showBackButton.value = true
 
                     val obsDetailsVM by remember {
@@ -314,7 +315,7 @@ fun MainView(
                         viewModel.schedulesViewModel(
                             ScheduleListType.valueOf(
                                 requireNotNull(it.arguments).getString(
-                                    "scheduleListType",
+                                    NavigationRouteParameter.SCHEDULE_LIST_TYPE.key,
                                     "ALL"
                                 )
                             )
@@ -332,13 +333,13 @@ fun MainView(
                     screen.createDeepLinkRoute()
                 ) {
                     val scheduleId by remember {
-                        mutableStateOf(it.arguments?.getString("scheduleId"))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.SCHEDULE_ID.key))
                     }
                     val observationId by remember {
-                        mutableStateOf(it.arguments?.getString("observationId"))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.OBSERVATION_ID.key))
                     }
                     val notificationId by remember {
-                        mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.NOTIFICATION_ID.key))
                     }
 
                     viewModel.showBackButton.value = true
@@ -360,13 +361,13 @@ fun MainView(
 
                 ) {
                     val scheduleId by remember {
-                        mutableStateOf(it.arguments?.getString("scheduleId"))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.SCHEDULE_ID.key))
                     }
                     val observationId by remember {
-                        mutableStateOf(it.arguments?.getString("observationId"))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.OBSERVATION_ID.key))
                     }
                     val notificationId by remember {
-                        mutableStateOf(it.arguments?.getString(NavigationNotificationIDKey))
+                        mutableStateOf(it.arguments?.getString(NavigationRouteParameter.NOTIFICATION_ID.key))
                     }
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (scheduleId != null || observationId != null) {

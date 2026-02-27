@@ -56,13 +56,13 @@ class NotificationViewModel: ObservableObject {
 
     func handleNotificationAction(notification: NotificationModel, navigationModalState: NavigationModalState) {
         coreModel.handleNotificationAction(notification: notification) { actionHandler, data in
-            switch actionHandler {
-            case NotificationActionHandler.deeplink:
-                if let uri = URL(string: data) {
-                    navigationModalState.openWithDeepLink(url: uri, notificationId: notification.notificationId)
+            if let data {
+                switch actionHandler {
+                case NotificationActionHandler.deeplink:
+                    AppDelegate.navigationScreenHandler.openRoute(to: data)
+                default:
+                    return
                 }
-            default:
-                return
             }
         }
     }
