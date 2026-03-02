@@ -232,7 +232,7 @@ class DeeplinkManager(
         schedule: ScheduleEntity,
         baseDeeplink: String? = null
     ): String {
-        val host = baseDeeplink ?: BASE_HOST
+        val host = baseDeeplink ?: "$protocolReplacement://$hostReplacement/"
         val base = if (host.endsWith("/")) host else "$host/"
 
         val observationRoute =
@@ -247,10 +247,5 @@ class DeeplinkManager(
             append("&scheduleId=")
             append(schedule.scheduleId)
         }
-    }
-
-
-    companion object {
-        private const val BASE_HOST = "app://io.redlink.umm.blendedcare/"
     }
 }
