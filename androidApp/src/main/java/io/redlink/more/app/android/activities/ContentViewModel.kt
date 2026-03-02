@@ -22,9 +22,7 @@ import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.main.MainActivity
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.models.AlertDialogModel
@@ -87,13 +85,11 @@ class ContentViewModel : ViewModel() {
             ?: throw IllegalStateException("MoreApplication.shared is not initialized")
         val modifiedDeepLink = rawDeepLink?.let { link ->
             sharedInstance.deeplinkManager
-                .modifyDeepLink(link, activity.getString(R.string.app_scheme), applicationId)
+                .modifyDeepLink(link)
                 .firstOrNull()
         } ?: notificationId?.let {
             sharedInstance.deeplinkManager.getNotificationViewDeepLink(
-                it,
-                activity.getString(R.string.app_scheme),
-                applicationId
+                it
             ).firstOrNull()
         }
 

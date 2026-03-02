@@ -19,6 +19,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.github.aakira.napier.Napier
 import io.redlink.more.Shared
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
@@ -110,10 +111,9 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                 )
                 shared?.let { shared ->
                     shared.deeplinkManager.setProtocol(Shared.PROTOCOL.toString(context))
-                    shared.deeplinkManager.setHost(Shared.HOST.toString(context))
+                    shared.deeplinkManager.setHost(applicationId) // applicationId is needed instead of the shared HOST, as this is necessary for the NavController in Android
                 }
             }
         }
-
     }
 }

@@ -38,20 +38,14 @@ class DeeplinkManager(
 
     fun getNotificationViewDeepLink(
         notificationId: String,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null
     ): Flow<DeepLinkData?> {
         return modifyDeepLink(
             "/${NavigationRoute.NOTIFICATIONS}?${NavigationRouteParameter.NOTIFICATION_ID}=$notificationId",
-            protocolReplacement,
-            hostReplacement
         )
     }
 
     fun modifyDeepLink(
         deepLink: String?,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null
     ): Flow<DeepLinkData?> = flow {
         deepLink?.let { deepLink ->
             val queryParams = deepLink.mapQueryParams()
@@ -78,8 +72,6 @@ class DeeplinkManager(
                     deepLinkModifier(
                         deepLink,
                         schedule,
-                        protocolReplacement,
-                        hostReplacement
                     ),
                     mapOf(
                         NavigationRouteParameter.NOTIFICATION_ID.key to notificationId,
@@ -96,12 +88,10 @@ class DeeplinkManager(
     private fun deepLinkModifier(
         deepLink: String,
         schedule: ScheduleEntity?,
-        protocolReplacement: String?,
-        hostReplacement: String?
     ): String {
         val selectedRoute = selectRoute(deepLink, schedule)
         Napier.d { "Selected route: $selectedRoute, schedule: $schedule, observationId: ${schedule?.observationId}" }
-        return replaceRoute(deepLink, selectedRoute, schedule, protocolReplacement, hostReplacement)
+        return replaceRoute(deepLink, selectedRoute, schedule)
     }
 
 
@@ -189,14 +179,12 @@ class DeeplinkManager(
         deepLink: String,
         routeToReplace: String,
         schedule: ScheduleEntity? = null,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null
     ): String {
-        val protocolAndHost = (protocolReplacement ?: this.protocolReplacement
-        ?: deepLink.substringBefore("://")) + "://"
+        val protocolAndHost = (this.protocolReplacement
+            ?: deepLink.substringBefore("://")) + "://"
         val afterProtocol = deepLink.substringAfter("://")
         val hostAndPath = afterProtocol.substringBefore('?')
-        val host = hostReplacement ?: this.hostReplacement ?: hostAndPath.substringBeforeLast(
+        val host = this.hostReplacement ?: hostAndPath.substringBeforeLast(
             "/",
             missingDelimiterValue = hostAndPath
         )
@@ -229,10 +217,8 @@ class DeeplinkManager(
 
     fun modifyDeepLink(
         deepLink: String?,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null,
         newState: (DeepLinkData?) -> Unit
-    ) = modifyDeepLink(deepLink, protocolReplacement, hostReplacement).asClosure(newState)
+    ) = modifyDeepLink(deepLink).asClosure(newState)
 
     /**
      * Creates a deep link for a given [ScheduleEntity].

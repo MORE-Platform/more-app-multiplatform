@@ -29,7 +29,7 @@ class NotificationViewModel: ObservableObject {
 
     init(filterViewModel: CoreNotificationFilterViewModel) {
         self.filterViewModel = filterViewModel
-        coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager, protocolReplacement: nil, hostReplacement: nil)
+        coreModel = CoreNotificationViewModel(coreFilterModel: filterViewModel, notificationManager: AppDelegate.shared.notificationManager)
 
         createPublisher(for: coreModel.notificationList)
         .removeDuplicates()
