@@ -130,7 +130,7 @@ class NotificationManager(
                     userFacing = title != null,
                     notificationData = data
                 )
-                storeNotifications(listOf(newNotification))
+                storeAndDisplayNotification(newNotification, false)
                 newNotification
             }
             handleNotificationInteraction(
@@ -162,18 +162,24 @@ class NotificationManager(
         displayNotification: Boolean
     ) {
         if (notification.title != null && notification.notificationBody != null) {
-            Scope.launch(Dispatchers.IO) {
+            Scope.launch {
+                Napier.i { "Storing notification: ${notification.title} - ${notification.notificationBody}" }
                 repository.notification.storeNotification(notification)
-            }
-            if (displayNotification) {
-                Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
-                localNotificationListener.displayNotification(notification, unreadUserCount.value)
+                if (displayNotification) {
+                    Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
+                    withContext(Dispatchers.Main) {
+                        localNotificationListener.displayNotification(
+                            notification,
+                            unreadUserCount.value
+                        )
+                    }
+                }
             }
         }
     }
 
     fun storeNotifications(notifications: List<NotificationEntity>) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             repository.notification.storeNotifications(notifications)
         }
     }
@@ -294,6 +300,11 @@ class NotificationManager(
             }
         } ?: run {
             markNotificationAsRead(notificationId)
+            Scope.launch {
+                deeplinkManager.getNotificationViewDeepLink(notificationId).firstOrNull()?.let {
+                    handler(NotificationActionHandler.DEEPLINK, it)
+                }
+            }
         }
     }
 

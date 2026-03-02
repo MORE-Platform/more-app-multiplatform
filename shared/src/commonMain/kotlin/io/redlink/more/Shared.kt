@@ -36,13 +36,17 @@ import io.redlink.more.services.store.SharedStorageRepository
 import io.redlink.more.viewModels.ViewManager
 import io.redlink.more.viewModels.bluetoothConnection.BluetoothController
 import io.redlink.more.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -93,84 +97,85 @@ class Shared(
     private var mainJob: Job? = null
 
     init {
-        initMainScope()
-        Scope.repeatedLaunch(60000L, Dispatchers.IO) {
-            if (mainJob == null || !mainJob!!.isActive) {
-                Napier.e(tag = "Shared::init") { "Main scope stopped! Restarting it..." }
-                withContext(Dispatchers.Main) {
-                    initMainScope()
+        val handler = CoroutineExceptionHandler { _, t ->
+            Napier.e(tag = "Shared::init") { "Init watcher crashed: ${t.stackTraceToString()}" }
+        }
+
+        mainJob?.cancel()
+        mainJob = Scope.launch(handler) {
+            while (isActive) {
+                try {
+                    combine(
+                        credentialRepository.hasCredentials,
+                        repositories.study.studyState
+                    ) { cred, state -> cred && state.isActive() }
+                        .catch { e ->
+                            Napier.e(tag = "Shared::init") { "Foreground/study watcher failed: ${e.stackTraceToString()}" }
+                            if (e is CancellationException) throw e
+                        }
+                        .distinctUntilChanged()
+                        .collect { state ->
+                            ViewManager.currentStudyActive(state)
+                            if (state) {
+                                updateData(ViewManager.appInForeground.value)
+                            } else {
+                                stopObservations()
+                                ViewManager.showBLEView(false)
+                                ObservationStates.resetAll()
+                            }
+                        }
+
+                    // If collect ever returns normally, we restart the loop.
+                    Napier.w(tag = "Shared::init") { "Foreground/study watcher completed unexpectedly; restarting" }
+                    delay(500L)
+                } catch (e: CancellationException) {
+                    // Normal shutdown/cancel.
+                    Napier.i(tag = "Shared::init") { "Foreground/study watcher cancelled" }
+                    throw e
+                } catch (t: Throwable) {
+                    // Any exception inside the collector would previously cancel the coroutine silently.
+                    Napier.e(tag = "Shared::init") { "Foreground/study watcher crashed; restarting: ${t.stackTraceToString()}" }
+                    delay(1000L)
+                }
+            }
+        }.second
+    }
+
+    fun updateData(appInForeground: Boolean) {
+        ViewManager.appIsInForeground(appInForeground)
+        Scope.launch {
+            Napier.d(tag = "Shared:updateData") { "Updating data, with app in foreground: $appInForeground" }
+            if (appInForeground) {
+                notificationManager.createNewFCMIfNecessary()
+                updateStudy()
+                if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    notificationManager.createNewFCMIfNecessary()
+                    updateSchedules()
+                    withContext(Dispatchers.Main) {
+                        observationDataManager.listenToDatapointCountChanges()
+                        observationManager.activateScheduleUpdate()
+                        dataRecorder.restartAll()
+                    }
+                    garminLogin()
+                    notificationManager.clearAllNotifications()
+                } else {
+                    ViewManager.showBLEView(false)
+                }
+                notificationManager.clearAllNotifications()
+            } else {
+                ViewManager.showBLEView(false)
+                if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    observationDataManager.sendData(true)
                 }
             }
         }
-    }
-
-    private fun initMainScope() {
-        mainJob = Scope.launch {
-            var prevFg: Boolean? = null
-            var prevState: Boolean? = null
-            combine(
-                ViewManager.appInForeground,
-                credentialRepository.hasCredentials,
-                repositories.study.studyState
-            ) { fg, cred, state -> Pair(fg, cred && state.isActive()) }
-                .distinctUntilChanged()
-                .collect { (fg, state) ->
-                    ViewManager.currentStudyActive(state)
-                    if (fg != prevFg && (state == prevState || prevState == null && state)) {
-                        Napier.d(tag = "Shared::init") { "App went to foreground: $fg, study state: $state" }
-                        if (fg) {
-                            updateStudy()
-                            if (state) {
-                                Napier.d(tag = "Shared::init") { "Launching updateSchedules()" }
-                                updateSchedules()
-                                notificationManager.createNewFCMIfNecessary()
-                                notificationManager.clearAllNotifications()
-                                notificationManager.downloadMissedNotifications()
-                                withContext(Dispatchers.Main) {
-                                    observationDataManager.listenToDatapointCountChanges()
-                                    observationManager.activateScheduleUpdate()
-                                    dataRecorder.restartAll()
-                                }
-                                garminLogin()
-                            } else {
-                                ViewManager.showBLEView(false)
-                            }
-                        } else {
-                            ViewManager.showBLEView(false)
-                            if (state) {
-                                observationDataManager.sendData(true)
-                            }
-                        }
-                    } else if (fg == prevFg && prevState != null && state != prevState) {
-                        Napier.d(tag = "Shared::init") { "Study state changed: $prevState -> $state" }
-                        if (state) {
-                            if (fg) {
-                                updateStudy()
-                                Napier.d(tag = "Shared::init") { "Launching updateSchedules() 2" }
-                                updateSchedules()
-                                withContext(Dispatchers.Main) {
-                                    observationDataManager.listenToDatapointCountChanges()
-                                    observationManager.activateScheduleUpdate()
-                                    dataRecorder.restartAll()
-                                }
-                                garminLogin()
-                            }
-                        } else {
-                            stopObservations()
-                            ViewManager.showBLEView(false)
-                            ObservationStates.resetAll()
-                        }
-                    }
-                    prevFg = fg
-                    prevState = state
-                }
-        }.second
     }
 
     suspend fun updateSchedules() {
         observationManager.updateTaskStates()
         observationFactory.updateObservationErrors()
         observationService.scheduleObservationReminder()
+        notificationManager.downloadMissedNotifications()
     }
 
     fun updateStudyAsync() {
@@ -318,7 +323,7 @@ class Shared(
 
             ViewManager.studyIsUpdating(true)
             try {
-                if (repositories.study.studyState.value == StudyState.ACTIVE && (study as? Study)?.studyState == Study.StudyState.active) {
+                if (repositories.study.studyState.value == StudyState.ACTIVE && (study as? Study)?.studyState == Study.StudyState.ACTIVE) {
                     observationDataManager.sendData(true)
                 }
                 StudyScope.cancel()

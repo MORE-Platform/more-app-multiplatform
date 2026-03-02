@@ -16,7 +16,7 @@
 import CoreMotion
 import Foundation
 
-extension CMSensorDataList: Sequence {
+extension CMSensorDataList: @retroactive Sequence {
     public typealias Iterator = NSFastEnumerationIterator
     public func makeIterator() -> NSFastEnumerationIterator {
         return NSFastEnumerationIterator(self)

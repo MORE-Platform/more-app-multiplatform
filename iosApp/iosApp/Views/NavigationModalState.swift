@@ -92,10 +92,12 @@ class NavigationModalState: ObservableObject {
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] show in
-                if show {
-                    self?.openView(screen: .garminConnect)
-                } else {
-                    self?.closeView(screen: .garminConnect)
+                Task {@MainActor in
+                    if show {
+                        self?.openView(screen: .garminConnect)
+                    } else {
+                        self?.closeView(screen: .garminConnect)
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -112,10 +114,12 @@ class NavigationModalState: ObservableObject {
             },
             set: { newValue in
                 if self.mayChangeViewStructure() {
-                    if newValue {
-                        self.openView(screen: screen)
-                    } else {
-                        self.closeView(screen: screen)
+                    Task { @MainActor in                    
+                        if newValue {
+                            self.openView(screen: screen)
+                        } else {
+                            self.closeView(screen: screen)
+                        }
                     }
                 }
             }
@@ -140,14 +144,24 @@ class NavigationModalState: ObservableObject {
         return nil
     }
 
+    @MainActor
     func openView(screen: NavigationScreen, scheduleId: String? = nil, observationId: String? = nil, notificationId: String? = nil) {
         if mayChangeViewStructure() {
             if !screen.values.fullScreen {
-                navigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
-                navigationStack.append(screen)
-                if let onViewOpen = currentNavigationAction()?.onViewOpen {
-                    Task { @MainActor in
-                        onViewOpen(screen)
+                switch screen.values.navigationLink {
+                case .dashboard:
+                    tagState = 0
+                case .notifications:
+                    tagState = 1
+                case .info:
+                    tagState = 2
+                default:
+                    navigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
+                    navigationStack.append(screen)
+                    if let onViewOpen = currentNavigationAction()?.onViewOpen {
+                        Task { @MainActor in
+                            onViewOpen(screen)
+                        }
                     }
                 }
             } else {
@@ -245,7 +259,9 @@ class NavigationModalState: ObservableObject {
                     let notificationId = params[.notificationId] ?? notificationId
                     let scheduleId = params[.scheduleId]
 
-                    self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
+                    Task {@MainActor in
+                        self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
+                    }
                 }
 
             } else if modifiedDeepLink == nil, let notificationId {
@@ -262,7 +278,9 @@ class NavigationModalState: ObservableObject {
             let notificationId: String? = params[NavigationRouteParameter.notificationId.key] as? String
             let scheduleId: String? = params[NavigationRouteParameter.scheduleId.key] as? String
 
-            self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
+            Task {@MainActor in
+                self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
+            }
         }
     }
 }

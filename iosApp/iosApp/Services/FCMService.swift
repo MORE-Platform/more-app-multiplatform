@@ -52,7 +52,6 @@ extension FCMService: UNUserNotificationCenterDelegate {
 
     @MainActor
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        ViewManager.shared.appIsInForeground(state: true)
         let content = response.notification.request.content
         let data = content.userInfo.notNilStringDictionary()
         let msgId = data[NotificationManager.companion.MSG_ID] ?? response.notification.request.identifier

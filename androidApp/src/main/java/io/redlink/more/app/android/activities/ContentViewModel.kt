@@ -29,6 +29,7 @@ import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
 import io.redlink.more.models.AlertDialogModel
 import io.redlink.more.registration.RegistrationService
+import io.redlink.more.scopes.Scope
 import io.redlink.more.services.notification.NotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -82,39 +83,30 @@ class ContentViewModel : ViewModel() {
             activity.intent.getStringExtra("deepLink") ?: activity.intent.data?.toString()
         Napier.d { "Attached deeplink: $rawDeepLink" }
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
-
+        val sharedInstance = MoreApplication.shared
+            ?: throw IllegalStateException("MoreApplication.shared is not initialized")
         val modifiedDeepLink = rawDeepLink?.let { link ->
-            val sharedInstance = MoreApplication.shared
-                ?: throw IllegalStateException("MoreApplication.shared is not initialized")
             sharedInstance.deeplinkManager
                 .modifyDeepLink(link, activity.getString(R.string.app_scheme), applicationId)
                 .firstOrNull()
+        } ?: notificationId?.let {
+            sharedInstance.deeplinkManager.getNotificationViewDeepLink(
+                it,
+                activity.getString(R.string.app_scheme),
+                applicationId
+            ).firstOrNull()
+        }
+
+        notificationId?.let {
+            Scope.launch {
+                sharedInstance.notificationManager.markNotificationAsRead(it)
+            }
         }
 
         Napier.d { "Modified deeplink: $modifiedDeepLink" }
 
-        val finalUri = when {
-            modifiedDeepLink != null -> {
-                notificationId?.let {
-                    val sharedInstance = MoreApplication.shared
-                        ?: throw IllegalStateException("MoreApplication.shared is not initialized")
-                    sharedInstance.notificationManager.handleNotificationInteraction(
-                        it, modifiedDeepLink.route
-                    )
-                }
-                modifiedDeepLink.route.toUri()
-            }
-
-            notificationId != null -> {
-                (ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters()).toUri()
-            }
-
-            else -> null
-        }
-
-        Napier.d { "Final deeplink: ${finalUri?.toString()}" }
         withContext(Dispatchers.Main) {
-            activity.intent.data = finalUri
+            activity.intent.data = modifiedDeepLink?.route?.toUri()
             openMain(activity)
         }
     }

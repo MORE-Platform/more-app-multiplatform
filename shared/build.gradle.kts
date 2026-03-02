@@ -159,7 +159,8 @@ tasks.register<GenerateTask>(
 
     configOptions.set(
         mapOf(
-            "dateLibrary" to "kotlinx-datetime"
+            "dateLibrary" to "kotlinx-datetime",
+            "enumPropertyNaming" to "UPPERCASE"
         )
     )
 

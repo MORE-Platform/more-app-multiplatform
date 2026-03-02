@@ -21,9 +21,31 @@ class DeeplinkManager(
     val observationFactory: ObservationFactory
 ) {
     private val deepLinks = mutableSetOf<String>()
+    private var protocolReplacement: String? = null
+    private var hostReplacement: String? = null
 
     fun addAvailableDeepLinks(deepLinks: Set<String>) {
         this.deepLinks.addAll(deepLinks)
+    }
+
+    fun setProtocol(protocolReplacement: String?) {
+        this.protocolReplacement = protocolReplacement
+    }
+
+    fun setHost(hostReplacement: String?) {
+        this.hostReplacement = hostReplacement
+    }
+
+    fun getNotificationViewDeepLink(
+        notificationId: String,
+        protocolReplacement: String? = null,
+        hostReplacement: String? = null
+    ): Flow<DeepLinkData?> {
+        return modifyDeepLink(
+            "/${NavigationRoute.NOTIFICATIONS}?${NavigationRouteParameter.NOTIFICATION_ID}=$notificationId",
+            protocolReplacement,
+            hostReplacement
+        )
     }
 
     fun modifyDeepLink(
@@ -50,24 +72,6 @@ class DeeplinkManager(
             Napier.d { "Schedule: $schedule, observationId: $observationIdParam" }
 
             val observationIdToUse = observationIdParam ?: schedule?.observationId
-
-            if (scheduleIdParam != null && schedule == null) {
-                emit(null)
-                return@flow
-            }
-
-            if (observationIdToUse.isNullOrEmpty()
-                || repos.observation.observationById(observationIdToUse)
-                    .firstOrNull() == null
-            ) {
-                emit(null)
-                return@flow
-            }
-
-            if (schedule != null && observationIdParam != null && schedule.observationId != observationIdParam) {
-                emit(null)
-                return@flow
-            }
 
             emit(
                 DeepLinkData(
@@ -134,23 +138,34 @@ class DeeplinkManager(
     }
 
     private fun routeForObservation(deepLink: String): String {
-        val incomingRoute =
-            deepLink.extractRouteFromDeepLink() ?: return NavigationRoute.SCHEDULE_DETAILS.route
+        val incomingRoute = extractIncomingRoute(deepLink.lowercase())
+            ?: return NavigationRoute.SCHEDULE_DETAILS.route
 
         val resolvedObservationRoute =
             observationFactory.getMatchingObservationTypes(setOf(incomingRoute)).firstOrNull()
+                ?: incomingRoute
 
         Napier.d { "Resolved observation route: $resolvedObservationRoute" }
-
-        if (resolvedObservationRoute == null) {
-            return NavigationRoute.SCHEDULE_DETAILS.route
-        }
 
         val valid = validateRoute(resolvedObservationRoute)
         Napier.d { "Validating route: $valid" }
         return if (valid) {
             resolvedObservationRoute
-        } else NavigationRoute.SCHEDULE_DETAILS.route
+        } else NavigationRoute.DASHBOARD.route
+    }
+
+    private fun extractIncomingRoute(raw: String): String? {
+        // 1) Try the existing extractor (works for full deeplinks like scheme://host/path?...)
+        val extracted = raw.extractRouteFromDeepLink()
+        if (!extracted.isNullOrBlank()) return extracted
+
+        // 2) Fallback: treat the input as a route/path-only string
+        //    e.g. "/notifications", "notifications", "notifications?x=1", "/foo#bar"
+        return raw.trim()
+            .removePrefix("/")
+            .substringBefore('?')
+            .substringBefore('#')
+            .takeIf { it.isNotBlank() }
     }
 
     private fun selectRoute(deepLink: String, schedule: ScheduleEntity?): String {
@@ -167,7 +182,7 @@ class DeeplinkManager(
                 Napier.d { "Schedule start: ${scheduleSchema.start}, end: ${scheduleSchema.end}, currentTime: ${now.epochSeconds}" }
                 NavigationRoute.SCHEDULE_DETAILS.route
             }
-        } ?: NavigationRoute.OBSERVATION_DETAILS.route
+        } ?: routeForObservation(deepLink)
     }
 
     private fun replaceRoute(
@@ -177,10 +192,11 @@ class DeeplinkManager(
         protocolReplacement: String? = null,
         hostReplacement: String? = null
     ): String {
-        val protocolAndHost = (protocolReplacement ?: deepLink.substringBefore("://")) + "://"
+        val protocolAndHost = (protocolReplacement ?: this.protocolReplacement
+        ?: deepLink.substringBefore("://")) + "://"
         val afterProtocol = deepLink.substringAfter("://")
         val hostAndPath = afterProtocol.substringBefore('?')
-        val host = hostReplacement ?: hostAndPath.substringBeforeLast(
+        val host = hostReplacement ?: this.hostReplacement ?: hostAndPath.substringBeforeLast(
             "/",
             missingDelimiterValue = hostAndPath
         )

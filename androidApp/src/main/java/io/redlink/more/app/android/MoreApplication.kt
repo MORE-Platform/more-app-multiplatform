@@ -19,6 +19,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.github.aakira.napier.Napier
 import io.redlink.more.Shared
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
@@ -32,7 +33,6 @@ import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.models.NotificationTextLocalization
 import io.redlink.more.napierDebugBuild
 import io.redlink.more.services.store.SharedPreferencesRepository
-import io.redlink.more.viewModels.ViewManager
 
 /**
  * Main Application class of the project.
@@ -60,13 +60,13 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
-        ViewManager.appIsInForeground(true)
+        shared?.updateData(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Napier.i { "App is in the background..." }
-        ViewManager.appIsInForeground(false)
+        shared?.updateData(false)
     }
 
     companion object {
@@ -109,6 +109,8 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                     AndroidObservationFactory(context, dataManager, repositories),
                     AndroidDataRecorder()
                 )
+                shared!!.deeplinkManager.setProtocol(context.getString(R.string.app_scheme))
+                shared!!.deeplinkManager.setHost(applicationId)
             }
         }
 
