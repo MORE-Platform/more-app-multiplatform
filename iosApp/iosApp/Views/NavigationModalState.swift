@@ -15,8 +15,8 @@
 
 import Combine
 import KMPNativeCoroutinesCombine
-import shared
 import SwiftUI
+import shared
 
 struct NavigationState: Hashable {
     var scheduleId: String? = nil
@@ -58,47 +58,49 @@ class NavigationModalState: ObservableObject {
 
     init(repos: MainRepository) {
         createPublisher(for: repos.study.studyState)
-        .removeDuplicates()
-        .receive(on: DispatchQueue.main)
-        .sink(receiveCompletion: { _ in }) { [weak self] state in
-            self?.currentStudyState = state
-            if state == StudyState.closed || state == StudyState.paused {
-                self?.clearViews()
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] state in
+                self?.currentStudyState = state
+                if state == StudyState.closed || state == StudyState.paused {
+                    self?.clearViews()
+                }
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
 
         createPublisher(for: ViewManager.shared.studyLoadingError)
-        .removeDuplicates()
-        .receive(on: DispatchQueue.main)
-        .sink(receiveCompletion: { _ in }) { [weak self] studyLoadingError in
-            self?.studyLoadingError = studyLoadingError.boolValue
-        }
-        .store(in: &cancellables)
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] studyLoadingError in
+                self?.studyLoadingError = studyLoadingError.boolValue
+            }
+            .store(in: &cancellables)
 
         createPublisher(for: ViewManager.shared.showGarminConnectView)
-        .removeDuplicates()
-        .map {
-            $0.boolValue
-        }
-        .flatMap { show -> AnyPublisher<Bool, Never> in
-            if show {
-                return Just(true)
-                    .delay(for: .seconds(0.5), scheduler: DispatchQueue.global(qos: .userInitiated))
-                    .eraseToAnyPublisher()
-            } else {
-                return Just(false).eraseToAnyPublisher()
+            .removeDuplicates()
+            .map {
+                $0.boolValue
             }
-        }
-        .receive(on: DispatchQueue.main)
-        .sink(receiveCompletion: { _ in }) { [weak self] show in
-            if show {
-                self?.openView(screen: .garminConnect)
-            } else {
-                self?.closeView(screen: .garminConnect)
+            .flatMap { show -> AnyPublisher<Bool, Never> in
+                if show {
+                    return Just(true)
+                        .delay(for: .seconds(0.5), scheduler: DispatchQueue.global(qos: .userInitiated))
+                        .eraseToAnyPublisher()
+                } else {
+                    return Just(false).eraseToAnyPublisher()
+                }
             }
-        }
-        .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] show in
+                Task {@MainActor in
+                    if show {
+                        self?.openView(screen: .garminConnect)
+                    } else {
+                        self?.closeView(screen: .garminConnect)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func screenBinding(for screen: NavigationScreen) -> Binding<Bool> {
@@ -112,10 +114,12 @@ class NavigationModalState: ObservableObject {
             },
             set: { newValue in
                 if self.mayChangeViewStructure() {
-                    if newValue {
-                        self.openView(screen: screen)
-                    } else {
-                        self.closeView(screen: screen)
+                    Task { @MainActor in                    
+                        if newValue {
+                            self.openView(screen: screen)
+                        } else {
+                            self.closeView(screen: screen)
+                        }
                     }
                 }
             }
@@ -140,14 +144,24 @@ class NavigationModalState: ObservableObject {
         return nil
     }
 
+    @MainActor
     func openView(screen: NavigationScreen, scheduleId: String? = nil, observationId: String? = nil, notificationId: String? = nil) {
         if mayChangeViewStructure() {
             if !screen.values.fullScreen {
-                navigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
-                navigationStack.append(screen)
-                if let onViewOpen = currentNavigationAction()?.onViewOpen {
-                    Task { @MainActor in
-                        onViewOpen(screen)
+                switch screen.values.navigationLink {
+                case .dashboard:
+                    tagState = 0
+                case .notifications:
+                    tagState = 1
+                case .info:
+                    tagState = 2
+                default:
+                    navigationStateStack.append(NavigationState(scheduleId: scheduleId, observationId: observationId, notificationId: notificationId))
+                    navigationStack.append(screen)
+                    if let onViewOpen = currentNavigationAction()?.onViewOpen {
+                        Task { @MainActor in
+                            onViewOpen(screen)
+                        }
                     }
                 }
             } else {
@@ -159,11 +173,13 @@ class NavigationModalState: ObservableObject {
 
     func navigationState(for screen: NavigationScreen) -> NavigationState? {
         if !screen.values.fullScreen && !navigationStateStack.isEmpty,
-           let index = navigationStack.lastIndex(where: { $0 == screen }),
-           index > -1 {
+            let index = navigationStack.lastIndex(where: { $0 == screen }),
+            index > -1
+        {
             return navigationStateStack[index]
         } else if screen.values.fullScreen && !fullscreenNavigationStateStack.isEmpty, let index = fullscreenNavigationStack.lastIndex(where: { $0 == screen }),
-                  index > -1 {
+            index > -1
+        {
             return fullscreenNavigationStateStack[index]
         }
         return nil
@@ -235,31 +251,35 @@ class NavigationModalState: ObservableObject {
             return
         }
         AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: protocolReplacement, hostReplacement: hostReplacement) { modifiedDeepLink in
-            if let modifiedDeepLink,
-               let modifiedURL = URL(string: modifiedDeepLink) {
-                let path = modifiedURL.path
-                if let matchingScreen = NavigationScreen.allCases.first(where: { $0.values.navigationLink == path }) {
-                    var parameters: [NavigationParameter: String] = [:]
-                    let components = URLComponents(url: modifiedURL, resolvingAgainstBaseURL: false)
+            if let modifiedDeepLink {
+                if let match = NavigationScreen.match(from: modifiedDeepLink.route) {
+                    let params = match.params
 
-                    for queryItem in components?.queryItems ?? [] {
-                        if let value = queryItem.value, let parameter = NavigationParameter(rawValue: queryItem.name) {
-                            parameters[parameter] = value
-                        }
+                    let observationId = params[.observationId]
+                    let notificationId = params[.notificationId] ?? notificationId
+                    let scheduleId = params[.scheduleId]
+
+                    Task {@MainActor in
+                        self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                     }
-
-                    let observationId = parameters[.observationId]
-                    let notificationId = parameters[.notificaitonId] ?? notificationId
-                    let scheduleId = parameters[.scheduleId]
-
-                    if let notificationId {
-                        AppDelegate.shared.notificationManager.handleNotificationInteraction(notificationId: notificationId, deeplink: modifiedDeepLink)
-                    }
-
-                    self.openView(screen: matchingScreen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
                 }
+
             } else if modifiedDeepLink == nil, let notificationId {
                 AppDelegate.shared.notificationManager.markNotificationAsRead(notificationId: notificationId)
+            }
+        }
+    }
+
+    func openRoute(to data: DeepLinkData) {
+        if let url = URL(string: data.route), let match = NavigationScreen.match(from: url) {
+            let params = data.params
+
+            let observationId: String? = params[NavigationRouteParameter.observationId.key] as? String
+            let notificationId: String? = params[NavigationRouteParameter.notificationId.key] as? String
+            let scheduleId: String? = params[NavigationRouteParameter.scheduleId.key] as? String
+
+            Task {@MainActor in
+                self.openView(screen: match.screen, scheduleId: scheduleId, observationId: observationId, notificationId: notificationId)
             }
         }
     }

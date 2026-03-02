@@ -23,6 +23,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver
@@ -34,7 +35,6 @@ import io.redlink.more.services.notification.LocalNotificationListener
 import io.redlink.more.services.notification.NotificationManager.Companion.MSG_ID
 
 class LocalPushNotificationService(private val context: Context) : LocalNotificationListener {
-    private val defaultChannelId = context.getString(R.string.default_channel_id)
     override fun displayNotification(notification: NotificationEntity, badgeCount: Int) {
         notification.title?.let { title ->
             notification.notificationBody?.let { messageKeyOrText ->
@@ -42,7 +42,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                 val nowMillis = System.currentTimeMillis()
                 val triggerAtMillis = (notification.timestamp ?: 0L) * 1000L
                 if (triggerAtMillis > nowMillis + 1000L) {
-                    val channelId = notification.channelId ?: defaultChannelId
+                    val channelId = notification.channelId ?: MoreApplication.DEFAULT_CHANNEL_ID!!
 
                     createNotificationIntent(notification, channelId)?.let { alarmIntent ->
                         AlarmUtils.addAlarm(
@@ -69,7 +69,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
                         PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
                     )
 
-                    val channelId = notification.channelId ?: defaultChannelId
+                    val channelId = notification.channelId ?: MoreApplication.DEFAULT_CHANNEL_ID!!
                     val notificationBuilder = NotificationCompat.Builder(context, channelId)
                         .setSmallIcon(R.mipmap.ic_more_logo_hf_v2_round)
                         .setContentTitle(title)
@@ -128,7 +128,7 @@ class LocalPushNotificationService(private val context: Context) : LocalNotifica
             notifications.forEach { notification ->
                 createNotificationIntent(
                     notification,
-                    notification.channelId ?: defaultChannelId
+                    notification.channelId ?: MoreApplication.DEFAULT_CHANNEL_ID!!
                 )?.let {
                     AlarmUtils.cancelAllAlarms(context, it)
                     Napier.i { "Cleared scheduled notifications for ID: ${notification.notificationId}" }

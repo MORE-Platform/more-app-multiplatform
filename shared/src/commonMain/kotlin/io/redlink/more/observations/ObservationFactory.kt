@@ -69,6 +69,10 @@ abstract class ObservationFactory(
 
     fun observationTypes() = observations.map { it.observationType.observationType }.toSet()
 
+    fun getMatchingObservationTypes(types: Set<String>): Set<String> =
+        observations.filter { it.observationType.matchesAny(types) }
+            .map { it.observationType.observationType }.toSet()
+
     fun sensorPermissions() =
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 

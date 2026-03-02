@@ -37,6 +37,9 @@ object ViewManager {
     @NativeCoroutines
     val showGarminConnectView: StateFlow<Boolean> = _showGarminConnectView
 
+    @NativeCoroutines
+    val activeStudy: StateFlow<Boolean> = _activeStudy
+
     private fun canOpenNewView(): Boolean {
         return _activeStudy.value &&
                 !_studyIsUpdating.value &&

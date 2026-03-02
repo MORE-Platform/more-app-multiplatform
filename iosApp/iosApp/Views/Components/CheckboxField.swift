@@ -20,17 +20,23 @@ struct CheckboxField: View {
 
     var body: some View {
         Button(action: {
-            self.callback(self.id)
+            withAnimation(.none) {
+                self.callback(self.id)
+            }
         }) {
             HStack(alignment: .center) {
                 Image(systemName: self.isSelected ? "checkmark.square.fill" : "square")
                     .foregroundColor(.more.primary)
+                    .animation(nil, value: isSelected)
                 BasicText(text: label, color: .more.secondary)
                 Spacer()
             }.foregroundColor(.more.primaryLight)
         }
         .foregroundColor(.more.white)
         .padding(.bottom, 7)
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .transaction { $0.animation = nil }
     }
 }
 

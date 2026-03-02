@@ -31,6 +31,7 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListItem
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.jvmLocalDate
+import io.redlink.more.navigation.model.NavigationRouteParameter
 
 @Composable
 fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, showButton: Boolean) {
@@ -77,8 +78,8 @@ fun ScheduleList(viewModel: ScheduleViewModel, navController: NavController, sho
                         ) {
                             navController.navigate(
                                 NavigationScreen.SCHEDULE_DETAILS.navigationRoute(
-                                    "scheduleId" to scheduleModel.scheduleId,
-                                    "scheduleListType" to viewModel.scheduleListType
+                                    NavigationRouteParameter.SCHEDULE_ID.key to scheduleModel.scheduleId,
+                                    NavigationRouteParameter.SCHEDULE_LIST_TYPE.key to viewModel.scheduleListType
                                 )
                             )
                         }

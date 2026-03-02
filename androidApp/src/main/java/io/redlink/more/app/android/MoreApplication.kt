@@ -32,7 +32,6 @@ import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.models.NotificationTextLocalization
 import io.redlink.more.napierDebugBuild
 import io.redlink.more.services.store.SharedPreferencesRepository
-import io.redlink.more.viewModels.ViewManager
 
 /**
  * Main Application class of the project.
@@ -44,6 +43,8 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         napierDebugBuild()
         appContext = this
         packagePath = this.packageName
+        appName = this.getString(R.string.app_name)
+        DEFAULT_CHANNEL_ID = packagePath + appName!!.lowercase() + ".urgent"
         NotificationTextLocalization.init(this)
 
         initShared(this)
@@ -58,20 +59,26 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
-        ViewManager.appIsInForeground(true)
+        shared?.updateData(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Napier.i { "App is in the background..." }
-        ViewManager.appIsInForeground(false)
+        shared?.updateData(false)
     }
 
     companion object {
         var appContext: Context? = null
             private set
 
+        var appName: String? = null
+            private set
+
         var packagePath: String? = null
+            private set
+
+        var DEFAULT_CHANNEL_ID: String? = null
             private set
 
         var firebaseAnalytics: FirebaseAnalytics? = null
@@ -101,6 +108,10 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                     AndroidObservationFactory(context, dataManager, repositories),
                     AndroidDataRecorder()
                 )
+                shared?.let { shared ->
+                    shared.deeplinkManager.setProtocol(Shared.PROTOCOL.toString(context))
+                    shared.deeplinkManager.setHost(Shared.HOST.toString(context))
+                }
             }
         }
 

@@ -103,6 +103,10 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
         }
     }
 
+    suspend fun getNotification(notificationId: String): NotificationEntity? {
+        return appDatabase.notificationDao().getById(notificationId)
+    }
+
     fun getAllUserFacingNotifications(): Flow<List<NotificationEntity>> {
         val dbFlow = appDatabase.notificationDao().getByPastUserFacingFlow(true)
 
@@ -134,9 +138,12 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
             readNotificationIds.remove(key)
         }
 
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             mutex.withLock {
-                appDatabase.notificationDao().updateReadStatus(key, read)
+                val notification = appDatabase.notificationDao().getById(key)
+                if (notification != null) {
+                    appDatabase.notificationDao().updateReadStatus(key, read)
+                }
                 readNotificationIds.remove(key)
             }
         }
@@ -151,11 +158,14 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
             completedNotificationIds.remove(key)
         }
 
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             mutex.withLock {
-                appDatabase.notificationDao().updateCompletedStatus(key, completed)
-                if (completed) {
-                    appDatabase.notificationDao().updateReadStatus(key, true)
+                val notification = appDatabase.notificationDao().getById(key)
+                if (notification != null) {
+                    appDatabase.notificationDao().updateCompletedStatus(key, completed)
+                    if (completed) {
+                        appDatabase.notificationDao().updateReadStatus(key, true)
+                    }
                 }
                 completedNotificationIds.remove(key)
             }
@@ -174,7 +184,7 @@ class NotificationRepository(private val appDatabase: AppDatabase) {
 
 
     fun deleteNotification(notificationId: String) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch {
             deletedNotificationIds.add(notificationId)
             mutex.withLock {
                 Napier.i { "Delete Notification: $deletedNotificationIds" }

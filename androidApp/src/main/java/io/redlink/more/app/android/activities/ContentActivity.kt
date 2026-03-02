@@ -28,6 +28,7 @@ import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
+import io.redlink.more.navigation.model.NavigationRouteParameter
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.flow.combine
@@ -41,11 +42,11 @@ class ContentActivity : ComponentActivity() {
             var deepLink = it
             Napier.d { "Received deep link: $deepLink" }
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                if (!deepLink.contains(NavigationScreen.NavigationNotificationIDKey)) {
+                if (!deepLink.contains(NavigationRouteParameter.NOTIFICATION_ID.key)) {
                     deepLink += if (deepLink.contains("?")) {
-                        "&${NavigationScreen.NavigationNotificationIDKey}=$msgId"
+                        "&${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     } else {
-                        "?${NavigationScreen.NavigationNotificationIDKey}=$msgId"
+                        "?${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     }
                 }
             }

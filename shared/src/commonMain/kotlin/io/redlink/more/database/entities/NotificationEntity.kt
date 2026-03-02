@@ -124,7 +124,7 @@ data class NotificationEntity(
                 priority = 1,
                 read = false,
                 completed = false,
-                userFacing = (notification.type ?: "text") == "text",
+                userFacing = notification.type == PushNotification.Type.TEXT,
                 notificationData = notification.data?.mapValues { it.value.toString() },
                 deepLink = notification.deepLink
             )
