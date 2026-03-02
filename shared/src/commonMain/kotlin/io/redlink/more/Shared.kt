@@ -10,6 +10,8 @@
  */
 package io.redlink.more
 
+import dev.icerock.moko.resources.desc.Resource
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.redlink.more.database.repository.MainRepository
@@ -396,5 +398,10 @@ class Shared(
     suspend fun removeStudyData() {
         repositories.deleteAll()
         observationFactory.clearNeededObservationTypes()
+    }
+
+    companion object {
+        val PROTOCOL = StringDesc.Resource(SharedRes.strings.deeplink_protocol)
+        val HOST = StringDesc.Resource(SharedRes.strings.deeplink_host)
     }
 }

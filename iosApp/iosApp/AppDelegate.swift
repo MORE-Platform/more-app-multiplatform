@@ -64,8 +64,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
         AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: routes)
-        AppDelegate.shared.deeplinkManager.setProtocol(protocolReplacement: "app")
-        AppDelegate.shared.deeplinkManager.setHost(hostReplacement: "io.redlink.umm.blenededcare")
+        AppDelegate.shared.deeplinkManager.setProtocol(protocolReplacement: Shared.companion.PROTOCOL.localized())
+        AppDelegate.shared.deeplinkManager.setHost(hostReplacement: Shared.companion.HOST.localized())
 
         return true
     }

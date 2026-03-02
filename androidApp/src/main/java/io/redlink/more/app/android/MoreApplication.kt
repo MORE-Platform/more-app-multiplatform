@@ -19,7 +19,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.github.aakira.napier.Napier
 import io.redlink.more.Shared
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
@@ -109,8 +108,10 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                     AndroidObservationFactory(context, dataManager, repositories),
                     AndroidDataRecorder()
                 )
-                shared!!.deeplinkManager.setProtocol(context.getString(R.string.app_scheme))
-                shared!!.deeplinkManager.setHost(applicationId)
+                shared?.let { shared ->
+                    shared.deeplinkManager.setProtocol(Shared.PROTOCOL.toString(context))
+                    shared.deeplinkManager.setHost(Shared.HOST.toString(context))
+                }
             }
         }
 
