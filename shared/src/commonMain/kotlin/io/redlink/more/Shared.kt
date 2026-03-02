@@ -282,14 +282,13 @@ class Shared(
 
         ViewManager.studyError(false)
 
-        val currentStudy = repositories.study.study.value
 
         var studyHasChanged = false
         var stateChanged = false
         var activeStatusChanged = false
         var versionChanged = false
 
-        currentStudy?.let { current ->
+        currentStudyBeforeFetch?.let { current ->
             val s = study as? Study
             val newState = s?.studyState?.toStudyState()
             val currentState = current.getState()
@@ -313,7 +312,7 @@ class Shared(
             }
         }
 
-        val hasNoCurrentStudy = currentStudy == null
+        val hasNoCurrentStudy = currentStudyBeforeFetch == null
         val shouldUpdate = studyHasChanged || hasNoCurrentStudy
 
         if (shouldUpdate) {
@@ -323,9 +322,6 @@ class Shared(
 
             ViewManager.studyIsUpdating(true)
             try {
-                if (repositories.study.studyState.value == StudyState.ACTIVE && (study as? Study)?.studyState == Study.StudyState.ACTIVE) {
-                    observationDataManager.sendData(true)
-                }
                 StudyScope.cancel()
                 observationFactory.clearNeededObservationTypes()
                 observationService.clearReminders()
