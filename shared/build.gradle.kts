@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -15,7 +18,7 @@ val openApiInputDir = "$rootDir/openapi"
 val openApiOutputDir = "$generated/open_api"
 val mobileAppApiInput = "$openApiInputDir/MobileAppAPI.yaml"
 val mobileAppApiOutputDir = "$openApiOutputDir/mobile_app_api"
-val mobileAppApiPackage = "io.redlink.umm.blendedcare.services.network.openapi"
+val mobileAppApiPackage = "io.redlink.more.services.network.openapi"
 val openapiIgnore = "$openApiInputDir/openapi-ignore"
 
 val coroutinesVersion = "1.10.2"
@@ -32,7 +35,7 @@ val mokoGraphicsVersion = "0.10.1"
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
         publishLibraryVariants("release")
     }
@@ -91,15 +94,15 @@ kotlin {
 }
 
 android {
-    namespace = "io.redlink.more.more_app_multiplatform"
+    namespace = "io.redlink.more"
     compileSdk = 36
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 29
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     testOptions {
         unitTests {
@@ -125,13 +128,13 @@ dependencies {
 }
 
 multiplatformResources {
-    resourcesPackage.set("io.redlink.umm.participant")
+    resourcesPackage.set("io.redlink.more")
     resourcesClassName.set("SharedRes")
     iosBaseLocalizationRegion.set("en")
     iosMinimalDeploymentTarget.set("16.2")
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
+tasks.register<GenerateTask>(
     "generateOpenApiClasses",
 ) {
     generatorName.set("kotlin")
@@ -156,7 +159,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(
 
     configOptions.set(
         mapOf(
-            "dateLibrary" to "kotlinx-datetime"
+            "dateLibrary" to "kotlinx-datetime",
+            "enumPropertyNaming" to "UPPERCASE"
         )
     )
 

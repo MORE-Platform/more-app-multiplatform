@@ -44,14 +44,14 @@ fun getEnvOrProperty(key: String, envProps: Properties): String? {
 val envProps = loadEnvFromFile()
 
 android {
-    namespace = "io.redlink.umm.blendedcare.app.android"
+    namespace = "io.redlink.more.app.android"
     compileSdk = 36
     defaultConfig {
         applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 14
-        versionName = "0.0.14"
+        versionCode = 15
+        versionName = "0.0.15"
     }
     buildFeatures {
         compose = true
@@ -141,14 +141,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

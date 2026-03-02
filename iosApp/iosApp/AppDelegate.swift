@@ -22,7 +22,8 @@ import shared
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.io.redlink.umm.blendedcare.ios"
+    static let bundleId = Bundle.main.bundleIdentifier ?? "io.redlink.umm.blendedcare.ios"
+    static let appGroup = "group." + bundleId
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)
@@ -59,8 +60,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DataUploadBackgroundTask.setupBackgroundTasks()
         DailyBackgroundTask.setupBackgroundTasks()
         ObservationReminderBackgroundTask.setupBackgroundTasks()
+        
+        let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
-        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreen.allCases.map { $0.values.navigationLink }))
+        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: routes)
+        AppDelegate.shared.deeplinkManager.setProtocol(protocolReplacement: Shared.companion.PROTOCOL.localized())
+        AppDelegate.shared.deeplinkManager.setHost(hostReplacement: Shared.companion.HOST.localized())
 
         return true
     }

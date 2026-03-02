@@ -15,6 +15,7 @@
 
 import shared
 import SwiftUI
+import UIKit
 
 struct QuestionObservationView: View {
     @StateObject private var viewModel: QuestionViewModel
@@ -44,20 +45,29 @@ struct QuestionObservationView: View {
 
                     VStack {
                         MoreActionButton(disabled: .constant(answerEntered())) {
-                            switch viewModel.questionModel?.type {
-                            case .singleChoice:
-                                if let selected = singleSelected {
-                                    viewModel.finish(data: selected as NSString)
+                            // Prepare data to submit based on the question type
+                            let dataToSubmit: AnyObject? = {
+                                switch viewModel.questionModel?.type {
+                                case .singleChoice:
+                                    if let selected = singleSelected { return selected as NSString }
+                                case .multipleChoice:
+                                    if !multiSelected.isEmpty { return multiSelected.map { $0 as NSString } as NSArray }
+                                default:
+                                    break
                                 }
-                            case .multipleChoice:
-                                if !multiSelected.isEmpty {
-                                    viewModel.finish(data: multiSelected.map { $0 as NSString } as NSArray)
-                                }
-                            default:
-                                break
-                            }
+                                return nil
+                            }()
+
+                            // Navigate immediately for responsiveness
                             navigationModalState.openView(screen: .questionObservationThanks)
                             navigationModalState.closeView(screen: .questionObservation)
+
+                            // Perform submission off the main thread to avoid blocking UI
+                            if let data = dataToSubmit {
+                                DispatchQueue.global(qos: .userInitiated).async {
+                                    viewModel.finish(data: data)
+                                }
+                            }
                         } label: {
                             Text("Answer")
                         }
@@ -68,6 +78,7 @@ struct QuestionObservationView: View {
                 .onAppear {
                     singleSelected = nil
                     multiSelected.removeAll()
+                    prewarmSymbols()
                     viewModel.viewDidAppear()
                 }
                 .onDisappear {
@@ -87,6 +98,14 @@ struct QuestionObservationView: View {
                 }
             }
         }
+    }
+    
+    private func prewarmSymbols() {
+        // Preload SF Symbols used in answer rows to avoid first-tap lag
+        _ = UIImage(systemName: "largecircle.fill.circle")
+        _ = UIImage(systemName: "circle")
+        _ = UIImage(systemName: "checkmark.square.fill")
+        _ = UIImage(systemName: "square")
     }
     
     private func answerEntered() -> Bool {

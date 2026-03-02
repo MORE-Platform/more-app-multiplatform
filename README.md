@@ -25,7 +25,7 @@ It's recommended that you install the latest stable versions for compatibility a
 performance. In order to build the iOS application the version of **iOS** should be at least 14.
 
 * [Android Studio](https://developer.android.com/studio)
-* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 16.0 or higher)
+* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 26.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK 21](https://www.oracle.com/java/technologies/downloads/)
 * [Gradle 8.14.3](https://gradle.org)
@@ -61,19 +61,26 @@ The following is an instruction on how to install and configure the project on y
    git clone https://github.com/MORE-Platform/more-app-multiplatform.git
    ```
 2. Open the project in Android Studio.
-3. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
+3. As we included a private maven package to include the shared module, you need to generate a new
+   Github developer token with packages:read permission. After that you need to open
+   `~/.gradle/gradle.properties` and add the following line:
+   ```
+   io.redlink-gmbh.mvn.user=<gh-user-name>
+   io.redlink-gmbh.mvn.key=<generated access token>
+   ```
+4. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
    and wait until it's done.
-4. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
+5. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
    JDK 11 or later**, and then under **Project Structure** --> **Modules** set in either *
    *androidApp** and **shared** the **Source Compatibility** and the **Target Compatibility** to at
    least **$JavaVersion.VERSION_11**.
-5. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be
+6. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be
    accessed by pressing cmd + , on Mac or Ctrl + Alt + S on Windows/Linux. Then, navigate to "Build,
    Execution, Deployment > Build Tools > Gradle". The JDK location can be set within that section.
-6. **Before** building the project you need to generate the openapi api clients. To do that just run
+7. **Before** building the project you need to generate the openapi api clients. To do that just run
    `./gradlew :shared:generateOpenApiClasses` from the project root. This has to be done, every time
    the OpenAPI spec changed, or the build directory was removed.
-7. Now we can build the project. Go to the terminal and perform the following command in the root
+8. Now we can build the project. Go to the terminal and perform the following command in the root
    folder of the project:
     ```sh
     ./gradlew build

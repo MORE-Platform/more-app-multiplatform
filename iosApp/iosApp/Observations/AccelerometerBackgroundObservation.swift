@@ -15,8 +15,8 @@
 
 import CoreMotion
 import Foundation
-import shared
 import UIKit
+import shared
 
 class AccelerometerBackgroundObservation: Observation_ {
     private var recordForDurationInSec: Double = 60 * 10
@@ -71,9 +71,10 @@ class AccelerometerBackgroundObservation: Observation_ {
     }
 
     override func applyObservationConfig(settings: [String: Any]) {
-        if var start = settings[Observation_.Companion().CONFIG_TASK_START] as? Int64,
-           let end = settings[Observation_.Companion().CONFIG_TASK_STOP] as? Int64,
-           Date(timeIntervalSince1970: TimeInterval(end)) > Date() {
+        if var start = settings[Observation_.companion.CONFIG_TASK_START] as? Int64,
+           let end = settings[Observation_.companion.CONFIG_TASK_STOP] as? Int64,
+            Date(timeIntervalSince1970: TimeInterval(end)) > Date()
+        {
             let startDate = Date(timeIntervalSince1970: TimeInterval(start))
             let endDate = Date(timeIntervalSince1970: TimeInterval(end))
             if startDate < Date() {

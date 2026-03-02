@@ -38,7 +38,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".BlendedCareApplication"
+        android:name="io.redlink.more.app.android.MoreApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_more_logo_blue"
         android:label="@string/app_name"
@@ -47,7 +47,7 @@
         android:usesCleartextTraffic="false"
         android:theme="@style/Theme.MorePlatform">
         <activity
-            android:name=".activities.ContentActivity"
+            android:name="io.redlink.more.app.android.activities.ContentActivity"
             android:exported="true"
 
             android:screenOrientation="portrait"
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.main.MainActivity"
+            android:name="io.redlink.more.app.android.activities.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
@@ -86,28 +86,28 @@
         </activity>
 
         <activity
-            android:name=".activities.observations.limeSurvey.LimeSurveyActivity"
+            android:name="io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".activities.observations.garmin.GarminConnectActivity"
+            android:name="io.redlink.more.app.android.activities.observations.garmin.GarminConnectActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.bluetooth.BLEConnectionActivity"
+            android:name="io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
         <service
-            android:name=".services.ObservationRecordingService"
+            android:name="io.redlink.more.app.android.services.ObservationRecordingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
-            android:name=".firebase.FCMService"
+            android:name="io.redlink.more.app.android.firebase.FCMService"
             android:exported="false"
             android:foregroundServiceType="">
             <intent-filter>
@@ -120,12 +120,12 @@
             android:value="@string/default_channel_id" />
 
         <receiver
-            android:name=".broadcasts.NotificationBroadcastReceiver"
+            android:name="io.redlink.more.app.android.broadcasts.NotificationBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="io.redlink.umm.blendedcare.app.android.NOTIFICATION_ACTION_READ" />
-                <action android:name="io.redlink.umm.blendedcare.app.android.SCHEDULED_NOTIFICATION" />
+                <action android:name="io.redlink.more.app.android.NOTIFICATION_ACTION_READ" />
+                <action android:name="io.redlink.more.app.android.SCHEDULED_NOTIFICATION" />
             </intent-filter>
         </receiver>
     </application>
