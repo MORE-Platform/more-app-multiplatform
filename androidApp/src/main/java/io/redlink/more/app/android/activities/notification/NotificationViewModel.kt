@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.NotificationModel
 import io.redlink.more.services.notification.NotificationActionHandler
@@ -27,9 +26,7 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
     val coreViewModel: CoreNotificationViewModel =
         CoreNotificationViewModel(
             coreFilterViewModel,
-            MoreApplication.shared!!.notificationManager,
-            stringResource(R.string.app_scheme),
-            applicationId
+            MoreApplication.shared!!.notificationManager
         )
 
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {

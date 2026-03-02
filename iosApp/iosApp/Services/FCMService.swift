@@ -65,8 +65,6 @@ extension FCMService: UNUserNotificationCenterDelegate {
             read: true,
             completed: false,
             data: data,
-            protocolReplacement: nil,
-            hostReplacement: nil
         ) { (actionHandler, deepLinkData) in
             if let deepLinkData {
                 switch actionHandler {

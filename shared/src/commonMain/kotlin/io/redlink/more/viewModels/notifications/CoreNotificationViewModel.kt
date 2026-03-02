@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.cancellable
 class CoreNotificationViewModel(
     private val coreFilterModel: CoreNotificationFilterViewModel,
     private val notificationManager: NotificationManager,
-    private val protocolReplacement: String? = null,
-    private val hostReplacement: String? = null
 ) : CoreViewModel() {
     private val originalNotificationList = mutableListOf<NotificationModel>()
     private val _notificationList: MutableStateFlow<List<NotificationModel>> =
@@ -68,8 +66,6 @@ class CoreNotificationViewModel(
         notificationManager.handleNotificationInteraction(
             notification.notificationId,
             notification.deepLink,
-            protocolReplacement,
-            hostReplacement,
             handler
         )
     }

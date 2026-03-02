@@ -113,8 +113,6 @@ class NotificationManager(
         read: Boolean = false,
         completed: Boolean = false,
         data: Map<String, String>? = null,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null,
         handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
     ) {
         Scope.launch {
@@ -136,8 +134,6 @@ class NotificationManager(
             handleNotificationInteraction(
                 notification.notificationId,
                 notification.deepLink,
-                protocolReplacement,
-                hostReplacement,
                 handler
             )
         }
@@ -258,8 +254,6 @@ class NotificationManager(
     fun handleNotificationInteraction(
         notificationId: String,
         deepLink: String?,
-        protocolReplacement: String? = null,
-        hostReplacement: String? = null,
         handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
     ) {
         deepLink?.let {
@@ -278,7 +272,7 @@ class NotificationManager(
                     )
                 }
 
-                deeplinkManager.modifyDeepLink(deepLink, protocolReplacement, hostReplacement)
+                deeplinkManager.modifyDeepLink(deepLink)
                     .firstOrNull()
                     ?.let { modifiedDeepLink ->
                         if (modifiedDeepLink.route.contains(NavigationRoute.SCHEDULE_DETAILS.route) || modifiedDeepLink.route.contains(

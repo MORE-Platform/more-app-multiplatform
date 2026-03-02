@@ -246,11 +246,11 @@ class NavigationModalState: ObservableObject {
         return notUpdatingOrError && allowedState
     }
 
-    func openWithDeepLink(url: URL, notificationId: String? = nil, protocolReplacement: String? = "app", hostReplacement: String? = "io.redlink.umm.blenededcare") {
+    func openWithDeepLink(url: URL, notificationId: String? = nil) {
         guard !ViewManager.shared.studyIsUpdatingValue else {
             return
         }
-        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString, protocolReplacement: protocolReplacement, hostReplacement: hostReplacement) { modifiedDeepLink in
+        AppDelegate.shared.deeplinkManager.modifyDeepLink(deepLink: url.absoluteString) { modifiedDeepLink in
             if let modifiedDeepLink {
                 if let match = NavigationScreen.match(from: modifiedDeepLink.route) {
                     let params = match.params
