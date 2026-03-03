@@ -24,3 +24,5 @@ xcuserdata
 /androidApp/debug
 /shared/schemas
 /shared/schemas/
+
+google-service.json
