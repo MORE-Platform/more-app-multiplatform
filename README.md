@@ -61,13 +61,13 @@ The following is an instruction on how to install and configure the project on y
    git clone https://github.com/MORE-Platform/more-app-multiplatform.git
    ```
 2. Open the project in Android Studio.
-3. As we included a private maven package to include the shared module, you need to generate a new
-   Github developer token with packages:read permission. After that you need to open
-   `~/.gradle/gradle.properties` and add the following line:
-   ```
-   io.redlink-gmbh.mvn.user=<gh-user-name>
-   io.redlink-gmbh.mvn.key=<generated access token>
-   ```
+3. To successfully build the iOS and Android apps, you need to integrate the Google API Key files
+   for each platform.
+    - For Android, place the `google-services.json` file in the `androidApp` directory.
+    - For iOS, place the `GoogleService-Info.plist` file in the `iosApp/iosApp` directory. Should
+      there be any trouble building the iosApp, make sure, that Xcode shows the file in the project
+      navigator. If it does not, you need to right click on the project source > "Add Files" >
+      Search the `GoogleService-Info.plist` file > "Add".
 4. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
    and wait until it's done.
 5. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
@@ -211,6 +211,8 @@ To run the pipeline, you need to set up the following environment variables:
 - `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
 - `FASTLANE_MATCH_SECRET`: Password for match repository
 - `MATCH_AUTH`: Basic authorization for match Git repository
+- `GOOGLE_API_KEY`: Google API Key (GoogleSerivce-Info.plist) for Firebase integration (base64
+  encoded)
 
 **Variables:**
 
@@ -235,6 +237,7 @@ To run the pipeline, you need to set up the following environment variables:
 - `ANDROID_KEY_ALIAS`: Alias for the Android signing key
 - `ANDROID_KEY_PASSWORD`: Password for the Android signing key
 - `FIREBASE_APP_ID`: (Optional) Firebase App ID for Firebase App Distribution
+- `GOOGLE_API_KEY`: Google API Key (google-services.json) for Firebase integration (base64 encoded)
 
 **Variables:**
 
@@ -293,7 +296,8 @@ an Android emulator:
 1. Click **Device Manager** in the upper right corner, right next to the build symbol.
 2. Click **Create device**.
 3. Choose the device you would like to use as an emulator. **Important**: The device should have *
-   *Play Store** support! You can see it by the device being marked with a Play Store icon.
+   *Play Store** support as only these will receive Firebase Push Notifications! You can see it by
+   the device being marked with a Play Store icon.
 4. Choose a system image. It's recommended to use the **Tiramisu** release with the **API Level 33
    **.
 5. Next verify configuration and the installation of the image will begin immediately.
