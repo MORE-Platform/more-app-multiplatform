@@ -34,6 +34,20 @@ fun loadEnvFromFile(): Properties {
         }
     }
 
+    val googleServicesApiKey = getEnvOrProperty("GOOGLE_API_KEY", envProps)
+    val googleServicesFile = File(project.projectDir, "google-services.json")
+    if (!googleServicesFile.exists() && !googleServicesApiKey.isNullOrEmpty()) {
+        println("google-services.json not found, creating from GOOGLE_API_KEY environment variable")
+        try {
+            val decodedBytes =
+                Base64.getDecoder().decode(googleServicesApiKey.trim().removeSurrounding("\""))
+            googleServicesFile.writeBytes(decodedBytes)
+            println("Created google-services.json from environment variable")
+        } catch (e: Exception) {
+            println("Failed to decode GOOGLE_API_KEY: ${e.message}")
+        }
+    }
+
     return envProps
 }
 
@@ -50,8 +64,8 @@ android {
         applicationId = "io.redlink.umm.blendedcare"
         minSdk = 29
         targetSdk = 36
-        versionCode = 15
-        versionName = "0.0.15"
+        versionCode = 16
+        versionName = "1.0.0"
     }
     buildFeatures {
         compose = true
