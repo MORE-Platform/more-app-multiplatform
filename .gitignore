@@ -25,5 +25,6 @@ xcuserdata
 /shared/schemas
 /shared/schemas/
 
-google-service.json
-GoogleService-Info-plist
+google-services.json
+GoogleService-Info.plist
+report.xml
