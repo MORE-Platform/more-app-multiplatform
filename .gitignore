@@ -24,3 +24,7 @@ xcuserdata
 /androidApp/debug
 /shared/schemas
 /shared/schemas/
+
+google-services.json
+GoogleService-Info.plist
+report.xml

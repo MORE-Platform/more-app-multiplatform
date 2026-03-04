@@ -18,7 +18,22 @@ end
 default_platform(:ios)
 
 platform :ios do
+  def setup_google_services
+    google_services_path = File.expand_path("../iosApp/GoogleService-Info.plist")
+    if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
+      UI.message("GoogleService-Info.plist not found, creating from GOOGLE_API_KEY environment variable")
+      require 'base64'
+      File.write(google_services_path, Base64.decode64(ENV["GOOGLE_API_KEY"].gsub(/^"(.*)"$/, '\1')))
+      UI.success("Created GoogleService-Info.plist from environment variable")
+    elsif File.exist?(google_services_path)
+      UI.message("GoogleService-Info.plist already exists, skipping creation from environment variable")
+    else
+      UI.important("GoogleService-Info.plist not found and GOOGLE_API_KEY not provided")
+    end
+  end
+
   before_all do
+    setup_google_services
     create_keychain(
       name: "temp_keychain",
       password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],

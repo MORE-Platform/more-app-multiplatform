@@ -84,6 +84,20 @@ platform :android do
     return apk_path
   end
 
+  def setup_google_services
+    google_services_path = File.expand_path("../google-services.json")
+    if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
+      UI.message("google-services.json not found, creating from GOOGLE_API_KEY environment variable")
+      require 'base64'
+      File.write(google_services_path, Base64.decode64(ENV["GOOGLE_API_KEY"].gsub(/^"(.*)"$/, '\1')))
+      UI.success("Created google-services.json from environment variable")
+    elsif File.exist?(google_services_path)
+      UI.message("google-services.json already exists, skipping creation from environment variable")
+    else
+      UI.important("google-services.json not found and GOOGLE_API_KEY not provided")
+    end
+  end
+
   desc "Run all tests"
   lane :test do
     gradle(task: "test", project_dir: "..")
@@ -92,6 +106,7 @@ platform :android do
   desc "Build the Android app (debug)"
   lane :build do
     begin
+      setup_google_services
       setup_android_signing
 
        generate_openapi
@@ -143,6 +158,7 @@ platform :android do
   desc "Deploy to Google Play Beta"
   lane :deploy_beta do
     begin
+        setup_google_services
         signing_configured = setup_android_signing
         unless signing_configured
           UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
@@ -244,6 +260,7 @@ platform :android do
   desc "Deploy to Google Play Production"
   lane :deploy_production do
     begin
+      setup_google_services
       signing_configured = setup_android_signing
       unless signing_configured
         UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
