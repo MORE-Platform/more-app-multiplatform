@@ -98,9 +98,13 @@ platform :android do
     end
   end
 
+
   desc "Run all tests"
   lane :test do
-    gradle(task: "test", project_dir: "..")
+    gradle(
+      task: "test",
+      project_dir: ".."
+    )
   end
 
   desc "Build the Android app (debug)"
@@ -109,12 +113,14 @@ platform :android do
       setup_google_services
       setup_android_signing
 
-       generate_openapi
+      generate_openapi
       gradle(
         task: "assemble",
         build_type: "Debug",
         project_dir: ".."
       )
+
+      test
 
       if !ENV['CI']
         begin
@@ -171,6 +177,15 @@ platform :android do
 
       name = ENV.fetch("FASTLANE_BUILD_NUMBER")
       UI.message("Building version #{name}")
+
+      generate_openapi
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: ".."
+      )
+
+      test
 
       begin
         major, minor, patch = name.split('.').map(&:to_i)
@@ -273,6 +288,15 @@ platform :android do
 
       name = ENV.fetch("FASTLANE_BUILD_NUMBER")
       UI.message("Building version #{name} for production")
+
+      generate_openapi
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: ".."
+      )
+
+      test
 
       begin
         major, minor, patch = name.split('.').map(&:to_i)
