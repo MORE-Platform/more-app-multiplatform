@@ -10,8 +10,6 @@
  */
 package io.redlink.more.observations.observationTypes
 
-import io.redlink.more.database.entities.ObservationDataEntity
-
 open class ObservationType(
     val observationType: String,
     val sensorPermissions: Set<String>,
@@ -19,11 +17,7 @@ open class ObservationType(
     val suffix: String? = null,
     val includes: String? = null
 ) {
-    fun addObservationType(schema: ObservationDataEntity): ObservationDataEntity {
-        val obsType = observationType
-        schema.observationType = obsType
-        return schema
-    }
+
 
     fun matches(type: String): Boolean {
         return type == observationType
