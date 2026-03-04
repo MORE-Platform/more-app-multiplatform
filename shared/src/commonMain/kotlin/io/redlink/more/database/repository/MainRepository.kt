@@ -2,15 +2,15 @@ package io.redlink.more.database.repository
 
 import io.redlink.more.database.AppDatabase
 
-class MainRepository(appDatabase: AppDatabase) {
-    val study = StudyRepository(appDatabase)
-    val observation = ObservationRepository(appDatabase)
-    val observationData = ObservationDataRepository(appDatabase)
-    val dataPointCount = DataPointCountRepository(appDatabase)
-    val schedule = ScheduleRepository(appDatabase)
+open class MainRepository(appDatabase: AppDatabase) {
+    open val study = StudyRepository(appDatabase)
+    open val observation = ObservationRepository(appDatabase)
+    open val observationData = ObservationDataRepository(appDatabase)
+    open val dataPointCount = DataPointCountRepository(appDatabase)
+    open val schedule = ScheduleRepository(appDatabase)
 
-    val notification = NotificationRepository(appDatabase)
-    val bluetoothDevice = BluetoothDeviceRepository(appDatabase)
+    open val notification = NotificationRepository(appDatabase)
+    open val bluetoothDevice = BluetoothDeviceRepository(appDatabase)
 
     suspend fun deleteAll() {
         study.deleteStudy()

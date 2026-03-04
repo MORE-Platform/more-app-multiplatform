@@ -40,7 +40,7 @@ class DeeplinkManager(
         notificationId: String,
     ): Flow<DeepLinkData?> {
         return modifyDeepLink(
-            "/${NavigationRoute.NOTIFICATIONS}?${NavigationRouteParameter.NOTIFICATION_ID}=$notificationId",
+            "/${NavigationRoute.NOTIFICATIONS.route}?${NavigationRouteParameter.NOTIFICATION_ID.key}=$notificationId",
         )
     }
 
@@ -65,6 +65,7 @@ class DeeplinkManager(
 
             Napier.d { "Schedule: $schedule, observationId: $observationIdParam" }
 
+            val scheduleIdToUse = scheduleIdParam ?: schedule?.scheduleId
             val observationIdToUse = observationIdParam ?: schedule?.observationId
 
             emit(
@@ -75,7 +76,7 @@ class DeeplinkManager(
                     ),
                     mapOf(
                         NavigationRouteParameter.NOTIFICATION_ID.key to notificationId,
-                        NavigationRouteParameter.SCHEDULE_ID.key to scheduleIdParam,
+                        NavigationRouteParameter.SCHEDULE_ID.key to scheduleIdToUse,
                         NavigationRouteParameter.OBSERVATION_ID.key to observationIdToUse
                     )
                 )
@@ -119,11 +120,12 @@ class DeeplinkManager(
     private fun extractRegisteredRoute(uriPattern: String): String? =
         uriPattern.extractRouteFromDeepLink()
 
-    private fun validateRoute(deepLink: String): Boolean {
+    internal fun validateRoute(deepLink: String): Boolean {
         Napier.d { "Available deeplinks: $deepLinks" }
+        val incomingRoute = extractIncomingRoute(deepLink) ?: deepLink
         return deepLinks.any { registered ->
             val registeredRoute = extractRegisteredRoute(registered) ?: registered
-            routeMatches(deepLink, registeredRoute)
+            routeMatches(incomingRoute, registeredRoute)
         }
     }
 
@@ -139,9 +141,7 @@ class DeeplinkManager(
 
         val valid = validateRoute(resolvedObservationRoute)
         Napier.d { "Validating route: $valid" }
-        return if (valid) {
-            resolvedObservationRoute
-        } else NavigationRoute.DASHBOARD.route
+        return resolvedObservationRoute
     }
 
     private fun extractIncomingRoute(raw: String): String? {
@@ -180,21 +180,12 @@ class DeeplinkManager(
         routeToReplace: String,
         schedule: ScheduleEntity? = null,
     ): String {
-        val protocolAndHost = (this.protocolReplacement
-            ?: deepLink.substringBefore("://")) + "://"
-        val afterProtocol = deepLink.substringAfter("://")
-        val hostAndPath = afterProtocol.substringBefore('?')
-        val host = this.hostReplacement ?: hostAndPath.substringBeforeLast(
-            "/",
-            missingDelimiterValue = hostAndPath
-        )
-        val fragment = deepLink.substringAfter('#', "")
-
-        val newHostAndPath =
-            if (hostAndPath.contains('/')) "$host/$routeToReplace" else "$hostAndPath/$routeToReplace"
+        val protocol = protocolReplacement
+            ?: if (deepLink.contains("://")) deepLink.substringBefore("://") else "app"
+        val host = hostReplacement ?: if (deepLink.contains("://")) deepLink.substringAfter("://")
+            .substringBefore("/") else "more"
 
         val paramsMap = deepLink.mapQueryParams().toMutableMap()
-
         schedule?.let {
             val scheduleIdKeySet =
                 paramsMap.getOrElse(NavigationRouteParameter.SCHEDULE_ID.key) { mutableSetOf() }
@@ -208,10 +199,8 @@ class DeeplinkManager(
         }.joinToString("&")
 
         return buildString {
-            append(protocolAndHost)
-            append(newHostAndPath)
+            append(protocol).append("://").append(host).append("/").append(routeToReplace)
             if (newQueryParams.isNotEmpty()) append("?").append(newQueryParams)
-            if (fragment.isNotEmpty()) append("#").append(fragment)
         }
     }
 

@@ -28,24 +28,24 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class ScheduleRepository(private val appDatabase: AppDatabase) {
+open class ScheduleRepository(private val appDatabase: AppDatabase) {
 
     private val mutex = Mutex()
 
-    fun count() = appDatabase.scheduleDao().countAsFlow()
+    open fun count() = appDatabase.scheduleDao().countAsFlow()
 
-    fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleEntity>> {
+    open fun allSchedulesWithStatus(done: Boolean = false): Flow<List<ScheduleEntity>> {
         return appDatabase.scheduleDao().getByDoneFlow(done)
     }
 
-    fun allSchedulesWithStates(states: Set<ScheduleState>): Flow<List<ScheduleEntity>> {
+    open fun allSchedulesWithStates(states: Set<ScheduleState>): Flow<List<ScheduleEntity>> {
         if (states.isEmpty()) {
             return flowOf(emptyList())
         }
         return appDatabase.scheduleDao().getByStatesFlow(states.map { it.name })
     }
 
-    fun getSchedulesWithReminder(
+    open fun getSchedulesWithReminder(
         states: Set<ScheduleState>,
         minTimestamp: Instant,
         maxTimestamp: Instant,
@@ -62,10 +62,10 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         )
     }
 
-    fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING): Flow<List<ScheduleEntity>> =
+    open fun allScheduleWithRunningState(scheduleState: ScheduleState = ScheduleState.RUNNING): Flow<List<ScheduleEntity>> =
         appDatabase.scheduleDao().getByStateFlow(scheduleState.name)
 
-    fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleEntity?> {
+    open fun firstScheduleAvailableForObservationId(observationId: String): Flow<ScheduleEntity?> {
         return appDatabase.scheduleDao().getByObservationIdFlow(observationId)
             .distinctUntilChanged()
             .transform { scheduleList ->
@@ -85,7 +85,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
             }
     }
 
-    fun allSchedulesToday(observationType: ObservationType): Flow<List<ScheduleEntity>> {
+    open fun allSchedulesToday(observationType: ObservationType): Flow<List<ScheduleEntity>> {
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         return appDatabase.scheduleDao().getByObservationTypeFlow(observationType.observationType)
             .transform { list ->
@@ -99,10 +99,10 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
             }
     }
 
-    fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
+    open fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId }
 
-    fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> {
+    open fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> {
         return appDatabase.scheduleDao().getByObservationIdFlow(observationId).transform {
             val start = it.sortedBy { it.start }.firstOrNull()
             val end = it.sortedBy { it.end }.lastOrNull()
@@ -120,7 +120,7 @@ class ScheduleRepository(private val appDatabase: AppDatabase) {
         appDatabase.scheduleDao().updateDoneStatus(id, wasDone)
     }
 
-    fun scheduleWithId(id: String): Flow<ScheduleEntity?> {
+    open fun scheduleWithId(id: String): Flow<ScheduleEntity?> {
         return appDatabase.scheduleDao().getById(id)
     }
 

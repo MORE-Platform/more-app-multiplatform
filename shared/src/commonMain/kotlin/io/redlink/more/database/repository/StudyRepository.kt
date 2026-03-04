@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 
-class StudyRepository(private val appDatabase: AppDatabase) {
+open class StudyRepository(private val appDatabase: AppDatabase) {
     private val _study = MutableStateFlow<StudyEntity?>(null)
 
     @NativeCoroutines

@@ -21,7 +21,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class ObservationDataRepository(private val appDatabase: AppDatabase) {
+open class ObservationDataRepository(private val appDatabase: AppDatabase) {
     private var queue = mutableSetOf<ObservationDataEntity>()
     private val mutex = Mutex()
 

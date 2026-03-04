@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.transform
 import kotlinx.datetime.Clock
 
-class ObservationRepository(private val appDatabase: AppDatabase) {
+open class ObservationRepository(private val appDatabase: AppDatabase) {
 
     suspend fun getCount(): Int = appDatabase.observationDao().getCount()
 

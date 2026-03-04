@@ -22,7 +22,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-class DataPointCountRepository(private val appDatabase: AppDatabase) {
+open class DataPointCountRepository(private val appDatabase: AppDatabase) {
     private val mutex = Mutex()
     private val countQueue = mutableMapOf<String, Long>()
     private var storeJob: Job? = null

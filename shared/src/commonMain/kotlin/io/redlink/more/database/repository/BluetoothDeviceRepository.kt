@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 
-class BluetoothDeviceRepository(
+open class BluetoothDeviceRepository(
     private val database: AppDatabase
 ) {
     fun storePairedDevice(bluetoothDevice: BluetoothDeviceEntity) {

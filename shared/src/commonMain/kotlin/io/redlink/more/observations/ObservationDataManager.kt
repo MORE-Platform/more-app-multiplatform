@@ -27,7 +27,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
     private var countJob: Job? = null
 
     private var scheduleCount = mutableMapOf<String, Long>()
-    protected val konnection = Konnection.instance
+    protected open val konnection: Konnection? by lazy { Konnection.instance }
 
     init {
         Napier.i(tag = "ObservationDataManager::init") { "ObservationDataManager init!" }
@@ -99,7 +99,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         countJob = null
     }
 
-    protected fun isConnected() = konnection.isConnected()
+    protected open fun isConnected() = konnection?.isConnected() ?: false
 
     protected suspend fun dataBulk() = repository.observationData.allAsBulk()
 

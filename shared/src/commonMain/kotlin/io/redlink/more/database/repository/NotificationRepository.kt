@@ -24,7 +24,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 
-class NotificationRepository(private val appDatabase: AppDatabase) {
+open class NotificationRepository(private val appDatabase: AppDatabase) {
     private val readNotificationIds = mutableSetOf<String>()
     private val completedNotificationIds = mutableSetOf<String>()
     private val deletedNotificationIds = mutableSetOf<String>()
