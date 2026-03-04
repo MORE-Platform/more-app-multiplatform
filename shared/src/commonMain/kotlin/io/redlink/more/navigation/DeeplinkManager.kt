@@ -164,7 +164,7 @@ class DeeplinkManager(
         return schedule?.let { scheduleSchema ->
             if ((scheduleSchema.start ?: (now.epochSeconds + 1)) <= now.epochSeconds
                 && (scheduleSchema.end ?: 0) >= now.epochSeconds
-                && scheduleSchema.getState().active()
+                && !scheduleSchema.getState().completed()
             ) {
                 routeForObservation(deepLink)
             } else {
