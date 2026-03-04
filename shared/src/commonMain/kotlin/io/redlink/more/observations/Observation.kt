@@ -38,6 +38,7 @@ abstract class Observation(
 
     private var running = false
     private val observationIds = mutableSetOf<String>()
+    private val observationTypes = mutableMapOf<String, String>()
     private val scheduleIds = mutableMapOf<String, String>()
     private val notificationIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
@@ -49,6 +50,12 @@ abstract class Observation(
 
     fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
         observationIds.add(observationId)
+        StudyScope.launch {
+            val realObservationType =
+                repos.observation.observationById(observationId).firstOrNull()?.observationType
+                    ?: observationType.observationType
+            observationTypes[observationId] = realObservationType
+        }
         timestampCollectionJob?.cancel()
         timestampCollectionJob = StudyScope.launch {
             repos.observation.collectTimestampForObservationIds(observationIds).collect {
@@ -147,7 +154,6 @@ abstract class Observation(
             updateObservationErrors()
         }
         return errors.isEmpty()
-
     }
 
     protected open fun observerErrors(): Set<String> = emptySet()
@@ -176,7 +182,11 @@ abstract class Observation(
     fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataEntity.fromData(
             observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
-        ).map { observationType.addObservationType(it) }
+        ).map {
+            it.observationType =
+                observationTypes[it.observationId] ?: observationType.observationType
+            it
+        }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded a new data point!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
@@ -184,7 +194,11 @@ abstract class Observation(
 
     fun storeData(data: List<ObservationBulkModel>, onCompletion: () -> Unit) {
         val dataSchemas = ObservationDataEntity.fromData(observationIds.toSet(), data)
-            .map { observationType.addObservationType(it) }
+            .map {
+                it.observationType =
+                    observationTypes[it.observationId] ?: observationType.observationType
+                it
+            }
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
@@ -249,7 +263,10 @@ abstract class Observation(
 
     private fun observationShutdown(scheduleId: String) {
         val observationId = scheduleIds.remove(scheduleId)
-        observationId?.let { observationIds.remove(it) }
+        observationId?.let {
+            observationIds.remove(it)
+            observationTypes.remove(it)
+        }
         if (observationIds.isEmpty()) {
             config.clear()
             configChanged = false
