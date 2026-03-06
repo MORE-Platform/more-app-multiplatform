@@ -12,7 +12,6 @@ package io.redlink.more.services.notification
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
-import io.redlink.more.Shared
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.repository.MainRepository
@@ -25,11 +24,11 @@ import io.redlink.more.navigation.DeeplinkManager
 import io.redlink.more.navigation.model.DeepLinkData
 import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.navigation.model.NavigationRouteParameter
+import io.redlink.more.scopes.AppDispatchers
+import io.redlink.more.scopes.MoreDispatchers
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.store.SharedStorageRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,24 +50,35 @@ interface LocalNotificationListener {
     fun updateBadgeCount(count: Int = 0)
 }
 
+interface NotificationActionObserver {
+    fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null)
+}
+
 class NotificationManager(
     val repository: MainRepository,
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService,
     private val deeplinkManager: DeeplinkManager,
-    private val sharedStorageRepository: SharedStorageRepository
+    private val sharedStorageRepository: SharedStorageRepository,
+    private val dispatchers: MoreDispatchers = AppDispatchers
 ) {
     private val _unreadUserCount = MutableStateFlow(0)
 
     @NativeCoroutines
     val unreadUserCount: StateFlow<Int> = _unreadUserCount
 
+    private var actionObserver: NotificationActionObserver? = null
+
+    fun setActionObserver(observer: NotificationActionObserver?) {
+        actionObserver = observer
+    }
+
     init {
         Scope.launch {
             repository.notification.getAllUserFacingNotifications()
                 .collect { notifications ->
                     notifications.filter { !it.read }.let {
-                        withContext(Dispatchers.Main) {
+                        withContext(dispatchers.main) {
                             _unreadUserCount.value = it.size
                             localNotificationListener.updateBadgeCount(it.size)
                         }
@@ -78,7 +88,6 @@ class NotificationManager(
     }
 
     fun storeAndHandleNotification(
-        shared: Shared,
         key: String,
         title: String?,
         body: String?,
@@ -89,7 +98,6 @@ class NotificationManager(
         displayNotification: Boolean
     ) {
         storeAndHandleNotification(
-            shared,
             NotificationEntity.toEntity(
                 notificationId = key,
                 channelId = null,
@@ -140,14 +148,12 @@ class NotificationManager(
     }
 
     fun storeAndHandleNotification(
-        shared: Shared,
         notification: NotificationEntity,
         displayNotification: Boolean
     ) {
         storeAndDisplayNotification(notification, displayNotification)
         if (notification.notificationData.isNotEmpty()) {
             handleNotificationDataAsync(
-                shared,
                 notification.getNotificationDataMap()
             )
         }
@@ -163,7 +169,7 @@ class NotificationManager(
                 repository.notification.storeNotification(notification)
                 if (displayNotification) {
                     Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
-                    withContext(Dispatchers.Main) {
+                    withContext(dispatchers.main) {
                         localNotificationListener.displayNotification(
                             notification,
                             unreadUserCount.value
@@ -186,7 +192,8 @@ class NotificationManager(
 
     suspend fun downloadMissedNotifications() {
         Napier.d { "Updating notifications" }
-        storeNotifications(NotificationEntity.toEntityList(networkService.downloadMissedNotifications()))
+        val missed = networkService.downloadMissedNotifications()
+        repository.notification.storeNotifications(NotificationEntity.toEntityList(missed))
     }
 
     fun deleteNotificationFromRepository(notificationId: String) {
@@ -196,7 +203,7 @@ class NotificationManager(
 
     fun deleteNotificationFromServer(msgID: String) {
         Napier.i { "Deleting notification with msgID $msgID from server..." }
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(dispatchers.io) {
             networkService.deletePushNotification(msgID)
         }
     }
@@ -215,22 +222,18 @@ class NotificationManager(
         deleteNotificationFromSystemTray(notificationId)
     }
 
-    fun handleNotificationDataAsync(shared: Shared, data: Map<String, String>) {
-        Scope.launch(Dispatchers.IO) {
-            handleNotificationData(
-                shared,
-                data
-            )
-        }
+    fun handleNotificationDataAsync(data: Map<String, String>) {
+        handleNotificationData(
+            data
+        )
     }
 
-    suspend fun handleNotificationData(
-        shared: Shared,
+    fun handleNotificationData(
         data: Map<String, String>
     ) {
         if (data.isNotEmpty()) {
             if (data[MAIN_DATA_KEY] == STUDY_CHANGED) {
-                updateStudy(shared, data)
+                updateStudy(data)
             }
             data[MSG_ID]?.let {
                 deleteNotificationFromServer(it)
@@ -279,15 +282,15 @@ class NotificationManager(
                                 NavigationRoute.OBSERVATION_DETAILS.route
                             )
                         ) {
-                            withContext(Dispatchers.Main) {
+                            withContext(dispatchers.main) {
                                 markNotificationAsRead(notificationId)
                             }
                         }
-                        withContext(Dispatchers.Main) {
+                        withContext(dispatchers.main) {
                             handler(NotificationActionHandler.DEEPLINK, modifiedDeepLink)
                         }
                     } ?: run {
-                    withContext(Dispatchers.Main) {
+                    withContext(dispatchers.main) {
                         markNotificationAsRead(notificationId)
                     }
                 }
@@ -344,7 +347,7 @@ class NotificationManager(
     }
 
     private fun storeAndUploadToken(newToken: String) {
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(dispatchers.io) {
             val (successful, _) = networkService.sendNotificationToken(newToken)
             sharedStorageRepository.store(FCM_TOKEN_UPLOADED, successful)
         }
@@ -370,7 +373,7 @@ class NotificationManager(
         val notifications = schedules.map {
             it.toNotificationEntity(true, deeplinkManager.createDeeplinkForSchedule(it))
         }
-        withContext(Dispatchers.Main) {
+        withContext(dispatchers.main) {
             storeNotifications(notifications)
             notifications.forEach {
                 Napier.i { "Scheduling notification ${it.notificationId} at ${it.timestamp} with deeplink: ${it.deepLink}" }
@@ -380,7 +383,7 @@ class NotificationManager(
     }
 
     suspend fun rescheduleNotifications(notifications: List<NotificationEntity>) {
-        withContext(Dispatchers.Main) {
+        withContext(dispatchers.main) {
             notifications.forEach {
                 displayNotification(it)
             }
@@ -396,17 +399,15 @@ class NotificationManager(
         }
     }
 
-    private suspend fun updateStudy(shared: Shared, data: Map<String, String>) {
+    private fun updateStudy(data: Map<String, String>) {
         val oldStudyState =
             data[STUDY_OLD_STATE]?.let { StudyState.getState(it) }
         val newStudyState =
             data[STUDY_NEW_STATE]?.let { StudyState.getState(it) }
-        shared.updateStudy(oldStudyState, newStudyState)
+        actionObserver?.updateStudy(oldStudyState, newStudyState)
     }
 
     companion object {
-        const val FCM_TOKEN = "FCM_TOKEN"
-
         private const val MAIN_DATA_KEY = "key"
         private const val STUDY_CHANGED = "STUDY_STATE_CHANGED"
         private const val STUDY_OLD_STATE = "oldState"

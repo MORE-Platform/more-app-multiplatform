@@ -11,6 +11,7 @@ plugins {
     id("com.rickclephas.kmp.nativecoroutines")
     id("org.openapi.generator").version("7.17.0").apply(true)
     id("dev.icerock.mobile.multiplatform-resources")
+    kotlin("plugin.allopen")
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -141,6 +142,10 @@ multiplatformResources {
     resourcesClassName.set("SharedRes")
     iosBaseLocalizationRegion.set("en")
     iosMinimalDeploymentTarget.set("16.2")
+}
+
+allOpen {
+    annotations("io.redlink.more.Mockable")
 }
 
 tasks.register<GenerateTask>(

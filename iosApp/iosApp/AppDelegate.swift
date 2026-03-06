@@ -26,7 +26,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let appGroup = "group." + bundleId
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repositories = MainRepository(appDatabase: database)
+    static let repositories = MainRepositoryImpl(appDatabase: database)
     static let navigationScreenHandler = NavigationModalState(repos: repositories)
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()
@@ -60,7 +60,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DataUploadBackgroundTask.setupBackgroundTasks()
         DailyBackgroundTask.setupBackgroundTasks()
         ObservationReminderBackgroundTask.setupBackgroundTasks()
-        
+
         let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
         AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: routes)

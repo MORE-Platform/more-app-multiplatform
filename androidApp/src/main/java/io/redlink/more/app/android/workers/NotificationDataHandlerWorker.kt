@@ -47,7 +47,7 @@ class NotificationDataHandlerWorker(context: Context, workerParameters: WorkerPa
             val type: Type = object : TypeToken<Map<String, String>>() {}.type
             val notificationData: Map<String, String> = Gson().fromJson(data, type)
             Napier.i("NotificationData: $notificationData")
-            shared.notificationManager.handleNotificationData(shared, notificationData)
+            shared.notificationManager.handleNotificationData(notificationData)
             Result.success()
         } catch (err: Exception) {
             Napier.e(err.stackTraceToString())

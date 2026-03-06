@@ -1,4 +1,4 @@
-package io.redlink.more.utils
+package io.redlink.more.mocks
 
 import io.redlink.more.database.AppDatabase
 

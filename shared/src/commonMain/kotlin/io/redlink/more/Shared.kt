@@ -18,6 +18,7 @@ import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.toStudyState
 import io.redlink.more.models.StudyState
 import io.redlink.more.navigation.DeeplinkManager
+import io.redlink.more.navigation.DeeplinkManagerImpl
 import io.redlink.more.observations.DataRecorder
 import io.redlink.more.observations.ObservationDataManager
 import io.redlink.more.observations.ObservationFactory
@@ -29,11 +30,15 @@ import io.redlink.more.scopes.StudyScope
 import io.redlink.more.services.ObservationService
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.network.NetworkService
+import io.redlink.more.services.network.NetworkServiceImpl
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.notification.LocalNotificationListener
+import io.redlink.more.services.notification.NotificationActionObserver
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.services.store.CredentialRepository
+import io.redlink.more.services.store.CredentialRepositoryImpl
 import io.redlink.more.services.store.EndpointRepository
+import io.redlink.more.services.store.EndpointRepositoryImpl
 import io.redlink.more.services.store.SharedStorageRepository
 import io.redlink.more.viewModels.ViewManager
 import io.redlink.more.viewModels.bluetoothConnection.BluetoothController
@@ -41,7 +46,6 @@ import io.redlink.more.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -62,13 +66,15 @@ class Shared(
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder,
     reminderNotificationSchedulingLimit: Int? = null,
-) {
-    val deeplinkManager = DeeplinkManager(repositories, observationFactory)
-    val endpointRepository = EndpointRepository(sharedStorageRepository)
-    val credentialRepository = CredentialRepository(sharedStorageRepository).also {
-        observationFactory.setCredentialsRepository(it)
-    }
-    val networkService = NetworkService(endpointRepository, credentialRepository)
+) : NotificationActionObserver, AutoCloseable {
+    val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
+    val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
+    val credentialRepository: CredentialRepository =
+        CredentialRepositoryImpl(sharedStorageRepository).also {
+            observationFactory.setCredentialsRepository(it)
+        }
+    val networkService: NetworkService =
+        NetworkServiceImpl(endpointRepository, credentialRepository)
 
     val observationManager = ObservationManager(
         repositories,
@@ -89,13 +95,14 @@ class Shared(
             deeplinkManager,
             sharedStorageRepository
         )
+            .also { it.setActionObserver(this) }
             .also { observationFactory.setNotificationManager(it) }
 
     val observationService =
         ObservationService(repositories, notificationManager, reminderNotificationSchedulingLimit)
 
     private val mutex = Mutex()
-    private val konnection = Konnection.instance
+    private val konnection by lazy { Konnection.instance }
     private var mainJob: Job? = null
 
     init {
@@ -180,21 +187,17 @@ class Shared(
         notificationManager.downloadMissedNotifications()
     }
 
-    fun updateStudyAsync() {
-        Scope.launch(Dispatchers.IO) {
-            updateStudy()
-        }
-    }
-
-    suspend fun updateStudy(
-        oldStudyState: StudyState? = null,
-        newStudyState: StudyState? = null
+    override fun updateStudy(
+        oldStudyState: StudyState?,
+        newStudyState: StudyState?
     ) {
         if (!credentialRepository.hasCredentials.value || mutex.isLocked) {
             return
         }
-        mutex.withLock {
-            updateStudyInternal(oldStudyState, newStudyState)
+        Scope.launch {
+            mutex.withLock {
+                updateStudyInternal(oldStudyState, newStudyState)
+            }
         }
     }
 
@@ -398,6 +401,14 @@ class Shared(
     suspend fun removeStudyData() {
         repositories.deleteAll()
         observationFactory.clearNeededObservationTypes()
+    }
+
+    private fun shutdown() {
+        notificationManager.setActionObserver(null)
+    }
+
+    override fun close() {
+        shutdown()
     }
 
     companion object {

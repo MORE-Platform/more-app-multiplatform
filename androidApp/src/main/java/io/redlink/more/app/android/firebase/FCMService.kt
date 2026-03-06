@@ -33,7 +33,6 @@ class FCMService : FirebaseMessagingService() {
                 message.daoFromRemoteMessage().toString()
             }
             MoreApplication.shared!!.notificationManager.storeAndHandleNotification(
-                MoreApplication.shared!!,
                 message.daoFromRemoteMessage(),
                 true
             )

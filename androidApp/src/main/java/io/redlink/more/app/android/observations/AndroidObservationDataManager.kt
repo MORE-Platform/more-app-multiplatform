@@ -23,7 +23,7 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.workers.DataUploadWorker
 import io.redlink.more.database.repository.MainRepository
-import io.redlink.more.observations.ObservationDataManager
+import io.redlink.more.observations.ObservationDataManagerImpl
 import io.redlink.more.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -32,7 +32,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
 
 class AndroidObservationDataManager(context: Context, repository: MainRepository) :
-    ObservationDataManager(repository) {
+    ObservationDataManagerImpl(repository) {
     private val workManager: WorkManager? = try {
         WorkManager.getInstance(context)
     } catch (e: IllegalStateException) {

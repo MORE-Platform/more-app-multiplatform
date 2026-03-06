@@ -10,67 +10,17 @@
  */
 package io.redlink.more.database.repository
 
-import io.github.aakira.napier.Napier
-import io.redlink.more.database.AppDatabase
 import io.redlink.more.database.entities.ObservationDataEntity
-import io.redlink.more.extensions.mapAsBulkData
-import io.redlink.more.scopes.Scope
 import io.redlink.more.services.network.openapi.model.DataBulk
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
-open class ObservationDataRepository(private val appDatabase: AppDatabase) {
-    private var queue = mutableSetOf<ObservationDataEntity>()
-    private val mutex = Mutex()
+interface ObservationDataRepository {
+    fun addData(dataList: List<ObservationDataEntity>)
 
-    init {
-        Scope.repeatedLaunch(10000L, Dispatchers.IO) {
-            if (queue.isNotEmpty()) {
-                store()
-            }
-        }
-    }
+    suspend fun store()
 
-    fun addData(dataList: List<ObservationDataEntity>) {
-        Scope.launch {
-            mutex.withLock {
-                queue.addAll(dataList)
-            }
-        }
-    }
+    suspend fun getCount(): Int
 
-    suspend fun store() {
-        if (queue.isNotEmpty()) {
-            val queueCopy = mutex.withLock {
-                val queueCopy = queue.toSet()
-                queue.clear()
-                queueCopy
-            }
-            appDatabase.observationDataDao().insertAll(queueCopy.toList())
-        }
-    }
+    suspend fun allAsBulk(): DataBulk?
 
-    suspend fun getCount(): Int = appDatabase.observationDataDao().getCount()
-
-    suspend fun allAsBulk(): DataBulk? {
-        return mutex.withLock {
-            val observationDataEntities = appDatabase.observationDataDao().getLatest(5000)
-            if (observationDataEntities.isNotEmpty()) {
-                observationDataEntities.mapAsBulkData()
-            } else {
-                null
-            }
-        }
-    }
-
-    suspend fun deleteAllWithId(idSet: Set<String>) {
-        Napier.i { "Deleting ${idSet.size} elements..." }
-        mutex.withLock {
-            idSet.forEach { dataId ->
-                appDatabase.observationDataDao().deleteById(dataId)
-            }
-        }
-    }
+    suspend fun deleteAllWithId(idSet: Set<String>)
 }

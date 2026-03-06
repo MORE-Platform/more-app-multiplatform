@@ -1,12 +1,12 @@
 package io.redlink.more.navigation
 
 import io.redlink.more.database.entities.ScheduleEntity
+import io.redlink.more.mocks.MockMainRepository
+import io.redlink.more.mocks.MockObservationFactory
+import io.redlink.more.mocks.MockScheduleRepository
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.navigation.model.NavigationRouteParameter
-import io.redlink.more.utils.MockMainRepository
-import io.redlink.more.utils.MockObservationFactory
-import io.redlink.more.utils.MockScheduleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -52,7 +52,7 @@ class DeeplinkManagerTest {
 
     @Test
     fun testAddAvailableDeepLinksAndRouteValidation() = runTest {
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
 
         val links = setOf("app://more/dashboard", "notifications")
         deeplinkManager.addAvailableDeepLinks(links)
@@ -64,7 +64,7 @@ class DeeplinkManagerTest {
 
     @Test
     fun testSetProtocolAndSetHost() = runTest {
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
         deeplinkManager.setProtocol("https")
         deeplinkManager.setHost("redlink.io")
 
@@ -77,7 +77,7 @@ class DeeplinkManagerTest {
 
     @Test
     fun testGetNotificationViewDeepLink() = runTest {
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
         val notificationId = "123"
         val result = deeplinkManager.getNotificationViewDeepLink(notificationId).first()
 
@@ -105,7 +105,7 @@ class DeeplinkManagerTest {
 
         scheduleRepository.scheduleWithIdResult = flowOf(schedule)
 
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
 
         val deepLink = "app://host/task-details?scheduleId=$scheduleId"
         val result = deeplinkManager.modifyDeepLink(deepLink).first()
@@ -131,7 +131,7 @@ class DeeplinkManagerTest {
 
         scheduleRepository.firstScheduleAvailableForObservationIdResult = flowOf(schedule)
 
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
 
         val deepLink = "app://host/observation-details?observationId=$observationId"
         val result = deeplinkManager.modifyDeepLink(deepLink).first()
@@ -143,7 +143,7 @@ class DeeplinkManagerTest {
 
     @Test
     fun testRouteMatchesWithSuffixes() = runTest {
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
 
         val registeredRoute = "question-observation"
         deeplinkManager.addAvailableDeepLinks(setOf("app://host/$registeredRoute"))
@@ -157,7 +157,7 @@ class DeeplinkManagerTest {
 
     @Test
     fun testModifyDeepLinkNullInput() = runTest {
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
         val result = deeplinkManager.modifyDeepLink(null).first()
         assertNull(result)
     }
@@ -166,7 +166,7 @@ class DeeplinkManagerTest {
     fun testCreateDeeplinkForSchedule() {
         observationFactory.matchingObservationTypes = setOf("question-observation")
 
-        deeplinkManager = DeeplinkManager(mainRepository, observationFactory)
+        deeplinkManager = DeeplinkManagerImpl(mainRepository, observationFactory)
         val schedule = ScheduleEntity(
             scheduleId = "s1",
             observationId = "o1",

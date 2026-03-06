@@ -2,19 +2,19 @@ package io.redlink.more.scopes
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
 
-object StudyScope {
+object StudyScope : StudyMoreScope {
     private val mutex = Mutex()
     private val studyJobs = mutableSetOf<String>()
+    override val coroutineContext: CoroutineContext = Scope.coroutineContext
 
-    fun launch(
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
+    override fun launch(
+        coroutineContext: CoroutineContext,
+        start: CoroutineStart,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val result = Scope.launch(coroutineContext, start, block)
@@ -36,10 +36,10 @@ object StudyScope {
         return result
     }
 
-    fun repeatedLaunch(
+    override fun repeatedLaunch(
         intervalMillis: Long,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        initalDelay: Long = 0,
+        coroutineContext: CoroutineContext,
+        initalDelay: Long,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val result = Scope.repeatedLaunch(intervalMillis, coroutineContext, initalDelay, block)
@@ -61,15 +61,15 @@ object StudyScope {
         return result
     }
 
-    fun cancel(uuid: String) {
+    override fun cancel(uuid: String) {
         Scope.cancel(uuid)
     }
 
-    fun cancel(uuids: Collection<String>) {
+    override fun cancel(uuids: Collection<String>) {
         Scope.cancel(uuids)
     }
 
-    fun cancel() {
+    override fun cancel() {
         val jobsToCancel = mutex.tryLock().let { acquired ->
             if (acquired) {
                 try {

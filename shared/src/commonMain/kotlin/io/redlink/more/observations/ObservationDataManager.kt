@@ -15,15 +15,34 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.models.StudyState
+import io.redlink.more.scopes.AppDispatchers
+import io.redlink.more.scopes.MoreDispatchers
+import io.redlink.more.scopes.MoreScope
 import io.redlink.more.scopes.Scope
+import io.redlink.more.scopes.StudyMoreScope
 import io.redlink.more.scopes.StudyScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-abstract class ObservationDataManager(private val repository: MainRepository) {
+interface ObservationDataManager {
+    fun add(dataList: List<ObservationDataEntity>, scheduleIdList: Set<String>)
+    fun saveAndSend()
+    fun store()
+    fun removeDataPointCount(scheduleId: String)
+    fun sendData(immediately: Boolean = false, onCompletion: (Boolean) -> Unit = {})
+    suspend fun sendData(immediately: Boolean): Boolean
+    fun listenToDatapointCountChanges()
+    fun stopListeningToCountChanges()
+}
+
+abstract class ObservationDataManagerImpl(
+    private val repository: MainRepository,
+    private val scope: MoreScope = Scope,
+    private val studyScope: StudyMoreScope = StudyScope,
+    private val dispatchers: MoreDispatchers = AppDispatchers
+) :
+    ObservationDataManager {
     private var countJob: Job? = null
 
     private var scheduleCount = mutableMapOf<String, Long>()
@@ -33,7 +52,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         Napier.i(tag = "ObservationDataManager::init") { "ObservationDataManager init!" }
     }
 
-    fun add(dataList: List<ObservationDataEntity>, scheduleIdList: Set<String>) {
+    override fun add(dataList: List<ObservationDataEntity>, scheduleIdList: Set<String>) {
         if (dataList.isNotEmpty()) {
             Napier.i(tag = "ObservationDataManager::add") { "Adding ${dataList.size} observations for schedule IDs: $scheduleIdList" }
             repository.observationData.addData(dataList)
@@ -44,28 +63,28 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         }
     }
 
-    fun saveAndSend() {
+    override fun saveAndSend() {
         Napier.i(tag = "ObservationDataManager::saveAndSend") { "Saving and sending observations" }
-        StudyScope.launch(Dispatchers.IO) {
+        scope.launch(dispatchers.io) {
             repository.observationData.store()
         }
     }
 
-    fun store() {
+    override fun store() {
         Napier.i(tag = "ObservationDataManager::store") { "Storing observations" }
-        StudyScope.launch(Dispatchers.IO) {
+        studyScope.launch(dispatchers.io) {
             repository.observationData.store()
         }
     }
 
-    fun removeDataPointCount(scheduleId: String) {
+    override fun removeDataPointCount(scheduleId: String) {
         Napier.d(tag = "ObservationDataManager::removeDataPointCount") { "Removing datapoint count for schedule ID: $scheduleId" }
         scheduleCount.remove(scheduleId)
     }
 
-    abstract fun sendData(immediately: Boolean = false, onCompletion: (Boolean) -> Unit = {})
+    abstract override fun sendData(immediately: Boolean, onCompletion: (Boolean) -> Unit)
 
-    suspend fun sendData(immediately: Boolean): Boolean {
+    override suspend fun sendData(immediately: Boolean): Boolean {
         return suspendCancellableCoroutine { cont ->
             sendData(immediately) { success ->
                 if (cont.isActive) cont.resume(success)
@@ -73,10 +92,10 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         }
     }
 
-    fun listenToDatapointCountChanges() {
+    override fun listenToDatapointCountChanges() {
         if (countJob == null) {
             Napier.d(tag = "ObservationDataManager::listenToDatapointCountChanges") { "Starting to listen for changes in datapoint counts" }
-            countJob = Scope.repeatedLaunch(60000, Dispatchers.IO) {
+            countJob = scope.repeatedLaunch(60000, dispatchers.io) {
                 if (isConnected()) {
                     val count = repository.observationData.getCount()
                     if (count > 0) {
@@ -93,7 +112,7 @@ abstract class ObservationDataManager(private val repository: MainRepository) {
         }
     }
 
-    fun stopListeningToCountChanges() {
+    override fun stopListeningToCountChanges() {
         Napier.d(tag = "ObservationDataManager::stopListeningToCAndroiduntChanges") { "Stopped listening for changes in datapoint counts" }
         countJob?.cancel()
         countJob = null

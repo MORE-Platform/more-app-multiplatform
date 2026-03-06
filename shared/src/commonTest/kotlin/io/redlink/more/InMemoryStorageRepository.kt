@@ -12,8 +12,7 @@ package io.redlink.more
 
 import io.redlink.more.services.store.SharedStorageRepository
 
-class ImMemoryStorageRepository : SharedStorageRepository {
-
+class InMemoryStorageRepository : SharedStorageRepository {
     private val storageMap = HashMap<String, Any>()
 
     override fun store(key: String, value: String) {

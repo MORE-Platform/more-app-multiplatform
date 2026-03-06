@@ -23,7 +23,7 @@ fun ReloadButton(
         modifier = modifier
     ) {
         isLoading.value = true
-        MoreApplication.shared!!.updateStudyAsync()
+        MoreApplication.shared!!.updateStudy()
         isLoading.value = false
     }
 }
