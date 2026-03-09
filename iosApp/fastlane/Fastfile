@@ -70,7 +70,7 @@ platform :ios do
 
     lane :test do
       gradle(
-        task: "test",
+        task: ":shared:iosSimulatorArm64Test",
         project_dir: "..",
       )
     end

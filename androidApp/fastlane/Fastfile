@@ -102,7 +102,7 @@ platform :android do
   desc "Run all tests"
   lane :test do
     gradle(
-      task: "test",
+      task: ":shared:testDebugUnitTest",
       project_dir: ".."
     )
   end
