@@ -43,6 +43,13 @@ platform :ios do
   end
 
   before_all do
+    if ENV["XCODE_VERSION"] && !ENV["XCODE_VERSION"].empty?
+      UI.message("Selecting Xcode version #{ENV["XCODE_VERSION"]}")
+      xcode_select(ENV["XCODE_VERSION"])
+    else
+      UI.message("No XCODE_VERSION specified, using the currently installed version.")
+    end
+
     setup_google_services
     create_keychain(
       name: "temp_keychain",
