@@ -131,7 +131,7 @@ class DeeplinkManagerImpl(
 
     private fun routeForObservation(deepLink: String): String {
         val incomingRoute = extractIncomingRoute(deepLink.lowercase())
-            ?: return NavigationRoute.SCHEDULE_DETAILS.route
+            ?: return NavigationRoute.DASHBOARD.route
 
         val resolvedObservationRoute =
             observationFactory.getMatchingObservationTypes(setOf(incomingRoute)).firstOrNull()
