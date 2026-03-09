@@ -21,7 +21,6 @@ plugins {
 
     id("com.rickclephas.kmp.nativecoroutines").version("1.0.1").apply(false)
     id("dev.icerock.mobile.multiplatform-resources").version("0.25.2").apply(false)
-    kotlin("plugin.allopen").version("2.3.10").apply(false)
 }
 
 

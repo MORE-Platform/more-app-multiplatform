@@ -14,6 +14,7 @@ import io.redlink.more.mocks.mockObservationDataManager
 import io.redlink.more.scopes.AppDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -44,7 +45,8 @@ class CoreStudyDetailsViewModelTest {
             observationDataManager = mockObservationDataManager(mockRepo),
             mainBluetoothConnector = MockBluetoothConnector(),
             observationFactory = MockObservationFactory(mockRepo),
-            dataRecorder = MockDataRecorder()
+            dataRecorder = MockDataRecorder(),
+            connectionStatusFlow = flowOf(true)
         ) {}
     }
 

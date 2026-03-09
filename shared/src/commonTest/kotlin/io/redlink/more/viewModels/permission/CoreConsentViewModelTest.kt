@@ -13,6 +13,7 @@ import io.redlink.more.services.network.openapi.model.Study
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
@@ -42,7 +43,8 @@ class CoreConsentViewModelTest {
             observationDataManager = mockObservationDataManager(mockRepo),
             mainBluetoothConnector = MockBluetoothConnector(),
             observationFactory = MockObservationFactory(mockRepo),
-            dataRecorder = MockDataRecorder()
+            dataRecorder = MockDataRecorder(),
+            connectionStatusFlow = flowOf(true)
         ) {}
     }
 

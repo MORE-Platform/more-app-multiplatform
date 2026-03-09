@@ -12,6 +12,7 @@ import io.redlink.more.models.LoginModel
 import io.redlink.more.registration.RegistrationService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -47,7 +48,8 @@ class CoreLoginViewModelTest {
             observationDataManager = mockObservationDataManager(),
             mainBluetoothConnector = MockBluetoothConnector(),
             observationFactory = MockObservationFactory(MockMainRepository()),
-            dataRecorder = MockDataRecorder()
+            dataRecorder = MockDataRecorder(),
+            connectionStatusFlow = flowOf(true)
         ) {}
     }
 

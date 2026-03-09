@@ -14,6 +14,7 @@ import io.redlink.more.mocks.mockObservationDataManager
 import io.redlink.more.models.NotificationModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -66,7 +67,8 @@ class CoreNotificationViewModelTest {
             observationDataManager = mockObservationDataManager(),
             mainBluetoothConnector = MockBluetoothConnector(),
             observationFactory = MockObservationFactory(repository),
-            dataRecorder = MockDataRecorder()
+            dataRecorder = MockDataRecorder(),
+            connectionStatusFlow = flowOf(true)
         ) {
             // Overriding localNotificationListener if it was open, but it's not.
         }

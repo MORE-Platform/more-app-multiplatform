@@ -48,6 +48,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -66,6 +67,8 @@ open class Shared(
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder,
     reminderNotificationSchedulingLimit: Int? = null,
+    val connectionStatusFlow: Flow<Boolean> =
+        Konnection.createInstance().observeHasConnection()
 ) : NotificationActionObserver, AutoCloseable {
     val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
@@ -102,7 +105,6 @@ open class Shared(
         ObservationService(repositories, notificationManager, reminderNotificationSchedulingLimit)
 
     private val mutex = Mutex()
-    private val konnection by lazy { Konnection.instance }
     private var mainJob: Job? = null
 
     init {
@@ -222,7 +224,7 @@ open class Shared(
 
         val currentStudyBeforeFetch = repositories.study.getStudy().firstOrNull()
 
-        if (!konnection.isConnected()) {
+        if (connectionStatusFlow.firstOrNull() == false) {
             Napier.d(tag = "Shared::updateStudy") { "No network connection, skipping study update" }
             if (newStudyState != null) {
                 repositories.study.updateStudyState(newStudyState)

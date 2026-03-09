@@ -1,7 +1,6 @@
 package io.redlink.more.registration
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
@@ -42,26 +41,20 @@ open class RegistrationService(
     @NativeCoroutines
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val konnection by lazy {
-        Konnection.createInstance().also {
-            startConnectionObservation()
-        }
-    }
-
     private val _connected = MutableStateFlow(false)
 
     @NativeCoroutines
     val connected: StateFlow<Boolean> = _connected
 
-    fun startConnectionObservation() {
+    init {
         Scope.launch(Dispatchers.IO) {
-            konnection.observeHasConnection().collect {
+            shared.connectionStatusFlow.collect {
                 _connected.value = it
                 Napier.i("Device connected: $it")
             }
         }
     }
-    
+
     fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
     open fun clearError() {
