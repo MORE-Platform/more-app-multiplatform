@@ -37,6 +37,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Setup Google Services
+        run: chmod +x ../setup_google_services.sh && ../setup_google_services.sh
+
       - name: Set Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -64,6 +67,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Setup Google Services
+        run: chmod +x ../setup_google_services.sh && ../setup_google_services.sh
 
       - name: Build Android app
         run: fastlane build
