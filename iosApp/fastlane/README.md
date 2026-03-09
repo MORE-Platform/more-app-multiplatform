@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios setup_google_services
+
+```sh
+[bundle exec] fastlane ios setup_google_services
+```
+
+
+
 ### ios test
 
 ```sh

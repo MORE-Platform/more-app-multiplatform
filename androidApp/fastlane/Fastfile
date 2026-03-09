@@ -84,7 +84,7 @@ platform :android do
     return apk_path
   end
 
-  def setup_google_services
+  lane :setup_google_services do
     google_services_path = File.expand_path("../google-services.json")
     if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
       UI.message("google-services.json not found, creating from GOOGLE_API_KEY environment variable")

@@ -18,7 +18,7 @@ end
 default_platform(:ios)
 
 platform :ios do
-  def setup_google_services
+  lane :setup_google_services do
     google_services_path = File.expand_path("../iosApp/GoogleService-Info.plist")
     if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
       UI.message("GoogleService-Info.plist not found, creating from GOOGLE_API_KEY environment variable")
