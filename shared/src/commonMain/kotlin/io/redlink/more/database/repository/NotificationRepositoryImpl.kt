@@ -28,36 +28,6 @@ class NotificationRepositoryImpl(private val appDatabase: AppDatabase) : Notific
     private val deletedNotificationIds = mutableSetOf<String>()
     private val mutex = Mutex()
 
-//    override fun storeNotification(
-//        key: String,
-//        channelId: String?,
-//        title: String?,
-//        body: String?,
-//        timestamp: Long,
-//        priority: Long,
-//        read: Boolean,
-//        completed: Boolean,
-//        userFacing: Boolean,
-//        additionalData: Map<String, String>?
-//    ) {
-//        Scope.launch {
-//            storeNotification(
-//                NotificationEntity.toEntity(
-//                    key,
-//                    channelId,
-//                    title,
-//                    body,
-//                    timestamp,
-//                    priority,
-//                    read,
-//                    completed,
-//                    userFacing,
-//                    additionalData
-//                )
-//            )
-//        }
-//    }
-
     override suspend fun storeNotification(notification: NotificationEntity) {
         mutex.withLock {
             val notificationId = notification.notificationId
