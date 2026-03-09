@@ -1,9 +1,9 @@
 package io.redlink.more.services.notification
 
-import io.redlink.more.InMemoryStorageRepository
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
+import io.redlink.more.mocks.InMemoryStorageRepository
 import io.redlink.more.mocks.MockDeeplinkManager
 import io.redlink.more.mocks.MockLocalNotificationListener
 import io.redlink.more.mocks.MockMainRepository

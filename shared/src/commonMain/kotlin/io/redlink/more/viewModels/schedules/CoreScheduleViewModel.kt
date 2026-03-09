@@ -37,11 +37,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class CoreScheduleViewModel(
+open class CoreScheduleViewModel(
     private val repos: MainRepository,
     private val dataRecorder: DataRecorder,
     private val scheduleListType: ScheduleListType,
-    val coreFilterModel: CoreDashboardFilterViewModel
+    val coreFilterModel: CoreDashboardFilterViewModel,
 ) : CoreViewModel() {
     private val scheduleStates = mutableSetOf<ScheduleState>()
     private var originalScheduleList = emptySet<ScheduleModel>()

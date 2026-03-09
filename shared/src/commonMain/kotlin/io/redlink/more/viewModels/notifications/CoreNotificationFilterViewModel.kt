@@ -19,7 +19,7 @@ import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class CoreNotificationFilterViewModel : CoreViewModel() {
+open class CoreNotificationFilterViewModel : CoreViewModel() {
     private var highPriority: Long = 2
 
     private val _filters = MutableStateFlow<Map<NotificationFilterTypeModel, Boolean>>(mapOf())
@@ -63,7 +63,7 @@ class CoreNotificationFilterViewModel : CoreViewModel() {
         highPriority = priority
     }
 
-    fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
+    open fun applyFilter(notificationList: List<NotificationModel>): List<NotificationModel> {
         return if (filterActive()) {
             notificationList.filter { notification ->
                 if (_filters.value[NotificationFilterTypeModel.IMPORTANT] == true) {
@@ -79,7 +79,7 @@ class CoreNotificationFilterViewModel : CoreViewModel() {
         } else notificationList
     }
 
-    fun filterActive() = _filters.value[NotificationFilterTypeModel.ALL] == false
+    open fun filterActive() = _filters.value[NotificationFilterTypeModel.ALL] == false
 
     private fun getEnumAsList(): List<NotificationFilterTypeModel> {
         return NotificationFilterTypeModel.entries

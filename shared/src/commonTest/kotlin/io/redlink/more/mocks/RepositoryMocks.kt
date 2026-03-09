@@ -279,8 +279,9 @@ class MockScheduleRepository : ScheduleRepository {
     override fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).map { it?.scheduleId }
 
+    var firstAndLastDateResult: Flow<Pair<ScheduleEntity?, ScheduleEntity?>>? = null
     override fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> =
-        flowOf(null to null)
+        firstAndLastDateResult ?: flowOf(null to null)
 
     var lastSetRunningState: Pair<String, ScheduleState>? = null
     override suspend fun setRunningStateFor(id: String, scheduleState: ScheduleState) {
@@ -331,6 +332,7 @@ class MockObservationDataRepository : ObservationDataRepository {
 class MockDataPointCountRepository : DataPointCountRepository {
     val increments = mutableListOf<Pair<Set<String>, Long>>()
     val deletedScheduleIds = mutableListOf<String>()
+    var dataPointResults = mutableMapOf<String, Flow<DataPointEntity?>>()
 
     override fun count(): Flow<Long> = flowOf(0L)
 
@@ -338,7 +340,8 @@ class MockDataPointCountRepository : DataPointCountRepository {
         increments.add(scheduleIdSet to addCount)
     }
 
-    override fun get(scheduleId: String): Flow<DataPointEntity?> = flowOf(null)
+    override fun get(scheduleId: String): Flow<DataPointEntity?> =
+        dataPointResults[scheduleId] ?: flowOf(null)
 
     override fun delete(scheduleId: String) {
         deletedScheduleIds.add(scheduleId)
@@ -352,14 +355,32 @@ class MockBluetoothDeviceRepository : BluetoothDeviceRepository {
 }
 
 class MockStudyRepository : StudyRepository {
-    override val study: StateFlow<StudyEntity?> = MutableStateFlow(null)
-    override val studyState: StateFlow<io.redlink.more.models.StudyState> =
-        MutableStateFlow(io.redlink.more.models.StudyState.NONE)
-    override val finishText: StateFlow<String?> = MutableStateFlow(null)
-    override suspend fun upsert(study: Study) {}
-    override fun getStudy(): Flow<StudyEntity?> = flowOf(null)
-    override suspend fun updateStudyState(state: io.redlink.more.models.StudyState) {}
-    override suspend fun deleteStudy() {}
+    private val _study = MutableStateFlow<StudyEntity?>(null)
+    override val study: StateFlow<StudyEntity?> = _study
+
+    private val _studyState = MutableStateFlow(io.redlink.more.models.StudyState.NONE)
+    override val studyState: StateFlow<io.redlink.more.models.StudyState> = _studyState
+
+    private val _finishText = MutableStateFlow<String?>(null)
+    override val finishText: StateFlow<String?> = _finishText
+
+    override suspend fun upsert(study: Study) {
+        _study.value = StudyEntity.fromStudy(study)
+    }
+
+    suspend fun upsert(study: StudyEntity) {
+        _study.value = study
+    }
+
+    override fun getStudy(): Flow<StudyEntity?> = study
+
+    override suspend fun updateStudyState(state: io.redlink.more.models.StudyState) {
+        _studyState.value = state
+    }
+
+    override suspend fun deleteStudy() {
+        _study.value = null
+    }
 }
 
 class MockMainRepository : MainRepository {

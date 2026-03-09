@@ -57,7 +57,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-class Shared(
+open class Shared(
     localNotificationListener: LocalNotificationListener,
     val repositories: MainRepository,
     val sharedStorageRepository: SharedStorageRepository,

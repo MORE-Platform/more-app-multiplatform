@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.kotlincrypto.hash.md.MD5
 
-class RegistrationService(
+open class RegistrationService(
     private val shared: Shared,
 ) {
     private val _validLoginModel = MutableStateFlow<LoginModel?>(null)
@@ -42,14 +42,18 @@ class RegistrationService(
     @NativeCoroutines
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val konnection = Konnection.createInstance()
+    private val konnection by lazy {
+        Konnection.createInstance().also {
+            startConnectionObservation()
+        }
+    }
 
     private val _connected = MutableStateFlow(false)
 
     @NativeCoroutines
     val connected: StateFlow<Boolean> = _connected
 
-    init {
+    fun startConnectionObservation() {
         Scope.launch(Dispatchers.IO) {
             konnection.observeHasConnection().collect {
                 _connected.value = it
@@ -57,14 +61,14 @@ class RegistrationService(
             }
         }
     }
-
+    
     fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
-    fun clearError() {
+    open fun clearError() {
         _error.value = null
     }
 
-    fun sendRegistrationToken(
+    open fun sendRegistrationToken(
         loginModel: LoginModel
     ) {
         clearError()

@@ -18,8 +18,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
+import kotlin.coroutines.CoroutineContext
 
-class CoreTaskCompletionBarViewModel(private val repository: MainRepository) : CoreViewModel() {
+class CoreTaskCompletionBarViewModel(
+    private val repository: MainRepository,
+    dispatcher: CoroutineContext? = null
+) : CoreViewModel() {
     private val _taskCompletion: MutableStateFlow<TaskCompletion> =
         MutableStateFlow(TaskCompletion())
 
@@ -27,7 +31,7 @@ class CoreTaskCompletionBarViewModel(private val repository: MainRepository) : C
     val taskCompletion: StateFlow<TaskCompletion> = _taskCompletion
 
     init {
-        launchScope {
+        launchScope(dispatcher) {
             repository.schedule.count()
                 .combine(
                     repository.schedule.allSchedulesWithStatus(true).cancellable()

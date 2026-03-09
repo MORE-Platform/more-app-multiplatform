@@ -54,7 +54,7 @@ interface NotificationActionObserver {
     fun updateStudy(oldStudyState: StudyState? = null, newStudyState: StudyState? = null)
 }
 
-class NotificationManager(
+open class NotificationManager(
     val repository: MainRepository,
     private val localNotificationListener: LocalNotificationListener,
     private val networkService: NetworkService,
@@ -212,12 +212,12 @@ class NotificationManager(
         localNotificationListener.deleteNotificationFromSystem(notificationId = notificationId)
     }
 
-    fun markNotificationAsRead(notificationId: String) {
+    open fun markNotificationAsRead(notificationId: String) {
         repository.notification.setNotificationReadStatus(notificationId, true)
         deleteNotificationFromSystemTray(notificationId)
     }
 
-    fun markNotificationAsCompleted(notificationId: String) {
+    open fun markNotificationAsCompleted(notificationId: String) {
         repository.notification.setNotificationCompletedStatus(notificationId, true)
         deleteNotificationFromSystemTray(notificationId)
     }
@@ -241,7 +241,7 @@ class NotificationManager(
         }
     }
 
-    fun handleNotificationInteraction(
+    open fun handleNotificationInteraction(
         notificationId: String,
         deeplink: String? = null
     ) {
@@ -254,7 +254,7 @@ class NotificationManager(
     }
 
 
-    fun handleNotificationInteraction(
+    open fun handleNotificationInteraction(
         notificationId: String,
         deepLink: String?,
         handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
