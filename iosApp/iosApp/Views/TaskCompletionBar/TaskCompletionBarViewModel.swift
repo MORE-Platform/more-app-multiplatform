@@ -20,7 +20,7 @@ import shared
 class TaskCompletionBarViewModel: ObservableObject {
     @Published var taskCompletion: TaskCompletion = TaskCompletion(finishedTasks: 0, totalTasks: 0)
     @Published var taskCompletionPercentage: Double = 0
-    var coreViewModel = CoreTaskCompletionBarViewModel(repository: AppDelegate.shared.repositories)
+    var coreViewModel = CoreTaskCompletionBarViewModel(repository: AppDelegate.shared.repositories, dispatcher: AppDispatchers.shared.default_)
 
     private var cancellables: Set<AnyCancellable> = []
 

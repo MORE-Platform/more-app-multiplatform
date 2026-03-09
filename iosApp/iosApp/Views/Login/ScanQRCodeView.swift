@@ -107,10 +107,25 @@ struct ScanQRCodeView: View {
     }
 }
 
-struct ScanQRCodeView_Previews: PreviewProvider {
-    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepositoryImpl(appDatabase: database)
-    static var previews: some View {
-        ScanQRCodeView(model: LoginViewModel(registration: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder(), reminderNotificationSchedulingLimit: nil))))
-    }
+#Preview {
+    let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    let repos = MainRepositoryImpl(appDatabase: database)
+    let dataManager = iOSObservationDataManager(
+        repository: repos,
+        scope: Scope.shared,
+        studyScope: StudyScope.shared,
+        dispatchers: AppDispatchers.shared
+    )
+    let sharedContainer = Shared(
+        localNotificationListener: LocalPushNotifications(),
+        repositories: repos,
+        sharedStorageRepository: UserDefaultsRepository(),
+        observationDataManager: dataManager,
+        mainBluetoothConnector: IOSBluetoothConnector(),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        dataRecorder: IOSDataRecorder(),
+        reminderNotificationSchedulingLimit: nil
+    )
+    let registrationService = RegistrationService(shared: sharedContainer)
+    ScanQRCodeView(model: LoginViewModel(registration: registrationService))
 }

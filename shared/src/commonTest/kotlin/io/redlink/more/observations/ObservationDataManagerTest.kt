@@ -183,7 +183,7 @@ class ObservationDataManagerTest {
         scope: MoreScope,
         studyScope: StudyMoreScope,
         dispatchers: MoreDispatchers
-    ) : ObservationDataManagerImpl(repository, scope, studyScope, dispatchers) {
+    ) : ObservationDataManager(repository, scope, studyScope, dispatchers) {
         var sendDataCalled = false
         var lastImmediately: Boolean? = null
 

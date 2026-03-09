@@ -31,7 +31,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()
     static let shared: Shared = {
-        let dataManager = iOSObservationDataManager(repository: repositories)
+        let dataManager = iOSObservationDataManager(repository: repositories, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
 
         return Shared(
             localNotificationListener: LocalPushNotifications(),
@@ -72,7 +72,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Notification Received: \(userInfo)")
-        AppDelegate.shared.notificationManager.handleNotificationDataAsync(shared: AppDelegate.shared, data: userInfo.notNilStringDictionary())
+        AppDelegate.shared.notificationManager.handleNotificationDataAsync(data: userInfo.notNilStringDictionary())
 
         completionHandler(.newData)
     }

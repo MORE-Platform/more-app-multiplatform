@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android test
 ```
 
-Run tests after build (without cleaning)
+Run all tests
 
 ### android build
 

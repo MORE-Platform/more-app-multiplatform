@@ -17,7 +17,7 @@ import Foundation
 import shared
 
 class iOSObservationDataManager: ObservationDataManager {
-    override func sendData(immediately: Bool = false, onCompletion: @escaping (KotlinBoolean) -> Void) {
+    override func sendData(immediately: Bool, onCompletion: @escaping (KotlinBoolean) -> Void) {
         AppDelegate.dataUploadManager.uploadData { onCompletion(KotlinBoolean(bool: $0)) }
     }
 }

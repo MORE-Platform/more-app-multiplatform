@@ -78,10 +78,20 @@ struct ConsentView: View {
     }
 }
 
-struct ConsentView_Previews: PreviewProvider {
-    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepositoryImpl(appDatabase: database)
-    static var previews: some View {
-        ConsentView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: ObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: ObservationFactory(repository: repos, dataManager: ObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder(), reminderNotificationSchedulingLimit: nil))))
-    }
+#Preview("ConsentView") {
+    let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    let repos = MainRepositoryImpl(appDatabase: database)
+    let dataManager = iOSObservationDataManager(repository: repos, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+    let shared = Shared(
+        localNotificationListener: LocalPushNotifications(),
+        repositories: repos,
+        sharedStorageRepository: UserDefaultsRepository(),
+        observationDataManager: dataManager,
+        mainBluetoothConnector: IOSBluetoothConnector(),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        dataRecorder: IOSDataRecorder(),
+        reminderNotificationSchedulingLimit: nil
+    )
+    let registration = RegistrationObservable(service: RegistrationService(shared: shared))
+    ConsentView(registration: registration)
 }

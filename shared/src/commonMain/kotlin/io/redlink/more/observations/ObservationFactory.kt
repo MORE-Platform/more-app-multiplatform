@@ -23,33 +23,15 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-interface ObservationFactory {
-    val observations: MutableSet<Observation>
-    val studyObservationTypes: StateFlow<Set<String>>
-
-    fun addNeededObservationTypes(observationTypes: Set<String>)
-    fun clearNeededObservationTypes()
-    fun setCredentialsRepository(credentialRepository: CredentialRepository)
-    fun studySensorPermissions(): Set<String>
-    fun setNotificationManager(notificationManager: NotificationManager)
-    fun observationTypes(): Set<String>
-    fun getMatchingObservationTypes(types: Set<String>): Set<String>
-    fun sensorPermissions(): Set<String>
-    fun bleDevicesNeeded(): Set<String>
-    fun autoStartableObservations(): Set<String>
-    suspend fun updateObservationErrors()
-    fun observation(type: String): Observation?
-}
-
-abstract class ObservationFactoryImpl(
+abstract class ObservationFactory(
     repository: MainRepository,
     private val dataManager: ObservationDataManager
-) : ObservationFactory {
+) {
     private var credentialRepository: CredentialRepository? = null
-    override val observations = mutableSetOf<Observation>()
+    open val observations = mutableSetOf<Observation>()
 
     private val _studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
-    override val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
+    open val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
 
     init {
         observations.add(QuestionObservation(repository))
@@ -63,39 +45,39 @@ abstract class ObservationFactoryImpl(
         }
     }
 
-    override fun addNeededObservationTypes(observationTypes: Set<String>) {
+    open fun addNeededObservationTypes(observationTypes: Set<String>) {
         Napier.i(tag = "ObservationFactory::addNeededObservationTypes") { "Adding observation types to studyObservationTypes: $observationTypes" }
         _studyObservationTypes.value += observationTypes
     }
 
-    override fun clearNeededObservationTypes() {
+    open fun clearNeededObservationTypes() {
         _studyObservationTypes.value = setOf()
         ObservationStates.resetAll()
     }
 
-    override fun setCredentialsRepository(credentialRepository: CredentialRepository) {
+    open fun setCredentialsRepository(credentialRepository: CredentialRepository) {
         this.credentialRepository = credentialRepository
     }
 
-    override fun studySensorPermissions() =
+    open fun studySensorPermissions() =
         observations.filter { observationMatchesStudyTypes(it, studyObservationTypes.value) }
             .flatMap { it.observationType.sensorPermissions }.toSet()
 
-    override fun setNotificationManager(notificationManager: NotificationManager) {
+    open fun setNotificationManager(notificationManager: NotificationManager) {
         observations.forEach { it.setNotificationManager(notificationManager) }
     }
 
-    override fun observationTypes() =
+    open fun observationTypes() =
         observations.map { it.observationType.observationType }.toSet()
 
-    override fun getMatchingObservationTypes(types: Set<String>): Set<String> =
+    open fun getMatchingObservationTypes(types: Set<String>): Set<String> =
         observations.filter { it.observationType.matchesAny(types) }
             .map { it.observationType.observationType }.toSet()
 
-    override fun sensorPermissions() =
+    open fun sensorPermissions() =
         observations.map { it.observationType.sensorPermissions }.flatten().toSet()
 
-    override fun bleDevicesNeeded(): Set<String> {
+    open fun bleDevicesNeeded(): Set<String> {
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "Filtering types for BLE: ${studyObservationTypes.value}" }
         val bleTypes =
             observations.filter { observationMatchesStudyTypes(it, studyObservationTypes.value) }
@@ -104,20 +86,20 @@ abstract class ObservationFactoryImpl(
         return bleTypes
     }
 
-    override fun autoStartableObservations(): Set<String> {
+    open fun autoStartableObservations(): Set<String> {
         val autoStartTypes = studyObservations().filter { it.ableToAutomaticallyStart() }
             .map { it.observationType.observationType }.toSet()
         Napier.i(tag = "ObservationFactory::autoStartableObservations") { "Auto-startable observations: $autoStartTypes" }
         return autoStartTypes
     }
 
-    override suspend fun updateObservationErrors() {
+    open suspend fun updateObservationErrors() {
         if (this.credentialRepository?.hasCredentials?.value == true) {
             studyObservations().forEach { it.updateObservationErrors() }
         }
     }
 
-    override fun observation(type: String): Observation? {
+    open fun observation(type: String): Observation? {
         Napier.i(tag = "ObservationFactory::observation") { "Fetching observation of type: $type" }
         return observations.firstOrNull {
             it.observationType.matches(type)

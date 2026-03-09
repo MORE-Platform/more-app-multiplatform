@@ -26,7 +26,7 @@ class DataUploadManager {
 
             Task(priority: .background) { [weak self] in
                 print("Fetching Data Bulk...")
-                let observationDataRepository = await ObservationDataRepository(appDatabase: AppDelegate.database)
+                let observationDataRepository = await ObservationDataRepositoryImpl(appDatabase: AppDelegate.database)
                 do {
                     if let dataBulk = try await observationDataRepository.allAsBulk(), !dataBulk.dataPoints.isEmpty {
                         print("Sending data to backend...")

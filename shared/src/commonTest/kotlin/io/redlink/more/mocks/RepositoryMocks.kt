@@ -20,7 +20,6 @@ import io.redlink.more.models.ScheduleState
 import io.redlink.more.observations.DataRecorder
 import io.redlink.more.observations.ObservationDataManager
 import io.redlink.more.observations.ObservationFactory
-import io.redlink.more.observations.ObservationFactoryImpl
 import io.redlink.more.observations.observationTypes.ObservationType
 import io.redlink.more.scopes.MoreScope
 import io.redlink.more.scopes.StudyMoreScope
@@ -413,7 +412,7 @@ class MockMainRepository : MainRepository {
 class MockObservationFactory(
     repository: MainRepository = MockMainRepository(),
     dataManager: ObservationDataManager? = null
-) : ObservationFactoryImpl(repository, dataManager ?: mockObservationDataManager(repository)) {
+) : ObservationFactory(repository, dataManager ?: mockObservationDataManager(repository)) {
     var matchingObservationTypes: Set<String> = emptySet()
 
     override fun getMatchingObservationTypes(types: Set<String>): Set<String> =

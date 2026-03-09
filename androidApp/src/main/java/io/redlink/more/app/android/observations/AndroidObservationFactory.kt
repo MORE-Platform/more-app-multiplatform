@@ -20,7 +20,7 @@ import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListen
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.observations.ObservationDataManager
-import io.redlink.more.observations.ObservationFactoryImpl
+import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,7 +30,7 @@ class AndroidObservationFactory(
     observationDataManager: ObservationDataManager,
     repository: MainRepository
 ) :
-    ObservationFactoryImpl(repository, observationDataManager) {
+    ObservationFactory(repository, observationDataManager) {
     init {
         observations.addAll(
             setOf(

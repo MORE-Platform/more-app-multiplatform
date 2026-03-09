@@ -60,19 +60,21 @@ platform :ios do
   after_all do |lane|
     delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
   end
-  desc "Run all tests"
-  lane :test do
-    gradle(
-      task: "test",
-      project_dir: ".."
-    )
-  end
+
   private_lane :generate_openapi do
     gradle(
       task: ":shared:generateOpenApiClasses",
       project_dir: ".."
     )
   end
+
+    lane :test do
+      gradle(
+        task: ":shared:test",
+        project_dir: "..",
+        flags: "--rerun-tasks --info --console=plain"
+      )
+    end
 
   desc "Bump build number and version to FASTLANE_BUILD_NUMBER"
   lane :increment_build do
@@ -124,6 +126,8 @@ platform :ios do
       export_method: "app-store",
       export_team_id: ENV["FASTLANE_TEAM_ID"]
     )
+    test
+
   end
 
   desc "Deploy a new beta to TestFlight"

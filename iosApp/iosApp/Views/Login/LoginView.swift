@@ -139,10 +139,20 @@ struct LoginView: View {
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepositoryImpl(appDatabase: database)
-    static var previews: some View {
-        LoginView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder(), reminderNotificationSchedulingLimit: nil))))
-    }
+#Preview("LoginView") {
+    let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    let repos = MainRepositoryImpl(appDatabase: database)
+    let dataManager = iOSObservationDataManager(repository: repos, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+    let shared = Shared(
+        localNotificationListener: LocalPushNotifications(),
+        repositories: repos,
+        sharedStorageRepository: UserDefaultsRepository(),
+        observationDataManager: dataManager,
+        mainBluetoothConnector: IOSBluetoothConnector(),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        dataRecorder: IOSDataRecorder(),
+        reminderNotificationSchedulingLimit: nil
+    )
+    let registration = RegistrationObservable(service: RegistrationService(shared: shared))
+    LoginView(registration: registration)
 }
