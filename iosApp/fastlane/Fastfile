@@ -21,20 +21,10 @@ platform :ios do
   lane :setup_google_services do
     google_services_path = File.expand_path("../iosApp/GoogleService-Info.plist")
     if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
-      UI.message("GoogleService-Info.plist not found, attempting to create from GOOGLE_API_KEY")
+      UI.message("GoogleService-Info.plist not found, creating from GOOGLE_API_KEY environment variable")
       require 'base64'
-      begin
-        trimmed_key = ENV["GOOGLE_API_KEY"].gsub(/^"(.*)"$/, '\1').strip
-        decoded = Base64.decode64(trimmed_key)
-        if decoded.strip.start_with?("<?xml") || decoded.strip.start_with?("<plist")
-          File.write(google_services_path, decoded)
-          UI.success("Created GoogleService-Info.plist from decoded GOOGLE_API_KEY")
-        else
-          UI.important("GOOGLE_API_KEY does not appear to be a Base64-encoded GoogleService-Info.plist. Skipping file creation.")
-        end
-      rescue => e
-        UI.error("Failed to process GOOGLE_API_KEY: #{e.message}")
-      end
+      File.write(google_services_path, Base64.decode64(ENV["GOOGLE_API_KEY"].gsub(/^"(.*)"$/, '\1')))
+      UI.success("Created GoogleService-Info.plist from environment variable")
     elsif File.exist?(google_services_path)
       UI.message("GoogleService-Info.plist already exists, skipping creation from environment variable")
     else
@@ -43,13 +33,6 @@ platform :ios do
   end
 
   before_all do
-    if ENV["XCODE_VERSION"] && !ENV["XCODE_VERSION"].empty?
-      UI.message("Selecting Xcode version #{ENV["XCODE_VERSION"]}")
-      xcodes(version: ENV["XCODE_VERSION"])
-    else
-      UI.message("No XCODE_VERSION specified, using the currently installed version.")
-    end
-
     setup_google_services
     create_keychain(
       name: "temp_keychain",
@@ -87,7 +70,7 @@ platform :ios do
 
     lane :test do
       gradle(
-        task: ":shared:test",
+        task: "test",
         project_dir: "..",
       )
     end
