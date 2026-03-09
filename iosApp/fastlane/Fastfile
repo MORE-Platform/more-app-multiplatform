@@ -45,7 +45,7 @@ platform :ios do
   before_all do
     if ENV["XCODE_VERSION"] && !ENV["XCODE_VERSION"].empty?
       UI.message("Selecting Xcode version #{ENV["XCODE_VERSION"]}")
-      xcversion(version: ENV["XCODE_VERSION"])
+      xcodes(version: ENV["XCODE_VERSION"])
     else
       UI.message("No XCODE_VERSION specified, using the currently installed version.")
     end
