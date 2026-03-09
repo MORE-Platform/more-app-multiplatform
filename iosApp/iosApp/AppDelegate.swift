@@ -41,7 +41,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
             dataRecorder: IOSDataRecorder(),
-            reminderNotificationSchedulingLimit: 30
+            reminderNotificationSchedulingLimit: 30,
+            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
         )
     }()
 

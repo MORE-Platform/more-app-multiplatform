@@ -68,7 +68,7 @@ open class Shared(
     val dataRecorder: DataRecorder,
     reminderNotificationSchedulingLimit: Int? = null,
     val connectionStatusFlow: Flow<Boolean> =
-        Konnection.createInstance().observeHasConnection()
+        konnectionInstance().observeHasConnection()
 ) : NotificationActionObserver, AutoCloseable {
     val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
@@ -416,5 +416,7 @@ open class Shared(
     companion object {
         val PROTOCOL = StringDesc.Resource(SharedRes.strings.deeplink_protocol)
         val HOST = StringDesc.Resource(SharedRes.strings.deeplink_host)
+
+        fun konnectionInstance() = Konnection.instance
     }
 }

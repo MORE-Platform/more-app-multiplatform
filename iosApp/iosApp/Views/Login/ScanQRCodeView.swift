@@ -124,7 +124,8 @@ struct ScanQRCodeView: View {
         mainBluetoothConnector: IOSBluetoothConnector(),
         observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
         dataRecorder: IOSDataRecorder(),
-        reminderNotificationSchedulingLimit: nil
+        reminderNotificationSchedulingLimit: nil,
+        connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
     )
     let registrationService = RegistrationService(shared: sharedContainer)
     ScanQRCodeView(model: LoginViewModel(registration: registrationService))

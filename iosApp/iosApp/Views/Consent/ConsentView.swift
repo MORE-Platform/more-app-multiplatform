@@ -90,7 +90,7 @@ struct ConsentView: View {
         mainBluetoothConnector: IOSBluetoothConnector(),
         observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
         dataRecorder: IOSDataRecorder(),
-        reminderNotificationSchedulingLimit: nil
+        reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
     )
     let registration = RegistrationObservable(service: RegistrationService(shared: shared))
     ConsentView(registration: registration)
