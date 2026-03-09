@@ -37,14 +37,25 @@ fun loadEnvFromFile(): Properties {
     val googleServicesApiKey = getEnvOrProperty("GOOGLE_API_KEY", envProps)
     val googleServicesFile = File(project.projectDir, "google-services.json")
     if (!googleServicesFile.exists() && !googleServicesApiKey.isNullOrEmpty()) {
-        println("google-services.json not found, creating from GOOGLE_API_KEY environment variable")
+        println("google-services.json not found, attempting to create from GOOGLE_API_KEY")
         try {
-            val decodedBytes =
-                Base64.getDecoder().decode(googleServicesApiKey.trim().removeSurrounding("\""))
-            googleServicesFile.writeBytes(decodedBytes)
-            println("Created google-services.json from environment variable")
+            val trimmedKey = googleServicesApiKey.trim().removeSurrounding("\"")
+            val decodedBytes = try {
+                Base64.getDecoder().decode(trimmedKey)
+            } catch (e: Exception) {
+                null
+            }
+
+            if (decodedBytes != null && String(decodedBytes).trim().startsWith("{")) {
+                googleServicesFile.writeBytes(decodedBytes)
+                println("Created google-services.json from decoded GOOGLE_API_KEY")
+            } else {
+                // If not valid Base64 or doesn't look like JSON, it might be the raw key or something else.
+                // We should NOT write it as google-services.json if it's just an API key.
+                println("GOOGLE_API_KEY does not appear to be a Base64-encoded google-services.json. Skipping file creation.")
+            }
         } catch (e: Exception) {
-            println("Failed to decode GOOGLE_API_KEY: ${e.message}")
+            println("Failed to process GOOGLE_API_KEY: ${e.message}")
         }
     }
 
