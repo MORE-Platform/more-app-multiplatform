@@ -14,19 +14,6 @@ import io.redlink.more.database.entities.NotificationEntity
 import kotlinx.coroutines.flow.Flow
 
 interface NotificationRepository {
-//    fun storeNotification(
-//        key: String,
-//        channelId: String?,
-//        title: String?,
-//        body: String?,
-//        timestamp: Long,
-//        priority: Long = 1,
-//        read: Boolean = false,
-//        completed: Boolean = false,
-//        userFacing: Boolean = true,
-//        additionalData: Map<String, String>? = null
-//    )
-
     suspend fun storeNotification(notification: NotificationEntity)
 
     suspend fun storeNotifications(notifications: List<NotificationEntity>)
