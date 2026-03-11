@@ -26,7 +26,7 @@ import io.redlink.more.app.android.activities.login.composables.ParticipationKey
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
-import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
+import io.redlink.more.registration.RegistrationService
 
 @Composable
 fun LoginView(registrationService: RegistrationService) {

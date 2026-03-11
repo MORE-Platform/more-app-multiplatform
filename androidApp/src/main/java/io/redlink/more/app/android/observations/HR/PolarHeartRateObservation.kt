@@ -23,14 +23,14 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
-import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
-import io.redlink.more.more_app_mutliplatform.extensions.anyNameIn
-import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
-import io.redlink.more.more_app_mutliplatform.scopes.Scope
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.polar.PolarStates
-import io.redlink.more.more_app_mutliplatform.viewModels.bluetoothConnection.PolarController
+import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.extensions.anyNameIn
+import io.redlink.more.observations.Observation
+import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.scopes.Scope
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
+import io.redlink.more.services.bluetooth.polar.PolarStates
+import io.redlink.more.viewModels.bluetoothConnection.PolarController
 import kotlinx.coroutines.Job
 
 private val permissions =
@@ -77,7 +77,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
                     if (hrReady) {
                         MoreApplication.shared!!.observationManager.updateTaskStates()
                     } else {
-                        Observation.pauseObservation(
+                        pauseObservation(
                             super.observationType
                         )
                     }
@@ -156,7 +156,10 @@ class PolarHeartRateObservation(repos: MainRepository) :
             errors.add("bluetooth_disabled")
             PolarStates.hrFeatureReady(false)
         }
-        if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
+        if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(
+                deviceIdentifier
+            )
+        ) {
             PolarStates.hrFeatureReady(false)
             errors.add("device_not_connected")
             errors.add(ERROR_DEVICE_NOT_CONNECTED)
@@ -198,7 +201,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
                 if (!deviceIdentifier.anyNameIn(devices)) {
                     pauseObservation(PolarVerityHeartRateType(emptySet()))
                     PolarStates.hrFeatureReady(false)
-                    Napier.d(tag = "PolarHeartRateObservation::Companion::listenToDeviceConnection") { "HR Feature removed!" }
+                    Napier.d(tag = "PolarHeartRateObservation:::listenToDeviceConnection") { "HR Feature removed!" }
                 }
             }
         }.second

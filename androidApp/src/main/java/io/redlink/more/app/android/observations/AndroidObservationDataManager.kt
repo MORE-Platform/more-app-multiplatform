@@ -22,9 +22,9 @@ import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.workers.DataUploadWorker
-import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
-import io.redlink.more.more_app_mutliplatform.observations.ObservationDataManager
-import io.redlink.more.more_app_mutliplatform.scopes.Scope
+import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.observations.ObservationDataManager
+import io.redlink.more.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -42,12 +42,11 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
     private val workerConstraints =
         Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
             .build()
 
-    override fun sendData(onCompletion: (Boolean) -> Unit) {
+    override fun sendData(immediately: Boolean, onCompletion: (Boolean) -> Unit) {
         Scope.launch {
-            if (workManager != null) {
+            if (!immediately && workManager != null) {
                 onCompletion(tryWorkManagerThenFallback())
             } else {
                 Napier.w { "WorkManager not available, falling back to direct upload..." }

@@ -34,8 +34,8 @@ import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.AccordionReadMore
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.registration.RegistrationService
 
 @Composable
 fun ConsentView(registrationService: RegistrationService) {

@@ -18,26 +18,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.bluetooth.BLEConnectionActivity
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.observations.garmin.GarminConnectActivity
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
-import io.redlink.more.app.android.activities.observations.questionnaire.QuestionnaireViewModel
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
-import kotlinx.coroutines.Dispatchers
+import io.redlink.more.models.ScheduleListType
+import io.redlink.more.viewModels.ViewManager
+import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainViewModel(context: Context) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
-
-    val unreadNotificationCount = mutableIntStateOf(0)
 
     val coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
 
@@ -56,21 +50,9 @@ class MainViewModel(context: Context) : ViewModel() {
         )
     }
 
-    private val simpleQuestionnaireViewModel by lazy {
-        QuestionnaireViewModel()
-    }
-
     private var lastBleViewState = false
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.unreadNotificationCount.collect {
-                withContext(Dispatchers.Main) {
-                    unreadNotificationCount.intValue = it
-                }
-            }
-        }
-
         viewModelScope.launch {
             ViewManager.bleViewActive.collect {
                 if (it && !lastBleViewState) {
@@ -98,7 +80,10 @@ class MainViewModel(context: Context) : ViewModel() {
                 LimeSurveyActivity.LIME_SURVEY_ACTIVITY_OBSERVATION_ID,
                 observationId
             )
-            intent.putExtra(LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID, notificationId)
+            intent.putExtra(
+                LimeSurveyActivity.LIME_SURVEY_ACTIVITY_NOTIFICATION_ID,
+                notificationId
+            )
             activityResultLauncher.launch(intent)
         }
     }
@@ -111,23 +96,6 @@ class MainViewModel(context: Context) : ViewModel() {
             val intent = Intent(activity, GarminConnectActivity::class.java)
             activityResultLauncher.launch(intent)
         }
-    }
-
-    fun creteNewSimpleQuestionViewModel(
-        scheduleId: String? = null,
-        observationId: String? = null,
-        notificationId: String?
-    ): QuestionnaireViewModel {
-        if (scheduleId != null || observationId != null) {
-            simpleQuestionnaireViewModel.apply {
-                if (!scheduleId.isNullOrBlank()) {
-                    setScheduleId(scheduleId, notificationId)
-                } else if (!observationId.isNullOrBlank()) {
-                    setObservationId(observationId, notificationId)
-                }
-            }
-        }
-        return simpleQuestionnaireViewModel
     }
 
     fun createObservationDetailView(observationId: String): ObservationDetailsViewModel {

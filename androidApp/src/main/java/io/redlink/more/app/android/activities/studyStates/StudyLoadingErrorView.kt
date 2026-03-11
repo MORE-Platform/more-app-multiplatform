@@ -1,6 +1,16 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.app.android.activities.studyStates
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +19,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,21 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.work.WorkManager
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.ContentActivity
+import io.redlink.more.app.android.activities.subcomponents.ExitButton
+import io.redlink.more.app.android.activities.subcomponents.ReloadButton
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.Title
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreImportant
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
 
 @Composable
 fun StudyLoadingErrorView() {
@@ -77,34 +79,14 @@ fun StudyLoadingErrorView() {
                 }
             }
 
-            SmallTextButton(
-                text = getStringResource(id = R.string.more_settings_resign_confirm),
-                buttonColors = ButtonDefaults.moreImportant(),
-                borderStroke = MoreColors.borderImportant(),
+            Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                AlertController.openAlertDialog(
-                    AlertDialogModel(
-                        title = context.getString(R.string.more_settings_withdraw_question_confirm),
-                        message = context.getString(R.string.more_settings_withdraw_statement_long),
-                        confirmLabel = context.getString(R.string.more_settings_resign_confirm),
-                        cancelLabel = context.getString(R.string.more_settings_continue),
-                        onConfirm = {
-                            WorkManager.getInstance(context).cancelAllWork()
-                            MoreApplication.shared!!.exitStudy {
-                                (context as? Activity)?.let { activity ->
-                                    activity.finish()
-                                    showNewActivityAndClearStack(
-                                        activity,
-                                        ContentActivity::class.java
-                                    )
-                                }
-                            }
-                        }
-                    )
-                )
+                ReloadButton()
+                ExitButton()
             }
         }
     }

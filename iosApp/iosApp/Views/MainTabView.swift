@@ -18,7 +18,6 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    private let strings = "Navigation"
     var body: some View {
         TabView(selection: $navigationModalState.tagState) {
             Group {
@@ -31,26 +30,14 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-                if #available(iOS 15.0, *) {
-                    NavigationWithDestinations {
-                        NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
-                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                    }
-                    .tabItem {
-                        Label(NavigationScreen.notifications.localize(), systemImage: "bell")
-                    }
-                    .tag(1)
-                    .badge(contentViewModel.unreadNotificationCount)
-                } else {
-                    NavigationWithDestinations {
-                        NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
-                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                    }
-                    .tabItem {
-                        Label(NavigationScreen.notifications.localize(), systemImage: "bell")
-                    }
-                    .tag(1)
+                NavigationWithDestinations {
+                    NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
+                .tabItem {
+                    Label(NavigationScreen.notifications.localize(), systemImage: "bell")
+                }
+                .tag(1)
                 NavigationWithDestinations {
                     InfoView(viewModel: contentViewModel.infoViewModel)
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
@@ -70,7 +57,7 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
             if let navigationState = navigationModalState.navigationState(for: .questionObservation) {
                 Navigation {
-                    SimpleQuetionObservationView(viewModel: contentViewModel.getSimpleQuestionObservationVM(navigationState: navigationState))
+                    QuestionObservationView(navigationState: navigationState)
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 .onDisappear {
@@ -80,7 +67,7 @@ struct MainTabView: View {
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
             Navigation {
-                SimpleQuestionThankYouView()
+                QuestionThankYouView()
                     .navigationBarTitleDisplayMode(.inline)
             }
             .onDisappear {
@@ -88,12 +75,14 @@ struct MainTabView: View {
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
-            Navigation {
-                LimeSurveyView(viewModel: contentViewModel.getLimeSurveyVM(navigationModalState: navigationModalState))
-                    .navigationBarTitleDisplayMode(.inline)
-            }
-            .onDisappear {
-                navigationModalState.removeNavigationAction()
+            if let navigationState = navigationModalState.navigationState(for: .limeSurvey) {
+                Navigation {
+                    LimeSurveyView(navigationState: navigationState)
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .onDisappear {
+                    navigationModalState.removeNavigationAction()
+                }
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {

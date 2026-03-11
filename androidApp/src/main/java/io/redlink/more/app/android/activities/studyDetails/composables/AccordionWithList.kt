@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.shared_composables.MediumTitle
 import io.redlink.more.app.android.shared_composables.MoreDivider
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.database.entities.ObservationEntity
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.database.entities.ObservationEntity
 
 @Composable
 fun AccordionWithList(

@@ -31,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.observationErrors.ObservationErrorListView
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDate
@@ -40,16 +39,13 @@ import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.DatapointCollectionView
 import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTextIconButton
 import io.redlink.more.app.android.shared_composables.TimeframeDays
 import io.redlink.more.app.android.shared_composables.TimeframeHours
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreSecondary2
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreSecondary2
+import io.redlink.more.models.ScheduleState
+import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
 
 @Composable
 fun TaskDetailsView(
@@ -166,37 +162,17 @@ fun TaskDetailsView(
                 )
 
                 if (!taskDetails.hidden) {
-                    SmallTextButton(
-                        text = if (taskDetails.state == ScheduleState.RUNNING) getStringResource(
-                            id = R.string.more_observation_pause
-                        )
-                        else if (taskDetails.observationType == SimpleQuestionType().observationType) getStringResource(
-                            id = R.string.more_questionnaire_start
-                        )
-                        else if (taskDetails.observationType == LimeSurveyType().observationType) getStringResource(
-                            id = R.string.more_limesurvey_start
-                        )
-                        else getStringResource(
-                            id = R.string.more_observation_start
-                        ),
-                        enabled = taskDetails.state.active() && if (taskDetails.observationType == PolarVerityHeartRateType(
+                    ObservationActionButton(
+                        navController,
+                        taskDetails.scheduleId,
+                        taskDetails.observationType,
+                        taskDetails.state,
+                        if (taskDetails.observationType == PolarVerityHeartRateType(
                                 emptySet()
                             ).observationType
                         ) viewModel.polarHrReady.value else true
                     ) {
-                        if (taskDetails.observationType == SimpleQuestionType().observationType) {
-                            navController.navigate(
-                                NavigationScreen.SIMPLE_QUESTION.navigationRoute(
-                                    "scheduleId" to scheduleId
-                                )
-                            )
-                        } else if (taskDetails.observationType == LimeSurveyType().observationType) {
-                            navController.navigate(
-                                NavigationScreen.LIMESURVEY.navigationRoute(
-                                    "scheduleId" to scheduleId
-                                )
-                            )
-                        } else if (taskDetails.state == ScheduleState.RUNNING) {
+                        if (taskDetails.state == ScheduleState.RUNNING) {
                             viewModel.pauseObservation()
                         } else {
                             viewModel.startObservation()

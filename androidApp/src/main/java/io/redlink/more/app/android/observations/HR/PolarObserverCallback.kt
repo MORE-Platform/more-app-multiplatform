@@ -16,7 +16,7 @@ import com.polar.sdk.api.PolarBleApiCallback
 import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHealthThermometerData
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
 import java.util.UUID
 
 class PolarObserverCallback : PolarBleApiCallback() {

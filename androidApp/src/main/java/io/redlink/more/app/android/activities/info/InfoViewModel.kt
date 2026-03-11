@@ -12,7 +12,7 @@ package io.redlink.more.app.android.activities.info
 
 import androidx.lifecycle.ViewModel
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.viewModels.studydetails.CoreStudyDetailsViewModel
+import io.redlink.more.viewModels.studydetails.CoreStudyDetailsViewModel
 
 class InfoViewModel : ViewModel() {
     val coreViewModel = CoreStudyDetailsViewModel(MoreApplication.shared!!)

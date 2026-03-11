@@ -27,7 +27,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.shared_composables.Title
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun StudyLoadingView() {

@@ -1,12 +1,23 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.app.android.observations
 
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.ObservationType
+import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.observations.Observation
+import io.redlink.more.observations.observationTypes.ObservationType
 
 fun Observation.showPermissionAlertDialog() {
     AlertController.openAlertDialog(
@@ -21,7 +32,7 @@ fun Observation.showPermissionAlertDialog() {
         ))
 }
 
-fun Observation.Companion.pauseObservation(observationType: ObservationType) {
+fun Observation.pauseObservation(observationType: ObservationType) {
     MoreApplication.shared!!.observationManager.pauseObservationType(
         observationType.observationType
     )

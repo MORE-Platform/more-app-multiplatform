@@ -39,9 +39,9 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.Title
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreApproved
-import io.redlink.more.app.android.ui.theme.moreImportant
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreApproved
+import io.redlink.more.app.android.theme.moreImportant
 
 @Composable
 fun LeaveStudyConfirmView(navController: NavController) {

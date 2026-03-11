@@ -15,7 +15,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
@@ -33,11 +32,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
 import io.redlink.more.app.android.R
@@ -47,22 +48,23 @@ import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 class LimeSurveyActivity : ComponentActivity() {
-    val viewModel: LimeSurveyViewModel = LimeSurveyViewModel()
+    private val viewModel: LimeSurveyViewModel by lazy {
+        LimeSurveyViewModel(
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID),
+            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID)
+        )
+    }
     var webView: WebView? = null
     var webClientListener: WebClient? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setModel(
-            intent.getStringExtra(LIME_SURVEY_ACTIVITY_SCHEDULE_ID),
-            intent.getStringExtra(LIME_SURVEY_ACTIVITY_OBSERVATION_ID),
-            intent.getStringExtra(LIME_SURVEY_ACTIVITY_NOTIFICATION_ID)
-        )
-
+        viewModel
         onBackPressedDispatcher.addCallback(this) {
             viewModel.onFinish()
             finish()
@@ -109,11 +111,6 @@ class LimeSurveyActivity : ComponentActivity() {
 
     }
 
-    override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
-        viewModel.onFinish()
-        return super.getOnBackInvokedDispatcher()
-    }
-
     companion object {
         const val LIME_SURVEY_ACTIVITY_SCHEDULE_ID = "LIME_SURVEY_ACTIVITY_SCHEDULE_ID"
         const val LIME_SURVEY_ACTIVITY_OBSERVATION_ID = "LIME_SURVEY_ACTIVITY_OBSERVATION_ID"
@@ -124,6 +121,8 @@ class LimeSurveyActivity : ComponentActivity() {
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
+    val limeSurveyLink by viewModel.coreViewModel.limeSurveyLink.collectAsStateWithLifecycle(null)
+    val dataLoading by viewModel.coreViewModel.dataLoading.collectAsStateWithLifecycle(false)
     val context = LocalContext.current
     if (viewModel.wasAnswered.value) {
         viewModel.onFinish()
@@ -160,7 +159,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
         }
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            if (viewModel.dataLoading.value) {
+            if (dataLoading) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -170,7 +169,7 @@ fun LimeSurveyView(viewModel: LimeSurveyViewModel, webView: WebView?) {
                 }
             } else {
                 webView?.let { webView ->
-                    viewModel.limeSurveyLink.value?.let { limeSurveyLink ->
+                    limeSurveyLink?.let { limeSurveyLink ->
                         Column(
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally,

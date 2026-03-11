@@ -36,7 +36,7 @@ import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.AccordionReadMore
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun StudyDetailsView(

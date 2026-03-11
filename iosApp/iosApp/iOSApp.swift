@@ -29,14 +29,14 @@ struct iOSApp: App {
             .onChange(of: scenePhase) { newPhase in
                 switch newPhase {
                 case .background:
-                    ViewManager.shared.appIsInForeground(state: false)
-                    if AppDelegate.shared.observationManager.hasRunningTasks() {
+                    AppDelegate.shared.updateData(appInForeground: false)
+                    if AppDelegate.shared.credentialRepository.hasCredentialsValue {
                         appDelegate.scheduleTasks()
                     }
                 case .inactive:
                     break
                 case .active:
-                    ViewManager.shared.appIsInForeground(state: true)
+                    AppDelegate.shared.updateData(appInForeground: true)
                     appDelegate.cancelBackgroundTasks()
                     break
                 default:

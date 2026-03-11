@@ -1,0 +1,41 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
+package io.redlink.more.database.dao
+
+import androidx.room.Dao
+import androidx.room.Query
+import io.redlink.more.database.entities.DataPointEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface DataPointDao : BaseDao<DataPointEntity> {
+    @Query("SELECT COUNT(*) FROM data_points")
+    suspend fun getCount(): Int
+
+    @Query("SELECT COUNT(*) FROM data_points")
+    fun getCountFlow(): Flow<Long>
+
+    @Query("SELECT * FROM data_points WHERE scheduleId = :scheduleId LIMIT 1")
+    fun getByScheduleId(scheduleId: String): Flow<DataPointEntity?>
+
+    @Query("DELETE FROM data_points WHERE scheduleId = :scheduleId")
+    suspend fun deleteByScheduleId(scheduleId: String)
+
+    @Query("SELECT COUNT(*) FROM data_points WHERE scheduleId IN (:scheduleIds)")
+    suspend fun getCountByScheduleIds(scheduleIds: Set<String>): Long
+
+    @Query("DELETE FROM data_points")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM data_points")
+    suspend fun getAll(): List<DataPointEntity>
+}

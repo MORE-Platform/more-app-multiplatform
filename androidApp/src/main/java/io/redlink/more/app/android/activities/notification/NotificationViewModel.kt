@@ -15,27 +15,27 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.models.NotificationModel
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationViewModel
+import io.redlink.more.models.NotificationModel
+import io.redlink.more.services.notification.NotificationActionHandler
+import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
+import io.redlink.more.viewModels.notifications.CoreNotificationViewModel
 
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
     val coreViewModel: CoreNotificationViewModel =
         CoreNotificationViewModel(
             coreFilterViewModel,
-            MoreApplication.shared!!.notificationManager,
-            stringResource(R.string.app_scheme),
-            applicationId
+            MoreApplication.shared!!.notificationManager
         )
 
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
         coreViewModel.handleNotificationAction(notification) { actionType, data ->
-            when (actionType) {
-                NotificationActionHandler.DEEPLINK -> navController.navigate(data.toUri())
+            data?.let {
+                when (actionType) {
+                    NotificationActionHandler.DEEPLINK -> navController.navigate(data.route.toUri())
+                    else -> {}
+                }
             }
         }
     }

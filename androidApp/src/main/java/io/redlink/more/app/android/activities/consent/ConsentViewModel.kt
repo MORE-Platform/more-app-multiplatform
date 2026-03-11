@@ -12,14 +12,14 @@ package io.redlink.more.app.android.activities.consent
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
-import io.redlink.more.more_app_mutliplatform.viewModels.permission.CoreConsentViewModel
+import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.registration.RegistrationService
+import io.redlink.more.viewModels.permission.CoreConsentViewModel
 
 class ConsentViewModel(
     val registrationService: RegistrationService

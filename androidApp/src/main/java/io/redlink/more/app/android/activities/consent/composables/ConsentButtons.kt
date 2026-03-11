@@ -39,7 +39,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.observations.PermissionUtils
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
@@ -134,7 +134,8 @@ fun checkAndRequestPermissions(
     extraPermissions: Set<String> = emptySet()
 ) {
     val permissions =
-        MoreApplication.shared!!.observationFactory.studySensorPermissions().toMutableSet()
+        MoreApplication.shared!!.observationFactory.studySensorPermissions()
+            .toMutableSet()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         permissions.add(Manifest.permission.POST_NOTIFICATIONS)
@@ -143,7 +144,8 @@ fun checkAndRequestPermissions(
     permissions.addAll(extraPermissions)
 
     permissions.addAll(
-        MoreApplication.shared?.observationFactory?.studySensorPermissions() ?: emptySet()
+        MoreApplication.shared?.observationFactory?.studySensorPermissions()
+            ?: emptySet()
     )
 
     val hasBackgroundLocationPermission =

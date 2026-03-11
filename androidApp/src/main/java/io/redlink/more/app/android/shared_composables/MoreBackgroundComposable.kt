@@ -39,11 +39,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.main.MainTabView
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.MorePlatformTheme
-import io.redlink.more.more_app_mutliplatform.AlertController
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.MorePlatformTheme
 
 @Composable
 fun MoreBackground(

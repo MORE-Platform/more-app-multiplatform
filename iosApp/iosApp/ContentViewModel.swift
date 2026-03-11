@@ -31,9 +31,6 @@ class ContentViewModel: ObservableObject {
     @Published var alertDialogModel: AlertDialogModel? = nil
     @Published var unreadNotificationCount: Int = 0
 
-    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
-    lazy var limeSurveyVM = LimeSurveyViewModel()
-
     let manualSchedule = ScheduleViewModel(scheduleListType: .manuals)
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
@@ -86,20 +83,13 @@ class ContentViewModel: ObservableObject {
             self?.alertDialogModel = alertDialogModel
         }
         .store(in: &cancellables)
-
-        AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
-            self?.unreadNotificationCount = kInt.intValue
-        }
-    }
-
-    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
-        simpleQuestionVM.setScheduleId(navigationState: navigationState)
-        return simpleQuestionVM
-    }
-
-    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
-        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
-        return limeSurveyVM
+        
+        createPublisher(for: AppDelegate.shared.notificationManager.unreadUserCount)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in}) { [weak self] notificationCount in
+                self?.unreadNotificationCount = notificationCount.intValue
+            }
+            .store(in: &cancellables).self
     }
 
     private func reinitAllViewModels() {

@@ -33,7 +33,7 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.app.android.theme.morePrimary
 
 @Composable
 fun QuestionnaireResponseView(navController: NavController) {

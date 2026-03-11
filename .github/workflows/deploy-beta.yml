@@ -11,7 +11,7 @@ on:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-15
+    runs-on: macos-26
     environment: AppStore
     if: startsWith(github.ref, 'refs/tags/')
     env:
@@ -23,6 +23,7 @@ jobs:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       FASTLANE_MATCH_SECRET: ${{ secrets.FASTLANE_MATCH_SECRET }}
       MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_AUTH }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: ${{ vars.FASTLANE_XCODEBUILD_SETTINGS_RETRIES }}
       APP_IDENTIFIERS: ${{ vars.APP_IDENTIFIERS }}
@@ -63,6 +64,7 @@ jobs:
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
     defaults:
       run:
         working-directory: androidApp

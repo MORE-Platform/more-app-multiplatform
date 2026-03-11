@@ -12,13 +12,13 @@ package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.models.LoginModel
-import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
-import io.redlink.more.more_app_mutliplatform.util.validateAndNormalizeUrl
+import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.models.LoginModel
+import io.redlink.more.registration.RegistrationService
+import io.redlink.more.util.validateAndNormalizeUrl
 
 class LoginViewModel(
     val registrationService: RegistrationService
@@ -62,7 +62,8 @@ class LoginViewModel(
     }
 
     fun extractValuesFromQRCode(qrCodeUrl: String) {
-        dataEndpoint.value = qrCodeUrl.substringBefore("signup?")
+        dataEndpoint.value =
+            qrCodeUrl.substringBefore("signup?").validateAndNormalizeUrl() ?: currentEndpoint()
         participantKey.value =
             qrCodeUrl.substringAfter("token=", "").takeIf { it.isNotEmpty() } ?: ""
     }

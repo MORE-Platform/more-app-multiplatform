@@ -1,11 +1,25 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.app.android.observations
 
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
-import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.observations.Observation
 
 /**
  * Utility class for handling permissions for observations
@@ -19,16 +33,16 @@ object PermissionUtils {
     private var pendingPermissions: Set<String>? = null
 
     private val permissionLaunchers =
-        mutableMapOf<Activity, androidx.activity.result.ActivityResultLauncher<Array<String>>>()
+        mutableMapOf<Activity, ActivityResultLauncher<Array<String>>>()
 
     /**
      * Initializes the permission launcher for an activity
      * This should be called in the activity's onCreate method
      * @param activity The activity to initialize the permission launcher for
      */
-    fun initializePermissionLauncher(activity: androidx.activity.ComponentActivity) {
+    fun initializePermissionLauncher(activity: ComponentActivity) {
         val permissionLauncher = activity.registerForActivityResult(
-            androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             val allGranted = permissions.values.all { it }
             pendingCallback?.invoke(allGranted)

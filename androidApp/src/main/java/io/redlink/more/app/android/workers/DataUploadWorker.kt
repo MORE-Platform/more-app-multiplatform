@@ -16,11 +16,11 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
-import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.services.network.NetworkService
+import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.store.CredentialRepository
+import io.redlink.more.services.store.EndpointRepository
+import io.redlink.more.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -36,10 +36,13 @@ class DataUploadWorker(
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
     private val credentialRepository: CredentialRepository =
-        MoreApplication.shared?.credentialRepository ?: CredentialRepository(sharedPreferences)
-    private val networkService = MoreApplication.shared?.networkService ?: NetworkService(
-        EndpointRepository(sharedPreferences), credentialRepository
-    )
+        MoreApplication.shared?.credentialRepository ?: CredentialRepository(
+            sharedPreferences
+        )
+    private val networkService =
+        MoreApplication.shared?.networkService ?: NetworkService(
+            EndpointRepository(sharedPreferences), credentialRepository
+        )
     private var stopped = false
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -83,7 +86,9 @@ class DataUploadWorker(
             Result.retry()
         } else {
             Napier.i { "Deleting observation data..." }
-            MoreApplication.shared!!.repositories.observationData.deleteAllWithId(ids)
+            MoreApplication.shared!!.repositories.observationData.deleteAllWithId(
+                ids
+            )
             Napier.i { "Deleted ${ids.size} observation data points, success" }
             Result.success()
         }

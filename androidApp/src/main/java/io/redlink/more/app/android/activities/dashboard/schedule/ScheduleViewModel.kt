@@ -15,10 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.polar.PolarStates
-import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
+import io.redlink.more.models.ScheduleListType
+import io.redlink.more.services.bluetooth.polar.PolarStates
+import io.redlink.more.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.viewModels.schedules.CoreScheduleViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

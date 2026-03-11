@@ -35,18 +35,23 @@ struct RadioButtonField: View {
 
     var body: some View {
         Button(action: {
-            self.callback(self.id)
+            withAnimation(.none) {
+                self.callback(self.id)
+            }
         }) {
             HStack(alignment: .center) {
                 Image(systemName: self.isMarked ? "largecircle.fill.circle" : "circle")
-                    .clipShape(Circle())
                     .foregroundColor(.more.primary)
+                    .animation(nil, value: isMarked)
                 BasicText(text: label, color: .more.secondary)
                 Spacer()
             }.foregroundColor(.more.primaryLight)
         }
         .foregroundColor(.more.white)
         .padding(.bottom, 7)
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .transaction { $0.animation = nil }
     }
 }
 
@@ -58,3 +63,4 @@ struct RadioButtonField_Preview: PreviewProvider {
                          })
     }
 }
+

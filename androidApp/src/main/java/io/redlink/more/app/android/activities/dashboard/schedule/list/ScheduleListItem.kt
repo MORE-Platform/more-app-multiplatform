@@ -30,17 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.activities.tasks.ObservationActionButton
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.BasicText
-import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.TimeframeHours
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.models.ScheduleModel
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.models.ScheduleModel
+import io.redlink.more.models.ScheduleState
+import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
 
 @Composable
 fun ScheduleListItem(
@@ -61,7 +61,10 @@ fun ScheduleListItem(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
-            SmallTitle(text = scheduleModel().observationTitle, color = MoreColors.Primary)
+            SmallTitle(
+                text = scheduleModel().observationTitle,
+                color = MoreColors.Primary
+            )
             if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
                 CircularProgressIndicator(
                     color = MoreColors.Approved,
@@ -77,7 +80,10 @@ fun ScheduleListItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            BasicText(text = scheduleModel().observationType, color = MoreColors.Secondary)
+            BasicText(
+                text = scheduleModel().observationType,
+                color = MoreColors.Secondary
+            )
             Row(horizontalArrangement = Arrangement.End) {
                 if ((observationErrors[scheduleModel().observationType]?.count()
                         ?: 0) > 0
@@ -104,44 +110,22 @@ fun ScheduleListItem(
             modifier = Modifier.padding(vertical = 8.dp)
         )
         if (showButton && !scheduleModel().hidden) {
-            when (scheduleModel().observationType) {
-                "question-observation" -> {
-                    SmallTextButton(
-                        text = getStringResource(id = R.string.more_questionnaire_start),
-                        enabled = scheduleModel().scheduleState.active()
-                    ) {
-                        navController.navigate(
-                            NavigationScreen.SIMPLE_QUESTION.navigationRoute("scheduleId" to scheduleModel().scheduleId)
-                        )
-                    }
-                }
-
-                "lime-survey-observation" -> {
-                    SmallTextButton(
-                        text = getStringResource(id = R.string.more_limesurvey_start),
-                        enabled = scheduleModel().scheduleState.active()
-                    ) {
-                        navController.navigate(NavigationScreen.LIMESURVEY.navigationRoute("scheduleId" to scheduleModel().scheduleId))
-                    }
-                }
-
-                else -> {
-                    SmallTextButton(
-                        text = if (scheduleModel().scheduleState == ScheduleState.RUNNING) getStringResource(
-                            id = R.string.more_observation_pause
-                        ) else getStringResource(
-                            id = R.string.more_observation_start
-                        ),
-                        enabled = scheduleModel().scheduleState.active() && if (scheduleModel().observationType == "polar-verity-observation")
-                            viewModel.polarHrReady.value else true
-                    ) {
-                        if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
-                            viewModel.pauseObservation(scheduleModel().scheduleId)
-                        } else {
-                            viewModel.startObservation(scheduleModel().scheduleId)
-                        }
-
-                    }
+            ObservationActionButton(
+                navController,
+                scheduleModel().scheduleId,
+                scheduleModel().observationType,
+                scheduleModel().scheduleState,
+                additionalEnableCondition = if (PolarVerityHeartRateType(
+                        setOf()
+                    ).matches(
+                        scheduleModel().observationType
+                    )
+                ) viewModel.polarHrReady.value else true
+            ) {
+                if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
+                    viewModel.pauseObservation(scheduleModel().scheduleId)
+                } else {
+                    viewModel.startObservation(scheduleModel().scheduleId)
                 }
             }
         }

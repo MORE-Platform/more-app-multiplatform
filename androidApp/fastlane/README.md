@@ -39,6 +39,14 @@ Build the Android app (debug)
 
 Deploy to Google Play Beta
 
+### android deploy_production
+
+```sh
+[bundle exec] fastlane android deploy_production
+```
+
+Deploy to Google Play Production
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

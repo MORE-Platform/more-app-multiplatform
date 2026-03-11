@@ -20,17 +20,15 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.main.MainActivity
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
-import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.registration.RegistrationService
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.registration.RegistrationService
+import io.redlink.more.scopes.Scope
+import io.redlink.more.services.notification.NotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -38,7 +36,8 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class ContentViewModel : ViewModel() {
-    val registrationService: RegistrationService = RegistrationService(MoreApplication.shared!!)
+    val registrationService: RegistrationService =
+        RegistrationService(MoreApplication.shared!!)
 
     val hasCredentials = mutableStateOf(false)
 
@@ -60,7 +59,7 @@ class ContentViewModel : ViewModel() {
         }
     }
 
-    fun openMainActivity(context: Context) {
+    suspend fun openMainActivity(context: Context) {
         (context as? Activity)?.let { activity ->
             schedulePeriodicWorker(activity)
             handleDeepLinkAndOpenMain(activity)
@@ -77,44 +76,34 @@ class ContentViewModel : ViewModel() {
         )
     }
 
-    private fun handleDeepLinkAndOpenMain(activity: Activity) {
+    private suspend fun handleDeepLinkAndOpenMain(activity: Activity) {
         val rawDeepLink =
             activity.intent.getStringExtra("deepLink") ?: activity.intent.data?.toString()
+        Napier.d { "Attached deeplink: $rawDeepLink" }
         val notificationId = activity.intent.getStringExtra(NotificationManager.MSG_ID)
+        val sharedInstance = MoreApplication.shared
+            ?: throw IllegalStateException("MoreApplication.shared is not initialized")
+        val modifiedDeepLink = rawDeepLink?.let { link ->
+            sharedInstance.deeplinkManager
+                .modifyDeepLink(link)
+                .firstOrNull()
+        } ?: notificationId?.let {
+            sharedInstance.deeplinkManager.getNotificationViewDeepLink(
+                it
+            ).firstOrNull()
+        }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val modifiedDeepLink = rawDeepLink?.let { link ->
-                val sharedInstance = MoreApplication.shared
-                    ?: throw IllegalStateException("MoreApplication.shared is not initialized")
-                sharedInstance.deeplinkManager
-                    .modifyDeepLink(link, stringResource(R.string.app_scheme), applicationId)
-                    .firstOrNull()
+        notificationId?.let {
+            Scope.launch {
+                sharedInstance.notificationManager.markNotificationAsRead(it)
             }
+        }
 
-            val finalUri = when {
-                modifiedDeepLink != null -> {
-                    notificationId?.let {
-                        val sharedInstance = MoreApplication.shared
-                            ?: throw IllegalStateException("MoreApplication.shared is not initialized")
-                        sharedInstance.notificationManager.handleNotificationInteraction(
-                            it, modifiedDeepLink
-                        )
-                    }
-                    modifiedDeepLink.toUri()
-                }
+        Napier.d { "Modified deeplink: $modifiedDeepLink" }
 
-                notificationId != null -> {
-                    (ContentActivity.DEEPLINK + NavigationScreen.NOTIFICATIONS.routeWithParameters()).toUri()
-                }
-
-                else -> null
-            }
-
-            Napier.d { finalUri.toString() }
-            withContext(Dispatchers.Main) {
-                activity.intent.data = finalUri
-                openMain(activity)
-            }
+        withContext(Dispatchers.Main) {
+            activity.intent.data = modifiedDeepLink?.route?.toUri()
+            openMain(activity)
         }
     }
 

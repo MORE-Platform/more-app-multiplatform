@@ -17,9 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
@@ -28,8 +28,9 @@ import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
+import io.redlink.more.navigation.model.NavigationRouteParameter
+import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -39,12 +40,13 @@ class ContentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
             var deepLink = it
+            Napier.d { "Received deep link: $deepLink" }
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                if (!deepLink.contains(NavigationNotificationIDKey)) {
+                if (!deepLink.contains(NavigationRouteParameter.NOTIFICATION_ID.key)) {
                     deepLink += if (deepLink.contains("?")) {
-                        "&$NavigationNotificationIDKey=$msgId"
+                        "&${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     } else {
-                        "?$NavigationNotificationIDKey=$msgId"
+                        "?${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     }
                 }
             }

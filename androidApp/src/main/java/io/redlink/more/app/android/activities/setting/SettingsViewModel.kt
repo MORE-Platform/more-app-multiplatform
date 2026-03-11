@@ -14,15 +14,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.database.entities.StudyEntity
-import io.redlink.more.more_app_mutliplatform.models.PermissionModel
-import io.redlink.more.more_app_mutliplatform.viewModels.settings.CoreSettingsViewModel
+import io.redlink.more.database.entities.StudyEntity
+import io.redlink.more.models.PermissionModel
+import io.redlink.more.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsViewModel : ViewModel() {
-    private var coreSettingsViewModel = CoreSettingsViewModel(MoreApplication.shared!!)
+    private var coreSettingsViewModel =
+        CoreSettingsViewModel(MoreApplication.shared!!)
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 

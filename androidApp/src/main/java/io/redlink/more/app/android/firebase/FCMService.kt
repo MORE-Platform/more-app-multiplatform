@@ -14,7 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.database.entities.NotificationEntity
+import io.redlink.more.database.entities.NotificationEntity
 import java.util.UUID
 
 /*

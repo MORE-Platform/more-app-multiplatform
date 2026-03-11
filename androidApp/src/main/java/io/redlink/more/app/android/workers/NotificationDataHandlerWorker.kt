@@ -16,8 +16,8 @@ import androidx.work.WorkerParameters
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import io.github.aakira.napier.Napier
+import io.redlink.more.Shared
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.Shared
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Type

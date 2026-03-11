@@ -45,7 +45,7 @@ import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.shared_composables.MoreDivider
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.Title
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun StudyClosedView() {

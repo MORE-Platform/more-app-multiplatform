@@ -17,7 +17,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
@@ -30,11 +29,10 @@ import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.util.ActivityProvider
-import io.redlink.more.more_app_mutliplatform.observations.ObservationFactory
-import io.redlink.more.more_app_mutliplatform.observations.ObservationManager
-import io.redlink.more.more_app_mutliplatform.scopes.Scope
-import io.redlink.more.more_app_mutliplatform.scopes.StudyScope
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
+import io.redlink.more.observations.ObservationFactory
+import io.redlink.more.observations.ObservationManager
+import io.redlink.more.scopes.Scope
+import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -62,7 +60,7 @@ class ObservationRecordingService : Service() {
             Napier.e("Failed to start foreground service: ${e.message}")
             try {
                 val basicNotification = Notification.Builder(this, "default")
-                    .setContentTitle("More Observation Service")
+                    .setContentTitle("${MoreApplication.appName} Observation Service")
                     .setContentText("Service is running")
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .build()
@@ -118,7 +116,7 @@ class ObservationRecordingService : Service() {
 
                 SERVICE_RECEIVER_RESTART_ALL_STATES -> {
                     restartAll()
-                    return START_REDELIVER_INTENT
+                    START_REDELIVER_INTENT
                 }
 
                 else -> {
@@ -144,7 +142,7 @@ class ObservationRecordingService : Service() {
                 )
 
                 val alarmManager =
-                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                    applicationContext.getSystemService(ALARM_SERVICE) as? AlarmManager
                 alarmManager?.let {
                     try {
                         it.set(
@@ -188,7 +186,7 @@ class ObservationRecordingService : Service() {
                 )
 
                 val alarmManager =
-                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                    applicationContext.getSystemService(ALARM_SERVICE) as? AlarmManager
                 alarmManager?.let {
                     try {
                         it.set(
@@ -231,7 +229,7 @@ class ObservationRecordingService : Service() {
                 )
 
                 val alarmManager =
-                    applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                    applicationContext.getSystemService(ALARM_SERVICE) as? AlarmManager
                 alarmManager?.let {
                     try {
                         it.set(
@@ -314,8 +312,11 @@ class ObservationRecordingService : Service() {
     private fun stopObservation(scheduleId: String) {
         observationManager?.stop(scheduleId)
         runningSchedules.remove(scheduleId)
-        StudyScope.launch(Dispatchers.IO) {
-            MoreApplication.shared!!.repositories.schedule.setCompletionStateFor(scheduleId, true)
+        Scope.launch {
+            MoreApplication.shared!!.repositories.schedule.setCompletionStateFor(
+                scheduleId,
+                true
+            )
         }
         if (observationManager?.hasRunningTasks() == false) {
             stopService()
@@ -357,7 +358,7 @@ class ObservationRecordingService : Service() {
             )
 
             val alarmManager =
-                applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.set(
                 AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + 1000,
@@ -418,16 +419,10 @@ class ObservationRecordingService : Service() {
     private fun startForegroundService() {
         Napier.d { "Starting the foreground service..." }
         try {
-            val channelId = try {
-                getString(R.string.default_channel_id)
-            } catch (e: Exception) {
-                "default"
-            }
-
             val notificationTitle = try {
                 getString(R.string.more_observation_running)
             } catch (e: Exception) {
-                "More Observation Service"
+                "${MoreApplication.appName} Observation Service"
             }
 
             val notificationText = try {
@@ -437,7 +432,7 @@ class ObservationRecordingService : Service() {
             }
 
             val notification = buildNotification(
-                channelId = channelId,
+                channelId = MoreApplication.DEFAULT_CHANNEL_ID!!,
                 notificationTitle = notificationTitle,
                 notificationText = notificationText
             )
@@ -461,7 +456,7 @@ class ObservationRecordingService : Service() {
                 channelId,
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "More observation service notifications"
+                description = "${MoreApplication.appName} observation service notifications"
                 enableLights(false)
                 enableVibration(false)
             }
@@ -490,7 +485,7 @@ class ObservationRecordingService : Service() {
         } catch (e: Exception) {
             Napier.e("Failed to build notification: ${e.message}")
             return Notification.Builder(applicationContext, "default")
-                .setContentTitle("More Service")
+                .setContentTitle("${MoreApplication.appName} Service")
                 .setContentText("Running")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setOngoing(true)
@@ -500,15 +495,16 @@ class ObservationRecordingService : Service() {
 
     companion object {
         private const val SCHEDULE_ID = "SCHEDULE_ID"
-        private const val SERVICE_RECEIVER_START_ACTION =
-            "io.redlink.more.app.android.START_SERVICE"
-        private const val SERVICE_RECEIVER_PAUSE_ACTION =
-            "io.redlink.more.app.android.PAUSE_SERVICE"
-        private const val SERVICE_RECEIVER_STOP_ACTION = "io.redlink.more.app.android.STOP_SERVICE"
-        private const val SERVICE_RECEIVER_STOP_ALL_ACTION =
-            "io.redlink.more.app.android.STOP_ALL_SERVICE"
-        private const val SERVICE_RECEIVER_RESTART_ALL_STATES =
-            "io.redlink.more.app.android.RESTART_ALL"
+        private val SERVICE_RECEIVER_START_ACTION =
+            "${MoreApplication.packagePath}.START_SERVICE"
+        private val SERVICE_RECEIVER_PAUSE_ACTION =
+            "${MoreApplication.packagePath}.PAUSE_SERVICE"
+        private val SERVICE_RECEIVER_STOP_ACTION =
+            "${MoreApplication.packagePath}.STOP_SERVICE"
+        private val SERVICE_RECEIVER_STOP_ALL_ACTION =
+            "${MoreApplication.packagePath}.STOP_ALL_SERVICE"
+        private val SERVICE_RECEIVER_RESTART_ALL_STATES =
+            "${MoreApplication.packagePath}.RESTART_ALL"
 
         private const val MAX_RETRIES = 100
 
@@ -542,7 +538,8 @@ class ObservationRecordingService : Service() {
             activity: Activity
         ) {
             val observations =
-                MoreApplication.shared?.observationFactory?.observations ?: emptySet()
+                MoreApplication.shared?.observationFactory?.observations
+                    ?: emptySet()
 
             if (observations.isEmpty()) {
                 startWithoutPermissionCheck(scheduleIds)
@@ -585,31 +582,41 @@ class ObservationRecordingService : Service() {
          * @param scheduleIds The schedule IDs to start
          */
         private fun startWithoutPermissionCheck(scheduleIds: Set<String>) {
-            Scope.launch(Dispatchers.IO) {
-                if (scheduleIds.isNotEmpty()) {
-                    val serviceIntent =
-                        Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
-                    serviceIntent.action = SERVICE_RECEIVER_START_ACTION
-                    serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(scheduleIds))
-                    try {
-                        Handler(Looper.getMainLooper()).post {
-                            if (running) {
-                                MoreApplication.appContext?.startService(serviceIntent)
-                            } else {
-                                MoreApplication.appContext?.startForegroundService(serviceIntent)
-                            }
+            if (ViewManager.appInForeground.value && scheduleIds.isNotEmpty()) {
+                val serviceIntent =
+                    Intent(
+                        MoreApplication.appContext,
+                        ObservationRecordingService::class.java
+                    )
+                serviceIntent.action = SERVICE_RECEIVER_START_ACTION
+                serviceIntent.putStringArrayListExtra(SCHEDULE_ID, ArrayList(scheduleIds))
+                try {
+                    Handler(Looper.getMainLooper()).post {
+                        if (running) {
+                            MoreApplication.appContext?.startService(
+                                serviceIntent
+                            )
+                        } else {
+                            MoreApplication.appContext?.startForegroundService(
+                                serviceIntent
+                            )
                         }
-                    } catch (e: Exception) {
-                        Napier.e(e.stackTraceToString())
                     }
+                } catch (e: Exception) {
+                    Napier.e(e.stackTraceToString())
                 }
+            } else if (!ViewManager.appInForeground.value) {
+                Napier.w { "Could not start Foreground service: App is not open!" }
             }
         }
 
         fun pause(scheduleId: String) {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
-                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                    Intent(
+                        MoreApplication.appContext,
+                        ObservationRecordingService::class.java
+                    )
                 serviceIntent.action = SERVICE_RECEIVER_PAUSE_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
                 MoreApplication.appContext?.startService(serviceIntent)
@@ -621,7 +628,10 @@ class ObservationRecordingService : Service() {
         fun stop(scheduleId: String) {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
-                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                    Intent(
+                        MoreApplication.appContext,
+                        ObservationRecordingService::class.java
+                    )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ACTION
                 serviceIntent.putExtra(SCHEDULE_ID, scheduleId)
                 MoreApplication.appContext?.startService(serviceIntent)
@@ -633,7 +643,10 @@ class ObservationRecordingService : Service() {
         fun stopAll() {
             if (ViewManager.appInForeground.value) {
                 val serviceIntent =
-                    Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                    Intent(
+                        MoreApplication.appContext,
+                        ObservationRecordingService::class.java
+                    )
                 serviceIntent.action = SERVICE_RECEIVER_STOP_ALL_ACTION
                 MoreApplication.appContext?.startService(serviceIntent)
             } else {
@@ -643,11 +656,16 @@ class ObservationRecordingService : Service() {
 
         fun restartAll() {
             val serviceIntent =
-                Intent(MoreApplication.appContext, ObservationRecordingService::class.java)
+                Intent(
+                    MoreApplication.appContext,
+                    ObservationRecordingService::class.java
+                )
             serviceIntent.action = SERVICE_RECEIVER_RESTART_ALL_STATES
             try {
                 Handler(Looper.getMainLooper()).post {
-                    MoreApplication.appContext?.startForegroundService(serviceIntent)
+                    MoreApplication.appContext?.startForegroundService(
+                        serviceIntent
+                    )
                 }
             } catch (e: Exception) {
                 Napier.e(e.stackTraceToString())

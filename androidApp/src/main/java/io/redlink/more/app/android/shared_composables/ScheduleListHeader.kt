@@ -34,8 +34,8 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreImportant
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreImportant
 
 @Composable
 fun ScheduleListHeader(

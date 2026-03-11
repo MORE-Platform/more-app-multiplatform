@@ -25,7 +25,7 @@ It's recommended that you install the latest stable versions for compatibility a
 performance. In order to build the iOS application the version of **iOS** should be at least 14.
 
 * [Android Studio](https://developer.android.com/studio)
-* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 16.0 or higher)
+* [XCode](https://apps.apple.com/us/app/xcode) (Must be of version 26.0 or higher)
 * [Command Line Tools](https://developer.apple.com/downloads/)
 * [JDK 21](https://www.oracle.com/java/technologies/downloads/)
 * [Gradle 8.14.3](https://gradle.org)
@@ -61,21 +61,32 @@ The following is an instruction on how to install and configure the project on y
    git clone https://github.com/MORE-Platform/more-app-multiplatform.git
    ```
 2. Open the project in Android Studio.
-3. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
+3. To successfully build the iOS and Android apps, you need to integrate the Google API Key files
+   for each platform.
+    - For Android, place the `google-services.json` file in the `androidApp` directory.
+    - For iOS, place the `GoogleService-Info.plist` file in the `iosApp/iosApp` directory. Should
+      there be any trouble building the iosApp, make sure, that Xcode shows the file in the project
+      navigator. If it does not, you need to right click on the project source > "Add Files" >
+      Search the `GoogleService-Info.plist` file > "Add".
+4. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
    and wait until it's done.
-4. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
+5. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
    JDK 11 or later**, and then under **Project Structure** --> **Modules** set in either *
    *androidApp** and **shared** the **Source Compatibility** and the **Target Compatibility** to at
    least **$JavaVersion.VERSION_11**.
-5. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be
+6. After being upgraded to JDK 11 or a later version, the Settings dialog in Android Studio can be
    accessed by pressing cmd + , on Mac or Ctrl + Alt + S on Windows/Linux. Then, navigate to "Build,
    Execution, Deployment > Build Tools > Gradle". The JDK location can be set within that section.
-6. Now we can build the project. Go to the terminal and perform the following command in the root
+7. **Before** building the project you need to generate the openapi api clients. To do that just run
+   `./gradlew :shared:generateOpenApiClasses` from the project root. This has to be done, every time
+   the OpenAPI spec changed, or the build directory was removed.
+8. Now we can build the project. Go to the terminal and perform the following command in the root
    folder of the project:
     ```sh
     ./gradlew build
     ```
-7. Now you should be good to go. You can create an emulator device and start your application.
+
+8.Now you should be good to go. You can create an emulator device and start your application.
 
 ### Troubleshooting with KDoctor
 
@@ -198,16 +209,17 @@ To run the pipeline, you need to set up the following environment variables:
 - `APPLE_CONNECT_KEY_ID`: App Store Connect API Key ID
 - `APPLE_CONNECT_ISSUER_ID`: App Store Connect API Issuer ID
 - `APPLE_CONNECT_KEY_CONTENT`: App Store Connect API Key content (base64 encoded)
-- `APPLE_CERTIFICATE`: Apple certificate for signing
 - `FASTLANE_MATCH_SECRET`: Password for match repository
 - `MATCH_AUTH`: Basic authorization for match Git repository
+- `GOOGLE_API_KEY`: Google API Key (GoogleSerivce-Info.plist) for Firebase integration (base64
+  encoded)
 
 **Variables:**
 
 - `APP_IDENTIFIERS`: Comma-separated list of app bundle identifiers (e.g., "
-  ac.at.lbg.dhp.more,ac.at.lbg.dhp.more.More-Notification-Service-Extension")
+  io.redlink.umm.blendedcare.io.redlink.umm.blendedcare.More-Notification-Service-Extension")
 - `TARGETS`: Comma-separated list of Xcode targets corresponding to the app identifiers (e.g., "
-  More,More-Notification-Service-Extension")
+  BlendedCare,BlendedCare-Notification-Service-Extension")
 - `FASTLANE_IOS_BUILD_SCHEME`: Xcode scheme to build
 - `FASTLANE_BUILD_NUMBER`: Build number (set automatically from tag in deploy workflow)
 - `APPLE_CONNECT_KEY_IS_BASE64`: Whether the APPLE_CONNECT_KEY_CONTENT is base64 encoded (
@@ -225,6 +237,7 @@ To run the pipeline, you need to set up the following environment variables:
 - `ANDROID_KEY_ALIAS`: Alias for the Android signing key
 - `ANDROID_KEY_PASSWORD`: Password for the Android signing key
 - `FIREBASE_APP_ID`: (Optional) Firebase App ID for Firebase App Distribution
+- `GOOGLE_API_KEY`: Google API Key (google-services.json) for Firebase integration (base64 encoded)
 
 **Variables:**
 
@@ -283,7 +296,8 @@ an Android emulator:
 1. Click **Device Manager** in the upper right corner, right next to the build symbol.
 2. Click **Create device**.
 3. Choose the device you would like to use as an emulator. **Important**: The device should have *
-   *Play Store** support! You can see it by the device being marked with a Play Store icon.
+   *Play Store** support as only these will receive Firebase Push Notifications! You can see it by
+   the device being marked with a Play Store icon.
 4. Choose a system image. It's recommended to use the **Tiramisu** release with the **API Level 33
    **.
 5. Next verify configuration and the installation of the image will begin immediately.
@@ -409,7 +423,7 @@ The source code of the shared module is organized in three source sets according
 
 When making changes to the Database Schemas, please *make sure to increase the Database Schema
 Version* in the `RealmDatabase.kt` file located unter
-`shared/src/commonMain/kotlin/io/redlink/more/more_app_mutliplatform/database`.
+`shared/src/commonMain/kotlin/io.redlink.umm.participant/database`.
 
 *If this version is not upgraded after a schema change, the app will crash on already deployed
 systems!*

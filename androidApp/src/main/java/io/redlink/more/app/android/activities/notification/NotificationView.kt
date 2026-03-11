@@ -37,7 +37,7 @@ import io.redlink.more.app.android.activities.notification.composables.Notificat
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.MoreDivider
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
+import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 
 @Composable
 fun NotificationView(

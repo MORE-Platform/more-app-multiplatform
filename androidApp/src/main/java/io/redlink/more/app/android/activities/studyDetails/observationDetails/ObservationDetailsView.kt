@@ -35,7 +35,7 @@ import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.TimeframeDays
 import io.redlink.more.app.android.shared_composables.TimeframeHours
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun ObservationDetailsView(
@@ -43,7 +43,8 @@ fun ObservationDetailsView(
     navController: NavController
 ) {
     val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.OBSERVATION_DETAILS.routeWithParameters())
+    val route =
+        backStackEntry?.arguments?.getString(NavigationScreen.OBSERVATION_DETAILS.routeWithParameters())
     LaunchedEffect(route) {
         viewModel.viewDidAppear()
     }
@@ -65,7 +66,7 @@ fun ObservationDetailsView(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-            ){
+            ) {
                 HeaderTitle(
                     title = viewModel.observationDetailsModel.value.observationTitle,
                     modifier = Modifier

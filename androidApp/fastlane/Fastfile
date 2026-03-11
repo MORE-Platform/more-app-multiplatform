@@ -84,6 +84,20 @@ platform :android do
     return apk_path
   end
 
+  def setup_google_services
+    google_services_path = File.expand_path("../google-services.json")
+    if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
+      UI.message("google-services.json not found, creating from GOOGLE_API_KEY environment variable")
+      require 'base64'
+      File.write(google_services_path, Base64.decode64(ENV["GOOGLE_API_KEY"].gsub(/^"(.*)"$/, '\1')))
+      UI.success("Created google-services.json from environment variable")
+    elsif File.exist?(google_services_path)
+      UI.message("google-services.json already exists, skipping creation from environment variable")
+    else
+      UI.important("google-services.json not found and GOOGLE_API_KEY not provided")
+    end
+  end
+
   desc "Run all tests"
   lane :test do
     gradle(task: "test", project_dir: "..")
@@ -92,8 +106,10 @@ platform :android do
   desc "Build the Android app (debug)"
   lane :build do
     begin
+      setup_google_services
       setup_android_signing
 
+       generate_openapi
       gradle(
         task: "assemble",
         build_type: "Debug",
@@ -132,10 +148,21 @@ platform :android do
     end
   end
 
+    private_lane :generate_openapi do
+      gradle(
+        task: ":shared:generateOpenApiClasses",
+        project_dir: ".."
+      )
+    end
+
   desc "Deploy to Google Play Beta"
   lane :deploy_beta do
     begin
+        setup_google_services
         signing_configured = setup_android_signing
+        unless signing_configured
+          UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
+        end
 
       if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
         UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
@@ -189,6 +216,7 @@ platform :android do
         UI.message("Fallback version code: #{code}")
       end
 
+      generate_openapi
 
       gradle(
         task: "bundle",
@@ -225,6 +253,106 @@ platform :android do
       end
     rescue => e
       UI.error("Error in deploy_beta: #{e.message}")
+      raise e
+    end
+  end
+
+  desc "Deploy to Google Play Production"
+  lane :deploy_production do
+    begin
+      setup_google_services
+      signing_configured = setup_android_signing
+      unless signing_configured
+        UI.user_error!("Missing ANDROID_KEYSTORE_BASE64 (release keystore). Refusing to build/upload a Release AAB unsigned or debug-signed.")
+      end
+
+      if ENV["FASTLANE_BUILD_NUMBER"].nil? || ENV["FASTLANE_BUILD_NUMBER"].empty?
+        UI.error("FASTLANE_BUILD_NUMBER environment variable is not set or is empty")
+        raise "FASTLANE_BUILD_NUMBER environment variable is required"
+      end
+
+      name = ENV.fetch("FASTLANE_BUILD_NUMBER")
+      UI.message("Building version #{name} for production")
+
+      begin
+        major, minor, patch = name.split('.').map(&:to_i)
+
+        # Same version code scheme as beta
+        base_code = major * 10_000 + minor * 100 + patch
+
+        if ENV["GOOGLE_PLAY_KEY_IN_BASE64"].nil? || ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
+          UI.important("GOOGLE_PLAY_KEY_IN_BASE64 environment variable is not set or is empty")
+          UI.important("Will attempt to use default authentication method for version code retrieval")
+          latest_version_code = google_play_track_version_codes(
+            track: "production"
+          ).max || base_code
+        else
+          key_base64 = ENV["GOOGLE_PLAY_KEY_IN_BASE64"]
+          key_file_path = ""
+          if !key_base64.nil? && !key_base64.empty?
+            key_file_path = decode_base64_to_temp_file(key_base64)
+          end
+
+          if File.exist?(File.expand_path(key_file_path))
+            UI.success("Using Google Play key file for version code retrieval: #{key_file_path}")
+            latest_version_code = google_play_track_version_codes(
+              track: "production",
+              json_key: File.expand_path(key_file_path)
+            ).max || base_code
+          else
+            UI.error("Google Play key file not found at: #{key_file_path}")
+            raise "Google Play key file not found. Please check the GOOGLE_PLAY_KEY_IN_BASE64 environment variable."
+          end
+        end
+
+        code = [base_code, latest_version_code + 1].max
+        UI.message("Base version code: #{base_code}")
+        UI.message("Latest production version code from Google Play: #{latest_version_code}")
+        UI.message("Using incremented production version code: #{code}")
+      rescue => e
+        UI.error("Error processing version number for production: #{e.message}")
+        UI.important("Falling back to calculated version code without increment")
+        code = major * 10_000 + minor * 100 + patch
+        UI.message("Fallback production version code: #{code}")
+      end
+
+      generate_openapi
+
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: "..",
+        properties: {
+          "VERSION_CODE" => code,
+          "VERSION_NAME" => name
+        }
+      )
+
+      if !signing_configured
+        UI.important("Release build was created without signing configuration. This may cause issues when uploading to Google Play.")
+      end
+
+      aab_path = get_aab_path("..")
+
+      begin
+        if ENV["GOOGLE_PLAY_KEY_IN_BASE64"] && !ENV["GOOGLE_PLAY_KEY_IN_BASE64"].empty?
+          key_file_path = decode_base64_to_temp_file(ENV["GOOGLE_PLAY_KEY_IN_BASE64"])
+          upload_to_play_store(
+            track: "production",
+            skip_upload_metadata: true,
+            release_status: "completed",
+            aab: aab_path,
+            skip_upload_apk: true,
+            json_key: File.expand_path(key_file_path)
+          )
+          UI.success("Successfully deployed to Google Play Production")
+        end
+      rescue => e
+        UI.error("Error uploading to Google Play Production: #{e.message}")
+        raise e
+      end
+    rescue => e
+      UI.error("Error in deploy_production: #{e.message}")
       raise e
     end
   end

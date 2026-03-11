@@ -15,24 +15,26 @@ import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.web.WebClientListener
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.viewModels.limeSurvey.CoreLimeSurveyViewModel
+import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.viewModels.limeSurvey.CoreLimeSurveyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.URL
 
-class LimeSurveyViewModel : ViewModel(), WebClientListener {
-    private val coreViewModel = CoreLimeSurveyViewModel(
+class LimeSurveyViewModel(scheduleId: String?, notificationId: String?, observationId: String?) :
+    ViewModel(), WebClientListener {
+    val coreViewModel = CoreLimeSurveyViewModel(
         MoreApplication.shared!!.repositories,
-        MoreApplication.shared!!.observationFactory
+        MoreApplication.shared!!.observationFactory,
+        scheduleId,
+        notificationId,
+        observationId
     )
-    val limeSurveyLink = mutableStateOf<String?>(null)
-    val dataLoading = mutableStateOf(false)
     val wasAnswered = mutableStateOf(false)
     val networkLoading = mutableStateOf(false)
     val alertDialogOpen = mutableStateOf<AlertDialogModel?>(null)
@@ -44,35 +46,6 @@ class LimeSurveyViewModel : ViewModel(), WebClientListener {
                     alertDialogOpen.value = it
                 }
             }
-        }
-        viewModelScope.launch {
-            coreViewModel.dataLoading.collect {
-                withContext(Dispatchers.Main) {
-                    dataLoading.value = it
-                }
-            }
-        }
-        coreViewModel.limeSurveyLink?.let { flow ->
-            viewModelScope.launch {
-                flow.collect {
-                    withContext(Dispatchers.Main) {
-                        limeSurveyLink.value = it
-                    }
-                }
-            }
-        }
-
-    }
-
-    fun setModel(
-        scheduleId: String? = null,
-        observationId: String? = null,
-        notificationId: String? = null
-    ) {
-        if (!scheduleId.isNullOrBlank()) {
-            coreViewModel.setScheduleId(scheduleId, notificationId)
-        } else if (!observationId.isNullOrBlank()) {
-            coreViewModel.setObservationId(observationId, notificationId)
         }
     }
 

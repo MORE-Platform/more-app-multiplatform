@@ -22,9 +22,9 @@ import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
-import io.redlink.more.more_app_mutliplatform.database.repository.MainRepository
-import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.GPSType
+import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.observations.Observation
+import io.redlink.more.observations.observationTypes.GPSType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -93,7 +93,7 @@ class GPSObservation(
             settings[LOCATION_INTERVAL_MILLIS_KEY]?.toString()?.trim('\"')?.toLong()?.let {
                 //gpsService.setIntervalMillis(it)
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             Log.e(TAG, e.stackTraceToString())
         }
     }

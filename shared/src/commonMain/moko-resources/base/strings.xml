@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="observation_is_active">Please open the app and start the observation!</string>
+
+    <string name="deeplink_protocol">app</string>
+    <string name="deeplink_host">io.redlink.more</string>
+</resources>

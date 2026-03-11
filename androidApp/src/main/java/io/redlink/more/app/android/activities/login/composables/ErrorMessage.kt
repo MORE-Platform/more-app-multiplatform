@@ -20,16 +20,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun ErrorMessage(hasError: Boolean, errorMsg: String) {
     if (hasError) {
-        Spacer(modifier = Modifier
-            .height(8.dp)
-            .fillMaxWidth())
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+                .fillMaxWidth()
+        )
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = errorMsg, color = MoreColors.Important, textAlign = TextAlign.Center)
+            Text(
+                text = errorMsg,
+                color = MoreColors.Important,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

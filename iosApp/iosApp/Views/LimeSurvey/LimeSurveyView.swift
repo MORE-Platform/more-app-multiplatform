@@ -16,7 +16,12 @@
 import SwiftUI
 
 struct LimeSurveyView: View {
-    @StateObject var viewModel: LimeSurveyViewModel
+    @StateObject private var viewModel: LimeSurveyViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    init(navigationState: NavigationState) {
+        _viewModel = StateObject(wrappedValue: LimeSurveyViewModel(navigationState: navigationState))
+    }
 
     var body: some View {
         MoreMainBackgroundView(contentPadding: 0) {
@@ -55,11 +60,16 @@ struct LimeSurveyView: View {
         .onDisappear {
             viewModel.viewDidDisappear()
         }
+        .onReceive(viewModel.$shouldClose.removeDuplicates()) { close in
+            if close {
+                dismiss()
+            }
+        }
     }
 }
 
 struct LimeSurveyView_Previews: PreviewProvider {
     static var previews: some View {
-        LimeSurveyView(viewModel: LimeSurveyViewModel())
+        LimeSurveyView(navigationState: NavigationState())
     }
 }

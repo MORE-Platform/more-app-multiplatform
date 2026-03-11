@@ -45,8 +45,9 @@ import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDateTimeFromEpochSeconds
 import io.redlink.more.app.android.extensions.toAnnotatedString
 import io.redlink.more.app.android.shared_composables.IconInline
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.models.NotificationModel
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.models.NotificationModel
+import io.redlink.more.models.localize
 
 @Composable
 fun NotificationItem(
@@ -106,8 +107,9 @@ fun NotificationItem(
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 50.dp)
         ) {
-            val annotatedNotificationModelBody = remember(notificationModel.notificationBody) {
-                notificationModel.notificationBody.trim().toAnnotatedString()
+            val localizedBody = remember(notificationModel.notificationBody) {
+                notificationModel.notificationBody.trim().localize()
+                    .trim().toAnnotatedString()
             }
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -115,9 +117,9 @@ fun NotificationItem(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 ClickableText(
-                    text = annotatedNotificationModelBody,
+                    text = localizedBody,
                     onClick = { offset ->
-                        annotatedNotificationModelBody.getStringAnnotations(
+                        localizedBody.getStringAnnotations(
                             tag = "URL",
                             start = offset,
                             end = offset

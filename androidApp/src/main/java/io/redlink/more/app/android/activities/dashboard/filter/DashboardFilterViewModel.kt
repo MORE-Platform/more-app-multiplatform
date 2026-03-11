@@ -18,9 +18,9 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formatDateFilterString
 import io.redlink.more.app.android.extensions.getQuantityString
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.models.DateFilterModel
-import io.redlink.more.more_app_mutliplatform.scopes.Scope.launch
-import io.redlink.more.more_app_mutliplatform.viewModels.dashboard.CoreDashboardFilterViewModel
+import io.redlink.more.models.DateFilterModel
+import io.redlink.more.scopes.Scope.launch
+import io.redlink.more.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

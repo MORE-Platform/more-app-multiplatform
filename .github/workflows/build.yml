@@ -20,6 +20,7 @@ jobs:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       FASTLANE_MATCH_SECRET: ${{ secrets.FASTLANE_MATCH_SECRET }}
       MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_AUTH }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: ${{ vars.FASTLANE_XCODEBUILD_SETTINGS_RETRIES }}
       APP_IDENTIFIERS: ${{ vars.APP_IDENTIFIERS }}
@@ -38,7 +39,7 @@ jobs:
       - name: Set Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.0.1'
+          xcode-version: '26.2'
 
       - name: Build iOS app
         run: fastlane build
@@ -55,6 +56,7 @@ jobs:
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       FASTLANE_BUILD_NUMBER: ${{ vars.FASTLANE_BUILD_NUMBER }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
     defaults:
       run:
         working-directory: androidApp

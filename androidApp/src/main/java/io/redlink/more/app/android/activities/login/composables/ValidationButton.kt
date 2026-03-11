@@ -26,8 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.morePrimary
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.morePrimary
 
 @Composable
 fun ValidationButton(model: LoginViewModel, focusManager: FocusManager) {

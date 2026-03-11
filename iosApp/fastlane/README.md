@@ -39,6 +39,14 @@ Build the app for App Store
 
 Deploy a new beta to TestFlight
 
+### ios deploy_appstore
+
+```sh
+[bundle exec] fastlane ios deploy_appstore
+```
+
+Deploy a new version to the App Store (production)
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

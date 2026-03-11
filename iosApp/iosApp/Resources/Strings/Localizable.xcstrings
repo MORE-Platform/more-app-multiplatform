@@ -1670,6 +1670,17 @@
         }
       }
     },
+    "Reload study" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Studie neu laden"
+          }
+        }
+      }
+    },
     "Required Permissions Were Not Granted" : {
       "comment" : "AlertDialog.strings\n  iosApp\n\n  Created by Jan Cortiel on 30.01.24.\n  Copyright © 2024 Redlink GmbH. All rights reserved.",
       "extractionState" : "manual",

@@ -18,11 +18,12 @@ import FirebaseCore
 import FirebaseCrashlyticsSwift
 import FirebaseMessaging
 import Foundation
-import shared
 import UIKit
+import shared
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static let appGroup = "group.ac.at.lbg.dhp.more.group"
+    static let bundleId = Bundle.main.bundleIdentifier ?? "ac.at.lbg.dhp.more.group"
+    static let appGroup = "group." + bundleId
     static let appGroupUserDefaults = UserDefaults(suiteName: appGroup)
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static let repositories = MainRepository(appDatabase: database)
@@ -39,7 +40,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
-            dataRecorder: IOSDataRecorder()
+            dataRecorder: IOSDataRecorder(),
+            reminderNotificationSchedulingLimit: 30
         )
     }()
 
@@ -47,7 +49,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         #if DEBUG
-            NapierProxyKt.napierDebugBuild(antilog: nil)
+        NapierProxyKt.napierDebugBuild(antilog: nil)
         #endif
 
         FirebaseApp.configure()
@@ -56,8 +58,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         AppDelegate.registerForNotifications()
 
         DataUploadBackgroundTask.setupBackgroundTasks()
+        DailyBackgroundTask.setupBackgroundTasks()
+        ObservationReminderBackgroundTask.setupBackgroundTasks()
+        
+        let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
-        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: Set(NavigationScreen.allCases.map { $0.values.navigationLink }))
+        AppDelegate.shared.deeplinkManager.addAvailableDeepLinks(deepLinks: routes)
+        AppDelegate.shared.deeplinkManager.setProtocol(protocolReplacement: Shared.companion.PROTOCOL.localized())
+        AppDelegate.shared.deeplinkManager.setHost(hostReplacement: Shared.companion.HOST.localized())
 
         return true
     }
@@ -80,10 +88,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func cancelBackgroundTasks() {
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DataUploadBackgroundTask.taskID)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DailyBackgroundTask.taskID)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: ObservationReminderBackgroundTask.taskID)
     }
 
     func scheduleTasks() {
         DataUploadBackgroundTask.schedule()
+        DailyBackgroundTask.schedule()
+        ObservationReminderBackgroundTask.schedule()
     }
 
     static func registerForNotifications() {

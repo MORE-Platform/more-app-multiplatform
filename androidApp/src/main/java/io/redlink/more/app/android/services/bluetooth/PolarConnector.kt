@@ -21,12 +21,12 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.HR.PolarConnectorListener
 import io.redlink.more.app.android.observations.HR.PolarObserverCallback
-import io.redlink.more.more_app_mutliplatform.database.entities.BluetoothDeviceEntity
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnector
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothConnectorObserver
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothState
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothStateManagement
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.polar.PolarStates
+import io.redlink.more.database.entities.BluetoothDeviceEntity
+import io.redlink.more.services.bluetooth.BluetoothConnector
+import io.redlink.more.services.bluetooth.BluetoothConnectorObserver
+import io.redlink.more.services.bluetooth.BluetoothState
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
+import io.redlink.more.services.bluetooth.polar.PolarStates
 
 class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListener {
     private val polarObserverCallback: PolarObserverCallback = PolarObserverCallback()
@@ -119,7 +119,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "HR ready!" }
             PolarStates.hrFeatureReady(true)
 
-            Napier.d(tag = "PolarHeartRateObservation::Companion::setHRFeature") { "HR Feature Ready!" }
+            Napier.d(tag = "PolarHeartRateObservation:::setHRFeature") { "HR Feature Ready!" }
         }
     }
 

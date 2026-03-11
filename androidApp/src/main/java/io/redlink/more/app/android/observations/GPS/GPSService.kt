@@ -13,16 +13,24 @@ package io.redlink.more.app.android.observations.GPS
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
-import com.google.android.gms.location.*
+import com.google.android.gms.location.Granularity
+import com.google.android.gms.location.LocationAvailability
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import io.github.aakira.napier.Napier
 
 
 private const val TAG = "GPSService"
 
 class GPSService(context: Context) {
-    private val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+    private val fusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
 
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 1000)
+    private val locationRequest =
+        LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 1000)
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
@@ -90,7 +98,11 @@ class GPSService(context: Context) {
     fun registerForLocationUpdates(listener: GPSListener) {
         Napier.d(tag = "GPSService::registerForLocationUpdates") { "Registered new listener!" }
         this.gpsListener = listener
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest.build(), locationCallback, Looper.getMainLooper())
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest.build(),
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     fun unregisterForLocationUpdates(listener: GPSListener) {

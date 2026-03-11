@@ -31,8 +31,9 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.models.ScheduleListType
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.models.ScheduleListType
+import io.redlink.more.navigation.model.NavigationRouteParameter
 
 @Composable
 fun FilterView(
@@ -49,7 +50,11 @@ fun FilterView(
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }, onClick = {
-                    navController.navigate(NavigationScreen.OBSERVATION_FILTER.navigationRoute("scheduleListType" to scheduleListType))
+                    navController.navigate(
+                        NavigationScreen.OBSERVATION_FILTER.navigationRoute(
+                            NavigationRouteParameter.SCHEDULE_LIST_TYPE.key to scheduleListType
+                        )
+                    )
                 })
     ) {
         Text(

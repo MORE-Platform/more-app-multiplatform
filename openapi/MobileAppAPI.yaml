@@ -16,6 +16,11 @@ tags:
   - name: Data
     description: |
       Endpoints to **send** observation-data
+  - name: Signup
+    description: |
+      Provides information about the study signup
+  - name: GarminRegistration
+    description: Endpoints to register for Garmin Connect using OAuth
 
 externalDocs:
   url: https://github.com/MORE-Platform
@@ -24,6 +29,28 @@ security:
   - apiKey: [ ]
 
 paths:
+  /signup:
+    get:
+      operationId: getSignupInfo
+      description: Returns simple HTML study information identified by the required participant registration token
+      tags:
+        - Signup
+      parameters:
+        - $ref: '#/components/parameters/RegistrationTokenQuery'
+      responses:
+        '200':
+          description: Simple study information in HTML
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/HtmlPage'
+        '400':
+          description: bad request, token missing or invalid
+        '404':
+          $ref: '#/components/responses/NoSuchRegistrationToken'
+        '410':
+          $ref: '#/components/responses/RegistrationTokenExpired'
+
   /registration:
     get:
       operationId: getStudyRegistrationInfo
@@ -79,6 +106,59 @@ paths:
       responses:
         '204':
           description: Participant left the study.
+
+  /registration/garmin:
+    get:
+      operationId: getGarminOauthUrl
+      description: redirect to the Garmin OAuth page
+      tags:
+        - GarminRegistration
+      responses:
+        '302':
+          description: redirect to Garmin OAuth
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL to the Garmin OAuth page
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+
+  /registration/garmin/callback:
+    get:
+      operationId: handleGarminCallback
+      description: handle the Garmin OAuth callback with code and state parameters
+      tags:
+        - GarminRegistration
+      security: [ ]
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: OAuth authorization code from Garmin
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: State parameter for CSRF protection
+      responses:
+        '200':
+          description: OAuth callback handled successfully
+        '302':
+          description: redirect after successful OAuth
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL to redirect the user after successful OAuth
+        '400':
+          description: invalid or missing parameters
+        '401':
+          $ref: '#/components/responses/UnauthorizedApiKey'
+
 
   /config/study:
     get:
@@ -148,7 +228,37 @@ paths:
           $ref: '#/components/responses/UnauthorizedApiKey'
         '404':
           description: unknown notification service
+  /notifications:
+    get:
+      operationId: listPushNotifications
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: return a list of all notifications for current participant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushNotification'
 
+  /notifications/{msgId}:
+    delete:
+      operationId: deleteNotification
+      tags:
+        - Notifications
+      parameters:
+        - name: msgId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: deleted successfully
+        '400':
+          description: not found
   /data/bulk:
     post:
       operationId: storeBulk
@@ -171,7 +281,6 @@ paths:
                   $ref: '#/components/schemas/Id'
         '401':
           $ref: '#/components/responses/UnauthorizedApiKey'
-
 components:
   schemas:
     Study:
@@ -185,12 +294,24 @@ components:
             The current study-state. Mainly used during the registration process.
           type: boolean
           default: true
+        studyState:
+          type: string
+          enum:
+            - active
+            - paused
+            - closed
+        participant:
+          $ref: '#/components/schemas/SimpleParticipant'
         studyTitle:
           type: string
         participantInfo:
           type: string
         consentInfo:
           type: string
+        finishText:
+          type: string
+        contact:
+          $ref: '#/components/schemas/ContactInfo'
         start:
           type: string
           format: date
@@ -202,14 +323,6 @@ components:
           items:
             $ref: '#/components/schemas/Observation'
           minItems: 1
-        contactInstitute:
-          type: string
-        contactPerson:
-          type: string
-        contactEmail:
-          type: string
-        contactPhoneNumber:
-          type: string
         version:
           $ref: '#/components/schemas/VersionTag'
       required:
@@ -221,7 +334,16 @@ components:
         - observations
         - version
 
-    Contact:
+    SimpleParticipant:
+      type: object
+      properties:
+        id:
+          type: integer
+        alias:
+          type: string
+
+    ContactInfo:
+      description: Contact-Information
       type: object
       properties:
         institute:
@@ -232,9 +354,6 @@ components:
           type: string
         phoneNumber:
           type: string
-      required:
-        - contactPerson
-        - contactEmail
 
     Observation:
       description: The configuration of an observation for the study.
@@ -266,6 +385,12 @@ components:
           type: boolean
           default: true
         hidden:
+          type: boolean
+          default: false
+        noSchedule:
+          type: boolean
+          default: false
+        reminder:
           type: boolean
           default: false
         version:
@@ -321,6 +446,29 @@ components:
         - deviceId
         - consentInfoMD5
         - observations
+
+    PushNotification:
+      description: a push notification
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 'text'
+            - 'data'
+        msgId:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        deepLink:
+          type: string
+        data:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
 
     AppConfiguration:
       description: |
@@ -445,6 +593,17 @@ components:
         - dataValue
         - timestamp
 
+    GarminRedirect:
+      type: object
+      properties:
+        code:
+          type: string
+        state:
+          type: string
+      required:
+        - code
+        - state
+
     Id:
       type: string
 
@@ -457,6 +616,9 @@ components:
         msg:
           type: string
 
+    HtmlPage:
+      description: HtmlRenderedPage
+
   parameters:
     RegistrationToken:
       name: More-Registration-Token
@@ -465,6 +627,13 @@ components:
       schema:
         type: string
       description: The token to register for a study
+    RegistrationTokenQuery:
+      name: token
+      in: query
+      required: true
+      schema:
+        type: string
+      description: The registration token of a participant
 
   responses:
     StudyInfoResponse:

@@ -35,8 +35,8 @@ import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreDivider
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.viewModels.schedules.CoreScheduleViewModel
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.viewModels.schedules.CoreScheduleViewModel
 
 @Composable
 fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
