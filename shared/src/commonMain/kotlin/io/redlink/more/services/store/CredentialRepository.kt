@@ -11,62 +11,20 @@
 package io.redlink.more.services.store
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import io.redlink.more.extensions.mapState
 import io.redlink.more.models.CredentialModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class CredentialRepository(private val sharedStorageRepository: SharedStorageRepository) {
-    private val _credentialsLoaded = MutableStateFlow(false)
+interface CredentialRepository {
+    @NativeCoroutines
+    val credentialsLoaded: StateFlow<Boolean>
 
     @NativeCoroutines
-    val credentialsLoaded: StateFlow<Boolean> = _credentialsLoaded
-    private var _cache = MutableStateFlow<CredentialModel?>(null)
+    val credentials: StateFlow<CredentialModel?>
 
     @NativeCoroutines
-    val credentials: StateFlow<CredentialModel?> = _cache
+    val hasCredentials: StateFlow<Boolean>
 
-    @NativeCoroutines
-    val hasCredentials: StateFlow<Boolean> =
-        credentials.mapState(CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate), false) {
-            it != null
-        }
+    fun store(credentials: CredentialModel): Boolean
 
-    init {
-        _cache.value = load()
-        _credentialsLoaded.value = true
-    }
-
-    fun store(credentials: CredentialModel): Boolean {
-        if (credentials.apiId.isNotEmpty() && credentials.apiKey.isNotEmpty()) {
-            sharedStorageRepository.store(CREDENTIAL_ID, credentials.apiId)
-            sharedStorageRepository.store(CREDENTIAL_KEY, credentials.apiKey)
-            _cache.value = credentials
-            return true
-        }
-        return false
-    }
-
-    private fun load(): CredentialModel? {
-        val apiId = sharedStorageRepository.load(CREDENTIAL_ID, "")
-        val apiKey = sharedStorageRepository.load(CREDENTIAL_KEY, "")
-        if (apiId.isNotEmpty() && apiKey.isNotEmpty()) {
-            return CredentialModel(apiId, apiKey)
-        }
-        return null
-    }
-
-    fun remove() {
-        sharedStorageRepository.remove(CREDENTIAL_ID)
-        sharedStorageRepository.remove(CREDENTIAL_KEY)
-        _cache.value = null
-    }
-
-    companion object {
-        private const val CREDENTIAL_ID = "sharedStorageCredentialID"
-        private const val CREDENTIAL_KEY = "sharedStorageCredentialKey"
-    }
+    fun remove()
 }

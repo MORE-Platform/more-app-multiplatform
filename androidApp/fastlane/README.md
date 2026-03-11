@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
+### android setup_google_services
+
+```sh
+[bundle exec] fastlane android setup_google_services
+```
+
+
+
 ### android test
 
 ```sh

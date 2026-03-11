@@ -10,32 +10,13 @@
  */
 package io.redlink.more.database.repository
 
-import io.redlink.more.database.AppDatabase
 import io.redlink.more.database.entities.BluetoothDeviceEntity
-import io.redlink.more.scopes.Scope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 
-class BluetoothDeviceRepository(
-    private val database: AppDatabase
-) {
-    fun storePairedDevice(bluetoothDevice: BluetoothDeviceEntity) {
-        if (bluetoothDevice.address != null) {
-            Scope.launch(Dispatchers.IO) {
-                database.bluetoothDeviceDao().insert(bluetoothDevice)
-            }
-        }
-    }
+interface BluetoothDeviceRepository {
+    fun storePairedDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun unpairDevice(bluetoothDevice: BluetoothDeviceEntity) {
-        bluetoothDevice.address?.let {
-            Scope.launch(Dispatchers.IO) {
-                database.bluetoothDeviceDao().deleteByAddress(it)
-            }
-        }
-    }
+    fun unpairDevice(bluetoothDevice: BluetoothDeviceEntity)
 
-    fun pairedDevices(): Flow<List<BluetoothDeviceEntity>> =
-        database.bluetoothDeviceDao().getAllFlow()
+    fun pairedDevices(): Flow<List<BluetoothDeviceEntity>>
 }

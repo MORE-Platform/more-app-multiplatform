@@ -1,0 +1,34 @@
+package io.redlink.more.mocks
+
+import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.navigation.DeeplinkManager
+import io.redlink.more.navigation.model.DeepLinkData
+import io.redlink.more.services.network.NetworkService
+import io.redlink.more.services.notification.LocalNotificationListener
+import io.redlink.more.services.notification.NotificationActionHandler
+import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.services.store.SharedStorageRepository
+
+class MockNotificationManager(
+    repository: MainRepository,
+    localNotificationListener: LocalNotificationListener,
+    networkService: NetworkService,
+    deeplinkManager: DeeplinkManager,
+    sharedStorageRepository: SharedStorageRepository
+) : NotificationManager(
+    repository,
+    localNotificationListener,
+    networkService,
+    deeplinkManager,
+    sharedStorageRepository
+) {
+    var handleNotificationInteractionCalled = false
+
+    override fun handleNotificationInteraction(
+        notificationId: String,
+        deepLink: String?,
+        handler: (NotificationActionHandler, DeepLinkData?) -> Unit
+    ) {
+        handleNotificationInteractionCalled = true
+    }
+}

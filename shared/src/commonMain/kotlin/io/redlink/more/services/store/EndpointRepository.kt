@@ -10,36 +10,10 @@
  */
 package io.redlink.more.services.store
 
-import io.redlink.more.util.validateAndNormalizeUrl
+interface EndpointRepository {
+    fun storeEndpoint(endpoint: String)
 
-class EndpointRepository(private val sharedStorageRepository: SharedStorageRepository) {
-    private var cache: String = ""
+    fun removeEndpoint()
 
-    init {
-        cache = loadEndpoint()
-    }
-
-    fun storeEndpoint(endpoint: String) {
-        val validEndpoint = endpoint.validateAndNormalizeUrl()?.ifBlank { DATA_BASE_PATH_ENDPOINT }
-            ?: DATA_BASE_PATH_ENDPOINT
-        sharedStorageRepository.store(ENDPOINT_KEY, validEndpoint)
-        cache = validEndpoint
-    }
-
-    private fun loadEndpoint(): String {
-        return sharedStorageRepository.load(ENDPOINT_KEY, cache)
-    }
-
-    fun removeEndpoint() {
-        cache = ""
-        sharedStorageRepository.remove(ENDPOINT_KEY)
-    }
-
-    fun endpoint(): String = cache.ifEmpty { DATA_BASE_PATH_ENDPOINT }
-
-    companion object {
-        private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
-        private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://data.more-health.at/api/v1"
-    }
+    fun endpoint(): String
 }

@@ -13,8 +13,8 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct TaskDetailsView: View {
     @StateObject private var viewModel: TaskDetailsViewModel
@@ -93,8 +93,9 @@ struct TaskDetailsView: View {
                                     scheduleId: scheduleId,
                                     observationType: detailsModel.observationType,
                                     state: detailsModel.state,
-                                    disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
-                                    .padding(.bottom)
+                                    disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty
+                                )
+                                .padding(.bottom)
                             }
                         }
                     }
@@ -113,7 +114,7 @@ struct TaskDetailsView: View {
 
 struct TaskDetailsViewPreview_Provider: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepository(appDatabase: database)
+    static let repos = MainRepositoryImpl(appDatabase: database)
     static var previews: some View {
         TaskDetailsView(scheduleId: "preview-schedule-id")
             .environmentObject(NavigationModalState(repos: repos))

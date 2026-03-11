@@ -11,89 +11,37 @@
 package io.redlink.more.database.repository
 
 import io.ktor.utils.io.core.Closeable
-import io.redlink.more.database.AppDatabase
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
-import io.redlink.more.extensions.asClosure
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.transform
-import kotlinx.datetime.Clock
 
-class ObservationRepository(private val appDatabase: AppDatabase) {
+interface ObservationRepository {
 
-    suspend fun getCount(): Int = appDatabase.observationDao().getCount()
+    suspend fun getCount(): Int
 
-    fun observations() = appDatabase.observationDao().getAllFlow()
+    fun observations(): Flow<List<ObservationEntity>>
 
-    fun observationWithUndoneSchedules(): Flow<Map<ObservationEntity, List<ScheduleEntity>>> {
-        return appDatabase.scheduleDao().getByDoneFlow(false)
-            .combine(observations()) { schedules: List<ScheduleEntity>, observations: List<ObservationEntity> ->
-                observations.associateWith { observation ->
-                    schedules.filter { schedule -> schedule.observationId == observation.observationId }
-                }
-            }
-    }
+    fun observationWithUndoneSchedules(): Flow<Map<ObservationEntity, List<ScheduleEntity>>>
 
-    suspend fun updateLastCollection(type: String, timestamp: Long) {
-        val observations = appDatabase.observationDao().getByObservationType(type)
-        observations.forEach { observation ->
-            val updatedObservation = observation.copy(collectionTimestamp = timestamp)
-            appDatabase.observationDao().update(updatedObservation)
-        }
-    }
+    suspend fun updateLastCollection(type: String, timestamp: Long)
 
-    suspend fun updateLastCollection(types: Set<String>, timestamp: Long) {
-        types.forEach { type ->
-            val observations = appDatabase.observationDao().getByObservationType(type)
-            observations.forEach { observation ->
-                val updatedObservation = observation.copy(collectionTimestamp = timestamp)
-                appDatabase.observationDao().update(updatedObservation)
-            }
-        }
-    }
+    suspend fun updateLastCollection(types: Set<String>, timestamp: Long)
 
-    fun collectionTimestamp(type: String): Flow<Long?> =
-        appDatabase.observationDao().getByObservationTypeFlow(type)
-            .transform { observationList ->
-                emit(observationList.firstOrNull()?.collectionTimestamp)
-            }
+    fun collectionTimestamp(type: String): Flow<Long?>
 
-    fun collectAllTimestamps(): Flow<Map<String, Long>> =
-        observations().transform { observationList ->
-            emit(observationList.associate { it.observationType to it.collectionTimestamp })
-        }
+    fun collectAllTimestamps(): Flow<Map<String, Long>>
 
-    fun collectTimestampForObservationIds(observationIds: Set<String>): Flow<Long> =
-        observations().transform { observationList ->
-            val filteredObservations =
-                observationList.filter { it.observationType in observationIds }
-            val maxTimestamp =
-                filteredObservations.maxByOrNull { it.collectionTimestamp }?.collectionTimestamp
-                    ?: Clock.System.now().toEpochMilliseconds()
-            emit(maxTimestamp)
-        }
+    fun collectTimestampForObservationIds(observationIds: Set<String>): Flow<Long>
 
-    fun collectTimestampOfType(type: String, newState: (Long?) -> Unit): Closeable {
-        return collectionTimestamp(type).asClosure(newState)
-    }
+    fun collectTimestampOfType(type: String, newState: (Long?) -> Unit): Closeable
 
-    fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
-        return collectAllTimestamps().asClosure(newState)
-    }
+    fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable
 
-    fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationEntity, List<ScheduleEntity>>) -> Unit): Closeable {
-        return observationWithUndoneSchedules().asClosure(newState)
-    }
+    fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationEntity, List<ScheduleEntity>>) -> Unit): Closeable
 
-    fun observationTypes(): Flow<Set<String>> = observations().transform { observationList ->
-        emit(observationList.map { it.observationType }.toSet())
-    }
+    fun observationTypes(): Flow<Set<String>>
 
-    fun observationById(observationId: String) =
-        appDatabase.observationDao().getByObservationIdFlow(observationId)
+    fun observationById(observationId: String): Flow<ObservationEntity?>
 
-    suspend fun getObservationByObservationId(observationId: String): ObservationEntity? {
-        return appDatabase.observationDao().getByObservationId(observationId)
-    }
+    suspend fun getObservationByObservationId(observationId: String): ObservationEntity?
 }

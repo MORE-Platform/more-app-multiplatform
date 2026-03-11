@@ -74,6 +74,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
         }
 
         androidMain.dependencies {
@@ -108,6 +109,14 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+    }
+}
+
+tasks.withType<Test> {
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
 
@@ -180,4 +189,16 @@ tasks.register<GenerateTask>(
     // Let Gradle cache this so it only runs when the YAML changes
     inputs.file(mobileAppApiInput)
     outputs.dir(mobileAppApiOutputDir)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    dependsOn("generateOpenApiClasses")
+}
+
+tasks.withType<com.google.devtools.ksp.gradle.KspAATask>().configureEach {
+    dependsOn("generateOpenApiClasses")
+}
+
+tasks.withType<Test>().configureEach {
+    dependsOn("generateOpenApiClasses")
 }

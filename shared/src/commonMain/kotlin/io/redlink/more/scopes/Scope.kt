@@ -17,7 +17,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -26,18 +25,19 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
 
-object Scope {
+object Scope : MoreScope {
     private val mutex = Mutex()
     private val rootJob = SupervisorJob()
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         Napier.e(throwable = exception, message = "Caught $exception in CoroutineExceptionHandler")
     }
-    private val scope = CoroutineScope(rootJob + Dispatchers.Default + exceptionHandler)
+    private val scope = CoroutineScope(rootJob + AppDispatchers.default + exceptionHandler)
+    override val coroutineContext: CoroutineContext = scope.coroutineContext
     private val jobs = mutableMapOf<String, Job>()
 
-    fun launch(
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
+    override fun launch(
+        coroutineContext: CoroutineContext,
+        start: CoroutineStart,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val uuid = createUUID()
@@ -105,10 +105,10 @@ object Scope {
 
     fun isActive(uuid: String) = jobs[uuid]?.isActive ?: false
 
-    fun repeatedLaunch(
+    override fun repeatedLaunch(
         intervalMillis: Long,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-        initalDelay: Long = 0,
+        coroutineContext: CoroutineContext,
+        initalDelay: Long,
         block: suspend CoroutineScope.() -> Unit
     ): Pair<String, Job> {
         val uuid = createUUID()
@@ -142,7 +142,7 @@ object Scope {
         return Pair(uuid, job)
     }
 
-    fun cancel(uuid: String) {
+    override fun cancel(uuid: String) {
         scope.launch {
             mutex.withLock {
                 jobs[uuid]?.cancel()
@@ -150,7 +150,7 @@ object Scope {
         }
     }
 
-    fun cancel(uuids: Collection<String>) {
+    override fun cancel(uuids: Collection<String>) {
         if (uuids.isEmpty()) return
 
         scope.launch {
@@ -168,7 +168,7 @@ object Scope {
         }
     }
 
-    fun cancel() {
+    override fun cancel() {
         scope.launch {
             mutex.withLock {
                 try {

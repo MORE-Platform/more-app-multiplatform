@@ -40,7 +40,12 @@ extension FCMService: UNUserNotificationCenterDelegate {
         let content = notification.request.content
         let data = content.userInfo.notNilStringDictionary()
         if let msgId = data[NotificationManager.companion.MSG_ID] {
-            AppDelegate.shared.notificationManager.storeAndHandleNotification(shared: AppDelegate.shared, key: msgId, title: content.title, body: content.body, priority: 1, read: false, completed: false, data: data, displayNotification: false)
+            AppDelegate.shared.notificationManager.storeAndHandleNotification(key: msgId, title: content.title, body: content.body, priority: 1, read: false, completed: false, data: data, displayNotification: false)
+        }
+        do {
+            try await AppDelegate.shared.observationService.scheduleObservationReminder()
+        } catch {
+            Napier.e("Error while updating observation reminder: \(error)")
         }
         do {
             try await AppDelegate.shared.observationService.scheduleObservationReminder()

@@ -62,12 +62,21 @@ The following is an instruction on how to install and configure the project on y
    ```
 2. Open the project in Android Studio.
 3. To successfully build the iOS and Android apps, you need to integrate the Google API Key files
-   for each platform.
-    - For Android, place the `google-services.json` file in the `androidApp` directory.
-    - For iOS, place the `GoogleService-Info.plist` file in the `iosApp/iosApp` directory. Should
-      there be any trouble building the iosApp, make sure, that Xcode shows the file in the project
-      navigator. If it does not, you need to right click on the project source > "Add Files" >
-      Search the `GoogleService-Info.plist` file > "Add".
+   for each platform. This can be done manually or via a script:
+    - **Automated setup**: If you have your `GOOGLE_API_KEY` (base64 encoded) as an environment
+      variable, you can run the following script from the root directory:
+      ```sh
+      chmod +x setup_google_services.sh
+      ./setup_google_services.sh
+      ```
+    - **Manual setup**:
+        - For Android, place the `google-services.json` file in the `androidApp` directory.
+        - For iOS, place the `GoogleService-Info.plist` file in the `iosApp/iosApp` directory.
+          Should
+          there be any trouble building the iosApp, make sure, that Xcode shows the file in the
+          project
+          navigator. If it does not, you need to right click on the project source > "Add Files" >
+          Search the `GoogleService-Info.plist` file > "Add".
 4. Make sure to sync project with the Gradle Files. Click **File | Sync Project with Gradle Files**
    and wait until it's done.
 5. This project requires **JDK 11** or later. To build the project you need to set your **runtime to
@@ -168,6 +177,8 @@ Android apps.
 
 The iOS fastlane configuration includes the following lanes:
 
+- `setup_google_services`: Automatically creates `GoogleService-Info.plist` if `GOOGLE_API_KEY` is
+  set.
 - `increment_build`: Bumps build number and version to `FASTLANE_BUILD_NUMBER`
 - `build`: Builds the app for App Store, including code signing setup
 - `deploy_beta`: Deploys a new beta to TestFlight (calls `increment_build` and `build`, then uploads
@@ -180,6 +191,7 @@ supports multiple app targets, including notification service extensions.
 
 The Android fastlane configuration includes the following lanes:
 
+- `setup_google_services`: Automatically creates `google-services.json` if `GOOGLE_API_KEY` is set.
 - `test`: Runs all tests
 - `build`: Builds the Android app (debug version)
 - `deploy_beta`: Builds a release version and deploys it to Google Play Beta

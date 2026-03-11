@@ -34,7 +34,7 @@ class RegistrationObservable: ObservableObject {
         }
         .store(in: &cancellables)
 
-        createPublisher(for: service.study)
+        createPublisher(for: service.study_)
         .receive(on: DispatchQueue.main)
         .sink { _ in
         } receiveValue: { [weak self] study in

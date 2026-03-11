@@ -11,6 +11,7 @@
 package io.redlink.more.viewModels
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.scopes.AppDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,10 +29,13 @@ abstract class CoreViewModel : Closeable {
     }
 
     fun launchScope(
-        coroutineContext: CoroutineContext = Dispatchers.Default,
+        coroutineContext: CoroutineContext? = null,
         block: suspend CoroutineScope.() -> Unit
     ) {
-        viewModelScope.launch(coroutineContext, block = block)
+        viewModelScope.launch(
+            coroutineContext ?: AppDispatchers.default,
+            block = block
+        )
     }
 
     override fun close() {

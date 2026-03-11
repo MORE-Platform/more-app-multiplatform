@@ -1,18 +1,6 @@
-/*
- * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
- * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
- * for Digital Health and Prevention -- A research institute of the
- * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
- * Förderung der wissenschaftlichen Forschung).
- * Licensed under the Apache 2.0 license with Commons Clause
- * (see https://www.apache.org/licenses/LICENSE-2.0 and
- * https://commonsclause.com/).
- */
-
 package io.redlink.more.registration
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
@@ -32,7 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.kotlincrypto.hash.md.MD5
 
-class RegistrationService(
+open class RegistrationService(
     private val shared: Shared,
 ) {
     private val _validLoginModel = MutableStateFlow<LoginModel?>(null)
@@ -53,8 +41,6 @@ class RegistrationService(
     @NativeCoroutines
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val konnection = Konnection.createInstance()
-
     private val _connected = MutableStateFlow(false)
 
     @NativeCoroutines
@@ -62,7 +48,7 @@ class RegistrationService(
 
     init {
         Scope.launch(Dispatchers.IO) {
-            konnection.observeHasConnection().collect {
+            shared.connectionStatusFlow.collect {
                 _connected.value = it
                 Napier.i("Device connected: $it")
             }
@@ -71,11 +57,11 @@ class RegistrationService(
 
     fun getEndpointRepository(): EndpointRepository = shared.endpointRepository
 
-    fun clearError() {
+    open fun clearError() {
         _error.value = null
     }
 
-    fun sendRegistrationToken(
+    open fun sendRegistrationToken(
         loginModel: LoginModel
     ) {
         clearError()

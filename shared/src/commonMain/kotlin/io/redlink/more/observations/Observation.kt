@@ -48,7 +48,11 @@ abstract class Observation(
 
     var timestampCollectionJob: Job? = null
 
-    fun start(observationId: String, scheduleId: String, notificationId: String? = null): Boolean {
+    open fun start(
+        observationId: String,
+        scheduleId: String,
+        notificationId: String? = null
+    ): Boolean {
         observationIds.add(observationId)
         StudyScope.launch {
             val realObservationType =
@@ -83,7 +87,7 @@ abstract class Observation(
         } else true
     }
 
-    fun stop(scheduleId: String, removeNotification: Boolean = false) {
+    open fun stop(scheduleId: String, removeNotification: Boolean = false) {
         Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
         if (observationIds.size <= 1) {
             stop {
@@ -204,7 +208,7 @@ abstract class Observation(
         onCompletion()
     }
 
-    fun stopAndFinish(scheduleId: String) {
+    open fun stopAndFinish(scheduleId: String) {
         Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
         stop {
             timestampCollectionJob?.cancel()
@@ -322,8 +326,6 @@ abstract class Observation(
         }
         scheduleIds.clear()
     }
-
-    fun isRunning() = running
 
     companion object {
         const val CONFIG_TASK_START = "observation_start_date_time"

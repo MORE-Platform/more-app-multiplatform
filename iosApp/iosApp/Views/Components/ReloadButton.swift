@@ -22,7 +22,7 @@ struct ReloadButton: View {
     
     private func reload() {
         isLoading = true
-        AppDelegate.shared.updateStudyAsync()
+        AppDelegate.shared.updateStudy(oldStudyState: nil, newStudyState: nil)
         isLoading = false
     }
 }

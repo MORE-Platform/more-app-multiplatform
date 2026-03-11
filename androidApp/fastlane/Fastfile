@@ -84,7 +84,7 @@ platform :android do
     return apk_path
   end
 
-  def setup_google_services
+  lane :setup_google_services do
     google_services_path = File.expand_path("../google-services.json")
     if !File.exist?(google_services_path) && ENV["GOOGLE_API_KEY"] && !ENV["GOOGLE_API_KEY"].empty?
       UI.message("google-services.json not found, creating from GOOGLE_API_KEY environment variable")
@@ -98,9 +98,13 @@ platform :android do
     end
   end
 
+
   desc "Run all tests"
   lane :test do
-    gradle(task: "test", project_dir: "..")
+    gradle(
+      task: ":shared:testDebugUnitTest",
+      project_dir: ".."
+    )
   end
 
   desc "Build the Android app (debug)"
@@ -109,12 +113,14 @@ platform :android do
       setup_google_services
       setup_android_signing
 
-       generate_openapi
+      generate_openapi
       gradle(
         task: "assemble",
         build_type: "Debug",
         project_dir: ".."
       )
+
+      test
 
       if !ENV['CI']
         begin
@@ -171,6 +177,15 @@ platform :android do
 
       name = ENV.fetch("FASTLANE_BUILD_NUMBER")
       UI.message("Building version #{name}")
+
+      generate_openapi
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: ".."
+      )
+
+      test
 
       begin
         major, minor, patch = name.split('.').map(&:to_i)
@@ -273,6 +288,15 @@ platform :android do
 
       name = ENV.fetch("FASTLANE_BUILD_NUMBER")
       UI.message("Building version #{name} for production")
+
+      generate_openapi
+      gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: ".."
+      )
+
+      test
 
       begin
         major, minor, patch = name.split('.').map(&:to_i)

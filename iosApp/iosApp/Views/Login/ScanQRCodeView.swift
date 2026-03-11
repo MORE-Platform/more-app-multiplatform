@@ -6,10 +6,9 @@
 //  Copyright © 2025 Redlink GmbH. All rights reserved.
 //
 
-import shared
-
 import AVFoundation
 import SwiftUI
+import shared
 
 struct ScanQRCodeView: View {
     @StateObject private var viewModel = ScanQRCodeViewModel()
@@ -87,29 +86,47 @@ struct ScanQRCodeView: View {
             Alert(
                 title: Text("permission_needed"),
                 message: Text(viewModel.errorMessage),
-                primaryButton: .default(Text("open_settings"), action: {
-                    let settingsString = UIApplication.openSettingsURLString
-                    if let settingsURL = URL(string: settingsString) {
-                        // open app settings, using openURL SwiftUI API
-                        openURL(settingsURL)
-                    }
-                }),
+                primaryButton: .default(
+                    Text("open_settings"),
+                    action: {
+                        let settingsString = UIApplication.openSettingsURLString
+                        if let settingsURL = URL(string: settingsString) {
+                            // open app settings, using openURL SwiftUI API
+                            openURL(settingsURL)
+                        }
+                    }),
                 secondaryButton: .cancel(Text("Cancel"))
             )
         }
         .onChange(of: viewModel.scannedCode) { code in
             if let code {
                 model.extractValuesFromQRCode(qrCodeUrl: code)
-                model.showQRCodeView = false // View schließen
+                model.showQRCodeView = false  // View schließen
             }
         }
     }
 }
 
-struct ScanQRCodeView_Previews: PreviewProvider {
-    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepository(appDatabase: database)
-    static var previews: some View {
-        ScanQRCodeView(model: LoginViewModel(registration: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder(), reminderNotificationSchedulingLimit: nil))))
-    }
+#Preview {
+    let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    let repos = MainRepositoryImpl(appDatabase: database)
+    let dataManager = iOSObservationDataManager(
+        repository: repos,
+        scope: Scope.shared,
+        studyScope: StudyScope.shared,
+        dispatchers: AppDispatchers.shared
+    )
+    let sharedContainer = Shared(
+        localNotificationListener: LocalPushNotifications(),
+        repositories: repos,
+        sharedStorageRepository: UserDefaultsRepository(),
+        observationDataManager: dataManager,
+        mainBluetoothConnector: IOSBluetoothConnector(),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        dataRecorder: IOSDataRecorder(),
+        reminderNotificationSchedulingLimit: nil,
+        connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
+    )
+    let registrationService = RegistrationService(shared: sharedContainer)
+    ScanQRCodeView(model: LoginViewModel(registration: registrationService))
 }

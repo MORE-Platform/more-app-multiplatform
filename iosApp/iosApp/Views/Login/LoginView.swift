@@ -13,8 +13,8 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct LoginView: View {
     @ObservedObject private var registration: RegistrationObservable
@@ -42,14 +42,15 @@ struct LoginView: View {
                 Image("more_welcome")
                     .padding(.vertical, 40)
 
-                MoreTextFieldHL(isSmTextfield: .constant(false),
-                                headerText: "participation_key_entry",
-                                inputPlaceholder: .constant("participation_key_entry"),
-                                input: $model.token,
-                                capitalization: .uppercase,
-                                autoCorrectDisabled: true,
-                                textType: .oneTimeCode,
-                                hlAlignment: .center
+                MoreTextFieldHL(
+                    isSmTextfield: .constant(false),
+                    headerText: "participation_key_entry",
+                    inputPlaceholder: .constant("participation_key_entry"),
+                    input: $model.token,
+                    capitalization: .uppercase,
+                    autoCorrectDisabled: true,
+                    textType: .oneTimeCode,
+                    hlAlignment: .center
                 )
                 .padding(.bottom, 12)
 
@@ -73,15 +74,16 @@ struct LoginView: View {
                 if showTokenInput {
                     VStack {
                         if let error = registration.error {
-                            let errorMessage = if error.code == 404 {
-                                "Token or Endpoint invalid"
-                            } else if let code = error.code?.intValue, code >= 500 && code < 600 {
-                                "System Error! Please try again later or contact your Study Administrator!"
-                            } else if error.message.count > 0 {
-                                error.message
-                            } else {
-                                "token_error"
-                            }
+                            let errorMessage =
+                                if error.code == 404 {
+                                    "Token or Endpoint invalid"
+                                } else if let code = error.code?.intValue, code >= 500 && code < 600 {
+                                    "System Error! Please try again later or contact your Study Administrator!"
+                                } else if error.message.count > 0 {
+                                    error.message
+                                } else {
+                                    "token_error"
+                                }
                             ErrorText(message: errorMessage)
                                 .padding(.bottom, 5)
                         }
@@ -96,11 +98,12 @@ struct LoginView: View {
                                     if registration.connected {
                                         model.validate()
                                     } else {
-                                        AlertController.shared.openAlertDialog(model: AlertDialogModel(
-                                            title: "no_internet_title",
-                                            message: "no_internet_message",
-                                            confirmLabel: "Ok",
-                                            cancelLabel: nil, onConfirm: nil)
+                                        AlertController.shared.openAlertDialog(
+                                            model: AlertDialogModel(
+                                                title: "no_internet_title",
+                                                message: "no_internet_message",
+                                                confirmLabel: "Ok",
+                                                cancelLabel: nil, onConfirm: nil)
                                         )
                                     }
                                 }
@@ -136,10 +139,20 @@ struct LoginView: View {
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
-    static let repos = MainRepository(appDatabase: database)
-    static var previews: some View {
-        LoginView(registration: RegistrationObservable(service: RegistrationService(shared: Shared(localNotificationListener: LocalPushNotifications(), repositories: repos, sharedStorageRepository: UserDefaultsRepository(), observationDataManager: iOSObservationDataManager(repository: repos), mainBluetoothConnector: IOSBluetoothConnector(), observationFactory: IOSObservationFactory(repository: repos, dataManager: iOSObservationDataManager(repository: repos)), dataRecorder: IOSDataRecorder(), reminderNotificationSchedulingLimit: nil))))
-    }
+#Preview("LoginView") {
+    let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    let repos = MainRepositoryImpl(appDatabase: database)
+    let dataManager = iOSObservationDataManager(repository: repos, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+    let shared = Shared(
+        localNotificationListener: LocalPushNotifications(),
+        repositories: repos,
+        sharedStorageRepository: UserDefaultsRepository(),
+        observationDataManager: dataManager,
+        mainBluetoothConnector: IOSBluetoothConnector(),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        dataRecorder: IOSDataRecorder(),
+        reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
+    )
+    let registration = RegistrationObservable(service: RegistrationService(shared: shared))
+    LoginView(registration: registration)
 }

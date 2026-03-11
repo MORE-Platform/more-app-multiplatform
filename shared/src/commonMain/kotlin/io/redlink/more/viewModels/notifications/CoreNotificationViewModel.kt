@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 
-class CoreNotificationViewModel(
+open class CoreNotificationViewModel(
     private val coreFilterModel: CoreNotificationFilterViewModel,
     private val notificationManager: NotificationManager,
 ) : CoreViewModel() {

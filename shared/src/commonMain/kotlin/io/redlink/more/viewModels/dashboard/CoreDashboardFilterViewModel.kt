@@ -25,7 +25,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 
-class CoreDashboardFilterViewModel(repository: MainRepository) : CoreViewModel() {
+open class CoreDashboardFilterViewModel(repository: MainRepository) : CoreViewModel() {
     val currentTypeFilter = MutableStateFlow(emptyMap<String, Boolean>())
     val currentDateFilter = MutableStateFlow(
         DateFilterModel.entries.associateWith { it == DateFilterModel.ENTIRE_TIME })
@@ -78,7 +78,7 @@ class CoreDashboardFilterViewModel(repository: MainRepository) : CoreViewModel()
 
     fun filterActive() = activeDateFilter() || activeTypeFilter()
 
-    fun applyFilter(scheduleModelList: Collection<ScheduleModel>): Collection<ScheduleModel> {
+    open fun applyFilter(scheduleModelList: Collection<ScheduleModel>): Collection<ScheduleModel> {
         var schedules = scheduleModelList.toList()
         if (filterActive()) {
             if (activeTypeFilter()) {

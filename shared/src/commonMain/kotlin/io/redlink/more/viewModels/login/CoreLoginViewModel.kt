@@ -14,7 +14,8 @@ import io.redlink.more.models.LoginModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.CoreViewModel
 
-class CoreLoginViewModel(private val registrationService: RegistrationService) : CoreViewModel() {
+open class CoreLoginViewModel(private val registrationService: RegistrationService) :
+    CoreViewModel() {
 
     fun sendRegistrationToken(
         loginModel: LoginModel

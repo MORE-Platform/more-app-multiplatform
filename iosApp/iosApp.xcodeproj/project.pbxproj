@@ -60,7 +60,6 @@
 		1F43998F29C1010400687906 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43998E29C1010400687906 /* InfoView.swift */; };
 		1F43DE212EC6137300B6F07B /* GarminConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE202EC6137300B6F07B /* GarminConnectView.swift */; };
 		1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */; };
-		1F45E5B92F2766AB00EE8487 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */; };
 		1F45E5BB2F288D7500EE8487 /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F45E5BA2F288D7500EE8487 /* ExitButton.swift */; };
 		1F45E5BD2F288DD600EE8487 /* ReloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F45E5BC2F288DD600EE8487 /* ReloadButton.swift */; };
 		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
@@ -115,6 +114,7 @@
 		1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */; };
 		1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */; };
 		1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */; };
+		1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */; };
 		1FB338B72E853936006BA594 /* StudyLoadingErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */; };
 		1FBD513A2BBC3E2D0029D185 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD51392BBC3E2D0029D185 /* FirebaseMessaging */; };
 		1FBD513C2BBC3E8A0029D185 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD513B2BBC3E8A0029D185 /* FirebaseCrashlytics */; };
@@ -275,7 +275,6 @@
 		1F43998E29C1010400687906 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		1F43DE202EC6137300B6F07B /* GarminConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectView.swift; sourceTree = "<group>"; };
 		1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectViewModel.swift; sourceTree = "<group>"; };
-		1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1F45E5BA2F288D7500EE8487 /* ExitButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
 		1F45E5BC2F288DD600EE8487 /* ReloadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReloadButton.swift; sourceTree = "<group>"; };
 		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
@@ -331,6 +330,7 @@
 		1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreColors.xcassets; sourceTree = "<group>"; };
 		1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterViewModel.swift; sourceTree = "<group>"; };
 		1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterView.swift; sourceTree = "<group>"; };
+		1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyLoadingErrorView.swift; sourceTree = "<group>"; };
 		1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataUploadBackgroundTask.swift; sourceTree = "<group>"; };
 		1FC9574B2C072B7900EB92D6 /* More-Notification-Service-Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "More-Notification-Service-Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -815,6 +815,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */,
 				1F9283C02BC512E500D459A7 /* PrivacyInfo.xcprivacy */,
 				EDAC149529DEF2010084CE1C /* iosApp.entitlements */,
 				1F8847C22991517F0023EF10 /* Resources */,
@@ -833,7 +834,6 @@
 				1F0026DA29CC8E730034EF65 /* AppDelegate.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */,
-				1F45E5B82F2766AB00EE8487 /* GoogleService-Info.plist */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -1009,8 +1009,7 @@
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				1FC957532C072B7900EB92D6 /* Embed Foundation Extensions */,
-				1F8E9DB22A80D31D006E4AF4 /* ShellScript */,
-				1F988B402F30941C0094F99F /* ShellScript */,
+				1F988B402F30941C0094F99F /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -1087,7 +1086,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
-				1F45E5B92F2766AB00EE8487 /* GoogleService-Info.plist in Resources */,
+				1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				1FF6D8AD2BC516270050AF10 /* PrivacyInfo.xcprivacy in Resources */,
@@ -1100,29 +1099,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1F8E9DB22A80D31D006E4AF4 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
-				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
-				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
-		};
-		1F988B402F30941C0094F99F /* ShellScript */ = {
+		1F988B402F30941C0094F99F /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1131,6 +1108,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -1574,7 +1552,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PraeCura;
+				INFOPLIST_KEY_CFBundleDisplayName = More;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1618,7 +1596,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PraeCura;
+				INFOPLIST_KEY_CFBundleDisplayName = More;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (

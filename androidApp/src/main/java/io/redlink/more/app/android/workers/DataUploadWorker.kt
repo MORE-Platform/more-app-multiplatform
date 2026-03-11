@@ -16,10 +16,11 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.services.network.NetworkService
+import io.redlink.more.services.network.NetworkServiceImpl
 import io.redlink.more.services.network.openapi.model.DataBulk
 import io.redlink.more.services.store.CredentialRepository
-import io.redlink.more.services.store.EndpointRepository
+import io.redlink.more.services.store.CredentialRepositoryImpl
+import io.redlink.more.services.store.EndpointRepositoryImpl
 import io.redlink.more.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,12 +37,12 @@ class DataUploadWorker(
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
     private val credentialRepository: CredentialRepository =
-        MoreApplication.shared?.credentialRepository ?: CredentialRepository(
+        MoreApplication.shared?.credentialRepository ?: CredentialRepositoryImpl(
             sharedPreferences
         )
     private val networkService =
-        MoreApplication.shared?.networkService ?: NetworkService(
-            EndpointRepository(sharedPreferences), credentialRepository
+        MoreApplication.shared?.networkService ?: NetworkServiceImpl(
+            EndpointRepositoryImpl(sharedPreferences), credentialRepository
         )
     private var stopped = false
 
