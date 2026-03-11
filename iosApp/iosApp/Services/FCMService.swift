@@ -47,6 +47,11 @@ extension FCMService: UNUserNotificationCenterDelegate {
         } catch {
             Napier.e("Error while updating observation reminder: \(error)")
         }
+        do {
+            try await AppDelegate.shared.observationService.scheduleObservationReminder()
+        } catch {
+            Napier.e("Error while updating observation reminder: \(error)")
+        }
         return [.sound, .badge, .banner]
     }
 
