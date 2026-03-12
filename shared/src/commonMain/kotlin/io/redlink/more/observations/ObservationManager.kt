@@ -190,7 +190,6 @@ class ObservationManager(
             scheduleSchemaList.firstOrNull { it.scheduleId == scheduleId }?.let {
                 Napier.i(tag = "ObservationManager::stop") { "Stopping schedule: $it" }
                 observation.stop(scheduleId, false)
-                observation.removeDataCount()
                 setObservationState(it, ScheduleState.DONE)
                 runningObservations.remove(scheduleId)
                 scheduleSchemaList.remove(it)

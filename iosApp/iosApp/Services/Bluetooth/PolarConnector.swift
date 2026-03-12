@@ -240,6 +240,10 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
             print("Polar HR Feature ready!")
             PolarStates.shared.hrFeatureReady(ready: true)
         }
+        if feature == .feature_polar_sdk_mode {
+            print("Polar SDK Mode ready!")
+            PolarStates.shared.sdkModeReady(ready: true)
+        }
     }
 }
 

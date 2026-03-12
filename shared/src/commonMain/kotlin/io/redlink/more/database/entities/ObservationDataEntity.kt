@@ -45,7 +45,7 @@ data class ObservationDataEntity(
             dataValue = try {
                 Json.parseToJsonElement(dataValue).jsonObject
             } catch (e: Exception) {
-                Napier.e(tag = this::class.asString()) { e.stackTraceToString() }
+                Napier.e(tag = this::class.simpleName) { e.stackTraceToString() }
                 JsonObject(emptyMap())
             },
             timestamp = timestampInstant()

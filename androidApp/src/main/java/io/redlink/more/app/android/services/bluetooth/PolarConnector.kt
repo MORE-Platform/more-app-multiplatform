@@ -38,7 +38,8 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
+            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO,
+            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_TEMPERATURE_DATA
         )
     ).apply {
         setPolarFilter(true)
@@ -118,8 +119,10 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
             Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "HR ready!" }
             PolarStates.hrFeatureReady(true)
-
-            Napier.d(tag = "PolarHeartRateObservation:::setHRFeature") { "HR Feature Ready!" }
+        }
+        if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE) {
+            Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "SDK Mode ready!" }
+            PolarStates.sdkModeReady(true)
         }
     }
 
