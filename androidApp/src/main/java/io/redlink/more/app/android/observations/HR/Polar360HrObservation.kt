@@ -135,7 +135,7 @@ class Polar360HrObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processHrSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        storeData(processed, -1)
+                        storeData(mapOf("polar360hrdata" to processed), -1,onCompletion)
                     },
                     { error ->
                         Napier.e(tag = "Polar360HrObservation") { "Failed to process offline data: ${error.message}" }

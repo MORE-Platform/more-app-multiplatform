@@ -178,6 +178,11 @@
 		ED7AE1ED29C8A2BF00616B93 /* TaskDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */; };
 		EDACF62729D2F31D0032327B /* PolarBleSdk in Frameworks */ = {isa = PBXBuildFile; productRef = EDACF62629D2F31D0032327B /* PolarBleSdk */; };
 		EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */; };
+		AA20000000000000000000C1 /* Polar360Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C1 /* Polar360Controller.swift */; };
+		AA20000000000000000000C2 /* Polar360HrObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C2 /* Polar360HrObservation.swift */; };
+		AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C3 /* Polar360AccObservation.swift */; };
+		AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C4 /* Polar360TempObservation.swift */; };
+		AA20000000000000000000C5 /* Polar360PpgObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C5 /* Polar360PpgObservation.swift */; };
 		EDAF93EF29F17A340093F1DA /* CompletedSchedules.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */; };
 		EDB16E2B29F933EF00701C27 /* TaskCompletionBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB16E2A29F933EF00701C27 /* TaskCompletionBarViewModel.swift */; };
 		EDB16E3029F9357300701C27 /* TaskCompletionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB16E2F29F9357300701C27 /* TaskCompletionBarView.swift */; };
@@ -395,6 +400,11 @@
 		ED7AE1EC29C8A2BF00616B93 /* TaskDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailsView.swift; sourceTree = "<group>"; };
 		EDAC149529DEF2010084CE1C /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarVerityHeartRateObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C1 /* Polar360Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360Controller.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C2 /* Polar360HrObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360HrObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C3 /* Polar360AccObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360AccObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C4 /* Polar360TempObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360TempObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C5 /* Polar360PpgObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360PpgObservation.swift; sourceTree = "<group>"; };
 		EDAF93EE29F17A340093F1DA /* CompletedSchedules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedSchedules.swift; sourceTree = "<group>"; };
 		EDB16E2A29F933EF00701C27 /* TaskCompletionBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCompletionBarViewModel.swift; sourceTree = "<group>"; };
 		EDB16E2F29F9357300701C27 /* TaskCompletionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCompletionBarView.swift; sourceTree = "<group>"; };
@@ -512,6 +522,11 @@
 				1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */,
 				07D9046729C85166003D2912 /* GPSObservation.swift */,
 				EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */,
+				AA10000000000000000000C1 /* Polar360Controller.swift */,
+				AA10000000000000000000C2 /* Polar360HrObservation.swift */,
+				AA10000000000000000000C3 /* Polar360AccObservation.swift */,
+				AA10000000000000000000C4 /* Polar360TempObservation.swift */,
+				AA10000000000000000000C5 /* Polar360PpgObservation.swift */,
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
@@ -1309,6 +1324,11 @@
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				B79BECC129F1811000966AD1 /* ContactInfo.swift in Sources */,
 				EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */,
+				AA20000000000000000000C1 /* Polar360Controller.swift in Sources */,
+				AA20000000000000000000C2 /* Polar360HrObservation.swift in Sources */,
+				AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */,
+				AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */,
+				AA20000000000000000000C5 /* Polar360PpgObservation.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 				B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */,

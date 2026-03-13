@@ -95,17 +95,29 @@ class Polar360AccObservation: Observation_ {
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
+        deviceListener?.cancel()
+        deviceListener = nil
         if offlineMode {
-            controller.stopOfflineRecording(dataType: .acc)
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = nil
+            controller.stopOfflineRecordingAndFetch(
+                dataType: .acc,
+                onSuccess: { [weak self] items in
+                    guard let self else { onCompletion(); return }
+                    let samples = items.compactMap { $0 as? PolarAccelerometerData.PolarAccelerometerDataSample }
+                    let processed = samples.map { ["x": $0.x, "y": $0.y, "z": $0.z, "timestamp": $0.timeStamp] as [String: Any] }
+                    self.storeData(data: ["polar360accdata": processed], timestamp: -1) { onCompletion() }
+                },
+                onError: { error in
+                    NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)")
+                    onCompletion()
+                }
+            )
         } else {
             accDisposable?.dispose()
             accDisposable = nil
+            onCompletion()
         }
-        deviceListener?.cancel()
-        deviceListener = nil
-        onCompletion()
     }
 
     override func observerErrors() -> Set<String> {

@@ -82,17 +82,29 @@ class Polar360PpiObservation: Observation_ {
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
+        deviceListener?.cancel()
+        deviceListener = nil
         if offlineMode {
-            controller.stopOfflineRecording(dataType: .ppi)
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = nil
+            controller.stopOfflineRecordingAndFetch(
+                dataType: .ppi,
+                onSuccess: { [weak self] items in
+                    guard let self else { onCompletion(); return }
+                    let samples = items.compactMap { $0 as? PolarPpiData.PolarPpiSample }
+                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppi, "ppiErrorEstimate": $0.errorEstimate, "timestamp": $0.timeStamp] as [String: Any] }
+                    self.storeData(data: ["polar360ppidata": processed], timestamp: -1) { onCompletion() }
+                },
+                onError: { error in
+                    NSLog("Polar360PpiObservation: Failed to fetch offline data: \(error)")
+                    onCompletion()
+                }
+            )
         } else {
             ppiDisposable?.dispose()
             ppiDisposable = nil
+            onCompletion()
         }
-        deviceListener?.cancel()
-        deviceListener = nil
-        onCompletion()
     }
 
     override func observerErrors() -> Set<String> {

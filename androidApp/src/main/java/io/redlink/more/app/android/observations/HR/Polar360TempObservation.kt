@@ -153,7 +153,7 @@ class Polar360TempObservation(repos: MainRepository) :
                     { items ->
                         val processed = processTemperatureSamples(items.filterIsInstance<PolarTemperatureData.PolarTemperatureDataSample>())
                         //TODO gateway data processing or here
-                        storeData(processed, -1, onCompletion)
+                        storeData(mapOf("polar360tempdata" to processed), -1, onCompletion)
                     },
                     { error ->
                         Napier.e(tag = "Polar360TempObservation") { "Failed to process offline data: ${error.message}" }

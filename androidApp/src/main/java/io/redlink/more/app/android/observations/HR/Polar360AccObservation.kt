@@ -152,7 +152,7 @@ class Polar360AccObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processAccSamples(items.filterIsInstance<PolarAccelerometerData.PolarAccelerometerDataSample>())
-                        storeData(processed, -1, onCompletion)
+                        storeData(mapOf("polar360accdata" to processed), -1, onCompletion)
                     },
                     { error ->
                         Napier.e(tag = "Polar360AccObservation") { "Failed to process offline data: ${error.message}" }

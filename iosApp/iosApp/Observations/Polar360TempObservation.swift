@@ -95,17 +95,29 @@ class Polar360TempObservation: Observation_ {
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
+        deviceListener?.cancel()
+        deviceListener = nil
         if offlineMode {
-            controller.stopOfflineRecording(dataType: .temperature)
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = nil
+            controller.stopOfflineRecordingAndFetch(
+                dataType: .temperature,
+                onSuccess: { [weak self] items in
+                    guard let self else { onCompletion(); return }
+                    let samples = items.compactMap { $0 as? PolarTemperatureData.PolarTemperatureDataSample }
+                    let processed = samples.map { ["temp": $0.temperature, "timestamp": $0.timeStamp] as [String: Any] }
+                    self.storeData(data: ["polar360tempdata": processed], timestamp: -1) { onCompletion() }
+                },
+                onError: { error in
+                    NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)")
+                    onCompletion()
+                }
+            )
         } else {
             tempDisposable?.dispose()
             tempDisposable = nil
+            onCompletion()
         }
-        deviceListener?.cancel()
-        deviceListener = nil
-        onCompletion()
     }
 
     override func observerErrors() -> Set<String> {

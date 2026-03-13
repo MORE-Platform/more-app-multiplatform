@@ -57,6 +57,48 @@ class Polar360Controller {
             )
     }
 
+    func stopOfflineRecordingAndFetch(dataType: PolarDeviceDataType, onSuccess: @escaping ([Any]) -> Void, onError: @escaping (Error) -> Void) {
+        guard let deviceId = currentDeviceId else {
+            onSuccess([])
+            return
+        }
+        _ = polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
+            .onErrorComplete()
+            .andThen(
+                polarConnector.polarApi.listOfflineRecordings(deviceId)
+                    .filter { $0.type == dataType }
+                    .concatMap { [weak self] entry -> Observable<[Any]> in
+                        guard let self else { return Observable.just([]) }
+                        return self.polarConnector.polarApi.getOfflineRecord(deviceId, entry: entry, secret: nil)
+                            .flatMap { data -> Single<[Any]> in
+                                let samples = self.extractSamples(from: data)
+                                return self.polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
+                                    .andThen(Single.just(samples))
+                            }
+                            .asObservable()
+                    }
+                    .toArray()
+                    .map { $0.flatMap { $0 } }
+            )
+            .subscribe(
+                onSuccess: { onSuccess($0) },
+                onError: { onError($0) }
+            )
+    }
+
+    private func extractSamples(from data: PolarOfflineRecordingData) -> [Any] {
+        switch data {
+        case .ppiOfflineRecordingData(let ppiData, _, _):
+            return ppiData.samples
+        case .accOfflineRecordingData(let accData, _, _):
+            return accData.samples
+        case .temperatureOfflineRecordingData(let tempData, _, _):
+            return tempData.samples
+        default:
+            return []
+        }
+    }
+
     func isOfflineRecordingMode(config: [String: Any]) -> Bool {
         if let val_ = config[Polar360Controller.CONFIG_OFFLINE_RECORDING] as? Bool {
             return val_

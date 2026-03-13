@@ -126,7 +126,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        storeData(processed, -1, onCompletion)
+                        storeData(mapOf("polar360ppidata" to processed), -1, onCompletion)
                     },
                     { error ->
                         Napier.e(tag = "Polar360PpiObservation") { "Failed to process offline data: ${error.message}" }
