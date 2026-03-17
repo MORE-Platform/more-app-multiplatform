@@ -86,9 +86,24 @@ class Polar360AccObservation(repos: MainRepository) :
         Polar360Controller.ensureReady(deviceId, offlineMode = offlineMode,
             onReady = {
                 if (offlineMode) {
-                    offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
-                        deviceId, PolarBleApi.PolarDeviceDataType.ACC
-                    )
+                    Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.ACC)
+                        .subscribe(
+                            { items ->
+                                val processed = processAccSamples(items.filterIsInstance<PolarAccelerometerData.PolarAccelerometerDataSample>())
+                                if (processed.isNotEmpty()) {
+                                    storeData(mapOf("polar360accdata" to processed), -1) {}
+                                }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.ACC
+                                )
+                            },
+                            { error ->
+                                Napier.e(tag = "Polar360AccObservation") { "Failed to fetch pending offline data: ${error.message}" }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.ACC
+                                )
+                            }
+                        )
                 } else {
                     accDisposable = Polar360Controller.getPolarApi()
                         .requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.ACC)

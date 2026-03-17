@@ -86,9 +86,24 @@ class Polar360TempObservation(repos: MainRepository) :
         Polar360Controller.ensureReady(deviceId, offlineMode = offlineMode,
             onReady = {
                 if (offlineMode) {
-                    offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
-                        deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE
-                    )
+                    Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.TEMPERATURE)
+                        .subscribe(
+                            { items ->
+                                val processed = processTemperatureSamples(items.filterIsInstance<PolarTemperatureData.PolarTemperatureDataSample>())
+                                if (processed.isNotEmpty()) {
+                                    storeData(mapOf("polar360tempdata" to processed), -1) {}
+                                }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE
+                                )
+                            },
+                            { error ->
+                                Napier.e(tag = "Polar360TempObservation") { "Failed to fetch pending offline data: ${error.message}" }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE
+                                )
+                            }
+                        )
                 } else {
                     tempDisposable = Polar360Controller.getPolarApi()
                         .requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE)

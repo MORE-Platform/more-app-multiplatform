@@ -81,9 +81,24 @@ class Polar360PpiObservation(repos: MainRepository) :
         Polar360Controller.ensureReady(deviceId, offlineMode = offlineMode,
             onReady = {
                 if (offlineMode) {
-                    offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
-                        deviceId, PolarBleApi.PolarDeviceDataType.PPI
-                    )
+                    Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.PPI)
+                        .subscribe(
+                            { items ->
+                                val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
+                                if (processed.isNotEmpty()) {
+                                    storeData(mapOf("polar360ppidata" to processed), -1) {}
+                                }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.PPI
+                                )
+                            },
+                            { error ->
+                                Napier.e(tag = "Polar360PpiObservation") { "Failed to fetch pending offline data: ${error.message}" }
+                                offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
+                                    deviceId, PolarBleApi.PolarDeviceDataType.PPI
+                                )
+                            }
+                        )
                 } else {
                     ppiDisposable = Polar360Controller.getPolarApi()
                         .startPpiStreaming(deviceId)

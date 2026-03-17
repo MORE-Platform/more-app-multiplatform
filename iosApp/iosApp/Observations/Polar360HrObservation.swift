@@ -47,8 +47,26 @@ class Polar360HrObservation: Observation_ {
             onCompleted: { [weak self] in
                 guard let self else { return }
                 if self.offlineMode {
-                    self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                        deviceId: deviceId, dataType: .ppi
+                    self.controller.stopOfflineRecordingAndFetch(
+                        dataType: .ppi,
+                        onSuccess: { [weak self] items in
+                            guard let self else { return }
+                            let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
+                            if !samples.isEmpty {
+                                let processed = samples.map { ["hr": $0.hr, "ts": $0.timestamp] as [String: Any] }
+                                self.storeData(data: ["polar360hrdata": processed], timestamp: -1) {}
+                            }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .ppi
+                            )
+                        },
+                        onError: { [weak self] error in
+                            NSLog("Polar360HrObservation: Failed to fetch pending offline data: \(error)")
+                            guard let self else { return }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .ppi
+                            )
+                        }
                     )
                 } else {
                     self.hrDisposable = self.controller.getPolarApi()

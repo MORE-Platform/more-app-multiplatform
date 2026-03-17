@@ -47,8 +47,26 @@ class Polar360TempObservation: Observation_ {
             onCompleted: { [weak self] in
                 guard let self else { return }
                 if self.offlineMode {
-                    self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                        deviceId: deviceId, dataType: .temperature
+                    self.controller.stopOfflineRecordingAndFetch(
+                        dataType: .temperature,
+                        onSuccess: { [weak self] items in
+                            guard let self else { return }
+                            let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
+                            if !samples.isEmpty {
+                                let processed = samples.map { ["temp": $0.temp, "timestamp": $0.timestamp] as [String: Any] }
+                                self.storeData(data: ["polar360tempdata": processed], timestamp: -1) {}
+                            }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .temperature
+                            )
+                        },
+                        onError: { [weak self] error in
+                            NSLog("Polar360TempObservation: Failed to fetch pending offline data: \(error)")
+                            guard let self else { return }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .temperature
+                            )
+                        }
                     )
                 } else {
                     let schedulerB = ConcurrentDispatchQueueScheduler(qos: .background)

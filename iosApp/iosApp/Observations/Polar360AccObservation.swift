@@ -47,8 +47,26 @@ class Polar360AccObservation: Observation_ {
             onCompleted: { [weak self] in
                 guard let self else { return }
                 if self.offlineMode {
-                    self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                        deviceId: deviceId, dataType: .acc
+                    self.controller.stopOfflineRecordingAndFetch(
+                        dataType: .acc,
+                        onSuccess: { [weak self] items in
+                            guard let self else { return }
+                            let samples = items.compactMap { $0 as? Polar360Controller.acc_data }
+                            if !samples.isEmpty {
+                                let processed = samples.map { ["x": $0.x, "y": $0.y, "z": $0.z, "timestamp": $0.timestamp] as [String: Any] }
+                                self.storeData(data: ["polar360accdata": processed], timestamp: -1) {}
+                            }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .acc
+                            )
+                        },
+                        onError: { [weak self] error in
+                            NSLog("Polar360AccObservation: Failed to fetch pending offline data: \(error)")
+                            guard let self else { return }
+                            self.offlineRecordingDisposable = self.controller.startOfflineRecording(
+                                deviceId: deviceId, dataType: .acc
+                            )
+                        }
                     )
                 } else {
                     let schedulerB = ConcurrentDispatchQueueScheduler(qos: .background)
