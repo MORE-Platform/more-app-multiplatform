@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.app.android.observations.Polar
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -9,14 +9,12 @@ import com.polar.sdk.api.model.PolarOfflineRecordingData
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
-import org.koin.core.component.getScopeName
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

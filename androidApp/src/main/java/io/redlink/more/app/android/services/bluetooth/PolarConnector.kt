@@ -19,8 +19,8 @@ import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.HR.PolarConnectorListener
-import io.redlink.more.app.android.observations.HR.PolarObserverCallback
+import io.redlink.more.app.android.observations.Polar.PolarConnectorListener
+import io.redlink.more.app.android.observations.Polar.PolarObserverCallback
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.bluetooth.BluetoothConnectorObserver

@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.app.android.observations.Polar
 
 import android.Manifest
 import android.content.Context

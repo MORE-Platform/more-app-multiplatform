@@ -1,4 +1,4 @@
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.app.android.observations.Polar
 
 import android.Manifest
 import android.content.ContentValues.TAG
@@ -24,7 +24,6 @@ import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListen
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.anyNameIn
 import io.redlink.more.observations.Observation
-import io.redlink.more.observations.ObservationBulkModel
 import io.redlink.more.observations.observationTypes.Polar360AccType
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.bluetooth.BluetoothStateManagement

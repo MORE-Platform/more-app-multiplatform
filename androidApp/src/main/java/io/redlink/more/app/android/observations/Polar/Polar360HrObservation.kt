@@ -1,9 +1,11 @@
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.app.android.observations.Polar
 
 import android.Manifest
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.model.PolarPpiData
@@ -19,9 +21,10 @@ import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListen
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.anyNameIn
 import io.redlink.more.observations.Observation
-import io.redlink.more.observations.observationTypes.Polar360PpiType
+import io.redlink.more.observations.observationTypes.Polar360HrType
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
+import io.redlink.more.services.bluetooth.polar.PolarStates
 import kotlinx.coroutines.Job
 
 private val permissions =
@@ -48,17 +51,17 @@ private val permissions =
         )
     }
 
-class Polar360PpiObservation(repos: MainRepository) :
-    Observation(repos, observationType = Polar360PpiType(permissions)) {
+class Polar360HrObservation(repos: MainRepository) :
+    Observation(repos, observationType = Polar360HrType(permissions)) {
 
     private val deviceIdentifier = setOf("Polar")
-    private var ppiDisposable: Disposable? = null
+    private var hrDisposable: Disposable? = null
     private var offlineRecordingDisposable: Disposable? = null
     private var deviceConnectionListener: Job? = null
     private var offlineMode = false
 
     override fun start(): Boolean {
-        Napier.d(tag = "Polar360PpiObservation::start") { "Starting Polar 360 PPI (offline=$offlineMode)..." }
+        Napier.d(tag = "Polar360HrObservation::start") { "Starting Polar 360 HR (offline=$offlineMode)..." }
         if (!observerAccessible()) {
             showObservationErrorNotification(
                 stringResource(R.string.observation_cannot_start),
@@ -69,7 +72,7 @@ class Polar360PpiObservation(repos: MainRepository) :
 
         val device = Polar360Controller.findPolar360Device()
         if (device == null) {
-            Napier.d(tag = "Polar360PpiObservation::start") { "No Polar 360 device connected" }
+            Napier.d(tag = "Polar360HrObservation::start") { "No Polar 360 device connected" }
             showObservationErrorNotification(
                 stringResource(R.string.observation_cannot_start),
                 stringResource(R.string.observation_error)
@@ -85,26 +88,31 @@ class Polar360PpiObservation(repos: MainRepository) :
                         deviceId, PolarBleApi.PolarDeviceDataType.PPI
                     )
                 } else {
-                    ppiDisposable = Polar360Controller.getPolarApi()
-                        .startPpiStreaming(deviceId)
+                    hrDisposable = Polar360Controller.getPolarApi()
+                        .startHrStreaming(deviceId)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .subscribe(
-                            { data: PolarPpiData ->
-                                if (data.samples.isNotEmpty()) {
-                                    val processed = processPpiSamples(data.samples)
-                                    processed.forEach { storeData(it) }
+                            { polarData ->
+                                if (polarData.samples.isNotEmpty()) {
+                                    val sample = polarData.samples[0]
+                                    Log.d(TAG, "HR: ${sample.hr}")
+                                    storeData(hr_data(hr = sample.hr, ts = 0L))
                                 }
                             },
                             { error ->
-                                Napier.e(tag = "Polar360PpiObservation") { "PPI stream failed: ${error.message}" }
-                                ppiDisposable = null
+                                Napier.e(tag = "Polar360HrObservation", message = "HR stream error: ${error.message}")
+                                pauseObservation(Polar360HrType(emptySet()))
+                                showObservationErrorNotification(
+                                    stringResource(R.string.observation_bluetooth_error),
+                                    stringResource(R.string.observation_error)
+                                )
                             }
                         )
                 }
             },
             onError = { error ->
-                Napier.e(tag = "Polar360PpiObservation") { "Setup failed: ${error.message}" }
+                Napier.e(tag = "Polar360HrObservation") { "Setup failed: ${error.message}" }
                 showObservationErrorNotification(
                     stringResource(R.string.observation_cannot_start),
                     stringResource(R.string.observation_error)
@@ -125,28 +133,26 @@ class Polar360PpiObservation(repos: MainRepository) :
             Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.PPI)
                 .subscribe(
                     { items ->
-                        val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        storeData(mapOf("polar360ppidata" to processed), -1, onCompletion)
+                        val processed = processHrSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
+                        storeData(mapOf("polar36q0hrdata" to processed), -1,onCompletion)
                     },
                     { error ->
-                        Napier.e(tag = "Polar360PpiObservation") { "Failed to process offline data: ${error.message}" }
+                        Napier.e(tag = "Polar360HrObservation") { "Failed to process offline data: ${error.message}" }
                         onCompletion()
                     }
                 )
         } else {
-            ppiDisposable?.dispose()
-            ppiDisposable = null
+            hrDisposable?.dispose()
+            hrDisposable = null
             onCompletion()
         }
     }
 
-    data class ppi_data(val hr: Int, val timestamp: Long, val ppiInMs: Int, val ppiErrorEstimate: Int)
+    data class hr_data(val hr: Int, val ts: Long)
 
-    fun processPpiSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<ppi_data> {
+    fun processHrSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<hr_data> {
         if (samples.isNullOrEmpty()) return emptyList()
-        return samples.map {
-            ppi_data(hr = it.hr, timestamp = it.timeStamp.toLong(), ppiInMs = it.ppi, ppiErrorEstimate = it.errorEstimate)
-        }
+        return samples.map { hr_data(hr = it.hr, ts = it.timeStamp.toLong()) }
     }
 
     override fun observerErrors(): Set<String> {
@@ -161,6 +167,8 @@ class Polar360PpiObservation(repos: MainRepository) :
         if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
             errors.add("device_not_connected")
             errors.add(ERROR_DEVICE_NOT_CONNECTED)
+        } else if (!PolarStates.hrFeatureReady.value) {
+            errors.add("hr_unavailable")
         }
         return errors
     }
@@ -183,7 +191,7 @@ class Polar360PpiObservation(repos: MainRepository) :
         return Scope.launch {
             BluetoothStateManagement.connectedDevices.collect { devices ->
                 if (!deviceIdentifier.anyNameIn(devices)) {
-                    pauseObservation(Polar360PpiType(emptySet()))
+                    pauseObservation(Polar360HrType(emptySet()))
                     Polar360Controller.onDeviceDisconnected()
                 }
             }
