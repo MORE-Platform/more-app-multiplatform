@@ -35,11 +35,11 @@ class Polar360TempObservation: Observation_ {
             return false
         }
 
-        guard let device = controller.findPolar360Device(),
-              let deviceId = device.deviceId else {
+        guard let device = controller.findPolar360Device() else {
             showCannotStartNotification()
             return false
         }
+        let deviceId = device.deviceId
 
         listenToDeviceConnection()
 
@@ -104,14 +104,12 @@ class Polar360TempObservation: Observation_ {
                 dataType: .temperature,
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); return }
-                    let samples = items.compactMap { $0 as? PolarTemperatureData.PolarTemperatureDataSample }
-                    let processed = samples.map { ["temp": $0.temperature, "timestamp": $0.timeStamp] as [String: Any] }
+                    let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
+                    print(samples)
+                    let processed = samples.map { ["temp": $0.temp, "timestamp": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360tempdata": processed], timestamp: -1) { onCompletion() }
                 },
-                onError: { error in
-                    NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)")
-                    onCompletion()
-                }
+                onError: { error in NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)") }
             )
         } else {
             tempDisposable?.dispose()

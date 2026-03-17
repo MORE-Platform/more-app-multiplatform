@@ -35,11 +35,11 @@ class Polar360PpiObservation: Observation_ {
             return false
         }
 
-        guard let device = controller.findPolar360Device(),
-              let deviceId = device.deviceId else {
+        guard let device = controller.findPolar360Device() else {
             showCannotStartNotification()
             return false
         }
+        let deviceId = device.deviceId
 
         listenToDeviceConnection()
 
@@ -62,8 +62,8 @@ class Polar360PpiObservation: Observation_ {
                                     self.storeData(
                                         data: [
                                             "hr": sample.hr,
-                                            "ppiInMs": sample.ppi,
-                                            "ppiErrorEstimate": sample.errorEstimate,
+                                            "ppiInMs": sample.ppInMs,
+                                            "ppiErrorEstimate": sample.ppErrorEstimate,
                                             "timestamp": sample.timeStamp
                                         ],
                                         timestamp: -1
@@ -91,14 +91,11 @@ class Polar360PpiObservation: Observation_ {
                 dataType: .ppi,
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); return }
-                    let samples = items.compactMap { $0 as? PolarPpiData.PolarPpiSample }
-                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppi, "ppiErrorEstimate": $0.errorEstimate, "timestamp": $0.timeStamp] as [String: Any] }
+                    let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
+                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360ppidata": processed], timestamp: -1) { onCompletion() }
                 },
-                onError: { error in
-                    NSLog("Polar360PpiObservation: Failed to fetch offline data: \(error)")
-                    onCompletion()
-                }
+                onError: { error in NSLog("Polar360PpgObservation: Failed to fetch offline data: \(error)") }
             )
         } else {
             ppiDisposable?.dispose()

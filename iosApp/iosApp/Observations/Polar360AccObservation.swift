@@ -35,11 +35,11 @@ class Polar360AccObservation: Observation_ {
             return false
         }
 
-        guard let device = controller.findPolar360Device(),
-              let deviceId = device.deviceId else {
+        guard let device = controller.findPolar360Device() else {
             showCannotStartNotification()
             return false
         }
+        let deviceId = device.deviceId
 
         listenToDeviceConnection()
 
@@ -104,14 +104,11 @@ class Polar360AccObservation: Observation_ {
                 dataType: .acc,
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); return }
-                    let samples = items.compactMap { $0 as? PolarAccelerometerData.PolarAccelerometerDataSample }
-                    let processed = samples.map { ["x": $0.x, "y": $0.y, "z": $0.z, "timestamp": $0.timeStamp] as [String: Any] }
+                    let samples = items.compactMap { $0 as? Polar360Controller.acc_data }
+                    let processed = samples.map { ["x": $0.x, "y": $0.y, "z": $0.z, "timestamp": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360accdata": processed], timestamp: -1) { onCompletion() }
                 },
-                onError: { error in
-                    NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)")
-                    onCompletion()
-                }
+                onError: { error in NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)") }
             )
         } else {
             accDisposable?.dispose()

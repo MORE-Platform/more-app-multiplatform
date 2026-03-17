@@ -35,11 +35,11 @@ class Polar360HrObservation: Observation_ {
             return false
         }
 
-        guard let device = controller.findPolar360Device(),
-              let deviceId = device.deviceId else {
+        guard let device = controller.findPolar360Device() else {
             showCannotStartNotification()
             return false
         }
+        let deviceId = device.deviceId
 
         listenToDeviceConnection()
 
@@ -48,7 +48,7 @@ class Polar360HrObservation: Observation_ {
                 guard let self else { return }
                 if self.offlineMode {
                     self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                        deviceId: deviceId, dataType: .hr
+                        deviceId: deviceId, dataType: .ppi
                     )
                 } else {
                     self.hrDisposable = self.controller.getPolarApi()
@@ -92,14 +92,11 @@ class Polar360HrObservation: Observation_ {
                 dataType: .ppi,
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); return }
-                    let samples = items.compactMap { $0 as? PolarPpiData.PolarPpiSample }
-                    let processed = samples.map { ["hr": $0.hr, "ts": $0.timeStamp] as [String: Any] }
+                    let samples = items.compactMap { $0 as? Polar360Controller.hr_data }
+                    let processed = samples.map { ["hr": $0.hr, "ts": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360hrdata": processed], timestamp: -1) { onCompletion() }
                 },
-                onError: { error in
-                    NSLog("Polar360HrObservation: Failed to fetch offline data: \(error)")
-                    onCompletion()
-                }
+                onError: { error in NSLog("Polar360HrObservation: Failed to fetch offline data: \(error)") }
             )
         } else {
             hrDisposable?.dispose()
