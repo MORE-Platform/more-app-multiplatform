@@ -13,18 +13,57 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
     @State private var exitButton = Color.more.important
 
-    private let stringTable = "SettingsView"
-    private let navigationStrings = "Navigation"
-
     var body: some View {
         VStack(alignment: .leading) {
+            MoreActionButton(
+                disabled: .constant(false),
+                action: {
+                    viewModel.coreViewModel.openSettings()
+                }
+            ) {
+                Text("open_settings")
+            }
+            .padding(.bottom, 16)
+
+            if viewModel.needsTracking {
+                VStack(alignment: .leading) {
+                    HStack(alignment: .center) {
+                        Toggle(isOn: viewModel.allowTrackingBinding) {
+                            Text(
+                                SharedRes
+                                    .strings()
+                                    .app_tracking_dialog_title
+                                    .desc()
+                                    .localized()
+                            )
+                        }
+                    }
+                    Divider()
+                    Text(
+                        SharedRes
+                            .strings()
+                            .app_tracking_dialog_message
+                            .desc()
+                            .localized()
+                    )
+                }
+                .padding(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.more.secondary, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.bottom, 8)
+
+            }
+
             Text("settings_text")
                 .foregroundColor(.more.secondary)
                 .padding(.bottom, 15)
@@ -36,6 +75,12 @@ struct SettingsView: View {
             Spacer()
         }
         .customNavigationTitle(with: NavigationScreen.settings.localize())
+        .onAppear {
+            viewModel.coreViewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.coreViewModel.viewDidDisappear()
+        }
     }
 }
 

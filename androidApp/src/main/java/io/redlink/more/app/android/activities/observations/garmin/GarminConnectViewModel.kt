@@ -14,10 +14,10 @@ package io.redlink.more.app.android.activities.observations.garmin
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import io.github.aakira.napier.Napier
-import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.web.WebClientListener
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
 import kotlinx.coroutines.runBlocking
 
@@ -57,7 +57,7 @@ class GarminConnectViewModel : WebClientListener {
                 return
             } else {
                 AlertController.openAlertDialog(
-                    AlertDialogModel(
+                    AlertDialogModel.fromStrings(
                         title = "Garmin Connect",
                         message = "Failed to authenticate with Garmin Connect. Please try again later.",
                         confirmLabel = "Ok",

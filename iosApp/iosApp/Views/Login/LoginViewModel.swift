@@ -57,7 +57,7 @@ class LoginViewModel: ObservableObject {
         if loginModel.valid() {
             registrationService.sendRegistrationToken(loginModel: loginModel)
         } else {
-            AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Token or Endpoint invalid", message: "login_model_invalid_body", confirmLabel: "Ok", cancelLabel: nil, onConfirm: nil, onDecline: nil))
+            AlertController.shared.openAlertDialog(model: AlertDialogModel.companion.fromStrings(title: "Token or Endpoint invalid", message: "login_model_invalid_body", confirmLabel: "Ok", cancelLabel: nil, onConfirm: nil, onDecline: nil))
         }
     }
 

@@ -16,11 +16,9 @@
 import SwiftUI
 
 struct InfoView: View {
-    @StateObject var viewModel: InfoViewModel
-    private let navigationStrings = "Navigation"
-    private let infoStrings = "Info"
-
+    let viewModel: InfoViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
+
     var body: some View {
         ScrollView {
             Divider()
@@ -58,6 +56,12 @@ struct InfoView: View {
         }
         .padding(.horizontal, 10)
         .customNavigationTitle(with: NavigationScreen.info.localize())
+        .onAppear {
+            viewModel.studyCoreModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.studyCoreModel.viewDidDisappear()
+        }
     }
 }
 

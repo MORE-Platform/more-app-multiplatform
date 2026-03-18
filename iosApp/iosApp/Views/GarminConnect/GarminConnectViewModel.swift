@@ -74,7 +74,7 @@ class GarminConnectViewModel: ObservableObject {
             }
             if failure {
                 await MainActor.run {
-                    let dialog = AlertDialogModel(title: "Error during Callback", message: "Error accessing your Garmin Connect Account! Please try again later!", confirmLabel: "Ok", cancelLabel: nil, onConfirm: { [weak self] in
+                    let dialog = AlertDialogModel.companion.fromStrings(title: "Error during Callback", message: "Error accessing your Garmin Connect Account! Please try again later!", confirmLabel: "Ok", cancelLabel: nil, onConfirm: { [weak self] in
                         self?.coreViewModel.closeView()
                         self?.shouldClose = true
                     })

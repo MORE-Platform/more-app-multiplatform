@@ -11,6 +11,7 @@
 package io.redlink.more.viewModels.login
 
 import io.redlink.more.models.LoginModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.CoreViewModel
 
@@ -29,5 +30,9 @@ open class CoreLoginViewModel(private val registrationService: RegistrationServi
 
     fun clearError() {
         registrationService.clearError()
+    }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.LOGIN.viewIdentifier
     }
 }

@@ -19,6 +19,7 @@ import io.redlink.more.models.DateFilterModel
 import io.redlink.more.models.ScheduleListType
 import io.redlink.more.models.ScheduleModel
 import io.redlink.more.models.ScheduleState
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.DataRecorder
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.ObservationStates
@@ -183,6 +184,15 @@ open class CoreScheduleViewModel(
     private fun invalidateCache() {
         sortedSchedulesCache.clear()
         cacheVersion++
+    }
+
+    override fun viewIdentifier(): String {
+        return when (scheduleListType) {
+            ScheduleListType.RUNNING -> NavigationRoute.RUNNING_SCHEDULES.viewIdentifier
+            ScheduleListType.COMPLETED -> NavigationRoute.COMPLETED_SCHEDULES.viewIdentifier
+            ScheduleListType.MANUALS -> NavigationRoute.DASHBOARD.viewIdentifier
+            else -> "Other Schedules"
+        }
     }
 }
 

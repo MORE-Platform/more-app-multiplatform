@@ -16,6 +16,7 @@ import io.redlink.more.extensions.set
 import io.redlink.more.models.DateFilter
 import io.redlink.more.models.DateFilterModel
 import io.redlink.more.models.ScheduleModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.scopes.Scope
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,5 +110,9 @@ open class CoreDashboardFilterViewModel(repository: MainRepository) : CoreViewMo
     fun onNewDateFilter(provideNewState: (Map<DateFilter, Boolean>) -> Unit) =
         currentDateFilter.transform { emit(it.mapKeys { it.key.asDataClass() }) }
             .asClosure(provideNewState)
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.OBSERVATION_FILTER.viewIdentifier
+    }
 
 }

@@ -99,7 +99,7 @@ struct LoginView: View {
                                         model.validate()
                                     } else {
                                         AlertController.shared.openAlertDialog(
-                                            model: AlertDialogModel(
+                                            model: AlertDialogModel.companion.fromStrings(
                                                 title: "no_internet_title",
                                                 message: "no_internet_message",
                                                 confirmLabel: "Ok",
@@ -143,13 +143,14 @@ struct LoginView: View {
     let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     let repos = MainRepositoryImpl(appDatabase: database)
     let dataManager = iOSObservationDataManager(repository: repos, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+    let userDefaults = UserDefaultsRepository()
     let shared = Shared(
         localNotificationListener: LocalPushNotifications(),
         repositories: repos,
-        sharedStorageRepository: UserDefaultsRepository(),
+        sharedStorageRepository: userDefaults,
         observationDataManager: dataManager,
         mainBluetoothConnector: IOSBluetoothConnector(),
-        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager, userDefaults: userDefaults),
         dataRecorder: IOSDataRecorder(),
         reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
     )

@@ -15,7 +15,10 @@ import android.graphics.Bitmap
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import io.github.aakira.napier.Napier
 import io.github.aakira.napier.log
+import io.redlink.more.logging.event
+import io.redlink.more.observations.appUsage.model.LogEvent
 
 class WebClient : WebViewClient() {
     private var clientListener: WebClientListener? = null
@@ -42,7 +45,7 @@ class WebClient : WebViewClient() {
 
     override fun onPageCommitVisible(view: WebView?, url: String?) {
         super.onPageCommitVisible(view, url)
-        log { "WebViewClient\$onPageCommitVisible: $url" }
+        Napier.event(LogEvent.URL_OPEN, "WebView: $url")
     }
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

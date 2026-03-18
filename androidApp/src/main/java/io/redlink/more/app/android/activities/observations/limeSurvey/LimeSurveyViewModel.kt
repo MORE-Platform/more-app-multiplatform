@@ -15,10 +15,10 @@ import android.webkit.WebView
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.web.WebClientListener
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.viewModels.limeSurvey.CoreLimeSurveyViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

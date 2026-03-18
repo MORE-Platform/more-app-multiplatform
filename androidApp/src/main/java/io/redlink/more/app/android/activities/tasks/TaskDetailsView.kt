@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.observationErrors.ObservationErrorListView
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDate
@@ -56,7 +57,6 @@ fun TaskDetailsView(
         remember {
             TaskDetailsViewModel(
                 MoreApplication.shared!!.dataRecorder,
-                MoreApplication.shared!!.observationFactory,
                 scheduleId
             )
         }
@@ -64,123 +64,128 @@ fun TaskDetailsView(
     val dataPoints by viewModel.coreViewModel.dataCount.collectAsStateWithLifecycle()
     val taskErrors by viewModel.coreViewModel.taskObservationErrors.collectAsStateWithLifecycle()
     val taskErrorActions by viewModel.coreViewModel.taskObservationErrorActions.collectAsStateWithLifecycle()
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        taskDetails?.let { taskDetails ->
-            LazyColumn(
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                item {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        HeaderTitle(
-                            title = taskDetails.observationTitle,
+
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewOpened() },
+        { viewModel.coreViewModel.viewClosed() }) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
+            taskDetails?.let { taskDetails ->
+                LazyColumn(
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .weight(0.65f)
-                                .padding(vertical = 11.dp)
+                                .fillMaxWidth()
+                        ) {
+                            HeaderTitle(
+                                title = taskDetails.observationTitle,
+                                modifier = Modifier
+                                    .weight(0.65f)
+                                    .padding(vertical = 11.dp)
+                            )
+                            if (taskDetails.state == ScheduleState.RUNNING)
+                                SmallTextIconButton(
+                                    text = getStringResource(id = R.string.more_abort),
+                                    imageText = getStringResource(id = R.string.more_abort),
+                                    image = Icons.Rounded.Square,
+                                    imageTint = MoreColors.Important,
+                                    borderStroke = MoreColors.borderDefault(),
+                                    buttonColors = ButtonDefaults.moreSecondary2()
+                                ) {
+                                    viewModel.stopObservation()
+                                }
+                        }
+                        BasicText(
+                            text = taskDetails.observationType,
+                            color = MoreColors.Secondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 14.dp)
                         )
-                        if (taskDetails.state == ScheduleState.RUNNING)
-                            SmallTextIconButton(
-                                text = getStringResource(id = R.string.more_abort),
-                                imageText = getStringResource(id = R.string.more_abort),
-                                image = Icons.Rounded.Square,
-                                imageTint = MoreColors.Important,
-                                borderStroke = MoreColors.borderDefault(),
-                                buttonColors = ButtonDefaults.moreSecondary2()
-                            ) {
-                                viewModel.stopObservation()
+
+                        TimeframeDays(
+                            taskDetails.start.jvmLocalDate(),
+                            taskDetails.end.jvmLocalDate(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        )
+                        TimeframeHours(
+                            taskDetails.start.jvmLocalDateTime(),
+                            taskDetails.end.jvmLocalDateTime(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Accordion(
+                            title = getStringResource(id = R.string.participant_information),
+                            description = taskDetails.participantInformation,
+                            hasCheck = false,
+                            hasPreview = false
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    scheduleId?.let {
+                        if (!taskDetails.state.completed()) {
+                            DatapointCollectionView(
+                                dataPoints,
+                                taskDetails.state
+                            )
+                        }
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    ObservationErrorListView(
+                        errors = taskErrors,
+                        errorActions = taskErrorActions
+                    )
+
+                    if (!taskDetails.hidden) {
+                        ObservationActionButton(
+                            navController,
+                            taskDetails.scheduleId,
+                            taskDetails.observationType,
+                            taskDetails.state,
+                            if (taskDetails.observationType == PolarVerityHeartRateType(
+                                    emptySet()
+                                ).observationType
+                            ) viewModel.polarHrReady.value else true
+                        ) {
+                            if (taskDetails.state == ScheduleState.RUNNING) {
+                                viewModel.pauseObservation()
+                            } else {
+                                viewModel.startObservation()
                             }
-                    }
-                    BasicText(
-                        text = taskDetails.observationType,
-                        color = MoreColors.Secondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 14.dp)
-                    )
-
-                    TimeframeDays(
-                        taskDetails.start.jvmLocalDate(),
-                        taskDetails.end.jvmLocalDate(),
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp)
-                    )
-                    TimeframeHours(
-                        taskDetails.start.jvmLocalDateTime(),
-                        taskDetails.end.jvmLocalDateTime(),
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Accordion(
-                        title = getStringResource(id = R.string.participant_information),
-                        description = taskDetails.participantInformation,
-                        hasCheck = false,
-                        hasPreview = false
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                }
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                scheduleId?.let {
-                    if (!taskDetails.state.completed()) {
-                        DatapointCollectionView(
-                            dataPoints,
-                            taskDetails.state
-                        )
-                    }
-                }
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                ObservationErrorListView(
-                    errors = taskErrors,
-                    errorActions = taskErrorActions
-                )
-
-                if (!taskDetails.hidden) {
-                    ObservationActionButton(
-                        navController,
-                        taskDetails.scheduleId,
-                        taskDetails.observationType,
-                        taskDetails.state,
-                        if (taskDetails.observationType == PolarVerityHeartRateType(
-                                emptySet()
-                            ).observationType
-                        ) viewModel.polarHrReady.value else true
-                    ) {
-                        if (taskDetails.state == ScheduleState.RUNNING) {
-                            viewModel.pauseObservation()
-                        } else {
-                            viewModel.startObservation()
                         }
                     }
                 }
             }
-        }
 
+        }
     }
 }

@@ -18,7 +18,6 @@ import SwiftUI
 
 struct CompletedSchedules: View {
     @StateObject var scheduleViewModel: ScheduleViewModel
-    private let navigationStrings = "Navigation"
     @State var tasksCompleted: Double = 0
     @State var totalTasks: Double = 0
     var body: some View {
@@ -27,5 +26,11 @@ struct CompletedSchedules: View {
             ScheduleView(viewModel: scheduleViewModel)
         }
         .customNavigationTitle(with: NavigationScreen.pastObservations.localize(), displayMode: .inline)
+        .onAppear {
+            scheduleViewModel.coreModel.viewDidAppear()
+        }
+        .onDisappear {
+            scheduleViewModel.coreModel.viewDidDisappear()
+        }
     }
 }

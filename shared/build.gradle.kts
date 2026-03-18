@@ -1,3 +1,15 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
@@ -116,7 +128,7 @@ tasks.withType<Test> {
     testLogging {
         events("passed", "skipped", "failed")
         showStandardStreams = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        exceptionFormat = FULL
     }
 }
 

@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
@@ -40,42 +41,46 @@ import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 @Composable
 fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
     val viewModel = remember { NotificationFilterViewModel(coreViewModel) }
-    LazyColumn {
-        item {
-            HeaderTitle(
-                title = stringResource(R.string.more_select_filter),
-                modifier = Modifier.padding(top = 20.dp)
-            )
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        itemsIndexed(viewModel.currentFilters.entries.sortedBy { it.key.sortIndex }) { _, entry ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (entry.value)
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = { viewModel.toggleFilter(entry.key) })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = entry.key.type,
-                        color = MoreColors.Secondary
-                    )
-                }
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewDidAppear() },
+        { viewModel.coreViewModel.viewDidDisappear() }) {
+        LazyColumn {
+            item {
+                HeaderTitle(
+                    title = stringResource(R.string.more_select_filter),
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
             }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+
+            itemsIndexed(viewModel.currentFilters.entries.sortedBy { it.key.sortIndex }) { _, entry ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (entry.value)
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.toggleFilter(entry.key) })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = entry.key.type,
+                            color = MoreColors.Secondary
+                        )
+                    }
+                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
         }
     }
 

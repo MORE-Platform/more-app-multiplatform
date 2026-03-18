@@ -20,7 +20,7 @@ struct ExitButton: View {
     }
     
     private func withdraw() {
-        AlertController.shared.openAlertDialog(model: AlertDialogModel(
+        AlertController.shared.openAlertDialog(model: AlertDialogModel.companion.fromStrings(
             title: "sure_message",
             message: "leave_confirmation_message",
             confirmLabel: "withdraw",

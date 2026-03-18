@@ -21,27 +21,33 @@ import io.redlink.more.app.android.activities.ContentActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.database.entities.StudyEntity
 import io.redlink.more.models.PermissionModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.viewModels.settings.CoreSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LeaveStudyViewModel : ViewModel() {
-    private var coreSettingsViewModel =
-        CoreSettingsViewModel(MoreApplication.shared!!)
+    val coreViewModel =
+        CoreSettingsViewModel(
+            MoreApplication.shared!!.repositories,
+            MoreApplication.shared!!.sharedStorageRepository,
+            NavigationRoute.LEAVE_STUDY.viewIdentifier
+        )
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel.study.collect {
+        coreViewModel.setExitStudyObserver(MoreApplication.shared!!)
+        viewModelScope.launch {
+            coreViewModel.study.collect {
                 withContext(Dispatchers.Main) {
                     study.value = it
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel.permissionModel.collect {
+        viewModelScope.launch {
+            coreViewModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
                 }
@@ -49,18 +55,10 @@ class LeaveStudyViewModel : ViewModel() {
         }
     }
 
-    fun viewDidAppear() {
-        coreSettingsViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreSettingsViewModel.viewDidDisappear()
-    }
-
     fun removeParticipation(context: Context) {
         WorkManager.getInstance(context).cancelAllWork()
         viewModelScope.launch {
-            coreSettingsViewModel.dataDeleted.collect {
+            coreViewModel.dataDeleted.collect {
                 if (it) {
                     (context as? Activity)?.let { activity ->
                         withContext(Dispatchers.Main) {
@@ -71,6 +69,6 @@ class LeaveStudyViewModel : ViewModel() {
                 }
             }
         }
-        coreSettingsViewModel.exitStudy()
+        coreViewModel.exitStudy()
     }
 }

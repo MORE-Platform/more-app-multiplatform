@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.studyDetails.composables.AccordionWithList
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -45,51 +46,54 @@ fun StudyDetailsView(
 ) {
     val viewModel = remember { StudyDetailsViewModel() }
     val studyInfo by viewModel.coreViewModel.studyModel.collectAsStateWithLifecycle()
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewDidAppear() },
+        { viewModel.coreViewModel.viewDidDisappear() }) {
+        studyInfo?.let {
+            Column(
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                LazyColumn {
+                    item {
+                        HeaderTitle(title = it.study.studyTitle)
+                        Spacer(Modifier.height(12.dp))
+                        TaskCompletionBarView(taskCompletionBarViewModel)
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if (it.study.start != null && it.study.end != null) {
+                                BasicText(text = "${getStringResource(R.string.study_duration)}: ")
+                                BasicText(
+                                    text = "${
+                                        it.study.start!!.jvmLocalDateTime().formattedString()
+                                    } - ${
+                                        it.study.end!!.jvmLocalDateTime().formattedString()
+                                    }",
+                                    color = MoreColors.Secondary
+                                )
+                            }
 
-    studyInfo?.let {
-        Column(
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            LazyColumn {
-                item {
-                    HeaderTitle(title = it.study.studyTitle)
-                    Spacer(Modifier.height(12.dp))
-                    TaskCompletionBarView(taskCompletionBarViewModel)
-                    Spacer(Modifier.height(8.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        if (it.study.start != null && it.study.end != null) {
-                            BasicText(text = "${getStringResource(R.string.study_duration)}: ")
-                            BasicText(
-                                text = "${
-                                    it.study.start!!.jvmLocalDateTime().formattedString()
-                                } - ${
-                                    it.study.end!!.jvmLocalDateTime().formattedString()
-                                }",
-                                color = MoreColors.Secondary
-                            )
                         }
+                        Spacer(Modifier.height(40.dp))
+                        AccordionReadMore(
+                            title = getStringResource(R.string.participant_information),
+                            description = it.study.participantInfo,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(16.dp))
 
+                        AccordionWithList(
+                            title = getStringResource(R.string.observation_modules),
+                            observations = it.observations,
+                            navController = navController
+                        )
                     }
-                    Spacer(Modifier.height(40.dp))
-                    AccordionReadMore(
-                        title = getStringResource(R.string.participant_information),
-                        description = it.study.participantInfo,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                    Spacer(Modifier.height(16.dp))
-
-                    AccordionWithList(
-                        title = getStringResource(R.string.observation_modules),
-                        observations = it.observations,
-                        navController = navController
-                    )
                 }
             }
         }

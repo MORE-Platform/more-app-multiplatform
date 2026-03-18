@@ -15,6 +15,7 @@ import io.redlink.more.extensions.mapState
 import io.redlink.more.extensions.set
 import io.redlink.more.models.NotificationFilterTypeModel
 import io.redlink.more.models.NotificationModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -83,5 +84,9 @@ open class CoreNotificationFilterViewModel : CoreViewModel() {
 
     private fun getEnumAsList(): List<NotificationFilterTypeModel> {
         return NotificationFilterTypeModel.entries
+    }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.NOTIFICATION_FILTER.viewIdentifier
     }
 }

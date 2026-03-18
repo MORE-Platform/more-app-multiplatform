@@ -15,10 +15,12 @@ import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.models.ScheduleState
+import io.redlink.more.observations.longRunningObservation.LongRunningObservationStorage
 import io.redlink.more.observations.observationTypes.ObservationType
 import io.redlink.more.scopes.Scope
 import io.redlink.more.scopes.StudyScope
 import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.services.store.PermissionApprovalState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -29,17 +31,28 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
+interface ObservationPermissionObserver {
+    fun requestPermission(observationType: ObservationType)
+    fun permissionState(observationType: ObservationType): PermissionApprovalState
+}
+
 abstract class Observation(
-    private val repos: MainRepository,
-    val observationType: ObservationType
+    protected val repos: MainRepository,
+    val observationType: ObservationType,
 ) {
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
 
-    private var running = false
-    private val observationIds = mutableSetOf<String>()
+    private var permissionObserver: ObservationPermissionObserver? = null
+
+    protected var running = false
+    protected val observationIds = mutableSetOf<String>()
+
+    protected var longRunningStorage: LongRunningObservationStorage? = null
+
+
     private val observationTypes = mutableMapOf<String, String>()
-    private val scheduleIds = mutableMapOf<String, String>()
+    protected val scheduleIds = mutableMapOf<String, String>()
     private val notificationIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
@@ -47,6 +60,15 @@ abstract class Observation(
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
     var timestampCollectionJob: Job? = null
+
+    fun setPermissionObserver(observer: ObservationPermissionObserver?) {
+        permissionObserver = observer
+        Napier.d { "PermissionObserver set for ${observationTypes.values.joinToString(", ")}" }
+    }
+
+    fun setLongRunningObservationStorage(longRunningObservationStorage: LongRunningObservationStorage?) {
+        this.longRunningStorage = longRunningObservationStorage
+    }
 
     open fun start(
         observationId: String,
@@ -122,6 +144,25 @@ abstract class Observation(
         notificationIds[scheduleId] = notificationId
     }
 
+    fun requestPermission() {
+        if (isPermissionRequested(observationType.observationType)) {
+            Napier.d(tag = "Observation::requestPermission") { "Permission already requested for ${observationType.observationType} in this session, skipping..." }
+            return
+        }
+        markPermissionRequested(observationType.observationType)
+        if (permissionObserver == null) {
+            Napier.w { "Permission observer is null for observation type ${observationType.observationType}" }
+        }
+        permissionObserver?.requestPermission(observationType)
+    }
+
+    open fun hasPermission(): PermissionApprovalState {
+        return permissionObserver?.permissionState(observationType) ?: run {
+            Napier.w { "Permission observer is null for observation type ${observationType.observationType}" }
+            PermissionApprovalState.NOT_SET
+        }
+    }
+
     fun observationConfig(settings: Map<String, Any>) {
         this.lastCollectionTimestamp = (settings[CONFIG_LAST_COLLECTION_TIMESTAMP] as? Long)?.let {
             Instant.fromEpochMilliseconds(it)
@@ -183,7 +224,23 @@ abstract class Observation(
 
     open fun ableToAutomaticallyStart() = true
 
-    fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
+    fun <T> storeInstant(data: T, timestamp: Long) {
+        longRunningStorage?.storeInstant(data, timestamp)
+    }
+
+    fun <T> startLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.startObservation(data, identifier, timestamp)
+    }
+
+    fun <T> finishLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.finishObservation(data, identifier, timestamp)
+    }
+
+    fun <T> inRangeLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.inRangeObservation(data, identifier, timestamp)
+    }
+
+    fun storeData(data: Map<String, Any>, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataEntity.fromData(
             observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
         ).map {
@@ -327,7 +384,24 @@ abstract class Observation(
         scheduleIds.clear()
     }
 
+    open fun onStudyExit() {}
+
     companion object {
+        private val requestedPermissions = mutableSetOf<String>()
+
+        fun resetRequestedPermissions() {
+            Napier.d(tag = "Observation::companion") { "Resetting requested permissions" }
+            requestedPermissions.clear()
+        }
+
+        fun markPermissionRequested(observationType: String) {
+            requestedPermissions.add(observationType)
+        }
+
+        fun isPermissionRequested(observationType: String): Boolean {
+            return requestedPermissions.contains(observationType)
+        }
+
         const val CONFIG_TASK_START = "observation_start_date_time"
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"

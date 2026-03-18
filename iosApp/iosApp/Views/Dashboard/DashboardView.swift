@@ -19,11 +19,9 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject private var navigationModalState: NavigationModalState
     @StateObject var viewModel: ScheduleViewModel
-    private let stringTable = "DashboardView"
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
     @State var tasksCompleted: Double = 0
-    private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
             ScheduleListHeader(scheduleViewModel: viewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
@@ -34,6 +32,12 @@ struct DashboardView: View {
             }
         }
         .customNavigationTitle(with: NavigationScreen.dashboard.localize(), displayMode: .inline)
+        .onAppear {
+            viewModel.coreModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.coreModel.viewDidDisappear()
+        }
     }
 }
 

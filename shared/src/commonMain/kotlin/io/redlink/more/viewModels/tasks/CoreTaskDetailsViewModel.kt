@@ -14,6 +14,7 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.asClosure
 import io.redlink.more.models.TaskDetailsModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.DataRecorder
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.ObservationStates
@@ -96,5 +97,9 @@ class CoreTaskDetailsViewModel(
 
     fun pauseObservation() {
         dataRecorder.pause(scheduleId)
+    }
+
+    override fun viewIdentifier(): String {
+        return "${NavigationRoute.SCHEDULE_DETAILS.viewIdentifier}: ${taskDetailsModel.value}"
     }
 }

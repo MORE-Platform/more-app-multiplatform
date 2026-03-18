@@ -116,13 +116,14 @@ struct ScanQRCodeView: View {
         studyScope: StudyScope.shared,
         dispatchers: AppDispatchers.shared
     )
+    let userDefaults = UserDefaultsRepository()
     let sharedContainer = Shared(
         localNotificationListener: LocalPushNotifications(),
         repositories: repos,
-        sharedStorageRepository: UserDefaultsRepository(),
+        sharedStorageRepository: userDefaults,
         observationDataManager: dataManager,
         mainBluetoothConnector: IOSBluetoothConnector(),
-        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager, userDefaults: userDefaults),
         dataRecorder: IOSDataRecorder(),
         reminderNotificationSchedulingLimit: nil,
         connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()

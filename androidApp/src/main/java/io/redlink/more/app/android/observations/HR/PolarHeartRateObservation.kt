@@ -149,7 +149,10 @@ class PolarHeartRateObservation(repos: MainRepository) :
         val errors = mutableSetOf<String>()
         if (!hasPermissions(MoreApplication.appContext!!)) {
             errors.add("error_access_bluetooth")
-            showPermissionAlertDialog()
+            if (!isPermissionRequested(observationType.observationType)) {
+                markPermissionRequested(observationType.observationType)
+                showPermissionAlertDialog()
+            }
             PolarStates.hrFeatureReady(false)
         }
         if (!BluetoothStateListener.bluetoothEnabled.value) {

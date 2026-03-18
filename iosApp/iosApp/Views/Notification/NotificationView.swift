@@ -58,5 +58,12 @@ struct NotificationView: View {
         }
         .frame(maxWidth: .infinity)
         .customNavigationTitle(with: NavigationScreen.notifications.localize())
+        .onAppear {
+            notificationViewModel.coreModel.viewDidAppear()
+        }
+        .onDisappear {
+            notificationViewModel.coreModel.viewDidDisappear()
+        }
     }
 }
+

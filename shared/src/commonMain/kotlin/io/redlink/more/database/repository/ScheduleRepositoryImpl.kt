@@ -19,7 +19,9 @@ import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.observations.observationTypes.ObservationType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -102,6 +104,11 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
     override fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).transform { it?.scheduleId }
 
+    override fun observationTypesForScheduleIds(scheduleIds: Set<String>): Flow<Set<String>> {
+        return appDatabase.scheduleDao().getObservationTypesForScheduleIds(scheduleIds)
+            .map { it.toSet() }
+    }
+
     override fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> {
         return appDatabase.scheduleDao().getByObservationIdFlow(observationId).transform {
             val start = it.sortedBy { it.start }.firstOrNull()
@@ -136,7 +143,11 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
             Napier.i { "Updating Schedule states..." }
 
             try {
-                val schedules = appDatabase.scheduleDao().getByDone(false)
+                val schedules = appDatabase
+                    .scheduleDao()
+                    .getByStatesFlow(ScheduleState.presentScheduleStates.map { it.name })
+                    .firstOrNull()
+                    ?: emptyList()
 
                 val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
                 val activeIds = mutableSetOf<String>()

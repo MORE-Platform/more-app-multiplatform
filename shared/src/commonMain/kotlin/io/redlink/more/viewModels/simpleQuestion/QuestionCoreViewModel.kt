@@ -11,10 +11,14 @@
 package io.redlink.more.viewModels.simpleQuestion
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.github.aakira.napier.Napier
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.logging.event
 import io.redlink.more.models.QuestionModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.ObservationFactory
+import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.observations.observationTypes.QuestionType
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,6 +69,10 @@ class QuestionCoreViewModel(
 
     fun finishQuestion(data: Any) {
         _questionModel.value?.let { questionModel ->
+            Napier.event(
+                LogEvent.OBSERVATION_EVENT,
+                "Questionnaire answered, but not yet sent, for Observation ID: $observationId"
+            )
             observation?.let { observation ->
                 observation.start(
                     questionModel.observationId,
@@ -72,11 +80,19 @@ class QuestionCoreViewModel(
                     notificationId
                 )
                 observation.storeData(mapOf(questionModel.type.observationDataResponseKey to data)) {
+                    Napier.event(
+                        LogEvent.OBSERVATION_EVENT,
+                        "Questionnaire answer successfully sent with Observation ID: $observationId"
+                    )
                     scheduleId?.let {
                         observation.stopAndSetDone(it)
                     }
                 }
             }
         }
+    }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.QUESTION.viewIdentifier
     }
 }

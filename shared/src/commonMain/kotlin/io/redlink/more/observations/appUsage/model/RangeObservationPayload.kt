@@ -8,12 +8,15 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.app.android.activities.dashboard
 
-import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.stringResource
+package io.redlink.more.observations.appUsage.model
 
-enum class Views(val tabPosition: Int, val tabText: String) {
-    SCHEDULE(tabPosition = 0, tabText = stringResource(R.string.more_main_tab_schedule)),
-    MODULES(tabPosition = 1, tabText = stringResource(R.string.more_main_tab_observations));
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class RangeObservationPayload(
+    val eventKey: String,
+    val identifier: String,
+    val startTimestamp: Long,
+    val endTimestamp: Long
+)

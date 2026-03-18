@@ -14,9 +14,10 @@
 //
 
 import SwiftUI
+import shared
 
 struct LeaveStudyView: View {
-    @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
+    private let viewModel: SettingsViewModel = SettingsViewModel(viewIdentifier: NavigationRoute.leaveStudy.viewIdentifier)
     @EnvironmentObject var contentViewModel: ContentViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
 
@@ -75,5 +76,11 @@ struct LeaveStudyView: View {
             LeaveStudyConfirmationView(viewModel: viewModel)
         }
         .customNavigationTitle(with: NavigationScreen.withdrawStudy.localize())
+        .onAppear {
+            viewModel.coreViewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.coreViewModel.viewDidDisappear()
+        }
     }
 }

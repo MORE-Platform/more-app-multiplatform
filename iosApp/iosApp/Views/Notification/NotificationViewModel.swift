@@ -19,7 +19,7 @@ import shared
 
 class NotificationViewModel: ObservableObject {
     private let filterViewModel: CoreNotificationFilterViewModel
-    private let coreModel: CoreNotificationViewModel
+    let coreModel: CoreNotificationViewModel
 
     @Published var notificationList: [NotificationModel] = []
 

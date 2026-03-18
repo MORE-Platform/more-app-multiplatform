@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -32,25 +33,29 @@ fun DashboardView(
     scheduleViewModel: ScheduleViewModel,
     taskCompletionBarViewModel: TaskCompletionBarViewModel
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        ScheduleListHeader(
-            viewModel = scheduleViewModel,
-            navController = navController,
-            taskCompletionBarViewModel = taskCompletionBarViewModel
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Column {
-            ScheduleListView(
-                navController,
-                scheduleViewModel,
-                showButton = true
+    OnAppearDisappear(
+        { scheduleViewModel.coreViewModel.viewOpened() },
+        { scheduleViewModel.coreViewModel.viewClosed() }) {
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            ScheduleListHeader(
+                viewModel = scheduleViewModel,
+                navController = navController,
+                taskCompletionBarViewModel = taskCompletionBarViewModel
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            Column {
+                ScheduleListView(
+                    navController,
+                    scheduleViewModel,
+                    showButton = true
+                )
+            }
         }
     }
 }

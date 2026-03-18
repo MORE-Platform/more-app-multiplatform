@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.observations.questionnaire.questionType.QuestionnaireQuestionAnswer
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.ErrorMessage
@@ -71,43 +70,42 @@ fun QuestionnaireView(navController: NavController, viewModel: QuestionViewModel
         NavigationScreen.QUESTION.routeWithParameters()
     )
 
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-
-    DisposableEffect(route) {
-        onDispose { viewModel.viewDidDisappear() }
-    }
-
-    var selectedAnswer by rememberSaveable(route, stateSaver = AnswerValueSaver) {
-        mutableStateOf(null)
-    }
-
-    if (viewModel.hasData.value) {
-        val observation by viewModel.coreViewModel.questionModel.collectAsStateWithLifecycle(null)
-        val type = observation?.type ?: QuestionType.NON
-
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            QuestionnaireQuestionAnswer(
-                model = viewModel,
-                selectedAnswer = selectedAnswer,
-                onAnswerSelected = { selectedAnswer = it }
-            )
+    OnAppearDisappear(
+        { viewModel.viewDidAppear() },
+        { viewModel.viewDidDisappear() }) {
+        var selectedAnswer by rememberSaveable(route, stateSaver = AnswerValueSaver) {
+            mutableStateOf(null)
         }
 
-        QuestionnaireButtons(
-            questionType = type,
-            selectedAnswer = selectedAnswer,
-            onFinish = {
-                viewModel.finish(type, it)
-                navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.routeWithParameters())
+        if (viewModel.hasData.value) {
+            val observation by viewModel.coreViewModel.questionModel.collectAsStateWithLifecycle(
+                null
+            )
+            val type = observation?.type ?: QuestionType.NON
+
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                QuestionnaireQuestionAnswer(
+                    model = viewModel,
+                    selectedAnswer = selectedAnswer,
+                    onAnswerSelected = { selectedAnswer = it }
+                )
             }
-        )
-    } else {
-        ErrorMessage(message = "${getStringResource(id = R.string.data_not_found)}!")
+
+            QuestionnaireButtons(
+                questionType = type,
+                selectedAnswer = selectedAnswer,
+                onFinish = {
+                    viewModel.finish(type, it)
+                    navController.navigate(NavigationScreen.QUESTIONNAIRE_RESPONSE.routeWithParameters())
+                }
+            )
+        } else {
+            ErrorMessage(message = "${getStringResource(id = R.string.data_not_found)}!")
+        }
     }
+
 }

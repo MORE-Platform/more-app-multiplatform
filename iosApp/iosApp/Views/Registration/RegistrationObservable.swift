@@ -46,10 +46,10 @@ class RegistrationObservable: ObservableObject {
         .removeDuplicates()
         .receive(on: DispatchQueue.main)
         .sink { _ in
-        } receiveValue: { [weak self] error in
-            self?.error = error
-            if error != nil && self?.study != nil {
-                AlertController.shared.openAlertDialog(model: AlertDialogModel(
+        } receiveValue: { [weak self] networkError in
+            self?.error = networkError
+            if networkError != nil && self?.study != nil {
+                AlertController.shared.openAlertDialog(model: AlertDialogModel.companion.fromStrings(
                     title: "consent_error_title",
                     message: "consent_error_body",
                     confirmLabel: "Ok",

@@ -49,7 +49,11 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
             if (!immediately && workManager != null) {
                 onCompletion(tryWorkManagerThenFallback())
             } else {
-                Napier.w { "WorkManager not available, falling back to direct upload..." }
+                if (workManager == null) {
+                    Napier.w { "WorkManager not available, falling back to direct upload..." }
+                } else {
+                    Napier.i { "Immediate upload requested, bypassing WorkManager for direct upload..." }
+                }
                 onCompletion(directUploadFallback())
             }
         }

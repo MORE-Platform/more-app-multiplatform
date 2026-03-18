@@ -1,6 +1,7 @@
 //
 
 import BackgroundTasks
+import SwiftUI
 import shared
 
 //  Copyright © 2023 Ludwig Boltzmann Institute for
@@ -13,7 +14,6 @@ import shared
 //  https://commonsclause.com/).
 //
 
-import SwiftUI
 
 @main
 struct iOSApp: App {
@@ -24,25 +24,28 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: contentViewModel)
-            .onAppear {
-            }
-            .onChange(of: scenePhase) { newPhase in
-                switch newPhase {
-                case .background:
-                    AppDelegate.shared.updateData(appInForeground: false)
-                    if AppDelegate.shared.credentialRepository.hasCredentialsValue {
-                        appDelegate.scheduleTasks()
-                    }
-                case .inactive:
-                    break
-                case .active:
-                    AppDelegate.shared.updateData(appInForeground: true)
-                    appDelegate.cancelBackgroundTasks()
-                    break
-                default:
-                    break
+                .onAppear {
                 }
-            }
+                .onChange(of: scenePhase) { newPhase in
+                    switch newPhase {
+                    case .background:
+                        ViewManager.shared.appIsInForeground(state: false)
+                        AppDelegate.shared.updateData(appInForeground: false)
+                        if AppDelegate.shared.credentialRepository.hasCredentialsValue {
+                            appDelegate.scheduleTasks()
+                        }
+                    case .inactive:
+                        break
+                    case .active:
+                        ViewManager.shared.appIsInForeground(state: true)
+                        PermissionManager.resetPermissionAlertFlag()
+                        AppDelegate.shared.updateData(appInForeground: true)
+                        appDelegate.cancelBackgroundTasks()
+                        break
+                    default:
+                        break
+                    }
+                }
         }
     }
 }

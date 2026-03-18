@@ -17,10 +17,22 @@ import Foundation
 import shared
 
 class IOSObservationFactory: ObservationFactory {
-    override init(repository: MainRepository, dataManager: ObservationDataManager) {
-        super.init(repository: repository, dataManager: dataManager)
-        observations.add(GPSObservation(repos: repository, sensorPermissions: ["gpsAlways"]))
-        observations.add(AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"]))
-        observations.add(PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"]))
+    init(repository: MainRepository, dataManager: ObservationDataManager, userDefaults: SharedStorageRepository) {
+        super.init(repository: repository, sharedStorageRepository: userDefaults, dataManager: dataManager, scope: Scope.shared)
+        registerObservation {
+            GPSObservation(repos: repository, sensorPermissions: ["gpsAlways"])
+        }
+
+        registerObservation {
+            AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"])
+        }
+
+        registerObservation {
+            PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
+        }
+    }
+
+    override func observationPostConstruct(observation: Observation_) {
+        observation.setPermissionObserver(observer: IOSObservationPermissionObserver())
     }
 }

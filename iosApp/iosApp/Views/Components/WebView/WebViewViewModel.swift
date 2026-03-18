@@ -50,6 +50,7 @@ extension WebViewViewModel: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("WebView didFinish")
+        Napier.event(.urlOpen, message: "WebView: \(webView.url?.absoluteString ?? "")")
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {

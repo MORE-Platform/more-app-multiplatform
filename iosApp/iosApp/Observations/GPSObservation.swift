@@ -15,25 +15,40 @@
 
 import CoreLocation
 import Foundation
-import shared
 import UIKit
+import shared
 
 class GPSObservation: Observation_ {
     private let manager: CLLocationManager = CLLocationManager()
+    private let locationDelegateProxy: LocationDelegateProxy
     public var currentLocation = CLLocation()
-    private var running = false
 
     init(repos: MainRepository, sensorPermissions: Set<String>) {
+        self.locationDelegateProxy = LocationDelegateProxy(owner: nil)
         super.init(repos: repos, observationType: GPSType(sensorPermissions: sensorPermissions))
-        manager.delegate = self
+
+        self.locationDelegateProxy.owner = self
+
+        if Thread.isMainThread {
+            manager.delegate = locationDelegateProxy
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else {
+                    return
+                }
+                self.manager.delegate = self.locationDelegateProxy
+            }
+        }
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }
 
     override func start() -> Bool {
-        if observerAccessible() {
-            manager.allowsBackgroundLocationUpdates = true
-            manager.showsBackgroundLocationIndicator = true
-            manager.startUpdatingLocation()
+        if hasPermission() == .granted {
+            DispatchQueue.main.async {
+                self.manager.allowsBackgroundLocationUpdates = true
+                self.manager.showsBackgroundLocationIndicator = true
+                self.manager.startUpdatingLocation()
+            }
             return true
         }
         return false
@@ -41,7 +56,6 @@ class GPSObservation: Observation_ {
 
     override func stop(onCompletion: @escaping () -> Void) {
         manager.stopUpdatingLocation()
-        running = false
         onCompletion()
     }
 
@@ -51,7 +65,8 @@ class GPSObservation: Observation_ {
             errors.insert("Permission request pending until observation is about to start")
             manager.requestWhenInUseAuthorization()
         } else if manager.authorizationStatus != .authorizedWhenInUse
-            && manager.authorizationStatus != .authorizedAlways {
+            && manager.authorizationStatus != .authorizedAlways
+        {
             errors.insert("Permission not granted to access location of the device")
             PermissionManager.openSensorPermissionDialog()
         } else if !CLLocationManager.locationServicesEnabled() {
@@ -60,21 +75,46 @@ class GPSObservation: Observation_ {
         return errors
     }
 
-    override func applyObservationConfig(settings: Dictionary<String, Any>) {}
+    override func applyObservationConfig(settings: [String: Any]) {
+    }
 }
 
-extension GPSObservation: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+extension GPSObservation {
+    fileprivate func handleLocations(_ locations: [CLLocation]) {
         let data = locations.compactMap { location in
-            let dict = ["longitude": location.coordinate.longitude, "latitude": location.coordinate.latitude, "altitude": location.altitude]
+            let dict = [
+                "longitude": location.coordinate.longitude,
+                "latitude": location.coordinate.latitude,
+                "altitude": location.altitude,
+            ]
             return ObservationBulkModel(data: dict, timestamp: Int64(location.timestamp.timeIntervalSince1970))
         }
         storeData(data: data) {}
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    fileprivate func handleAuthorizationChange(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .restricted || manager.authorizationStatus == .denied || manager.accuracyAuthorization != .fullAccuracy {
             super.stopAndSetState(state: .active, scheduleId: nil)
         }
+    }
+}
+
+private final class LocationDelegateProxy: NSObject, CLLocationManagerDelegate {
+    weak var owner: GPSObservation?
+
+    init(owner: GPSObservation?) {
+        self.owner = owner
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        owner?.handleLocations(locations)
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        owner?.handleAuthorizationChange(manager)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location error:", error)
     }
 }

@@ -12,10 +12,12 @@ package io.redlink.more.app.android.activities.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import io.redlink.more.AlertController
+import dev.icerock.moko.resources.desc.Raw
+import dev.icerock.moko.resources.desc.StringDesc
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.util.validateAndNormalizeUrl
@@ -45,17 +47,17 @@ class LoginViewModel(
             } else {
                 AlertController.openAlertDialog(
                     AlertDialogModel(
-                        stringResource(R.string.more_token_error),
-                        stringResource(R.string.more_404),
-                        confirmLabel = "Ok"
+                        StringDesc.Raw(stringResource(R.string.more_token_error)),
+                        StringDesc.Raw(stringResource(R.string.more_404)),
+                        confirmLabel = StringDesc.Raw("Ok")
                     )
                 )
             }
         } else {
             val dialogModel = AlertDialogModel(
-                title = stringResource(R.string.no_internet_connection_title),
-                message = stringResource(R.string.no_internet_connection_body),
-                confirmLabel = "Ok"
+                title = StringDesc.Raw(stringResource(R.string.no_internet_connection_title)),
+                message = StringDesc.Raw(stringResource(R.string.no_internet_connection_body)),
+                confirmLabel = StringDesc.Raw("Ok")
             )
             AlertController.openAlertDialog(dialogModel)
         }

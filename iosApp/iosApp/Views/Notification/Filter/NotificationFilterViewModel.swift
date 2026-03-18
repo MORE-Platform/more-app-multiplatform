@@ -18,7 +18,6 @@ import KMPNativeCoroutinesCombine
 import shared
 
 class NotificationFilterViewModel: ObservableObject {
-    private let stringTable = "NotificationFilter"
     let coreViewModel: CoreNotificationFilterViewModel
 
     @Published var allFilters: [NotificationFilterTypeModel: Bool] = [:]

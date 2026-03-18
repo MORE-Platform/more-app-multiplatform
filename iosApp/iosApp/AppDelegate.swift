@@ -32,14 +32,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let dataUploadManager = DataUploadManager()
     static let shared: Shared = {
         let dataManager = iOSObservationDataManager(repository: repositories, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+        let userDefaults = UserDefaultsRepository()
 
         return Shared(
             localNotificationListener: LocalPushNotifications(),
             repositories: repositories,
-            sharedStorageRepository: UserDefaultsRepository(),
+            sharedStorageRepository: userDefaults,
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
-            observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
+            observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager, userDefaults: userDefaults),
             dataRecorder: IOSDataRecorder(),
             reminderNotificationSchedulingLimit: 30,
             connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
@@ -52,6 +53,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         #if DEBUG
         NapierProxyKt.napierDebugBuild(antilog: nil)
         #endif
+
+        EventCollection.shared.addObserver(observer: EventConsumer())
 
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.debug)
@@ -118,5 +121,12 @@ extension AppDelegate: MessagingDelegate {
             name: Notification.Name("FCMToken"),
             object: nil,
             userInfo: tokenDict)
+    }
+}
+
+class EventConsumer: EventObserver {
+    func onEvent(event: LogEvent, message: String?) {
+        // Handle events, e.g., send to Analytics
+        print("Received Event: \(event.key) - \(message ?? "")")
     }
 }

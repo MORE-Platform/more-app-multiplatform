@@ -19,12 +19,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.observationTypes.GPSType
+import io.redlink.more.services.store.PermissionApprovalState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -57,13 +57,15 @@ class GPSObservation(
 
     override fun start(): Boolean {
         Napier.d { "Trying to start GPS..." }
-        if (this.hasPermission()) {
+        if (this.hasPermission() == PermissionApprovalState.GRANTED) {
             val listener = this
             scope.launch {
                 Napier.d { "Registering GPS Service..." }
                 gpsService.registerForLocationUpdates(listener)
             }
             return true
+        } else {
+            this.requestPermission()
         }
         return false
     }
@@ -81,9 +83,12 @@ class GPSObservation(
         if (!GPSStateListener.gpsEnabled.value) {
             errors.add("location_disabled")
         }
-        if (!hasPermission()) {
+        if (this.hasPermission() != PermissionApprovalState.GRANTED) {
             errors.add("location_permission_not_granted")
-            showPermissionAlertDialog()
+            if (!isPermissionRequested(observationType.observationType)) {
+                markPermissionRequested(observationType.observationType)
+                showPermissionAlertDialog()
+            }
         }
         return errors
     }
@@ -114,8 +119,8 @@ class GPSObservation(
         Napier.d { "Location available: $available" }
     }
 
-    private fun hasPermission(): Boolean {
-        return this.hasPermissions(MoreApplication.appContext!!)
+    private fun checkPermission(): Boolean {
+        return this.hasPermission() == PermissionApprovalState.GRANTED
     }
 
     private fun hasPermissions(context: Context): Boolean {

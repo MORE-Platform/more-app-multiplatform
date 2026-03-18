@@ -12,12 +12,14 @@ package io.redlink.more.app.android.activities.consent
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import io.redlink.more.AlertController
+import dev.icerock.moko.resources.desc.Raw
+import dev.icerock.moko.resources.desc.StringDesc
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.permission.CoreConsentViewModel
 
@@ -36,10 +38,10 @@ class ConsentViewModel(
     fun openPermissionDeniedAlertDialog(context: Context) {
         AlertController.openAlertDialog(
             AlertDialogModel(
-                title = stringResource(R.string.required_permissions_not_granted_title),
-                message = stringResource(R.string.required_permission_not_granted_message),
-                confirmLabel = stringResource(R.string.proceed_to_settings_button),
-                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                title = StringDesc.Raw(stringResource(R.string.required_permissions_not_granted_title)),
+                message = StringDesc.Raw(stringResource(R.string.required_permission_not_granted_message)),
+                confirmLabel = StringDesc.Raw(stringResource(R.string.proceed_to_settings_button)),
+                cancelLabel = StringDesc.Raw(stringResource(R.string.proceed_without_granting_button)),
                 onConfirm = {
                     MoreApplication.openSettings.value = true
                 },
@@ -52,10 +54,10 @@ class ConsentViewModel(
     fun openNotificationPermissionDeniedAlertDialog(context: Context) {
         AlertController.openAlertDialog(
             AlertDialogModel(
-                title = stringResource(R.string.notification_permission_not_granted_title),
-                message = stringResource(R.string.notification_permission_not_granted_message),
-                confirmLabel = stringResource(R.string.proceed_to_settings_button),
-                cancelLabel = stringResource(R.string.proceed_without_granting_button),
+                title = StringDesc.Raw(stringResource(R.string.notification_permission_not_granted_title)),
+                message = StringDesc.Raw(stringResource(R.string.notification_permission_not_granted_message)),
+                confirmLabel = StringDesc.Raw(stringResource(R.string.proceed_to_settings_button)),
+                cancelLabel = StringDesc.Raw(stringResource(R.string.proceed_without_granting_button)),
                 onConfirm = {
                     MoreApplication.openSettings.value = true
                 },

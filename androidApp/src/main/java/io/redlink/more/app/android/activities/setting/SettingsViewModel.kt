@@ -22,21 +22,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsViewModel : ViewModel() {
-    private var coreSettingsViewModel =
-        CoreSettingsViewModel(MoreApplication.shared!!)
+    val coreViewModel =
+        CoreSettingsViewModel(
+            MoreApplication.shared!!.repositories,
+            MoreApplication.shared!!.sharedStorageRepository
+        )
     val study = mutableStateOf<StudyEntity?>(null)
     val permissionModel = mutableStateOf<PermissionModel?>(null)
 
     init {
+        coreViewModel.setExitStudyObserver(MoreApplication.shared)
         viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel.study.collect {
+            coreViewModel.study.collect {
                 withContext(Dispatchers.Main) {
                     study.value = it
                 }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            coreSettingsViewModel.permissionModel.collect {
+            coreViewModel.permissionModel.collect {
                 withContext(Dispatchers.Main) {
                     permissionModel.value = it
                 }

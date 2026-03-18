@@ -6,8 +6,8 @@
 //  Copyright © 2024 Redlink GmbH. All rights reserved.
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct MoreAlertDialog: View {
     let alertDialogModel: AlertDialogModel
@@ -17,7 +17,7 @@ struct MoreAlertDialog: View {
             Color.black.opacity(0.5)
                 .ignoresSafeArea(edges: .all)
             VStack(spacing: 20) {
-                Text(LocalizedStringKey(alertDialogModel.title))
+                Text(alertDialogModel.title.localized())
                     .foregroundColor(.more.primary)
                     .font(.headline)
                     .multilineTextAlignment(.center)
@@ -27,7 +27,7 @@ struct MoreAlertDialog: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading) {
-                        Text(LocalizedStringKey(alertDialogModel.message))
+                        Text(alertDialogModel.message.localized())
                             .foregroundColor(.more.primary)
                             .font(.subheadline)
                             .multilineTextAlignment(.leading)
@@ -43,7 +43,7 @@ struct MoreAlertDialog: View {
                             onConfirm()
                         }
                     } label: {
-                        Text(LocalizedStringKey(alertDialogModel.confirmLabel))
+                        Text(alertDialogModel.confirmLabel.localized())
                     }
 
                     if let cancelLabel = alertDialogModel.cancelLabel {
@@ -53,10 +53,10 @@ struct MoreAlertDialog: View {
                             }
                         } label: {
                             if #available(iOS 17.0, *) {
-                                Text(LocalizedStringKey(cancelLabel))
+                                Text(cancelLabel.localized())
                                     .foregroundStyle(Color.more.primary)
                             } else {
-                                Text(LocalizedStringKey(cancelLabel))
+                                Text(cancelLabel.localized())
                                     .foregroundColor(.more.primary)
                             }
                         }
@@ -76,15 +76,16 @@ struct MoreAlertDialog: View {
 }
 
 #Preview {
-    MoreAlertDialog(alertDialogModel: AlertDialogModel(
-        title: "Needed permissions were not given",
-        message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?",
-        confirmLabel: "Required Permissions Were Not Granted",
-        cancelLabel: "Continue without allowing",
-        onConfirm: {
-            print("Settings")
-        },
-        onDecline: {
-            print("Continue")
-        }))
+    MoreAlertDialog(
+        alertDialogModel: AlertDialogModel.companion.fromStrings(
+            title: "Needed permissions were not given",
+            message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?",
+            confirmLabel: "Required Permissions Were Not Granted",
+            cancelLabel: "Continue without allowing",
+            onConfirm: {
+                print("Settings")
+            },
+            onDecline: {
+                print("Continue")
+            }))
 }

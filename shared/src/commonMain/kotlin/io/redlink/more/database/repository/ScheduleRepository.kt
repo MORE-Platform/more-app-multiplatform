@@ -41,6 +41,8 @@ interface ScheduleRepository {
 
     fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?>
 
+    fun observationTypesForScheduleIds(scheduleIds: Set<String>): Flow<Set<String>>
+
     fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>>
 
     suspend fun setRunningStateFor(id: String, scheduleState: ScheduleState)

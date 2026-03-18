@@ -66,7 +66,7 @@ data class ObservationDataEntity(
             )
         }
 
-        fun fromData(data: Any, timestamp: Long = -1): ObservationDataEntity {
+        inline fun <reified T> fromData(data: T, timestamp: Long = -1): ObservationDataEntity {
             val finalTimestamp = if (timestamp > 0) {
                 timestamp * 1000 // Convert to milliseconds
             } else {
@@ -75,7 +75,7 @@ data class ObservationDataEntity(
 
             return ObservationDataEntity(
                 timestamp = finalTimestamp,
-                dataValue = data.asString() ?: "{}"
+                dataValue = data?.asString() ?: "{}"
             )
         }
 

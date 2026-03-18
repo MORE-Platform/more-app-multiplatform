@@ -31,12 +31,15 @@ import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.observations.ObservationManager
+import io.redlink.more.scopes.AppDispatchers
 import io.redlink.more.scopes.Scope
 import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ObservationRecordingService : Service() {
     private var observationManager: ObservationManager? = null
@@ -537,44 +540,54 @@ class ObservationRecordingService : Service() {
             scheduleIds: Set<String>,
             activity: Activity
         ) {
-            val observations =
-                MoreApplication.shared?.observationFactory?.observations
-                    ?: emptySet()
-
-            if (observations.isEmpty()) {
-                startWithoutPermissionCheck(scheduleIds)
-                return
-            }
-
-            val allPermissionsGranted = observations.all { observation ->
-                PermissionUtils.hasAllPermissions(observation, activity)
-            }
-
-            if (allPermissionsGranted) {
-                startWithoutPermissionCheck(scheduleIds)
-            } else {
-                val observationNeedingPermissions = observations.firstOrNull { observation ->
-                    !PermissionUtils.hasAllPermissions(observation, activity)
+            Scope.launch {
+                val observationsTypes =
+                    MoreApplication.shared!!.repositories.schedule.observationTypesForScheduleIds(
+                        scheduleIds
+                    ).firstOrNull() ?: emptySet()
+                val observations =
+                    MoreApplication.shared!!.observationFactory.observations.filter { it.observationType.observationType in observationsTypes }
+                if (observations.isEmpty()) {
+                    startWithoutPermissionCheck(scheduleIds)
+                    return@launch
                 }
 
-                if (observationNeedingPermissions != null) {
-                    pendingScheduleIds.addAll(scheduleIds)
+                withContext(AppDispatchers.main) {
+                    val allPermissionsGranted = observations.all { observation ->
+                        PermissionUtils.hasAllPermissions(observation, activity)
+                    }
 
-                    PermissionUtils.requestPermissions(
-                        observationNeedingPermissions,
-                        activity
-                    ) { granted ->
-                        if (granted) {
-                            checkPermissionsAndStart(scheduleIds, activity)
+                    if (allPermissionsGranted) {
+                        startWithoutPermissionCheck(scheduleIds)
+                    } else {
+                        val observationNeedingPermissions =
+                            observations.firstOrNull { observation ->
+                                !PermissionUtils.hasAllPermissions(observation, activity)
+                            }
+
+                        if (observationNeedingPermissions != null) {
+                            pendingScheduleIds.addAll(scheduleIds)
+
+
+                            PermissionUtils.requestPermissions(
+                                observationNeedingPermissions,
+                                activity
+                            ) { granted ->
+                                if (granted) {
+                                    checkPermissionsAndStart(scheduleIds, activity)
+                                } else {
+                                    observationNeedingPermissions.showPermissionAlertDialog()
+                                    pendingScheduleIds.removeAll(scheduleIds)
+                                }
+                            }
                         } else {
-                            observationNeedingPermissions.showPermissionAlertDialog()
-                            pendingScheduleIds.removeAll(scheduleIds)
+                            startWithoutPermissionCheck(scheduleIds)
                         }
                     }
-                } else {
-                    startWithoutPermissionCheck(scheduleIds)
                 }
+
             }
+
         }
 
         /**

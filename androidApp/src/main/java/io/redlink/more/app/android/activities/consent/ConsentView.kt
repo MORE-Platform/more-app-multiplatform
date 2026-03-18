@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.consent.composables.ConsentButtons
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.Accordion
@@ -42,51 +43,55 @@ fun ConsentView(registrationService: RegistrationService) {
     val model = remember { ConsentViewModel(registrationService) }
     val permissions by model.coreModel.permissions.collectAsStateWithLifecycle()
     permissions?.let { permissionModel ->
-        LazyColumn(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.9f)
-        ) {
-            item {
-                Text(
-                    text = permissionModel.studyTitle,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MoreColors.Primary,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.padding(8.dp))
-                AccordionReadMore(
-                    title = getStringResource(id = R.string.participant_information),
-                    description = permissionModel.studyParticipantInfo,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-            items(permissionModel.consentInfo) { consentInfo ->
-                Accordion(
-                    title = if (permissionModel.consentInfo.indexOf(consentInfo) == 0)
-                        permissionModel.studyTitle
-                    else
-                        consentInfo.title,
-                    description = consentInfo.info,
-                    hasCheck = true,
-                    hasPreview = (permissionModel.consentInfo.indexOf(consentInfo) == 0)
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(40.dp))
-            }
+        OnAppearDisappear(
+            { model.coreModel.viewDidAppear() },
+            { model.coreModel.viewDidDisappear() }) {
+            LazyColumn(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.9f)
+            ) {
+                item {
+                    Text(
+                        text = permissionModel.studyTitle,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = MoreColors.Primary,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.padding(8.dp))
+                    AccordionReadMore(
+                        title = getStringResource(id = R.string.participant_information),
+                        description = permissionModel.studyParticipantInfo,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+                items(permissionModel.consentInfo) { consentInfo ->
+                    Accordion(
+                        title = if (permissionModel.consentInfo.indexOf(consentInfo) == 0)
+                            permissionModel.studyTitle
+                        else
+                            consentInfo.title,
+                        description = consentInfo.info,
+                        hasCheck = true,
+                        hasPreview = (permissionModel.consentInfo.indexOf(consentInfo) == 0)
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(40.dp))
+                }
 
-            item {
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                    modifier = Modifier
-                        .padding(bottom = 10.dp)
-                ) {
-                    ConsentButtons(model = model)
+                item {
+                    Box(
+                        contentAlignment = Alignment.BottomCenter,
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                    ) {
+                        ConsentButtons(model = model)
+                    }
                 }
             }
         }

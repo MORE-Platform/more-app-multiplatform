@@ -30,9 +30,10 @@ import io.redlink.more.database.AppDatabase
 import io.redlink.more.database.getDatabaseBuilder
 import io.redlink.more.database.getRoomDatabase
 import io.redlink.more.database.repository.MainRepositoryImpl
+import io.redlink.more.logging.napierDebugBuild
 import io.redlink.more.models.NotificationTextLocalization
-import io.redlink.more.napierDebugBuild
 import io.redlink.more.services.store.SharedPreferencesRepository
+import io.redlink.more.viewModels.ViewManager
 
 /**
  * Main Application class of the project.
@@ -42,6 +43,9 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         super<Application>.onCreate()
         napierDebugBuild(FirebaseCrashlyticsAntilog())
         napierDebugBuild()
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
         appContext = this
         packagePath = this.packageName
         appName = this.getString(R.string.app_name)
@@ -60,12 +64,14 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
+        ViewManager.appIsInForeground(true)
         shared?.updateData(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Napier.i { "App is in the background..." }
+        ViewManager.appIsInForeground(false)
         shared?.updateData(false)
     }
 
@@ -100,16 +106,23 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                 val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
                 val repositories = MainRepositoryImpl(database)
                 val dataManager = AndroidObservationDataManager(context, repositories)
-                shared = Shared(
+                val sharedPreferences = SharedPreferencesRepository(context)
+                val tempShared = Shared(
                     LocalPushNotificationService(context),
                     repositories,
-                    SharedPreferencesRepository(context),
+                    sharedPreferences,
                     dataManager,
                     androidBluetoothConnector,
-                    AndroidObservationFactory(context, dataManager, repositories),
+                    AndroidObservationFactory(
+                        context,
+                        dataManager,
+                        repositories,
+                        sharedPreferences,
+                    ),
                     AndroidDataRecorder()
                 )
-                shared?.let { shared ->
+                shared = tempShared
+                tempShared.let { shared ->
                     shared.deeplinkManager.setProtocol(Shared.PROTOCOL.toString(context))
                     shared.deeplinkManager.setHost(applicationId) // applicationId is needed instead of the shared HOST, as this is necessary for the NavController in Android
                 }

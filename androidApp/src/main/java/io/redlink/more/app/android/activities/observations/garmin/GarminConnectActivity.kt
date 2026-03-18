@@ -48,7 +48,7 @@ import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MessageAlertDialog
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.viewModels.ViewManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -178,7 +178,7 @@ fun GarminConnectSSOView(viewModel: GarminConnectViewModel, webView: WebView?) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (webView == null || viewModel.coreViewModel.garminSSOUrl() == null) {
                 MessageAlertDialog(
-                    AlertDialogModel(
+                    AlertDialogModel.fromStrings(
                         title = "Garmin Connect",
                         message = getStringResource(id = R.string.garmin_connect_unavailable),
                         confirmLabel = "Ok",

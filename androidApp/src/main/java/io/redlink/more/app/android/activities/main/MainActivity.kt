@@ -282,8 +282,7 @@ fun MainView(
                     }
 
                     ObservationDetailsView(
-                        viewModel = obsDetailsVM,
-                        navController = navController
+                        viewModel = obsDetailsVM
                     )
                 }
             }

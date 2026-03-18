@@ -13,6 +13,7 @@ package io.redlink.more.viewModels.permission
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.extensions.mapState
 import io.redlink.more.models.PermissionModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -26,4 +27,8 @@ class CoreConsentViewModel(
         registrationService.study.mapState(viewModelScope, null) { study ->
             study?.let { PermissionModel.create(it, studyConsentTitle) }
         }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.CONSENT.viewIdentifier
+    }
 }

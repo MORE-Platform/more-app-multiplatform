@@ -18,7 +18,7 @@ import KMPNativeCoroutinesCombine
 import shared
 
 class StudyDetailsViewModel: ObservableObject {
-    private let coreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared)
+    private let coreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared, customViewIdentifier: nil)
     @Published var studyDetailsModel: StudyDetailsModel?
     var studyStart: Date = Date()
     var studyEnd: Date = Date()
