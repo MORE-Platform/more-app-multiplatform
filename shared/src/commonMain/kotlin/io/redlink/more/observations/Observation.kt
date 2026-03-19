@@ -165,18 +165,26 @@ abstract class Observation(
     protected open fun observerErrors(): Set<String> = emptySet()
 
     suspend fun updateObservationErrors() {
-        repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
+        val schedules = repos.schedule.allSchedulesToday(observationType).firstOrNull()
+        Napier.d(tag = "Observation::updateObservationErrors") { "Schedules today for ${observationType.observationType}: $schedules" }
+        schedules?.let {
             if (it.isNotEmpty()) {
-                Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
+                val errors = observerErrors()
+                val studyState = repos.study.studyState.value
+                Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}: errors=$errors, studyState=$studyState, scheduleCount=${it.size}" }
 
-                if (repos.study.studyState.value.isActive()) {
+                if (studyState.isActive()) {
                     ObservationStates.updateObservationErrors(
                         observationType.observationType,
-                        observerErrors()
+                        errors
                     )
+                } else {
+                    Napier.d(tag = "Observation::updateObservationErrors") { "Skipping error update — study not active (state=$studyState)" }
                 }
+            } else {
+                Napier.d(tag = "Observation::updateObservationErrors") { "No schedules today for ${observationType.observationType}, skipping" }
             }
-        }
+        } ?: Napier.d(tag = "Observation::updateObservationErrors") { "No schedule data available for ${observationType.observationType}" }
     }
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)

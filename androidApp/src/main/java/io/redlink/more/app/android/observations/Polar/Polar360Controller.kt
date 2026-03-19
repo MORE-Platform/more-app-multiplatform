@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
@@ -65,6 +66,18 @@ object Polar360Controller {
     private var ftuDisposable: Disposable? = null
     private var sdkModeEnabled = false
     private var currentDeviceId: String? = null
+    private val bleScheduler = Schedulers.single()
+    private val operationQueue = PublishSubject.create<Single<List<Any>>>().toSerialized()
+
+    init {
+        operationQueue
+            .doOnNext { Napier.d(tag = "Polar360Controller::queue") { "Task enqueued, processing next..." } }
+            .concatMapSingle { it }
+            .subscribe(
+                { result -> Napier.d(tag = "Polar360Controller::queue") { "Task completed with ${result.size} items" } },
+                { error -> Napier.e(tag = "Polar360Controller::queue") { "BLE operation queue error: ${error.message}" } }
+            )
+    }
 
 
 
@@ -80,7 +93,7 @@ object Polar360Controller {
         currentDeviceId = deviceId
         ftuDisposable?.dispose()
         ftuDisposable = checkIfDeviceIsSetup(deviceId)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(bleScheduler)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ setupDone ->
                 if (setupDone) {
@@ -105,16 +118,22 @@ object Polar360Controller {
         dataType: PolarBleApi.PolarDeviceDataType,
         settings: PolarSensorSetting? = null
     ): Disposable {
+        Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Starting offline recording on device=$deviceId" }
         return polarConnector.polarApi.disableSDKMode(deviceId)
+            .doOnError { e -> Napier.w(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] disableSDKMode error (ignored): ${e.message}" } }
             .onErrorComplete()
-            .doOnComplete { Napier.d(tag = "Polar360Controller") { "SDK mode disabled for $dataType" } }
-            .andThen(polarConnector.polarApi.stopOfflineRecording(deviceId, dataType).onErrorComplete())
+            .doOnComplete { Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] SDK mode disabled, stopping any existing recording..." } }
+            .andThen(
+                polarConnector.polarApi.stopOfflineRecording(deviceId, dataType)
+                    .doOnError { e -> Napier.w(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] pre-stop error (ignored): ${e.message}" } }
+                    .onErrorComplete()
+            )
             .andThen(resolveAndStartOfflineRecording(deviceId, dataType, settings))
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(bleScheduler)
+            .observeOn(bleScheduler)
             .subscribe(
-                { Napier.d(tag = "Polar360Controller") { "Started offline recording for $dataType" } },
-                { error -> Napier.e(tag = "Polar360Controller") { "Failed to start offline recording for $dataType: ${error.message}" } }
+                { Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Offline recording started successfully" } },
+                { error -> Napier.e(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Failed to start: ${error.message}" } }
             )
     }
 
@@ -148,48 +167,82 @@ object Polar360Controller {
     }
 
     fun stopOfflineRecording(dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
-        val deviceId = currentDeviceId ?: return Single.just(emptyList())
+        val deviceId = currentDeviceId ?: run {
+            Napier.w(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] currentDeviceId is null — returning empty" }
+            return Single.just(emptyList())
+        }
+        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Enqueueing stop+fetch for device=$deviceId" }
+        return Single.create { emitter ->
+            val task = doStopOfflineRecording(deviceId, dataType)
+                .doOnSuccess { emitter.onSuccess(it) }
+                .doOnError { emitter.onError(it) }
+                .onErrorReturnItem(emptyList())
+            operationQueue.onNext(task)
+        }
+    }
 
+    private fun doStopOfflineRecording(deviceId: String, dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
+        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Stopping recording on device=$deviceId" }
         return polarConnector.polarApi.stopOfflineRecording(deviceId, dataType)
+            .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Recording stopped, listing all recordings..." } }
+            .doOnError { e -> Napier.w(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] stopOfflineRecording API error (ignored): ${e.message}" } }
             .onErrorComplete()
             .andThen(
                 polarConnector.polarApi.listOfflineRecordings(deviceId)
                     .doOnNext { entry ->
                         Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
-                            "Found recording entry: type=${entry.type}, date=${entry.date}, size=${entry.size}"
+                            "[$dataType] Listed entry: type=${entry.type}, date=${entry.date}, size=${entry.size} — matches=${entry.type == dataType}"
                         }
                     }
+                    .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] listOfflineRecordings completed" } }
+                    .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] listOfflineRecordings error: ${e.message}" } }
                     .filter { entry -> entry.type == dataType }
                     .concatMap { entry ->
+                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Fetching record: date=${entry.date}, size=${entry.size}" }
                         polarConnector.polarApi.getOfflineRecord(deviceId, entry, null)
+                            .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] getOfflineRecord error: ${e.message}" } }
                             .flatMap { data ->
                                 val samples: List<Any> = when (data) {
                                     is PolarOfflineRecordingData.PpiOfflineRecording -> data.data.samples.also {
-                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "PPI samples: ${it.size}" }
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] PPI record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
                                     }
                                     is PolarOfflineRecordingData.AccOfflineRecording -> data.data.samples.also {
-                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "ACC samples: ${it.size}" }
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] ACC record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
                                     }
                                     is PolarOfflineRecordingData.TemperatureOfflineRecording -> data.data.samples.also {
-                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "TEMP samples: ${it.size}" }
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] TEMP record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
                                     }
                                     is PolarOfflineRecordingData.PpgOfflineRecording -> data.data.samples.also {
-                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "PPG samples: ${it.size}" }
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] PPG record: ${it.size} samples"
+                                        }
                                     }
                                     else -> emptyList<Any>().also {
-                                        Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "Unsupported data type: ${data::class.simpleName}" }
+                                        Napier.e(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] Unhandled data type: ${data::class.simpleName}"
+                                        }
                                     }
                                 }
+                                Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Removing entry from device..." }
                                 polarConnector.polarApi.removeOfflineRecord(deviceId, entry)
+                                    .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Entry removed" } }
+                                    .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] removeOfflineRecord error: ${e.message}" } }
                                     .andThen(Single.just(samples))
                             }
                             .toFlowable()
                     }
                     .toList()
                     .map { it.flatten() }
+                    .doOnSuccess { all -> Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Total samples returned: ${all.size}" } }
             )
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(bleScheduler)
+            .observeOn(bleScheduler)
     }
 
     fun isOfflineRecordingMode(config: Map<String, Any>): Boolean {
