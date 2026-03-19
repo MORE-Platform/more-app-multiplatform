@@ -33,13 +33,11 @@ enum class LogEvent(
         key = "app_in_foreground",
         storageMode = EventStorageMode.RANGE_START,
         family = EventFamily.APP_VISIBILITY,
-        storeWithoutApproval = true
     ),
     APP_IN_BACKGROUND(
         key = "app_in_background",
         storageMode = EventStorageMode.RANGE_END,
         family = EventFamily.APP_VISIBILITY,
-        storeWithoutApproval = true
     ),
     VIEW_OPEN(
         key = "view_open",
@@ -54,7 +52,6 @@ enum class LogEvent(
     BUTTON_PRESS(
         key = "button_press",
         storageMode = EventStorageMode.INSTANT,
-        storeWithoutApproval = true
     ),
     NOTIFICATION_INTERACTION(
         key = "notification_interaction",
@@ -66,7 +63,8 @@ enum class LogEvent(
     ),
     APP_TRACKING_ACCEPTED(
         key = "app_tracking_accepted",
-        storageMode = EventStorageMode.INSTANT
+        storageMode = EventStorageMode.INSTANT,
+        storeWithoutApproval = true
     ),
     OBSERVATION_EVENT(
         key = "observation_event",
@@ -74,7 +72,8 @@ enum class LogEvent(
     ),
     APP_TRACKING_DECLINED(
         key = "app_tracking_declined",
-        storageMode = EventStorageMode.INSTANT
+        storageMode = EventStorageMode.INSTANT,
+        storeWithoutApproval = true
     );
 
     fun aggregateKey(identifier: String): String =

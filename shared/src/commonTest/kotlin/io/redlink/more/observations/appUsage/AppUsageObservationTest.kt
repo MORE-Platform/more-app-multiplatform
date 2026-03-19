@@ -94,10 +94,12 @@ class AppUsageObservationTest {
 
         // BUTTON_PRESS has storeWithoutApproval = true now
         observation.onEvent(LogEvent.BUTTON_PRESS, "test_button")
+        observation.onEvent(LogEvent.APP_TRACKING_DECLINED, "")
 
         assertEquals(1, mockRepo.mockObservationData.addedData.size)
         val storedData = mockRepo.mockObservationData.addedData.first()
-        assertTrue(storedData.dataValue.contains("button_press"))
+        assertTrue(!storedData.dataValue.contains("button_press"))
+        assertTrue(storedData.dataValue.contains("app_tracking_declined"))
     }
 
     @Test
@@ -204,19 +206,17 @@ class AppUsageObservationTest {
         val observation = AppUsageObservation(mockRepo, permissionRepo)
         observation.setDataManager(mockObservationDataManager(mockRepo))
 
-        // BUTTON_PRESS has storeWithoutApproval = true
-        observation.onEvent(LogEvent.BUTTON_PRESS, "test_button")
+        observation.onEvent(LogEvent.APP_TRACKING_ACCEPTED, "")
 
-        // Should be buffered because not started
         assertEquals(0, mockRepo.mockObservationData.addedData.size)
-        assertTrue(mockSharedStorage.load("app_usage_data_buffer", "").contains("button_press"))
+        assertTrue(
+            mockSharedStorage.load("app_usage_data_buffer", "").contains("app_tracking_accepted")
+        )
 
-        // Now start
         observation.start("1", "1")
 
-        // Should be flushed even if tracking is NOT approved
         assertEquals(1, mockRepo.mockObservationData.addedData.size)
-        assertTrue(mockRepo.mockObservationData.addedData.first().dataValue.contains("button_press"))
+        assertTrue(mockRepo.mockObservationData.addedData.first().dataValue.contains("app_tracking_accepted"))
     }
 
     @Test
