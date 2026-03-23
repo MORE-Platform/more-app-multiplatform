@@ -29,6 +29,7 @@ struct iOSApp: App {
             .onChange(of: scenePhase) { newPhase in
                 switch newPhase {
                 case .background:
+                    Polar360Controller.shared.appIsInBackground = true
                     AppDelegate.shared.updateData(appInForeground: false)
                     if AppDelegate.shared.credentialRepository.hasCredentialsValue {
                         appDelegate.scheduleTasks()
@@ -36,6 +37,12 @@ struct iOSApp: App {
                 case .inactive:
                     break
                 case .active:
+                    Polar360Controller.shared.appIsInBackground = false
+                    // Observations have completed (or will complete via beginBackgroundTask /
+                    // BGAppRefreshTask). Clear persisted IDs so they don't bleed into the
+                    // next session.
+                    Polar360Controller.shared.clearBackgroundDeviceId()
+                    IOSDataRecorder.clearBackgroundScheduleIds()
                     AppDelegate.shared.updateData(appInForeground: true)
                     appDelegate.cancelBackgroundTasks()
                     break

@@ -21,6 +21,7 @@ class Polar360TempObservation: Observation_ {
     private var offlineRecordingDisposable: Disposable?
     private var deviceListener: AnyCancellable?
     private var offlineMode = false
+    private var stopBackgroundSync: BackgroundSync?
 
     private static let notificationBackoffInterval: TimeInterval = 60
     private static var lastCannotStartNotificationDate: Date?
@@ -43,8 +44,7 @@ class Polar360TempObservation: Observation_ {
 
         listenToDeviceConnection()
 
-        controller.ensureReady(deviceId: deviceId, offlineMode: offlineMode).subscribe(
-            onCompleted: { [weak self] in
+        controller.ensureReady(deviceId: deviceId, offlineMode: offlineMode, onReady: { [weak self] in
                 guard let self else { return }
                 if self.offlineMode {
                     self.controller.stopOfflineRecordingAndFetch(
@@ -106,9 +106,8 @@ class Polar360TempObservation: Observation_ {
                             }
                         )
                 }
-            },
-            onError: { error in print("Polar360 Temp setup error: \(error)") }
-        )
+            
+        }, onError: { error in print("Polar360 Temp setup error: \(error)") })
         return true
     }
 
@@ -118,16 +117,32 @@ class Polar360TempObservation: Observation_ {
         if offlineMode {
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = nil
+
+            let finishBg: () -> Void
+            if controller.appIsInBackground {
+                let sync = BackgroundSync()
+                stopBackgroundSync = sync
+                finishBg = sync.begin(taskName: "Polar360TempStopAndFetch")
+            } else {
+                finishBg = { [weak self] in self?.stopBackgroundSync = nil }
+            }
+
             controller.stopOfflineRecordingAndFetch(
                 dataType: .temperature,
                 onSuccess: { [weak self] items in
-                    guard let self else { onCompletion(); return }
+                    guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
                     print(samples)
                     let processed = samples.map { ["temp": $0.temp, "timestamp": $0.timestamp] as [String: Any] }
-                    self.storeData(data: ["polar360tempdata": processed], timestamp: -1) { onCompletion() }
+                    self.storeData(data: ["polar360tempdata": processed], timestamp: -1) {
+                        onCompletion()
+                        finishBg()
+                    }
                 },
-                onError: { error in NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)") }
+                onError: { error in
+                    NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)")
+                    finishBg()
+                }
             )
         } else {
             tempDisposable?.dispose()
@@ -158,7 +173,7 @@ class Polar360TempObservation: Observation_ {
 
     override func bleDevicesNeeded() -> Set<String> { deviceIdentificer }
 
-    override func ableToAutomaticallyStart() -> Bool { false }
+    override func ableToAutomaticallyStart() -> Bool { observerAccessible() }
 
     private func showCannotStartNotification() {
         let now = Date()

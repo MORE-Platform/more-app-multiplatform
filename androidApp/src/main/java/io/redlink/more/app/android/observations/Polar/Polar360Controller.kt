@@ -149,17 +149,6 @@ object Polar360Controller {
             return polarConnector.polarApi.startOfflineRecording(deviceId, dataType, settings, null)
         }
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, dataType)
-            .onErrorResumeNext { error: Throwable ->
-                Napier.e(tag = "Polar360Controller::$dataType") { "Settings request failed: $error" }
-                Single.just(
-                    PolarSensorSetting(
-                        hashMapOf(
-                            PolarSensorSetting.SettingType.SAMPLE_RATE to 1,
-                            PolarSensorSetting.SettingType.RESOLUTION to 1
-                        )
-                    )
-                )
-            }
             .flatMapCompletable { resolvedSettings ->
                 Napier.d(tag = "Polar360Controller::$dataType") { "Using settings: ${resolvedSettings.settings}" }
                 polarConnector.polarApi.startOfflineRecording(deviceId, dataType, resolvedSettings, null)

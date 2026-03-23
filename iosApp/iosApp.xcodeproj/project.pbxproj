@@ -21,6 +21,8 @@
 		07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293D29D58F7C00853108 /* ExpandableContent.swift */; };
 		1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DA29CC8E730034EF65 /* AppDelegate.swift */; };
 		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
+		BB1A2B3C4D5E6F7A8B9C0002 /* BackgroundSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */; };
+		BB1A2B3C4D5E6F7A8B9C0004 /* Polar360SyncBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */; };
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */; };
 		1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */; };
@@ -245,6 +247,8 @@
 		07FD293D29D58F7C00853108 /* ExpandableContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContent.swift; sourceTree = "<group>"; };
 		1F0026DA29CC8E730034EF65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
+		BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSync.swift; sourceTree = "<group>"; };
+		BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360SyncBackgroundTask.swift; sourceTree = "<group>"; };
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionView.swift; sourceTree = "<group>"; };
 		1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionViewModel.swift; sourceTree = "<group>"; };
@@ -497,6 +501,8 @@
 				1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */,
 				1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */,
 				1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */,
+				BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */,
+				BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */,
 			);
 			path = BackgroundTasks;
 			sourceTree = "<group>";
@@ -1253,6 +1259,8 @@
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */,
 				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
+				BB1A2B3C4D5E6F7A8B9C0002 /* BackgroundSync.swift in Sources */,
+				BB1A2B3C4D5E6F7A8B9C0004 /* Polar360SyncBackgroundTask.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,

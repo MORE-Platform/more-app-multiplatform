@@ -21,6 +21,7 @@ class Polar360AccObservation: Observation_ {
     private var offlineRecordingDisposable: Disposable?
     private var deviceListener: AnyCancellable?
     private var offlineMode = false
+    private var stopBackgroundSync: BackgroundSync?
 
     private static let notificationBackoffInterval: TimeInterval = 60
     private static var lastCannotStartNotificationDate: Date?
@@ -43,8 +44,7 @@ class Polar360AccObservation: Observation_ {
 
         listenToDeviceConnection()
 
-        controller.ensureReady(deviceId: deviceId, offlineMode: offlineMode).subscribe(
-            onCompleted: { [weak self] in
+        controller.ensureReady(deviceId: deviceId, offlineMode: offlineMode, onReady: { [weak self] in
                 guard let self else { return }
                 if self.offlineMode {
                     self.controller.stopOfflineRecordingAndFetch(
@@ -106,9 +106,8 @@ class Polar360AccObservation: Observation_ {
                             }
                         )
                 }
-            },
-            onError: { error in print("Polar360 ACC setup error: \(error)") }
-        )
+            
+        }, onError: { error in print("Polar360 ACC setup error: \(error)") })
         return true
     }
 
@@ -118,15 +117,31 @@ class Polar360AccObservation: Observation_ {
         if offlineMode {
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = nil
+
+            let finishBg: () -> Void
+            if controller.appIsInBackground {
+                let sync = BackgroundSync()
+                stopBackgroundSync = sync
+                finishBg = sync.begin(taskName: "Polar360AccStopAndFetch")
+            } else {
+                finishBg = { [weak self] in self?.stopBackgroundSync = nil }
+            }
+
             controller.stopOfflineRecordingAndFetch(
                 dataType: .acc,
                 onSuccess: { [weak self] items in
-                    guard let self else { onCompletion(); return }
+                    guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.acc_data }
                     let processed = samples.map { ["x": $0.x, "y": $0.y, "z": $0.z, "timestamp": $0.timestamp] as [String: Any] }
-                    self.storeData(data: ["polar360accdata": processed], timestamp: -1) { onCompletion() }
+                    self.storeData(data: ["polar360accdata": processed], timestamp: -1) {
+                        onCompletion()
+                        finishBg()
+                    }
                 },
-                onError: { error in NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)") }
+                onError: { error in
+                    NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)")
+                    finishBg()
+                }
             )
         } else {
             accDisposable?.dispose()
@@ -157,7 +172,7 @@ class Polar360AccObservation: Observation_ {
 
     override func bleDevicesNeeded() -> Set<String> { deviceIdentificer }
 
-    override func ableToAutomaticallyStart() -> Bool { false }
+    override func ableToAutomaticallyStart() -> Bool { observerAccessible() }
 
     private func showCannotStartNotification() {
         let now = Date()

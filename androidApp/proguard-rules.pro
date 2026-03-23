@@ -47,3 +47,41 @@
     @org.joda.convert.FromString *;
     @org.joda.convert.ToString *;
 }
+
+# Keep shared KMM module classes (needed for Koin reflection-based DI)
+-keep class io.redlink.more.** { *; }
+-keepnames class io.redlink.more.** { *; }
+
+# Keep Koin DI classes
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
+
+# Keep Ktor HTTP client
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# Keep kotlinx.serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep class kotlinx.serialization.** { *; }
+-dontwarn kotlinx.serialization.**
+-keepclassmembers class * {
+    @kotlinx.serialization.SerialName <fields>;
+}
+-keepclasseswithmembers class * {
+    @kotlinx.serialization.Serializable *;
+}
+
+# Keep Room database and entities
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class * { *; }
+-keepclassmembers @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao interface * { *; }
+-dontwarn androidx.room.**
+
+# Keep Gson serialization
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
