@@ -142,7 +142,8 @@ extension NavigationScreen {
     }
 
     func localize() -> String {
-        return values.screenName
+        let localizedKey = String.LocalizationValue(stringLiteral: values.screenName)
+        return String(localized: localizedKey)
     }
 
     func generateURL(withParameters params: [NavigationRouteParameter: String]) -> URL? {
