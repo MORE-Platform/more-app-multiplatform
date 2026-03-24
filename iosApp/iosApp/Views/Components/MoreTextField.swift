@@ -23,7 +23,7 @@ struct MoreTextField: View {
     var textType: UITextContentType? = nil
 
     var body: some View {
-        TextField(titleKey, text: $inputText)
+        TextField(LocalizedStringKey(titleKey), text: $inputText)
             .textFieldAutoCapitalizataion(capitalization: capitalization)
             .autocorrectionDisabled(autoCorrectDisabled)
             .textContentType(textType)

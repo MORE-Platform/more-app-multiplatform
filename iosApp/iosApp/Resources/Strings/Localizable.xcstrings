@@ -563,19 +563,19 @@
         }
       }
     },
-    "enter_study_url" : {
+    "enter_study_endpoint_placeholder" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL der Studie eigeben"
+            "value" : "URL der Studie eingeben"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter study URL"
+            "value" : "Enter Study URL"
           }
         }
       }
@@ -1378,6 +1378,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter Registration Token"
+          }
+        }
+      }
+    },
+    "participation_key_entry_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Token eingeben"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter Token"
           }
         }
       }

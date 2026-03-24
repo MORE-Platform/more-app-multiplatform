@@ -37,9 +37,9 @@ struct MoreTextFieldHL: View {
             .padding(3)
 
             if isSmTextfield {
-                MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
+                MoreTextFieldSmBottom(titleKey: $inputPlaceholder, inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             } else {
-                MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
+                MoreTextField(titleKey: $inputPlaceholder, inputText: $input, capitalization: capitalization, autoCorrectDisabled: autoCorrectDisabled, textType: textType)
             }
         }
     }
