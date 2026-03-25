@@ -1147,6 +1147,17 @@
         }
       }
     },
+    "Notification Filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachrichten Filter"
+          }
+        }
+      }
+    },
     "Notification Permissions Not Granted" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1429,6 +1440,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter Token"
+          }
+        }
+      }
+    },
+    "Past Observations" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vergangene Aufzeichnungen"
           }
         }
       }
