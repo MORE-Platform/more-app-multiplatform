@@ -225,6 +225,23 @@
         }
       }
     },
+    "app-usage-observation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App usage"
+          }
+        }
+      }
+    },
     "back_to_settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -955,6 +972,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modules"
+          }
+        }
+      }
+    },
+    "multiple-choice-question-observation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehrfachauswahl"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple Choice"
           }
         }
       }
@@ -1868,6 +1902,23 @@
         }
       }
     },
+    "Select Filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle einen Filter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Filter"
+          }
+        }
+      }
+    },
     "Select Time" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2025,7 +2076,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Starte den  Fragebogen"
+            "value" : "Starte den Fragebogen"
           }
         },
         "en" : {
