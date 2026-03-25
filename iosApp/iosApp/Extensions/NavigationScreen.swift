@@ -70,7 +70,7 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
         case .questionObservationThanks:
             return NavigationScreenValues(screenName: "Question Thanks", navigationLink: .questionnaireResponse, fullScreen: true)
         case .dashboardFilter:
-            return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: .dashboard)
+            return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: .observationFilter)
         case .notificationFilter:
             return NavigationScreenValues(screenName: "Notification Filter", navigationLink: .notificationFilter)
         case .pastObservations:
