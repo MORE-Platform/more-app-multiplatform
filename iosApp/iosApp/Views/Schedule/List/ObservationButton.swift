@@ -29,6 +29,7 @@ struct ObservationButton: View {
         VStack {
             if QuestionType_().matches(type: observationType) {
                 MoreActionButton(
+                    backgroundColor: Color.more.approved,
                     disabled: .constant(disabled),
                     action: {
                         navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
@@ -40,6 +41,7 @@ struct ObservationButton: View {
                 }
             } else if observationType == "lime-survey-observation" {
                 MoreActionButton(
+                    backgroundColor: Color.more.approved,
                     disabled: .constant(disabled),
                     action: {
                         navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
@@ -51,6 +53,7 @@ struct ObservationButton: View {
                 }
             } else {
                 MoreActionButton(
+                    backgroundColor: state == .running ? Color.more.primary : Color.more.approved,
                     disabled: .constant(disabled),
                     action: {
                         if state == .running {

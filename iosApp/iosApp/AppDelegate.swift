@@ -74,19 +74,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Notification Received: \(userInfo)")
+        Napier.d("Notification Received: \(userInfo)")
         AppDelegate.shared.notificationManager.handleNotificationDataAsync(data: userInfo.notNilStringDictionary())
 
         completionHandler(.newData)
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Did register for Remote Notifications With Device Token: \(String(decoding: deviceToken, as: UTF8.self))")
+        Napier.d("Did register for Remote Notifications With Device Token: \(String(decoding: deviceToken, as: UTF8.self))")
         Messaging.messaging().apnsToken = deviceToken
     }
 
     private func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("App did fail to register for remote notifications: \(error)")
+        Napier.e("App did fail to register for remote notifications: \(error)")
     }
 
     func cancelBackgroundTasks() {

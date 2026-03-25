@@ -27,7 +27,7 @@ class FCMService: NSObject {
 
 extension FCMService: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("FCM Token received: \(String(describing: fcmToken))")
+        Napier.i("FCM Token received: \(String(describing: fcmToken))")
         if let fcmToken {
             AppDelegate.shared.notificationManager.doNewFCMToken(token: fcmToken)
         }

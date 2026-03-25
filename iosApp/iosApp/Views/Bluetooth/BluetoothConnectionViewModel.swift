@@ -126,7 +126,7 @@ class BluetoothConnectionViewModel: ObservableObject {
             do {
                 try await coreViewModel.connectToDevice(device: device)
             } catch {
-                print("Cannot connect to bluetooth device: \(device.deviceName ?? "Unknown"): \(error)")
+                Napier.e("Cannot connect to bluetooth device: \(device.deviceName ?? "Unknown"): \(error)")
             }
         }
     }

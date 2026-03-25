@@ -37,7 +37,7 @@ class GarminConnectViewModel: ObservableObject {
 
     func getUrl() -> URLRequest? {
         if let url = coreViewModel.garminSSOUrl()?.description(), let requestUrl = URL(string: url) {
-            print(url)
+            Napier.d("\(url)")
             var request = URLRequest(url: requestUrl)
 
             allowedHost = requestUrl.host
@@ -69,7 +69,7 @@ class GarminConnectViewModel: ObservableObject {
                     }
                 }
             } catch {
-                print("Exception during Callback \(error)")
+                Napier.e("Exception during Callback \(error)")
                 didHandleCallback = false
             }
             if failure {

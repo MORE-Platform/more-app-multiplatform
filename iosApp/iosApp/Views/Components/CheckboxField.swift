@@ -43,7 +43,7 @@ struct CheckboxField: View {
 struct CheckboxField_Previews: PreviewProvider {
     static var previews: some View {
         CheckboxField(id: "Test", label: "Test", isSelected: false, callback: { selected in
-            print("Toggled item is \(selected)")
+            Napier.d("Toggled item is \(selected)")
         })
     }
 }

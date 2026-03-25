@@ -15,17 +15,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentView
+import io.redlink.more.app.android.activities.consent.Polar360ProfileFormView
 import io.redlink.more.app.android.activities.login.LoginView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
 import io.redlink.more.app.android.extensions.applicationId
+import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.observations.Polar.Polar360UserProfile
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.navigation.model.NavigationRouteParameter
@@ -79,15 +85,36 @@ class ContentActivity : ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
-    val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
     val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
     val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
     val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
+    val study by viewModel.registrationService.study.collectAsStateWithLifecycle()
+    var showPolar360ProfileForm by remember { mutableStateOf(false) }
+
+    val studyHasPolar360 = study?.observations
+        ?.any { it.observationType.contains("polar360observation") } == true
 
     MoreBackground(showBackButton = false) {
         if (credentialsLoaded && !hasCredentials) {
-            if (validLogin != null) {
-                ConsentView(viewModel.registrationService)
+            if (showPolar360ProfileForm) {
+                Polar360ProfileFormView(onComplete = {
+                    viewModel.registrationService.acceptConsent(
+                        getSecureID(MoreApplication.appContext!!) ?: ""
+                    )
+                })
+            } else if (study != null) {
+                ConsentView(
+                    registrationService = viewModel.registrationService,
+                    onConsentAccepted = {
+                        if (studyHasPolar360 && Polar360UserProfile.load() == null) {
+                            showPolar360ProfileForm = true
+                        } else {
+                            viewModel.registrationService.acceptConsent(
+                                getSecureID(MoreApplication.appContext!!) ?: ""
+                            )
+                        }
+                    }
+                )
             } else {
                 LoginView(viewModel.registrationService)
                 AppVersion()

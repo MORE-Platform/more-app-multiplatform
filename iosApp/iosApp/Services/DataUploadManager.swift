@@ -25,35 +25,35 @@ class DataUploadManager {
             currentlyUploading = true
 
             Task(priority: .background) { [weak self] in
-                print("Fetching Data Bulk...")
+                Napier.d("Fetching Data Bulk...")
                 let observationDataRepository = await ObservationDataRepositoryImpl(appDatabase: AppDelegate.database)
                 do {
                     if let dataBulk = try await observationDataRepository.allAsBulk(), !dataBulk.dataPoints.isEmpty {
-                        print("Sending data to backend...")
+                        Napier.d("Sending data to backend...")
                         let pair = try await AppDelegate.shared.networkService.sendData(data: dataBulk)
                         if let error = pair.second {
-                            print("Error: \(error)")
+                            Napier.e("Error: \(error)")
                             self?.currentlyUploading = false
                             completion(false)
                         } else if let self, let idSet = pair.first as? Set<String> {
-                            print("Sent data! Deleting local data...")
+                            Napier.d("Sent data! Deleting local data...")
                             try await observationDataRepository.deleteAllWithId(idSet: idSet)
-                            print("Deleted data!")
+                            Napier.d("Deleted data!")
                             self.currentlyUploading = false
                             completion(true)
                         } else {
-                            print("Error!")
+                            Napier.e("Error!")
                             self?.currentlyUploading = false
                             completion(false)
                         }
                     } else {
-                        print("No data to send!")
+                        Napier.d("No data to send!")
                         self?.currentlyUploading = false
                         completion(true)
                     }
 
                 } catch {
-                    print("Error: \(error)")
+                    Napier.e("Error: \(error)")
                     self?.currentlyUploading = false
                     completion(false)
                 }
@@ -62,6 +62,6 @@ class DataUploadManager {
     }
 
     func close() {
-        print("Closed!")
+        Napier.d("Closed!")
     }
 }

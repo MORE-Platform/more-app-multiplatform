@@ -18,7 +18,7 @@ import shared
 
 class ObservationDataCollector {
     func collectData(dataCollected completion: @escaping (Bool) -> Void) {
-        print("Collect undone observations")
+        Napier.i("Collect undone observations")
         Task {
             do {
                 try await AppDelegate.shared.observationManager.updateTaskStates()
@@ -31,7 +31,7 @@ class ObservationDataCollector {
                     }
                 }
             } catch {
-                print("Cannot update task states: \(error)")
+                Napier.e("Cannot update task states: \(error)")
             }
         }
     }

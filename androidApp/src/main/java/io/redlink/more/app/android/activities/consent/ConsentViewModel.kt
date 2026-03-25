@@ -22,14 +22,19 @@ import io.redlink.more.registration.RegistrationService
 import io.redlink.more.viewModels.permission.CoreConsentViewModel
 
 class ConsentViewModel(
-    val registrationService: RegistrationService
+    val registrationService: RegistrationService,
+    private val onConsentAccepted: (() -> Unit)? = null
 ) : ViewModel() {
     val coreModel =
         CoreConsentViewModel(registrationService, stringResource(R.string.consent_information))
 
     fun acceptConsent(context: Context) {
-        getSecureID(context)?.let { uniqueDeviceId ->
-            registrationService.acceptConsent(uniqueDeviceId)
+        if (onConsentAccepted != null) {
+            onConsentAccepted.invoke()
+        } else {
+            getSecureID(context)?.let { uniqueDeviceId ->
+                registrationService.acceptConsent(uniqueDeviceId)
+            }
         }
     }
 

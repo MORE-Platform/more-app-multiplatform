@@ -207,6 +207,33 @@ class ObservationManager(
         stopAllInList()
     }
 
+    fun stopAllWithCompletion(onAllStopped: () -> Unit) {
+        Napier.i(tag = "ObservationManager::stopAllWithCompletion") { "Stopping all observations sequentially..." }
+        val toStop = runningObservations.entries.toList()
+        currentlyRunning.clear()
+        stopSequentially(toStop, onAllStopped)
+    }
+
+    private fun stopSequentially(
+        remaining: List<Map.Entry<String, Observation>>,
+        onAllStopped: () -> Unit
+    ) {
+        if (remaining.isEmpty()) {
+            onAllStopped()
+            return
+        }
+        val (scheduleId, observation) = remaining.first()
+        observation.stopAndFinish(scheduleId) {
+            studyScope.launch(dispatchers.io) {
+                repositories.schedule.setCompletionStateFor(scheduleId, true)
+            }
+            repositories.dataPointCount.delete(scheduleId)
+            runningObservations.remove(scheduleId)
+            scheduleSchemaList.removeAll { it.scheduleId == scheduleId }
+            stopSequentially(remaining.drop(1), onAllStopped)
+        }
+    }
+
     suspend fun updateTaskStates() {
         repositories.schedule.updateTaskStates(observationFactory, dataRecorder)
     }

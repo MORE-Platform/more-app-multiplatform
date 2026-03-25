@@ -142,6 +142,8 @@
 		AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C3 /* Polar360AccObservation.swift */; };
 		AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C4 /* Polar360TempObservation.swift */; };
 		AA20000000000000000000C5 /* Polar360PpiObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C5 /* Polar360PpiObservation.swift */; };
+		AA20000000000000000000C6 /* Polar360UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C6 /* Polar360UserProfile.swift */; };
+		AA20000000000000000000C7 /* Polar360ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C7 /* Polar360ProfileFormView.swift */; };
 		B70888492DF2D4290048A4AC /* QRCodeScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */; };
 		B708884B2DF2E6730048A4AC /* ScanQrCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */; };
 		B708884D2DF2EE600048A4AC /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */; };
@@ -366,6 +368,8 @@
 		AA10000000000000000000C3 /* Polar360AccObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360AccObservation.swift; sourceTree = "<group>"; };
 		AA10000000000000000000C4 /* Polar360TempObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360TempObservation.swift; sourceTree = "<group>"; };
 		AA10000000000000000000C5 /* Polar360PpiObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360PpiObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C6 /* Polar360UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360UserProfile.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C7 /* Polar360ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360ProfileFormView.swift; sourceTree = "<group>"; };
 		B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanDelegate.swift; sourceTree = "<group>"; };
 		B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQrCodeViewModel.swift; sourceTree = "<group>"; };
 		B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
@@ -477,6 +481,7 @@
 			isa = PBXGroup;
 			children = (
 				1F1E45D02E7842F400C82016 /* RegistrationObservable.swift */,
+				AA10000000000000000000C7 /* Polar360ProfileFormView.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -533,6 +538,7 @@
 				AA10000000000000000000C3 /* Polar360AccObservation.swift */,
 				AA10000000000000000000C4 /* Polar360TempObservation.swift */,
 				AA10000000000000000000C5 /* Polar360PpiObservation.swift */,
+				AA10000000000000000000C6 /* Polar360UserProfile.swift */,
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
@@ -1337,6 +1343,8 @@
 				AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */,
 				AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */,
 				AA20000000000000000000C5 /* Polar360PpiObservation.swift in Sources */,
+				AA20000000000000000000C6 /* Polar360UserProfile.swift in Sources */,
+				AA20000000000000000000C7 /* Polar360ProfileFormView.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 				B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */,

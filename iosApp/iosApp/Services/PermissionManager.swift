@@ -69,7 +69,7 @@ class PermissionManager: NSObject, ObservableObject {
 
     private var cmSensorStatus: PermissionStatus = .non {
         didSet {
-            print("cmSensor \(cmSensorStatus)")
+            Napier.d("cmSensor \(cmSensorStatus)")
             if cmSensorStatus.userResponded() {
                 requestPermission()
             }
@@ -157,7 +157,7 @@ class PermissionManager: NSObject, ObservableObject {
                 }
 
                 activityManager.startActivityUpdates(to: OperationQueue.main) { [weak self] _ in
-                    print("Starting Activity Updates")
+                    Napier.i("Starting Activity Updates")
                     self?.cmSensorStatus = .accepted
                     self?.authorizationTimer?.invalidate()
                     self?.authorizationTimer = nil
@@ -172,7 +172,7 @@ class PermissionManager: NSObject, ObservableObject {
     }
 
     private func checkBluetoothAuthorization(always: Bool = true) -> PermissionStatus {
-        print("Checking for Bluetooth authorization")
+        Napier.d("Checking for Bluetooth authorization")
         if CBManager.authorization == .notDetermined {
             cbManager = CBCentralManager(delegate: self, queue: nil)
             return .requesting
@@ -197,7 +197,7 @@ class PermissionManager: NSObject, ObservableObject {
                 } else {
                     notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                         if let error {
-                            print(error)
+                            Napier.e("\(error)")
                             self.notificationStatus = .declined
                         } else {
                             self.notificationStatus = granted ? .accepted : .declined
@@ -233,7 +233,7 @@ class PermissionManager: NSObject, ObservableObject {
     }
 
     func requestPermission(permissionRequest: Bool = false) {
-        print("Requesting Permissions")
+        Napier.d("Requesting Permissions")
         if permissionRequest {
             permissionsRequested = true
         }
@@ -247,7 +247,7 @@ class PermissionManager: NSObject, ObservableObject {
             } else if cmSensorStatus == .requesting && !cmSensorStatus.userResponded() {
                 requestCMSensorRecorder()
             } else {
-                print("Continuing")
+                Napier.d("Continuing")
                 observer.accepted()
             }
         }

@@ -50,12 +50,12 @@ class PolarVerityHeartRateObservation: Observation_ {
         .sink(receiveCompletion: { _ in }) { pair in
             if let studyActive = pair.first?.boolValue, studyActive {
                 if let hrReady = pair.second?.boolValue, hrReady {
-                    print("HR Ready: \(hrReady)")
+                    Napier.d("HR Ready: \(hrReady)")
                     Task {
                         do {
                             try await AppDelegate.shared.observationManager.updateTaskStates()
                         } catch {
-                            print("Cannot start polar observation: \(error)")
+                            Napier.e("Cannot start polar observation: \(error)")
                         }
                     }
                 } else {
@@ -77,7 +77,7 @@ class PolarVerityHeartRateObservation: Observation_ {
                         }
                     }
                 }, onError: { [weak self] error in
-                    print(error)
+                    Napier.e("\(error)")
                     if let self {
                         showCannotStartNotificationWithBackoff(title: "Observation Error", message: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!")
                         Observation_.pauseObservation(self.observationType)
@@ -121,7 +121,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
 
     override func bleDevicesNeeded() -> Set<String> {
-        print("Polar device needed \(deviceIdentificer)")
+        Napier.d("Polar device needed \(deviceIdentificer)")
         return deviceIdentificer
     }
 

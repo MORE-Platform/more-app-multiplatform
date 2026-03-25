@@ -61,7 +61,7 @@ class Polar360PpiObservation: Observation_ {
                             )
                         },
                         onError: { [weak self] error in
-                            NSLog("Polar360PpiObservation: Failed to fetch pending offline data: \(error)")
+                            Napier.e("Polar360PpiObservation: Failed to fetch pending offline data: \(error)")
                             guard let self else { return }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
                                 deviceId: deviceId, dataType: .ppi
@@ -89,12 +89,12 @@ class Polar360PpiObservation: Observation_ {
                                 }
                             },
                             onError: { error in
-                                print("Polar360 PPI stream failed: \(error)")
+                                Napier.e("Polar360 PPI stream failed: \(error)")
                             }
                         )
                 }
             
-        }, onError: { error in print("Polar360 PPI setup error: \(error)") })
+        }, onError: { error in Napier.e("Polar360 PPI setup error: \(error)") })
         return true
     }
 
@@ -126,7 +126,7 @@ class Polar360PpiObservation: Observation_ {
                     }
                 },
                 onError: { error in
-                    NSLog("Polar360PpiObservation: Failed to fetch offline data: \(error)")
+                    Napier.e("Polar360PpiObservation: Failed to fetch offline data: \(error)")
                     finishBg()
                 }
             )

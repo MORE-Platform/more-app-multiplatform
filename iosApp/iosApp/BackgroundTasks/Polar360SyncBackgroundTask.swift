@@ -18,7 +18,7 @@ enum Polar360SyncBackgroundTask {
     /// Earliest-begin hint passed to iOS — the system may still delay longer.
     static let minimumInterval: TimeInterval = 1 * 60
 
-    // MARK: - Registration
+    // Registration
 
     static func setupBackgroundTasks() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: taskID, using: nil) { task in
@@ -30,11 +30,9 @@ enum Polar360SyncBackgroundTask {
         }
     }
 
-    // MARK: - Scheduling
+    //Scheduling
 
-    /// Submits a BGAppRefreshTaskRequest.
-    /// - Parameter earliestBeginDate: Earliest date iOS may execute the task.
-    ///   Pass `nil` to use `minimumInterval` seconds from now.
+
     static func schedule(earliestBeginDate: Date? = nil) {
         let request = BGAppRefreshTaskRequest(identifier: taskID)
         request.earliestBeginDate = earliestBeginDate ?? Date(timeIntervalSinceNow: minimumInterval)
@@ -49,21 +47,14 @@ enum Polar360SyncBackgroundTask {
     // MARK: - Handling
 
     private static func handle(task: BGAppRefreshTask) {
-        // Re-schedule immediately so the next run is queued even if this one expires early.
         schedule()
 
-        // Mark as background so that stop(scheduleId:) and stopOfflineRecordingAndFetch
-        // do not prematurely remove persisted IDs or skip the UserDefaults fallback.
-        // This flag is normally set by iOSApp.onChange but is not set on a cold launch.
         Polar360Controller.shared.appIsInBackground = true
-
-        // Restore the device ID that was saved when the observation started so
-        // stopOfflineRecordingAndFetch can find the Polar device after a cold launch.
+        
+        
         Polar360Controller.shared.restoreDeviceIdFromBackground()
 
-        // Log the schedule IDs that were persisted when observations started.
-        // collectData → updateTaskStates() re-hydrates KMP from its DB, which uses
-        // these same IDs to tag the fetched BLE data before it reaches the backend.
+        
         let scheduleIds = IOSDataRecorder.loadScheduleIdsFromBackground()
         Napier.i("Polar360SyncBackgroundTask: handling with \(scheduleIds.count) schedule IDs: \(scheduleIds)")
 

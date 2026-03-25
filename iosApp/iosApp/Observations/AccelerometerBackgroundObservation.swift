@@ -36,7 +36,7 @@ class AccelerometerBackgroundObservation: Observation_ {
         if observerAccessible() {
             recorder.recordAccelerometer(forDuration: recordForDurationInSec)
             startRecording = Date()
-            print("CMSensorRecorder started recording accelerometer data for the next \(recordForDurationInSec)s...")
+            Napier.i("CMSensorRecorder started recording accelerometer data for the next \(recordForDurationInSec)s...")
             DispatchQueue.main.async { [weak self] in
                 self?.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
                     if let self {
@@ -63,9 +63,9 @@ class AccelerometerBackgroundObservation: Observation_ {
 
     override func store(start: Int64, end: Int64, onCompletion: @escaping () -> Void) {
         collectData(start: Date(timeIntervalSince1970: TimeInterval(start)), end: Date(timeIntervalSince1970: TimeInterval(end))) {
-            print("\(Date()): Data collected")
+            Napier.d("\(Date()): Data collected")
             super.store(start: start, end: end, onCompletion: {})
-            print("\(Date()): Returning from store function")
+            Napier.d("\(Date()): Returning from store function")
             onCompletion()
         }
     }
@@ -80,7 +80,7 @@ class AccelerometerBackgroundObservation: Observation_ {
             if startDate < Date() {
                 start = Int64(Date().timeIntervalSince1970)
             }
-            print("Recording time from \(startDate) to \(endDate); \(Double(end - start))s")
+            Napier.d("Recording time from \(startDate) to \(endDate); \(Double(end - start))s")
             recordForDurationInSec = Double(end - start)
         }
     }
@@ -123,7 +123,7 @@ extension AccelerometerBackgroundObservation: ObservationCollector {
                 }
             }
         } else {
-            print("Start must be smaller than end! Start: \(start); End: \(end)")
+            Napier.w("Start must be smaller than end! Start: \(start); End: \(end)")
             completion()
         }
     }

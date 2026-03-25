@@ -218,12 +218,13 @@ abstract class Observation(
         onCompletion()
     }
 
-    open fun stopAndFinish(scheduleId: String) {
+    open fun stopAndFinish(scheduleId: String, onCompletion: () -> Unit = {}) {
         Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
         stop {
             timestampCollectionJob?.cancel()
             saveAndSend()
             observationShutdown(scheduleId)
+            onCompletion()
         }
         Scope.launch {
             updateObservationErrors()

@@ -45,31 +45,31 @@ class WebViewViewModel: NSObject, ObservableObject {
 
 extension WebViewViewModel: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-        print("WebView did commit...")
+        Napier.d("WebView did commit...")
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("WebView didFinish")
+        Napier.d("WebView didFinish")
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("WebView didFail with error: \(error)")
+        Napier.e("WebView didFail with error: \(error)")
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("WebView didStartProviisonalNavigation")
+        Napier.d("WebView didStartProviisonalNavigation")
     }
 
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
-        print("WebView didBecome download")
+        Napier.d("WebView didBecome download")
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("WebView didFail Provisional Navigation with error: \(error)")
+        Napier.e("WebView didFail Provisional Navigation with error: \(error)")
     }
 
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        print("WebView did receive Server redirect for provisional navigation")
+        Napier.d("WebView did receive Server redirect for provisional navigation")
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {

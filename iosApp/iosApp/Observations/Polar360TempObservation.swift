@@ -61,7 +61,7 @@ class Polar360TempObservation: Observation_ {
                             )
                         },
                         onError: { [weak self] error in
-                            NSLog("Polar360TempObservation: Failed to fetch pending offline data: \(error)")
+                            Napier.e("Polar360TempObservation: Failed to fetch pending offline data: \(error)")
                             guard let self else { return }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
                                 deviceId: deviceId, dataType: .temperature
@@ -74,7 +74,7 @@ class Polar360TempObservation: Observation_ {
                     self.tempDisposable = self.controller.getPolarApi()
                         .requestStreamSettings(deviceId, feature: .temperature)
                         .catch { error -> Single<PolarSensorSetting> in
-                            print("Polar360 Temp settings request failed: \(error)")
+                            Napier.e("Polar360 Temp settings request failed: \(error)")
                             let defaultSettings = try! PolarSensorSetting([
                                 .sampleRate: 1,
                                 .resolution: 1
@@ -102,12 +102,12 @@ class Polar360TempObservation: Observation_ {
                                 }
                             },
                             onError: { error in
-                                print("Polar360 Temperature stream failed: \(error)")
+                                Napier.e("Polar360 Temperature stream failed: \(error)")
                             }
                         )
                 }
-            
-        }, onError: { error in print("Polar360 Temp setup error: \(error)") })
+
+        }, onError: { error in Napier.e("Polar360 Temp setup error: \(error)") })
         return true
     }
 
@@ -132,7 +132,7 @@ class Polar360TempObservation: Observation_ {
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
-                    print(samples)
+                    Napier.d("\(samples)")
                     let processed = samples.map { ["temp": $0.temp, "timestamp": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360tempdata": processed], timestamp: -1) {
                         onCompletion()
@@ -140,7 +140,7 @@ class Polar360TempObservation: Observation_ {
                     }
                 },
                 onError: { error in
-                    NSLog("Polar360TempObservation: Failed to fetch offline data: \(error)")
+                    Napier.e("Polar360TempObservation: Failed to fetch offline data: \(error)")
                     finishBg()
                 }
             )

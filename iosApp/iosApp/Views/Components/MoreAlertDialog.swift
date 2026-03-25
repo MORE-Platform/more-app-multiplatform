@@ -82,9 +82,9 @@ struct MoreAlertDialog: View {
         confirmLabel: "Required Permissions Were Not Granted",
         cancelLabel: "Continue without allowing",
         onConfirm: {
-            print("Settings")
+            Napier.d("Settings")
         },
         onDecline: {
-            print("Continue")
+            Napier.d("Continue")
         }))
 }

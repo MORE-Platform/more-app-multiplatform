@@ -61,7 +61,7 @@ class Polar360AccObservation: Observation_ {
                             )
                         },
                         onError: { [weak self] error in
-                            NSLog("Polar360AccObservation: Failed to fetch pending offline data: \(error)")
+                            Napier.e("Polar360AccObservation: Failed to fetch pending offline data: \(error)")
                             guard let self else { return }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
                                 deviceId: deviceId, dataType: .acc
@@ -74,7 +74,7 @@ class Polar360AccObservation: Observation_ {
                     self.accDisposable = self.controller.getPolarApi()
                         .requestStreamSettings(deviceId, feature: .acc)
                         .catch { error -> Single<PolarSensorSetting> in
-                            print("Polar360 ACC settings request failed: \(error)")
+                            Napier.e("Polar360 ACC settings request failed: \(error)")
                             let defaultSettings = try! PolarSensorSetting([
                                 .sampleRate: 52,
                                 .resolution: 1
@@ -102,12 +102,12 @@ class Polar360AccObservation: Observation_ {
                                 ) { }
                             },
                             onError: { error in
-                                print("Polar360 Accelerometer stream failed: \(error)")
+                                Napier.e("Polar360 Accelerometer stream failed: \(error)")
                             }
                         )
                 }
-            
-        }, onError: { error in print("Polar360 ACC setup error: \(error)") })
+
+        }, onError: { error in Napier.e("Polar360 ACC setup error: \(error)") })
         return true
     }
 
@@ -139,7 +139,7 @@ class Polar360AccObservation: Observation_ {
                     }
                 },
                 onError: { error in
-                    NSLog("Polar360AccObservation: Failed to fetch offline data: \(error)")
+                    Napier.e("Polar360AccObservation: Failed to fetch offline data: \(error)")
                     finishBg()
                 }
             )

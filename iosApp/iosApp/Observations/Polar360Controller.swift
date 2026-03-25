@@ -31,22 +31,24 @@ class Polar360Controller {
             .concatMap { $0 }
             .subscribe(
                 onNext: { _ in },
-                onError: { error in NSLog("Polar360Controller: BLE operation queue error: \(error)") }
+                onError: { error in Napier.e("Polar360Controller: BLE operation queue error: \(error)") }
             )
             .disposed(by: disposeBag)
     }
-    
-    
+
+
     class ppi_data: Codable {
         let hr: Int
         let timestamp: UInt64
         let ppiInMs : UInt16
         let ppiErrorEstimate : UInt16
-        init(hr:Int, timestamp:UInt64, ppiInMs:UInt16, ppiErrorEstimate:UInt16){
+        let skinContact  : Bool
+        init(hr:Int, timestamp:UInt64, ppiInMs:UInt16, ppiErrorEstimate:UInt16,skinContact:Int){
             self.hr = hr
             self.timestamp = timestamp
             self.ppiInMs = ppiInMs
             self.ppiErrorEstimate = ppiErrorEstimate
+            self.skinContact = skinContact == 1
         }
     }
 
@@ -73,7 +75,7 @@ class Polar360Controller {
             self.timestamp = Timestamp
         }
     }
-    
+
     class hr_data: Codable {
         let hr: Int
         let timestamp: UInt64
@@ -82,8 +84,8 @@ class Polar360Controller {
             self.timestamp = timestamp
         }
     }
-    
-    
+
+
     func findPolar360Device() -> BluetoothDeviceEntity? {
         return bleManager.connectedDevicesValue.first { device in
             guard let name = device.deviceName?.lowercased() else { return false }
@@ -98,8 +100,7 @@ class Polar360Controller {
             .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : enableSdkModeIfNeeded(identifier: deviceId))
             .andThen(Single<[Any]>.just([]))
             .catch { error -> Single<[Any]> in
-                NSLog("Polar360Controller: ensureReady failed: \(error)")
-                
+                Napier.e("Polar360Controller: ensureReady failed: \(error)")
                 return .just([])
             }
             .do(onSuccess: { _ in onReady() })
@@ -108,7 +109,7 @@ class Polar360Controller {
     }
 
     func startOfflineRecording(deviceId: String, dataType: PolarDeviceDataType, settings: PolarSensorSetting? = nil) -> Disposable {
-        NSLog("Polar360Controller: [\(dataType)] Starting offline recording on device=\(deviceId)")
+        Napier.i("Polar360Controller: [\(dataType)] Starting offline recording on device=\(deviceId)")
         let disableSdk = Completable.deferred {
             do {
                 return try self.polarConnector.polarApi.disableSDKMode(deviceId)
@@ -117,16 +118,16 @@ class Polar360Controller {
             }
         }
         .catch { error -> Completable in
-            NSLog("Polar360Controller: [\(dataType)] disableSDKMode error (ignored): \(error)")
+            Napier.w("Polar360Controller: [\(dataType)] disableSDKMode error (ignored): \(error)")
             return Completable.empty()
         }
         .do(onCompleted: {
-            NSLog("Polar360Controller: [\(dataType)] SDK mode disabled, stopping any existing recording...")
+            Napier.d("Polar360Controller: [\(dataType)] SDK mode disabled, stopping any existing recording...")
         })
 
         let preStop = polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .catch { error -> Completable in
-                NSLog("Polar360Controller: [\(dataType)] pre-stop error (ignored): \(error)")
+                Napier.w("Polar360Controller: [\(dataType)] pre-stop error (ignored): \(error)")
                 return Completable.empty()
             }
 
@@ -134,21 +135,21 @@ class Polar360Controller {
             .andThen(preStop)
             .andThen(resolveAndStartOfflineRecording(deviceId: deviceId, dataType: dataType, settings: settings))
             .subscribe(
-                onCompleted: { NSLog("Polar360Controller: [\(dataType)] Offline recording started successfully") },
-                onError: { error in NSLog("Polar360Controller: [\(dataType)] Failed to start: \(error)") }
+                onCompleted: { Napier.i("Polar360Controller: [\(dataType)] Offline recording started successfully") },
+                onError: { error in Napier.e("Polar360Controller: [\(dataType)] Failed to start: \(error)") }
             )
     }
 
     private func resolveAndStartOfflineRecording(deviceId: String, dataType: PolarDeviceDataType, settings: PolarSensorSetting?) -> Completable {
         // PPI and HR do not accept settings in normal offline mode.
         if dataType == .ppi || dataType == .hr {
-            NSLog("Polar360Controller: [\(dataType)] Starting offline recording with nil settings")
+            Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with nil settings")
             return polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: nil, secret: nil)
         }
         // ACC and temperature: request supported settings from the device (defaults to 2Hz for temp).
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, feature: dataType)
             .flatMapCompletable { resolvedSettings in
-                NSLog("Polar360Controller: [\(dataType)] Starting offline recording with settings: \(resolvedSettings)")
+                Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with settings: \(resolvedSettings)")
                 return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: resolvedSettings, secret: nil)
             }
     }
@@ -159,14 +160,14 @@ class Polar360Controller {
         guard let deviceId = currentDeviceId else { return }
         polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .subscribe(
-                onCompleted: { NSLog("Polar360Controller: Stopped offline recording for \(dataType)") },
-                onError: { error in NSLog("Polar360Controller: Could not stop offline recording for \(dataType): \(error)") }
+                onCompleted: { Napier.i("Polar360Controller: Stopped offline recording for \(dataType)") },
+                onError: { error in Napier.e("Polar360Controller: Could not stop offline recording for \(dataType): \(error)") }
             )
             .disposed(by: disposeBag)
     }
-    
+
     func background_offline_fetch(dataType: PolarDeviceDataType, scheduledTime : Date ,onSuccess: @escaping ([Any]) -> Void, onError: @escaping (Error) -> Void) {
-        
+
     }
 
     func stopOfflineRecordingAndFetch(dataType: PolarDeviceDataType, onSuccess: @escaping ([Any]) -> Void, onError: @escaping (Error) -> Void) {
@@ -177,18 +178,18 @@ class Polar360Controller {
             restoreDeviceIdFromBackground()
         }
         guard let deviceId = currentDeviceId else {
-            NSLog("Polar360Controller: [\(dataType)] currentDeviceId is nil — returning empty")
+            Napier.w("Polar360Controller: [\(dataType)] currentDeviceId is nil — returning empty")
             onSuccess([])
             return
         }
-        NSLog("Polar360Controller: [\(dataType)] Enqueueing stop+fetch for device=\(deviceId)")
+        Napier.d("Polar360Controller: [\(dataType)] Enqueueing stop+fetch for device=\(deviceId)")
         let task = buildStopAndFetch(deviceId: deviceId, dataType: dataType)
             .catch { error -> Single<[Any]> in
-                NSLog("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
+                Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
                 return .just([])
             }
             .do(onSuccess: { samples in
-                NSLog("Polar360Controller: [\(dataType)] Task completed with \(samples.count) items")
+                Napier.i("Polar360Controller: [\(dataType)] Task completed with \(samples.count) items")
                 onSuccess(samples)
             })
             .asObservable()
@@ -196,45 +197,45 @@ class Polar360Controller {
     }
 
     private func buildStopAndFetch(deviceId: String, dataType: PolarDeviceDataType) -> Single<[Any]> {
-        NSLog("Polar360Controller: [\(dataType)] Stopping recording on device=\(deviceId)")
+        Napier.d("Polar360Controller: [\(dataType)] Stopping recording on device=\(deviceId)")
         return polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .catch { error -> Completable in
-                NSLog("Polar360Controller: [\(dataType)] stopOfflineRecording API error (ignored): \(error)")
+                Napier.w("Polar360Controller: [\(dataType)] stopOfflineRecording API error (ignored): \(error)")
                 return Completable.empty()
             }
             .do(onCompleted: {
-                NSLog("Polar360Controller: [\(dataType)] Recording stopped, listing all recordings...")
+                Napier.d("Polar360Controller: [\(dataType)] Recording stopped, listing all recordings...")
             })
             .andThen(
                 polarConnector.polarApi.listOfflineRecordings(deviceId)
                     .do(onNext: { entry in
-                        NSLog("Polar360Controller: [\(dataType)] Listed entry: type=\(entry.type), date=\(entry.date), size=\(entry.size) — matches=\(entry.type == dataType)")
+                        Napier.d("Polar360Controller: [\(dataType)] Listed entry: type=\(entry.type), date=\(entry.date), size=\(entry.size) — matches=\(entry.type == dataType)")
                     }, onError: { error in
-                        NSLog("Polar360Controller: [\(dataType)] listOfflineRecordings error: \(error)")
+                        Napier.e("Polar360Controller: [\(dataType)] listOfflineRecordings error: \(error)")
                     }, onCompleted: {
-                        NSLog("Polar360Controller: [\(dataType)] listOfflineRecordings completed")
+                        Napier.d("Polar360Controller: [\(dataType)] listOfflineRecordings completed")
                     })
                     .filter { $0.type == dataType }
                     .concatMap { [weak self] entry -> Observable<[Any]> in
                         guard let self else { return Observable.just([]) }
-                        NSLog("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
+                        Napier.d("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
                         return self.polarConnector.polarApi.getOfflineRecord(deviceId, entry: entry, secret: nil)
                             .flatMap { [weak self] data -> Single<[Any]> in
                                 guard let self else { return .just([]) }
-                                print(data)
+                                Napier.d("\(data)")
                                 let samples = self.extractSamples(from: data)
-                                NSLog("Polar360Controller: [\(dataType)] Fetched \(samples.count) samples, removing entry...")
+                                Napier.d("Polar360Controller: [\(dataType)] Fetched \(samples.count) samples, removing entry...")
                                 return self.polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
                                     .do(onError: { error in
-                                        NSLog("Polar360Controller: [\(dataType)] removeOfflineRecord error: \(error)")
+                                        Napier.e("Polar360Controller: [\(dataType)] removeOfflineRecord error: \(error)")
                                     }, onCompleted: {
-                                        NSLog("Polar360Controller: [\(dataType)] Entry removed")
+                                        Napier.d("Polar360Controller: [\(dataType)] Entry removed")
                                     })
                                     .catch { _ in Completable.empty() }
                                     .andThen(Single.just(samples))
                             }
                             .catch { [weak self] error -> Single<[Any]> in
-                                NSLog("Polar360Controller: [\(dataType)] getOfflineRecord error: \(error) — removing unreadable entry")
+                                Napier.e("Polar360Controller: [\(dataType)] getOfflineRecord error: \(error) — removing unreadable entry")
                                 guard let self else { return .just([]) }
                                 return self.polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
                                     .catch { _ in Completable.empty() }
@@ -245,7 +246,7 @@ class Polar360Controller {
                     .toArray()
                     .map { $0.flatMap { $0 } }
                     .do(onSuccess: { all in
-                        NSLog("Polar360Controller: [\(dataType)] Total samples returned: \(all.count)")
+                        Napier.i("Polar360Controller: [\(dataType)] Total samples returned: \(all.count)")
                     })
             )
     }
@@ -256,17 +257,17 @@ class Polar360Controller {
             return accData.map {
                 acc_data(x: $0.x, y: $0.y, z: $0.z, timestamp: $0.timeStamp)
             };
-            
+
         case let .ppiOfflineRecordingData(ppiData, _):
             return ppiData.samples.map {
                 ppi_data(hr: $0.hr, timestamp: $0.timeStamp,
-                         ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate)
+                         ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate , skinContact:  $0.skinContactStatus)
             };
             /*
              ppiData.samples.map {
                 hr_data(hr: $0.hr, timestamp: $0.timeStamp)
              };*/
-            
+
         case let .temperatureOfflineRecordingData(tempData, _):
             Napier.e("polarTempdata \(tempData)")
             return tempData.samples.map {
@@ -352,21 +353,25 @@ class Polar360Controller {
         return polarConnector.polarApi.isFtuDone(identifier)
             .flatMapCompletable { ftuDone in
                 if ftuDone {
-                    NSLog("Polar 360 FTU already done")
+                    Napier.i("Polar 360 FTU already done")
                     return Completable.empty()
                 } else {
                     let dateFormatter = ISO8601DateFormatter()
                     dateFormatter.formatOptions = [.withInternetDateTime]
                     dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
 
+                    let profile = Polar360UserProfile.load()
+                    let birthDate = profile?.birthDate ?? Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()
+                    let maxHR = max(120, min(220, 220 - (profile?.age ?? 30)))
+
                     let ftuConfig = PolarFirstTimeUseConfig(
-                        gender: PolarFirstTimeUseConfig.Gender.female,
-                        birthDate: Date(),
-                        height: 180,
-                        weight: 80,
-                        maxHeartRate: 180,
+                        gender: profile?.gender.polarGender ?? .female,
+                        birthDate: birthDate,
+                        height: Float(profile?.heightCm ?? 170),
+                        weight: Float(profile?.weightKg ?? 70),
+                        maxHeartRate: Int(maxHR),
                         vo2Max: 80,
-                        restingHeartRate: 100,
+                        restingHeartRate: 60,
                         trainingBackground: PolarFirstTimeUseConfig.TrainingBackground.frequent,
                         deviceTime: dateFormatter.string(from: Date()),
                         typicalDay: PolarFirstTimeUseConfig.TypicalDay.mostlyMoving,

@@ -155,12 +155,12 @@ class Polar360PpiObservation(repos: MainRepository) :
         }
     }
 
-    data class ppi_data(val hr: Int, val timestamp: Long, val ppiInMs: Int, val ppiErrorEstimate: Int)
+    data class ppi_data(val hr: Int, val timestamp: Long, val ppiInMs: Int, val ppiErrorEstimate: Int , var skinContact: Boolean)
 
     fun processPpiSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<ppi_data> {
         if (samples.isNullOrEmpty()) return emptyList()
         return samples.map {
-            ppi_data(hr = it.hr, timestamp = it.timeStamp.toLong(), ppiInMs = it.ppi, ppiErrorEstimate = it.errorEstimate)
+            ppi_data(hr = it.hr, timestamp = it.timeStamp.toLong(), ppiInMs = it.ppi, ppiErrorEstimate = it.errorEstimate , skinContact =  it.skinContactStatus )
         }
     }
 

@@ -66,7 +66,7 @@ class IOSDataRecorder: DataRecorder {
                         persistScheduleId(scheduleId)
                     }
                 } catch {
-                    print(error)
+                    Napier.e("\(error)")
                 }
             }
         }
@@ -84,7 +84,7 @@ class IOSDataRecorder: DataRecorder {
                         persistScheduleId(id)
                     }
                 } catch {
-                    print(error)
+                    Napier.e("\(error)")
                 }
             }
         }
@@ -119,7 +119,7 @@ class IOSDataRecorder: DataRecorder {
             do {
                 try await AppDelegate.shared.observationManager.restartStillRunning()
             } catch {
-                print(error)
+                Napier.e("\(error)")
             }
         }
     }
@@ -129,7 +129,7 @@ class IOSDataRecorder: DataRecorder {
             do {
                 try await AppDelegate.shared.observationManager.updateTaskStates()
             } catch {
-                print("Cannot update task states: \(error)")
+                Napier.e("Cannot update task states: \(error)")
             }
         }
     }

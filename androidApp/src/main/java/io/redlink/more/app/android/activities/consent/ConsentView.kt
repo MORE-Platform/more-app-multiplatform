@@ -38,8 +38,8 @@ import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.registration.RegistrationService
 
 @Composable
-fun ConsentView(registrationService: RegistrationService) {
-    val model = remember { ConsentViewModel(registrationService) }
+fun ConsentView(registrationService: RegistrationService, onConsentAccepted: (() -> Unit)? = null) {
+    val model = remember { ConsentViewModel(registrationService, onConsentAccepted) }
     val permissions by model.coreModel.permissions.collectAsStateWithLifecycle()
     permissions?.let { permissionModel ->
         LazyColumn(

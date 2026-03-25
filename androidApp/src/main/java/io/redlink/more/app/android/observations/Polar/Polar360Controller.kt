@@ -24,42 +24,8 @@ import java.util.TimeZone
 object Polar360Controller {
     const val CONFIG_OFFLINE_RECORDING = "Offline_recording"
 
-    interface OfflineRecordingItem {
-        val timestamp: Long
-        fun toMap(): Map<String, Any>
-    }
 
-    data class accItem(
-        val x: Int,
-        val y: Int,
-        val z: Int,
-        override val timestamp: Long,
-    ) : OfflineRecordingItem {
-        override fun toMap() = mapOf("x" to x, "y" to y, "z" to z)
-    }
 
-    data class ppi_data(
-        val hr: Int,
-        override val timestamp: Long,
-        val ppiInMs: Int,
-        val ppiErrorEstimate: Int
-    ) : OfflineRecordingItem {
-        override fun toMap() = mapOf("hr" to hr, "ppiInMs" to ppiInMs, "ppiErrorEstimate" to ppiErrorEstimate)
-    }
-
-    data class tmpItem(
-        val temp: Float,
-        override val timestamp: Long,
-    ) : OfflineRecordingItem {
-        override fun toMap() = mapOf("temperature" to temp)
-    }
-
-    data class hr_data(
-        val hr: Int,
-        override val timestamp: Long
-    ) : OfflineRecordingItem {
-        override fun toMap() = mapOf("hr" to hr)
-    }
 
     private val polarConnector get() = MoreApplication.polarConnector!!
     private val bleManager = BluetoothStateManagement
@@ -284,15 +250,19 @@ object Polar360Controller {
                     sdf.timeZone = TimeZone.getTimeZone("UTC")
                     val deviceTime = sdf.format(calendar.time)
 
-                    val birthCalendar = Calendar.getInstance()
-                    birthCalendar.add(Calendar.YEAR, -30)
+                    val profile = Polar360UserProfile.load()
+                    val birthDate = profile?.birthDate ?: Calendar.getInstance().apply {
+                        add(Calendar.YEAR, -30)
+                    }.time
+                    val age = profile?.age ?: 30
+                    val maxHR = (220 - age).coerceIn(120, 220)
 
                     val ftuConfig = PolarFirstTimeUseConfig(
-                        gender = PolarFirstTimeUseConfig.Gender.MALE,
-                        birthDate = birthCalendar.time,
-                        height = 170.0f,
-                        weight = 70.0f,
-                        maxHeartRate = 190,
+                        gender = profile?.gender?.polarGender ?: PolarFirstTimeUseConfig.Gender.FEMALE,
+                        birthDate = birthDate,
+                        height = (profile?.heightCm ?: 170).toFloat(),
+                        weight = (profile?.weightKg ?: 70).toFloat(),
+                        maxHeartRate = maxHR,
                         vo2Max = 45,
                         restingHeartRate = 60,
                         trainingBackground = 30,

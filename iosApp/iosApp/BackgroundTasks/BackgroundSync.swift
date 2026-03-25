@@ -7,29 +7,12 @@ import Foundation
 import UIKit
 import shared
 
-/// Requests extended background execution time for a single async operation
-/// (e.g. a BLE stop-and-fetch chain) and automatically cancels when the app
-/// re-enters the foreground.
-///
-/// Usage:
-///   let sync = BackgroundSync()
-///   let finish = sync.begin(taskName: "Polar360HrStopAndFetch")
-///   doAsyncWork { finish() }  // call finish() when done
-///
-/// - `begin(taskName:)` calls `UIApplication.beginBackgroundTask` and registers
-///   a `willEnterForegroundNotification` observer that ends the task early if the
-///   user returns to the app.
-/// - `end()` is idempotent and thread-safe: UIKit calls are always dispatched to
-///   the main thread.
+
 final class BackgroundSync {
     private var taskID: UIBackgroundTaskIdentifier = .invalid
     private var observer: NSObjectProtocol?
 
-    // MARK: - Public API
-
-    /// Starts the background task and the foreground cancellation observer.
-    /// - Parameter taskName: Descriptive name shown in Instruments / crash logs.
-    /// - Returns: A completion closure — call it when the async work finishes.
+    
     func begin(taskName: String) -> () -> Void {
         onMain { [weak self] in
             guard let self, self.taskID == .invalid else { return }
@@ -50,8 +33,8 @@ final class BackgroundSync {
         return { [weak self] in self?.end() }
     }
 
-    /// Ends the background task and removes the foreground observer.
-    /// Safe to call multiple times and from any thread.
+ 
+    
     func end() {
         onMainAsync { [weak self] in
             guard let self else { return }

@@ -61,7 +61,7 @@ class Polar360HrObservation: Observation_ {
                             )
                         },
                         onError: { [weak self] error in
-                            NSLog("Polar360HrObservation: Failed to fetch pending offline data: \(error)")
+                            Napier.e("Polar360HrObservation: Failed to fetch pending offline data: \(error)")
                             guard let self else { return }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
                                 deviceId: deviceId, dataType: .ppi
@@ -71,9 +71,9 @@ class Polar360HrObservation: Observation_ {
                 } else {
                     self.hrDisposable = self.controller.getPolarApi()
                         .startHrStreaming(deviceId)
-                        .do(onSubscribe: { print("Polar360 HR stream subscribing...") })
+                        .do(onSubscribe: { Napier.d("Polar360 HR stream subscribing...") })
                         .catch { error in
-                            print("Polar360 HR stream failed to start: \(error)")
+                            Napier.e("Polar360 HR stream failed to start: \(error)")
                             return Observable.empty()
                         }
                         .subscribe(on: MainScheduler.instance)
@@ -86,7 +86,7 @@ class Polar360HrObservation: Observation_ {
                                 }
                             },
                             onError: { [weak self] error in
-                                print("Polar360 HR error: \(error)")
+                                Napier.e("Polar360 HR error: \(error)")
                                 if let self {
                                     self.showCannotStartNotification()
                                     Observation_.pauseObservation(self.observationType)
@@ -95,7 +95,7 @@ class Polar360HrObservation: Observation_ {
                         )
                 }
             
-        }, onError: { error in print("Polar360 HR setup error: \(error)") })
+        }, onError: { error in Napier.e("Polar360 HR setup error: \(error)") })
         return true
     }
 
@@ -127,7 +127,7 @@ class Polar360HrObservation: Observation_ {
                     }
                 },
                 onError: { error in
-                    NSLog("Polar360HrObservation: Failed to fetch offline data: \(error)")
+                    Napier.e("Polar360HrObservation: Failed to fetch offline data: \(error)")
                     finishBg()
                 }
             )
