@@ -761,13 +761,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur wichtige"
+            "value" : "Wichtig"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only Important"
+            "value" : "Important"
           }
         }
       }
@@ -2626,14 +2626,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht gelesene"
+            "state" : "needs_review",
+            "value" : "Ungelesen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not read"
+            "value" : "Unread"
           }
         }
       }
