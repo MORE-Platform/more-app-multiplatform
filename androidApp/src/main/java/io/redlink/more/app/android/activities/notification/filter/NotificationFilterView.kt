@@ -27,8 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.redlink.more.Shared.Companion.getSharedResource
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.getStringResourceByName
+import io.redlink.more.app.android.extensions.sharedResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -70,7 +73,7 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = entry.key.type,
+                        description = sharedResource(entry.key.type),
                         color = MoreColors.Secondary
                     )
                 }
@@ -78,5 +81,4 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
     }
-
 }

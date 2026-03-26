@@ -33,6 +33,7 @@ import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.tasks.ObservationActionButton
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.getStringResourceByName
 import io.redlink.more.app.android.extensions.jvmLocalDateTime
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTitle
@@ -81,7 +82,7 @@ fun ScheduleListItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             BasicText(
-                text = scheduleModel().observationType,
+                text = getStringResourceByName(scheduleModel().observationType.replace("-", "_")),
                 color = MoreColors.Secondary
             )
             Row(horizontalArrangement = Arrangement.End) {

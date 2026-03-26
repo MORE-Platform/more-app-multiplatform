@@ -31,14 +31,18 @@ struct NotificationFilterView: View {
                     .padding(15)
                 Divider()
 
-                ForEach(viewModel.allFilters.keys.sorted {
-                    $0.sortIndex < $1.sortIndex
-                }, id: \.self) { filter in
-                    if let selected = viewModel.allFilters[filter] {
+                ForEach(
+                    viewModel.allFilters.keys.sorted { $0.sortIndex < $1.sortIndex },
+                    id: \.name
+                ) { filter in
+                    if let selected = viewModel.allFilters.get(key: filter) {
                         Button {
                             viewModel.toggleFilters(filter: filter)
                         } label: {
-                            MoreFilterOption(option: filter.type, isSelected: .constant(selected))
+                            MoreFilterOption(
+                                option: filter.type.localize(),
+                                isSelected: .constant(selected)
+                            )
                             Spacer()
                         }
                         .buttonStyle(.borderless)
