@@ -119,7 +119,7 @@ class Polar360PpiObservation: Observation_ {
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
-                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp] as [String: Any] }
+                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact" : $0.skinContact] as [String: Any] }
                     self.storeData(data: ["polar360ppidata": processed], timestamp: -1) {
                         onCompletion()
                         finishBg()

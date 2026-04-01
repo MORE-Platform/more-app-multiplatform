@@ -112,7 +112,7 @@ class Polar360HrObservation(repos: MainRepository) :
                                 if (polarData.samples.isNotEmpty()) {
                                     val sample = polarData.samples[0]
                                     Log.d(TAG, "HR: ${sample.hr}")
-                                    storeData(hr_data(hr = sample.hr, ts = 0L))
+                                    storeData(hr_data(hr = sample.hr, timestamp = 0L, skinContact = sample.contactStatus))
                                 }
                             },
                             { error ->
@@ -163,11 +163,11 @@ class Polar360HrObservation(repos: MainRepository) :
         }
     }
 
-    data class hr_data(val hr: Int, val ts: Long)
+    data class hr_data(val hr: Int, val timestamp: Long, val skinContact: Boolean)
 
     fun processHrSamples(samples: List<PolarPpiData.PolarPpiSample>?): List<hr_data> {
         if (samples.isNullOrEmpty()) return emptyList()
-        return samples.map { hr_data(hr = it.hr, ts = it.timeStamp.toLong()) }
+        return samples.map { hr_data(hr = it.hr, timestamp = it.timeStamp.toLong(), skinContact = it.skinContactStatus) }
     }
 
     override fun observerErrors(): Set<String> {

@@ -79,9 +79,11 @@ class Polar360Controller {
     class hr_data: Codable {
         let hr: Int
         let timestamp: UInt64
-        init(hr:Int, timestamp:UInt64){
+        let skinContact : Bool
+        init(hr:Int, timestamp:UInt64 , skinContact : Bool){
             self.hr = hr
             self.timestamp = timestamp
+            self.skinContact = skinContact
         }
     }
 
