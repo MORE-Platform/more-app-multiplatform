@@ -48,6 +48,6 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         if (!coreFilterViewModel.filterActive()) {
             return sharedResource(SharedRes.strings.more_filter_notification_all)
         }
-        return coreFilterViewModel.activeTypes.value.joinToString(", ") { sharedResource(it) }
+        return coreFilterViewModel.activeTypes.value.joinToString(", ") { it }
     }
 }

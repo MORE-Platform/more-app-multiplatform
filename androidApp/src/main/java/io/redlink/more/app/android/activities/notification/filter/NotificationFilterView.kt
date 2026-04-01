@@ -73,7 +73,7 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = sharedResource(entry.key.type),
+                        description = entry.key.type,
                         color = MoreColors.Secondary
                     )
                 }

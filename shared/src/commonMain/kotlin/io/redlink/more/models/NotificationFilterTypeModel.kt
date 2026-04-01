@@ -13,9 +13,9 @@ package io.redlink.more.models
 import dev.icerock.moko.resources.StringResource
 import io.redlink.more.SharedRes
 
-enum class NotificationFilterTypeModel(val type: StringResource, val sortIndex: Int) {
-    ALL(SharedRes.strings.more_filter_notification_all, 0),
-    UNREAD(SharedRes.strings.more_filter_notification_unread, 1),
-    IMPORTANT(SharedRes.strings.more_filter_notification_important, 2);
+enum class NotificationFilterTypeModel(val type: String, val sortIndex: Int) {
+    ALL("All", 0),
+    UNREAD("Unread", 1),
+    IMPORTANT("Important", 2);
 
 }

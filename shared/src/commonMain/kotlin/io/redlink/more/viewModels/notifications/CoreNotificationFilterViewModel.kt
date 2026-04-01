@@ -30,7 +30,7 @@ open class CoreNotificationFilterViewModel : CoreViewModel() {
     val filters: StateFlow<Map<NotificationFilterTypeModel, Boolean>> = _filters
 
     @NativeCoroutines
-    val activeTypes: StateFlow<Set<StringResource>> = filters.mapState(viewModelScope) {
+    val activeTypes: StateFlow<Set<String>> = filters.mapState(viewModelScope) {
         it.filter { it.value }.map { it.key.type }.toSet()
     }
 
