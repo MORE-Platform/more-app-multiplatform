@@ -10,9 +10,6 @@
  */
 package io.redlink.more.models
 
-import dev.icerock.moko.resources.StringResource
-import io.redlink.more.SharedRes
-
 enum class NotificationFilterTypeModel(val type: String, val sortIndex: Int) {
     ALL("All", 0),
     UNREAD("Unread", 1),

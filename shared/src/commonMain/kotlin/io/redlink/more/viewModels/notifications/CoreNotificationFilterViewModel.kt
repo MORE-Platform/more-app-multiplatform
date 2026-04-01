@@ -11,8 +11,6 @@
 package io.redlink.more.viewModels.notifications
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import dev.icerock.moko.resources.StringResource
-import io.redlink.more.Shared.Companion.getSharedResource
 import io.redlink.more.extensions.mapState
 import io.redlink.more.extensions.set
 import io.redlink.more.models.NotificationFilterTypeModel

@@ -13,12 +13,8 @@ package io.redlink.more.app.android.activities.notification
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import io.redlink.more.Shared.Companion.getSharedResource
-import io.redlink.more.SharedRes
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.extensions.sharedResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.models.NotificationModel
 import io.redlink.more.services.notification.NotificationActionHandler
@@ -46,7 +42,7 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
 
     fun getFilterString(): String {
         if (!coreFilterViewModel.filterActive()) {
-            return sharedResource(SharedRes.strings.more_filter_notification_all)
+            return stringResource(R.string.more_filter_notification_all)
         }
         return coreFilterViewModel.activeTypes.value.joinToString(", ") { it }
     }
