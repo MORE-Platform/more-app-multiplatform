@@ -10,6 +10,7 @@
  */
 package io.redlink.more
 
+import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.tmapps.konnection.Konnection
@@ -418,5 +419,7 @@ open class Shared(
         val HOST = StringDesc.Resource(SharedRes.strings.deeplink_host)
 
         fun konnectionInstance() = Konnection.instance
+
+        fun getSharedResource(id: StringResource): StringDesc = StringDesc.Resource(id)
     }
 }

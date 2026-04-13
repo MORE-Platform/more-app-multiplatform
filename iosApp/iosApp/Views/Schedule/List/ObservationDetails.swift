@@ -28,7 +28,7 @@ struct ObservationDetails: View {
                     .font(Font.more.headline)
                     .foregroundColor(Color.more.primary)
                     .padding(.bottom, 1)
-                Text(observationType)
+                Text(LocalizedStringKey(observationType))
                     .foregroundColor(Color.more.secondary)
             }
             .padding(4)

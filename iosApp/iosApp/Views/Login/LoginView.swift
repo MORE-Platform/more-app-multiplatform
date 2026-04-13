@@ -45,7 +45,7 @@ struct LoginView: View {
                 MoreTextFieldHL(
                     isSmTextfield: .constant(false),
                     headerText: "participation_key_entry",
-                    inputPlaceholder: .constant("participation_key_entry"),
+                    inputPlaceholder: .constant("participation_key_entry_placeholder"),
                     input: $model.token,
                     capitalization: .uppercase,
                     autoCorrectDisabled: true,
@@ -121,7 +121,7 @@ struct LoginView: View {
                         expanded: $showEndpoint,
                         isSmTextfield: .constant(true),
                         headerText: .constant("study_endpoint_headling"),
-                        inputPlaceholder: .constant("enter_study_endpoint"),
+                        inputPlaceholder: .constant("enter_study_endpoint_placeholder"),
                         input: $model.endpoint,
                         capitalization: .lowercase,
                         textType: .URL

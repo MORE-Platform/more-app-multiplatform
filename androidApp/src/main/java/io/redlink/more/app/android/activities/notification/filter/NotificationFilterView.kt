@@ -78,5 +78,4 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
             MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
     }
-
 }

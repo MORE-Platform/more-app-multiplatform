@@ -13,6 +13,8 @@ package io.redlink.more.app.android.extensions
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import dev.icerock.moko.resources.StringResource
+import io.redlink.more.Shared.Companion.getSharedResource
 import io.redlink.more.app.android.BuildConfig
 import io.redlink.more.app.android.MoreApplication
 
@@ -29,5 +31,8 @@ fun getSecureID(context: Context) =
     Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 
 fun getProductName() = Build.PRODUCT
+
+fun sharedResource(id: StringResource): String =
+    getSharedResource(id).toString(context = MoreApplication.appContext!!)
 
 const val applicationId = BuildConfig.APPLICATION_ID

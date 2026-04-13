@@ -40,12 +40,17 @@ class NotificationViewModel: ObservableObject {
         .store(in: &cancellables)
 
         createPublisher(for: filterViewModel.activeTypes)
-        .map { (types: Set<String>) -> String in
-            guard !types.isEmpty else {
-                return ""
+            .map { (types: Set<String>) -> String in
+                guard !types.isEmpty else {
+                    return ""
+                }
+
+                let localized = types
+                    .sorted()
+                    .map { String(localized: String.LocalizationValue($0)) }
+
+                return ListFormatter.localizedString(byJoining: localized)
             }
-            return types.sorted().joined(separator: ", ")
-        }
         .removeDuplicates()
         .receive(on: DispatchQueue.main)
         .sink(receiveCompletion: { _ in }) { [weak self] text in

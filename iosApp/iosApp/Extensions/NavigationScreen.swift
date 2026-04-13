@@ -70,7 +70,7 @@ enum NavigationScreen: CaseIterable, Equatable, Identifiable {
         case .questionObservationThanks:
             return NavigationScreenValues(screenName: "Question Thanks", navigationLink: .questionnaireResponse, fullScreen: true)
         case .dashboardFilter:
-            return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: .dashboard)
+            return NavigationScreenValues(screenName: "Dashboard Filter", navigationLink: .observationFilter)
         case .notificationFilter:
             return NavigationScreenValues(screenName: "Notification Filter", navigationLink: .notificationFilter)
         case .pastObservations:
@@ -142,7 +142,8 @@ extension NavigationScreen {
     }
 
     func localize() -> String {
-        return values.screenName
+        let localizedKey = String.LocalizationValue(stringLiteral: values.screenName)
+        return String(localized: localizedKey)
     }
 
     func generateURL(withParameters params: [NavigationRouteParameter: String]) -> URL? {
