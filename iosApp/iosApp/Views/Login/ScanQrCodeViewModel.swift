@@ -108,8 +108,7 @@ class ScanQRCodeViewModel: NSObject, ObservableObject {
 
     func presentError(errorDescription: String?) {
         if errorDescription != nil {
-            print("Error when setting up camera: ")
-            print(errorDescription! as String)
+            Napier.e("Error when setting up camera: \(errorDescription!)")
         }
 
         DispatchQueue.main.async {

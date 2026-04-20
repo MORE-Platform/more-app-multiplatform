@@ -59,7 +59,7 @@ struct RadioButtonField_Preview: PreviewProvider {
     static var previews: some View {
         RadioButtonField(id: "Test", label: "Test", isMarked: false,
                          callback: { selected in
-                             print("Selected item is \(selected)")
+                             Napier.d("Selected item is \(selected)")
                          })
     }
 }

@@ -30,6 +30,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     static let navigationScreenHandler = NavigationModalState(repos: repositories)
     static let polarConnector = PolarConnector()
     static let dataUploadManager = DataUploadManager()
+    static let dataRecorder = IOSDataRecorder()
     static let shared: Shared = {
         let dataManager = iOSObservationDataManager(repository: repositories, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
 
@@ -40,7 +41,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             observationDataManager: dataManager,
             mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager),
-            dataRecorder: IOSDataRecorder(),
+            dataRecorder: dataRecorder,
             reminderNotificationSchedulingLimit: 30,
             connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
         )
@@ -61,6 +62,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DataUploadBackgroundTask.setupBackgroundTasks()
         DailyBackgroundTask.setupBackgroundTasks()
         ObservationReminderBackgroundTask.setupBackgroundTasks()
+        Polar360SyncBackgroundTask.setupBackgroundTasks()
 
         let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 
@@ -72,31 +74,33 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Notification Received: \(userInfo)")
+        Napier.d("Notification Received: \(userInfo)")
         AppDelegate.shared.notificationManager.handleNotificationDataAsync(data: userInfo.notNilStringDictionary())
 
         completionHandler(.newData)
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Did register for Remote Notifications With Device Token: \(String(decoding: deviceToken, as: UTF8.self))")
+        Napier.d("Did register for Remote Notifications With Device Token: \(String(decoding: deviceToken, as: UTF8.self))")
         Messaging.messaging().apnsToken = deviceToken
     }
 
     private func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("App did fail to register for remote notifications: \(error)")
+        Napier.e("App did fail to register for remote notifications: \(error)")
     }
 
     func cancelBackgroundTasks() {
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DataUploadBackgroundTask.taskID)
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: DailyBackgroundTask.taskID)
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: ObservationReminderBackgroundTask.taskID)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Polar360SyncBackgroundTask.taskID)
     }
 
     func scheduleTasks() {
         DataUploadBackgroundTask.schedule()
         DailyBackgroundTask.schedule()
         ObservationReminderBackgroundTask.schedule()
+        Polar360SyncBackgroundTask.schedule()
     }
 
     static func registerForNotifications() {

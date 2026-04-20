@@ -20,9 +20,9 @@ struct ConsentView: View {
     @StateObject private var viewModel: ConsentViewModel
     @ObservedObject private var registration: RegistrationObservable
 
-    init(registration: RegistrationObservable) {
+    init(registration: RegistrationObservable, onConsentAccepted: (() -> Void)? = nil) {
         _registration = ObservedObject(wrappedValue: registration)
-        _viewModel = StateObject(wrappedValue: ConsentViewModel(registrationService: registration.service))
+        _viewModel = StateObject(wrappedValue: ConsentViewModel(registrationService: registration.service, onConsentAccepted: onConsentAccepted))
     }
 
     var body: some View {

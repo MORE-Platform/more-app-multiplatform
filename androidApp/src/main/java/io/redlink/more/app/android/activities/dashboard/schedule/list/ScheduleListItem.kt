@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -66,16 +65,7 @@ fun ScheduleListItem(
                 text = scheduleModel().observationTitle,
                 color = MoreColors.Primary
             )
-            if (scheduleModel().scheduleState == ScheduleState.RUNNING) {
-                CircularProgressIndicator(
-                    color = MoreColors.Approved,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .height(15.dp)
-                        .width(15.dp)
-                )
-            }
+
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

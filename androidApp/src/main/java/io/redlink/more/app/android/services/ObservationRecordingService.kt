@@ -33,6 +33,7 @@ import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.observations.ObservationManager
 import io.redlink.more.scopes.Scope
 import io.redlink.more.viewModels.ViewManager
+import java.util.Collections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -324,9 +325,11 @@ class ObservationRecordingService : Service() {
     }
 
     private fun stopAll() {
-        observationManager?.stopAll()
-        runningSchedules.clear()
-        if (observationManager?.hasRunningTasks() == false) {
+        observationManager?.stopAllWithCompletion {
+            runningSchedules.clear()
+            stopService()
+        } ?: run {
+            runningSchedules.clear()
             stopService()
         }
     }
@@ -511,7 +514,7 @@ class ObservationRecordingService : Service() {
         var running = false
             private set
 
-        private val runningSchedules = mutableSetOf<String>()
+        private val runningSchedules = Collections.synchronizedSet(mutableSetOf<String>())
 
         private val pendingScheduleIds = mutableSetOf<String>()
 

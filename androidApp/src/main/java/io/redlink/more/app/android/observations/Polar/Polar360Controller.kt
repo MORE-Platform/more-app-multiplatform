@@ -1,0 +1,280 @@
+package io.redlink.more.app.android.observations.Polar
+
+import android.content.ContentValues.TAG
+import android.util.Log
+import com.polar.sdk.api.PolarBleApi
+import com.polar.sdk.api.model.PolarFirstTimeUseConfig
+import com.polar.sdk.api.model.PolarSensorSetting
+import com.polar.sdk.api.model.PolarOfflineRecordingData
+import io.github.aakira.napier.Napier
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
+import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.database.entities.BluetoothDeviceEntity
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
+
+object Polar360Controller {
+    const val CONFIG_OFFLINE_RECORDING = "Offline_recording"
+
+
+
+
+    private val polarConnector get() = MoreApplication.polarConnector!!
+    private val bleManager = BluetoothStateManagement
+    private var ftuDisposable: Disposable? = null
+    private var sdkModeEnabled = false
+    private var currentDeviceId: String? = null
+    private val bleScheduler = Schedulers.single()
+    private val operationQueue = PublishSubject.create<Single<List<Any>>>().toSerialized()
+
+    init {
+        operationQueue
+            .doOnNext { Napier.d(tag = "Polar360Controller::queue") { "Task enqueued, processing next..." } }
+            .concatMapSingle { it }
+            .subscribe(
+                { result -> Napier.d(tag = "Polar360Controller::queue") { "Task completed with ${result.size} items" } },
+                { error -> Napier.e(tag = "Polar360Controller::queue") { "BLE operation queue error: ${error.message}" } }
+            )
+    }
+
+
+
+
+    fun findPolar360Device(): BluetoothDeviceEntity? {
+        return bleManager.connectedDevices.value.firstOrNull {
+            val name = it.deviceName?.lowercase() ?: return@firstOrNull false
+            name.contains("polar") && name.contains("360") && it.address != null
+        }
+    }
+
+    fun ensureReady(deviceId: String, offlineMode: Boolean, onReady: () -> Unit, onError: (Throwable) -> Unit) {
+        currentDeviceId = deviceId
+        ftuDisposable?.dispose()
+        ftuDisposable = checkIfDeviceIsSetup(deviceId)
+            .subscribeOn(bleScheduler)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ setupDone ->
+                if (setupDone) {
+                    if (offlineMode) {
+                        disableSdkMode(deviceId)
+                    } else {
+                        enableSdkMode(deviceId)
+                    }
+                    onReady()
+                } else {
+                    Log.e(TAG, "Polar 360 FTU failed")
+                    onError(RuntimeException("First time use setup failed"))
+                }
+            }, { error ->
+                Log.e(TAG, "Polar 360 setup check failed: ${error.localizedMessage}")
+                onError(error)
+            })
+    }
+
+    fun startOfflineRecording(
+        deviceId: String,
+        dataType: PolarBleApi.PolarDeviceDataType,
+        settings: PolarSensorSetting? = null
+    ): Disposable {
+        Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Starting offline recording on device=$deviceId" }
+        return polarConnector.polarApi.disableSDKMode(deviceId)
+            .doOnError { e -> Napier.w(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] disableSDKMode error (ignored): ${e.message}" } }
+            .onErrorComplete()
+            .doOnComplete { Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] SDK mode disabled, stopping any existing recording..." } }
+            .andThen(
+                polarConnector.polarApi.stopOfflineRecording(deviceId, dataType)
+                    .doOnError { e -> Napier.w(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] pre-stop error (ignored): ${e.message}" } }
+                    .onErrorComplete()
+            )
+            .andThen(resolveAndStartOfflineRecording(deviceId, dataType, settings))
+            .subscribeOn(bleScheduler)
+            .observeOn(bleScheduler)
+            .subscribe(
+                { Napier.d(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Offline recording started successfully" } },
+                { error -> Napier.e(tag = "Polar360Controller::startOfflineRecording") { "[$dataType] Failed to start: ${error.message}" } }
+            )
+    }
+
+    private fun resolveAndStartOfflineRecording(
+        deviceId: String,
+        dataType: PolarBleApi.PolarDeviceDataType,
+        settings: PolarSensorSetting?
+    ): Completable {
+        if (dataType == PolarBleApi.PolarDeviceDataType.HR || dataType == PolarBleApi.PolarDeviceDataType.PPI) {
+            return polarConnector.polarApi.startOfflineRecording(deviceId, dataType)
+        }
+        if (settings != null) {
+            return polarConnector.polarApi.startOfflineRecording(deviceId, dataType, settings, null)
+        }
+        return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, dataType)
+            .flatMapCompletable { resolvedSettings ->
+                Napier.d(tag = "Polar360Controller::$dataType") { "Using settings: ${resolvedSettings.settings}" }
+                polarConnector.polarApi.startOfflineRecording(deviceId, dataType, resolvedSettings, null)
+            }
+    }
+
+    fun stopOfflineRecording(dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
+        val deviceId = currentDeviceId ?: run {
+            Napier.w(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] currentDeviceId is null — returning empty" }
+            return Single.just(emptyList())
+        }
+        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Enqueueing stop+fetch for device=$deviceId" }
+        return Single.create { emitter ->
+            val task = doStopOfflineRecording(deviceId, dataType)
+                .doOnSuccess { emitter.onSuccess(it) }
+                .doOnError { emitter.onError(it) }
+                .onErrorReturnItem(emptyList())
+            operationQueue.onNext(task)
+        }
+    }
+
+    private fun doStopOfflineRecording(deviceId: String, dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
+        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Stopping recording on device=$deviceId" }
+        return polarConnector.polarApi.stopOfflineRecording(deviceId, dataType)
+            .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Recording stopped, listing all recordings..." } }
+            .doOnError { e -> Napier.w(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] stopOfflineRecording API error (ignored): ${e.message}" } }
+            .onErrorComplete()
+            .andThen(
+                polarConnector.polarApi.listOfflineRecordings(deviceId)
+                    .doOnNext { entry ->
+                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                            "[$dataType] Listed entry: type=${entry.type}, date=${entry.date}, size=${entry.size} — matches=${entry.type == dataType}"
+                        }
+                    }
+                    .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] listOfflineRecordings completed" } }
+                    .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] listOfflineRecordings error: ${e.message}" } }
+                    .filter { entry -> entry.type == dataType }
+                    .concatMap { entry ->
+                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Fetching record: date=${entry.date}, size=${entry.size}" }
+                        polarConnector.polarApi.getOfflineRecord(deviceId, entry, null)
+                            .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] getOfflineRecord error: ${e.message}" } }
+                            .flatMap { data ->
+                                val samples: List<Any> = when (data) {
+                                    is PolarOfflineRecordingData.PpiOfflineRecording -> data.data.samples.also {
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] PPI record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
+                                    }
+                                    is PolarOfflineRecordingData.AccOfflineRecording -> data.data.samples.also {
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] ACC record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
+                                    }
+                                    is PolarOfflineRecordingData.TemperatureOfflineRecording -> data.data.samples.also {
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] TEMP record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
+                                    }
+                                    is PolarOfflineRecordingData.PpgOfflineRecording -> data.data.samples.also {
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] PPG record: ${it.size} samples"
+                                        }
+                                    }
+                                    else -> emptyList<Any>().also {
+                                        Napier.e(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] Unhandled data type: ${data::class.simpleName}"
+                                        }
+                                    }
+                                }
+                                Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Removing entry from device..." }
+                                polarConnector.polarApi.removeOfflineRecord(deviceId, entry)
+                                    .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Entry removed" } }
+                                    .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] removeOfflineRecord error: ${e.message}" } }
+                                    .andThen(Single.just(samples))
+                            }
+                            .toFlowable()
+                    }
+                    .toList()
+                    .map { it.flatten() }
+                    .doOnSuccess { all -> Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Total samples returned: ${all.size}" } }
+            )
+            .subscribeOn(bleScheduler)
+            .observeOn(bleScheduler)
+    }
+
+    fun isOfflineRecordingMode(config: Map<String, Any>): Boolean {
+        Napier.d(tag =  "Polar360Controller:isOfflineRecordingMode"){config.toString()}
+        return config[CONFIG_OFFLINE_RECORDING] == true
+                || config[CONFIG_OFFLINE_RECORDING]?.toString()?.lowercase() == "true"
+    }
+
+    fun getCurrentDeviceId(): String? = currentDeviceId
+
+    private fun enableSdkMode(deviceId: String) {
+        if (!sdkModeEnabled) {
+            try {
+                polarConnector.polarApi.enableSDKMode(deviceId)
+                sdkModeEnabled = true
+                Napier.d(tag = "Polar360Controller") { "SDK mode enabled for $deviceId" }
+            } catch (e: Exception) {
+                Napier.e(tag = "Polar360Controller") { "Failed to enable SDK mode: ${e.message}" }
+            }
+        }
+    }
+
+    private fun disableSdkMode(deviceId: String) {
+        if (sdkModeEnabled) {
+            try {
+                polarConnector.polarApi.disableSDKMode(deviceId)
+                sdkModeEnabled = false
+                Napier.d(tag = "Polar360Controller") { "SDK mode disabled for $deviceId" }
+            } catch (e: Exception) {
+                Napier.e(tag = "Polar360Controller") { "Failed to disable SDK mode: ${e.message}" }
+            }
+        }
+    }
+
+    fun onDeviceDisconnected() {
+        sdkModeEnabled = false
+        currentDeviceId = null
+    }
+
+    fun getPolarApi() = polarConnector.polarApi
+
+    private fun checkIfDeviceIsSetup(deviceId: String): Single<Boolean> {
+        return polarConnector.polarApi.isFtuDone(deviceId)
+            .flatMap { ftuDone ->
+                if (ftuDone) {
+                    Single.just(true)
+                } else {
+                    val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+                    sdf.timeZone = TimeZone.getTimeZone("UTC")
+                    val deviceTime = sdf.format(calendar.time)
+
+                    val profile = Polar360UserProfile.load()
+                    val birthDate = profile?.birthDate ?: Calendar.getInstance().apply {
+                        add(Calendar.YEAR, -30)
+                    }.time
+                    val age = profile?.age ?: 30
+                    val maxHR = (220 - age).coerceIn(120, 220)
+
+                    val ftuConfig = PolarFirstTimeUseConfig(
+                        gender = profile?.gender?.polarGender ?: PolarFirstTimeUseConfig.Gender.FEMALE,
+                        birthDate = birthDate,
+                        height = (profile?.heightCm ?: 170).toFloat(),
+                        weight = (profile?.weightKg ?: 70).toFloat(),
+                        maxHeartRate = maxHR,
+                        vo2Max = 45,
+                        restingHeartRate = 60,
+                        trainingBackground = 30,
+                        deviceTime = deviceTime,
+                        typicalDay = PolarFirstTimeUseConfig.TypicalDay.MOSTLY_SITTING,
+                        sleepGoalMinutes = 480
+                    )
+
+                    polarConnector.polarApi.doFirstTimeUse(deviceId, ftuConfig)
+                        .toSingleDefault(true)
+                        .onErrorReturnItem(false)
+                }
+            }
+    }
+}

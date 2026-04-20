@@ -57,7 +57,7 @@ class ContentViewModel: ObservableObject {
         .first(where: { $0 == true })
         .receive(on: DispatchQueue.main)
         .sink { completion in
-            print("Credentials have loaded with completion: \(completion)")
+            Napier.d("Credentials have loaded with completion: \(completion)")
         } receiveValue: { [weak self] loaded in
             self?.credentialsLoaded = loaded
         }

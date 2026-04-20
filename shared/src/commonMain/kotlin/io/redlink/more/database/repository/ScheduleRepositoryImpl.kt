@@ -141,6 +141,7 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
                 val stateUpdates = mutableListOf<Pair<String, ScheduleState>>()
                 val activeIds = mutableSetOf<String>()
                 val pausingIds = mutableSetOf<String>()
+                val stoppingIds = mutableSetOf<String>()
 
                 schedules.forEach { scheduleEntity ->
                     val newState = scheduleEntity.updateState()
@@ -148,6 +149,9 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
                     if (scheduleEntity.getState() != newState) {
                         stateUpdates.add(scheduleEntity.scheduleId to newState)
                         Napier.i { "State update for Entity: $scheduleEntity; ${scheduleEntity.getState()} -> $newState" }
+                        if (scheduleEntity.getState().running() && newState.completed()) {
+                            stoppingIds.add(scheduleEntity.scheduleId)
+                        }
                     }
 
                     if (newState == ScheduleState.RUNNING
@@ -171,6 +175,11 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
                     appDatabase.scheduleDao().updateState(scheduleId, newState.name)
                 }
 
+                if (stoppingIds.isNotEmpty()) {
+                    stoppingIds.forEach { scheduleId ->
+                        dataRecorder.stop(scheduleId)
+                    }
+                }
                 if (activeIds.isNotEmpty()) {
                     dataRecorder.startMultiple(activeIds)
                 }

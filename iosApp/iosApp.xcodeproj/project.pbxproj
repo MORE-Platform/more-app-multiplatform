@@ -21,6 +21,8 @@
 		07FD293E29D58F7C00853108 /* ExpandableContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FD293D29D58F7C00853108 /* ExpandableContent.swift */; };
 		1F0026DB29CC8E730034EF65 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DA29CC8E730034EF65 /* AppDelegate.swift */; };
 		1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */; };
+		BB1A2B3C4D5E6F7A8B9C0002 /* BackgroundSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */; };
+		BB1A2B3C4D5E6F7A8B9C0004 /* Polar360SyncBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */; };
 		1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */; };
 		1F09A02C29F69E660001177F /* BluetoothConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */; };
 		1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */; };
@@ -114,7 +116,6 @@
 		1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */; };
 		1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */; };
 		1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */; };
-		1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */; };
 		1FB338B72E853936006BA594 /* StudyLoadingErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */; };
 		1FBD513A2BBC3E2D0029D185 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD51392BBC3E2D0029D185 /* FirebaseMessaging */; };
 		1FBD513C2BBC3E8A0029D185 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD513B2BBC3E8A0029D185 /* FirebaseCrashlytics */; };
@@ -136,6 +137,13 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		3007C4E152846B66C9FD5A69 /* SetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3007C5E9B53BC561D105D2B3 /* SetExtension.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		AA20000000000000000000C1 /* Polar360Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C1 /* Polar360Controller.swift */; };
+		AA20000000000000000000C2 /* Polar360HrObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C2 /* Polar360HrObservation.swift */; };
+		AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C3 /* Polar360AccObservation.swift */; };
+		AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C4 /* Polar360TempObservation.swift */; };
+		AA20000000000000000000C5 /* Polar360PpiObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C5 /* Polar360PpiObservation.swift */; };
+		AA20000000000000000000C6 /* Polar360UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C6 /* Polar360UserProfile.swift */; };
+		AA20000000000000000000C7 /* Polar360ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C7 /* Polar360ProfileFormView.swift */; };
 		B70888492DF2D4290048A4AC /* QRCodeScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */; };
 		B708884B2DF2E6730048A4AC /* ScanQrCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */; };
 		B708884D2DF2EE600048A4AC /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */; };
@@ -170,6 +178,7 @@
 		B79DBA5729D3484D00A1F547 /* MoreFilterOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */; };
 		B79DBA5929D349DB00A1F547 /* MoreFilterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */; };
 		B7B4888229FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */; };
+		C5DDA7B32F6806E7003C0FDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C5DDA7B22F6806E7003C0FDB /* GoogleService-Info.plist */; };
 		ED16C5E729B72E2F00DA8AFE /* MoreFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */; };
 		ED474B4C29FAAC7A0077AD5C /* QuestionThankYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED474B4B29FAAC7A0077AD5C /* QuestionThankYouView.swift */; };
 		ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A7F3E29DC405B00E266EC /* FCMService.swift */; };
@@ -240,6 +249,8 @@
 		07FD293D29D58F7C00853108 /* ExpandableContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableContent.swift; sourceTree = "<group>"; };
 		1F0026DA29CC8E730034EF65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskHandler.swift; sourceTree = "<group>"; };
+		BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSync.swift; sourceTree = "<group>"; };
+		BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360SyncBackgroundTask.swift; sourceTree = "<group>"; };
 		1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadManager.swift; sourceTree = "<group>"; };
 		1F09A02B29F69E660001177F /* BluetoothConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionView.swift; sourceTree = "<group>"; };
 		1F09A02D29F69E710001177F /* BluetoothConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothConnectionViewModel.swift; sourceTree = "<group>"; };
@@ -330,7 +341,6 @@
 		1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreColors.xcassets; sourceTree = "<group>"; };
 		1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterViewModel.swift; sourceTree = "<group>"; };
 		1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterView.swift; sourceTree = "<group>"; };
-		1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyLoadingErrorView.swift; sourceTree = "<group>"; };
 		1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataUploadBackgroundTask.swift; sourceTree = "<group>"; };
 		1FC9574B2C072B7900EB92D6 /* More-Notification-Service-Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "More-Notification-Service-Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -353,6 +363,13 @@
 		7555FF7B242A565900829871 /* More.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = More.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA10000000000000000000C1 /* Polar360Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360Controller.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C2 /* Polar360HrObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360HrObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C3 /* Polar360AccObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360AccObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C4 /* Polar360TempObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360TempObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C5 /* Polar360PpiObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360PpiObservation.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C6 /* Polar360UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360UserProfile.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C7 /* Polar360ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polar360ProfileFormView.swift; sourceTree = "<group>"; };
 		B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanDelegate.swift; sourceTree = "<group>"; };
 		B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQrCodeViewModel.swift; sourceTree = "<group>"; };
 		B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
@@ -387,6 +404,7 @@
 		B79DBA5629D3484D00A1F547 /* MoreFilterOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterOption.swift; sourceTree = "<group>"; };
 		B79DBA5829D349DB00A1F547 /* MoreFilterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilterText.swift; sourceTree = "<group>"; };
 		B7B4888129FBCAFA00999A0A /* ViewAdaptsToOpenKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAdaptsToOpenKeyboard.swift; sourceTree = "<group>"; };
+		C5DDA7B22F6806E7003C0FDB /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED16C5E629B72E2F00DA8AFE /* MoreFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreFilter.swift; sourceTree = "<group>"; };
 		ED474B4B29FAAC7A0077AD5C /* QuestionThankYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionThankYouView.swift; sourceTree = "<group>"; };
 		ED6A7F3E29DC405B00E266EC /* FCMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCMService.swift; sourceTree = "<group>"; };
@@ -463,6 +481,7 @@
 			isa = PBXGroup;
 			children = (
 				1F1E45D02E7842F400C82016 /* RegistrationObservable.swift */,
+				AA10000000000000000000C7 /* Polar360ProfileFormView.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -487,6 +506,8 @@
 				1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */,
 				1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */,
 				1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */,
+				BB1A2B3C4D5E6F7A8B9C0001 /* BackgroundSync.swift */,
+				BB1A2B3C4D5E6F7A8B9C0003 /* Polar360SyncBackgroundTask.swift */,
 			);
 			path = BackgroundTasks;
 			sourceTree = "<group>";
@@ -512,6 +533,12 @@
 				1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */,
 				07D9046729C85166003D2912 /* GPSObservation.swift */,
 				EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */,
+				AA10000000000000000000C1 /* Polar360Controller.swift */,
+				AA10000000000000000000C2 /* Polar360HrObservation.swift */,
+				AA10000000000000000000C3 /* Polar360AccObservation.swift */,
+				AA10000000000000000000C4 /* Polar360TempObservation.swift */,
+				AA10000000000000000000C5 /* Polar360PpiObservation.swift */,
+				AA10000000000000000000C6 /* Polar360UserProfile.swift */,
 				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
@@ -815,7 +842,6 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
-				1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */,
 				1F9283C02BC512E500D459A7 /* PrivacyInfo.xcprivacy */,
 				EDAC149529DEF2010084CE1C /* iosApp.entitlements */,
 				1F8847C22991517F0023EF10 /* Resources */,
@@ -834,6 +860,7 @@
 				1F0026DA29CC8E730034EF65 /* AppDelegate.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */,
+				C5DDA7B22F6806E7003C0FDB /* GoogleService-Info.plist */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -1086,7 +1113,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
-				1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */,
+				C5DDA7B32F6806E7003C0FDB /* GoogleService-Info.plist in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				1FF6D8AD2BC516270050AF10 /* PrivacyInfo.xcprivacy in Resources */,
@@ -1238,6 +1265,8 @@
 				1F8847C129914FD60023EF10 /* StringExtension.swift in Sources */,
 				1F09A02E29F69E710001177F /* BluetoothConnectionViewModel.swift in Sources */,
 				1F0026DD29CC8F710034EF65 /* BackgroundTaskHandler.swift in Sources */,
+				BB1A2B3C4D5E6F7A8B9C0002 /* BackgroundSync.swift in Sources */,
+				BB1A2B3C4D5E6F7A8B9C0004 /* Polar360SyncBackgroundTask.swift in Sources */,
 				B748DF3629CC43990026C348 /* ExpandableText.swift in Sources */,
 				ED6A7F3F29DC405B00E266EC /* FCMService.swift in Sources */,
 				1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */,
@@ -1309,6 +1338,13 @@
 				1F8847D629915ADE0023EF10 /* MoreAnimation.swift in Sources */,
 				B79BECC129F1811000966AD1 /* ContactInfo.swift in Sources */,
 				EDACF62929D2FB200032327B /* PolarVerityHeartRateObservation.swift in Sources */,
+				AA20000000000000000000C1 /* Polar360Controller.swift in Sources */,
+				AA20000000000000000000C2 /* Polar360HrObservation.swift in Sources */,
+				AA20000000000000000000C3 /* Polar360AccObservation.swift in Sources */,
+				AA20000000000000000000C4 /* Polar360TempObservation.swift in Sources */,
+				AA20000000000000000000C5 /* Polar360PpiObservation.swift in Sources */,
+				AA20000000000000000000C6 /* Polar360UserProfile.swift in Sources */,
+				AA20000000000000000000C7 /* Polar360ProfileFormView.swift in Sources */,
 				1F8847F129938C6B0023EF10 /* ConsentViewModel.swift in Sources */,
 				EDBB2B4829B8CFE400CA973E /* SettingsViewModel.swift in Sources */,
 				B79DBA5129D3431100A1F547 /* DashboardFilterView.swift in Sources */,

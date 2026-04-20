@@ -7,6 +7,7 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).data-upload</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).dailyRefresh</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).observation-reminder-refresh</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).polar360-sync</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>

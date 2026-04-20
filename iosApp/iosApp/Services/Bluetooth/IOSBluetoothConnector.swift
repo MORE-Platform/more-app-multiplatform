@@ -53,13 +53,13 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
     }
 
     func connect(device: BluetoothDeviceEntity) -> KotlinError? {
-        print("Connecting to device: \(device)")
+        Napier.d("Connecting to device: \(device)")
         let (hasConnected, error) = connectToSpecificDevice(device: device)
         if hasConnected {
             guard let error else {
                 return nil
             }
-            print(error)
+            Napier.e("\(error)")
             return error
         }
         if let cbPeripheral = peripherals.first(where: { $0.identifier.uuidString == device.deviceId }) {
@@ -99,22 +99,22 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
         if !bleManager.scanningValue {
             switch centralManager.state {
             case .unknown:
-                print("Bluetooth state unknown")
+                Napier.w("Bluetooth state unknown")
                 scanningWithUnknownBLEState = true
             case .resetting:
-                print("Bluetooth state resetting")
+                Napier.w("Bluetooth state resetting")
             case .unsupported:
-                print("Bluetooth state unsupported")
+                Napier.w("Bluetooth state unsupported")
             case .unauthorized:
-                print("Bluetooth state unauthorized")
+                Napier.w("Bluetooth state unauthorized")
             case .poweredOff:
-                print("Bluetooth state powered off")
+                Napier.w("Bluetooth state powered off")
             case .poweredOn:
-                print("Bluetooth state powered on")
+                Napier.i("Bluetooth state powered on")
                 bleManager.isScanning(scan: true)
                 centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
             @unknown default:
-                print("Bluetooth state unknown default")
+                Napier.w("Bluetooth state unknown default")
             }
         }
     }
@@ -199,27 +199,27 @@ class IOSBluetoothConnector: NSObject, BluetoothConnector {
 
 extension IOSBluetoothConnector: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Connected to \(peripheral.description)")
+        Napier.i("Connected to \(peripheral.description)")
         let device = peripheral.toBluetoothDevice()
         peripherals.insert(peripheral)
         didConnectToDevice(bluetoothDevice: device)
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral) {
-        print("Disconnected from \(peripheral.identifier)")
+        Napier.i("Disconnected from \(peripheral.identifier)")
         let device = peripheral.toBluetoothDevice()
         bleManager.removeConnectedDeviceIds(deviceIds: [peripheral.identifier.uuidString])
         didDisconnectFromDevice(bluetoothDevice: device)
     }
 
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral) {
-        print("Did fail to connect to device: \(peripheral.identifier)")
+        Napier.e("Did fail to connect to device: \(peripheral.identifier)")
         bleManager.removeConnectingDeviceIds(deviceIds: [peripheral.identifier.uuidString])
         didFailToConnectToDevice(bluetoothDevice: peripheral.toBluetoothDevice())
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        print("Manager state is powered on: \(central.state == .poweredOn)")
+        Napier.d("Manager state is powered on: \(central.state == .poweredOn)")
         if central.state == .poweredOn {
             delegate?.bleHasPower()
             if scanningWithUnknownBLEState {

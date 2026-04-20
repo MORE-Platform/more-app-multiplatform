@@ -10,6 +10,7 @@
 //
 import shared
 import SwiftUI
+import UIKit
 struct ContentView: View {
     @ObservedObject var viewModel: ContentViewModel
     @StateObject private var navigationModalState = AppDelegate.navigationScreenHandler
@@ -70,10 +71,32 @@ struct CredentialsView: View {
 struct RegistrationView: View {
     @ObservedObject var navigationModalState: NavigationModalState
     @StateObject private var registration = RegistrationObservable(service: RegistrationService(shared: AppDelegate.shared))
+    @State private var showPolar360ProfileForm = false
+
+    private var studyHasPolar360: Bool {
+        registration.study?.observations.contains { $0.observationType.contains("polar360observation") } ?? false
+    }
+
+    private func acceptConsent() {
+        if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+            registration.service.acceptConsent(uniqueDeviceId: uniqueId)
+        }
+    }
+
     var body: some View {
         VStack {
-            if registration.study != nil {
-                ConsentView(registration: registration)
+            if showPolar360ProfileForm {
+                Polar360ProfileFormView {
+                    acceptConsent()
+                }
+            } else if registration.study != nil {
+                ConsentView(registration: registration, onConsentAccepted: {
+                    if studyHasPolar360 && Polar360UserProfile.load() == nil {
+                        showPolar360ProfileForm = true
+                    } else {
+                        acceptConsent()
+                    }
+                })
             } else {
                 LoginView(registration: registration)
                     .onAppear {

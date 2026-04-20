@@ -33,7 +33,7 @@ struct LoginButton_Previews: PreviewProvider {
     static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     static var previews: some View {
         LoginButton(disabled: .constant(false)) {
-            print("Hello World")
+            Napier.d("Hello World")
         }
     }
 }

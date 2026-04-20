@@ -19,8 +19,8 @@ import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
 import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.HR.PolarConnectorListener
-import io.redlink.more.app.android.observations.HR.PolarObserverCallback
+import io.redlink.more.app.android.observations.Polar.PolarConnectorListener
+import io.redlink.more.app.android.observations.Polar.PolarObserverCallback
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.bluetooth.BluetoothConnectorObserver
@@ -38,7 +38,8 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
+            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO,
+            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_TEMPERATURE_DATA
         )
     ).apply {
         setPolarFilter(true)
@@ -118,8 +119,10 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_HR) {
             Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "HR ready!" }
             PolarStates.hrFeatureReady(true)
-
-            Napier.d(tag = "PolarHeartRateObservation:::setHRFeature") { "HR Feature Ready!" }
+        }
+        if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE) {
+            Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "SDK Mode ready!" }
+            PolarStates.sdkModeReady(true)
         }
     }
 

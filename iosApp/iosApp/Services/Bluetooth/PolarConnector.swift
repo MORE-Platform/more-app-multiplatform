@@ -71,7 +71,7 @@ class PolarConnector: NSObject, BluetoothConnector {
                 try self.polarApi.connectToDevice(device.deviceId)
                 return nil
             } catch {
-                print(error)
+                Napier.e("\(error)")
                 return KotlinError(message: error.localizedDescription)
             }
         }
@@ -93,7 +93,7 @@ class PolarConnector: NSObject, BluetoothConnector {
                 self.stopScanning()
                 try self.polarApi.disconnectFromDevice(device.deviceId)
             } catch {
-                print(error)
+                Napier.e("\(error)")
             }
         }
 
@@ -110,14 +110,14 @@ class PolarConnector: NSObject, BluetoothConnector {
         if CBManager.authorization == .restricted || CBManager.authorization == .denied {
             PermissionManager.openSensorPermissionDialog()
         } else if !bleManager.scanningValue && observer.count > 0 && bleManager.bluetoothActiveValue && bleManager.devicesCurrentlyConnectingValue.isEmpty {
-            print("Polar: Starting the scan...")
+            Napier.d("Polar: Starting the scan...")
             bleManager.isScanning(scan: true)
             Task { @MainActor [weak self] in
                 if let self {
                     self.devicesSubscription = self.polarApi.searchForDevice().subscribe(onNext: { device in
                         self.didDiscoverDevice(device: BluetoothDeviceEntity.fromPolarDevice(polarInfo: device))
                     }, onError: { error in
-                        print(error)
+                        Napier.e("\(error)")
                         BluetoothStateManagement.shared.isScanning(scan: false)
                     }, onDisposed: {
                         BluetoothStateManagement.shared.isScanning(scan: false)
@@ -130,7 +130,7 @@ class PolarConnector: NSObject, BluetoothConnector {
     func stopScanning() {
         Task { @MainActor [weak self] in
             if let self, BluetoothStateManagement.shared.scanningValue {
-                print("Polar: Stopping the scan and cleaning up...")
+                Napier.d("Polar: Stopping the scan and cleaning up...")
                 self.devicesSubscription?.dispose()
                 self.devicesSubscription = nil
 
@@ -207,29 +207,29 @@ class PolarConnector: NSObject, BluetoothConnector {
 
 extension PolarConnector: PolarBleApiObserver {
     func deviceDisconnected(_ identifier: PolarBleSdk.PolarDeviceInfo, pairingError: Bool) {
-        print("Polar disconnected: \(identifier.name). Had paring error: \(pairingError)")
+        Napier.i("Polar disconnected: \(identifier.name). Had paring error: \(pairingError)")
         didDisconnectFromDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 
     func deviceConnecting(_ identifier: PolarBleSdk.PolarDeviceInfo) {
-        print("Polar connecting: \(identifier.name)")
+        Napier.i("Polar connecting: \(identifier.name)")
         isConnectingToDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 
     func deviceConnected(_ identifier: PolarDeviceInfo) {
-        print("Polar connected: \(identifier.name)")
+        Napier.i("Polar connected: \(identifier.name)")
         didConnectToDevice(bluetoothDevice: BluetoothDeviceEntity.fromPolarDevice(polarInfo: identifier))
     }
 }
 
 extension PolarConnector: PolarBleApiPowerStateObserver {
     func blePowerOn() {
-        print("Polar power on")
+        Napier.i("Polar power on")
         bleManager.setBluetoothState(active: true)
     }
 
     func blePowerOff() {
-        print("Polar power off")
+        Napier.i("Polar power off")
         bleManager.setBluetoothState(active: false)
     }
 }
@@ -237,32 +237,36 @@ extension PolarConnector: PolarBleApiPowerStateObserver {
 extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
     func bleSdkFeatureReady(_ identifier: String, feature: PolarBleSdk.PolarBleSdkFeature) {
         if feature == .feature_hr {
-            print("Polar HR Feature ready!")
+            Napier.i("Polar HR Feature ready!")
             PolarStates.shared.hrFeatureReady(ready: true)
+        }
+        if feature == .feature_polar_sdk_mode {
+            Napier.i("Polar SDK Mode ready!")
+            PolarStates.shared.sdkModeReady(ready: true)
         }
     }
 }
 
 extension PolarConnector: PolarBleApiDeviceInfoObserver {
     func batteryChargingStatusReceived(_ identifier: String, chargingStatus: PolarBleSdk.BleBasClient.ChargeState) {
-        print("Battery charging status received by \(identifier): \(chargingStatus)")
+        Napier.d("Battery charging status received by \(identifier): \(chargingStatus)")
     }
 
     func disInformationReceivedWithKeysAsStrings(_ identifier: String, key: String, value: String) {
-        print("DisinformationReceivedWithKeysAsString by \(identifier): \(key); \(value)")
+        Napier.d("DisinformationReceivedWithKeysAsString by \(identifier): \(key); \(value)")
     }
 
     func batteryLevelReceived(_ identifier: String, batteryLevel: UInt) {
-        print("Battery level for \(identifier): \(batteryLevel)")
+        Napier.d("Battery level for \(identifier): \(batteryLevel)")
     }
 
     func disInformationReceived(_ identifier: String, uuid: CBUUID, value: String) {
-        print("Disinformation received by \(identifier): \(uuid); \(value)")
+        Napier.d("Disinformation received by \(identifier): \(uuid); \(value)")
     }
 }
 
 extension PolarConnector: PolarBleApiLogger {
     func message(_ str: String) {
-        print("Polar logger: \(str)")
+        Napier.d("Polar logger: \(str)")
     }
 }

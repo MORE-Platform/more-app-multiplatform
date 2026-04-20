@@ -56,7 +56,7 @@ struct SwiftUIWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        print("WebView URL: \(String(describing: url))")
+        Napier.d("WebView URL: \(String(describing: url))")
         if let url {
             viewModel.webView.load(url)
         } else {
