@@ -53,7 +53,7 @@ class Polar360HrObservation: Observation_ {
                             guard let self else { return }
                             let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
                             if !samples.isEmpty {
-                                let processed = samples.map { ["hr": $0.hr, "timestamp": $0.timestamp] as [String: Any] }
+                                let processed = samples.map { ["hr": $0.hr, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
                                 self.storeData(data: ["polar360hrdata": processed], timestamp: -1) {}
                             }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(

@@ -19,6 +19,7 @@ struct ObservationDetails: View {
     let observationTitle: String
     let observationType: String
     let numberOfObservationErrors: Int
+    var isRunning: Bool = false
     var action: () -> Void = {}
 
     var body: some View {
@@ -26,10 +27,10 @@ struct ObservationDetails: View {
             VStack(alignment: .leading) {
                 BasicText(text: observationTitle)
                     .font(Font.more.headline)
-                    .foregroundColor(Color.more.primary)
+                    .foregroundColor(isRunning ? Color.more.approved : Color.more.primary)
                     .padding(.bottom, 1)
                 Text(observationType)
-                    .foregroundColor(Color.more.secondary)
+                    .foregroundColor(isRunning ? Color.more.approved : Color.more.secondary)
             }
             .padding(4)
             Spacer()
@@ -43,7 +44,7 @@ struct ObservationDetails: View {
                 .padding(.horizontal, 4)
             }
             Image(systemName: "chevron.forward")
-                .foregroundColor(numberOfObservationErrors > 0 ? .more.important : .more.primary)
+                .foregroundColor(numberOfObservationErrors > 0 ? .more.important : (isRunning ? .more.approved : .more.primary))
         }
     }
 }

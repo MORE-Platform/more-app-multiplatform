@@ -57,6 +57,40 @@ class Polar360PpiObservation(repos: MainRepository) :
     private var deviceConnectionListener: Job? = null
     private var offlineMode = false
 
+    companion object {
+        var recording_startTimestamp: Long? = null
+        var recroding_endTimestamp: Long? = null
+
+        fun padToOneHz(
+            samples: List<ppi_data>,
+            startNs: Long,
+            endNs: Long
+        ): List<ppi_data> {
+            if (endNs <= startNs) return samples
+
+            val step = 1_000_000_000L
+            val sorted = samples.sortedBy { it.timestamp }
+            val result = mutableListOf<ppi_data>()
+            var sampleIndex = 0
+            var cursor = startNs
+
+            while (cursor < endNs) {
+                val slotEnd = cursor + step
+                if (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < slotEnd) {
+                    result.add(sorted[sampleIndex])
+                    sampleIndex++
+                } else {
+                    result.add(ppi_data(hr = -99, timestamp = cursor, ppiInMs = 0, ppiErrorEstimate = 65535, skinContact = false))
+                }
+                cursor = slotEnd
+            }
+
+            val validCount = result.count { it.ppiErrorEstimate != 65535 }
+            Napier.d(tag = "Polar360PpiObservation") { "padToOneHz — total=${result.size}, valid=$validCount, corrupted=${result.size - validCount}" }
+            return result
+        }
+    }
+
     override fun start(): Boolean {
         Napier.d(tag = "Polar360PpiObservation::start") { "Starting Polar 360 PPI (offline=$offlineMode)..." }
         if (!observerAccessible()) {
@@ -141,7 +175,12 @@ class Polar360PpiObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        storeData(mapOf("polar360ppidata" to processed), -1, onCompletion)
+                        val padded = padToOneHz(
+                            samples = processed,
+                            startNs = recording_startTimestamp ?: 0L,
+                            endNs = recroding_endTimestamp ?: 0L
+                        )
+                        storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
                     },
                     { error ->
                         Napier.e(tag = "Polar360PpiObservation") { "Failed to process offline data: ${error.message}" }

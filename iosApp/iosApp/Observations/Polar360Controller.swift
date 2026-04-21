@@ -10,6 +10,17 @@ import PolarBleSdk
 import RxSwift
 import shared
 
+enum Polar360Error: LocalizedError {
+    case corruptedRecording(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .corruptedRecording(let msg):
+            return "Polar360: corrupted recording — \(msg)"
+        }
+    }
+}
+
 class Polar360Controller {
     static let shared = Polar360Controller()
     static let CONFIG_OFFLINE_RECORDING = "Offline_recording"
@@ -101,11 +112,12 @@ class Polar360Controller {
         let task = checkIfDeviceIsSetup(identifier: deviceId)
             .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : enableSdkModeIfNeeded(identifier: deviceId))
             .andThen(Single<[Any]>.just([]))
-            .catch { error -> Single<[Any]> in
-                Napier.e("Polar360Controller: ensureReady failed: \(error)")
-                return .just([])
-            }
-            .do(onSuccess: { _ in onReady() })
+            .do(onSuccess: { _ in onReady() },
+                onError: { [onError] error in
+                    Napier.e("Polar360Controller: ensureReady failed: \(error)")
+                
+                })
+            .catch { _ in Single<[Any]>.just([]) }
             .asObservable()
         operationQueue.onNext(task)
     }
@@ -186,19 +198,24 @@ class Polar360Controller {
         }
         Napier.d("Polar360Controller: [\(dataType)] Enqueueing stop+fetch for device=\(deviceId)")
         let task = buildStopAndFetch(deviceId: deviceId, dataType: dataType)
-            .catch { error -> Single<[Any]> in
-                Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
-                return .just([])
-            }
-            .do(onSuccess: { samples in
+            .do(onSuccess: { [onSuccess] samples in
                 Napier.i("Polar360Controller: [\(dataType)] Task completed with \(samples.count) items")
                 onSuccess(samples)
+            }, onError: { [onError] error in
+                Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
+                                                         
             })
+            .catch { _ in Single<[Any]>.just([]) }
             .asObservable()
         operationQueue.onNext(task)
     }
 
     private func buildStopAndFetch(deviceId: String, dataType: PolarDeviceDataType) -> Single<[Any]> {
+        if dataType == .ppi {
+            let endNs = UInt64(Date().timeIntervalSince1970) * 1_000_000_000
+            Polar360PpiObservation.recroding_endTimestamp = endNs
+            Napier.d("Polar360Controller: [ppi] recroding_endTimestamp=\(endNs)")
+        }
         Napier.d("Polar360Controller: [\(dataType)] Stopping recording on device=\(deviceId)")
         return polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .catch { error -> Completable in
@@ -220,12 +237,21 @@ class Polar360Controller {
                     .filter { $0.type == dataType }
                     .concatMap { [weak self] entry -> Observable<[Any]> in
                         guard let self else { return Observable.just([]) }
+                        if dataType == .ppi {
+                            let startNs = UInt64(entry.date.timeIntervalSince1970) * 1_000_000_000
+                            Polar360PpiObservation.recording_startTimestamp  = startNs
+                            Napier.d("Polar360Controller: [ppi] recordingStartTimestamp=\(startNs) (entry.date=\(entry.date))")
+                        }
                         Napier.d("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
                         return self.polarConnector.polarApi.getOfflineRecord(deviceId, entry: entry, secret: nil)
                             .flatMap { [weak self] data -> Single<[Any]> in
                                 guard let self else { return .just([]) }
-                                Napier.d("\(data)")
+                                Napier.d("Polar360Controller: [\(dataType)] getOfflineRecord returned: \(data)")
+                                if case .emptyData(let startTime) = data {
+                                    Napier.w("Polar360Controller: [\(dataType)] SDK returned emptyData — entry={type=\(entry.type), date=\(entry.date), size=\(entry.size)}, startTime=\(startTime) — likely no skin contact during recording; removing entry")
+                                }
                                 let samples = self.extractSamples(from: data)
+                                Napier.d("Polar360Controller: [\(dataType)] extractSamples result: count=\(samples.count), raw=\(samples)")
                                 Napier.d("Polar360Controller: [\(dataType)] Fetched \(samples.count) samples, removing entry...")
                                 return self.polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
                                     .do(onError: { error in
@@ -237,6 +263,7 @@ class Polar360Controller {
                                     .andThen(Single.just(samples))
                             }
                             .catch { [weak self] error -> Single<[Any]> in
+                                if error is Polar360Error { return Single.error(error) }
                                 Napier.e("Polar360Controller: [\(dataType)] getOfflineRecord error: \(error) — removing unreadable entry")
                                 guard let self else { return .just([]) }
                                 return self.polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
@@ -261,21 +288,24 @@ class Polar360Controller {
             };
 
         case let .ppiOfflineRecordingData(ppiData, _):
+            Napier.d("Polar360Controller: ppiOfflineRecordingData — sample count=\(ppiData.samples.count)")
             return ppiData.samples.map {
                 ppi_data(hr: $0.hr, timestamp: $0.timeStamp,
                          ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate , skinContact:  $0.skinContactStatus)
             };
-            /*
-             ppiData.samples.map {
-                hr_data(hr: $0.hr, timestamp: $0.timeStamp)
-             };*/
 
         case let .temperatureOfflineRecordingData(tempData, _):
             Napier.e("polarTempdata \(tempData)")
             return tempData.samples.map {
                 temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
             };
+
+        case let .emptyData(startTime):
+            Napier.w("Polar360Controller: extractSamples — SDK returned emptyData (startTime=\(startTime)); recording may be too short or corrupted")
+            return []
+
         default:
+            Napier.w("Polar360Controller: extractSamples — unhandled PolarOfflineRecordingData case: \(data)")
             return []
         }
     }
@@ -360,7 +390,7 @@ class Polar360Controller {
                 } else {
                     let dateFormatter = ISO8601DateFormatter()
                     dateFormatter.formatOptions = [.withInternetDateTime]
-                    dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+                    dateFormatter.timeZone = TimeZone.current
 
                     let profile = Polar360UserProfile.load()
                     let birthDate = profile?.birthDate ?? Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()

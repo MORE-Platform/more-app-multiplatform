@@ -33,9 +33,9 @@ struct ScheduleListItem: View {
                 navigationModalState.openView(screen: .taskDetails, scheduleId: scheduleModel.scheduleId)
             } label: {
                 VStack(alignment: .leading) {
-                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType, numberOfObservationErrors: viewModel.observationErrors[scheduleModel.observationType]?.count ?? 0)
+                    ObservationDetails(observationTitle: scheduleModel.observationTitle, observationType: scheduleModel.observationType, numberOfObservationErrors: viewModel.observationErrors[scheduleModel.observationType]?.count ?? 0, isRunning: scheduleModel.scheduleState == .running)
                         .padding(.bottom, 4)
-                    ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end)
+                    ObservationTimeDetails(start: scheduleModel.start, end: scheduleModel.end, isRunning: scheduleModel.scheduleState == .running)
                 }
             }
 

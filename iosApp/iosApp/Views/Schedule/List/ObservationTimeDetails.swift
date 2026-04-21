@@ -19,14 +19,16 @@ import SwiftUI
 struct ObservationTimeDetails: View {
     var start: Int64
     var end: Int64
+    var isRunning: Bool = false
     private let stringTable = "ScheduleListView"
 
     var body: some View {
         HStack {
             Image(systemName: "clock.fill")
-            BasicText(text: String(format: "%@:", String(localized: "timeframe")))
+                .foregroundColor(isRunning ? Color.more.approved : Color.more.primary)
+            BasicText(text: String(format: "%@:", String(localized: "timeframe")), color: isRunning ? Color.more.approved : Color.more.primary)
             Text(String(format: "%@ - %@", start.toDateString(dateFormat: "HH:mm"), end.toDateString(dateFormat: "HH:mm")))
-                .foregroundColor(Color.more.secondary)
+                .foregroundColor(isRunning ? Color.more.approved : Color.more.secondary)
         }
     }
 }
