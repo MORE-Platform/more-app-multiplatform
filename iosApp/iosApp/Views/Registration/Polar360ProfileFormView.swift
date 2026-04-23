@@ -33,12 +33,20 @@ struct Polar360ProfileFormView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Gender")
                             .font(.headline)
-                        Picker("Gender", selection: $gender) {
+                        HStack(spacing: 0) {
                             ForEach(Polar360UserProfile.Gender.allCases, id: \.self) { g in
-                                Text(g.displayName).tag(g)
+                                Button { gender = g } label: {
+                                    Text(g.displayName)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(gender == g ? genderColor(g) : Color(.systemGray5))
+                                        .foregroundColor(gender == g ? .white : .secondary)
+                                }
                             }
                         }
-                        .pickerStyle(.segmented)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -89,5 +97,9 @@ struct Polar360ProfileFormView: View {
             }
         }
         .padding(24)
+    }
+
+    private func genderColor(_ g: Polar360UserProfile.Gender) -> Color {
+        g == .female ? Color(red: 0.89, green: 0.25, blue: 0.52) : Color(red: 0.13, green: 0.47, blue: 0.87)
     }
 }

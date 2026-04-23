@@ -109,8 +109,9 @@ class Polar360Controller {
     func ensureReady(deviceId: String, offlineMode: Bool, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void) {
         currentDeviceId = deviceId
         saveDeviceIdForBackground()
+        //bad Logic put in we need to disable sdk mode anyways
         let task = checkIfDeviceIsSetup(identifier: deviceId)
-            .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : enableSdkModeIfNeeded(identifier: deviceId))
+            .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : disableSdkModeIfNeeded(identifier: deviceId))
             .andThen(Single<[Any]>.just([]))
             .do(onSuccess: { _ in onReady() },
                 onError: { [onError] error in
@@ -212,7 +213,9 @@ class Polar360Controller {
 
     private func buildStopAndFetch(deviceId: String, dataType: PolarDeviceDataType) -> Single<[Any]> {
         if dataType == .ppi {
-            let endNs = UInt64(Date().timeIntervalSince1970) * 1_000_000_000
+            // Express end time as nanoseconds since 2000-01-01 — the epoch the server uses.
+            let epoch2000: TimeInterval = 946_684_800
+            let endNs = UInt64(max(0, Date().timeIntervalSince1970 - epoch2000)) * 1_000_000_000
             Polar360PpiObservation.recroding_endTimestamp = endNs
             Napier.d("Polar360Controller: [ppi] recroding_endTimestamp=\(endNs)")
         }
@@ -238,8 +241,10 @@ class Polar360Controller {
                     .concatMap { [weak self] entry -> Observable<[Any]> in
                         guard let self else { return Observable.just([]) }
                         if dataType == .ppi {
-                            let startNs = UInt64(entry.date.timeIntervalSince1970) * 1_000_000_000
-                            Polar360PpiObservation.recording_startTimestamp  = startNs
+                            let epoch2000: TimeInterval = 946_684_800
+                            let startSecs = entry.date.timeIntervalSince1970 - epoch2000
+                            let startNs = startSecs > 0 ? UInt64(startSecs) * 1_000_000_000 : 0
+                            Polar360PpiObservation.recording_startTimestamp = startNs
                             Napier.d("Polar360Controller: [ppi] recordingStartTimestamp=\(startNs) (entry.date=\(entry.date))")
                         }
                         Napier.d("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")

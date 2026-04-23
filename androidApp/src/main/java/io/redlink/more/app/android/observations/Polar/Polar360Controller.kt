@@ -63,11 +63,14 @@ object Polar360Controller {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ setupDone ->
                 if (setupDone) {
+                    // For any syteaming of offline recording with ppi/hr sdk mode must be off
+                    disableSdkMode(deviceId)
+                    /*
                     if (offlineMode) {
                         disableSdkMode(deviceId)
                     } else {
                         enableSdkMode(deviceId)
-                    }
+                    }*/
                     onReady()
                 } else {
                     Log.e(TAG, "Polar 360 FTU failed")
@@ -138,7 +141,8 @@ object Polar360Controller {
 
     private fun doStopOfflineRecording(deviceId: String, dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
         if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
-            val endNs = System.currentTimeMillis() * 1_000_000L
+            val epoch2000Ms = 946_684_800_000L
+            val endNs = (System.currentTimeMillis() - epoch2000Ms) * 1_000_000L
             Polar360PpiObservation.recroding_endTimestamp = endNs
             Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recoring_endTime=$endNs" }
         }
@@ -159,7 +163,8 @@ object Polar360Controller {
                     .filter { entry -> entry.type == dataType }
                     .concatMap { entry ->
                         if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
-                            val startNs = entry.date.time * 1_000_000L
+                            val epoch2000Ms = 946_684_800_000L
+                            val startNs = (entry.date.time - epoch2000Ms) * 1_000_000L
                             Polar360PpiObservation.recording_startTimestamp = startNs
                             Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recording_startTimestamp=$startNs (entry.date=${entry.date})" }
                         }
@@ -281,7 +286,7 @@ object Polar360Controller {
                         height = (profile?.heightCm ?: 170).toFloat(),
                         weight = (profile?.weightKg ?: 70).toFloat(),
                         maxHeartRate = maxHR,
-                        vo2Max = 45,
+                        vo2Max = 35,
                         restingHeartRate = 60,
                         trainingBackground = 30,
                         deviceTime = deviceTime,

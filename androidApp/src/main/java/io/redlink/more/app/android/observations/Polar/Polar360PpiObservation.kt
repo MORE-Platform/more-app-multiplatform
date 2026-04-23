@@ -66,19 +66,43 @@ class Polar360PpiObservation(repos: MainRepository) :
             startNs: Long,
             endNs: Long
         ): List<ppi_data> {
-            if (endNs <= startNs) return samples
+            if (endNs <= 0 || samples.isEmpty()) return samples
 
             val step = 1_000_000_000L
             val sorted = samples.sortedBy { it.timestamp }
+
+            // Window start: take the earlier of recording_startTimestamp and first sample,
+            // floored to a whole second, so the full recording period is covered.
+            val firstSampleTs = sorted.first().timestamp
+            val rawStart = if (startNs > 0) minOf(startNs, firstSampleTs) else firstSampleTs
+            val effectiveStart = (rawStart / step) * step
+
+            if (effectiveStart >= endNs) return samples
+
+            val maxDurationNs = 24L * 3600 * 1_000_000_000L
+            if (endNs - effectiveStart > maxDurationNs) {
+                Napier.w(tag = "Polar360PpiObservation") { "padToOneHz — derived duration exceeds 24 h cap; returning raw samples" }
+                return samples
+            }
+
             val result = mutableListOf<ppi_data>()
             var sampleIndex = 0
-            var cursor = startNs
+            var cursor = effectiveStart
 
             while (cursor < endNs) {
                 val slotEnd = cursor + step
-                if (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < slotEnd) {
-                    result.add(sorted[sampleIndex])
+                // Advance past any samples that fall before this slot.
+                while (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < cursor) {
                     sampleIndex++
+                }
+                if (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < slotEnd) {
+                    val s = sorted[sampleIndex]
+                    result.add(ppi_data(hr = s.hr, timestamp = cursor, ppiInMs = s.ppiInMs, ppiErrorEstimate = s.ppiErrorEstimate, skinContact = s.skinContact))
+                    sampleIndex++
+                    // Skip any additional samples within the same 1-second slot.
+                    while (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < slotEnd) {
+                        sampleIndex++
+                    }
                 } else {
                     result.add(ppi_data(hr = -99, timestamp = cursor, ppiInMs = 0, ppiErrorEstimate = 65535, skinContact = false))
                 }
@@ -120,7 +144,12 @@ class Polar360PpiObservation(repos: MainRepository) :
                             { items ->
                                 val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                                 if (processed.isNotEmpty()) {
-                                    storeData(mapOf("polar360ppidata" to processed), -1) {}
+                                    val padded = padToOneHz(
+                                        samples = processed,
+                                        startNs = recording_startTimestamp ?: 0L,
+                                        endNs = recroding_endTimestamp ?: 0L
+                                    )
+                                    storeData(mapOf("polar360ppidata" to padded), -1) {}
                                 }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
                                     deviceId, PolarBleApi.PolarDeviceDataType.PPI
@@ -177,6 +206,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                         val padded = padToOneHz(
                             samples = processed,
+                            //todo polar uses non traditional timestamp start date
                             startNs = recording_startTimestamp ?: 0L,
                             endNs = recroding_endTimestamp ?: 0L
                         )

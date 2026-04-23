@@ -2,21 +2,22 @@ package io.redlink.more.app.android.activities.consent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -76,17 +77,27 @@ fun Polar360ProfileFormView(onComplete: () -> Unit) {
 
             Text("Gender", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             Spacer(Modifier.height(8.dp))
-            TabRow(
-                selectedTabIndex = selectedGenderIndex,
-                backgroundColor = MoreColors.PrimaryLight200,
-                contentColor = MoreColors.White
-            ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 genders.forEachIndexed { index, gender ->
-                    Tab(
-                        selected = selectedGenderIndex == index,
+                    val isSelected = selectedGenderIndex == index
+                    val genderColor = if (gender == Polar360UserProfile.Gender.FEMALE)
+                        Color(0xFFD63384) else Color(0xFF1976D2)
+                    val shape = if (index == 0)
+                        RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp, topEnd = 0.dp, bottomEnd = 0.dp)
+                    else
+                        RoundedCornerShape(topStart = 0.dp, bottomStart = 0.dp, topEnd = 8.dp, bottomEnd = 8.dp)
+                    Button(
                         onClick = { selectedGenderIndex = index },
-                        text = { Text(gender.displayName) }
-                    )
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = shape,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = if (isSelected) genderColor else Color(0xFFEEEEEE),
+                            contentColor = if (isSelected) Color.White else Color(0xFF444444)
+                        ),
+                        elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 2.dp)
+                    ) {
+                        Text(gender.displayName, fontWeight = FontWeight.SemiBold)
+                    }
                 }
             }
 
