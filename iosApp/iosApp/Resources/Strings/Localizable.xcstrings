@@ -225,6 +225,23 @@
         }
       }
     },
+    "app-usage-observation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Nutzung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App usage"
+          }
+        }
+      }
+    },
     "back_to_settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -559,19 +576,19 @@
         }
       }
     },
-    "enter_study_url" : {
+    "enter_study_endpoint_placeholder" : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL der Studie eigeben"
+            "value" : "URL der Studie eingeben"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter study URL"
+            "value" : "Enter Study URL"
           }
         }
       }
@@ -740,13 +757,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur wichtige"
+            "value" : "Wichtig"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only Important"
+            "value" : "Important"
           }
         }
       }
@@ -955,6 +972,23 @@
         }
       }
     },
+    "multiple-choice-question-observation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehrfachauswahl"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple Choice"
+          }
+        }
+      }
+    },
     "No devices connected" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1105,6 +1139,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No internet connection"
+          }
+        }
+      }
+    },
+    "Notification Filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachrichten Filter"
           }
         }
       }
@@ -1374,6 +1419,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter Registration Token"
+          }
+        }
+      }
+    },
+    "participation_key_entry_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Token eingeben"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter Token"
+          }
+        }
+      }
+    },
+    "Past Observations" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vergangene Aufzeichnungen"
           }
         }
       }
@@ -1847,6 +1920,23 @@
         }
       }
     },
+    "Select Filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle einen Filter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Filter"
+          }
+        }
+      }
+    },
     "Select Time" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2004,7 +2094,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Starte den  Fragebogen"
+            "value" : "Starte den Fragebogen"
           }
         },
         "en" : {
@@ -2532,14 +2622,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht gelesene"
+            "state" : "needs_review",
+            "value" : "Ungelesen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not read"
+            "value" : "Unread"
           }
         }
       }

@@ -15,16 +15,4 @@ enum class NotificationFilterTypeModel(val type: String, val sortIndex: Int) {
     UNREAD("Unread", 1),
     IMPORTANT("Important", 2);
 
-    companion object {
-        fun createModel(type: String): NotificationFilterTypeModel? {
-            return when (type) {
-                ALL.type -> ALL
-                UNREAD.type -> UNREAD
-                IMPORTANT.type -> IMPORTANT
-                else -> {
-                    null
-                }
-            }
-        }
-    }
 }

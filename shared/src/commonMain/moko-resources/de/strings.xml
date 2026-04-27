@@ -21,4 +21,8 @@
         deaktiviert. Bitte aktivieren Sie diese in den Studieneinstellungen.
     </string>
     <string name="app_usage_tracking_disabled_confirm">Einstellungen</string>
+
+    <string name="more_filter_notification_all">Alle Nachrichten</string>
+    <string name="more_filter_notification_unread">Ungelesen</string>
+    <string name="more_filter_notification_important">Wichtig</string>
 </resources>
