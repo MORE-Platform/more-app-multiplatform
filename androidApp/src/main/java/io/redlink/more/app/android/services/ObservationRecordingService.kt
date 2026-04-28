@@ -394,7 +394,8 @@ class ObservationRecordingService : Service() {
 
                         if (!hasRunningTasks) {
                             Napier.i { "No running tasks found, stopping service" }
-                            stopAll()
+                            runningSchedules.clear()
+                            stopService()
                         }
                     }
                 } catch (e: Exception) {

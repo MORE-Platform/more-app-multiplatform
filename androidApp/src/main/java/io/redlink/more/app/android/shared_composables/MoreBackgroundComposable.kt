@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -125,7 +127,9 @@ fun MoreTopAppBar(
     TopAppBar(
         backgroundColor = Color.Transparent,
         elevation = 0.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,7 +178,11 @@ fun MoreTopAppBar(
 
 @Composable
 fun MoreBottomAppBar(selectedIndex: Int, unreadNotificationCount: Int, onTabChange: (Int) -> Unit) {
-    BottomAppBar(elevation = 2.dp, backgroundColor = MoreColors.PrimaryDark) {
+    BottomAppBar(
+        elevation = 2.dp,
+        backgroundColor = MoreColors.PrimaryDark,
+        modifier = Modifier.navigationBarsPadding()
+    ) {
         MainTabView(selectedIndex, unreadNotificationCount, onTabChange)
     }
 }

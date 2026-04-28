@@ -149,7 +149,7 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
                     if (scheduleEntity.getState() != newState) {
                         stateUpdates.add(scheduleEntity.scheduleId to newState)
                         Napier.i { "State update for Entity: $scheduleEntity; ${scheduleEntity.getState()} -> $newState" }
-                        if (scheduleEntity.getState().running() && newState.completed()) {
+                        if (scheduleEntity.getState() == ScheduleState.RUNNING && newState.completed()) {
                             stoppingIds.add(scheduleEntity.scheduleId)
                         }
                     }

@@ -35,7 +35,7 @@ data class ScheduleEntity(
                 end?.let { endTime ->
                     when {
                         endTime <= now -> {
-                            if (getState().running()) {
+                            if (getState() == ScheduleState.RUNNING) {
                                 ScheduleState.DONE
                             } else {
                                 ScheduleState.ENDED

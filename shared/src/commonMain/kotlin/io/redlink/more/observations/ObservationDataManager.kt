@@ -55,6 +55,9 @@ abstract class ObservationDataManager(
         Napier.i(tag = "ObservationDataManager::saveAndSend") { "Saving and sending observations" }
         scope.launch(dispatchers.io) {
             repository.observationData.store()
+            if (repository.study.studyState.value == StudyState.ACTIVE) {
+                sendData(true)
+            }
         }
     }
 

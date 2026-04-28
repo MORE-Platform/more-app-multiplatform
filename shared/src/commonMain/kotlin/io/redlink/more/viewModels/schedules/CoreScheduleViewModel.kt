@@ -77,7 +77,8 @@ open class CoreScheduleViewModel(
             when (scheduleListType) {
                 ScheduleListType.MANUALS -> setOf(
                     ScheduleState.DEACTIVATED, ScheduleState.ACTIVE,
-                    ScheduleState.RUNNING, ScheduleState.PAUSED
+                    ScheduleState.RUNNING, ScheduleState.PAUSED, ScheduleState.ENDED,
+                    ScheduleState.DONE
                 )
 
                 ScheduleListType.RUNNING -> {
