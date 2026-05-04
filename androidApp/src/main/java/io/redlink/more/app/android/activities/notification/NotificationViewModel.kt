@@ -44,6 +44,6 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         if (!coreFilterViewModel.filterActive()) {
             return stringResource(R.string.more_filter_notification_all)
         }
-        return coreFilterViewModel.activeTypes.value.joinToString(", ")
+        return coreFilterViewModel.activeTypes.value.joinToString(", ") { it }
     }
 }

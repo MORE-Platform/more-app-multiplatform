@@ -83,5 +83,4 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
             }
         }
     }
-
 }

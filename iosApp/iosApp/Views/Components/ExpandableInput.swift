@@ -47,9 +47,9 @@ struct ExpandableInput: View {
 
             if expanded {
                 if isSmTextfield {
-                    MoreTextFieldSmBottom(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
+                    MoreTextFieldSmBottom(titleKey: $inputPlaceholder, inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
                 } else {
-                    MoreTextField(titleKey: .constant(inputPlaceholder), inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
+                    MoreTextField(titleKey: $inputPlaceholder, inputText: $input, capitalization: capitalization, autoCorrectDisabled: true, textType: textType)
                 }
             }
         }
