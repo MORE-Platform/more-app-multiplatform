@@ -10,8 +10,10 @@
  */
 package io.redlink.more.app.android.extensions
 
+import io.redlink.more.SharedRes
 import io.redlink.more.app.android.R
 import io.redlink.more.models.DateFilterModel
+import io.redlink.more.models.NotificationFilterTypeModel
 
 fun String.formatDateFilterString(): String {
     return when (this) {
@@ -21,4 +23,12 @@ fun String.formatDateFilterString(): String {
         else -> stringResource(R.string.more_filter_entire_time)
     }
 
+}
+
+fun String.formatNotificationFilterString(): String {
+    return when (this) {
+        NotificationFilterTypeModel.UNREAD.toString() -> sharedResource(SharedRes.strings.more_filter_notification_unread)
+        NotificationFilterTypeModel.IMPORTANT.toString() -> sharedResource(SharedRes.strings.more_filter_notification_important)
+        else -> sharedResource(SharedRes.strings.more_filter_notification_all)
+    }
 }
