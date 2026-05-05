@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.extensions.formatNotificationFilterString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
@@ -70,7 +71,7 @@ fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = entry.key.type,
+                        description = entry.key.toString().formatNotificationFilterString(),
                         color = MoreColors.Secondary
                     )
                 }

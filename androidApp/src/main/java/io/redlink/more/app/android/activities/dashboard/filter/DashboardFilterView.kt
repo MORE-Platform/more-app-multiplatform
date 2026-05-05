@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.getStringResourceByName
+import io.redlink.more.app.android.extensions.observationTypeToResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
@@ -140,7 +142,7 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                         .padding(4.dp)
                 ) {
                     HeaderDescription(
-                        description = item.key,
+                        description = getStringResourceByName(item.key.observationTypeToResource()),
                         color = if (item.value) MoreColors.Primary else MoreColors.Secondary
                     )
                 }

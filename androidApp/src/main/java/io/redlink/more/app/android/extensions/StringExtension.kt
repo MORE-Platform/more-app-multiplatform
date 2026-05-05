@@ -40,3 +40,6 @@ fun String.toAnnotatedString(): AnnotatedString {
 
     return builder.toAnnotatedString()
 }
+
+// app-usage -> app_usage
+fun String.observationTypeToResource(): String = this.replace("-", "_")
