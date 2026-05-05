@@ -556,6 +556,13 @@
 			path = GarminConnect;
 			sourceTree = "<group>";
 		};
+		1F60BFC92FA8A423007CD41A /* PC_Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = PC_Components;
+			sourceTree = "<group>";
+		};
 		1F6A4E3A29F6C94B00F0247F /* Bluetooth */ = {
 			isa = PBXGroup;
 			children = (
@@ -709,6 +716,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F60BFC92FA8A423007CD41A /* PC_Components */,
 				1F43DE1F2EC6136700B6F07B /* GarminConnect */,
 				1F1E45CF2E7842E300C82016 /* Registration */,
 				1F8937892BFF1EB20083D20E /* ObservationErrors */,

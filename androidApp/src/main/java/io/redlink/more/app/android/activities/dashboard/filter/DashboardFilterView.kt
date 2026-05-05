@@ -123,35 +123,36 @@ fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
                 MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
             }
 
-        items(viewModel.currentTypeFilter.entries.sortedBy { it.key }) { item ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (
-                    item.value
-                )
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = { viewModel.toggleTypeFilter(item.key) })
-                        .padding(4.dp)
+            items(viewModel.currentTypeFilter.entries.sortedBy { it.key }) { item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    HeaderDescription(
-                        description = getStringResourceByName(item.key.observationTypeToResource()),
-                        color = if (item.value) MoreColors.Primary else MoreColors.Secondary
+                    if (
+                        item.value
                     )
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.toggleTypeFilter(item.key) })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = getStringResourceByName(item.key.observationTypeToResource()),
+                            color = if (item.value) MoreColors.Primary else MoreColors.Secondary
+                        )
+                    }
                 }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
             }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
         }
     }
 }
