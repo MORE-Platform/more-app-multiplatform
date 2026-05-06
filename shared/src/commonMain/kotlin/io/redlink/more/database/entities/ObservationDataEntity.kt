@@ -68,7 +68,11 @@ data class ObservationDataEntity(
 
         inline fun <reified T> fromData(data: T, timestamp: Long = -1): ObservationDataEntity {
             val finalTimestamp = if (timestamp > 0) {
-                timestamp * 1000 // Convert to milliseconds
+                if (timestamp < 100_000_000_000L) {
+                    timestamp * 1000 // Convert to milliseconds
+                } else {
+                    timestamp
+                }
             } else {
                 Clock.System.now().toEpochMilliseconds()
             }

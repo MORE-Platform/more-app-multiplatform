@@ -67,10 +67,12 @@ fun ConsentButtons(model: ConsentViewModel) {
             }
         }
 
-        val anyPermissionDenied = mutablePermissionMap.values.any { !it }
-
-        if (anyPermissionDenied) {
-            model.openPermissionDeniedAlertDialog(context)
+        val deniedPermissions = mutablePermissionMap.filter { !it.value }.keys
+        if (deniedPermissions.isNotEmpty()) {
+            model.openPermissionDeniedAlertDialog(
+                context,
+                deniedPermissions.map { PermissionUtils.getPermissionLabel(context, it) }
+            )
         } else {
             model.acceptConsent(context)
         }

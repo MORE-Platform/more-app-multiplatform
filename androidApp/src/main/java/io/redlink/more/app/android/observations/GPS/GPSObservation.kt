@@ -12,37 +12,22 @@ package io.redlink.more.app.android.observations.GPS
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Build
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationResult
 import io.github.aakira.napier.Napier
-import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.observationTypes.GPSType
+import io.redlink.more.scopes.Scope
 import io.redlink.more.services.store.PermissionApprovalState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val TAG = "GPSObservation"
-private val permissions = if (Build.VERSION.SDK_INT >= 34) {
-    setOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.FOREGROUND_SERVICE_LOCATION
-    )
-} else {
-    setOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
-}
+private val permissions = setOf(
+    Manifest.permission.ACCESS_COARSE_LOCATION,
+    Manifest.permission.ACCESS_FINE_LOCATION
+)
 
 class GPSObservation(
     context: Context,
@@ -51,26 +36,15 @@ class GPSObservation(
 ) : Observation(repos, observationType = GPSType(permissions)),
     GPSListener {
     private val locationManager = context.getSystemService(LocationManager::class.java)
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
-
-    fun getPermission(): Set<String> = permissions
 
     override fun start(): Boolean {
-        Napier.d { "Trying to start GPS..." }
-        if (this.hasPermission() == PermissionApprovalState.GRANTED) {
-            val listener = this
-            scope.launch {
-                Napier.d { "Registering GPS Service..." }
-                gpsService.registerForLocationUpdates(listener)
-            }
-            return true
-        } else {
-            this.requestPermission()
-        }
-        return false
+        Napier.d { "Registering GPS Service..." }
+        gpsService.registerForLocationUpdates(this)
+        return true
     }
 
     override fun stop(onCompletion: () -> Unit) {
+        Napier.d { "Unregistering GPS Service..." }
         this.gpsService.unregisterForLocationUpdates(this)
         onCompletion()
     }
@@ -85,10 +59,6 @@ class GPSObservation(
         }
         if (this.hasPermission() != PermissionApprovalState.GRANTED) {
             errors.add("location_permission_not_granted")
-            if (!isPermissionRequested(observationType.observationType)) {
-                markPermissionRequested(observationType.observationType)
-                showPermissionAlertDialog()
-            }
         }
         return errors
     }
@@ -96,7 +66,7 @@ class GPSObservation(
     override fun applyObservationConfig(settings: Map<String, Any>) {
         try {
             settings[LOCATION_INTERVAL_MILLIS_KEY]?.toString()?.trim('\"')?.toLong()?.let {
-                //gpsService.setIntervalMillis(it)
+                gpsService.setIntervalMillis(it)
             }
         } catch (e: Exception) {
             Log.e(TAG, e.stackTraceToString())
@@ -117,25 +87,11 @@ class GPSObservation(
 
     override fun locationAvailable(available: Boolean) {
         Napier.d { "Location available: $available" }
-    }
-
-    private fun checkPermission(): Boolean {
-        return this.hasPermission() == PermissionApprovalState.GRANTED
-    }
-
-    private fun hasPermissions(context: Context): Boolean {
-        getPermission().forEach { permission ->
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    permission
-                ) == PackageManager.PERMISSION_DENIED
-            ) {
-                Napier.d { "Has no GPS permissions!" }
-                return false
+        if (!available) {
+            Scope.launch() {
+                updateObservationErrors()
             }
         }
-        Napier.d { "Has GPS permissions!" }
-        return true
     }
 
     companion object {

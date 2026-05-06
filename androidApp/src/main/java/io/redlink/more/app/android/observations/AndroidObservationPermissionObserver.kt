@@ -48,6 +48,7 @@ class AndroidObservationPermissionObserver(
     }
 
     override fun requestPermission(observationType: ObservationType) {
+        Napier.d { "Requesting permissions for $observationType" }
         if (observationType.observationType == AppUsageObservationType().observationType) {
             if (permissionState(observationType) != PermissionApprovalState.NOT_SET) {
                 return

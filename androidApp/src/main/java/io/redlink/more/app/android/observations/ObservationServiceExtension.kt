@@ -51,7 +51,12 @@ fun startObservationsWithPermissionCheck(
                 if (granted) {
                     startObservationsWithPermissionCheck(scheduleIds, activity)
                 } else {
-                    observationNeedingPermissions.showPermissionAlertDialog()
+                    observationNeedingPermissions.showPermissionAlertDialog(
+                        PermissionUtils.getMissingPermissionNames(
+                            observationNeedingPermissions,
+                            activity
+                        )
+                    )
                 }
             }
         } else {

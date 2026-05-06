@@ -20,6 +20,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
 import io.redlink.more.observations.Observation
+import io.redlink.more.observations.observationTypes.AppUsageObservationType
+import io.redlink.more.services.store.PermissionApprovalState
 
 /**
  * Utility class for handling permissions for observations
@@ -74,8 +76,36 @@ object PermissionUtils {
      * @return True if all permissions are granted, false otherwise
      */
     fun hasAllPermissions(observation: Observation, context: Context): Boolean {
-        val permissions = observation.observationType.sensorPermissions
-        return hasAllPermissions(permissions, context)
+        return observation.hasPermission() == PermissionApprovalState.GRANTED
+    }
+
+    fun getMissingPermissionNames(observation: Observation, context: Context): List<String> {
+        val missing = mutableListOf<String>()
+        if (observation.observationType.observationType == AppUsageObservationType().observationType) {
+            if (observation.hasPermission() != PermissionApprovalState.GRANTED) {
+                missing.add("App Usage")
+            }
+        } else {
+            for (permission in observation.observationType.sensorPermissions) {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    missing.add(getPermissionLabel(context, permission))
+                }
+            }
+        }
+        return missing
+    }
+
+    fun getPermissionLabel(context: Context, permission: String): String {
+        return try {
+            val permissionInfo = context.packageManager.getPermissionInfo(permission, 0)
+            permissionInfo.loadLabel(context.packageManager).toString()
+        } catch (e: Exception) {
+            permission.substringAfterLast('.')
+        }
     }
 
     /**
@@ -141,7 +171,7 @@ object PermissionUtils {
         if (permissionLauncher != null) {
             permissionLauncher.launch(permissionsToRequest)
         } else {
-            observation.showPermissionAlertDialog()
+            observation.showPermissionAlertDialog(getMissingPermissionNames(observation, activity))
             callback?.invoke(false)
         }
 

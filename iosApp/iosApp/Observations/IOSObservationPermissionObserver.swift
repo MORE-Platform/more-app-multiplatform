@@ -21,6 +21,7 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
         if observationType is GPSType {
             let lm = CLLocationManager()
             let status = lm.authorizationStatus
+            Napier.i("GPS authorization: \(status)")
             return if status == .notDetermined {
                 .notSet
             } else if (status == .authorizedAlways || status == .authorizedWhenInUse) && lm.accuracyAuthorization == .fullAccuracy {
@@ -31,6 +32,7 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
         }
         if observationType is AccelerometerType {
             let status = CMSensorRecorder.authorizationStatus()
+            Napier.i("CMSensorRecorder authorization: \(status)")
             return if status == .notDetermined {
                 .notSet
             } else if status == .authorized {
@@ -41,6 +43,7 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
         }
         if observationType is PolarVerityHeartRateType {
             let status = CBManager.authorization
+            Napier.i("CBManager authorization: \(status)")
             return if status == .notDetermined {
                 .notSet
             } else if status == .allowedAlways {
@@ -51,6 +54,7 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
         }
         if observationType is AppUsageObservationType {
             let status = ATTrackingManager.trackingAuthorizationStatus
+            Napier.i("ATTrackingManager authorization: \(status)")
             if status == .notDetermined {
                 return .notSet
             } else if status == .authorized {

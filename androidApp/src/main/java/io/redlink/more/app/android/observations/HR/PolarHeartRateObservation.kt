@@ -21,7 +21,6 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.observations.pauseObservation
-import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.anyNameIn
@@ -149,10 +148,6 @@ class PolarHeartRateObservation(repos: MainRepository) :
         val errors = mutableSetOf<String>()
         if (!hasPermissions(MoreApplication.appContext!!)) {
             errors.add("error_access_bluetooth")
-            if (!isPermissionRequested(observationType.observationType)) {
-                markPermissionRequested(observationType.observationType)
-                showPermissionAlertDialog()
-            }
             PolarStates.hrFeatureReady(false)
         }
         if (!BluetoothStateListener.bluetoothEnabled.value) {

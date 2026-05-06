@@ -11,14 +11,8 @@
 
 package io.redlink.more.observations.appUsage
 
-import dev.icerock.moko.resources.desc.Resource
-import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.Napier
-import io.redlink.more.SharedRes
 import io.redlink.more.database.repository.MainRepository
-import io.redlink.more.dialog.AlertController
-import io.redlink.more.dialog.AlertDialogModel
-import io.redlink.more.getPlatform
 import io.redlink.more.logging.EventCollection
 import io.redlink.more.logging.EventObserver
 import io.redlink.more.observations.Observation
@@ -29,7 +23,6 @@ import io.redlink.more.observations.observationTypes.AppUsageObservationType
 import io.redlink.more.services.store.PermissionApprovalState
 import io.redlink.more.services.store.PermissionRepository
 import io.redlink.more.services.store.PermissionType
-import io.redlink.more.util.openSystemSettings
 import kotlinx.datetime.Clock
 
 class AppUsageObservation(
@@ -173,20 +166,8 @@ class AppUsageObservation(
         permissionRepository.storeValue(BUFFER_KEY, json)
     }
 
-    override fun start(
-        observationId: String,
-        scheduleId: String,
-        notificationId: String?
-    ): Boolean {
-        if (hasPermission() != PermissionApprovalState.GRANTED) {
-            requestPermission()
-        }
-        val started = super.start(observationId, scheduleId, notificationId)
-        flushBufferIfPossible()
-        return started
-    }
-
     override fun start(): Boolean {
+        flushBufferIfPossible()
         return true
     }
 
@@ -203,24 +184,6 @@ class AppUsageObservation(
         if (hasPermission() == PermissionApprovalState.DECLINED) {
             Napier.e { "App tracking declined!" }
             errors.add("app_usage_tracking_declined")
-            if (isPermissionRequested(observationType.observationType)) {
-                return errors
-            }
-            markPermissionRequested(observationType.observationType)
-            val isAndroid = getPlatform().name.lowercase().contains("android")
-            val messageRes = if (isAndroid) {
-                SharedRes.strings.app_usage_tracking_disabled_message_android
-            } else {
-                SharedRes.strings.app_usage_tracking_disabled_message_ios
-            }
-            val model = AlertDialogModel(
-                title = StringDesc.Resource(SharedRes.strings.app_usage_tracking_disabled_title),
-                message = StringDesc.Resource(messageRes),
-                confirmLabel = StringDesc.Resource(SharedRes.strings.app_usage_tracking_disabled_confirm),
-                cancelLabel = StringDesc.Resource(SharedRes.strings.app_tracking_dialog_negative_button),
-                onConfirm = { openSystemSettings() }
-            )
-            AlertController.openAlertDialog(model)
         }
         return errors
     }

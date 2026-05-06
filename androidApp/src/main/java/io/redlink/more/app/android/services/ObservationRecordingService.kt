@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.services
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Notification
@@ -18,10 +19,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
@@ -56,18 +61,27 @@ class ObservationRecordingService : Service() {
         // Critical: Start foreground service immediately to prevent ANR crashes
         // This must happen within 5 seconds when startForegroundService() is called
         try {
-            if (!running) {
-                startForegroundService()
-            }
+            startForegroundService()
         } catch (e: Exception) {
             Napier.e("Failed to start foreground service: ${e.message}")
             try {
-                val basicNotification = Notification.Builder(this, "default")
-                    .setContentTitle("${MoreApplication.appName} Observation Service")
+                val fallbackChannelId = "observation_service_fallback"
+                val notificationManager = getSystemService(NotificationManager::class.java)
+                if (notificationManager?.getNotificationChannel(fallbackChannelId) == null) {
+                    val fallbackChannel = NotificationChannel(
+                        fallbackChannelId,
+                        "Observation Service Fallback",
+                        NotificationManager.IMPORTANCE_LOW
+                    )
+                    notificationManager?.createNotificationChannel(fallbackChannel)
+                }
+                val basicNotification = Notification.Builder(this, fallbackChannelId)
+                    .setContentTitle("${MoreApplication.appName ?: "More"} Observation Service")
                     .setContentText("Service is running")
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .build()
-                startForeground(1001, basicNotification)
+                val type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                startForeground(1001, basicNotification, type)
                 running = true
             } catch (fallbackException: Exception) {
                 Napier.e("Failed to start foreground service with fallback notification: ${fallbackException.message}")
@@ -419,6 +433,47 @@ class ObservationRecordingService : Service() {
         }
     }
 
+    private fun calculateForegroundServiceType(): Int {
+        var type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+
+        // Location check
+        val hasLocationPermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+        if (hasLocationPermission) {
+            type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+        }
+
+        // Connected Device check (Bluetooth)
+        val hasBluetoothPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_SCAN
+                    ) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_ADVERTISE
+                    ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+        if (hasBluetoothPermission) {
+            type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+        }
+
+        return type
+    }
+
     private fun startForegroundService() {
         Napier.d { "Starting the foreground service..." }
         try {
@@ -435,11 +490,12 @@ class ObservationRecordingService : Service() {
             }
 
             val notification = buildNotification(
-                channelId = MoreApplication.DEFAULT_CHANNEL_ID!!,
+                channelId = MoreApplication.DEFAULT_CHANNEL_ID ?: (packageName + ".observation_service"),
                 notificationTitle = notificationTitle,
                 notificationText = notificationText
             )
-            startForeground(1001, notification)
+            val type = calculateForegroundServiceType()
+            startForeground(1001, notification, type)
             running = true
             Napier.d { "Foreground service started successfully" }
         } catch (e: Exception) {
@@ -487,8 +543,18 @@ class ObservationRecordingService : Service() {
                 .build()
         } catch (e: Exception) {
             Napier.e("Failed to build notification: ${e.message}")
-            return Notification.Builder(applicationContext, "default")
-                .setContentTitle("${MoreApplication.appName} Service")
+            val fallbackChannelId = "observation_service_fallback"
+            val notificationManager = applicationContext.getSystemService(NotificationManager::class.java)
+            if (notificationManager?.getNotificationChannel(fallbackChannelId) == null) {
+                val fallbackChannel = NotificationChannel(
+                    fallbackChannelId,
+                    "Observation Service Fallback",
+                    NotificationManager.IMPORTANCE_LOW
+                )
+                notificationManager?.createNotificationChannel(fallbackChannel)
+            }
+            return Notification.Builder(applicationContext, fallbackChannelId)
+                .setContentTitle("${MoreApplication.appName ?: "More"} Service")
                 .setContentText("Running")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setOngoing(true)
@@ -576,7 +642,12 @@ class ObservationRecordingService : Service() {
                                 if (granted) {
                                     checkPermissionsAndStart(scheduleIds, activity)
                                 } else {
-                                    observationNeedingPermissions.showPermissionAlertDialog()
+                                    observationNeedingPermissions.showPermissionAlertDialog(
+                                        PermissionUtils.getMissingPermissionNames(
+                                            observationNeedingPermissions,
+                                            activity
+                                        )
+                                    )
                                     pendingScheduleIds.removeAll(scheduleIds)
                                 }
                             }

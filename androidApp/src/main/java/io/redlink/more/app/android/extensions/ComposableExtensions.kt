@@ -43,7 +43,11 @@ fun getStringResourceByName(name: String): String {
         "string",
         LocalContext.current.packageName
     )
-    return getStringResource(resourceId)
+    return if (resourceId != 0) {
+        getStringResource(resourceId)
+    } else {
+        name
+    }
 }
 
 @Composable

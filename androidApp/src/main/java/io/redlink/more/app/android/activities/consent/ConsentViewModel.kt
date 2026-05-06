@@ -35,11 +35,15 @@ class ConsentViewModel(
         }
     }
 
-    fun openPermissionDeniedAlertDialog(context: Context) {
+    fun openPermissionDeniedAlertDialog(context: Context, missingPermissions: List<String> = emptyList()) {
+        var message = stringResource(R.string.required_permission_not_granted_message)
+        if (missingPermissions.isNotEmpty()) {
+            message += "\n\n" + stringResource(R.string.missing_permissions_label) + ": " + missingPermissions.joinToString(", ")
+        }
         AlertController.openAlertDialog(
             AlertDialogModel(
                 title = StringDesc.Raw(stringResource(R.string.required_permissions_not_granted_title)),
-                message = StringDesc.Raw(stringResource(R.string.required_permission_not_granted_message)),
+                message = StringDesc.Raw(message),
                 confirmLabel = StringDesc.Raw(stringResource(R.string.proceed_to_settings_button)),
                 cancelLabel = StringDesc.Raw(stringResource(R.string.proceed_without_granting_button)),
                 onConfirm = {
