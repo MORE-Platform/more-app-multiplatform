@@ -102,17 +102,13 @@ abstract class Observation(
         }
         configChanged = false
         return if (!running) {
-            Napier.i(tag = "Observation::start") { "Observation with type ${observationType.observationType} starting" }
+            Napier.i(tag = "Observation::start") { "Observation with type ${observationType.observationType} starting..." }
             applyObservationConfig(config)
             permissionObserver?.let {
-                if (it.permissionState(this.observationType) != PermissionApprovalState.GRANTED) {
-                    Napier.w(tag = "Observation::start") { "Observation with type ${observationType.observationType} missing permissions: ${observationType.sensorPermissions}! Requesting..." }
-                    it.requestPermission(this.observationType)
-                    return false
-                }
-                Napier.d { "Observation with type ${observationType.observationType} has all necessary permissions!" }
+                updateObservationPermissions()
             }
             running = start()
+            Napier.i { "Observation with type ${observationType.observationType} started: $running" }
             running
         } else true
     }
@@ -207,6 +203,15 @@ abstract class Observation(
     }
 
     protected open fun observerErrors(): Set<String> = emptySet()
+
+    fun updateObservationPermissions() {
+        if (hasPermission() != PermissionApprovalState.GRANTED) {
+            Napier.w { "Permissions not given for observation ${observationType.observationType}! Requesting permissions..." }
+            requestPermission()
+        } else {
+            Napier.d { "All permissions given for observation ${observationType.observationType}!" }
+        }
+    }
 
     suspend fun updateObservationErrors() {
         repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {

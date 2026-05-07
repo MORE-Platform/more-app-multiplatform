@@ -69,6 +69,7 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
     }
 
     func requestPermission(observationType: ObservationType) {
+        AppDelegate.shared.observationFactory.startRequestingPermissions()
         if observationType is GPSType {
             locationManager.delegate = self
             let status = locationManager.authorizationStatus
@@ -78,6 +79,9 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
                 locationManager.requestAlwaysAuthorization()
             } else if status == .denied || status == .restricted || locationManager.accuracyAuthorization != .fullAccuracy {
                 PermissionManager.openSensorPermissionDialog()
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
+            } else {
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
             }
             return
         }
@@ -91,9 +95,13 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
                 mam.startActivityUpdates(to: OperationQueue.main) { [weak self] _ in
                     self?.motionActivityManager?.stopActivityUpdates()
                     self?.motionActivityManager = nil
+                    AppDelegate.shared.observationFactory.stopRequestingPermissions()
                 }
             } else if status == .denied || status == .restricted {
                 PermissionManager.openSensorPermissionDialog()
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
+            } else {
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
             }
             return
         }
@@ -105,6 +113,9 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
                 centralManager = CBCentralManager(delegate: self, queue: nil)
             } else if status == .denied || status == .restricted {
                 PermissionManager.openSensorPermissionDialog()
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
+            } else {
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
             }
             return
         }
@@ -114,15 +125,20 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
             if status == .notDetermined {
                 ATTrackingManager.requestTrackingAuthorization { _ in
                     // Observation flow will re-check via permissionState
+                    AppDelegate.shared.observationFactory.stopRequestingPermissions()
                 }
             } else if status == .denied || status == .restricted {
                 PermissionManager.openSensorPermissionDialog()
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
+            } else {
+                AppDelegate.shared.observationFactory.stopRequestingPermissions()
             }
             return
         }
 
         // Default fallback for other observation types
         PermissionManager.openSensorPermissionDialog()
+        AppDelegate.shared.observationFactory.stopRequestingPermissions()
     }
 }
 
@@ -130,6 +146,7 @@ extension IOSObservationPermissionObserver: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         // No-op: Observation flow will re-check via permissionState
         locationManager.delegate = nil
+        AppDelegate.shared.observationFactory.stopRequestingPermissions()
     }
 }
 
@@ -137,5 +154,6 @@ extension IOSObservationPermissionObserver: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         // Release once we have a state update; prompt has been shown (if needed)
         centralManager = nil
+        AppDelegate.shared.observationFactory.stopRequestingPermissions()
     }
 }

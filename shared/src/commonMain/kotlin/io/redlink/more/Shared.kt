@@ -192,7 +192,6 @@ open class Shared(
         observationFactory.observationsWithInterface(EventObserver::class)
             .forEach { EventCollection.addObserver(it) }
         observationManager.updateTaskStates()
-        observationFactory.updateObservationErrors()
         observationService.scheduleObservationReminder()
         notificationManager.downloadMissedNotifications()
     }
@@ -361,9 +360,8 @@ open class Shared(
         }
     }
 
-    suspend fun newLogin() {
+    fun newLogin() {
         notificationManager.newFCMToken()
-        observationFactory.updateObservationErrors()
         garminLogin()
     }
 

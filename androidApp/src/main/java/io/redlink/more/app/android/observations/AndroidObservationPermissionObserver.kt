@@ -49,8 +49,10 @@ class AndroidObservationPermissionObserver(
 
     override fun requestPermission(observationType: ObservationType) {
         Napier.d { "Requesting permissions for $observationType" }
+        MoreApplication.shared?.observationFactory?.startRequestingPermissions()
         if (observationType.observationType == AppUsageObservationType().observationType) {
             if (permissionState(observationType) != PermissionApprovalState.NOT_SET) {
+                MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
                 return
             }
             AlertController.openAlertDialog(
@@ -61,9 +63,11 @@ class AndroidObservationPermissionObserver(
                     cancelLabel = StringDesc.Resource(SharedRes.strings.app_tracking_dialog_negative_button),
                     onConfirm = {
                         Napier.event(LogEvent.APP_TRACKING_ACCEPTED)
+                        MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
                     },
                     onDecline = {
                         Napier.event(LogEvent.APP_TRACKING_DECLINED)
+                        MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
                     }
                 )
             )
@@ -74,8 +78,14 @@ class AndroidObservationPermissionObserver(
         if (activity != null) {
             MoreApplication.shared!!.observationFactory.observation(observationType.observationType)
                 ?.let { observation ->
-                    PermissionUtils.requestPermissions(observation, activity)
-                }
+                    PermissionUtils.requestPermissions(observation, activity) {
+                        MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
+                    }
+                } ?: run {
+                MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
+            }
+        } else {
+            MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
         }
     }
 }

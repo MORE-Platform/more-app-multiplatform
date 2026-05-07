@@ -26,6 +26,8 @@ import io.redlink.more.services.store.CredentialRepository
 import io.redlink.more.services.store.PermissionRepository
 import io.redlink.more.services.store.PermissionRepositoryImpl
 import io.redlink.more.services.store.SharedStorageRepository
+import io.redlink.more.viewModels.ViewManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.reflect.KClass
@@ -34,8 +36,31 @@ abstract class ObservationFactory(
     repository: MainRepository,
     sharedStorageRepository: SharedStorageRepository,
     private val dataManager: ObservationDataManager,
-    scope: MoreScope = Scope
+    private val scope: MoreScope = Scope
 ) {
+    private var isRequestingPermissions = false
+    private var updateErrorsDeferred = false
+
+    private var activePermissionRequests = 0
+
+    fun startRequestingPermissions() {
+        activePermissionRequests++
+        isRequestingPermissions = true
+    }
+
+    fun stopRequestingPermissions() {
+        activePermissionRequests--
+        if (activePermissionRequests <= 0) {
+            activePermissionRequests = 0
+            isRequestingPermissions = false
+            if (updateErrorsDeferred) {
+                updateErrorsDeferred = false
+                scope.launch(AppDispatchers.default) {
+                    updateObservationErrors()
+                }
+            }
+        }
+    }
     private var credentialRepository: CredentialRepository? = null
     open val observations = mutableSetOf<Observation>()
 
@@ -53,11 +78,23 @@ abstract class ObservationFactory(
     init {
         registerImportantObservations(repository, permissionRepository)
         registerNormalObservations(repository)
-        scope.launch(AppDispatchers.io) {
+        scope.launch(AppDispatchers.default) {
             repository.observation.observationTypes().collect {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 initializeNeededObservations(it)
                 _studyObservationTypes.value = it
+                if (it.isNotEmpty()) {
+                    scope.launch(AppDispatchers.default) {
+                        Napier.d { "Updating observation permissions..." }
+                        while (!ViewManager.appInForeground.value) {
+                            Napier.d { "App not in foreground! Waiting for permission check..." }
+                            delay(100)
+                        }
+                        updateObservationPermissions()
+                        updateObservationErrors()
+                        Napier.d { "Updated permission check!" }
+                    }
+                }
             }
         }
     }
@@ -161,8 +198,25 @@ abstract class ObservationFactory(
     }
 
     open suspend fun updateObservationErrors() {
+        if (isRequestingPermissions) {
+            updateErrorsDeferred = true
+            Napier.d { "Observation error update blocked while requesting permissions. Deferring..." }
+            return
+        }
         if (this.credentialRepository?.hasCredentials?.value == true) {
+            Napier.d { "Updating Observation errors..." }
             studyObservations().forEach { it.updateObservationErrors() }
+        }
+    }
+
+    fun updateObservationPermissions() {
+        if (this.credentialRepository?.hasCredentials?.value == true) {
+            startRequestingPermissions()
+            Napier.d { "Updating Observation permissions for types ${studyObservations()}..." }
+            studyObservations().forEach {
+                it.updateObservationPermissions()
+            }
+            stopRequestingPermissions()
         }
     }
 
