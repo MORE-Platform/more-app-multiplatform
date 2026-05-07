@@ -27,9 +27,13 @@ import io.redlink.more.services.store.PermissionRepository
 import io.redlink.more.services.store.PermissionRepositoryImpl
 import io.redlink.more.services.store.SharedStorageRepository
 import io.redlink.more.viewModels.ViewManager
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import kotlin.reflect.KClass
 
 abstract class ObservationFactory(
@@ -79,21 +83,12 @@ abstract class ObservationFactory(
         registerImportantObservations(repository, permissionRepository)
         registerNormalObservations(repository)
         scope.launch(AppDispatchers.default) {
-            repository.observation.observationTypes().collect {
+            repository.observation.observationTypes().collectLatest {
                 Napier.i(tag = "ObservationFactory::init") { "Observation types fetched: $it" }
                 initializeNeededObservations(it)
                 _studyObservationTypes.value = it
                 if (it.isNotEmpty()) {
-                    scope.launch(AppDispatchers.default) {
-                        Napier.d { "Updating observation permissions..." }
-                        while (!ViewManager.appInForeground.value) {
-                            Napier.d { "App not in foreground! Waiting for permission check..." }
-                            delay(100)
-                        }
-                        updateObservationPermissions()
-                        updateObservationErrors()
-                        Napier.d { "Updated permission check!" }
-                    }
+                    updateObservationPermissionsAndErrorsWhenInForeground()
                 }
             }
         }
@@ -197,6 +192,27 @@ abstract class ObservationFactory(
         return autoStartTypes
     }
 
+    private suspend fun updateObservationPermissionsAndErrorsWhenInForeground() {
+        withTimeoutOrNull(300_000L) {
+            ViewManager.appInForeground.collectLatest { inForeground ->
+                if (inForeground) {
+                    Napier.d { "App in foreground, updating observation permissions and errors..." }
+                    updateObservationPermissions()
+                    updateObservationErrors()
+                    Napier.d { "Updated permission check!" }
+                    cancel()
+                } else {
+                    var currentLogDelay = 1000L
+                    while (true) {
+                        Napier.d { "App not in foreground! Waiting for permission check..." }
+                        delay(currentLogDelay)
+                        currentLogDelay = (currentLogDelay * 2).coerceAtMost(30000L)
+                    }
+                }
+            }
+        }
+    }
+
     open suspend fun updateObservationErrors() {
         if (isRequestingPermissions) {
             updateErrorsDeferred = true
@@ -209,14 +225,18 @@ abstract class ObservationFactory(
         }
     }
 
-    fun updateObservationPermissions() {
+    suspend fun updateObservationPermissions() {
         if (this.credentialRepository?.hasCredentials?.value == true) {
             startRequestingPermissions()
-            Napier.d { "Updating Observation permissions for types ${studyObservations()}..." }
-            studyObservations().forEach {
-                it.updateObservationPermissions()
+            try {
+                Napier.d { "Updating Observation permissions for types ${studyObservations()}..." }
+                studyObservations().forEach {
+                    yield()
+                    it.updateObservationPermissions()
+                }
+            } finally {
+                stopRequestingPermissions()
             }
-            stopRequestingPermissions()
         }
     }
 
