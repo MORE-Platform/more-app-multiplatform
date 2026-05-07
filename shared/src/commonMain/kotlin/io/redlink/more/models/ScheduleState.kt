@@ -29,5 +29,6 @@ enum class ScheduleState {
 
     companion object {
         fun getState(name: String) = entries.firstOrNull { it.name == name } ?: DEACTIVATED
+        val presentScheduleStates = listOf(DEACTIVATED, ACTIVE, RUNNING, PAUSED)
     }
 }

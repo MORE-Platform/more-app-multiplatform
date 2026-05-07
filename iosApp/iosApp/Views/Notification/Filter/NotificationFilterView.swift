@@ -17,11 +17,11 @@ import shared
 import SwiftUI
 
 struct NotificationFilterView: View {
-    @StateObject private var viewModel: NotificationFilterViewModel
+    private let viewModel: NotificationFilterViewModel
     @State var filtersChanged = false
 
     init(coreVM: CoreNotificationFilterViewModel) {
-        _viewModel = StateObject(wrappedValue: NotificationFilterViewModel(coreViewModel: coreVM))
+        viewModel = NotificationFilterViewModel(coreViewModel: coreVM)
     }
 
     var body: some View {
@@ -52,5 +52,11 @@ struct NotificationFilterView: View {
         }
         .customNavigationTitle(with: NavigationScreen.notificationFilter.localize())
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.coreViewModel.viewDidAppear()
+        }
+        .onDisappear {
+            viewModel.coreViewModel.viewDidDisappear()
+        }
     }
 }

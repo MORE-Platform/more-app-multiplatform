@@ -113,6 +113,9 @@ interface ScheduleDao : BaseDao<ScheduleEntity> {
     @Query("SELECT COUNT(*) FROM schedules WHERE observationId = :observationId")
     suspend fun getCountByObservationId(observationId: String): Int
 
+    @Query("SELECT DISTINCT observationType FROM schedules WHERE scheduleId IN (:scheduleIds)")
+    fun getObservationTypesForScheduleIds(scheduleIds: Set<String>): Flow<List<String>>
+
     @Query("UPDATE schedules SET done = :done WHERE scheduleId = :scheduleId")
     suspend fun updateDoneStatus(scheduleId: String, done: Boolean)
 

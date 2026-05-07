@@ -1,7 +1,21 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.viewModels
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
+import io.redlink.more.logging.event
+import io.redlink.more.observations.Observation
+import io.redlink.more.observations.appUsage.model.LogEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,6 +31,7 @@ object ViewManager {
     private val _studyIsUpdating = MutableStateFlow(false)
     private val _showBluetoothView = MutableStateFlow(false)
     private val _showGarminConnectView = MutableStateFlow(false)
+    private val _showSettingsView = MutableStateFlow(false)
     private val _studyLoadingError = MutableStateFlow(false)
     private val _appInForeground = MutableStateFlow(false)
     private val _bleViewOpen = MutableStateFlow(false)
@@ -36,6 +51,9 @@ object ViewManager {
 
     @NativeCoroutines
     val showGarminConnectView: StateFlow<Boolean> = _showGarminConnectView
+
+    @NativeCoroutines
+    val showSettingsView: StateFlow<Boolean> = _showSettingsView
 
     @NativeCoroutines
     val activeStudy: StateFlow<Boolean> = _activeStudy
@@ -114,6 +132,12 @@ object ViewManager {
     }
 
     fun appIsInForeground(state: Boolean) {
+        if (state) {
+            Napier.event(LogEvent.APP_IN_FOREGROUND)
+            Observation.resetRequestedPermissions()
+        } else {
+            Napier.event(LogEvent.APP_IN_BACKGROUND)
+        }
         _appInForeground.value = state
     }
 
@@ -137,10 +161,15 @@ object ViewManager {
         return false
     }
 
+    fun showSettingsView(state: Boolean) {
+        _showSettingsView.value = state
+    }
+
     fun resetAll() {
         _studyIsUpdating.value = false
         _showBluetoothView.value = false
         _showGarminConnectView.value = false
+        _showSettingsView.value = false
         _studyLoadingError.value = false
         _bleViewOpen.value = false
         pendingViewRequests.clear()

@@ -110,7 +110,7 @@ class ObservationManager(
                     scheduleSchemaList.removeAll { it.scheduleId == scheduleId }
                     currentlyRunning.remove(scheduleId)
                 }
-                result
+                return@let result
             } ?: false
             if (!result) {
                 Napier.w(tag = "ObservationManager::start") { "Could not find observation for schema for scheduleId: $scheduleId" }

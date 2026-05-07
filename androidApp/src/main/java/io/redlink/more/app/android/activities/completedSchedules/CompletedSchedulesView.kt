@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.list.ScheduleListView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
@@ -32,25 +33,30 @@ fun CompletedSchedulesView(
     navController: NavController,
     taskCompletionBarViewModel: TaskCompletionBarViewModel
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        ScheduleListHeader(
-            viewModel = viewModel,
-            navController = navController,
-            taskCompletionBarViewModel = taskCompletionBarViewModel
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Column {
-            ScheduleListView(
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewDidAppear() },
+        { viewModel.coreViewModel.viewDidDisappear() }) {
+
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            ScheduleListHeader(
+                viewModel = viewModel,
                 navController = navController,
-                scheduleViewModel = viewModel,
-                showButton = false
+                taskCompletionBarViewModel = taskCompletionBarViewModel
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            Column {
+                ScheduleListView(
+                    navController = navController,
+                    scheduleViewModel = viewModel,
+                    showButton = false
+                )
+            }
         }
     }
 }

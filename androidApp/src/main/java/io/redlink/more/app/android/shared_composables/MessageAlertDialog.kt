@@ -18,17 +18,19 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import io.redlink.more.app.android.theme.MoreColors
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertDialogModel
 
 @Composable
 fun MessageAlertDialog(model: AlertDialogModel) {
+    val context = LocalContext.current
     MessageAlertDialog(
-        title = model.title,
-        message = model.message,
-        positiveButtonTitle = model.confirmLabel,
-        negativeButtonTitle = model.cancelLabel,
+        title = model.title.toString(context),
+        message = model.message.toString(context),
+        positiveButtonTitle = model.confirmLabel.toString(context),
+        negativeButtonTitle = model.cancelLabel?.toString(context),
         onPositive = model.onConfirm,
         onNegative = model.onDecline
     )

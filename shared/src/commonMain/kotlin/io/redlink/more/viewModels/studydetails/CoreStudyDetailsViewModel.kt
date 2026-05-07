@@ -13,6 +13,7 @@ package io.redlink.more.viewModels.studydetails
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.Shared
 import io.redlink.more.models.StudyDetailsModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,11 +21,15 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 
-class CoreStudyDetailsViewModel(shared: Shared) : CoreViewModel() {
+class CoreStudyDetailsViewModel(shared: Shared, private val customViewIdentifier: String? = null) :
+    CoreViewModel() {
     private val _studyModel = MutableStateFlow<StudyDetailsModel?>(null)
 
     @NativeCoroutines
     val studyModel: StateFlow<StudyDetailsModel?> = _studyModel
+    override fun viewIdentifier(): String {
+        return customViewIdentifier ?: NavigationRoute.STUDY_DETAILS.viewIdentifier
+    }
 
     init {
         launchScope {

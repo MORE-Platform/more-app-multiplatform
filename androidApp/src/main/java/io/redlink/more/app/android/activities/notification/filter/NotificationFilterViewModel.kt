@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NotificationFilterViewModel(private val coreViewModel: CoreNotificationFilterViewModel) :
+class NotificationFilterViewModel(val coreViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
     val currentFilters = mutableStateMapOf<NotificationFilterTypeModel, Boolean>()
 

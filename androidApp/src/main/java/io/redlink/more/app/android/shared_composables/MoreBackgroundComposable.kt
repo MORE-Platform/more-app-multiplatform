@@ -39,11 +39,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.main.MainTabView
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.MorePlatformTheme
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.viewModels.ViewManager
 
 @Composable
 fun MoreBackground(
@@ -61,12 +62,15 @@ fun MoreBackground(
 ) {
     val context = LocalContext.current
     val alertDialogModel by AlertController.alertDialogModel.collectAsStateWithLifecycle(null)
-    if (MoreApplication.openSettings.value) {
+    val showSettingsView by ViewManager.showSettingsView.collectAsStateWithLifecycle(false)
+
+    if (MoreApplication.openSettings.value || showSettingsView) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
         }
         context.startActivity(intent)
         MoreApplication.openSettings.value = false
+        ViewManager.showSettingsView(false)
     }
     MorePlatformTheme {
         Scaffold(

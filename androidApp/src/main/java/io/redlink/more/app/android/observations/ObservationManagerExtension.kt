@@ -50,7 +50,12 @@ suspend fun ObservationManager.startWithPermissionCheck(
                     Napier.d("Observation started with result: $result")
                 }
             } else {
-                observation.showPermissionAlertDialog()
+                observation.showPermissionAlertDialog(
+                    PermissionUtils.getMissingPermissionNames(
+                        observation,
+                        activity
+                    )
+                )
             }
         }
 

@@ -15,10 +15,12 @@ import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.models.ScheduleState
+import io.redlink.more.observations.longRunningObservation.LongRunningObservationStorage
 import io.redlink.more.observations.observationTypes.ObservationType
 import io.redlink.more.scopes.Scope
 import io.redlink.more.scopes.StudyScope
 import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.services.store.PermissionApprovalState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -29,17 +31,28 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
+interface ObservationPermissionObserver {
+    fun requestPermission(observationType: ObservationType)
+    fun permissionState(observationType: ObservationType): PermissionApprovalState
+}
+
 abstract class Observation(
-    private val repos: MainRepository,
-    val observationType: ObservationType
+    protected val repos: MainRepository,
+    val observationType: ObservationType,
 ) {
     private var dataManager: ObservationDataManager? = null
     private var notificationManager: NotificationManager? = null
 
-    private var running = false
-    private val observationIds = mutableSetOf<String>()
+    private var permissionObserver: ObservationPermissionObserver? = null
+
+    protected var running = false
+    protected val observationIds = mutableSetOf<String>()
+
+    protected var longRunningStorage: LongRunningObservationStorage? = null
+
+
     private val observationTypes = mutableMapOf<String, String>()
-    private val scheduleIds = mutableMapOf<String, String>()
+    protected val scheduleIds = mutableMapOf<String, String>()
     private val notificationIds = mutableMapOf<String, String>()
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
@@ -47,6 +60,15 @@ abstract class Observation(
     protected var lastCollectionTimestamp: Instant = Clock.System.now()
 
     var timestampCollectionJob: Job? = null
+
+    fun setPermissionObserver(observer: ObservationPermissionObserver?) {
+        permissionObserver = observer
+        Napier.d { "PermissionObserver set for ${observationTypes.values.joinToString(", ")}" }
+    }
+
+    fun setLongRunningObservationStorage(longRunningObservationStorage: LongRunningObservationStorage?) {
+        this.longRunningStorage = longRunningObservationStorage
+    }
 
     open fun start(
         observationId: String,
@@ -80,16 +102,20 @@ abstract class Observation(
         }
         configChanged = false
         return if (!running) {
-            Napier.i(tag = "Observation::start") { "Observation with type ${observationType.observationType} starting" }
+            Napier.i(tag = "Observation::start") { "Observation with type ${observationType.observationType} starting..." }
             applyObservationConfig(config)
+            permissionObserver?.let {
+                updateObservationPermissions()
+            }
             running = start()
-            return running
+            Napier.i { "Observation with type ${observationType.observationType} started: $running" }
+            running
         } else true
     }
 
     open fun stop(scheduleId: String, removeNotification: Boolean = false) {
         Napier.i(tag = "Observation::stop") { "Stopping observation of type ${observationType.observationType} for schedule $scheduleId." }
-        if (observationIds.size <= 1) {
+        if (scheduleIds.size <= 1) {
             stop {
                 timestampCollectionJob?.cancel()
                 saveAndSend()
@@ -120,6 +146,25 @@ abstract class Observation(
 
     fun addNotificationId(scheduleId: String, notificationId: String) {
         notificationIds[scheduleId] = notificationId
+    }
+
+    fun requestPermission() {
+        if (isPermissionRequested(observationType.observationType)) {
+            Napier.d(tag = "Observation::requestPermission") { "Permission already requested for ${observationType.observationType} in this session, skipping..." }
+            return
+        }
+        markPermissionRequested(observationType.observationType)
+        if (permissionObserver == null) {
+            Napier.w { "Permission observer is null for observation type ${observationType.observationType}" }
+        }
+        permissionObserver?.requestPermission(observationType)
+    }
+
+    open fun hasPermission(): PermissionApprovalState {
+        return permissionObserver?.permissionState(observationType) ?: run {
+            Napier.w { "Permission observer is null for observation type ${observationType.observationType}" }
+            PermissionApprovalState.NOT_SET
+        }
     }
 
     fun observationConfig(settings: Map<String, Any>) {
@@ -154,13 +199,19 @@ abstract class Observation(
     fun observerAccessible(): Boolean {
         val errors = observerErrors()
         Napier.d(tag = "Observation::observerAccessible") { errors.toString() }
-        Scope.launch {
-            updateObservationErrors()
-        }
         return errors.isEmpty()
     }
 
     protected open fun observerErrors(): Set<String> = emptySet()
+
+    fun updateObservationPermissions() {
+        if (hasPermission() != PermissionApprovalState.GRANTED) {
+            Napier.w { "Permissions not given for observation ${observationType.observationType}! Requesting permissions..." }
+            requestPermission()
+        } else {
+            Napier.d { "All permissions given for observation ${observationType.observationType}!" }
+        }
+    }
 
     suspend fun updateObservationErrors() {
         repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
@@ -183,7 +234,23 @@ abstract class Observation(
 
     open fun ableToAutomaticallyStart() = true
 
-    fun storeData(data: Any, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
+    fun <T> storeInstant(data: T, timestamp: Long) {
+        longRunningStorage?.storeInstant(data, timestamp)
+    }
+
+    fun <T> startLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.startObservation(data, identifier, timestamp)
+    }
+
+    fun <T> finishLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.finishObservation(data, identifier, timestamp)
+    }
+
+    fun <T> inRangeLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.inRangeObservation(data, identifier, timestamp)
+    }
+
+    fun storeData(data: Map<String, Any>, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
         val dataSchemas = ObservationDataEntity.fromData(
             observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
         ).map {
@@ -209,9 +276,14 @@ abstract class Observation(
     }
 
     open fun stopAndFinish(scheduleId: String) {
-        Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for observationIds: $observationIds" }
-        stop {
-            timestampCollectionJob?.cancel()
+        Napier.i(tag = "Observation::stopAndFinish") { "Stopping and finishing observation ${observationType.observationType} for scheduleId: $scheduleId" }
+        if (scheduleIds.size <= 1) {
+            stop {
+                timestampCollectionJob?.cancel()
+                saveAndSend()
+                observationShutdown(scheduleId)
+            }
+        } else {
             saveAndSend()
             observationShutdown(scheduleId)
         }
@@ -223,17 +295,25 @@ abstract class Observation(
     // Used in iOS
     fun stopAndSetState(state: ScheduleState = ScheduleState.ACTIVE, scheduleId: String?) {
         Napier.d(tag = "Observation::stopAndSetState") { "Stopping observation of type ${observationType.observationType} and setting state to $state for schedule $scheduleId." }
-        stop {
-            timestampCollectionJob?.cancel()
-            saveAndSend()
-            scheduleIds.keys.forEach {
-                StudyScope.launch(Dispatchers.IO) {
-                    repos.schedule.setRunningStateFor(it, state)
+        if (scheduleIds.size <= 1 || scheduleId == null) {
+            stop {
+                timestampCollectionJob?.cancel()
+                saveAndSend()
+                scheduleIds.keys.forEach {
+                    StudyScope.launch(Dispatchers.IO) {
+                        repos.schedule.setRunningStateFor(it, state)
+                    }
+                }
+                scheduleId?.let {
+                    observationShutdown(it)
                 }
             }
-            scheduleId?.let {
-                observationShutdown(it)
+        } else {
+            saveAndSend()
+            StudyScope.launch(Dispatchers.IO) {
+                repos.schedule.setRunningStateFor(scheduleId, state)
             }
+            observationShutdown(scheduleId)
         }
         Scope.launch {
             updateObservationErrors()
@@ -242,13 +322,26 @@ abstract class Observation(
 
     fun stopAndSetDone(scheduleId: String) {
         Napier.d(tag = "Observation::stopAndSetDone") { "Stopping observation of type ${observationType.observationType} and setting done for schedule $scheduleId." }
-        stop {
-            timestampCollectionJob?.cancel()
-            saveAndSend()
-            scheduleIds.keys.forEach {
-                StudyScope.launch(Dispatchers.IO) {
-                    repos.schedule.setCompletionStateFor(it, true)
+        if (scheduleIds.size <= 1) {
+            stop {
+                timestampCollectionJob?.cancel()
+                saveAndSend()
+                scheduleIds.keys.forEach {
+                    StudyScope.launch(Dispatchers.IO) {
+                        repos.schedule.setCompletionStateFor(it, true)
+                    }
                 }
+                observationShutdown(scheduleId)
+                removeDataCount()
+                handleNotification(scheduleId)
+                Scope.launch {
+                    updateObservationErrors()
+                }
+            }
+        } else {
+            saveAndSend()
+            StudyScope.launch(Dispatchers.IO) {
+                repos.schedule.setCompletionStateFor(scheduleId, true)
             }
             observationShutdown(scheduleId)
             removeDataCount()
@@ -267,11 +360,13 @@ abstract class Observation(
 
     private fun observationShutdown(scheduleId: String) {
         val observationId = scheduleIds.remove(scheduleId)
-        observationId?.let {
-            observationIds.remove(it)
-            observationTypes.remove(it)
+        observationId?.let { id ->
+            if (scheduleIds.values.none { it == id }) {
+                observationIds.remove(id)
+                observationTypes.remove(id)
+            }
         }
-        if (observationIds.isEmpty()) {
+        if (scheduleIds.isEmpty()) {
             config.clear()
             configChanged = false
             running = false
@@ -327,7 +422,24 @@ abstract class Observation(
         scheduleIds.clear()
     }
 
+    open fun onStudyExit() {}
+
     companion object {
+        private val requestedPermissions = mutableSetOf<String>()
+
+        fun resetRequestedPermissions() {
+            Napier.d(tag = "Observation::companion") { "Resetting requested permissions" }
+            requestedPermissions.clear()
+        }
+
+        fun markPermissionRequested(observationType: String) {
+            requestedPermissions.add(observationType)
+        }
+
+        fun isPermissionRequested(observationType: String): Boolean {
+            return requestedPermissions.contains(observationType)
+        }
+
         const val CONFIG_TASK_START = "observation_start_date_time"
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"

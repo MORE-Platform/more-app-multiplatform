@@ -1,8 +1,20 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.database
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import io.redlink.more.database.dao.AggregatedObservationDataDao
 import io.redlink.more.database.dao.BluetoothDeviceDao
 import io.redlink.more.database.dao.DataPointDao
 import io.redlink.more.database.dao.NotificationDao
@@ -10,6 +22,7 @@ import io.redlink.more.database.dao.ObservationDao
 import io.redlink.more.database.dao.ObservationDataDao
 import io.redlink.more.database.dao.ScheduleDao
 import io.redlink.more.database.dao.StudyDao
+import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.DataPointEntity
 import io.redlink.more.database.entities.NotificationEntity
@@ -26,9 +39,10 @@ import io.redlink.more.database.entities.StudyEntity
         ObservationDataEntity::class,
         NotificationEntity::class,
         BluetoothDeviceEntity::class,
-        DataPointEntity::class
+        DataPointEntity::class,
+        AggregatedObservationDataEntity::class
     ],
-    version = 2
+    version = 3
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -39,4 +53,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
     abstract fun bluetoothDeviceDao(): BluetoothDeviceDao
     abstract fun dataPointDao(): DataPointDao
+    abstract fun aggregatedObservationDataDao(): AggregatedObservationDataDao
 }

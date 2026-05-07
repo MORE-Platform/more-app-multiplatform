@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="observation_is_active">Bitte öffne die App und starte die Beobachtung!</string>
+    <string name="app_tracking_dialog_title">Berechtigung zur App-Nutzungsverfolgung</string>
+    <string name="app_tracking_dialog_message">Diese Studie verwendet App-Nutzungsdaten, um zu
+        verstehen, wie
+        Teilnehmende ihre Smartphones verwenden. Wenn Sie diese Berechtigung erlauben, helfen Sie
+        uns,
+        die für die Studie erforderlichen Daten zu erfassen.
+    </string>
+    <string name="app_tracking_dialog_positive_button">Erlauben</string>
+    <string name="app_tracking_dialog_negative_button">Verweigern</string>
+    <string name="app_usage_tracking_disabled_title">App-Tracking deaktiviert</string>
+    <string name="app_usage_tracking_disabled_message_ios">Die App-Nutzungsverfolgung ist
+        deaktiviert. Bitte aktivieren Sie diese in den Studieneinstellungen. Wenn sie dort bereits
+        aktiviert ist, überprüfen Sie bitte Ihre allgemeinen iOS-Datenschutzeinstellungen für
+        "Tracking".
+    </string>
+    <string name="app_usage_tracking_disabled_message_android">Die App-Nutzungsverfolgung ist
+        deaktiviert. Bitte aktivieren Sie diese in den Studieneinstellungen.
+    </string>
+    <string name="app_usage_tracking_disabled_confirm">Einstellungen</string>
 
     <string name="more_filter_notification_all">Alle Nachrichten</string>
     <string name="more_filter_notification_unread">Ungelesen</string>

@@ -14,6 +14,7 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.asClosure
 import io.redlink.more.models.ObservationDetailsModel
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
@@ -24,6 +25,9 @@ class CoreObservationDetailsViewModel(
     private val observationId: String
 ) : CoreViewModel() {
     val observationDetailsModel = MutableStateFlow<ObservationDetailsModel?>(null)
+    override fun viewIdentifier(): String {
+        return NavigationRoute.OBSERVATION_DETAILS.viewIdentifier
+    }
 
     override fun viewDidAppear() {
         launchScope {

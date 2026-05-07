@@ -15,6 +15,7 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.repository.BluetoothDeviceRepository
 import io.redlink.more.extensions.anyNameIn
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.bluetooth.BluetoothConnector
@@ -109,6 +110,10 @@ class BluetoothController(
 
     private fun disableBackgroundScanner() {
         bleManager.disableBgScanning()
+    }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.BLUETOOTH_CONNECTION.viewIdentifier
     }
 
     override fun viewDidAppear() {

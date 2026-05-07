@@ -33,7 +33,14 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         coreViewModel.handleNotificationAction(notification) { actionType, data ->
             data?.let {
                 when (actionType) {
-                    NotificationActionHandler.DEEPLINK -> navController.navigate(data.route.toUri())
+                    NotificationActionHandler.DEEPLINK -> {
+                        val uri = data.route.toUri()
+                        val destRoute = uri.path?.removePrefix("/") ?: uri.toString().substringBefore("?")
+                        val currentRoute = navController.currentDestination?.route?.substringBefore("?")
+                        if (destRoute != currentRoute) {
+                            navController.navigate(uri)
+                        }
+                    }
                     else -> {}
                 }
             }

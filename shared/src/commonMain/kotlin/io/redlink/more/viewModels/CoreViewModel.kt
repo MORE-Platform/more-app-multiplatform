@@ -10,7 +10,10 @@
  */
 package io.redlink.more.viewModels
 
+import io.github.aakira.napier.Napier
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.logging.event
+import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.scopes.AppDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +25,22 @@ import kotlin.coroutines.CoroutineContext
 abstract class CoreViewModel : Closeable {
     protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    open fun viewDidAppear() {}
+    abstract fun viewIdentifier(): String
+
+    open fun viewOpened() {
+        Napier.event(LogEvent.VIEW_OPEN, viewIdentifier())
+    }
+
+    open fun viewClosed() {
+        Napier.event(LogEvent.VIEW_CLOSED, viewIdentifier())
+    }
+
+    open fun viewDidAppear() {
+        viewOpened()
+    }
 
     open fun viewDidDisappear() {
-        close()
+        viewClosed()
     }
 
     fun launchScope(

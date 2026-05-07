@@ -1,9 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="observation_is_active">Please open the app and start the observation!</string>
 
     <string name="deeplink_protocol">app</string>
     <string name="deeplink_host">io.redlink.more</string>
+    <string name="app_tracking_dialog_title">App Tracking Permission</string>
+    <string name="app_tracking_dialog_message">This study uses app usage data to understand how
+        participants use their phones. Allowing this permission helps us collect the data required
+        for the study.
+    </string>
+    <string name="app_tracking_dialog_positive_button">Allow</string>
+    <string name="app_tracking_dialog_negative_button">Deny</string>
+    <string name="app_usage_tracking_disabled_title">App Tracking Disabled</string>
+    <string name="app_usage_tracking_disabled_message_ios">App usage tracking is disabled. Please
+        enable it in the study settings. If it's already enabled there, please check your general
+        iOS privacy settings for "Tracking".
+    </string>
+    <string name="app_usage_tracking_disabled_message_android">App usage tracking is disabled.
+        Please enable it in the study settings.
+    </string>
+    <string name="app_usage_tracking_disabled_confirm">Settings</string>
 
     <string name="more_filter_notification_all">All Notifications</string>
     <string name="more_filter_notification_unread">Unread</string>

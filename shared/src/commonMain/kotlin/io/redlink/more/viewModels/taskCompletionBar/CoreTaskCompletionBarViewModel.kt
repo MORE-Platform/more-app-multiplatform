@@ -29,6 +29,9 @@ class CoreTaskCompletionBarViewModel(
 
     @NativeCoroutines
     val taskCompletion: StateFlow<TaskCompletion> = _taskCompletion
+    override fun viewIdentifier(): String {
+        return "Task Completion Sub View"
+    }
 
     init {
         launchScope(dispatcher) {

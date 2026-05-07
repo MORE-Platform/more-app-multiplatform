@@ -19,28 +19,43 @@ import io.redlink.more.app.android.observations.accelerometer.AccelerometerObser
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.observations.Observation
 import io.redlink.more.observations.ObservationDataManager
 import io.redlink.more.observations.ObservationFactory
+import io.redlink.more.scopes.AppDispatchers
+import io.redlink.more.scopes.MoreScope
 import io.redlink.more.scopes.Scope
+import io.redlink.more.services.store.SharedStorageRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AndroidObservationFactory(
     context: Context,
     observationDataManager: ObservationDataManager,
-    repository: MainRepository
+    repository: MainRepository,
+    sharedStorageRepository: SharedStorageRepository,
+    scope: MoreScope = Scope
 ) :
-    ObservationFactory(repository, observationDataManager) {
+    ObservationFactory(
+        repository,
+        sharedStorageRepository,
+        observationDataManager
+    ) {
     init {
-        observations.addAll(
-            setOf(
-                AccelerometerObservation(context, repository),
-                GPSObservation(context, repository, gpsService = GPSService(context)),
-                PolarHeartRateObservation(repository)
-            )
-        )
+        registerObservation {
+            AccelerometerObservation(context, repository)
+        }
+        registerObservation {
+            GPSObservation(context, repository, gpsService = GPSService(context))
+        }
+        registerObservation {
+            PolarHeartRateObservation(repository)
+        }
+        registerObservation {
+            appUsageObservation!!
+        }
 
-        Scope.launch(Dispatchers.IO) {
+        scope.launch(AppDispatchers.io) {
             GPSStateListener.gpsEnabled.collect {
                 withContext(Dispatchers.Main) {
                     super.updateObservationErrors()
@@ -48,7 +63,7 @@ class AndroidObservationFactory(
             }
         }
 
-        Scope.launch(Dispatchers.IO) {
+        scope.launch(AppDispatchers.io) {
             BluetoothStateListener.bluetoothEnabled.collect {
                 withContext(Dispatchers.Main) {
                     super.updateObservationErrors()
@@ -56,7 +71,7 @@ class AndroidObservationFactory(
             }
         }
 
-        Scope.launch(Dispatchers.IO) {
+        scope.launch(AppDispatchers.io) {
             super.studyObservationTypes.collect { studyObservationTypes ->
                 val permissions =
                     super.observations.filter { it.observationType.observationType in studyObservationTypes }
@@ -82,4 +97,11 @@ class AndroidObservationFactory(
         }
     }
 
+    override fun observationPostConstruct(observation: Observation) {
+        observation.setPermissionObserver(
+            AndroidObservationPermissionObserver(
+                permissionRepository
+            )
+        )
+    }
 }

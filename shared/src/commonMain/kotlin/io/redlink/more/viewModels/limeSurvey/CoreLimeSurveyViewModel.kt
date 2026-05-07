@@ -14,7 +14,10 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.set
+import io.redlink.more.logging.event
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.ObservationFactory
+import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.observations.limesurvey.LimeSurveyObservation
 import io.redlink.more.viewModels.CoreViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +46,9 @@ class CoreLimeSurveyViewModel(
 
     @NativeCoroutines
     val dataLoading: StateFlow<Boolean> = _dataLoading
+    override fun viewIdentifier(): String {
+        return NavigationRoute.LIMESURVEY.viewIdentifier
+    }
 
     init {
         viewModelScope.launch {
@@ -83,6 +89,10 @@ class CoreLimeSurveyViewModel(
     fun finish() {
         scheduleId?.let {
             observation.storeData()
+            Napier.event(
+                LogEvent.OBSERVATION_EVENT,
+                "Limesurvey Study answered for: $limeSurveyLink"
+            )
             observation.stopAndSetDone(it)
         }
         clear()

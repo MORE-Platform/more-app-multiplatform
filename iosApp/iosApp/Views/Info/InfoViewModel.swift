@@ -18,7 +18,7 @@ import KMPNativeCoroutinesCombine
 import shared
 
 class InfoViewModel: ObservableObject {
-    private let studyCoreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared)
+    let studyCoreModel = CoreStudyDetailsViewModel(shared: AppDelegate.shared, customViewIdentifier: NavigationRoute.info.viewIdentifier)
     @Published var studyTitle: String?
     @Published var contactInstitute: String?
     @Published var contactPerson: String?

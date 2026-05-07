@@ -34,12 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentViewModel
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.observations.PermissionUtils
 import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.logging.event
+import io.redlink.more.observations.appUsage.model.LogEvent
+import io.redlink.more.observations.observationTypes.AppUsageObservationType
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
@@ -63,10 +67,12 @@ fun ConsentButtons(model: ConsentViewModel) {
             }
         }
 
-        val anyPermissionDenied = mutablePermissionMap.values.any { !it }
-
-        if (anyPermissionDenied) {
-            model.openPermissionDeniedAlertDialog(context)
+        val deniedPermissions = mutablePermissionMap.filter { !it.value }.keys
+        if (deniedPermissions.isNotEmpty()) {
+            model.openPermissionDeniedAlertDialog(
+                context,
+                deniedPermissions.map { PermissionUtils.getPermissionLabel(context, it) }
+            )
         } else {
             model.acceptConsent(context)
         }
@@ -82,6 +88,7 @@ fun ConsentButtons(model: ConsentViewModel) {
         ) {
             Button(
                 onClick = {
+                    Napier.event(LogEvent.BUTTON_PRESS, "Consent approved")
                     checkAndRequestPermissions(context, launcher, model)
                 },
                 colors = ButtonDefaults
@@ -99,6 +106,7 @@ fun ConsentButtons(model: ConsentViewModel) {
 
             Button(
                 onClick = {
+                    Napier.event(LogEvent.BUTTON_PRESS, "Consent declined")
                     model.decline()
                 },
                 colors = ButtonDefaults
@@ -147,6 +155,8 @@ fun checkAndRequestPermissions(
         MoreApplication.shared?.observationFactory?.studySensorPermissions()
             ?: emptySet()
     )
+
+    permissions.removeAll(AppUsageObservationType().sensorPermissions)
 
     val hasBackgroundLocationPermission =
         permissions.contains(Manifest.permission.ACCESS_BACKGROUND_LOCATION)

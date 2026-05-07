@@ -17,6 +17,8 @@ import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.toStudyState
+import io.redlink.more.logging.EventCollection
+import io.redlink.more.logging.EventObserver
 import io.redlink.more.models.StudyState
 import io.redlink.more.navigation.DeeplinkManager
 import io.redlink.more.navigation.DeeplinkManagerImpl
@@ -44,6 +46,7 @@ import io.redlink.more.services.store.SharedStorageRepository
 import io.redlink.more.viewModels.ViewManager
 import io.redlink.more.viewModels.bluetoothConnection.BluetoothController
 import io.redlink.more.viewModels.garminConnectOAuth.CoreGarminConnectViewModel
+import io.redlink.more.viewModels.settings.ExitStudyListener
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +73,7 @@ open class Shared(
     reminderNotificationSchedulingLimit: Int? = null,
     val connectionStatusFlow: Flow<Boolean> =
         konnectionInstance().observeHasConnection()
-) : NotificationActionObserver, AutoCloseable {
+) : NotificationActionObserver, ExitStudyListener, AutoCloseable {
     val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
     val credentialRepository: CredentialRepository =
@@ -109,6 +112,8 @@ open class Shared(
     private var mainJob: Job? = null
 
     init {
+        observationFactory.observationsWithInterface(EventObserver::class)
+            .forEach { EventCollection.addObserver(it) }
         val handler = CoroutineExceptionHandler { _, t ->
             Napier.e(tag = "Shared::init") { "Init watcher crashed: ${t.stackTraceToString()}" }
         }
@@ -154,7 +159,6 @@ open class Shared(
     }
 
     fun updateData(appInForeground: Boolean) {
-        ViewManager.appIsInForeground(appInForeground)
         Scope.launch {
             Napier.d(tag = "Shared:updateData") { "Updating data, with app in foreground: $appInForeground" }
             if (appInForeground) {
@@ -177,6 +181,7 @@ open class Shared(
             } else {
                 ViewManager.showBLEView(false)
                 if (repositories.study.studyState.value == StudyState.ACTIVE) {
+                    observationDataManager.store()
                     observationDataManager.sendData(true)
                 }
             }
@@ -184,8 +189,9 @@ open class Shared(
     }
 
     suspend fun updateSchedules() {
+        observationFactory.observationsWithInterface(EventObserver::class)
+            .forEach { EventCollection.addObserver(it) }
         observationManager.updateTaskStates()
-        observationFactory.updateObservationErrors()
         observationService.scheduleObservationReminder()
         notificationManager.downloadMissedNotifications()
     }
@@ -354,9 +360,8 @@ open class Shared(
         }
     }
 
-    suspend fun newLogin() {
+    fun newLogin() {
         notificationManager.newFCMToken()
-        observationFactory.updateObservationErrors()
         garminLogin()
     }
 
@@ -375,7 +380,7 @@ open class Shared(
         }
     }
 
-    fun exitStudy(onDeletion: () -> Unit) {
+    override fun exitStudy(onComplete: () -> Unit) {
         StudyScope.cancel()
         bluetoothController.resetAll()
         Scope.launch {
@@ -384,10 +389,11 @@ open class Shared(
             observationService.clearReminders()
             notificationManager.clearAllNotifications()
             removeStudyData()
-            observationFactory.clearNeededObservationTypes()
-            onDeletion()
+            observationFactory.onStudyExit()
+            onComplete()
             ViewManager.resetAll()
             clearSharedStorage()
+            EventCollection.clearQueue()
         }
     }
 

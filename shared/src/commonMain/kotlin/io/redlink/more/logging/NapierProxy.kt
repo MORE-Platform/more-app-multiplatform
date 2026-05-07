@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more
+package io.redlink.more.logging
 
 import io.github.aakira.napier.Antilog
 import io.github.aakira.napier.DebugAntilog
@@ -16,4 +16,8 @@ import io.github.aakira.napier.Napier
 
 fun napierDebugBuild(antilog: Antilog? = null) {
     Napier.base(antilog ?: DebugAntilog())
+}
+
+fun addNapierLogChannel(antilog: Antilog) {
+    Napier.base(antilog)
 }

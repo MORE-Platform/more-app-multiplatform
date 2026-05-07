@@ -16,8 +16,8 @@
 import AVFoundation
 import Combine
 import KMPNativeCoroutinesCombine
-import shared
 import UIKit
+import shared
 
 class ConsentViewModel: ObservableObject {
     private let coreModel: CoreConsentViewModel
@@ -39,20 +39,22 @@ class ConsentViewModel: ObservableObject {
         coreModel = CoreConsentViewModel(registrationService: registrationService, studyConsentTitle: String(localized: "study_consent"))
 
         createPublisher(for: coreModel.permissions)
-        .receive(on: DispatchQueue.main)
-        .sink { _ in
-        } receiveValue: { [weak self] model in
-            self?.permissionModel = model
-        }
-        .store(in: &cancellables)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+            } receiveValue: { [weak self] model in
+                self?.permissionModel = model
+            }
+            .store(in: &cancellables)
     }
 
     func onAppear() {
         permissionManager.observer = self
+        coreModel.viewDidAppear()
     }
 
     func onDisappear() {
         permissionManager.observer = nil
+        coreModel.viewDidDisappear()
     }
 
     func resetPermissionRequest() {
@@ -80,22 +82,23 @@ extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
         Task { @MainActor in
             if permissionManager.anyNeededPermissionDeclined() {
-                AlertController.shared.openAlertDialog(model:
-                                                       AlertDialogModel(
-                                                           title: "Required Permissions Were Not Granted",
-                                                           message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?",
-                                                           confirmLabel: "Proceed to Settings",
-                                                           cancelLabel: "Proceed Without Granting Permissions",
-                                                           onConfirm: {
-                                                               if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                                                                   UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                                                               }
-                                                               self.resetPermissionRequest()
-                                                           },
-                                                           onDecline: {
-                                                               self.acceptConsent()
-                                                               self.requestedPermissions = false
-                                                           }))
+                AlertController.shared.openAlertDialog(
+                    model:
+                        AlertDialogModel.companion.fromStrings(
+                            title: "Required Permissions Were Not Granted",
+                            message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?",
+                            confirmLabel: "Proceed to Settings",
+                            cancelLabel: "Proceed Without Granting Permissions",
+                            onConfirm: {
+                                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                }
+                                self.resetPermissionRequest()
+                            },
+                            onDecline: {
+                                self.acceptConsent()
+                                self.requestedPermissions = false
+                            }))
             } else {
                 self.acceptConsent()
                 self.requestedPermissions = false

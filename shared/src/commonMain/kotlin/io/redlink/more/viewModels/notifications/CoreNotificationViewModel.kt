@@ -14,6 +14,7 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.extensions.set
 import io.redlink.more.models.NotificationModel
 import io.redlink.more.navigation.model.DeepLinkData
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.services.notification.NotificationActionHandler
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.viewModels.CoreViewModel
@@ -68,5 +69,9 @@ open class CoreNotificationViewModel(
             notification.deepLink,
             handler
         )
+    }
+
+    override fun viewIdentifier(): String {
+        return NavigationRoute.NOTIFICATIONS.viewIdentifier
     }
 }

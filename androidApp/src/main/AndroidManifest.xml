@@ -105,7 +105,7 @@
             android:name="io.redlink.more.app.android.services.ObservationRecordingService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:foregroundServiceType="dataSync|location|connectedDevice" />
         <service
             android:name="io.redlink.more.app.android.firebase.FCMService"
             android:exported="false"

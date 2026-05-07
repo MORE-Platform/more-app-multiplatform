@@ -12,6 +12,7 @@ package io.redlink.more.viewModels.startupConnection
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.redlink.more.database.entities.BluetoothDeviceEntity
+import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.viewModels.CoreViewModel
 import io.redlink.more.viewModels.bluetoothConnection.BluetoothController
@@ -23,6 +24,7 @@ class CoreBluetoothViewModel(
 ) : CoreViewModel() {
     @NativeCoroutines
     val devicesNeededToConnectTo: StateFlow<Set<String>> = observationFactory.studyObservationTypes
+    override fun viewIdentifier(): String = NavigationRoute.BLUETOOTH_CONNECTION.viewIdentifier
 
     override fun viewDidAppear() {
         coreBluetooth.viewDidAppear()

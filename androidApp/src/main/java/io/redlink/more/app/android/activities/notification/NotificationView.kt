@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.notification.composables.NotificationFilterViewButton
 import io.redlink.more.app.android.activities.notification.composables.NotificationItem
 import io.redlink.more.app.android.extensions.getStringResource
@@ -46,48 +47,53 @@ fun NotificationView(
 ) {
     val viewModel = remember { NotificationViewModel(coreFilterViewModel) }
     val notificationList by viewModel.coreViewModel.notificationList.collectAsStateWithLifecycle()
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewOpened() },
+        { viewModel.coreViewModel.viewClosed() }) {
 
-        item {
-            Column(
-                modifier = Modifier
-                    .height(
-                        IntrinsicSize.Min
-                    )
-            ) {
-                NotificationFilterViewButton(navController, viewModel = viewModel)
+        LazyColumn(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .height(
+                            IntrinsicSize.Min
+                        )
+                ) {
+                    NotificationFilterViewButton(navController, viewModel = viewModel)
+                }
+                Spacer(modifier = Modifier.padding(10.dp))
             }
-            Spacer(modifier = Modifier.padding(10.dp))
-        }
 
-        item {
-            if (notificationList.isEmpty()) {
-                Text(text = getStringResource(id = R.string.no_notifications_yet))
+            item {
+                if (notificationList.isEmpty()) {
+                    Text(text = getStringResource(id = R.string.no_notifications_yet))
+                }
             }
-        }
 
-        items(notificationList.sortedByDescending { it.timestamp }) { notification ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        if (!notification.read) {
-                            viewModel.handleNotificationAction(notification, navController)
+            items(notificationList.sortedByDescending { it.timestamp }) { notification ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            if (!notification.read) {
+                                viewModel.handleNotificationAction(notification, navController)
+                            }
                         }
+                        .padding(bottom = 10.dp)
+                ) {
+                    Column {
+                        NotificationItem(viewModel, notification, navController)
+                        MoreDivider()
                     }
-                    .padding(bottom = 10.dp)
-            ) {
-                Column {
-                    NotificationItem(viewModel, notification, navController)
-                    MoreDivider()
                 }
             }
         }

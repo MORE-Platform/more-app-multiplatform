@@ -11,6 +11,6 @@
 package io.redlink.more.observations
 
 data class ObservationBulkModel(
-    val data: Any,
+    val data: Map<String, Any>,
     val timestamp: Long = 0
 )

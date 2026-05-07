@@ -24,7 +24,7 @@ import io.redlink.more.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class DashboardFilterViewModel(private val coreViewModel: CoreDashboardFilterViewModel) :
+class DashboardFilterViewModel(val coreViewModel: CoreDashboardFilterViewModel) :
     ViewModel() {
     val currentTypeFilter = mutableStateMapOf<String, Boolean>()
     val currentDateFilter = mutableStateMapOf<DateFilterModel, Boolean>()

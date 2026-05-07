@@ -23,52 +23,41 @@ struct ObservationButton: View {
     var observationType: String
     var state: ScheduleState
     var disabled: Bool
-    private let stringTable = "ScheduleListView"
 
     var body: some View {
         VStack {
-            if QuestionType_().matches(type: observationType) {
-                MoreActionButton(
-                    disabled: .constant(disabled),
-                    action: {
-                        navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
-                    }
-                ) {
-                    VStack {
+            MoreActionButton(disabled: .constant(disabled), action: buttonAction) {
+                VStack {
+                    if QuestionType_().matches(type: observationType) {
                         Text("start_questionnaire")
-                    }
-                }
-            } else if observationType == "lime-survey-observation" {
-                MoreActionButton(
-                    disabled: .constant(disabled),
-                    action: {
-                        navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
-                    }
-                ) {
-                    VStack {
-                        Text("Button to start a limesurvey")
-                    }
-                }
-            } else {
-                MoreActionButton(
-                    disabled: .constant(disabled),
-                    action: {
-                        if state == .running {
-                            observationActionDelegate.pause(scheduleId: scheduleId)
-                        } else {
-                            observationActionDelegate.start(scheduleId: scheduleId)
-                        }
-                    }
-                ) {
-                    VStack {
-                        if state == ScheduleState.running {
-                            Text("pause_observation")
-                        } else {
-                            Text("start_observation")
-                        }
+                    } else if LimeSurveyType().matches(type: observationType) {
+                        Text("Start LimeSurvey")
+                    } else if state == ScheduleState.running {
+                        Text("pause_observation")
+                    } else {
+                        Text("start_observation")
                     }
                 }
             }
+        }
+    }
+
+    private func buttonAction() {
+        var screenToOpen: NavigationScreen? =
+            if QuestionType_().matches(type: observationType) {
+                .questionObservation
+            } else if LimeSurveyType().matches(type: observationType) {
+                .limeSurvey
+            } else {
+                nil
+            }
+        Napier.event(.buttonPress, message: "\(state == .running ? "Pause" : "Start") observation \(observationType)")
+        if let screenToOpen {
+            navigationModalState.openView(screen: screenToOpen, scheduleId: scheduleId)
+        } else if state == .running {
+            observationActionDelegate.pause(scheduleId: scheduleId)
+        } else {
+            observationActionDelegate.start(scheduleId: scheduleId)
         }
     }
 }

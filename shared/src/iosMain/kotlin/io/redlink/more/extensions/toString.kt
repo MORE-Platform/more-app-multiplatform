@@ -21,7 +21,7 @@ import platform.Foundation.create
 actual fun Any.asString(): String? {
     return try {
         NSJSONSerialization.dataWithJSONObject(this, NSJSONWritingPrettyPrinted, null)?.let {
-            return NSString.create(it, NSUTF8StringEncoding) as String?
+            return NSString.create(it, NSUTF8StringEncoding) as? String
         }
     } catch (e: Exception) {
         println(e)

@@ -34,7 +34,7 @@ struct StudyClosedView: View {
                 }
             }
             MoreActionButton(disabled: .constant(false)) {
-                AppDelegate.shared.exitStudy(onDeletion: {})
+                AppDelegate.shared.exitStudy(onComplete: {})
             } label: {
                 BasicText(text: "Leave Study", color: .more.white, font: .headline)
             }

@@ -10,13 +10,11 @@
  */
 package io.redlink.more.app.android.observations.accelerometer
 
-import android.Manifest
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Build
 import android.util.Log
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.observations.Observation
@@ -31,18 +29,7 @@ class AccelerometerObservation(
 ) : Observation(
     repos,
     observationType = AccelerometerType(
-        if (Build.VERSION.SDK_INT >= 34) {
-            setOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.FOREGROUND_SERVICE_LOCATION
-            )
-        } else {
-            setOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        }
+        emptySet()
     )
 ), SensorEventListener {
     private val sensorManager = context.getSystemService(SensorManager::class.java)

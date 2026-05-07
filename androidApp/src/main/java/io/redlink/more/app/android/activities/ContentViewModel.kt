@@ -20,12 +20,12 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.aakira.napier.Napier
-import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.main.MainActivity
 import io.redlink.more.app.android.extensions.showNewActivityAndClearStack
 import io.redlink.more.app.android.workers.ScheduleUpdateWorker
-import io.redlink.more.models.AlertDialogModel
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.registration.RegistrationService
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.notification.NotificationManager

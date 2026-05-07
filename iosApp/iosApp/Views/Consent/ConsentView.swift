@@ -45,6 +45,7 @@ struct ConsentView: View {
                         .tint(.more.primary)
                 } else {
                     MoreActionButton(disabled: .constant(viewModel.requestedPermissions || registration.isLoading), alertOpen: $viewModel.showErrorAlert) {
+                        Napier.event(.buttonPress, message: "Consent accepted")
                         viewModel.requestPermissions()
                     } label: {
                         VStack {
@@ -59,6 +60,7 @@ struct ConsentView: View {
                     }
                     Spacer()
                     MoreActionButton(backgroundColor: .more.important, disabled: .constant(false)) {
+                        Napier.event(.buttonPress, message: "Consent declined")
                         viewModel.decline()
                     } label: {
                         Text("decline_button")
@@ -82,13 +84,14 @@ struct ConsentView: View {
     let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
     let repos = MainRepositoryImpl(appDatabase: database)
     let dataManager = iOSObservationDataManager(repository: repos, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
+    let userDefaults = UserDefaultsRepository()
     let shared = Shared(
         localNotificationListener: LocalPushNotifications(),
         repositories: repos,
-        sharedStorageRepository: UserDefaultsRepository(),
+        sharedStorageRepository: userDefaults,
         observationDataManager: dataManager,
         mainBluetoothConnector: IOSBluetoothConnector(),
-        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager),
+        observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager, userDefaults: userDefaults),
         dataRecorder: IOSDataRecorder(),
         reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
     )

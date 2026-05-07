@@ -24,7 +24,7 @@ class ObservationDetailsViewModel(
     observationId: String,
 ) : ViewModel() {
 
-    private val coreViewModel: CoreObservationDetailsViewModel =
+    val coreViewModel: CoreObservationDetailsViewModel =
         CoreObservationDetailsViewModel(
             MoreApplication.shared!!.repositories,
             observationId
@@ -45,18 +45,5 @@ class ObservationDetailsViewModel(
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                coreViewModel.viewDidAppear()
-            }
-        }
-    }
-
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreViewModel.viewDidDisappear()
     }
 }

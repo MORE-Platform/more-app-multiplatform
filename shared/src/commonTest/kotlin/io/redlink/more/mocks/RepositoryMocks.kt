@@ -1,6 +1,18 @@
+/*
+ * Copyright LBI-DHP and/or licensed to LBI-DHP under one or more
+ * contributor license agreements (LBI-DHP: Ludwig Boltzmann Institute
+ * for Digital Health and Prevention -- A research institute of the
+ * Ludwig Boltzmann Gesellschaft, Österreichische Vereinigung zur
+ * Förderung der wissenschaftlichen Forschung).
+ * Licensed under the Apache 2.0 license with Commons Clause
+ * (see https://www.apache.org/licenses/LICENSE-2.0 and
+ * https://commonsclause.com/).
+ */
+
 package io.redlink.more.mocks
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.DataPointEntity
 import io.redlink.more.database.entities.NotificationEntity
@@ -8,6 +20,7 @@ import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.entities.StudyEntity
+import io.redlink.more.database.repository.AggregatedObservationDataRepository
 import io.redlink.more.database.repository.BluetoothDeviceRepository
 import io.redlink.more.database.repository.DataPointCountRepository
 import io.redlink.more.database.repository.MainRepository
@@ -278,6 +291,12 @@ class MockScheduleRepository : ScheduleRepository {
     override fun firstScheduleIdAvailableForObservationId(observationId: String): Flow<String?> =
         firstScheduleAvailableForObservationId(observationId).map { it?.scheduleId }
 
+    override fun observationTypesForScheduleIds(scheduleIds: Set<String>): Flow<Set<String>> =
+        _schedules.map {
+            it.values.filter { s -> s.scheduleId in scheduleIds }.map { s -> s.observationType }
+                .toSet()
+        }
+
     var firstAndLastDateResult: Flow<Pair<ScheduleEntity?, ScheduleEntity?>>? = null
     override fun getFirstAndLastDate(observationId: String): Flow<Pair<ScheduleEntity?, ScheduleEntity?>> =
         firstAndLastDateResult ?: flowOf(null to null)
@@ -382,7 +401,68 @@ class MockStudyRepository : StudyRepository {
     }
 }
 
-class MockMainRepository : MainRepository {
+
+class MockAggregatedObservationDataRepository : AggregatedObservationDataRepository {
+    private val data = MutableStateFlow<Map<String, AggregatedObservationDataEntity>>(emptyMap())
+
+    override suspend fun insert(entity: AggregatedObservationDataEntity) {
+        data.value += (entity.id to entity)
+    }
+
+    override suspend fun insertAll(entities: List<AggregatedObservationDataEntity>) {
+        data.value += entities.associateBy { it.id }
+    }
+
+    override suspend fun update(entity: AggregatedObservationDataEntity) {
+        data.value += (entity.id to entity)
+    }
+
+    override suspend fun delete(entity: AggregatedObservationDataEntity) {
+        data.value -= entity.id
+    }
+
+    override suspend fun deleteById(id: String) {
+        data.value -= id
+    }
+
+    override suspend fun deleteByObservationId(observationId: String) {
+        data.value = data.value.filterValues { it.observationId != observationId }
+    }
+
+    override suspend fun deleteAll() {
+        data.value = emptyMap()
+    }
+
+    override suspend fun getById(id: String): AggregatedObservationDataEntity? = data.value[id]
+
+    override fun getByIdFlow(id: String): Flow<AggregatedObservationDataEntity?> =
+        data.map { it[id] }
+
+    override suspend fun getByObservationId(observationId: String): List<AggregatedObservationDataEntity> =
+        data.value.values.filter { it.observationId == observationId }
+
+    override fun getByObservationIdFlow(observationId: String): Flow<List<AggregatedObservationDataEntity>> =
+        data.map { it.values.filter { e -> e.observationId == observationId } }
+
+    override suspend fun getByObservationType(observationType: String): List<AggregatedObservationDataEntity> =
+        data.value.values.filter { it.observationType == observationType }
+
+    override fun getByObservationTypeFlow(observationType: String): Flow<List<AggregatedObservationDataEntity>> =
+        data.map { it.values.filter { e -> e.observationType == observationType } }
+
+    override suspend fun getAll(): List<AggregatedObservationDataEntity> =
+        data.value.values.toList()
+
+    override fun getAllFlow(): Flow<List<AggregatedObservationDataEntity>> =
+        data.map { it.values.toList() }
+
+    override suspend fun getCount(): Int = data.value.size
+
+    override suspend fun getCountByObservationId(observationId: String): Int =
+        data.value.values.count { it.observationId == observationId }
+}
+
+class MockMainRepository() : MainRepository {
     private val _mockSchedule = MockScheduleRepository()
     private val _mockNotification = MockNotificationRepository()
     private val _mockObservation = MockObservationRepository()
@@ -390,6 +470,7 @@ class MockMainRepository : MainRepository {
     private val _mockDataPointCount = MockDataPointCountRepository()
     private val _mockBluetoothDevice = MockBluetoothDeviceRepository()
     private val _mockStudy = MockStudyRepository()
+    private val _mockAggregatedObservationData = MockAggregatedObservationDataRepository()
 
     override val schedule: ScheduleRepository get() = _mockSchedule
     override val notification: NotificationRepository get() = _mockNotification
@@ -398,6 +479,7 @@ class MockMainRepository : MainRepository {
     override val dataPointCount: DataPointCountRepository get() = _mockDataPointCount
     override val bluetoothDevice: BluetoothDeviceRepository get() = _mockBluetoothDevice
     override val study: StudyRepository get() = _mockStudy
+    override val aggregatedObservationData: AggregatedObservationDataRepository get() = _mockAggregatedObservationData
 
     val mockSchedule: MockScheduleRepository get() = _mockSchedule
     val mockNotification: MockNotificationRepository get() = _mockNotification
@@ -405,14 +487,24 @@ class MockMainRepository : MainRepository {
     val mockObservationData: MockObservationDataRepository get() = _mockObservationData
     val mockDataPointCount: MockDataPointCountRepository get() = _mockDataPointCount
     val mockStudy: MockStudyRepository get() = _mockStudy
+    val mockAggregatedObservationData: MockAggregatedObservationDataRepository get() = _mockAggregatedObservationData
 
-    override suspend fun deleteAll() {}
+    override suspend fun deleteAll() {
+        _mockStudy.deleteStudy()
+        _mockNotification.deleteAll()
+        _mockAggregatedObservationData.deleteAll()
+    }
 }
 
 class MockObservationFactory(
     repository: MainRepository = MockMainRepository(),
+    sharedStorageRepository: MockSharedStorageRepository = MockSharedStorageRepository(),
     dataManager: ObservationDataManager? = null
-) : ObservationFactory(repository, dataManager ?: mockObservationDataManager(repository)) {
+) : ObservationFactory(
+    repository,
+    sharedStorageRepository,
+    dataManager ?: mockObservationDataManager(repository)
+) {
     var matchingObservationTypes: Set<String> = emptySet()
 
     override fun getMatchingObservationTypes(types: Set<String>): Set<String> =

@@ -33,7 +33,11 @@ struct GarminConnectView: View {
             }
         }
         .onAppear {
+            viewModel.coreViewModel.viewDidAppear()
             viewModel.clearAllWebViewData()
+        }
+        .onDisappear() {
+            viewModel.coreViewModel.viewDidDisappear()
         }
         .onReceive(viewModel.$shouldClose.removeDuplicates()) { close in
             if close {

@@ -112,10 +112,12 @@
 		1F9DB1A0298CF44000DBB7DB /* MoreColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9DB19F298CF44000DBB7DB /* MoreColor.swift */; };
 		1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A2298D022E00DBB7DB /* MoreImages.xcassets */; };
 		1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */; };
+		1FA044462F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA044452F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift */; };
 		1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */; };
 		1FA763E92A42F834007C1CF9 /* NotificationFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */; };
 		1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */; };
 		1FB338B72E853936006BA594 /* StudyLoadingErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */; };
+		1FBCF72B2F699971002ABE61 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 1FBCF72A2F699971002ABE61 /* InfoPlist.xcstrings */; };
 		1FBD513A2BBC3E2D0029D185 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD51392BBC3E2D0029D185 /* FirebaseMessaging */; };
 		1FBD513C2BBC3E8A0029D185 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1FBD513B2BBC3E8A0029D185 /* FirebaseCrashlytics */; };
 		1FC4F87429D2B86100F65026 /* DataUploadBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */; };
@@ -328,10 +330,12 @@
 		1F9DB19F298CF44000DBB7DB /* MoreColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreColor.swift; sourceTree = "<group>"; };
 		1F9DB1A2298D022E00DBB7DB /* MoreImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreImages.xcassets; sourceTree = "<group>"; };
 		1F9DB1A4298D02FB00DBB7DB /* MoreColors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = MoreColors.xcassets; sourceTree = "<group>"; };
+		1FA044452F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSObservationPermissionObserver.swift; sourceTree = "<group>"; };
 		1FA763E62A42F834007C1CF9 /* NotificationFilterViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterViewModel.swift; sourceTree = "<group>"; };
 		1FA763E72A42F834007C1CF9 /* NotificationFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFilterView.swift; sourceTree = "<group>"; };
 		1FA9ADD02F5F0993004DF4ED /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1FB338B62E853936006BA594 /* StudyLoadingErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyLoadingErrorView.swift; sourceTree = "<group>"; };
+		1FBCF72A2F699971002ABE61 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataUploadBackgroundTask.swift; sourceTree = "<group>"; };
 		1FC9574B2C072B7900EB92D6 /* More-Notification-Service-Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "More-Notification-Service-Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FC9574D2C072B7900EB92D6 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -506,6 +510,7 @@
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
 			isa = PBXGroup;
 			children = (
+				1FA044452F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift */,
 				1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */,
 				1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */,
 				1F80EC4629C83F74004667B1 /* iOSObservationDataManager.swift */,
@@ -549,6 +554,13 @@
 				1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */,
 			);
 			path = GarminConnect;
+			sourceTree = "<group>";
+		};
+		1F60BFC92FA8A423007CD41A /* PC_Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = PC_Components;
 			sourceTree = "<group>";
 		};
 		1F6A4E3A29F6C94B00F0247F /* Bluetooth */ = {
@@ -704,6 +716,7 @@
 		1F9C3E8B298AAC0000B9AC82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F60BFC92FA8A423007CD41A /* PC_Components */,
 				1F43DE1F2EC6136700B6F07B /* GarminConnect */,
 				1F1E45CF2E7842E300C82016 /* Registration */,
 				1F8937892BFF1EB20083D20E /* ObservationErrors */,
@@ -834,6 +847,7 @@
 				1F0026DA29CC8E730034EF65 /* AppDelegate.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */,
+				1FBCF72A2F699971002ABE61 /* InfoPlist.xcstrings */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -1088,6 +1102,7 @@
 				1F9DB1A5298D02FB00DBB7DB /* MoreColors.xcassets in Resources */,
 				1FA9ADD12F5F0993004DF4ED /* GoogleService-Info.plist in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
+				1FBCF72B2F699971002ABE61 /* InfoPlist.xcstrings in Resources */,
 				1F9DB1A3298D022E00DBB7DB /* MoreImages.xcassets in Resources */,
 				1FF6D8AD2BC516270050AF10 /* PrivacyInfo.xcprivacy in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
@@ -1260,6 +1275,7 @@
 				1FDC264A29C1CFE80011D8A4 /* NavigationText.swift in Sources */,
 				1F9C3E90298AACC100B9AC82 /* MoreMainBackgroundView.swift in Sources */,
 				07190FEC29E834E800A8CB1F /* LeaveStudyConfirmationView.swift in Sources */,
+				1FA044462F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift in Sources */,
 				1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				1F8847E0299160400023EF10 /* MoreTextFieldStyle.swift in Sources */,

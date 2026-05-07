@@ -66,16 +66,20 @@ data class ObservationDataEntity(
             )
         }
 
-        fun fromData(data: Any, timestamp: Long = -1): ObservationDataEntity {
+        inline fun <reified T> fromData(data: T, timestamp: Long = -1): ObservationDataEntity {
             val finalTimestamp = if (timestamp > 0) {
-                timestamp * 1000 // Convert to milliseconds
+                if (timestamp < 100_000_000_000L) {
+                    timestamp * 1000 // Convert to milliseconds
+                } else {
+                    timestamp
+                }
             } else {
                 Clock.System.now().toEpochMilliseconds()
             }
 
             return ObservationDataEntity(
                 timestamp = finalTimestamp,
-                dataValue = data.asString() ?: "{}"
+                dataValue = data?.asString() ?: "{}"
             )
         }
 

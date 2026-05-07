@@ -30,7 +30,7 @@ class GPSService(context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
 
     private val locationRequest =
-        LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 1000)
+        LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
@@ -47,11 +47,8 @@ class GPSService(context: Context) {
 
     init {
         setWaitForAccurateLocation(false)
-//        setDurationMillis(1000)
         setMinUpdateIntervalMillis(500)
-        setMaxUpdateAgeMillis(1000)
         setGranularity(Granularity.GRANULARITY_FINE)
-//        setMinUpdateDistanceMeters(10f)
     }
 
     fun setPriority(priority: Int) {
