@@ -29,23 +29,26 @@ import java.time.LocalDateTime
 fun TimeframeHours(
     startTime: LocalDateTime,
     endTime: LocalDateTime,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isRunning: Boolean = false
 ) {
+    val primaryColor = if (isRunning) MoreColors.Approved else MoreColors.Primary
+    val secondaryColor = if (isRunning) MoreColors.Approved else MoreColors.Secondary
     Row(modifier = modifier) {
         Icon(
             Icons.Default.AccessTimeFilled,
             contentDescription = getStringResource(R.string.more_table_item_icon_start_time),
-            tint = MoreColors.Primary,
+            tint = primaryColor,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = getStringResource(id = R.string.more_schedule_timeframe),
-            color = MoreColors.Primary,
+            color = primaryColor,
             modifier = Modifier.padding(end = 8.dp)
         )
         Text(
             text = "${startTime.formattedString("HH:mm")} - ${endTime.formattedString("HH:mm")}",
-            color = MoreColors.Secondary
+            color = secondaryColor
         )
     }
 }

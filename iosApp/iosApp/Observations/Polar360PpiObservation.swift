@@ -129,6 +129,7 @@ class Polar360PpiObservation: Observation_ {
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
+                    guard !samples.isEmpty else { onCompletion(); finishBg(); return }
                     let padded = Polar360PpiObservation.padToOneHz(
                         samples: samples,
                         startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,

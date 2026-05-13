@@ -55,6 +55,7 @@ fun ScheduleListItem(
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     ) {
+        val isRunning = scheduleModel().scheduleState == ScheduleState.RUNNING
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
@@ -62,7 +63,7 @@ fun ScheduleListItem(
         ) {
             SmallTitle(
                 text = scheduleModel().observationTitle,
-                color = MoreColors.Primary
+                color = if (isRunning) MoreColors.Approved else MoreColors.Primary
             )
 
         }
@@ -72,7 +73,7 @@ fun ScheduleListItem(
         ) {
             BasicText(
                 text = scheduleModel().observationType,
-                color = MoreColors.Secondary
+                color = if (isRunning) MoreColors.Approved else MoreColors.Secondary
             )
             Row(horizontalArrangement = Arrangement.End) {
                 if ((observationErrors[scheduleModel().observationType]?.count()
@@ -97,7 +98,8 @@ fun ScheduleListItem(
         TimeframeHours(
             startTime = scheduleModel().start.jvmLocalDateTime(),
             endTime = scheduleModel().end.jvmLocalDateTime(),
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp),
+            isRunning = isRunning
         )
         if (showButton && !scheduleModel().hidden) {
             ObservationActionButton(

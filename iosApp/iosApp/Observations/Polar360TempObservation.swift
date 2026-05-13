@@ -133,6 +133,7 @@ class Polar360TempObservation: Observation_ {
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
                     Napier.d("\(samples)")
+                    guard !samples.isEmpty else { onCompletion(); finishBg(); return }
                     let processed = samples.map { ["temp": $0.temp, "timestamp": $0.timestamp] as [String: Any] }
                     self.storeData(data: ["polar360tempdata": processed], timestamp: -1) {
                         onCompletion()

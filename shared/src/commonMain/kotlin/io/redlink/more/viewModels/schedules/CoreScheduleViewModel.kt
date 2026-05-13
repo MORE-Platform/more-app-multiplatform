@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -157,7 +158,13 @@ open class CoreScheduleViewModel(
     }
 
     private fun createManualTasks(scheduleList: List<ScheduleEntity>): List<ScheduleModel> {
-        return createModels(scheduleList.filter { !it.hidden })
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        return createModels(scheduleList.filter { entity ->
+            !entity.hidden &&
+                entity.endInstant()
+                    ?.toLocalDateTime(TimeZone.currentSystemDefault())?.date
+                    ?.let { it >= today } == true
+        })
     }
 
     private fun updateSchedulesFromSnapshot(newSchedules: Collection<ScheduleModel>) {

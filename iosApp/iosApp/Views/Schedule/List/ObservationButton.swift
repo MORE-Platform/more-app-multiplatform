@@ -48,7 +48,7 @@ struct ObservationButton: View {
                     }
                 ) {
                     VStack {
-                        Text("Button to start a limesurvey")
+                        Text("start_limesurvey")
                     }
                 }
             } else {

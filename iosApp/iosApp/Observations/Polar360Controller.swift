@@ -30,6 +30,7 @@ class Polar360Controller {
 
     private var sdkModeEnabled = false
     private var currentDeviceId: String?
+    private var activeRecordingTypes: Set<PolarDeviceDataType> = []
     /// Updated by iOSApp on every scene-phase transition so observations
     /// can branch between foreground and background stop behaviour without
     /// importing UIKit or touching UIApplication on an unknown thread.
@@ -125,6 +126,8 @@ class Polar360Controller {
 
     func startOfflineRecording(deviceId: String, dataType: PolarDeviceDataType, settings: PolarSensorSetting? = nil) -> Disposable {
         Napier.i("Polar360Controller: [\(dataType)] Starting offline recording on device=\(deviceId)")
+        activeRecordingTypes.insert(dataType)
+
         let disableSdk = Completable.deferred {
             do {
                 return try self.polarConnector.polarApi.disableSDKMode(deviceId)
@@ -146,9 +149,25 @@ class Polar360Controller {
                 return Completable.empty()
             }
 
+        let restartOthers = Completable.deferred { [weak self] in
+            guard let self else { return Completable.empty() }
+            let others = self.activeRecordingTypes.filter { $0 != dataType }
+            guard !others.isEmpty else { return Completable.empty() }
+            Napier.i("Polar360Controller: [\(dataType)] Restarting other active recordings: \(others)")
+            return Completable.concat(others.map { otherType in
+                self.resolveAndStartOfflineRecording(deviceId: deviceId, dataType: otherType, settings: nil)
+                    .do(onCompleted: { Napier.i("Polar360Controller: [\(otherType)] Restarted after [\(dataType)] start") })
+                    .catch { error -> Completable in
+                        Napier.w("Polar360Controller: [\(otherType)] Restart failed (ignored): \(error)")
+                        return Completable.empty()
+                    }
+            })
+        }
+
         return disableSdk
             .andThen(preStop)
             .andThen(resolveAndStartOfflineRecording(deviceId: deviceId, dataType: dataType, settings: settings))
+            .andThen(restartOthers)
             .subscribe(
                 onCompleted: { Napier.i("Polar360Controller: [\(dataType)] Offline recording started successfully") },
                 onError: { error in Napier.e("Polar360Controller: [\(dataType)] Failed to start: \(error)") }
@@ -186,6 +205,7 @@ class Polar360Controller {
     }
 
     func stopOfflineRecordingAndFetch(dataType: PolarDeviceDataType, onSuccess: @escaping ([Any]) -> Void, onError: @escaping (Error) -> Void) {
+        activeRecordingTypes.remove(dataType)
         // If the in-memory ID was cleared by a mid-sequence BLE disconnect while the app
         // is in the background, fall back to the value persisted in UserDefaults so the
         // remaining queued observations can still complete their fetch.

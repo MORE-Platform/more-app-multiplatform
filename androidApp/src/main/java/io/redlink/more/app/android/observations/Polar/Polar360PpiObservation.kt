@@ -204,13 +204,17 @@ class Polar360PpiObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        val padded = padToOneHz(
-                            samples = processed,
-                            //todo polar uses non traditional timestamp start date
-                            startNs = recording_startTimestamp ?: 0L,
-                            endNs = recroding_endTimestamp ?: 0L
-                        )
-                        storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
+                        if (processed.isNotEmpty()) {
+                            val padded = padToOneHz(
+                                samples = processed,
+                                //todo polar uses non traditional timestamp start date
+                                startNs = recording_startTimestamp ?: 0L,
+                                endNs = recroding_endTimestamp ?: 0L
+                            )
+                            storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
+                        } else {
+                            onCompletion()
+                        }
                     },
                     { error ->
                         Napier.e(tag = "Polar360PpiObservation") { "Failed to process offline data: ${error.message}" }

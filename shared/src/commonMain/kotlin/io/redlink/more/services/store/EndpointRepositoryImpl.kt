@@ -36,11 +36,11 @@ class EndpointRepositoryImpl(private val sharedStorageRepository: SharedStorageR
         sharedStorageRepository.remove(ENDPOINT_KEY)
     }
 
-    override fun endpoint(): String = "https://data.more-health.at/api/v1"
+    override fun endpoint(): String = cache.ifEmpty { DATA_BASE_PATH_ENDPOINT }
 
     companion object {
         private const val ENDPOINT_KEY = "sharedStorageEndpointKey"
         private const val DATA_BASE_PATH_ENDPOINT: String =
-            "https://data.more-health.at/api/v1"
+            "https://data.dev.more-health.at/api/v1"
     }
 }
