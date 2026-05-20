@@ -112,6 +112,7 @@ class Polar360Controller {
         saveDeviceIdForBackground()
         //bad Logic put in we need to disable sdk mode anyways
         let task = checkIfDeviceIsSetup(identifier: deviceId)
+            .andThen(syncDeviceTime(identifier: deviceId))
             .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : disableSdkModeIfNeeded(identifier: deviceId))
             .andThen(Single<[Any]>.just([]))
             .do(onSuccess: { _ in onReady() },
@@ -232,13 +233,6 @@ class Polar360Controller {
     }
 
     private func buildStopAndFetch(deviceId: String, dataType: PolarDeviceDataType) -> Single<[Any]> {
-        if dataType == .ppi {
-            // Express end time as nanoseconds since 2000-01-01 — the epoch the server uses.
-            let epoch2000: TimeInterval = 946_684_800
-            let endNs = UInt64(max(0, Date().timeIntervalSince1970 - epoch2000)) * 1_000_000_000
-            Polar360PpiObservation.recroding_endTimestamp = endNs
-            Napier.d("Polar360Controller: [ppi] recroding_endTimestamp=\(endNs)")
-        }
         Napier.d("Polar360Controller: [\(dataType)] Stopping recording on device=\(deviceId)")
         return polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .catch { error -> Completable in
@@ -260,13 +254,6 @@ class Polar360Controller {
                     .filter { $0.type == dataType }
                     .concatMap { [weak self] entry -> Observable<[Any]> in
                         guard let self else { return Observable.just([]) }
-                        if dataType == .ppi {
-                            let epoch2000: TimeInterval = 946_684_800
-                            let startSecs = entry.date.timeIntervalSince1970 - epoch2000
-                            let startNs = startSecs > 0 ? UInt64(startSecs) * 1_000_000_000 : 0
-                            Polar360PpiObservation.recording_startTimestamp = startNs
-                            Napier.d("Polar360Controller: [ppi] recordingStartTimestamp=\(startNs) (entry.date=\(entry.date))")
-                        }
                         Napier.d("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
                         return self.polarConnector.polarApi.getOfflineRecord(deviceId, entry: entry, secret: nil)
                             .flatMap { [weak self] data -> Single<[Any]> in
@@ -401,6 +388,24 @@ class Polar360Controller {
                 self.sdkModeEnabled = false
                 return try self.polarConnector.polarApi.disableSDKMode(identifier)
             } catch {
+                return Completable.empty()
+            }
+        }
+    }
+
+    private func syncDeviceTime(identifier: String) -> Completable {
+        return Completable.deferred {
+            do {
+                return try self.polarConnector.polarApi.setLocalTime(identifier, time: Date(), zone: TimeZone.current)
+                    .do(onCompleted: {
+                        Napier.i("Polar360Controller: Device time synced for \(identifier)")
+                    })
+                    .catch { error -> Completable in
+                        Napier.w("Polar360Controller: Failed to sync device time (ignored): \(error)")
+                        return Completable.empty()
+                    }
+            } catch {
+                Napier.w("Polar360Controller: setLocalTime threw (ignored): \(error)")
                 return Completable.empty()
             }
         }

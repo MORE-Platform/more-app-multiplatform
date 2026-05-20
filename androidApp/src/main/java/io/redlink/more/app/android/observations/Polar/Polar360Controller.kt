@@ -59,6 +59,9 @@ object Polar360Controller {
         currentDeviceId = deviceId
         ftuDisposable?.dispose()
         ftuDisposable = checkIfDeviceIsSetup(deviceId)
+            .flatMap { setupDone ->
+                syncDeviceTime(deviceId).toSingleDefault(setupDone).onErrorReturnItem(setupDone)
+            }
             .subscribeOn(bleScheduler)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ setupDone ->
@@ -140,12 +143,6 @@ object Polar360Controller {
     }
 
     private fun doStopOfflineRecording(deviceId: String, dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
-        if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
-            val epoch2000Ms = 946_684_800_000L
-            val endNs = (System.currentTimeMillis() - epoch2000Ms) * 1_000_000L
-            Polar360PpiObservation.recroding_endTimestamp = endNs
-            Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recoring_endTime=$endNs" }
-        }
         Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Stopping recording on device=$deviceId" }
         return polarConnector.polarApi.stopOfflineRecording(deviceId, dataType)
             .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Recording stopped, listing all recordings..." } }
@@ -162,12 +159,6 @@ object Polar360Controller {
                     .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] listOfflineRecordings error: ${e.message}" } }
                     .filter { entry -> entry.type == dataType }
                     .concatMap { entry ->
-                        if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
-                            val epoch2000Ms = 946_684_800_000L
-                            val startNs = (entry.date.time - epoch2000Ms) * 1_000_000L
-                            Polar360PpiObservation.recording_startTimestamp = startNs
-                            Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recording_startTimestamp=$startNs (entry.date=${entry.date})" }
-                        }
                         Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Fetching record: date=${entry.date}, size=${entry.size}" }
                         polarConnector.polarApi.getOfflineRecord(deviceId, entry, null)
                             .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] getOfflineRecord error: ${e.message}" } }
@@ -261,6 +252,16 @@ object Polar360Controller {
     }
 
     fun getPolarApi() = polarConnector.polarApi
+
+    private fun syncDeviceTime(deviceId: String): Completable {
+        val calendar = Calendar.getInstance()
+        return polarConnector.polarApi.setLocalTime(deviceId, calendar)
+            .doOnComplete { Log.i(TAG, "Polar360Controller: Device time synced for $deviceId") }
+            .onErrorComplete { error ->
+                Log.w(TAG, "Polar360Controller: Failed to sync device time (ignored): ${error.localizedMessage}")
+                true
+            }
+    }
 
     private fun checkIfDeviceIsSetup(deviceId: String): Single<Boolean> {
         return polarConnector.polarApi.isFtuDone(deviceId)

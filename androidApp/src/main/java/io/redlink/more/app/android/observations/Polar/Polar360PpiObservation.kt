@@ -58,40 +58,20 @@ class Polar360PpiObservation(repos: MainRepository) :
     private var offlineMode = false
 
     companion object {
-        var recording_startTimestamp: Long? = null
-        var recroding_endTimestamp: Long? = null
-
-        fun padToOneHz(
-            samples: List<ppi_data>,
-            startNs: Long,
-            endNs: Long
-        ): List<ppi_data> {
-            if (endNs <= 0 || samples.isEmpty()) return samples
+        fun padToOneHz(samples: List<ppi_data>): List<ppi_data> {
+            if (samples.isEmpty()) return samples
 
             val step = 1_000_000_000L
             val sorted = samples.sortedBy { it.timestamp }
-
-            // Window start: take the earlier of recording_startTimestamp and first sample,
-            // floored to a whole second, so the full recording period is covered.
-            val firstSampleTs = sorted.first().timestamp
-            val rawStart = if (startNs > 0) minOf(startNs, firstSampleTs) else firstSampleTs
-            val effectiveStart = (rawStart / step) * step
-
-            if (effectiveStart >= endNs) return samples
-
-            val maxDurationNs = 24L * 3600 * 1_000_000_000L
-            if (endNs - effectiveStart > maxDurationNs) {
-                Napier.w(tag = "Polar360PpiObservation") { "padToOneHz — derived duration exceeds 24 h cap; returning raw samples" }
-                return samples
-            }
+            val effectiveStart = (sorted.first().timestamp / step) * step
+            val effectiveEnd = sorted.last().timestamp + step  // exclusive; ensures last sample's slot is included
 
             val result = mutableListOf<ppi_data>()
             var sampleIndex = 0
             var cursor = effectiveStart
 
-            while (cursor < endNs) {
+            while (cursor < effectiveEnd) {
                 val slotEnd = cursor + step
-                // Advance past any samples that fall before this slot.
                 while (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < cursor) {
                     sampleIndex++
                 }
@@ -99,7 +79,6 @@ class Polar360PpiObservation(repos: MainRepository) :
                     val s = sorted[sampleIndex]
                     result.add(ppi_data(hr = s.hr, timestamp = cursor, ppiInMs = s.ppiInMs, ppiErrorEstimate = s.ppiErrorEstimate, skinContact = s.skinContact))
                     sampleIndex++
-                    // Skip any additional samples within the same 1-second slot.
                     while (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < slotEnd) {
                         sampleIndex++
                     }
@@ -144,11 +123,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                             { items ->
                                 val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                                 if (processed.isNotEmpty()) {
-                                    val padded = padToOneHz(
-                                        samples = processed,
-                                        startNs = recording_startTimestamp ?: 0L,
-                                        endNs = recroding_endTimestamp ?: 0L
-                                    )
+                                    val padded = padToOneHz(processed)
                                     storeData(mapOf("polar360ppidata" to padded), -1) {}
                                 }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
@@ -205,12 +180,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                         if (processed.isNotEmpty()) {
-                            val padded = padToOneHz(
-                                samples = processed,
-                                //todo polar uses non traditional timestamp start date
-                                startNs = recording_startTimestamp ?: 0L,
-                                endNs = recroding_endTimestamp ?: 0L
-                            )
+                            val padded = padToOneHz(processed)
                             storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
                         } else {
                             onCompletion()
