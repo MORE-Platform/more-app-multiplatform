@@ -45,7 +45,6 @@ import io.redlink.more.app.android.shared_composables.TimeframeHours
 import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreSecondary2
 import io.redlink.more.models.ScheduleState
-import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
 
 @Composable
@@ -165,8 +164,6 @@ fun TaskDetailsView(
 
                 if (!taskDetails.hidden) {
                     val additionalCondition = when {
-                        taskDetails.observationType == PolarVerityHeartRateType(emptySet()).observationType ->
-                            viewModel.polarHrReady.value
                         taskDetails.state == ScheduleState.RUNNING ->
                             viewModel.isPauseAllowed(taskDetails.observationType)
                         else -> true

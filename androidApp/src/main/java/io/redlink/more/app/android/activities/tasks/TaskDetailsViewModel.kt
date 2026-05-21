@@ -10,17 +10,11 @@
  */
 package io.redlink.more.app.android.activities.tasks
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.observations.DataRecorder
 import io.redlink.more.observations.ObservationFactory
-import io.redlink.more.services.bluetooth.polar.PolarStates
 import io.redlink.more.viewModels.tasks.CoreTaskDetailsViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder,
@@ -33,18 +27,6 @@ class TaskDetailsViewModel(
             dataRecorder,
             scheduleId
         )
-
-    val polarHrReady = mutableStateOf(false)
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            PolarStates.hrFeatureReady.collect {
-                withContext(Dispatchers.Main) {
-                    polarHrReady.value = it
-                }
-            }
-        }
-    }
 
     fun isPauseAllowed(observationType: String): Boolean =
         observationFactory.observation(observationType)?.manualPauseAllowed() ?: true
