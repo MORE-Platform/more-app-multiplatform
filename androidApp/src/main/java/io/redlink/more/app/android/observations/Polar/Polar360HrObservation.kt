@@ -188,6 +188,13 @@ class Polar360HrObservation(repos: MainRepository) :
         return errors
     }
 
+    override fun shouldAutoPause(): Boolean = !offlineMode
+
+    override fun manualPauseAllowed(): Boolean {
+        if (!offlineMode) return true
+        return Polar360Controller.findPolar360Device() != null
+    }
+
     override fun bleDevicesNeeded(): Set<String> = deviceIdentifier
 
     override fun ableToAutomaticallyStart(): Boolean = observerAccessible()
@@ -206,8 +213,12 @@ class Polar360HrObservation(repos: MainRepository) :
         return Scope.launch {
             BluetoothStateManagement.connectedDevices.collect { devices ->
                 if (!deviceIdentifier.anyNameIn(devices)) {
-                    pauseObservation(Polar360HrType(emptySet()))
-                    Polar360Controller.onDeviceDisconnected()
+                    if (offlineMode) {
+                        // In offline mode the device records independently — keep running
+                    } else {
+                        pauseObservation(Polar360HrType(emptySet()))
+                        Polar360Controller.onDeviceDisconnected()
+                    }
                 }
             }
         }.second

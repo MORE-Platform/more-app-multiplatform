@@ -163,7 +163,7 @@ class ScheduleRepositoryImpl(private val appDatabase: AppDatabase) : ScheduleRep
                             ?.let { observation ->
                                 if (observation.observerAccessible()) {
                                     activeIds.add(scheduleEntity.scheduleId)
-                                } else {
+                                } else if (observation.shouldAutoPause()) {
                                     pausingIds.add(scheduleEntity.scheduleId)
                                 }
                             }

@@ -233,6 +233,12 @@ class Polar360Controller {
     }
 
     private func buildStopAndFetch(deviceId: String, dataType: PolarDeviceDataType) -> Single<[Any]> {
+        if dataType == .ppi {
+            let epoch2000: TimeInterval = 946_684_800
+            let endNs = UInt64(max(0, Date().timeIntervalSince1970 - epoch2000)) * 1_000_000_000
+            Polar360PpiObservation.recroding_endTimestamp = endNs
+            Napier.d("Polar360Controller: [ppi] recroding_endTimestamp=\(endNs)")
+        }
         Napier.d("Polar360Controller: [\(dataType)] Stopping recording on device=\(deviceId)")
         return polarConnector.polarApi.stopOfflineRecording(deviceId, feature: dataType)
             .catch { error -> Completable in
@@ -254,6 +260,13 @@ class Polar360Controller {
                     .filter { $0.type == dataType }
                     .concatMap { [weak self] entry -> Observable<[Any]> in
                         guard let self else { return Observable.just([]) }
+                        if dataType == .ppi {
+                            let epoch2000: TimeInterval = 946_684_800
+                            let startSecs = entry.date.timeIntervalSince1970 - epoch2000
+                            let startNs = startSecs > 0 ? UInt64(startSecs) * 1_000_000_000 : 0
+                            Polar360PpiObservation.recording_startTimestamp = startNs
+                            Napier.d("Polar360Controller: [ppi] recording_startTimestamp=\(startNs) (entry.date=\(entry.date))")
+                        }
                         Napier.d("Polar360Controller: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
                         return self.polarConnector.polarApi.getOfflineRecord(deviceId, entry: entry, secret: nil)
                             .flatMap { [weak self] data -> Single<[Any]> in

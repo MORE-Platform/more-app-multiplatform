@@ -25,7 +25,10 @@ class Polar360PpiObservation: Observation_ {
 
     private static let notificationBackoffInterval: TimeInterval = 60
     private static var lastCannotStartNotificationDate: Date?
-    
+
+    static var recording_startTimestamp: UInt64? = nil
+    static var recroding_endTimestamp: UInt64? = nil
+
     init(repos: MainRepository, sensorPermissions: Set<String>) {
         super.init(repos: repos, observationType: Polar360PpiType(sensorPermissions: sensorPermissions))
     }
@@ -54,7 +57,11 @@ class Polar360PpiObservation: Observation_ {
                             guard let self else { return }
                             let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
                             if !samples.isEmpty {
-                                let padded = Polar360PpiObservation.padToOneHz(samples: samples)
+                                let padded = Polar360PpiObservation.padToOneHz(
+                                    samples: samples,
+                                    startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
+                                    endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
+                                )
                                 let processed = padded.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
                                 self.storeData(data: ["polar360ppidata": processed], timestamp: -1) {}
                             }
@@ -123,7 +130,11 @@ class Polar360PpiObservation: Observation_ {
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
                     guard !samples.isEmpty else { onCompletion(); finishBg(); return }
-                    let padded = Polar360PpiObservation.padToOneHz(samples: samples)
+                    let padded = Polar360PpiObservation.padToOneHz(
+                        samples: samples,
+                        startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
+                        endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
+                    )
                     let processed = padded.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
                     self.storeData(data: ["polar360ppidata": processed], timestamp: -1) {
                         onCompletion()
@@ -143,19 +154,33 @@ class Polar360PpiObservation: Observation_ {
         }
     }
 
-    static func padToOneHz(samples: [Polar360Controller.ppi_data]) -> [Polar360Controller.ppi_data] {
-        guard !samples.isEmpty else { return samples }
+    static func padToOneHz(
+        samples: [Polar360Controller.ppi_data],
+        startNs: UInt64,
+        endNs: UInt64
+    ) -> [Polar360Controller.ppi_data] {
+        guard endNs > 0, !samples.isEmpty else { return samples }
 
         let step: UInt64 = 1_000_000_000
         let sorted = samples.sorted { $0.timestamp < $1.timestamp }
-        let effectiveStart = (sorted.first!.timestamp / step) * step
-        let effectiveEnd = sorted.last!.timestamp + step  // exclusive; ensures last sample's slot is included
+
+        let firstSampleTs = sorted.first!.timestamp
+        let rawStart = startNs > 0 ? min(startNs, firstSampleTs) : firstSampleTs
+        let effectiveStart = (rawStart / step) * step
+
+        guard effectiveStart < endNs else { return samples }
+
+        let maxDurationNs: UInt64 = 24 * 3600 * 1_000_000_000
+        guard endNs - effectiveStart <= maxDurationNs else {
+            Napier.w("Polar360PpiObservation: padToOneHz — derived duration exceeds 24 h cap; returning raw samples")
+            return samples
+        }
 
         var result: [Polar360Controller.ppi_data] = []
         var sampleIndex = 0
         var cursor = effectiveStart
 
-        while cursor < effectiveEnd {
+        while cursor < endNs {
             let slotEnd = cursor + step
             while sampleIndex < sorted.count && sorted[sampleIndex].timestamp < cursor {
                 sampleIndex += 1
@@ -210,6 +235,8 @@ class Polar360PpiObservation: Observation_ {
         offlineMode = controller.isOfflineRecordingMode(config: settings)
     }
 
+    override func shouldAutoPause() -> Bool { !offlineMode }
+
     override func bleDevicesNeeded() -> Set<String> { deviceIdentificer }
 
     override func ableToAutomaticallyStart() -> Bool { observerAccessible() }
@@ -232,9 +259,14 @@ class Polar360PpiObservation: Observation_ {
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] devices in
-                if let self, !self.deviceIdentificer.anyNameIn(items: devices) {
-                    self.controller.onDeviceDisconnected()
-                    self.deviceListener?.cancel()
+                guard let self else { return }
+                if !self.deviceIdentificer.anyNameIn(items: devices) {
+                    if self.offlineMode {
+                        // In offline mode the device records independently — keep running
+                    } else {
+                        self.controller.onDeviceDisconnected()
+                        self.deviceListener?.cancel()
+                    }
                 }
             })
     }

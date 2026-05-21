@@ -160,6 +160,8 @@ class Polar360HrObservation: Observation_ {
         offlineMode = controller.isOfflineRecordingMode(config: settings)
     }
 
+    override func shouldAutoPause() -> Bool { !offlineMode }
+
     override func bleDevicesNeeded() -> Set<String> { deviceIdentificer }
 
     override func ableToAutomaticallyStart() -> Bool { observerAccessible() }
@@ -182,9 +184,14 @@ class Polar360HrObservation: Observation_ {
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] devices in
-                if let self, !self.deviceIdentificer.anyNameIn(items: devices) {
-                    self.controller.onDeviceDisconnected()
-                    self.deviceListener?.cancel()
+                guard let self else { return }
+                if !self.deviceIdentificer.anyNameIn(items: devices) {
+                    if self.offlineMode {
+                        // In offline mode the device records independently — keep running
+                    } else {
+                        self.controller.onDeviceDisconnected()
+                        self.deviceListener?.cancel()
+                    }
                 }
             })
     }

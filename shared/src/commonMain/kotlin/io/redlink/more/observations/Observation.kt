@@ -164,6 +164,10 @@ abstract class Observation(
 
     protected open fun observerErrors(): Set<String> = emptySet()
 
+    open fun shouldAutoPause(): Boolean = true
+
+    open fun manualPauseAllowed(): Boolean = true
+
     suspend fun updateObservationErrors() {
         val schedules = repos.schedule.allSchedulesToday(observationType).firstOrNull()
         Napier.d(tag = "Observation::updateObservationErrors") { "Schedules today for ${observationType.observationType}: $schedules" }
@@ -339,7 +343,7 @@ abstract class Observation(
     }
 
     companion object {
-        const val CONFIG_TASK_START = "observation_start_date_time"
+    const val CONFIG_TASK_START = "observation_start_date_time"
         const val CONFIG_TASK_STOP = "observation_stop_date_time"
         const val SCHEDULE_ID = "schedule_id"
         const val CONFIG_LAST_COLLECTION_TIMESTAMP = "observation_last_collection_timestamp"

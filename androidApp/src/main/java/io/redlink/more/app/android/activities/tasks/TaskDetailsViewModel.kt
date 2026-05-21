@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder,
-    observationFactory: ObservationFactory,
+    private val observationFactory: ObservationFactory,
     scheduleId: String
 ) : ViewModel() {
     val coreViewModel: CoreTaskDetailsViewModel =
@@ -45,6 +45,9 @@ class TaskDetailsViewModel(
             }
         }
     }
+
+    fun isPauseAllowed(observationType: String): Boolean =
+        observationFactory.observation(observationType)?.manualPauseAllowed() ?: true
 
     fun startObservation() {
         coreViewModel.startObservation()

@@ -58,19 +58,36 @@ class Polar360PpiObservation(repos: MainRepository) :
     private var offlineMode = false
 
     companion object {
-        fun padToOneHz(samples: List<ppi_data>): List<ppi_data> {
-            if (samples.isEmpty()) return samples
+        var recording_startTimestamp: Long? = null
+        var recroding_endTimestamp: Long? = null
+
+        fun padToOneHz(
+            samples: List<ppi_data>,
+            startNs: Long,
+            endNs: Long
+        ): List<ppi_data> {
+            if (endNs <= 0 || samples.isEmpty()) return samples
 
             val step = 1_000_000_000L
             val sorted = samples.sortedBy { it.timestamp }
-            val effectiveStart = (sorted.first().timestamp / step) * step
-            val effectiveEnd = sorted.last().timestamp + step  // exclusive; ensures last sample's slot is included
+
+            val firstSampleTs = sorted.first().timestamp
+            val rawStart = if (startNs > 0) minOf(startNs, firstSampleTs) else firstSampleTs
+            val effectiveStart = (rawStart / step) * step
+
+            if (effectiveStart >= endNs) return samples
+
+            val maxDurationNs = 24L * 3600 * 1_000_000_000L
+            if (endNs - effectiveStart > maxDurationNs) {
+                Napier.w(tag = "Polar360PpiObservation") { "padToOneHz — derived duration exceeds 24 h cap; returning raw samples" }
+                return samples
+            }
 
             val result = mutableListOf<ppi_data>()
             var sampleIndex = 0
             var cursor = effectiveStart
 
-            while (cursor < effectiveEnd) {
+            while (cursor < endNs) {
                 val slotEnd = cursor + step
                 while (sampleIndex < sorted.size && sorted[sampleIndex].timestamp < cursor) {
                     sampleIndex++
@@ -123,7 +140,11 @@ class Polar360PpiObservation(repos: MainRepository) :
                             { items ->
                                 val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                                 if (processed.isNotEmpty()) {
-                                    val padded = padToOneHz(processed)
+                                    val padded = padToOneHz(
+                                        samples = processed,
+                                        startNs = recording_startTimestamp ?: 0L,
+                                        endNs = recroding_endTimestamp ?: 0L
+                                    )
                                     storeData(mapOf("polar360ppidata" to padded), -1) {}
                                 }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
@@ -180,7 +201,11 @@ class Polar360PpiObservation(repos: MainRepository) :
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
                         if (processed.isNotEmpty()) {
-                            val padded = padToOneHz(processed)
+                            val padded = padToOneHz(
+                                samples = processed,
+                                startNs = recording_startTimestamp ?: 0L,
+                                endNs = recroding_endTimestamp ?: 0L
+                            )
                             storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
                         } else {
                             onCompletion()
@@ -223,6 +248,13 @@ class Polar360PpiObservation(repos: MainRepository) :
         return errors
     }
 
+    override fun shouldAutoPause(): Boolean = !offlineMode
+
+    override fun manualPauseAllowed(): Boolean {
+        if (!offlineMode) return true
+        return Polar360Controller.findPolar360Device() != null
+    }
+
     override fun bleDevicesNeeded(): Set<String> = deviceIdentifier
 
     override fun ableToAutomaticallyStart(): Boolean = observerAccessible()
@@ -241,8 +273,12 @@ class Polar360PpiObservation(repos: MainRepository) :
         return Scope.launch {
             BluetoothStateManagement.connectedDevices.collect { devices ->
                 if (!deviceIdentifier.anyNameIn(devices)) {
-                    pauseObservation(Polar360PpiType(emptySet()))
-                    Polar360Controller.onDeviceDisconnected()
+                    if (offlineMode) {
+                        // In offline mode the device records independently — keep running
+                    } else {
+                        pauseObservation(Polar360PpiType(emptySet()))
+                        Polar360Controller.onDeviceDisconnected()
+                    }
                 }
             }
         }.second

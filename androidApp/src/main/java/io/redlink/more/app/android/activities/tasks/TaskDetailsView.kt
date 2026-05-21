@@ -46,6 +46,7 @@ import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.app.android.theme.moreSecondary2
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
 
 @Composable
 fun TaskDetailsView(
@@ -64,6 +65,7 @@ fun TaskDetailsView(
     val dataPoints by viewModel.coreViewModel.dataCount.collectAsStateWithLifecycle()
     val taskErrors by viewModel.coreViewModel.taskObservationErrors.collectAsStateWithLifecycle()
     val taskErrorActions by viewModel.coreViewModel.taskObservationErrorActions.collectAsStateWithLifecycle()
+    val connectedDevices by BluetoothStateManagement.connectedDevices.collectAsStateWithLifecycle()
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -162,15 +164,19 @@ fun TaskDetailsView(
                 )
 
                 if (!taskDetails.hidden) {
+                    val additionalCondition = when {
+                        taskDetails.observationType == PolarVerityHeartRateType(emptySet()).observationType ->
+                            viewModel.polarHrReady.value
+                        taskDetails.state == ScheduleState.RUNNING ->
+                            viewModel.isPauseAllowed(taskDetails.observationType)
+                        else -> true
+                    }
                     ObservationActionButton(
                         navController,
                         taskDetails.scheduleId,
                         taskDetails.observationType,
                         taskDetails.state,
-                        if (taskDetails.observationType == PolarVerityHeartRateType(
-                                emptySet()
-                            ).observationType
-                        ) viewModel.polarHrReady.value else true
+                        additionalCondition
                     ) {
                         if (taskDetails.state == ScheduleState.RUNNING) {
                             viewModel.pauseObservation()
