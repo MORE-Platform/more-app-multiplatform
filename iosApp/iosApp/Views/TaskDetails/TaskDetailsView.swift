@@ -44,6 +44,7 @@ struct TaskDetailsView: View {
                             InlineAbortButton {
                                 viewModel.stop(scheduleId: scheduleId)
                             }
+                            .disabled(!viewModel.taskObservationErrors.isEmpty)
                         }
                     }
                     .frame(height: 40)

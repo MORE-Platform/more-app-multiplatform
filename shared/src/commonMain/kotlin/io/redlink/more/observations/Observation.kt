@@ -166,8 +166,6 @@ abstract class Observation(
 
     open fun shouldAutoPause(): Boolean = true
 
-    open fun manualPauseAllowed(): Boolean = true
-
     suspend fun updateObservationErrors() {
         val schedules = repos.schedule.allSchedulesToday(observationType).firstOrNull()
         Napier.d(tag = "Observation::updateObservationErrors") { "Schedules today for ${observationType.observationType}: $schedules" }

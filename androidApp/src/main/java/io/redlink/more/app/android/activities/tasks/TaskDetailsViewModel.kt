@@ -18,7 +18,7 @@ import io.redlink.more.viewModels.tasks.CoreTaskDetailsViewModel
 
 class TaskDetailsViewModel(
     dataRecorder: DataRecorder,
-    private val observationFactory: ObservationFactory,
+    observationFactory: ObservationFactory,
     scheduleId: String
 ) : ViewModel() {
     val coreViewModel: CoreTaskDetailsViewModel =
@@ -27,9 +27,6 @@ class TaskDetailsViewModel(
             dataRecorder,
             scheduleId
         )
-
-    fun isPauseAllowed(observationType: String): Boolean =
-        observationFactory.observation(observationType)?.manualPauseAllowed() ?: true
 
     fun startObservation() {
         coreViewModel.startObservation()

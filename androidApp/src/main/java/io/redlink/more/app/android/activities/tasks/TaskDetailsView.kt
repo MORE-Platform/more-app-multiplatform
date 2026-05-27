@@ -73,6 +73,12 @@ fun TaskDetailsView(
             .padding(4.dp)
     ) {
         taskDetails?.let { taskDetails ->
+            val isPolar360 = taskDetails.observationType.startsWith("polar360observation:")
+            val polar360DeviceConnected = connectedDevices.any { device ->
+                val name = device.deviceName?.lowercase() ?: ""
+                name.contains("polar") && name.contains("360")
+            }
+            val buttonsEnabled = !isPolar360 || polar360DeviceConnected
             LazyColumn(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,6 +102,7 @@ fun TaskDetailsView(
                                 imageText = getStringResource(id = R.string.more_abort),
                                 image = Icons.Rounded.Square,
                                 imageTint = MoreColors.Important,
+                                enabled = buttonsEnabled,
                                 borderStroke = MoreColors.borderDefault(),
                                 buttonColors = ButtonDefaults.moreSecondary2()
                             ) {
@@ -163,19 +170,14 @@ fun TaskDetailsView(
                 )
 
                 if (!taskDetails.hidden) {
-                    val additionalCondition = when {
-                        taskDetails.state == ScheduleState.RUNNING ->
-                            viewModel.isPauseAllowed(taskDetails.observationType)
-                        else -> true
-                    }
                     ObservationActionButton(
                         navController,
                         taskDetails.scheduleId,
                         taskDetails.observationType,
                         taskDetails.state,
-                        additionalCondition
+                        taskErrors
                     ) {
-                        if (taskDetails.state == ScheduleState.RUNNING) {
+                        if (taskDetails.state == ScheduleState.RUNNING ) {
                             viewModel.pauseObservation()
                         } else {
                             viewModel.startObservation()

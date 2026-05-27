@@ -179,21 +179,23 @@ class Polar360HrObservation(repos: MainRepository) :
         if (!BluetoothStateListener.bluetoothEnabled.value) {
             errors.add("bluetooth_disabled")
         }
-        if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
-            errors.add("device_not_connected")
-            errors.add(ERROR_DEVICE_NOT_CONNECTED)
-        } else if (!PolarStates.hrFeatureReady.value) {
-            errors.add("hr_unavailable")
+        if (offlineMode) {
+            if (Polar360Controller.findPolar360Device() == null) {
+                errors.add("device_not_connected")
+                errors.add(ERROR_DEVICE_NOT_CONNECTED)
+            }
+        } else {
+            if (!MoreApplication.shared!!.bluetoothController.observerDeviceAccessible(deviceIdentifier)) {
+                errors.add("device_not_connected")
+                errors.add(ERROR_DEVICE_NOT_CONNECTED)
+            } else if (!PolarStates.hrFeatureReady.value) {
+                errors.add("hr_unavailable")
+            }
         }
         return errors
     }
 
     override fun shouldAutoPause(): Boolean = !offlineMode
-
-    override fun manualPauseAllowed(): Boolean {
-        if (!offlineMode) return true
-        return Polar360Controller.findPolar360Device() != null
-    }
 
     override fun bleDevicesNeeded(): Set<String> = deviceIdentifier
 
@@ -214,7 +216,7 @@ class Polar360HrObservation(repos: MainRepository) :
             BluetoothStateManagement.connectedDevices.collect { devices ->
                 if (!deviceIdentifier.anyNameIn(devices)) {
                     if (offlineMode) {
-                        // In offline mode the device records independently — keep running
+                        updateObservationErrors()
                     } else {
                         pauseObservation(Polar360HrType(emptySet()))
                         Polar360Controller.onDeviceDisconnected()

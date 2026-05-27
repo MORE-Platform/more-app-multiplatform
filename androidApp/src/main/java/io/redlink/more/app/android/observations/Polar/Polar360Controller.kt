@@ -177,7 +177,7 @@ object Polar360Controller {
                             .flatMap { data ->
                                 val samples: List<Any> = when (data) {
                                     is PolarOfflineRecordingData.PpiOfflineRecording -> data.data.samples.also {
-                                        
+
                                         if (it.isEmpty()) {
                                             Napier.w(tag = "Polar360Controller::stopOfflineRecording") {
                                                 "[$dataType] SDK returned 0 samples for entry size=${entry.size} — likely no skin contact during recording; removing entry"
@@ -215,6 +215,10 @@ object Polar360Controller {
                                     .doOnComplete { Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Entry removed" } }
                                     .doOnError { e -> Napier.e(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] removeOfflineRecord error: ${e.message}" } }
                                     .andThen(Single.just(samples))
+                            }
+                            .onErrorResumeNext { e: Throwable ->
+                                Napier.w(tag = "Polar360Controller::stopOfflineRecording") { "[$dataType] Skipping unreadable entry (date=${entry.date}, size=${entry.size}): ${e.message}" }
+                                Single.just(emptyList())
                             }
                             .toFlowable()
                     }
