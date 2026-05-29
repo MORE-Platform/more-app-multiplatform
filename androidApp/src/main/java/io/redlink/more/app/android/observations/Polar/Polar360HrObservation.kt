@@ -15,6 +15,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.observations.ignore
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
@@ -101,7 +102,7 @@ class Polar360HrObservation(repos: MainRepository) :
                                     deviceId, PolarBleApi.PolarDeviceDataType.PPI
                                 )
                             }
-                        )
+                        ).ignore()
                 } else {
                     hrDisposable = Polar360Controller.getPolarApi()
                         .startHrStreaming(deviceId)
@@ -155,7 +156,7 @@ class Polar360HrObservation(repos: MainRepository) :
                         Napier.e(tag = "Polar360HrObservation") { "Failed to process offline data: ${error.message}" }
                         onCompletion()
                     }
-                )
+                ).ignore()
         } else {
             hrDisposable?.dispose()
             hrDisposable = null

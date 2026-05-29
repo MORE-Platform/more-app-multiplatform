@@ -140,6 +140,7 @@ class Polar360AccObservation: Observation_ {
                 },
                 onError: { error in
                     Napier.e("Polar360AccObservation: Failed to fetch offline data: \(error)")
+                    onCompletion()
                     finishBg()
                 }
             )

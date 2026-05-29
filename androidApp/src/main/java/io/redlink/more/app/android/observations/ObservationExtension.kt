@@ -11,6 +11,7 @@
 
 package io.redlink.more.app.android.observations
 
+import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.AlertController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
@@ -37,3 +38,6 @@ fun Observation.pauseObservation(observationType: ObservationType) {
         observationType.observationType
     )
 }
+
+/** Explicitly marks a fire-and-forget [Disposable] as intentionally untracked. */
+fun Disposable.ignore() = Unit

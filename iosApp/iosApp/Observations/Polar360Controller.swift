@@ -115,12 +115,12 @@ class Polar360Controller {
             .andThen(syncDeviceTime(identifier: deviceId))
             .andThen(offlineMode ? disableSdkModeIfNeeded(identifier: deviceId) : disableSdkModeIfNeeded(identifier: deviceId))
             .andThen(Single<[Any]>.just([]))
-            .do(onSuccess: { _ in onReady() },
-                onError: { [onError] error in
-                    Napier.e("Polar360Controller: ensureReady failed: \(error)")
-                
-                })
-            .catch { _ in Single<[Any]>.just([]) }
+            .do(onSuccess: { _ in onReady() })
+            .catch { error -> Single<[Any]> in
+                Napier.e("Polar360Controller: ensureReady failed: \(error)")
+                onError(error)
+                return Single.just([])
+            }
             .asObservable()
         operationQueue.onNext(task)
     }
@@ -223,11 +223,12 @@ class Polar360Controller {
             .do(onSuccess: { [onSuccess] samples in
                 Napier.i("Polar360Controller: [\(dataType)] Task completed with \(samples.count) items")
                 onSuccess(samples)
-            }, onError: { [onError] error in
-                Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
-                                                         
             })
-            .catch { _ in Single<[Any]>.just([]) }
+            .catch { error -> Single<[Any]> in
+                Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
+                onError(error)
+                return Single.just([])
+            }
             .asObservable()
         operationQueue.onNext(task)
     }

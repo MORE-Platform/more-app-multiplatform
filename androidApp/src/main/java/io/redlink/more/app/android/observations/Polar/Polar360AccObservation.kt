@@ -18,6 +18,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.observations.ignore
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
@@ -103,7 +104,7 @@ class Polar360AccObservation(repos: MainRepository) :
                                     deviceId, PolarBleApi.PolarDeviceDataType.ACC
                                 )
                             }
-                        )
+                        ).ignore()
                 } else {
                     accDisposable = Polar360Controller.getPolarApi()
                         .requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.ACC)
@@ -138,7 +139,13 @@ class Polar360AccObservation(repos: MainRepository) :
                             },
                             { error ->
                                 Log.e(TAG, "ACC stream failed: ${error.localizedMessage}")
+                                accDisposable?.dispose()
                                 accDisposable = null
+                                pauseObservation(Polar360AccType(emptySet()))
+                                showObservationErrorNotification(
+                                    stringResource(R.string.observation_bluetooth_error),
+                                    stringResource(R.string.observation_error)
+                                )
                             }
                         )
                 }
@@ -172,7 +179,7 @@ class Polar360AccObservation(repos: MainRepository) :
                         Napier.e(tag = "Polar360AccObservation") { "Failed to process offline data: ${error.message}" }
                         onCompletion()
                     }
-                )
+                ).ignore()
         } else {
             accDisposable?.dispose()
             accDisposable = null

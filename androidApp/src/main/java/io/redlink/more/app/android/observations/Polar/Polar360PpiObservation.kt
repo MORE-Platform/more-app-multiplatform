@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.observations.ignore
 import io.redlink.more.app.android.observations.pauseObservation
 import io.redlink.more.app.android.observations.showPermissionAlertDialog
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
@@ -173,7 +174,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                                     deviceId, PolarBleApi.PolarDeviceDataType.PPI
                                 )
                             }
-                        )
+                        ).ignore()
                 } else {
                     ppiDisposable = Polar360Controller.getPolarApi()
                         .startPpiStreaming(deviceId)
@@ -188,7 +189,13 @@ class Polar360PpiObservation(repos: MainRepository) :
                             },
                             { error ->
                                 Napier.e(tag = "Polar360PpiObservation") { "PPI stream failed: ${error.message}" }
+                                ppiDisposable?.dispose()
                                 ppiDisposable = null
+                                pauseObservation(Polar360PpiType(emptySet()))
+                                showObservationErrorNotification(
+                                    stringResource(R.string.observation_bluetooth_error),
+                                    stringResource(R.string.observation_error)
+                                )
                             }
                         )
                 }
@@ -231,7 +238,7 @@ class Polar360PpiObservation(repos: MainRepository) :
                         Napier.e(tag = "Polar360PpiObservation") { "Failed to process offline data: ${error.message}" }
                         onCompletion()
                     }
-                )
+                ).ignore()
         } else {
             ppiDisposable?.dispose()
             ppiDisposable = null
