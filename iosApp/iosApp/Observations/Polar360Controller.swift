@@ -118,7 +118,7 @@ class Polar360Controller {
             .do(onSuccess: { _ in onReady() })
             .catch { error -> Single<[Any]> in
                 Napier.e("Polar360Controller: ensureReady failed: \(error)")
-                onError(error)
+                onError(error as! Error)
                 return Single.just([])
             }
             .asObservable()
@@ -226,7 +226,7 @@ class Polar360Controller {
             })
             .catch { error -> Single<[Any]> in
                 Napier.e("Polar360Controller: [\(dataType)] stop+fetch failed: \(error)")
-                onError(error)
+                onError(error as! Error)
                 return Single.just([])
             }
             .asObservable()
