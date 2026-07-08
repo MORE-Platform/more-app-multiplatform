@@ -181,11 +181,17 @@ class Polar360Controller {
             Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with nil settings")
             return polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: nil, secret: nil)
         }
-        // ACC and temperature: request supported settings from the device (defaults to 2Hz for temp).
+        // ACC and temperature: prefer the device's requested settings (known-good on current
+        // firmware, defaults to 2Hz for temp). Some newer firmware fails settings negotiation
+        // for temperature — if the settings-based start errors, fall back to a settings-less start.
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, feature: dataType)
             .flatMapCompletable { resolvedSettings in
                 Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with settings: \(resolvedSettings)")
                 return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: resolvedSettings, secret: nil)
+            }
+            .catch { settingsError -> Completable in
+                Napier.w("Polar360Controller: [\(dataType)] Settings-based start failed (\(settingsError)); retrying without settings")
+                return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: nil, secret: nil)
             }
     }
 
@@ -322,6 +328,12 @@ class Polar360Controller {
 
         case let .temperatureOfflineRecordingData(tempData, _):
             Napier.e("polarTempdata \(tempData)")
+            return tempData.samples.map {
+                temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
+            };
+
+        case let .skinTemperatureOfflineRecordingData(tempData, _):
+            Napier.d("Polar360Controller: skinTemperatureOfflineRecordingData — sample count=\(tempData.samples.count)")
             return tempData.samples.map {
                 temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
             };

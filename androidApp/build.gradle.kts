@@ -171,7 +171,7 @@ kotlin {
 val composeVersion = "1.6.0"
 val workVersion = "2.10.3"
 val navVersion = "2.9.3"
-val polarSDKVersion = "6.7.0"
+val polarSDKVersion = "6.16.1"
 val ktorVersion = "3.4.0"
 val roomVersion = "2.8.4"
 val koinVersion = "4.1.1"

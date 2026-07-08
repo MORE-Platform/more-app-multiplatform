@@ -87,7 +87,7 @@ class Polar360TempObservation(repos: MainRepository) :
         Polar360Controller.ensureReady(deviceId, offlineMode = offlineMode,
             onReady = {
                 if (offlineMode) {
-                    Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.TEMPERATURE)
+                    Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.SKIN_TEMPERATURE)
                         .subscribe(
                             { items ->
                                 val processed = processTemperatureSamples(items.filterIsInstance<PolarTemperatureData.PolarTemperatureDataSample>())
@@ -95,13 +95,13 @@ class Polar360TempObservation(repos: MainRepository) :
                                     storeData(mapOf("polar360tempdata" to processed), -1) {}
                                 }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
-                                    deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE
+                                    deviceId, PolarBleApi.PolarDeviceDataType.SKIN_TEMPERATURE
                                 )
                             },
                             { error ->
                                 Napier.e(tag = "Polar360TempObservation") { "Failed to fetch pending offline data: ${error.message}" }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
-                                    deviceId, PolarBleApi.PolarDeviceDataType.TEMPERATURE
+                                    deviceId, PolarBleApi.PolarDeviceDataType.SKIN_TEMPERATURE
                                 )
                             }
                         ).ignore()
@@ -169,7 +169,7 @@ class Polar360TempObservation(repos: MainRepository) :
         if (offlineMode) {
             offlineRecordingDisposable?.dispose()
             offlineRecordingDisposable = null
-            Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.TEMPERATURE)
+            Polar360Controller.stopOfflineRecording(PolarBleApi.PolarDeviceDataType.SKIN_TEMPERATURE)
                 .subscribe(
                     { items ->
                         val processed = processTemperatureSamples(items.filterIsInstance<PolarTemperatureData.PolarTemperatureDataSample>())

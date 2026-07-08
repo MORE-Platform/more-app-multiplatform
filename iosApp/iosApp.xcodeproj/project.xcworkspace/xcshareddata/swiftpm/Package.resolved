@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/polarofficial/polar-ble-sdk.git",
       "state" : {
-        "revision" : "299639de113d0946c4a84f4c15e67bbca2173bad",
-        "version" : "6.7.0"
+        "revision" : "46c23dcd8beb4a2bfd3886e222a184c4ddc06278",
+        "version" : "6.16.1"
       }
     },
     {

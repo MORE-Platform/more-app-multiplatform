@@ -56,13 +56,14 @@ class Polar360PpiObservation: Observation_ {
                         onSuccess: { [weak self] items in
                             guard let self else { return }
                             let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
-                            let padded = Polar360PpiObservation.padToOneHz(
-                                samples: samples,
-                                startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
-                                endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
-                            )
-                            if !padded.isEmpty {
-                                let processed = padded.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
+                            // DIAGNOSTIC: padding temporarily disabled — store raw fetched samples
+//                            let padded = Polar360PpiObservation.padToOneHz(
+//                                samples: samples,
+//                                startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
+//                                endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
+//                            )
+                            if !samples.isEmpty {
+                                let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
                                 self.storeData(data: ["polar360ppidata": processed], timestamp: -1) {}
                             }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
@@ -129,13 +130,14 @@ class Polar360PpiObservation: Observation_ {
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.ppi_data }
-                    let padded = Polar360PpiObservation.padToOneHz(
-                        samples: samples,
-                        startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
-                        endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
-                    )
-                    guard !padded.isEmpty else { onCompletion(); finishBg(); return }
-                    let processed = padded.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
+                    // DIAGNOSTIC: padding temporarily disabled — store raw fetched samples
+//                    let padded = Polar360PpiObservation.padToOneHz(
+//                        samples: samples,
+//                        startNs: Polar360PpiObservation.recording_startTimestamp ?? 0,
+//                        endNs: Polar360PpiObservation.recroding_endTimestamp ?? 0
+//                    )
+                    guard !samples.isEmpty else { onCompletion(); finishBg(); return }
+                    let processed = samples.map { ["hr": $0.hr, "ppiInMs": $0.ppiInMs, "ppiErrorEstimate": $0.ppiErrorEstimate, "timestamp": $0.timestamp, "skinContact": $0.skinContact] as [String: Any] }
                     self.storeData(data: ["polar360ppidata": processed], timestamp: -1) {
                         onCompletion()
                         finishBg()

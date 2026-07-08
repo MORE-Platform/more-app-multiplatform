@@ -156,13 +156,14 @@ class Polar360PpiObservation(repos: MainRepository) :
                         .subscribe(
                             { items ->
                                 val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                                val padded = padToOneHz(
-                                    samples = processed,
-                                    startNs = recording_startTimestamp ?: 0L,
-                                    endNs = recroding_endTimestamp ?: 0L
-                                )
-                                if (padded.isNotEmpty()) {
-                                    storeData(mapOf("polar360ppidata" to padded), -1) {}
+                                // DIAGNOSTIC: padding temporarily disabled — store raw fetched samples
+//                                val padded = padToOneHz(
+//                                    samples = processed,
+//                                    startNs = recording_startTimestamp ?: 0L,
+//                                    endNs = recroding_endTimestamp ?: 0L
+//                                )
+                                if (processed.isNotEmpty()) {
+                                    storeData(mapOf("polar360ppidata" to processed), -1) {}
                                 }
                                 offlineRecordingDisposable = Polar360Controller.startOfflineRecording(
                                     deviceId, PolarBleApi.PolarDeviceDataType.PPI
@@ -223,13 +224,14 @@ class Polar360PpiObservation(repos: MainRepository) :
                 .subscribe(
                     { items ->
                         val processed = processPpiSamples(items.filterIsInstance<PolarPpiData.PolarPpiSample>())
-                        val padded = padToOneHz(
-                            samples = processed,
-                            startNs = recording_startTimestamp ?: 0L,
-                            endNs = recroding_endTimestamp ?: 0L
-                        )
-                        if (padded.isNotEmpty()) {
-                            storeData(mapOf("polar360ppidata" to padded), -1, onCompletion)
+                        // DIAGNOSTIC: padding temporarily disabled — store raw fetched samples
+//                        val padded = padToOneHz(
+//                            samples = processed,
+//                            startNs = recording_startTimestamp ?: 0L,
+//                            endNs = recroding_endTimestamp ?: 0L
+//                        )
+                        if (processed.isNotEmpty()) {
+                            storeData(mapOf("polar360ppidata" to processed), -1, onCompletion)
                         } else {
                             onCompletion()
                         }

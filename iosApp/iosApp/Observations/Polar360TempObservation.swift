@@ -48,7 +48,7 @@ class Polar360TempObservation: Observation_ {
                 guard let self else { return }
                 if self.offlineMode {
                     self.controller.stopOfflineRecordingAndFetch(
-                        dataType: .temperature,
+                        dataType: .skinTemperature,
                         onSuccess: { [weak self] items in
                             guard let self else { return }
                             let samples = items.compactMap { $0 as? Polar360Controller.temp_data }
@@ -57,14 +57,14 @@ class Polar360TempObservation: Observation_ {
                                 self.storeData(data: ["polar360tempdata": processed], timestamp: -1) {}
                             }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                                deviceId: deviceId, dataType: .temperature
+                                deviceId: deviceId, dataType: .skinTemperature
                             )
                         },
                         onError: { [weak self] error in
                             Napier.e("Polar360TempObservation: Failed to fetch pending offline data: \(error)")
                             guard let self else { return }
                             self.offlineRecordingDisposable = self.controller.startOfflineRecording(
-                                deviceId: deviceId, dataType: .temperature
+                                deviceId: deviceId, dataType: .skinTemperature
                             )
                         }
                     )
@@ -128,7 +128,7 @@ class Polar360TempObservation: Observation_ {
             }
 
             controller.stopOfflineRecordingAndFetch(
-                dataType: .temperature,
+                dataType: .skinTemperature,
                 onSuccess: { [weak self] items in
                     guard let self else { onCompletion(); finishBg(); return }
                     let samples = items.compactMap { $0 as? Polar360Controller.temp_data }

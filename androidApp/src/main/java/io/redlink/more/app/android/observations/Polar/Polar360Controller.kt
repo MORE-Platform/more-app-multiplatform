@@ -17,6 +17,9 @@ import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -120,10 +123,19 @@ object Polar360Controller {
         if (settings != null) {
             return polarConnector.polarApi.startOfflineRecording(deviceId, dataType, settings, null)
         }
+        // ACC/TEMPERATURE: prefer the device's requested settings (known-good on current
+        // firmware). Some newer firmware fails settings negotiation for temperature — if the
+        // settings-based start errors, fall back to a settings-less start.
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, dataType)
             .flatMapCompletable { resolvedSettings ->
                 Napier.d(tag = "Polar360Controller::$dataType") { "Using settings: ${resolvedSettings.settings}" }
                 polarConnector.polarApi.startOfflineRecording(deviceId, dataType, resolvedSettings, null)
+            }
+            .onErrorResumeNext { settingsError ->
+                Napier.w(tag = "Polar360Controller::$dataType") {
+                    "Settings-based start failed (${settingsError.message}); retrying without settings"
+                }
+                polarConnector.polarApi.startOfflineRecording(deviceId, dataType)
             }
     }
 
@@ -167,7 +179,7 @@ object Polar360Controller {
                     .concatMap { entry ->
                         if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
                             val epoch2000Ms = 946_684_800_000L
-                            val startNs = (entry.date.time - epoch2000Ms) * 1_000_000L
+                            val startNs = (entry.date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - epoch2000Ms) * 1_000_000L
                             Polar360PpiObservation.recording_startTimestamp = startNs
                             Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recording_startTimestamp=$startNs (entry.date=${entry.date})" }
                         }
@@ -196,6 +208,11 @@ object Polar360Controller {
                                     is PolarOfflineRecordingData.TemperatureOfflineRecording -> data.data.samples.also {
                                         Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
                                             "[$dataType] TEMP record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
+                                        }
+                                    }
+                                    is PolarOfflineRecordingData.SkinTemperatureOfflineRecording -> data.data.samples.also {
+                                        Napier.d(tag = "Polar360Controller::stopOfflineRecording") {
+                                            "[$dataType] SKIN TEMP record: ${it.size} samples, firstTimestamp=${it.firstOrNull()?.timeStamp}"
                                         }
                                     }
                                     is PolarOfflineRecordingData.PpgOfflineRecording -> data.data.samples.also {
@@ -270,8 +287,8 @@ object Polar360Controller {
     fun getPolarApi() = polarConnector.polarApi
 
     private fun syncDeviceTime(deviceId: String): Completable {
-        val calendar = Calendar.getInstance()
-        return polarConnector.polarApi.setLocalTime(deviceId, calendar)
+        val dateTime = LocalDateTime.now()
+        return polarConnector.polarApi.setLocalTime(deviceId, dateTime)
             .doOnComplete { Log.i(TAG, "Polar360Controller: Device time synced for $deviceId") }
             .onErrorComplete { error ->
                 Log.w(TAG, "Polar360Controller: Failed to sync device time (ignored): ${error.localizedMessage}")
@@ -291,9 +308,9 @@ object Polar360Controller {
                     val deviceTime = sdf.format(calendar.time)
 
                     val profile = Polar360UserProfile.load()
-                    val birthDate = profile?.birthDate ?: Calendar.getInstance().apply {
+                    val birthDate = (profile?.birthDate ?: Calendar.getInstance().apply {
                         add(Calendar.YEAR, -30)
-                    }.time
+                    }.time).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                     val age = profile?.age ?: 30
                     val maxHR = (220 - age).coerceIn(120, 220)
 
