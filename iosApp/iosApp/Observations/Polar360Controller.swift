@@ -128,6 +128,7 @@ class Polar360Controller {
     func startOfflineRecording(deviceId: String, dataType: PolarDeviceDataType, settings: PolarSensorSetting? = nil) -> Disposable {
         Napier.i("Polar360Controller: [\(dataType)] Starting offline recording on device=\(deviceId)")
         activeRecordingTypes.insert(dataType)
+        logOfflineRecordingState(deviceId, tag: "\(dataType) PRE-START")
 
         let disableSdk = Completable.deferred {
             do {
@@ -170,9 +171,42 @@ class Polar360Controller {
             .andThen(resolveAndStartOfflineRecording(deviceId: deviceId, dataType: dataType, settings: settings))
             .andThen(restartOthers)
             .subscribe(
-                onCompleted: { Napier.i("Polar360Controller: [\(dataType)] Offline recording started successfully") },
-                onError: { error in Napier.e("Polar360Controller: [\(dataType)] Failed to start: \(error)") }
+                onCompleted: {
+                    Napier.i("Polar360Controller: [\(dataType)] Offline recording started successfully")
+                    self.logOfflineRecordingState(deviceId, tag: "\(dataType) POST-START-OK")
+                },
+                onError: { error in
+                    Napier.e("Polar360Controller: [\(dataType)] Failed to start: \(error)")
+                    self.logOfflineRecordingState(deviceId, tag: "\(dataType) POST-FAIL")
+                }
             )
+    }
+
+    /// Diagnostic: logs which offline-recording data types the device SUPPORTS and which
+    /// are CURRENTLY recording. Used to explain "Invalid state" start failures (e.g. a
+    /// skin-temp recording already stuck active on the device that stop didn't clear).
+    private func logOfflineRecordingState(_ deviceId: String, tag: String) {
+        polarConnector.polarApi.getAvailableOfflineRecordingDataTypes(deviceId)
+            .subscribe(
+                onSuccess: { types in
+                    Napier.d("Polar360Controller: [\(tag)] device SUPPORTS offline types = \(types.map { "\($0)" }.sorted())")
+                },
+                onFailure: { err in
+                    Napier.w("Polar360Controller: [\(tag)] getAvailableOfflineRecordingDataTypes failed: \(err)")
+                }
+            )
+            .disposed(by: disposeBag)
+        polarConnector.polarApi.getOfflineRecordingStatus(deviceId)
+            .subscribe(
+                onSuccess: { status in
+                    let recording = status.filter { $0.value }.keys.map { "\($0)" }.sorted()
+                    Napier.d("Polar360Controller: [\(tag)] currently RECORDING = \(recording.isEmpty ? "none" : recording.joined(separator: ", ")) | full=\(status)")
+                },
+                onFailure: { err in
+                    Napier.w("Polar360Controller: [\(tag)] getOfflineRecordingStatus failed: \(err)")
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     private func resolveAndStartOfflineRecording(deviceId: String, dataType: PolarDeviceDataType, settings: PolarSensorSetting?) -> Completable {
