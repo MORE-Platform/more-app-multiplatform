@@ -26,17 +26,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
-fun ActivityProgressView(modifier: Modifier = Modifier, finishedTasks: Int, totalTasks: Int, headline: String = getStringResource(id = R.string.more_main_completed_tasks)){
-    val percent: Double = if(totalTasks > 0) finishedTasks.toDouble() / totalTasks.toDouble() else 0.0
+fun ActivityProgressView(
+    modifier: Modifier = Modifier,
+    finishedTasks: Int,
+    totalTasks: Int,
+    headline: String = getStringResource(id = R.string.more_main_completed_tasks)
+) {
+    val percent: Double =
+        if (totalTasks > 0) finishedTasks.toDouble() / totalTasks.toDouble() else 0.0
     Column(
         modifier = modifier
-        .fillMaxWidth()
-        .padding(vertical = 5.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically,
+            .fillMaxWidth()
+            .padding(vertical = 5.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()

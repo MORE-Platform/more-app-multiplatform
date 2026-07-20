@@ -6,19 +6,18 @@
 //  Copyright © 2024 Redlink GmbH. All rights reserved.
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct MoreAlertDialog: View {
-    var alertDialogModel: AlertDialogModel
+    let alertDialogModel: AlertDialogModel
 
-    private let stringTable = "AlertDialog"
     var body: some View {
         ZStack {
             Color.black.opacity(0.5)
                 .ignoresSafeArea(edges: .all)
             VStack(spacing: 20) {
-                Text(String.localize(forKey: alertDialogModel.title, withComment: "alert dialog title", inTable: stringTable))
+                Text(alertDialogModel.title.localized())
                     .foregroundColor(.more.primary)
                     .font(.headline)
                     .multilineTextAlignment(.center)
@@ -28,7 +27,7 @@ struct MoreAlertDialog: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading) {
-                        Text(String.localize(forKey: alertDialogModel.message, withComment: "alert dialog message", inTable: stringTable))
+                        Text(alertDialogModel.message.localized())
                             .foregroundColor(.more.primary)
                             .font(.subheadline)
                             .multilineTextAlignment(.leading)
@@ -40,20 +39,24 @@ struct MoreAlertDialog: View {
 
                 VStack {
                     MoreActionButton(disabled: .constant(false)) {
-                        alertDialogModel.onPositive()
+                        if let onConfirm = alertDialogModel.onConfirm {
+                            onConfirm()
+                        }
                     } label: {
-                        Text(String.localize(forKey: alertDialogModel.positiveTitle, withComment: "positive button", inTable: stringTable))
+                        Text(alertDialogModel.confirmLabel.localized())
                     }
 
-                    if let negativeTitle = alertDialogModel.negativeTitle {
+                    if let cancelLabel = alertDialogModel.cancelLabel {
                         MoreActionButton(backgroundColor: .more.secondaryLight, disabled: .constant(false)) {
-                            alertDialogModel.onNegative()
+                            if let onDecline = alertDialogModel.onDecline {
+                                onDecline()
+                            }
                         } label: {
                             if #available(iOS 17.0, *) {
-                                Text(String.localize(forKey: negativeTitle, withComment: "negative button", inTable: stringTable))
+                                Text(cancelLabel.localized())
                                     .foregroundStyle(Color.more.primary)
                             } else {
-                                Text(String.localize(forKey: negativeTitle, withComment: "negative button", inTable: stringTable))
+                                Text(cancelLabel.localized())
                                     .foregroundColor(.more.primary)
                             }
                         }
@@ -73,9 +76,16 @@ struct MoreAlertDialog: View {
 }
 
 #Preview {
-    MoreAlertDialog(alertDialogModel: AlertDialogModel(title: "Needed permissions were not given", message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?", positiveTitle: "Required Permissions Were Not Granted", negativeTitle: "Continue without allowing", onPositive: {
-        print("Settings")
-    }, onNegative: {
-        print("Continue")
-    }))
+    MoreAlertDialog(
+        alertDialogModel: AlertDialogModel.companion.fromStrings(
+            title: "Needed permissions were not given",
+            message: "This study needs one or more sensor permission to correctly work. You may decline sensor permissions, but if you do, the app and the study may not work fully or as expected. Would you like to go to the settings and allow the app to access needed sensor permissions?",
+            confirmLabel: "Required Permissions Were Not Granted",
+            cancelLabel: "Continue without allowing",
+            onConfirm: {
+                print("Settings")
+            },
+            onDecline: {
+                print("Continue")
+            }))
 }

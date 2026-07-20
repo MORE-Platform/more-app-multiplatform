@@ -17,23 +17,24 @@ import androidx.lifecycle.viewModelScope
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
-import io.redlink.more.more_app_mutliplatform.AlertController
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDevice
-import io.redlink.more.more_app_mutliplatform.services.bluetooth.BluetoothDeviceManager
-import io.redlink.more.more_app_mutliplatform.viewModels.ViewManager
-import io.redlink.more.more_app_mutliplatform.viewModels.startupConnection.CoreBluetoothViewModel
+import io.redlink.more.database.entities.BluetoothDeviceEntity
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
+import io.redlink.more.scopes.Scope
+import io.redlink.more.services.bluetooth.BluetoothStateManagement
+import io.redlink.more.viewModels.ViewManager
+import io.redlink.more.viewModels.startupConnection.CoreBluetoothViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BluetoothViewModel : ViewModel() {
-    private val coreBluetoothViewModel = CoreBluetoothViewModel(
+    val coreViewModel = CoreBluetoothViewModel(
         MoreApplication.shared!!.observationFactory,
         MoreApplication.shared!!.bluetoothController
     )
-    val discoveredDevices = mutableStateListOf<BluetoothDevice>()
-    val connectedDevices = mutableStateListOf<BluetoothDevice>()
+    val discoveredDevices = mutableStateListOf<BluetoothDeviceEntity>()
+    val connectedDevices = mutableStateListOf<BluetoothDeviceEntity>()
     val connectingDevices = mutableStateListOf<String>()
     val isScanning = mutableStateOf(false)
     val bluetoothPowerState = mutableStateOf(BluetoothStateListener.bluetoothEnabled.value)
@@ -59,7 +60,7 @@ class BluetoothViewModel : ViewModel() {
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.discoveredDevices.collect {
+            BluetoothStateManagement.discoveredDevices.collect {
                 withContext(Dispatchers.Main) {
                     discoveredDevices.clear()
                     discoveredDevices.addAll(it)
@@ -68,7 +69,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.connectedDevices.collect {
+            BluetoothStateManagement.connectedDevices.collect {
                 withContext(Dispatchers.Main) {
                     connectedDevices.clear()
                     connectedDevices.addAll(it)
@@ -77,7 +78,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            coreBluetoothViewModel.coreBluetooth.isScanning.collect {
+            BluetoothStateManagement.scanning.collect {
                 withContext(Dispatchers.Main) {
                     isScanning.value = it
                 }
@@ -85,7 +86,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            coreBluetoothViewModel.devicesNeededToConnectTo.collect {
+            coreViewModel.devicesNeededToConnectTo.collect {
                 withContext(Dispatchers.Main) {
                     neededDevices.clear()
                     neededDevices.addAll(MoreApplication.shared!!.observationFactory.bleDevicesNeeded())
@@ -101,7 +102,7 @@ class BluetoothViewModel : ViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            BluetoothDeviceManager.devicesCurrentlyConnecting.collect {
+            BluetoothStateManagement.devicesCurrentlyConnecting.collect {
                 withContext(Dispatchers.Main) {
                     connectingDevices.clear()
                     connectingDevices.addAll(it.mapNotNull { it.address })
@@ -112,19 +113,21 @@ class BluetoothViewModel : ViewModel() {
 
     fun viewDidAppear() {
         ViewManager.bleViewOpen(true)
-        coreBluetoothViewModel.viewDidAppear()
+        coreViewModel.viewOpened()
     }
 
     fun viewDidDisappear() {
-        coreBluetoothViewModel.viewDidDisappear()
         ViewManager.bleViewOpen(false)
+        coreViewModel.viewClosed()
     }
 
-    fun connectToDevice(device: BluetoothDevice) {
-        coreBluetoothViewModel.connectToDevice(device)
+    fun connectToDevice(device: BluetoothDeviceEntity) {
+        Scope.launch {
+            coreViewModel.connectToDevice(device)
+        }
     }
 
-    fun disconnectFromDevice(device: BluetoothDevice) {
-        coreBluetoothViewModel.disconnectFromDevice(device)
+    fun disconnectFromDevice(device: BluetoothDeviceEntity) {
+        coreViewModel.disconnectFromDevice(device)
     }
 }

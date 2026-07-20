@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextDecoration
-import io.redlink.more.more_app_mutliplatform.util.RegexData
+import io.redlink.more.util.RegexData
 
 fun String.toAnnotatedString(): AnnotatedString {
     val urlStyle = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)
@@ -40,3 +40,6 @@ fun String.toAnnotatedString(): AnnotatedString {
 
     return builder.toAnnotatedString()
 }
+
+// app-usage -> app_usage
+fun String.observationTypeToResource(): String = this.replace("-", "_")

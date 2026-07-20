@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -24,7 +24,7 @@ struct ObservationTimeDetails: View {
     var body: some View {
         HStack {
             Image(systemName: "clock.fill")
-            BasicText(text: String(format: "%@:", String.localize(forKey: "timeframe", withComment: "when the observation was started", inTable: stringTable)))
+            BasicText(text: String(format: "%@:", String(localized: "timeframe")))
             Text(String(format: "%@ - %@", start.toDateString(dateFormat: "HH:mm"), end.toDateString(dateFormat: "HH:mm")))
                 .foregroundColor(Color.more.secondary)
         }

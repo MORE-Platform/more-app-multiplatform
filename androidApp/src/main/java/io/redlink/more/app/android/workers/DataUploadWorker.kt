@@ -16,12 +16,12 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.more_app_mutliplatform.database.repository.ObservationDataRepository
-import io.redlink.more.more_app_mutliplatform.services.network.NetworkService
-import io.redlink.more.more_app_mutliplatform.services.network.openapi.model.DataBulk
-import io.redlink.more.more_app_mutliplatform.services.store.CredentialRepository
-import io.redlink.more.more_app_mutliplatform.services.store.EndpointRepository
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.services.network.NetworkServiceImpl
+import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.store.CredentialRepository
+import io.redlink.more.services.store.CredentialRepositoryImpl
+import io.redlink.more.services.store.EndpointRepositoryImpl
+import io.redlink.more.services.store.SharedPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -30,38 +30,42 @@ private const val TAG = "DataUploadWorker"
 /**
  * The Worker, which tries to upload given databulks. It receives a bulk of data ids, queries them from the SQLite and sends them to the DSB. Then it deletes those ids on a successful return.
  */
-class DataUploadWorker (
+class DataUploadWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
     private val workManager = WorkManager.getInstance(applicationContext)
     private val sharedPreferences = SharedPreferencesRepository(applicationContext)
-    private val credentialRepository: CredentialRepository = MoreApplication.shared?.credentialRepository ?: CredentialRepository(sharedPreferences)
-    private val networkService = MoreApplication.shared?.networkService ?: NetworkService(EndpointRepository(sharedPreferences), credentialRepository)
+    private val credentialRepository: CredentialRepository =
+        MoreApplication.shared?.credentialRepository ?: CredentialRepositoryImpl(
+            sharedPreferences
+        )
+    private val networkService =
+        MoreApplication.shared?.networkService ?: NetworkServiceImpl(
+            EndpointRepositoryImpl(sharedPreferences), credentialRepository
+        )
     private var stopped = false
-    private val observationDataRepository = ObservationDataRepository()
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Napier.i { "Starting DataUploadWorker doWork()" }
 
-        if (!credentialRepository.hasCredentials()) {
+        if (!credentialRepository.hasCredentials.value) {
             Napier.i { "No credentials found, DataUploadWorker failure" }
             return@withContext Result.failure()
         }
 
         try {
             Napier.i { "Worker started!" }
-            return@withContext observationDataRepository.allAsBulk()?.let { bulk ->
-                if (bulk.dataPoints.isNotEmpty()) {
-                    return@withContext uploadDataBulk(bulk).apply {
-                        observationDataRepository.close()
+            return@withContext MoreApplication.shared!!.repositories.observationData.allAsBulk()
+                ?.let { bulk ->
+                    if (bulk.dataPoints.isNotEmpty()) {
+                        return@withContext uploadDataBulk(bulk)
                     }
-                }
-                Napier.i { "No data points found, DataUploadWorker success" }
-                Result.success()
-            } ?: Result.failure()
+                    Napier.i { "No data points found, DataUploadWorker success" }
+                    Result.success()
+                } ?: Result.failure()
         } catch (err: Exception) {
-            Napier.e(throwable = err, message =  "Exception in DataUploadWorker")
+            Napier.e(throwable = err, message = "Exception in DataUploadWorker")
             if (isStopped) {
                 stopped = isStopped
                 workManager.cancelAllWork()
@@ -83,7 +87,9 @@ class DataUploadWorker (
             Result.retry()
         } else {
             Napier.i { "Deleting observation data..." }
-            observationDataRepository.deleteAllWithId(ids)
+            MoreApplication.shared!!.repositories.observationData.deleteAllWithId(
+                ids
+            )
             Napier.i { "Deleted ${ids.size} observation data points, success" }
             Result.success()
         }

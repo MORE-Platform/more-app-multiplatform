@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.formattedString
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 import java.time.LocalDate
 
 @Composable
-fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier = Modifier){
+fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
         Icon(
             Icons.Default.CalendarMonth,
@@ -38,9 +38,9 @@ fun TimeframeDays(startTime: LocalDate, endTime: LocalDate, modifier: Modifier =
             text = startTime.let {
                 val start: String = startTime.formattedString("dd.MM.yyyy")
                 val end: String = endTime.formattedString("dd.MM.yyyy")
-                if(start != end) {
-                   "$start - $end"
-                }else {
+                if (start != end) {
+                    "$start - $end"
+                } else {
                     start
                 }
             },

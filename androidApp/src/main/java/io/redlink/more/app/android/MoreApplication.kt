@@ -18,15 +18,22 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.github.aakira.napier.Napier
+import io.redlink.more.Shared
+import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
-import io.redlink.more.more_app_mutliplatform.Shared
-import io.redlink.more.more_app_mutliplatform.napierDebugBuild
-import io.redlink.more.more_app_mutliplatform.services.store.SharedPreferencesRepository
+import io.redlink.more.database.AppDatabase
+import io.redlink.more.database.getDatabaseBuilder
+import io.redlink.more.database.getRoomDatabase
+import io.redlink.more.database.repository.MainRepositoryImpl
+import io.redlink.more.logging.napierDebugBuild
+import io.redlink.more.models.NotificationTextLocalization
+import io.redlink.more.services.store.SharedPreferencesRepository
+import io.redlink.more.viewModels.ViewManager
 
 /**
  * Main Application class of the project.
@@ -36,32 +43,49 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         super<Application>.onCreate()
         napierDebugBuild(FirebaseCrashlyticsAntilog())
         napierDebugBuild()
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
         appContext = this
+        packagePath = this.packageName
+        appName = this.getString(R.string.app_name)
+        DEFAULT_CHANNEL_ID = packagePath + appName!!.lowercase() + ".urgent"
+        NotificationTextLocalization.init(this)
 
         initShared(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     override fun onTerminate() {
+        shared?.bluetoothController?.close()
         super.onTerminate()
-        shared?.mainBluetoothConnector?.close()
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         Napier.i { "App is in the foreground..." }
-        shared?.appInForeground(true)
-        shared?.notificationManager?.updateNotificationBadgeCount()
+        ViewManager.appIsInForeground(true)
+        shared?.updateData(true)
     }
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         Napier.i { "App is in the background..." }
-        shared?.appInForeground(false)
+        ViewManager.appIsInForeground(false)
+        shared?.updateData(false)
     }
 
     companion object {
         var appContext: Context? = null
+            private set
+
+        var appName: String? = null
+            private set
+
+        var packagePath: String? = null
+            private set
+
+        var DEFAULT_CHANNEL_ID: String? = null
             private set
 
         var firebaseAnalytics: FirebaseAnalytics? = null
@@ -79,17 +103,30 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
             if (shared == null) {
                 polarConnector = PolarConnector(context)
                 val androidBluetoothConnector = polarConnector!!
-                val dataManager = AndroidObservationDataManager(context)
-                shared = Shared(
+                val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
+                val repositories = MainRepositoryImpl(database)
+                val dataManager = AndroidObservationDataManager(context, repositories)
+                val sharedPreferences = SharedPreferencesRepository(context)
+                val tempShared = Shared(
                     LocalPushNotificationService(context),
-                    SharedPreferencesRepository(context),
+                    repositories,
+                    sharedPreferences,
                     dataManager,
                     androidBluetoothConnector,
-                    AndroidObservationFactory(context, dataManager),
+                    AndroidObservationFactory(
+                        context,
+                        dataManager,
+                        repositories,
+                        sharedPreferences,
+                    ),
                     AndroidDataRecorder()
                 )
+                shared = tempShared
+                tempShared.let { shared ->
+                    shared.deeplinkManager.setProtocol(Shared.PROTOCOL.toString(context))
+                    shared.deeplinkManager.setHost(applicationId) // applicationId is needed instead of the shared HOST, as this is necessary for the NavController in Android
+                }
             }
         }
-
     }
 }

@@ -11,6 +11,7 @@
 package io.redlink.more.app.android.activities.notification.filter
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,54 +23,65 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
+import io.redlink.more.app.android.extensions.formatNotificationFilterString
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreDivider
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 
 @Composable
-fun NotificationFilterView(viewModel: NotificationFilterViewModel) {
-    LazyColumn {
-        item {
-            HeaderTitle(
-                title = stringResource(R.string.more_select_filter),
-                modifier = Modifier.padding(top = 20.dp)
-            )
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        itemsIndexed(viewModel.currentFilters.entries.sortedBy { it.key.sortIndex }) { _, entry ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if(entry.value)
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleFilter(entry.key) })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = entry.key.type,
-                        color = MoreColors.Secondary
-                    )
-                }
+fun NotificationFilterView(coreViewModel: CoreNotificationFilterViewModel) {
+    val viewModel = remember { NotificationFilterViewModel(coreViewModel) }
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewDidAppear() },
+        { viewModel.coreViewModel.viewDidDisappear() }) {
+        LazyColumn {
+            item {
+                HeaderTitle(
+                    title = stringResource(R.string.more_select_filter),
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
             }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+
+            itemsIndexed(viewModel.currentFilters.entries.sortedBy { it.key.sortIndex }) { _, entry ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (entry.value)
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.toggleFilter(entry.key) })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = entry.key.toString().formatNotificationFilterString(),
+                            color = MoreColors.Secondary
+                        )
+                    }
+                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
         }
     }
-
 }

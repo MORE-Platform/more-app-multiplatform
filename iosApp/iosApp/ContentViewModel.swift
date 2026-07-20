@@ -7,175 +7,97 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
 
-import Foundation
-import shared
 import BackgroundTasks
+import Combine
+import Foundation
+import KMPNativeCoroutinesCombine
+import shared
 
 class ContentViewModel: ObservableObject {
-    private let registrationService = RegistrationService(shared: AppDelegate.shared)
-    
     @Published var hasCredentials = false
-    @Published var loginViewScreenNr = 0
+    @Published var credentialsLoaded = false
     @Published var isLeaveStudyOpen: Bool = false
     @Published var isLeaveStudyConfirmOpen: Bool = false
     @Published var showBleView = false
-    
+
     @Published var mainTabViewSelection = 0
-    
-    @Published var finishText: String? = nil
+
     @Published var alertDialogModel: AlertDialogModel? = nil
     @Published var unreadNotificationCount: Int = 0
 
-    lazy var loginViewModel: LoginViewModel = {
-        let viewModel = LoginViewModel(registrationService: registrationService)
-        viewModel.delegate = self
-        return viewModel
-    }()
-    lazy var consentViewModel: ConsentViewModel = {
-        let viewModel = ConsentViewModel(registrationService: registrationService)
-        viewModel.delegate = self
-        return viewModel
-    }()
-    
-    lazy var taskDetailsVM: TaskDetailsViewModel = {
-        TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder)
-    }()
-    
-    lazy var simpleQuestionVM = SimpleQuestionObservationViewModel()
-    lazy var limeSurveyVM = LimeSurveyViewModel()
-    
-    var dashboardViewModel: DashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
+    let manualSchedule = ScheduleViewModel(scheduleListType: .manuals)
     lazy var runningViewModel = ScheduleViewModel(scheduleListType: .running)
     lazy var completedViewModel = ScheduleViewModel(scheduleListType: .completed)
-    lazy var settingsViewModel: SettingsViewModel = {
-        let viewModel = SettingsViewModel()
-        viewModel.delegate = self
-        return viewModel
-    }()
-    
-    var notificationViewModel: NotificationViewModel
-    
-    var notificationFilterViewModel: NotificationFilterViewModel
-    
+    lazy var settingsViewModel: SettingsViewModel = SettingsViewModel()
+
+    let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
+
     lazy var infoViewModel = InfoViewModel()
 
-    lazy var bluetoothViewModel: BluetoothConnectionViewModel = BluetoothConnectionViewModel()
-    
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
-        let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
-        notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
-        notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
-        hasCredentials = AppDelegate.shared.credentialRepository.hasCredentials()
-        
-        ViewManager.shared.studyIsUpdatingAsClosure { kBool in
-            AppDelegate.navigationScreenHandler.studyIsUpdating(kBool.boolValue)
+        createPublisher(for: AppDelegate.shared.credentialRepository.credentials)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] credentials in
+            self?.hasCredentials = credentials != nil
         }
-        
-        ViewManager.shared.showBluetoothViewAsClosure { [weak self] kBool in
-            if kBool.boolValue {
-                self?.showBleView = kBool.boolValue
-            }
+        .store(in: &cancellables)
+
+        createPublisher(for: AppDelegate.shared.credentialRepository.credentialsLoaded)
+        .map {
+            $0.boolValue
         }
-        
-        AppDelegate.shared.onStudyStateChange { [weak self] studyState in
-            self?.finishText = AppDelegate.shared.finishText
-            AppDelegate.navigationScreenHandler.setStudyState(studyState)
+        .first(where: { $0 == true })
+        .receive(on: DispatchQueue.main)
+        .sink { completion in
+            print("Credentials have loaded with completion: \(completion)")
+        } receiveValue: { [weak self] loaded in
+            self?.credentialsLoaded = loaded
         }
-        
-        AlertController.shared.onNewAlertDialogModel { [weak self] alertDialogModel in
+        .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.studyIsUpdating)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { updating in
+            AppDelegate.navigationScreenHandler.studyIsUpdating(updating.boolValue)
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: ViewManager.shared.bleViewActive)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] show in
+            self?.showBleView = show.boolValue
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: AlertController.shared.alertDialogModel)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] alertDialogModel in
             self?.alertDialogModel = alertDialogModel
         }
+        .store(in: &cancellables)
         
-        AppDelegate.shared.unreadNotificationCountAsClosure { [weak self] kInt in
-            self?.unreadNotificationCount = kInt.intValue
-        }
-    }
-    
-    func showLoginView() {
-        DispatchQueue.main.async {
-            self.registrationService.reset()
-            self.loginViewScreenNr = 0
-            self.hasCredentials = false
-        }
-    }
-    
-    func showConsentView() {
-        DispatchQueue.main.async {
-            self.loginViewScreenNr = 1
-            self.consentViewModel.onAppear()
-        }
-    }
-    
-    func getTaskDetailsVM(navigationState: NavigationState) -> TaskDetailsViewModel {
-        if let scheduleId = navigationState.scheduleId {
-            taskDetailsVM.setSchedule(scheduleId: scheduleId)
-        }
-        return taskDetailsVM
-    }
-    
-    func getSimpleQuestionObservationVM(navigationState: NavigationState) -> SimpleQuestionObservationViewModel {
-        simpleQuestionVM.setScheduleId(navigationState: navigationState)
-        return simpleQuestionVM
-    }
-    
-    func getLimeSurveyVM(navigationModalState: NavigationModalState) -> LimeSurveyViewModel {
-        limeSurveyVM.setNavigationModalState(navigationModalState: navigationModalState)
-        return limeSurveyVM
+        createPublisher(for: AppDelegate.shared.notificationManager.unreadUserCount)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in}) { [weak self] notificationCount in
+                self?.unreadNotificationCount = notificationCount.intValue
+            }
+            .store(in: &cancellables).self
     }
 
-    
     private func reinitAllViewModels() {
-        dashboardViewModel = DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .manuals))
         runningViewModel = ScheduleViewModel(scheduleListType: .running)
         completedViewModel = ScheduleViewModel(scheduleListType: .completed)
-        
-        let coreNotificationFilterViewModel = CoreNotificationFilterViewModel()
-        notificationViewModel = NotificationViewModel(filterViewModel: coreNotificationFilterViewModel)
-        notificationFilterViewModel = NotificationFilterViewModel(coreViewModel: coreNotificationFilterViewModel)
-        
+
         settingsViewModel = SettingsViewModel()
-        settingsViewModel.delegate = self
-        
-        bluetoothViewModel = BluetoothConnectionViewModel()
+
         infoViewModel = InfoViewModel()
-    }
-}
-
-extension ContentViewModel: LoginViewModelListener {
-    func tokenValid(study: Study) {
-        DispatchQueue.main.async {
-            self.consentViewModel.consentInfo = study.consentInfo
-            self.consentViewModel.buildConsentModel()
-            self.showConsentView()
-        }
-    }
-}
-
-extension ContentViewModel: ConsentViewModelListener {
-    func decline() {
-        showLoginView()
-    }
-    
-    func credentialsStored() {
-        reinitAllViewModels()
-        DispatchQueue.main.async { [weak self] in
-            self?.hasCredentials = true
-        }
-        AppDelegate.shared.doNewLogin()
-    }
-
-    func credentialsDeleted() {
-        DispatchQueue.main.async { [weak self] in
-            if let self {
-                self.hasCredentials = false
-            }
-        }
-        showLoginView()
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -41,8 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun Accordion(
@@ -65,34 +65,41 @@ fun Accordion(
         )
     )
 
-    Row(verticalAlignment = Alignment.Top,
+    Row(
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
     ) {
-        Column(modifier = Modifier
-            .weight(1f)
-            .padding(start = 8.dp)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp)
+        ) {
 
-
-            Column(verticalArrangement = Arrangement.Center,
+            Column(
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         open.value = !open.value
                     }
                     .height(48.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
 
                 ) {
 
-                    if(hasCheck) {
+                    if (hasCheck) {
                         IconInline(
                             icon = Icons.Rounded.Done,
                             color = MoreColors.Approved,
@@ -100,17 +107,17 @@ fun Accordion(
                         )
                     }
 
-                    if(hasSmallTitle) {
+                    if (hasSmallTitle) {
                         SmallTitle(text = title, modifier = Modifier.weight(0.9f))
                     } else {
                         MediumTitle(text = title, modifier = Modifier.weight(0.9f))
                     }
-                        Icon(
-                            Icons.Rounded.ExpandMore,
-                            contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
-                            tint = MoreColors.Primary,
-                            modifier = Modifier.rotate(angle)
-                        )
+                    Icon(
+                        Icons.Rounded.ExpandMore,
+                        contentDescription = getStringResource(id = R.string.more_endpoint_rotatable_arrow_description),
+                        tint = MoreColors.Primary,
+                        modifier = Modifier.rotate(angle)
+                    )
                 }
             }
 
@@ -121,16 +128,16 @@ fun Accordion(
                 )
             }
 
-            if(hasPreview) {
+            if (hasPreview) {
                 Text(
                     text = description,
                     color = if (open.value) MoreColors.Primary else MoreColors.TextInactive,
-                    maxLines = if(open.value) Int.MAX_VALUE else 1,
+                    maxLines = if (open.value) Int.MAX_VALUE else 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = if (open.value) TextUnit.Unspecified else 14.sp
                 )
                 Spacer(Modifier.height(12.dp))
-            } else if(open.value) {
+            } else if (open.value) {
                 Text(
                     text = description,
                     color = MoreColors.Primary,

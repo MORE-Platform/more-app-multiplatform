@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -22,18 +22,16 @@ struct InlineAbortButton: View {
         Button {
             action()
         } label: {
-            HStack{
+            HStack {
                 Image(systemName: "square.fill")
                     .padding(0.5)
-                    
                     .foregroundColor(.more.important)
-                Text(String.localize(forKey: "Abort", withComment: "Abort running task.", inTable: stringTable))
+                Text("Abort")
                     .foregroundColor(.more.secondary)
             }
             .padding(5)
-            
         }
-        .accent(color: .more.primaryLight)
+        .tint(.more.primaryLight)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
                 .stroke(Color.more.secondaryMedium, lineWidth: 1)

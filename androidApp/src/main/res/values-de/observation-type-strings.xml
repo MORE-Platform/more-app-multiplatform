@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="question_observation">Frage</string>
+    <string name="questionnaire_observation">Fragebogen</string>
+    <string name="multiple_choice_question_observation">Multiple Choice</string>
+    <string name="gps_mobile_observation">GPS</string>
+    <string name="acc_mobile_observation">Accelerometer</string>
+    <string name="app_usage_observation">App Nutzung</string>
+    <string name="polar_verity_observation">Polar Verity</string>
+    <string name="garmin_observation">Garmin</string>
+    <string name="lime_survey_observation">LimeSurvey</string>
+</resources>

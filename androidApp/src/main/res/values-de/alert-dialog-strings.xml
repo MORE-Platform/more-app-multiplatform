@@ -6,4 +6,9 @@
     <string name="notification_permission_not_granted_message">Wir bitten um Erlaubnis, Ihnen Push-Benachrichtigungen zu senden. Dies hilft, den aktuellen Status der Studie jederzeit aufrechtzuerhalten und dient als Erinnerung an Ihre Aufgaben.</string>
     <string name="proceed_to_settings_button">Zu den Einstellungen gehen</string>
     <string name="proceed_without_granting_button">Ohne Berechtigungen fortfahren</string>
+    <string name="missing_permissions_label">Fehlende Berechtigungen</string>
+    <string name="no_internet_connection_title">Keine Internetverbindung</string>
+    <string name="no_internet_connection_body">Bitte verbinden Sie das Gerät mit dem Internet und versuchen es erneut!</string>
+    <string name="accept_button">Annehmen</string>
+    <string name="decline_button">Ablehnen</string>
 </resources>

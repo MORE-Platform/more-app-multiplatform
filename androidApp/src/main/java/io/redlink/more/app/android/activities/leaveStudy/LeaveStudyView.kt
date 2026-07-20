@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,94 +30,93 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.leaveStudy.LeaveStudyViewModel
 import io.redlink.more.app.android.extensions.Image
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTitle
 import io.redlink.more.app.android.shared_composables.Title
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreApproved
-import io.redlink.more.app.android.ui.theme.moreImportant
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreApproved
+import io.redlink.more.app.android.theme.moreImportant
 
 @Composable
-fun LeaveStudyView(navController: NavController, viewModel: LeaveStudyViewModel) {
+fun LeaveStudyView(navController: NavController) {
     val context = LocalContext.current
+    val viewModel = remember { LeaveStudyViewModel() }
 
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(NavigationScreen.LEAVE_STUDY.routeWithParameters())
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewDidAppear() },
+        { viewModel.coreViewModel.viewDidDisappear() }) {
         Column(
-            modifier = Modifier.fillMaxWidth(0.8f),
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            viewModel.permissionModel.value?.let {
-                Title(text = it.studyTitle, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            }
 
-            Spacer(Modifier.height(80.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    id = R.drawable.warning_exclamation,
-                    contentDescription = "More Logo",
-                    modifier = Modifier
-                        .fillMaxWidth(0.3f)
-                        .aspectRatio(1.5f)
+                viewModel.permissionModel.value?.let {
+                    Title(
+                        text = it.studyTitle,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(Modifier.height(80.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        id = R.drawable.warning_exclamation,
+                        contentDescription = "More Logo",
+                        modifier = Modifier
+                            .fillMaxWidth(0.3f)
+                            .aspectRatio(1.5f)
+                    )
+                }
+
+                Spacer(Modifier.height(18.dp))
+
+                SmallTitle(
+                    text = stringResource(id = R.string.more_settings_withdraw_statement),
+                    color = MoreColors.Important,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
-            }
 
-            Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(80.dp))
 
-            SmallTitle(
-                text = stringResource(id = R.string.more_settings_withdraw_statement),
-                color = MoreColors.Important,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+                SmallTitle(
+                    text = stringResource(id = R.string.more_settings_withdraw_question),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(Modifier.height(80.dp))
+                Spacer(Modifier.height(18.dp))
 
-            SmallTitle(
-                text = stringResource(id = R.string.more_settings_withdraw_question),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+                SmallTextButton(
+                    text = stringResource(id = R.string.more_settings_continue),
+                    buttonColors = ButtonDefaults.moreApproved(),
+                    borderStroke = MoreColors.borderApproved()
+                ) {
+                    (context as? Activity)?.onBackPressed()
+                }
 
-            Spacer(Modifier.height(18.dp))
-
-            SmallTextButton(
-                text = stringResource(id = R.string.more_settings_continue),
-                buttonColors = ButtonDefaults.moreApproved(),
-                borderStroke = MoreColors.borderApproved()
-            ) {
-                (context as? Activity)?.onBackPressed()
-            }
-
-            SmallTextButton(
-                text = getStringResource(id = R.string.more_settings_withdraw_from_study),
-                buttonColors = ButtonDefaults.moreImportant(),
-                borderStroke = MoreColors.borderImportant()
-            ) {
-                navController.navigate(NavigationScreen.LEAVE_STUDY_CONFIRM.routeWithParameters())
+                SmallTextButton(
+                    text = getStringResource(id = R.string.more_settings_withdraw_from_study),
+                    buttonColors = ButtonDefaults.moreImportant(),
+                    borderStroke = MoreColors.borderImportant()
+                ) {
+                    navController.navigate(NavigationScreen.LEAVE_STUDY_CONFIRM.routeWithParameters())
+                }
             }
         }
     }

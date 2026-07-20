@@ -59,7 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 import kotlin.math.roundToInt
 
 @Composable

@@ -11,6 +11,7 @@
 package io.redlink.more.app.android.activities.dashboard.filter
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -23,117 +24,135 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.extensions.getStringResourceByName
+import io.redlink.more.app.android.extensions.observationTypeToResource
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.IconInline
 import io.redlink.more.app.android.shared_composables.MoreDivider
-import io.redlink.more.app.android.ui.theme.MoreColors
-
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.viewModels.schedules.CoreScheduleViewModel
 
 @Composable
-fun DashboardFilterView(viewModel: DashboardFilterViewModel) {
-    LazyColumn {
-        item {
-            HeaderTitle(
-                title = stringResource(R.string.more_filter_set_duration),
-                modifier = Modifier.padding(top = 20.dp)
-            )
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        itemsIndexed(viewModel.currentDateFilter.entries.sortedBy { it.key.sortIndex }) { _, item ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (item.value)
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleDateFilter(item.key) })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = viewModel.dateFilters[item.key]
-                            ?: getStringResource(id = R.string.more_filter_all),
-                        color = if (item.value) MoreColors.Primary else MoreColors.Secondary
-                    )
-                }
-            }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        item {
-            HeaderTitle(
-                title = stringResource(R.string.more_filter_set_type),
-                modifier = Modifier.padding(top = 20.dp)
-            )
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (!viewModel.typeFilterActive.value)
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.clearTypeFilter() })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = stringResource(R.string.more_filter_all),
-                        color = if (!viewModel.typeFilterActive.value) MoreColors.Primary else MoreColors.Secondary
-                    )
-                }
-            }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
-        }
-
-        items(viewModel.currentTypeFilter.entries.sortedBy { it.key }) { item ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (
-                    item.value
+fun DashboardFilterView(coreScheduleViewModel: CoreScheduleViewModel) {
+    val viewModel = remember { DashboardFilterViewModel(coreScheduleViewModel.coreFilterModel) }
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewOpened() },
+        { viewModel.coreViewModel.viewClosed() }) {
+        LazyColumn {
+            item {
+                HeaderTitle(
+                    title = stringResource(R.string.more_filter_set_duration),
+                    modifier = Modifier.padding(top = 20.dp)
                 )
-                    IconInline(
-                        icon = Icons.Rounded.Done,
-                        color = MoreColors.Approved,
-                        contentDescription = getStringResource(id = R.string.more_filter_selected)
-                    )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .clickable(onClick = { viewModel.toggleTypeFilter(item.key) })
-                        .padding(4.dp)
-                ) {
-                    HeaderDescription(
-                        description = item.key,
-                        color = if (item.value) MoreColors.Primary else MoreColors.Secondary
-                    )
-                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
             }
-            MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+
+            itemsIndexed(viewModel.currentDateFilter.entries.sortedBy { it.key.sortIndex }) { _, item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (item.value)
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.toggleDateFilter(item.key) })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = viewModel.dateFilters[item.key]
+                                ?: getStringResource(id = R.string.more_filter_all),
+                            color = if (item.value) MoreColors.Primary else MoreColors.Secondary
+                        )
+                    }
+                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
+
+            item {
+                HeaderTitle(
+                    title = stringResource(R.string.more_filter_set_type),
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (!viewModel.typeFilterActive.value)
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.clearTypeFilter() })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = stringResource(R.string.more_filter_all),
+                            color = if (!viewModel.typeFilterActive.value) MoreColors.Primary else MoreColors.Secondary
+                        )
+                    }
+                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
+
+            items(viewModel.currentTypeFilter.entries.sortedBy { it.key }) { item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (
+                        item.value
+                    )
+                        IconInline(
+                            icon = Icons.Rounded.Done,
+                            color = MoreColors.Approved,
+                            contentDescription = getStringResource(id = R.string.more_filter_selected)
+                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { viewModel.toggleTypeFilter(item.key) })
+                            .padding(4.dp)
+                    ) {
+                        HeaderDescription(
+                            description = getStringResourceByName(item.key.observationTypeToResource()),
+                            color = if (item.value) MoreColors.Primary else MoreColors.Secondary
+                        )
+                    }
+                }
+                MoreDivider(modifier = Modifier.padding(vertical = 10.dp))
+            }
         }
     }
 }

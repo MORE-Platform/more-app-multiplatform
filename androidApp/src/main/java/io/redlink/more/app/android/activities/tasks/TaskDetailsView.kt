@@ -22,16 +22,16 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Square
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen
+import io.redlink.more.app.android.activities.OnAppearDisappear
 import io.redlink.more.app.android.activities.observationErrors.ObservationErrorListView
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.extensions.jvmLocalDate
@@ -40,174 +40,152 @@ import io.redlink.more.app.android.shared_composables.Accordion
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.DatapointCollectionView
 import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.shared_composables.SmallTextButton
 import io.redlink.more.app.android.shared_composables.SmallTextIconButton
 import io.redlink.more.app.android.shared_composables.TimeframeDays
 import io.redlink.more.app.android.shared_composables.TimeframeHours
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreSecondary2
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.LimeSurveyType
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.PolarVerityHeartRateType
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.SimpleQuestionType
-
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreSecondary2
+import io.redlink.more.models.ScheduleState
+import io.redlink.more.observations.observationTypes.PolarVerityHeartRateType
 
 @Composable
 fun TaskDetailsView(
     navController: NavController,
-    viewModel: TaskDetailsViewModel,
-    scheduleId: String?
+    scheduleId: String
 ) {
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route =
-        backStackEntry?.arguments?.getString(NavigationScreen.SCHEDULE_DETAILS.routeWithParameters())
-    val context = LocalContext.current
-    LaunchedEffect(route) {
-        viewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            viewModel.viewDidDisappear()
-        }
-    }
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    HeaderTitle(
-                        title = viewModel.taskDetailsModel.value.observationTitle,
-                        modifier = Modifier
-                            .weight(0.65f)
-                            .padding(vertical = 11.dp)
-                    )
-                    if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING)
-                        SmallTextIconButton(
-                            text = getStringResource(id = R.string.more_abort),
-                            imageText = getStringResource(id = R.string.more_abort),
-                            image = Icons.Rounded.Square,
-                            imageTint = MoreColors.Important,
-                            borderStroke = MoreColors.borderDefault(),
-                            buttonColors = ButtonDefaults.moreSecondary2()
-                        ) {
-                            viewModel.stopObservation()
-                        }
-                }
-                BasicText(
-                    text = viewModel.taskDetailsModel.value.observationType,
-                    color = MoreColors.Secondary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 14.dp)
-                )
-
-                TimeframeDays(
-                    viewModel.taskDetailsModel.value.start.jvmLocalDate(),
-                    viewModel.taskDetailsModel.value.end.jvmLocalDate(),
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                )
-                TimeframeHours(
-                    viewModel.taskDetailsModel.value.start.jvmLocalDateTime(),
-                    viewModel.taskDetailsModel.value.end.jvmLocalDateTime(),
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Accordion(
-                    title = getStringResource(id = R.string.participant_information),
-                    description = viewModel.taskDetailsModel.value.participantInformation,
-                    hasCheck = false,
-                    hasPreview = false
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-            }
-        }
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            scheduleId?.let {
-                if (!viewModel.taskDetailsModel.value.state.completed()) {
-                    DatapointCollectionView(
-                        viewModel.dataPointCount.value,
-                        viewModel.taskDetailsModel.value.state
-                    )
-                }
-            }
-        }
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-
-            ObservationErrorListView(
-                errors = viewModel.taskObservationErrors,
-                errorActions = viewModel.taskObservationErrorActions
+    val viewModel =
+        remember {
+            TaskDetailsViewModel(
+                MoreApplication.shared!!.dataRecorder,
+                scheduleId
             )
+        }
+    val taskDetails by viewModel.coreViewModel.taskDetailsModel.collectAsStateWithLifecycle()
+    val dataPoints by viewModel.coreViewModel.dataCount.collectAsStateWithLifecycle()
+    val taskErrors by viewModel.coreViewModel.taskObservationErrors.collectAsStateWithLifecycle()
+    val taskErrorActions by viewModel.coreViewModel.taskObservationErrorActions.collectAsStateWithLifecycle()
 
-            if (!viewModel.taskDetailsModel.value.hidden) {
-                SmallTextButton(
-                    text = if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) getStringResource(
-                        id = R.string.more_observation_pause
-                    )
-                    else if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) getStringResource(
-                        id = R.string.more_questionnaire_start
-                    )
-                    else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) getStringResource(
-                        id = R.string.more_limesurvey_start
-                    )
-                    else getStringResource(
-                        id = R.string.more_observation_start
-                    ),
-                    enabled = viewModel.isEnabled.value && if (viewModel.taskDetailsModel.value.observationType == PolarVerityHeartRateType(
-                            emptySet()
-                        ).observationType
-                    ) viewModel.polarHrReady.value else true
+    OnAppearDisappear(
+        { viewModel.coreViewModel.viewOpened() },
+        { viewModel.coreViewModel.viewClosed() }) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
+            taskDetails?.let { taskDetails ->
+                LazyColumn(
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    if (viewModel.taskDetailsModel.value.observationType == SimpleQuestionType().observationType) {
-                        navController.navigate(
-                            NavigationScreen.SIMPLE_QUESTION.navigationRoute(
-                                "scheduleId" to scheduleId
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            HeaderTitle(
+                                title = taskDetails.observationTitle,
+                                modifier = Modifier
+                                    .weight(0.65f)
+                                    .padding(vertical = 11.dp)
                             )
+                            if (taskDetails.state == ScheduleState.RUNNING)
+                                SmallTextIconButton(
+                                    text = getStringResource(id = R.string.more_abort),
+                                    imageText = getStringResource(id = R.string.more_abort),
+                                    image = Icons.Rounded.Square,
+                                    imageTint = MoreColors.Important,
+                                    borderStroke = MoreColors.borderDefault(),
+                                    buttonColors = ButtonDefaults.moreSecondary2()
+                                ) {
+                                    viewModel.stopObservation()
+                                }
+                        }
+                        BasicText(
+                            text = taskDetails.observationType,
+                            color = MoreColors.Secondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 14.dp)
                         )
-                    } else if (viewModel.taskDetailsModel.value.observationType == LimeSurveyType().observationType) {
-                        navController.navigate(
-                            NavigationScreen.LIMESURVEY.navigationRoute(
-                                "scheduleId" to scheduleId
+
+                        TimeframeDays(
+                            taskDetails.start.jvmLocalDate(),
+                            taskDetails.end.jvmLocalDate(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        )
+                        TimeframeHours(
+                            taskDetails.start.jvmLocalDateTime(),
+                            taskDetails.end.jvmLocalDateTime(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Accordion(
+                            title = getStringResource(id = R.string.participant_information),
+                            description = taskDetails.participantInformation,
+                            hasCheck = false,
+                            hasPreview = false
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    scheduleId?.let {
+                        if (!taskDetails.state.completed()) {
+                            DatapointCollectionView(
+                                dataPoints,
+                                taskDetails.state
                             )
-                        )
-                    } else if (viewModel.taskDetailsModel.value.state == ScheduleState.RUNNING) {
-                        viewModel.pauseObservation()
-                    } else {
-                        viewModel.startObservation()
+                        }
+                    }
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    ObservationErrorListView(
+                        errors = taskErrors,
+                        errorActions = taskErrorActions
+                    )
+
+                    if (!taskDetails.hidden) {
+                        ObservationActionButton(
+                            navController,
+                            taskDetails.scheduleId,
+                            taskDetails.observationType,
+                            taskDetails.state,
+                            if (taskDetails.observationType == PolarVerityHeartRateType(
+                                    emptySet()
+                                ).observationType
+                            ) viewModel.polarHrReady.value else true
+                        ) {
+                            if (taskDetails.state == ScheduleState.RUNNING) {
+                                viewModel.pauseObservation()
+                            } else {
+                                viewModel.startObservation()
+                            }
+                        }
                     }
                 }
             }
-        }
 
+        }
     }
 }

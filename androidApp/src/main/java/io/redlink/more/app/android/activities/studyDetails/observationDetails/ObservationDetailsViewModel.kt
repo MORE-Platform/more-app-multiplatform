@@ -13,17 +13,22 @@ package io.redlink.more.app.android.activities.studyDetails.observationDetails
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.redlink.more.more_app_mutliplatform.models.ObservationDetailsModel
-import io.redlink.more.more_app_mutliplatform.viewModels.observationDetails.CoreObservationDetailsViewModel
+import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.models.ObservationDetailsModel
+import io.redlink.more.viewModels.observationDetails.CoreObservationDetailsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ObservationDetailsViewModel(
     observationId: String,
-): ViewModel() {
+) : ViewModel() {
 
-    private val coreViewModel: CoreObservationDetailsViewModel = CoreObservationDetailsViewModel(observationId)
+    val coreViewModel: CoreObservationDetailsViewModel =
+        CoreObservationDetailsViewModel(
+            MoreApplication.shared!!.repositories,
+            observationId
+        )
     val observationDetailsModel = mutableStateOf(
         ObservationDetailsModel(
             "", "", "", 0, 0, ""
@@ -40,18 +45,5 @@ class ObservationDetailsViewModel(
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                coreViewModel.viewDidAppear()
-            }
-        }
-    }
-
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreViewModel.viewDidDisappear()
     }
 }

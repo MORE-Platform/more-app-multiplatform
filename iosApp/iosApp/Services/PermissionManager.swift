@@ -14,13 +14,14 @@
 //
 
 import AVFoundation
+import AppTrackingTransparency
 import CoreBluetooth
 import CoreLocation
 import CoreMotion
 import Foundation
-import shared
 import UIKit
 import UserNotifications
+import shared
 
 enum PermissionStatus {
     case accepted, declined, requesting, non
@@ -82,14 +83,17 @@ class PermissionManager: NSObject, ObservableObject {
                 if notificationStatus == .accepted {
                     AppDelegate.registerForNotifications()
                 } else {
-                    AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Notification Permissions Not Granted", message: "We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks.", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-                        if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                        }
-                        AlertController.shared.closeAlertDialog()
-                    }, onNegative: {
-                        AlertController.shared.closeAlertDialog()
-                    }))
+                    AlertController.shared.openAlertDialog(
+                        model: AlertDialogModel.companion.fromStrings(
+                            title: "Notification Permissions Not Granted",
+                            message: "We request permission to send you push notifications. This assists in maintaining the study's current status at all times and serves as a reminder for your tasks.",
+                            confirmLabel: "Proceed to Settings",
+                            cancelLabel: "Proceed Without Granting Permissions",
+                            onConfirm: {
+                                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                }
+                            }))
                 }
                 requestPermission()
             }
@@ -99,6 +103,14 @@ class PermissionManager: NSObject, ObservableObject {
     private var cameraStatus: PermissionStatus = .non {
         didSet {
             if cameraStatus.userResponded() {
+                requestPermission()
+            }
+        }
+    }
+
+    private var appTrackingStatus: PermissionStatus = .non {
+        didSet {
+            if appTrackingStatus.userResponded() {
                 requestPermission()
             }
         }
@@ -116,7 +128,6 @@ class PermissionManager: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
     }
 
     private func requestGpsAuthorization(always: Bool = true) {
@@ -125,7 +136,8 @@ class PermissionManager: NSObject, ObservableObject {
             locationManager.requestAlwaysAuthorization()
             gpsStatus = .requesting
         } else if locationManager.authorizationStatus == CLAuthorizationStatus.denied
-            || locationManager.authorizationStatus == CLAuthorizationStatus.restricted || locationManager.accuracyAuthorization != .fullAccuracy {
+            || locationManager.authorizationStatus == CLAuthorizationStatus.restricted || locationManager.accuracyAuthorization != .fullAccuracy
+        {
             gpsStatus = .declined
         } else {
             gpsStatus = .accepted
@@ -212,11 +224,36 @@ class PermissionManager: NSObject, ObservableObject {
     }
 
     private func requestPermissionCamera() {
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: { accessGranted in
-            DispatchQueue.main.async {
-                self.cameraPermissionGranted = accessGranted
+        AVCaptureDevice.requestAccess(
+            for: .video,
+            completionHandler: { accessGranted in
+                DispatchQueue.main.async {
+                    self.cameraPermissionGranted = accessGranted
+                }
+            })
+    }
+
+    func requestAppTrackingAuthorization() {
+        let status = ATTrackingManager.trackingAuthorizationStatus
+        if status == .notDetermined {
+            ATTrackingManager.requestTrackingAuthorization { [weak self] newStatus in
+                Task { @MainActor in
+                    if newStatus == .authorized {
+                        Napier.event(.appTrackingAccepted)
+                        self?.appTrackingStatus = .accepted
+                    } else {
+                        Napier.event(.appTrackingDeclined)
+                        self?.appTrackingStatus = .declined
+                    }
+                }
             }
-        })
+        } else if status == .authorized {
+            Napier.event(.appTrackingAccepted)
+            appTrackingStatus = .accepted
+        } else {
+            Napier.event(.appTrackingDeclined)
+            appTrackingStatus = .declined
+        }
     }
 
     func anyNeededPermissionDeclined() -> Bool {
@@ -228,12 +265,14 @@ class PermissionManager: NSObject, ObservableObject {
         cameraStatus = observationPermissions.contains("camera") ? .requesting : .non
         cmSensorStatus = observationPermissions.contains("cmsensorrecorder") ? .requesting : .non
         bluetoothStatus = observationPermissions.contains("bluetoothAlways") ? .requesting : .non
+        appTrackingStatus = observationPermissions.contains("appTracking") ? .requesting : .non
     }
 
     func requestPermission(permissionRequest: Bool = false) {
         print("Requesting Permissions")
         if permissionRequest {
             permissionsRequested = true
+            setPermissionValues(observationPermissions: AppDelegate.shared.observationFactory.studySensorPermissions())
         }
         if permissionsRequested, let observer {
             if notificationStatus == .requesting && !notificationStatus.userResponded() {
@@ -244,6 +283,8 @@ class PermissionManager: NSObject, ObservableObject {
                 bluetoothStatus = checkBluetoothAuthorization()
             } else if cmSensorStatus == .requesting && !cmSensorStatus.userResponded() {
                 requestCMSensorRecorder()
+            } else if appTrackingStatus == .requesting && !appTrackingStatus.userResponded() {
+                requestAppTrackingAuthorization()
             } else {
                 print("Continuing")
                 observer.accepted()
@@ -257,6 +298,7 @@ class PermissionManager: NSObject, ObservableObject {
         bluetoothStatus = bluetoothStatus.resetStatus()
         cmSensorStatus = cmSensorStatus.resetStatus()
         cameraStatus = cameraStatus.resetStatus()
+        appTrackingStatus = appTrackingStatus.resetStatus()
         permissionsRequested = false
     }
 
@@ -266,6 +308,7 @@ class PermissionManager: NSObject, ObservableObject {
         bluetoothStatus = .non
         cmSensorStatus = .non
         cameraStatus = .non
+        appTrackingStatus = .non
         permissionsRequested = false
     }
 }
@@ -278,23 +321,28 @@ extension PermissionManager: CLLocationManagerDelegate {
             gpsStatus = .accepted
         }
     }
-    
+
     private static var permissionAlertOpenedThisSession = false
+
+    static func resetPermissionAlertFlag() {
+        permissionAlertOpenedThisSession = false
+    }
 
     static func openSensorPermissionDialog() {
         if permissionAlertOpenedThisSession {
             return
         }
-        
+
         permissionAlertOpenedThisSession = true
-        AlertController.shared.openAlertDialog(model: AlertDialogModel(title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", positiveTitle: "Proceed to Settings", negativeTitle: "Proceed Without Granting Permissions", onPositive: {
-            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-            AlertController.shared.closeAlertDialog()
-        }, onNegative: {
-            AlertController.shared.closeAlertDialog()
-        }))
+        AlertController.shared.openAlertDialog(
+            model: AlertDialogModel.companion.fromStrings(
+                title: "Required Permissions Were Not Granted", message: "This study requires one or more sensor permissions to function correctly. You may choose to decline these permissions; however, doing so may result in the application and study not functioning fully or as expected. Would you like to navigate to settings to allow the app access to these necessary permissions?", confirmLabel: "Proceed to Settings", cancelLabel: "Proceed Without Granting Permissions",
+                onConfirm: {
+                    if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }, onDecline: nil))
+
     }
 }
 

@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.activities.observations.questionnaire
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,13 +33,17 @@ import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.app.android.ui.theme.morePrimary
-
+import io.redlink.more.app.android.theme.morePrimary
 
 @Composable
 fun QuestionnaireResponseView(navController: NavController) {
     val title = stringResource(R.string.more_quest_thank_you)
+    BackHandler {
+        navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) {
+            popUpTo(0) { inclusive = true }
+        }
 
+    }
     MoreBackground {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -59,7 +64,11 @@ fun QuestionnaireResponseView(navController: NavController) {
                 HeaderDescription(description = stringResource(R.string.more_quest_thank_you_full))
             }
             TextButton(
-                onClick = { navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) },
+                onClick = {
+                    navController.navigate(NavigationScreen.DASHBOARD.routeWithParameters()) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
                 colors = ButtonDefaults.morePrimary(),
                 modifier = Modifier
                     .padding(bottom = 16.dp)

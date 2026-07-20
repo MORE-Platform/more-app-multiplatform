@@ -18,27 +18,25 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    @StateObject var viewModel: DashboardViewModel
-    private let stringTable = "DashboardView"
+    @StateObject var viewModel: ScheduleViewModel
     @State var totalTasks: Double = 0
     @State var selection: Int = 0
     @State var tasksCompleted: Double = 0
-    private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
-            ScheduleListHeader(scheduleViewModel: viewModel.scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
+            ScheduleListHeader(scheduleViewModel: viewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             if selection == 0 {
-                ScheduleView(viewModel: viewModel.scheduleViewModel)
+                ScheduleView(viewModel: viewModel)
             } else {
                 EmptyView()
             }
         }
-        .customNavigationTitle(with: NavigationScreen.dashboard.localize(useTable: navigationStrings, withComment: "Dashboard title"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.dashboard.localize(), displayMode: .inline)
         .onAppear {
-            viewModel.viewDidAppear()
+            viewModel.coreModel.viewDidAppear()
         }
         .onDisappear {
-            viewModel.viewDidDisappear()
+            viewModel.coreModel.viewDidDisappear()
         }
     }
 }
@@ -46,7 +44,7 @@ struct DashboardView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         MoreMainBackgroundView {
-            DashboardView(viewModel: DashboardViewModel(scheduleViewModel: ScheduleViewModel(scheduleListType: .all)))
+            DashboardView(viewModel: ScheduleViewModel(scheduleListType: .all))
                 .environmentObject(ContentViewModel())
         }
     }

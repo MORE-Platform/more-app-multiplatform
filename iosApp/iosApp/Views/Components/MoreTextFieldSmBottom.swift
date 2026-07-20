@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -24,7 +24,7 @@ struct MoreTextFieldSmBottom: View {
     var autoCorrectDisabled: Bool = false
     var textType: UITextContentType? = nil
     var body: some View {
-        TextField(titleKey, text: $inputText)
+        TextField(LocalizedStringKey(titleKey), text: $inputText)
             .textFieldAutoCapitalizataion(capitalization: capitalization)
             .autocorrectionDisabled(autoCorrectDisabled)
             .textContentType(textType)
@@ -38,13 +38,10 @@ struct MoreTextFieldSmBottom: View {
                     .foregroundColor(Color.more.primaryMedium)
                     .offset(x: 0, y: 20)
             )
-        
-            
     }
 }
 
 struct MoreTextFieldSmBottom_Previews: PreviewProvider {
-    
     static var previews: some View {
         MoreTextFieldSmBottom(titleKey: .constant("Hello World Key"), inputText: .constant(""), capitalization: .normal)
     }

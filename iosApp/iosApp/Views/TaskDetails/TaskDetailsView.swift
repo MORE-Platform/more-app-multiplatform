@@ -13,11 +13,11 @@
 //  https://commonsclause.com/).
 //
 
-import shared
 import SwiftUI
+import shared
 
 struct TaskDetailsView: View {
-    @StateObject var viewModel: TaskDetailsViewModel
+    @StateObject private var viewModel: TaskDetailsViewModel
 
     @State private var scrollViewContentSize: CGSize = .zero
 
@@ -27,6 +27,10 @@ struct TaskDetailsView: View {
     private let scheduleStringTable = "ScheduleListView"
     private let navigationStrings = "Navigation"
     private let errorStrings = "Errors"
+
+    init(scheduleId: String) {
+        _viewModel = StateObject(wrappedValue: TaskDetailsViewModel(scheduleId: scheduleId))
+    }
 
     var body: some View {
         MoreMainBackgroundView(contentPadding: 0) {
@@ -53,7 +57,7 @@ struct TaskDetailsView: View {
                 ObservationDetailsData(dateRange: viewModel.getDateRangeString(), timeframe: viewModel.getTimeRangeString())
 
                 HStack {
-                    AccordionItem(title: String.localize(forKey: "Participant Information", withComment: "Participant Information of specific task.", inTable: stringTable), info: viewModel.taskDetailsModel?.participantInformation ?? "")
+                    AccordionItem(title: "Participant Information", info: viewModel.taskDetailsModel?.participantInformation ?? "")
                 }
                 if let detailsModel = viewModel.taskDetailsModel, !detailsModel.state.completed() {
                     Spacer()
@@ -61,19 +65,26 @@ struct TaskDetailsView: View {
                         DatapointsCollection(datapoints: $viewModel.dataCount, running: detailsModel.state == .running)
                     }
                     Spacer()
-                    
+
                     VStack {
                         ObservationErrorListView(taskObservationErrors: viewModel.taskObservationErrors, taskObservationErrorActions: viewModel.taskObservationErrorAction)
                             .background(
-                                GeometryReader { geo -> Color in
-                                    DispatchQueue.main.async {
-                                        scrollViewContentSize = geo.size
-                                    }
-                                    return Color.clear
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear {
+                                            DispatchQueue.main.async {
+                                                scrollViewContentSize = geo.size
+                                            }
+                                        }
+                                        .onChange(of: geo.size) { newSize in
+                                            DispatchQueue.main.async {
+                                                scrollViewContentSize = newSize
+                                            }
+                                        }
                                 }
                             )
                             .frame(maxWidth: .infinity, maxHeight: 100)
-                        
+
                         if !detailsModel.hidden {
                             if let scheduleId = navigationModalState.navigationState(for: .taskDetails)?.scheduleId {
                                 Divider()
@@ -82,16 +93,15 @@ struct TaskDetailsView: View {
                                     scheduleId: scheduleId,
                                     observationType: detailsModel.observationType,
                                     state: detailsModel.state,
-                                    disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty)
+                                    disabled: !detailsModel.state.active() || !viewModel.taskObservationErrors.isEmpty
+                                )
                                 .padding(.bottom)
                             }
                         }
                     }
-
                 }
-                
             }
-            .customNavigationTitle(with: NavigationScreen.taskDetails.localize(useTable: navigationStrings, withComment: "Task Detail"))
+            .customNavigationTitle(with: NavigationScreen.taskDetails.localize())
             .onAppear {
                 viewModel.viewDidAppear()
             }
@@ -103,8 +113,10 @@ struct TaskDetailsView: View {
 }
 
 struct TaskDetailsViewPreview_Provider: PreviewProvider {
+    static let database = DatabaseManagerKt.getRoomDatabase(builder: DatabaseManager_iosKt.getDatabaseBuilder())
+    static let repos = MainRepositoryImpl(appDatabase: database)
     static var previews: some View {
-        TaskDetailsView(viewModel: TaskDetailsViewModel(dataRecorder: AppDelegate.shared.dataRecorder))
-            .environmentObject(NavigationModalState())
+        TaskDetailsView(scheduleId: "preview-schedule-id")
+            .environmentObject(NavigationModalState(repos: repos))
     }
 }

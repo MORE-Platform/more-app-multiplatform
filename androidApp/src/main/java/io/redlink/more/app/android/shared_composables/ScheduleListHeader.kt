@@ -19,19 +19,23 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.NavigationScreen
 import io.redlink.more.app.android.activities.dashboard.composables.FilterView
+import io.redlink.more.app.android.activities.dashboard.filter.DashboardFilterViewModel
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.moreImportant
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.moreImportant
 
 @Composable
 fun ScheduleListHeader(
@@ -39,16 +43,19 @@ fun ScheduleListHeader(
     navController: NavController,
     taskCompletionBarViewModel: TaskCompletionBarViewModel
 ) {
+    val filterViewModel =
+        remember { DashboardFilterViewModel(viewModel.coreViewModel.coreFilterModel) }
+    val errorCount by viewModel.coreViewModel.numberOfErrors.collectAsStateWithLifecycle()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.height(IntrinsicSize.Min)
     ) {
         TaskCompletionBarView(taskCompletionBarViewModel)
-        if (viewModel.numberOfObservationErrors() > 0) {
+        if (errorCount > 0) {
             Box(modifier = Modifier.padding(vertical = 4.dp)) {
 
                 SmallTextIconButton(
-                    text = "${viewModel.numberOfObservationErrors()} ${getStringResource(id = R.string.error)}",
+                    text = "$errorCount ${getStringResource(id = R.string.error)}",
                     imageText = "Error",
                     image = Icons.Default.Warning,
                     imageTint = MoreColors.White,
@@ -60,7 +67,7 @@ fun ScheduleListHeader(
         }
         FilterView(
             navController,
-            model = viewModel.filterModel,
+            model = filterViewModel,
             scheduleListType = viewModel.scheduleListType
         )
     }

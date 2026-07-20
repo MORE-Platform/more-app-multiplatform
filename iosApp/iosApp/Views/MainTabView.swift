@@ -18,50 +18,37 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject var contentViewModel: ContentViewModel
     @EnvironmentObject private var navigationModalState: NavigationModalState
-    private let strings = "Navigation"
     var body: some View {
         TabView(selection: $navigationModalState.tagState) {
             Group {
                 NavigationWithDestinations {
-                    DashboardView(viewModel: contentViewModel.dashboardViewModel)
+                    DashboardView(viewModel: contentViewModel.manualSchedule)
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
-                    Label(NavigationScreen.dashboard.localize(useTable: strings, withComment: "Dashboard Tab"), systemImage: "house")
+                    Label(NavigationScreen.dashboard.localize(), systemImage: "house")
                 }
                 .tag(0)
 
-                if #available(iOS 15.0, *) {
-                    NavigationWithDestinations {
-                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
-                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                    }
-                    .tabItem {
-                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                    }
-                    .tag(1)
-                    .badge(contentViewModel.unreadNotificationCount)
-                } else {
-                    NavigationWithDestinations {
-                        NotificationView(notificationViewModel: contentViewModel.notificationViewModel, filterVM: contentViewModel.notificationFilterViewModel)
-                            .padding(.horizontal, navigationModalState.horizontalContentPadding)
-                    }
-                    .tabItem {
-                        Label(NavigationScreen.notifications.localize(useTable: strings, withComment: "Notifications Tab"), systemImage: "bell")
-                    }
-                    .tag(1)
+                NavigationWithDestinations {
+                    NotificationView(coreFilterVM: contentViewModel.coreNotificationFilterViewModel)
+                        .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
+                .tabItem {
+                    Label(NavigationScreen.notifications.localize(), systemImage: "bell")
+                }
+                .tag(1)
                 NavigationWithDestinations {
                     InfoView(viewModel: contentViewModel.infoViewModel)
                         .padding(.horizontal, navigationModalState.horizontalContentPadding)
                 }
                 .tabItem {
-                    Label(NavigationScreen.info.localize(useTable: strings, withComment: "Info Tab"), systemImage: "info.circle")
+                    Label(NavigationScreen.info.localize(), systemImage: "info.circle")
                 }
                 .tag(2)
             }
         }
-        .accent(color: .more.primaryDark)
+        .tint(.more.primaryDark)
         .onAppear {
             UITabBar.appearance().barTintColor = UIColor(Color.more.primaryLight)
             UITabBar.appearance().unselectedItemTintColor = UIColor(Color.more.primary)
@@ -70,7 +57,7 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservation)) {
             if let navigationState = navigationModalState.navigationState(for: .questionObservation) {
                 Navigation {
-                    SimpleQuetionObservationView(viewModel: contentViewModel.getSimpleQuestionObservationVM(navigationState: navigationState))
+                    QuestionObservationView(navigationState: navigationState)
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 .onDisappear {
@@ -80,7 +67,7 @@ struct MainTabView: View {
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .questionObservationThanks)) {
             Navigation {
-                SimpleQuestionThankYouView()
+                QuestionThankYouView()
                     .navigationBarTitleDisplayMode(.inline)
             }
             .onDisappear {
@@ -88,16 +75,27 @@ struct MainTabView: View {
             }
         }
         .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .limeSurvey)) {
+            if let navigationState = navigationModalState.navigationState(for: .limeSurvey) {
+                Navigation {
+                    LimeSurveyView(navigationState: navigationState)
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .onDisappear {
+                    navigationModalState.removeNavigationAction()
+                }
+            }
+        }
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {
+            LeaveStudyView()
+        }
+        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .garminConnect)) {
             Navigation {
-                LimeSurveyView(viewModel: contentViewModel.getLimeSurveyVM(navigationModalState: navigationModalState))
+                GarminConnectView()
                     .navigationBarTitleDisplayMode(.inline)
             }
             .onDisappear {
                 navigationModalState.removeNavigationAction()
             }
-        }
-        .fullScreenCover(isPresented: navigationModalState.screenBinding(for: .withdrawStudy)) {
-            LeaveStudyView(viewModel: contentViewModel.settingsViewModel)
         }
     }
 }
@@ -107,3 +105,4 @@ struct MainTabView_Previews: PreviewProvider {
         MainTabView()
     }
 }
+

@@ -16,15 +16,22 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import io.redlink.more.more_app_mutliplatform.observations.Observation
-import io.redlink.more.more_app_mutliplatform.observations.observationTypes.AccelerometerType
-import io.redlink.more.more_app_mutliplatform.util.Scope
+import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.observations.Observation
+import io.redlink.more.observations.observationTypes.AccelerometerType
+import io.redlink.more.scopes.Scope
 
 private const val TAG = "AccelerometerObservation"
 
 class AccelerometerObservation(
-    context: Context
-) : Observation(observationType = AccelerometerType(emptySet())), SensorEventListener {
+    context: Context,
+    repos: MainRepository
+) : Observation(
+    repos,
+    observationType = AccelerometerType(
+        emptySet()
+    )
+), SensorEventListener {
     private val sensorManager = context.getSystemService(SensorManager::class.java)
     private val sensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private var sampleFrequency: Int = SensorManager.SENSOR_DELAY_NORMAL

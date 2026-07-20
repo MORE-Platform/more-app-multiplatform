@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,7 +17,7 @@ import SwiftUI
 
 struct AppVersion: View {
     var body: some View {
-        Text("\("App Version".localize(withComment: "App Version")): \(Bundle.main.appBuild)")
+        Text("\("App Version"): \(Bundle.main.appBuild)")
             .font(.system(size: 10, weight: .medium))
             .foregroundColor(.more.primary)
             .padding(.vertical, 10)

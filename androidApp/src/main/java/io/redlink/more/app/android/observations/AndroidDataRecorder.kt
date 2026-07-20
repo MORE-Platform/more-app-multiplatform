@@ -12,7 +12,7 @@ package io.redlink.more.app.android.observations
 
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.services.ObservationRecordingService
-import io.redlink.more.more_app_mutliplatform.observations.DataRecorder
+import io.redlink.more.observations.DataRecorder
 
 class AndroidDataRecorder : DataRecorder {
     override fun start(scheduleId: String) {

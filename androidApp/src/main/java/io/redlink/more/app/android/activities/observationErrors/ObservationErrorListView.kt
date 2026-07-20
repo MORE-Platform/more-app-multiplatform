@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,13 +26,13 @@ import io.redlink.more.app.android.extensions.getStringResourceByName
 import io.redlink.more.app.android.extensions.showNewActivity
 import io.redlink.more.app.android.shared_composables.BasicText
 import io.redlink.more.app.android.shared_composables.SmallTextIconButton
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.observations.Observation
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.observations.Observation.Companion.ERROR_DEVICE_NOT_CONNECTED
 
 @Composable
 fun ObservationErrorListView(
-    errors: SnapshotStateList<String>,
-    errorActions: SnapshotStateList<String>
+    errors: List<String>,
+    errorActions: List<String>
 ) {
     val context = LocalContext.current
     if (errors.isNotEmpty()) {
@@ -65,7 +64,7 @@ fun ObservationErrorListView(
             }
             if (errorActions.isNotEmpty()) {
                 item {
-                    if (errorActions.contains(Observation.ERROR_DEVICE_NOT_CONNECTED)) {
+                    if (errorActions.contains(ERROR_DEVICE_NOT_CONNECTED)) {
                         SmallTextIconButton(
                             text = NavigationScreen.BLUETOOTH_CONNECTION.stringRes(),
                             imageText = getStringResource(id = R.string.more_ble_icon_description),

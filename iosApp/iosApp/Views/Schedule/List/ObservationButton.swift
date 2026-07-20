@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -23,52 +23,41 @@ struct ObservationButton: View {
     var observationType: String
     var state: ScheduleState
     var disabled: Bool
-    private let stringTable = "ScheduleListView"
-    
+
     var body: some View {
         VStack {
-            if observationType == "question-observation" {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.openView(screen: .questionObservation, scheduleId: scheduleId)
-                }) {
-                    VStack {
-                        Text(
-                            String.localize(forKey: "start_questionnaire", withComment: "Button to start a questionnaire", inTable: stringTable)
-                        )
-                    }
-                }
-            } else if observationType == "lime-survey-observation" {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    navigationModalState.openView(screen: .limeSurvey, scheduleId: scheduleId)
-                }) {
-                    VStack {
-                        Text(
-                            "Start LimeSurvey"
-                                .localize(withComment: "Button to start a limesurvey", useTable: stringTable)
-                        )
-                    }
-                }
-            } else {
-                MoreActionButton(disabled: .constant(disabled), action: {
-                    if state == .running {
-                        observationActionDelegate.pause(scheduleId: scheduleId)
+            MoreActionButton(disabled: .constant(disabled), action: buttonAction) {
+                VStack {
+                    if QuestionType_().matches(type: observationType) {
+                        Text("start_questionnaire")
+                    } else if LimeSurveyType().matches(type: observationType) {
+                        Text("Start LimeSurvey")
+                    } else if state == ScheduleState.running {
+                        Text("pause_observation")
                     } else {
-                        observationActionDelegate.start(scheduleId: scheduleId)
-                    }
-                }) {
-                    VStack {
-                        if state == ScheduleState.running {
-                            Text(
-                                String.localize(forKey: "pause_observation", withComment: "Button to pause an observation", inTable: stringTable)
-                            )
-                        } else {
-                            Text(
-                                String.localize(forKey: "start_observation", withComment: "Button to start an observation", inTable: stringTable)
-                            )
-                        }
+                        Text("start_observation")
                     }
                 }
             }
+        }
+    }
+
+    private func buttonAction() {
+        var screenToOpen: NavigationScreen? =
+            if QuestionType_().matches(type: observationType) {
+                .questionObservation
+            } else if LimeSurveyType().matches(type: observationType) {
+                .limeSurvey
+            } else {
+                nil
+            }
+        Napier.event(.buttonPress, message: "\(state == .running ? "Pause" : "Start") observation \(observationType)")
+        if let screenToOpen {
+            navigationModalState.openView(screen: screenToOpen, scheduleId: scheduleId)
+        } else if state == .running {
+            observationActionDelegate.pause(scheduleId: scheduleId)
+        } else {
+            observationActionDelegate.start(scheduleId: scheduleId)
         }
     }
 }

@@ -18,10 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
-fun HeaderTitle (
+fun HeaderTitle(
     title: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,

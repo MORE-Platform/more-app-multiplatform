@@ -2,9 +2,9 @@
 <resources>
     <string name="default_channel_id" translatable="false">io.redlink.more.app.android.urgent</string>
     <string name="unread_channel_id" translatable="false">unread_notifications_channel</string>
-    <string name="notification_title">More Project</string>
-    <string name="notification_channel_name">More Project Notification</string>
-    <string name="notification_channel_description">The More Project Notification Channel provides newest information and health requests</string>
+    <string name="notification_title">PraeCura</string>
+    <string name="notification_channel_name">PraeCura Notification</string>
+    <string name="notification_channel_description">The PraeCura Notification Channel provides newest information and health requests</string>
     <string name="notification_unread_title">%1$d unread notifications</string>
     <string name="notification_unread_content">You have %1$d unread notifications. Please check them out.</string>
 

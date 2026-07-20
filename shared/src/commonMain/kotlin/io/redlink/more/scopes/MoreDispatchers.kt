@@ -1,0 +1,37 @@
+package io.redlink.more.scopes
+
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+
+interface MoreDispatchers {
+    val default: CoroutineDispatcher
+    val main: CoroutineDispatcher
+    val io: CoroutineDispatcher
+}
+
+object AppDispatchers : MoreDispatchers {
+    private var _default: CoroutineDispatcher = Dispatchers.Default
+    private var _main: CoroutineDispatcher = Dispatchers.Main
+    private var _io: CoroutineDispatcher = Dispatchers.IO
+
+    override val default: CoroutineDispatcher get() = _default
+    override val main: CoroutineDispatcher get() = _main
+    override val io: CoroutineDispatcher get() = _io
+
+    fun set(
+        default: CoroutineDispatcher = Dispatchers.Default,
+        main: CoroutineDispatcher = Dispatchers.Main,
+        io: CoroutineDispatcher = Dispatchers.IO
+    ) {
+        _default = default
+        _main = main
+        _io = io
+    }
+
+    fun reset() {
+        _default = Dispatchers.Default
+        _main = Dispatchers.Main
+        _io = Dispatchers.IO
+    }
+}

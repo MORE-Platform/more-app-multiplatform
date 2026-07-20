@@ -27,12 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.more_app_mutliplatform.models.ScheduleState
-
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.models.ScheduleState
 
 @Composable
-fun DatapointCollectionView (datapoints: Long, scheduleState: ScheduleState?){
+fun DatapointCollectionView(datapoints: Long, scheduleState: ScheduleState?) {
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -40,8 +39,8 @@ fun DatapointCollectionView (datapoints: Long, scheduleState: ScheduleState?){
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-    ){
-        if(scheduleState == ScheduleState.RUNNING) {
+    ) {
+        if (scheduleState == ScheduleState.RUNNING) {
             CircularProgressIndicator(
                 color = MoreColors.Approved,
                 modifier = Modifier
@@ -51,7 +50,7 @@ fun DatapointCollectionView (datapoints: Long, scheduleState: ScheduleState?){
             Spacer(Modifier.padding(6.dp))
         }
 
-        if(scheduleState == ScheduleState.RUNNING || datapoints > 0) {
+        if (scheduleState == ScheduleState.RUNNING || datapoints > 0) {
             MediumTitle(text = getStringResource(id = R.string.more_observation_datapoints))
             Spacer(Modifier.padding(4.dp))
             Text(

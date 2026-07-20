@@ -21,25 +21,31 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.HeaderDescription
 import io.redlink.more.app.android.shared_composables.HeaderTitle
-import io.redlink.more.app.android.ui.theme.MoreColors
-
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
-fun QuestionnaireHeader(model: QuestionnaireViewModel) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(2.dp))
+fun QuestionnaireHeader(model: QuestionViewModel) {
+    val observation by model.coreViewModel.questionModel.collectAsStateWithLifecycle(null)
+    val title = observation?.observationTitle ?: ""
+    val info = observation?.participantInfo ?: ""
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+    )
     {
-        HeaderTitle(title = model.observationTitle.value)
+        HeaderTitle(title = title)
         Spacer(Modifier.height(12.dp))
 
         LazyColumn(
@@ -59,7 +65,7 @@ fun QuestionnaireHeader(model: QuestionnaireViewModel) {
                 )
             }
             item {
-                HeaderDescription(description = model.observationParticipantInfo.value)
+                HeaderDescription(description = info)
             }
         }
 

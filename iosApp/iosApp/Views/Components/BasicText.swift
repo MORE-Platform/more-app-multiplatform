@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -22,7 +22,7 @@ struct BasicText: View {
     var lineLimit: Int? = nil
     var textAlign: TextAlignment = .leading
     var body: some View {
-        Text(.init(text))
+        Text(LocalizedStringKey(text))
             .foregroundColor(color)
             .multilineTextAlignment(textAlign)
             .fixedSize(horizontal: false, vertical: true)

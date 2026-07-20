@@ -14,6 +14,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,10 +40,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
-fun AccordionReadMore (title: String, description: String, modifier: Modifier = Modifier) {
+fun AccordionReadMore(title: String, description: String, modifier: Modifier = Modifier) {
     var overflow by remember { mutableStateOf(false) }
     val open = remember {
         mutableStateOf(false)
@@ -56,15 +57,20 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
     )
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = modifier) {
+        modifier = modifier
+    ) {
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-                .clickable {
-                open.value = !open.value
-            }
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    open.value = !open.value
+                }
         )
         {
             MediumTitle(
@@ -98,15 +104,21 @@ fun AccordionReadMore (title: String, description: String, modifier: Modifier = 
 
         if (overflow) {
             Spacer(Modifier.padding(4.dp))
-            Row(verticalAlignment = Alignment.CenterVertically,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         open.value = !open.value
                     }) {
                 Text(
-                    text = if (open.value) getStringResource(id = R.string.more_read_less) else getStringResource(id = R.string.more_read_more),
+                    text = if (open.value) getStringResource(id = R.string.more_read_less) else getStringResource(
+                        id = R.string.more_read_more
+                    ),
                     color = MoreColors.Primary,
                     fontWeight = FontWeight.SemiBold,
                 )

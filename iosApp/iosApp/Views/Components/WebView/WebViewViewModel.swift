@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -17,13 +17,13 @@ import Foundation
 import WebKit
 
 protocol WebViewListener {
-    func onRedirect(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy
+    func onRedirect(navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy
 }
 
 class WebViewViewModel: NSObject, ObservableObject {
     private static let webViewProgressObserverKey = "estimatedProgress"
     let webView = WKWebView(frame: .zero)
-    
+
     var delegate: WebViewListener?
 
     @Published var progress: Float = 0
@@ -50,6 +50,7 @@ extension WebViewViewModel: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("WebView didFinish")
+        Napier.event(.urlOpen, message: "WebView: \(webView.url?.absoluteString ?? "")")
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -60,7 +61,6 @@ extension WebViewViewModel: WKNavigationDelegate {
         print("WebView didStartProviisonalNavigation")
     }
 
-    @available(iOS 14.5, *)
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
         print("WebView didBecome download")
     }
@@ -74,6 +74,9 @@ extension WebViewViewModel: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
-        return delegate?.onRedirect(navigationAction: navigationAction) ?? .allow
+        if let delegate = delegate {
+            return await delegate.onRedirect(navigationAction: navigationAction)
+        }
+        return .allow
     }
 }

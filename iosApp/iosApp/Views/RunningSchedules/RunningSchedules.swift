@@ -20,12 +20,17 @@ struct RunningSchedules: View {
     @StateObject var scheduleViewModel: ScheduleViewModel
     @State var totalTasks: Double = 0
     @State var tasksCompleted: Double = 0
-    private let navigationStrings = "Navigation"
     var body: some View {
         VStack {
             ScheduleListHeader(scheduleViewModel: scheduleViewModel, totalTasks: $totalTasks, tasksCompleted: $tasksCompleted)
             ScheduleView(viewModel: scheduleViewModel)
         }
-        .customNavigationTitle(with: NavigationScreen.runningObservations.localize(useTable: navigationStrings, withComment: "Running Schedules title"), displayMode: .inline)
+        .customNavigationTitle(with: NavigationScreen.runningObservations.localize(), displayMode: .inline)
+        .onAppear {
+            scheduleViewModel.coreModel.viewDidAppear()
+        }
+        .onDisappear {
+            scheduleViewModel.coreModel.viewDidDisappear()
+        }
     }
 }

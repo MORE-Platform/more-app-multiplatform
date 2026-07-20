@@ -7,8 +7,8 @@
 //  Digital Health and Prevention - A research institute
 //  of the Ludwig Boltzmann Gesellschaft,
 //  Oesterreichische Vereinigung zur Foerderung
-//  der wissenschaftlichen Forschung 
-//  Licensed under the Apache 2.0 license with Commons Clause 
+//  der wissenschaftlichen Forschung
+//  Licensed under the Apache 2.0 license with Commons Clause
 //  (see https://www.apache.org/licenses/LICENSE-2.0 and
 //  https://commonsclause.com/).
 //
@@ -16,71 +16,62 @@
 import Foundation
 import shared
 import WebKit
+import Combine
+import KMPNativeCoroutinesCombine
 
 class LimeSurveyViewModel: ObservableObject {
-    private let coreViewModel = CoreLimeSurveyViewModel(observationFactory: AppDelegate.shared.observationFactory)
-
+    private let coreViewModel: CoreLimeSurveyViewModel
     let webViewModel = WebViewViewModel()
 
     @Published var limeSurveyLink: URL?
     @Published var dataLoading = false
     @Published var wasAnswered = false
+    @Published var shouldClose = false
 
-    private var navigationModalState: NavigationModalState?
-    
-    private var limeSurveyLinkChange: Ktor_ioCloseable?
+    private var cancellables = Set<AnyCancellable>()
 
-    init() {
+    init(navigationState: NavigationState) {
+        coreViewModel = CoreLimeSurveyViewModel(repositories: AppDelegate.shared.repositories, observationFactory: AppDelegate.shared.observationFactory, scheduleId: navigationState.scheduleId, notificationId: navigationState.notificationId, observationId: navigationState.observationId)
         webViewModel.delegate = self
-        coreViewModel.onDataLoadingChange { [weak self] boolean in
-            DispatchQueue.main.async {
-                self?.dataLoading = boolean.boolValue
-            }
-        }
         
+        createPublisher(for: coreViewModel.dataLoading)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] in
+                self?.dataLoading = $0.boolValue
+            }
+            .store(in: &cancellables)
+        
+        createPublisher(for: coreViewModel.limeSurveyLink)
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: {_ in}) { [weak self] in
+                self?.limeSurveyLink = if let link = $0 {
+                    URL(string: link)
+                } else {
+                    nil
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func viewDidAppear() {
         coreViewModel.viewDidAppear()
-        
-        limeSurveyLinkChange = coreViewModel.onLimeSurveyLinkChange { [weak self] link in
-            DispatchQueue.main.async {
-                if let link {
-                    self?.limeSurveyLink = URL(string: link)
-                } else {
-                    self?.limeSurveyLink = nil
-                }
-            }
-        }
-        
     }
 
     func viewDidDisappear() {
-        limeSurveyLinkChange?.close()
-        limeSurveyLinkChange = nil
         dataLoading = false
         wasAnswered = false
         coreViewModel.viewDidDisappear()
     }
-    
-    func setNavigationModalState(navigationModalState: NavigationModalState) {
-        self.navigationModalState = navigationModalState
-        if let state = navigationModalState.navigationState(for: .limeSurvey) {
-            if let scheduleId = state.scheduleId {
-                coreViewModel.setScheduleId(scheduleId: scheduleId, notificationId: state.notificationId)
-            } else if let observationId = state.observationId {
-                coreViewModel.setObservationId(observationId: observationId, notificationId: state.notificationId)
-            }
-        }
-    }
 
+    @MainActor
     func onFinish() {
         if wasAnswered {
             coreViewModel.finish()
         } else {
             coreViewModel.cancel()
         }
-        self.navigationModalState?.closeView(screen: .limeSurvey)
+        shouldClose = true
     }
 
     private func extractPathAndParameters(url: URL) -> (String, [String: String]) {
@@ -96,12 +87,12 @@ class LimeSurveyViewModel: ObservableObject {
 }
 
 extension LimeSurveyViewModel: WebViewListener {
-    func onRedirect(navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
-        if let url = navigationAction.request.url {
+    func onRedirect(navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        if let url = await navigationAction.request.url {
             print("onRedirect URL: \(url)")
             let (endPath, parameters) = extractPathAndParameters(url: url)
             if endPath.lowercased().contains("end.htm"), parameters.keys.contains("savedid") {
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     self.wasAnswered = true
                     self.onFinish()
                 }
@@ -110,3 +101,4 @@ extension LimeSurveyViewModel: WebViewListener {
         return .allow
     }
 }
+

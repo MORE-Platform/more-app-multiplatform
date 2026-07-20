@@ -13,43 +13,36 @@ package io.redlink.more.app.android.activities.dashboard.schedule.list
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewModel
+import io.redlink.more.app.android.extensions.getStringResource
+import io.redlink.more.app.android.shared_composables.EmptyListView
 import io.redlink.more.app.android.shared_composables.ScheduleList
-
 
 @Composable
 fun ScheduleListView(
     navController: NavController,
-    routeString: String,
     scheduleViewModel: ScheduleViewModel,
     showButton: Boolean
 ) {
-    val backStackEntry = remember { navController.currentBackStackEntry }
-    val route = backStackEntry?.arguments?.getString(routeString)
-    LaunchedEffect(route) {
-        scheduleViewModel.viewDidAppear()
-    }
-    DisposableEffect(route) {
-        onDispose {
-            scheduleViewModel.viewDidDisappear()
-        }
-    }
+    val scheduleList by scheduleViewModel.coreViewModel.schedulesByDate.collectAsStateWithLifecycle()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        if (scheduleViewModel.schedulesByDate.isNotEmpty()) {
+        if (scheduleList.isNotEmpty()) {
             ScheduleList(
                 navController = navController,
                 viewModel = scheduleViewModel,
                 showButton = showButton
             )
+        } else {
+            EmptyListView(getStringResource(R.string.more_schedule_empty_list))
         }
     }
 }

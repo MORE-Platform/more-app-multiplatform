@@ -31,17 +31,20 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.activities.main.MainTabView
-import io.redlink.more.app.android.ui.theme.MoreColors
-import io.redlink.more.app.android.ui.theme.MorePlatformTheme
-import io.redlink.more.more_app_mutliplatform.models.AlertDialogModel
+import io.redlink.more.app.android.theme.MoreColors
+import io.redlink.more.app.android.theme.MorePlatformTheme
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.viewModels.ViewManager
 
 @Composable
 fun MoreBackground(
@@ -54,28 +57,32 @@ fun MoreBackground(
     tabSelectionIndex: Int = 0,
     onTabChange: (Int) -> Unit = {},
     maxWidth: Float = 0.9F,
-    alertDialogModel: AlertDialogModel? = null,
     unreadNotificationCount: Int = 0,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    if (MoreApplication.openSettings.value) {
+    val alertDialogModel by AlertController.alertDialogModel.collectAsStateWithLifecycle(null)
+    val showSettingsView by ViewManager.showSettingsView.collectAsStateWithLifecycle(false)
+
+    if (MoreApplication.openSettings.value || showSettingsView) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
         }
         context.startActivity(intent)
         MoreApplication.openSettings.value = false
+        ViewManager.showSettingsView(false)
     }
     MorePlatformTheme {
-        Scaffold(topBar = {
-            MoreTopAppBar(
-                navigationTitle,
-                showBackButton,
-                onBackButtonClick,
-                leftCornerContent,
-                rightCornerContent
-            )
-        },
+        Scaffold(
+            topBar = {
+                MoreTopAppBar(
+                    navigationTitle,
+                    showBackButton,
+                    onBackButtonClick,
+                    leftCornerContent,
+                    rightCornerContent
+                )
+            },
             bottomBar = {
                 if (showTabRow) {
                     MoreBottomAppBar(
@@ -181,8 +188,7 @@ fun MoreBottomAppBar(selectedIndex: Int, unreadNotificationCount: Int, onTabChan
 fun BackgroundPreview() {
     MoreBackground(
         navigationTitle = "Test",
-        true,
-        alertDialogModel = AlertDialogModel("Test", "Message", "Accept", "DEcline", {})
+        true
     ) {
         Text("Hello WOrld")
     }

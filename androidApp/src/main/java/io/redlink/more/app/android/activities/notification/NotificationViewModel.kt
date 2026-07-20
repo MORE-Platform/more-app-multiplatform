@@ -10,58 +10,39 @@
  */
 package io.redlink.more.app.android.activities.notification
 
-import android.net.Uri
-import androidx.compose.runtime.mutableStateListOf
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
-import io.redlink.more.more_app_mutliplatform.models.NotificationModel
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationActionHandler
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationFilterViewModel
-import io.redlink.more.more_app_mutliplatform.viewModels.notifications.CoreNotificationViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
+import io.redlink.more.models.NotificationModel
+import io.redlink.more.services.notification.NotificationActionHandler
+import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
+import io.redlink.more.viewModels.notifications.CoreNotificationViewModel
 
 class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFilterViewModel) :
     ViewModel() {
-    private val coreViewModel: CoreNotificationViewModel =
+    val coreViewModel: CoreNotificationViewModel =
         CoreNotificationViewModel(
             coreFilterViewModel,
-            MoreApplication.shared!!.notificationManager,
-            stringResource(R.string.app_scheme),
-            applicationId
+            MoreApplication.shared!!.notificationManager
         )
-    val notificationList = mutableStateListOf<NotificationModel>()
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            coreViewModel.notificationList.collect {
-                withContext(Dispatchers.Main) {
-                    notificationList.clear()
-                    notificationList.addAll(it)
-                }
-            }
-        }
-    }
-
-    fun viewDidAppear() {
-        coreViewModel.viewDidAppear()
-    }
-
-    fun viewDidDisappear() {
-        coreViewModel.viewDidDisappear()
-    }
 
     fun handleNotificationAction(notification: NotificationModel, navController: NavController) {
         coreViewModel.handleNotificationAction(notification) { actionType, data ->
-            when (actionType) {
-                NotificationActionHandler.DEEPLINK -> navController.navigate(Uri.parse(data))
+            data?.let {
+                when (actionType) {
+                    NotificationActionHandler.DEEPLINK -> {
+                        val uri = data.route.toUri()
+                        val destRoute = uri.path?.removePrefix("/") ?: uri.toString().substringBefore("?")
+                        val currentRoute = navController.currentDestination?.route?.substringBefore("?")
+                        if (destRoute != currentRoute) {
+                            navController.navigate(uri)
+                        }
+                    }
+                    else -> {}
+                }
             }
         }
     }
@@ -70,6 +51,6 @@ class NotificationViewModel(private val coreFilterViewModel: CoreNotificationFil
         if (!coreFilterViewModel.filterActive()) {
             return stringResource(R.string.more_filter_notification_all)
         }
-        return coreFilterViewModel.getActiveTypes().joinToString(", ")
+        return coreFilterViewModel.activeTypes.value.joinToString(", ") { it }
     }
 }

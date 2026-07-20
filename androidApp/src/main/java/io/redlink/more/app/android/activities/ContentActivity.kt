@@ -14,16 +14,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import io.github.aakira.napier.Napier
+import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
-import io.redlink.more.app.android.activities.NavigationScreen.Companion.NavigationNotificationIDKey
 import io.redlink.more.app.android.activities.consent.ConsentView
 import io.redlink.more.app.android.activities.login.LoginView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
+import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
 import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.extensions.stringResource
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
-import io.redlink.more.more_app_mutliplatform.services.notification.NotificationManager
+import io.redlink.more.navigation.model.NavigationRouteParameter
+import io.redlink.more.services.notification.NotificationManager
+import io.redlink.more.viewModels.ViewManager
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class ContentActivity : ComponentActivity() {
     private val viewModel = ContentViewModel()
@@ -31,17 +40,33 @@ class ContentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
             var deepLink = it
+            Napier.d { "Received deep link: $deepLink" }
             intent.getStringExtra(NotificationManager.MSG_ID)?.let { msgId ->
-                if (!deepLink.contains(NavigationNotificationIDKey)) {
+                if (!deepLink.contains(NavigationRouteParameter.NOTIFICATION_ID.key)) {
                     deepLink += if (deepLink.contains("?")) {
-                        "&$NavigationNotificationIDKey=$msgId"
+                        "&${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     } else {
-                        "?$NavigationNotificationIDKey=$msgId"
+                        "?${NavigationRouteParameter.NOTIFICATION_ID.key}=$msgId"
                     }
                 }
             }
             intent.putExtra(NotificationManager.DEEP_LINK, deepLink)
         }
+
+        lifecycleScope.launch {
+            combine(
+                MoreApplication.shared!!.credentialRepository.hasCredentials,
+                viewModel.registrationService.isLoading
+            ) { hasCredentials, isLoading ->
+                hasCredentials && !isLoading
+            }.collect { shouldNavigateToMain ->
+                if (shouldNavigateToMain) {
+                    viewModel.openMainActivity(this@ContentActivity)
+                }
+            }
+        }
+
+
         setContent {
             ContentView(viewModel = viewModel)
         }
@@ -54,16 +79,23 @@ class ContentActivity : ComponentActivity() {
 
 @Composable
 fun ContentView(viewModel: ContentViewModel) {
-    if (viewModel.hasCredentials.value) {
-        viewModel.openMainActivity(LocalContext.current)
-    } else {
-        MoreBackground(showBackButton = false, alertDialogModel = viewModel.alertDialogOpen.value) {
-            if (viewModel.loginViewScreenNr.intValue == 0) {
-                LoginView(model = viewModel.loginViewModel)
-                AppVersion()
+    val validLogin by viewModel.registrationService.validLoginModel.collectAsStateWithLifecycle()
+    val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
+    val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
+    val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
+
+    MoreBackground(showBackButton = false) {
+        if (credentialsLoaded && !hasCredentials) {
+            if (validLogin != null) {
+                ConsentView(viewModel.registrationService)
             } else {
-                ConsentView(model = viewModel.consentViewModel)
+                LoginView(viewModel.registrationService)
+                AppVersion()
             }
+        } else if (studyLoadingError) {
+            StudyLoadingErrorView()
+        } else {
+            StudyLoadingView()
         }
     }
 }

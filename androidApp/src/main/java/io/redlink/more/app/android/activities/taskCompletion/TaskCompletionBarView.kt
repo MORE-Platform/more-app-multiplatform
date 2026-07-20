@@ -20,8 +20,9 @@ import io.redlink.more.app.android.shared_composables.ActivityProgressView
 
 @Composable
 fun TaskCompletionBarView(viewModel: TaskCompletionBarViewModel) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         ActivityProgressView(
             finishedTasks = viewModel.taskCompletion.value.finishedTasks,

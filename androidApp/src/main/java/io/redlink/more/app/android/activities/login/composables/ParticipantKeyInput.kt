@@ -24,6 +24,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -38,10 +39,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.login.LoginViewModel
 import io.redlink.more.app.android.extensions.getStringResource
-import io.redlink.more.app.android.ui.theme.MoreColors
+import io.redlink.more.app.android.shared_composables.MoreDivider
+import io.redlink.more.app.android.theme.MoreColors
 
 @Composable
 fun ParticipationKeyInput(
@@ -49,7 +52,7 @@ fun ParticipationKeyInput(
     focusRequester: FocusRequester,
     focusManager: FocusManager,
 ) {
-
+    val networkError by model.error.collectAsStateWithLifecycle()
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = getStringResource(id = R.string.more_registration_token_label),
@@ -69,10 +72,10 @@ fun ParticipationKeyInput(
                 value = model.participantKey.value,
                 onValueChange = {
                     model.participantKey.value = it
-                    model.error.value = null
+                    model.registrationService.clearError()
                 },
                 trailingIcon = {
-                    if (model.isTokenError()) {
+                    if (networkError != null && !networkError?.message.isNullOrBlank()) {
                         Icon(Icons.Filled.Error, "Error", tint = MoreColors.Important)
                     }
                 },
@@ -84,13 +87,13 @@ fun ParticipationKeyInput(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    autoCorrect = false,
+                    capitalization = KeyboardCapitalization.Characters,
+                    autoCorrectEnabled = false,
                     keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Characters
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                isError = model.isTokenError(),
+                isError = networkError != null && !networkError?.message.isNullOrBlank(),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = MoreColors.Primary,
@@ -113,14 +116,23 @@ fun ParticipationKeyInput(
                     .height(60.dp)
             )
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                ErrorMessage(
-                    hasError = model.error.value != null,
-                    errorMsg = model.error.value ?: getStringResource(
-                        id = R.string.more_token_error
-                    )
-                )
+                networkError?.let { error ->
+                    if (error.code == 404) {
+                        ErrorMessage(true, getStringResource(R.string.more_404))
+                    } else if (error.code != null && error.code!! >= 500 && error.code!! < 600) {
+                        ErrorMessage(true, getStringResource(R.string.more_system_error))
+                    } else if (error.message.isNotBlank()) {
+                        ErrorMessage(true, error.message)
+                    } else {
+                        ErrorMessage(true, getStringResource(R.string.more_token_error))
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
+            QRCodeButton(model = model)
+            Spacer(modifier = Modifier.height(32.dp))
+            MoreDivider()
+            Spacer(modifier = Modifier.height(32.dp))
             ValidationButton(model = model, focusManager = focusManager)
         }
 
