@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -122,14 +123,28 @@ object Polar360Controller {
         }
         if (settings != null) {
             return polarConnector.polarApi.startOfflineRecording(deviceId, dataType, settings, null)
+                .onErrorResumeNext { settingsError ->
+                    Napier.w(tag = "Polar360Controller::$dataType") {
+                        "Settings-based start failed (${settingsError.message}); retrying without settings"
+                    }
+                    polarConnector.polarApi.startOfflineRecording(deviceId, dataType)
+                }
         }
         // ACC/TEMPERATURE: prefer the device's requested settings (known-good on current
         // firmware). Some newer firmware fails settings negotiation for temperature — if the
         // settings-based start errors, fall back to a settings-less start.
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, dataType)
             .flatMapCompletable { resolvedSettings ->
-                Napier.d(tag = "Polar360Controller::$dataType") { "Using settings: ${resolvedSettings.settings}" }
-                polarConnector.polarApi.startOfflineRecording(deviceId, dataType, resolvedSettings, null)
+                // Passing the queried settings as-is lets the SDK resolve to the device's max
+                // sample rate (4 Hz for skin temperature). Temperature must be recorded at 1 Hz,
+                // so pin SAMPLE_RATE to 1 while keeping the device's native resolution/channels.
+                val chosenSettings = if (isTemperature(dataType)) {
+                    pinTemperatureSampleRate(resolvedSettings)
+                } else {
+                    resolvedSettings
+                }
+                Napier.d(tag = "Polar360Controller::$dataType") { "Using settings: ${chosenSettings.settings}" }
+                polarConnector.polarApi.startOfflineRecording(deviceId, dataType, chosenSettings, null)
             }
             .onErrorResumeNext { settingsError ->
                 Napier.w(tag = "Polar360Controller::$dataType") {
@@ -137,6 +152,24 @@ object Polar360Controller {
                 }
                 polarConnector.polarApi.startOfflineRecording(deviceId, dataType)
             }
+    }
+
+    private fun isTemperature(dataType: PolarBleApi.PolarDeviceDataType): Boolean =
+        dataType == PolarBleApi.PolarDeviceDataType.TEMPERATURE ||
+            dataType == PolarBleApi.PolarDeviceDataType.SKIN_TEMPERATURE
+
+    // Builds a concrete setting from the device's available offline settings, forcing the sample
+    // rate to 1 Hz (the documented native rate for skin temperature). Every other setting type
+    // keeps the device's max available value so resolution/channels stay valid.
+    private fun pinTemperatureSampleRate(available: PolarSensorSetting): PolarSensorSetting {
+        val concrete = available.settings.mapValues { (type, values) ->
+            if (type == PolarSensorSetting.SettingType.SAMPLE_RATE) {
+                if (values.contains(1)) 1 else (values.minOrNull() ?: 1)
+            } else {
+                values.maxOrNull() ?: 0
+            }
+        }
+        return PolarSensorSetting(HashMap(concrete))
     }
 
     fun stopOfflineRecording(dataType: PolarBleApi.PolarDeviceDataType): Single<List<Any>> {
@@ -179,7 +212,7 @@ object Polar360Controller {
                     .concatMap { entry ->
                         if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
                             val epoch2000Ms = 946_684_800_000L
-                            val startNs = (entry.date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - epoch2000Ms) * 1_000_000L
+                            val startNs = (entry.date.toInstant(ZoneOffset.UTC).toEpochMilli() - epoch2000Ms) * 1_000_000L
                             Polar360PpiObservation.recording_startTimestamp = startNs
                             Napier.d(tag = "Polar360Controller::stopOfflineRecording") { "[ppi] recording_startTimestamp=$startNs (entry.date=${entry.date})" }
                         }
@@ -287,7 +320,7 @@ object Polar360Controller {
     fun getPolarApi() = polarConnector.polarApi
 
     private fun syncDeviceTime(deviceId: String): Completable {
-        val dateTime = LocalDateTime.now()
+        val dateTime = LocalDateTime.now(ZoneOffset.UTC)
         return polarConnector.polarApi.setLocalTime(deviceId, dateTime)
             .doOnComplete { Log.i(TAG, "Polar360Controller: Device time synced for $deviceId") }
             .onErrorComplete { error ->

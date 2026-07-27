@@ -16,6 +16,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.LocationManager
+import androidx.core.content.ContextCompat
 import io.redlink.more.scopes.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,12 @@ object GPSStateListener {
             listenerActive = true
             Scope.launch(Dispatchers.Main) {
                 val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
-                context.registerReceiver(receiver, filter)
+                ContextCompat.registerReceiver(
+                    context,
+                    receiver,
+                    filter,
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                )
                 updateGpsState(context)
             }
         }

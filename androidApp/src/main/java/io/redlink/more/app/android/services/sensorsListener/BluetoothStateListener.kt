@@ -44,7 +44,12 @@ object BluetoothStateListener {
             listenerActive = true
             Scope.launch(Dispatchers.Main) {
                 val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-                context.registerReceiver(receiver, filter)
+                ContextCompat.registerReceiver(
+                    context,
+                    receiver,
+                    filter,
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                )
                 updateBluetoothState(context)
             }
         }

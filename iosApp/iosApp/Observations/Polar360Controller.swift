@@ -216,17 +216,43 @@ class Polar360Controller {
             return polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: nil, secret: nil)
         }
         // ACC and temperature: prefer the device's requested settings (known-good on current
-        // firmware, defaults to 2Hz for temp). Some newer firmware fails settings negotiation
-        // for temperature — if the settings-based start errors, fall back to a settings-less start.
+        // firmware). Some newer firmware fails settings negotiation for temperature — if the
+        // settings-based start errors, fall back to a settings-less start.
         return polarConnector.polarApi.requestOfflineRecordingSettings(deviceId, feature: dataType)
             .flatMapCompletable { resolvedSettings in
-                Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with settings: \(resolvedSettings)")
-                return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: resolvedSettings, secret: nil)
+                // Passing the queried settings as-is lets the SDK resolve to the device's max
+                // sample rate (4 Hz for skin temperature). Temperature must be recorded at 1 Hz,
+                // so pin sampleRate to 1 while keeping the device's native resolution/channels.
+                let chosenSettings = self.isTemperature(dataType)
+                    ? self.pinTemperatureSampleRate(resolvedSettings)
+                    : resolvedSettings
+                Napier.d("Polar360Controller: [\(dataType)] Starting offline recording with settings: \(chosenSettings)")
+                return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: chosenSettings, secret: nil)
             }
             .catch { settingsError -> Completable in
                 Napier.w("Polar360Controller: [\(dataType)] Settings-based start failed (\(settingsError)); retrying without settings")
                 return self.polarConnector.polarApi.startOfflineRecording(deviceId, feature: dataType, settings: nil, secret: nil)
             }
+    }
+
+    private func isTemperature(_ dataType: PolarDeviceDataType) -> Bool {
+        return dataType == .temperature || dataType == .skinTemperature
+    }
+
+    // Builds a concrete setting from the device's available offline settings, forcing the sample
+    // rate to 1 Hz (the documented native rate for skin temperature). Every other setting type
+    // keeps the device's max available value so resolution/channels stay valid. Falls back to the
+    // unmodified settings if the concrete initializer rejects the combination.
+    private func pinTemperatureSampleRate(_ available: PolarSensorSetting) -> PolarSensorSetting {
+        var concrete: [PolarSensorSetting.SettingType: UInt32] = [:]
+        for (type, values) in available.settings {
+            if type == .sampleRate {
+                concrete[type] = values.contains(1) ? 1 : (values.min() ?? 1)
+            } else {
+                concrete[type] = values.max() ?? 0
+            }
+        }
+        return (try? PolarSensorSetting(concrete)) ?? available
     }
 
     func stopOfflineRecording(dataType: PolarDeviceDataType) {
