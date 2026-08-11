@@ -71,7 +71,27 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         AppDelegate.shared.deeplinkManager.setProtocol(protocolReplacement: Shared.companion.PROTOCOL.localized())
         AppDelegate.shared.deeplinkManager.setHost(hostReplacement: Shared.companion.HOST.localized())
 
+        flushPendingDeliveredNotifications()
+
         return true
+    }
+
+    /// Reads delivery records written by the Notification Service Extension (which cannot
+    /// access the KMP shared framework) and re-emits them as NOTIFICATION_DELIVERED tracking
+    /// events now that the main app process — and its tracking infrastructure — is running.
+    private func flushPendingDeliveredNotifications() {
+        let key = "pending_notification_delivered_events"
+        guard
+            let defaults = UserDefaults(suiteName: AppDelegate.appGroup),
+            let pending = defaults.array(forKey: key) as? [[String: String]],
+            !pending.isEmpty
+        else { return }
+
+        for record in pending {
+            let id = record["id"] ?? "unknown"
+            Napier.event(.notificationDelivered, message: "id:\(id) (system)")
+        }
+        defaults.removeObject(forKey: key)
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {

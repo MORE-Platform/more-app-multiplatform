@@ -27,7 +27,6 @@ import io.redlink.more.services.network.openapi.model.StudyConsent
 import io.redlink.more.services.store.CredentialRepository
 import io.redlink.more.services.store.EndpointRepository
 
-private const val TAG = "NetworkService"
 
 class NetworkServiceImpl(
     endpointRepository: EndpointRepository,
@@ -284,4 +283,7 @@ class NetworkServiceImpl(
         return NetworkServiceError(code, errorResponse)
     }
 
+    companion object {
+        private const val TAG = "NetworkService"
+    }
 }

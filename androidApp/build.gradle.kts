@@ -63,7 +63,7 @@ android {
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 37
         versionName = "5.0.0"
     }
@@ -148,6 +148,7 @@ android {
             }
 
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

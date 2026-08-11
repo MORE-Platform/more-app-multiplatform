@@ -198,6 +198,7 @@ class AppUsageObservation(
         event: LogEvent,
         message: String?
     ) {
+        Napier.d { "New AppUsage Event: $event; Message: $message" }
         if (event == LogEvent.APP_TRACKING_ACCEPTED) {
             if (trackingApproval != PermissionApprovalState.GRANTED) {
                 setTrackingApproval(true)

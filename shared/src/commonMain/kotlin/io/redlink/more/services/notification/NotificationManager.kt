@@ -17,6 +17,7 @@ import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.mapQueryParams
 import io.redlink.more.extensions.toNotificationEntity
+import io.redlink.more.logging.track
 import io.redlink.more.models.NotificationStatusType
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.models.StudyState
@@ -24,6 +25,7 @@ import io.redlink.more.navigation.DeeplinkManager
 import io.redlink.more.navigation.model.DeepLinkData
 import io.redlink.more.navigation.model.NavigationRoute
 import io.redlink.more.navigation.model.NavigationRouteParameter
+import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.scopes.AppDispatchers
 import io.redlink.more.scopes.MoreDispatchers
 import io.redlink.more.scopes.Scope
@@ -36,6 +38,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 interface LocalNotificationListener {
     fun displayNotification(notification: NotificationEntity, badgeCount: Int = 0)
@@ -167,6 +170,11 @@ open class NotificationManager(
             Scope.launch {
                 Napier.i { "Storing notification: ${notification.title} - ${notification.notificationBody}" }
                 repository.notification.storeNotification(notification)
+                val now = Clock.System.now().epochSeconds
+                val triggerTime = notification.timestamp ?: now
+                if (triggerTime <= now + 1) {
+                    LogEvent.NOTIFICATION_DELIVERED.track(mapOf("id" to notification.notificationId))
+                }
                 if (displayNotification) {
                     Napier.d(tag = "NotificationManager::storeAndDisplayNotification") { "Displaying notification: $notification" }
                     withContext(dispatchers.main) {
@@ -187,6 +195,11 @@ open class NotificationManager(
     }
 
     fun displayNotification(notification: NotificationEntity) {
+        val now = Clock.System.now().epochSeconds
+        val triggerTime = notification.timestamp ?: now
+        if (triggerTime <= now + 1) {
+            LogEvent.NOTIFICATION_SHOWN.track(mapOf("id" to notification.notificationId))
+        }
         localNotificationListener.displayNotification(notification, unreadUserCount.value)
     }
 
@@ -259,6 +272,7 @@ open class NotificationManager(
         deepLink: String?,
         handler: ((NotificationActionHandler, DeepLinkData?) -> Unit)
     ) {
+        LogEvent.NOTIFICATION_CLICKED.track(mapOf("id" to notificationId))
         deepLink?.let {
             Scope.launch {
 
