@@ -32,7 +32,7 @@ struct CheckboxField: View {
                 Spacer()
             }.foregroundColor(.more.primaryLight)
         }
-        .foregroundColor(.more.white)
+        .foregroundColor(.white)
         .padding(.bottom, 7)
         .buttonStyle(.plain)
         .contentShape(Rectangle())

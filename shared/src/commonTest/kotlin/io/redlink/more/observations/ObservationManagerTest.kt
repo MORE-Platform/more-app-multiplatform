@@ -1,14 +1,18 @@
 package io.redlink.more.observations
 
+import io.redlink.more.SharedRes
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.extensions.desc
 import io.redlink.more.mocks.MockMainRepository
 import io.redlink.more.mocks.MockObservationFactory
 import io.redlink.more.mocks.MockStudyMoreScope
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.observations.observationTypes.ObservationType
 import io.redlink.more.scopes.MoreDispatchers
+import io.redlink.more.services.store.PermissionApprovalState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,6 +67,7 @@ class ObservationManagerTest {
     fun tearDown() {
         testScope.cancel()
         Dispatchers.resetMain()
+        Observation.resetRequestedPermissions()
     }
 
     @Test
@@ -296,6 +301,60 @@ class ObservationManagerTest {
         assertEquals(1000L, mockObservation.lastStoreStart)
     }
 
+    @Test
+    fun testUpdateObservationPermissionsRequestsPermissionWhenNotSet() = runTest {
+        val mockObservation =
+            MockObservation(repository, ObservationType("simple-observation", emptySet()))
+        val permissionObserver = FakePermissionObserver(PermissionApprovalState.NOT_SET)
+        mockObservation.setPermissionObserver(permissionObserver)
+
+        mockObservation.updateObservationPermissions()
+
+        assertEquals(1, permissionObserver.requestPermissionCallCount)
+    }
+
+    @Test
+    fun testUpdateObservationPermissionsShowsAlertWhenDeclined() = runTest {
+        val mockObservation =
+            MockObservation(repository, ObservationType("simple-observation", emptySet()))
+        val permissionObserver = FakePermissionObserver(PermissionApprovalState.DECLINED)
+        mockObservation.setPermissionObserver(permissionObserver)
+
+        mockObservation.updateObservationPermissions()
+
+        assertEquals(
+            SharedRes.strings.observation_permission_missing_title.desc(),
+            AlertController.alertDialogModel.value?.title
+        )
+        assertEquals(0, permissionObserver.requestPermissionCallCount)
+        AlertController.closeAlertDialog()
+    }
+
+    @Test
+    fun testUpdateObservationPermissionsDoesNothingWhenGranted() = runTest {
+        val mockObservation =
+            MockObservation(repository, ObservationType("simple-observation", emptySet()))
+        val permissionObserver = FakePermissionObserver(PermissionApprovalState.GRANTED)
+        mockObservation.setPermissionObserver(permissionObserver)
+        val alertBefore = AlertController.alertDialogModel.value
+
+        mockObservation.updateObservationPermissions()
+
+        assertEquals(0, permissionObserver.requestPermissionCallCount)
+        assertEquals(alertBefore, AlertController.alertDialogModel.value)
+    }
+
+    class FakePermissionObserver(private val state: PermissionApprovalState) :
+        ObservationPermissionObserver {
+        var requestPermissionCallCount = 0
+
+        override fun requestPermission(observationType: ObservationType) {
+            requestPermissionCallCount++
+        }
+
+        override fun permissionState(observationType: ObservationType): PermissionApprovalState = state
+    }
+
     class MockDataRecorder : DataRecorder {
         var lastStartedScheduleId: String? = null
         var lastStartedMultipleScheduleIds: Set<String>? = null
@@ -348,7 +407,7 @@ class ObservationManagerTest {
             //
         }
 
-        override fun start(
+        override suspend fun start(
             observationId: String,
             scheduleId: String,
             notificationId: String?

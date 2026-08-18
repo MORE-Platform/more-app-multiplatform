@@ -29,6 +29,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,11 +45,16 @@ import io.redlink.more.app.android.theme.MoreColors
 import io.redlink.more.logging.event
 import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.observations.observationTypes.AppUsageObservationType
+import io.redlink.more.observations.healthConnect.HealthConnectObservationType
+import io.redlink.more.scopes.Scope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ConsentButtons(model: ConsentViewModel) {
     val isLoading by model.registrationService.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissionsMap ->
@@ -74,7 +80,7 @@ fun ConsentButtons(model: ConsentViewModel) {
                 deniedPermissions.map { PermissionUtils.getPermissionLabel(context, it) }
             )
         } else {
-            model.acceptConsent(context)
+            requestHealthConnectPermissionsThenAcceptConsent(context, coroutineScope, model)
         }
     }
 
@@ -89,7 +95,7 @@ fun ConsentButtons(model: ConsentViewModel) {
             Button(
                 onClick = {
                     Napier.event(LogEvent.BUTTON_PRESS, "Consent approved")
-                    checkAndRequestPermissions(context, launcher, model)
+                    checkAndRequestPermissions(context, launcher, model, coroutineScope)
                 },
                 colors = ButtonDefaults
                     .buttonColors(
@@ -139,6 +145,7 @@ fun checkAndRequestPermissions(
     context: Context,
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
+    coroutineScope: CoroutineScope,
     extraPermissions: Set<String> = emptySet()
 ) {
     val permissions =
@@ -165,9 +172,9 @@ fun checkAndRequestPermissions(
     }
 
     if (hasBackgroundLocationPermission) {
-        checkPermissionForBackgroundLocationAccess(context, launcher, model)
+        checkPermissionForBackgroundLocationAccess(context, launcher, model, coroutineScope)
     } else {
-        checkPermissions(context, launcher, permissions, model)
+        checkPermissions(context, launcher, permissions, model, coroutineScope)
     }
 }
 
@@ -176,12 +183,13 @@ fun checkPermissions(
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     permissions: Set<String>,
     model: ConsentViewModel,
+    coroutineScope: CoroutineScope,
 ): Boolean {
     return if (!PermissionUtils.hasAllPermissions(permissions, context)) {
         launcher.launch(permissions.toTypedArray())
         false
     } else {
-        model.acceptConsent(context)
+        requestHealthConnectPermissionsThenAcceptConsent(context, coroutineScope, model)
         true
     }
 }
@@ -190,6 +198,7 @@ fun checkPermissionForBackgroundLocationAccess(
     context: Context,
     launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
     model: ConsentViewModel,
+    coroutineScope: CoroutineScope,
 ) {
     if (PermissionUtils.hasAllPermissions(
             setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
@@ -205,14 +214,43 @@ fun checkPermissionForBackgroundLocationAccess(
                 context,
                 launcher,
                 model,
+                coroutineScope,
                 setOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
             )
             dialog.dismiss()
         }
         .setNegativeButton("Decline") { dialog, _ ->
-            checkAndRequestPermissions(context, launcher, model)
+            checkAndRequestPermissions(context, launcher, model, coroutineScope)
             dialog.dismiss()
         }
         .create()
         .show()
+}
+
+/**
+ * Enqueues a Health Connect permission check for whichever subtypes the study actually needs (if
+ * any), by delegating to [HealthConnectObservation]'s own collector-aware permission check - the
+ * same logic that already runs at schedule-start time - instead of duplicating it here. This
+ * automatically scopes to active collectors, requests only what's missing, and shows the
+ * missing-permission alert on decline.
+ *
+ * The check runs on the app-wide [Scope] rather than [coroutineScope] (which is tied to this
+ * composition and dies when ContentActivity is torn down after consent completes), and does not
+ * block consent submission - AndroidHealthConnectManager queues the actual system prompt until
+ * MainActivity is resumed, so waiting for it here would only stall the consent flow.
+ */
+fun requestHealthConnectPermissionsThenAcceptConsent(
+    context: Context,
+    coroutineScope: CoroutineScope,
+    model: ConsentViewModel
+) {
+    Scope.launch {
+        MoreApplication.shared?.observationFactory
+            ?.observation(HealthConnectObservationType().observationType)
+            ?.updateObservationPermissions()
+    }
+    coroutineScope.launch {
+        model.registrationService.beginConsentSubmission()
+        model.acceptConsent(context)
+    }
 }

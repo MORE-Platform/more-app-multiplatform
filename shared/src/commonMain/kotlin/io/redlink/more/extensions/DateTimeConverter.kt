@@ -17,6 +17,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.todayIn
 
 fun Instant.fromUTCtoCurrent(): Instant {
     val currentZone = TimeZone.currentSystemDefault()
@@ -24,6 +26,13 @@ fun Instant.fromUTCtoCurrent(): Instant {
 }
 
 fun Instant.localDateTime(): LocalDateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())
+
+fun Instant.localDate(): LocalDate = this.localDateTime().date
+
+fun kotlin.time.Instant.localDate(): LocalDate =
+    Instant.fromEpochMilliseconds(this.toEpochMilliseconds()).localDate()
+
+fun LocalDate.Companion.today(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 fun LocalDate.time(): Long =
     this.atTime(0, 0).toInstant(TimeZone.currentSystemDefault()).epochSeconds

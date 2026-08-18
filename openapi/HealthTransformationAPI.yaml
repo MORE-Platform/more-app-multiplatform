@@ -1,0 +1,526 @@
+openapi: 3.0.3
+
+info:
+  title: Health Transformation Model
+  description: |
+    Provider-independent models used to normalize health data before it is
+    transformed into DataPoints.
+
+    These models are intended to provide a common representation for health
+    data originating from different providers such as Garmin Connect,
+    Apple Health and Google Health Connect.
+
+    Provider-specific integrations are responsible for converting their
+    native data structures into these models. The normalized data can then
+    be transformed into the existing DataPoint representation.
+
+    The existing Garmin transformation models remain in place for backwards
+    compatibility with the Garmin ingestion pipeline.
+  version: "1"
+
+paths: { }
+
+components:
+  schemas:
+
+    # -------------------------------------------------------------------------
+    # Common temporal wrapper
+    # -------------------------------------------------------------------------
+
+    TimeData:
+      type: object
+      description: |
+        A timestamped health measurement.
+
+        `timestamp` represents the effective timestamp of the resulting
+        DataPoint.
+
+        `startTime` and `endTime` may additionally be provided for data that
+        describes an interval rather than a single measurement.
+
+        `additionalData` can be used for metadata which should be retained
+        during transformation but does not belong to the normalized health
+        measurement itself.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Effective timestamp of the measurement.
+
+        startTime:
+          type: string
+          format: date-time
+          description: Start of the represented time interval, if applicable.
+
+        endTime:
+          type: string
+          format: date-time
+          description: End of the represented time interval, if applicable.
+
+        device:
+          type: string
+          description: The device identifier, from where the data were recorded on.
+
+        data:
+          oneOf:
+            - $ref: "#/components/schemas/HeartRateData"
+            - $ref: "#/components/schemas/StepData"
+            - $ref: "#/components/schemas/ActivityData"
+            - $ref: "#/components/schemas/BloodPressureData"
+            - $ref: "#/components/schemas/SleepData"
+          description: Normalized health measurement.
+
+        additionalData:
+          type: object
+          additionalProperties: true
+          default: { }
+          description: |
+            Optional additional metadata associated with this measurement.
+
+            Provider-specific metadata may be placed here when it cannot be
+            represented by the common model. Consumers must not rely on such
+            metadata being available for every provider.
+
+      required:
+        - timestamp
+        - data
+
+
+    # -------------------------------------------------------------------------
+    # Heart rate
+    # -------------------------------------------------------------------------
+
+    HeartRateData:
+      type: object
+      description: |
+        A single heart-rate measurement independent of the source provider.
+      properties:
+        hr:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Heart rate in beats per minute (BPM).
+      required:
+        - hr
+
+
+    # -------------------------------------------------------------------------
+    # Steps / distance
+    # -------------------------------------------------------------------------
+
+    StepData:
+      type: object
+      description: |
+        Step and distance information for a point or interval in time.
+      properties:
+        steps:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Number of steps.
+
+        stepsGoal:
+          type: integer
+          format: int32
+          minimum: 0
+          description: |
+            Step goal associated with the measurement, if provided by the
+            source.
+
+            Not all providers expose a step goal.
+
+        distanceInMeters:
+          type: number
+          format: double
+          minimum: 0
+          description: Distance travelled in meters.
+
+
+    # -------------------------------------------------------------------------
+    # Activity
+    # -------------------------------------------------------------------------
+
+    ActivityData:
+      type: object
+      description: |
+        Normalized activity information.
+
+        Some properties are optional because not all health providers expose
+        motion intensity, MET or active-duration information.
+      properties:
+        activityType:
+          $ref: "#/components/schemas/ActivityType"
+
+        met:
+          type: number
+          format: double
+          minimum: 0
+          description: |
+            Metabolic equivalent of task (MET), if available.
+
+        intensity:
+          oneOf:
+            - $ref: "#/components/schemas/ActivityIntensity"
+
+        activeTimeInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Duration considered active, in seconds.
+
+        meanMotionIntensity:
+          type: number
+          format: double
+          description: |
+            Mean motion intensity when provided by the source.
+
+        maxMotionIntensity:
+          type: number
+          format: double
+          description: |
+            Maximum motion intensity when provided by the source.
+
+      required:
+        - activityType
+
+
+    ActivityType:
+      type: string
+      description: |
+        Provider-independent activity classification.
+
+        Native provider activity values should be mapped to the closest
+        semantically equivalent value. Values that cannot safely be mapped
+        should use OTHER rather than inventing an equivalence.
+      enum:
+        - WALKING
+        - RUNNING
+        - WHEELCHAIR_PUSHING
+        - SEDENTARY
+        - SLEEP
+        - OTHER
+
+
+    ActivityIntensity:
+      type: string
+      description: Normalized activity intensity.
+      enum:
+        - SEDENTARY
+        - ACTIVE
+        - HIGHLY_ACTIVE
+
+
+    # -------------------------------------------------------------------------
+    # Blood pressure
+    # -------------------------------------------------------------------------
+
+    BloodPressureData:
+      type: object
+      description: |
+        A blood-pressure measurement independent of the source provider.
+      properties:
+        systolic:
+          type: integer
+          format: int32
+          description: Systolic blood pressure in mmHg.
+
+        diastolic:
+          type: integer
+          format: int32
+          description: Diastolic blood pressure in mmHg.
+
+        pulse:
+          type: integer
+          format: int32
+          minimum: 0
+          description: |
+            Pulse rate in beats per minute at the time of the reading,
+            if supplied with the blood-pressure measurement.
+
+        sourceType:
+          $ref: "#/components/schemas/MeasurementSourceType"
+
+      required:
+        - systolic
+        - diastolic
+
+
+    MeasurementSourceType:
+      type: string
+      description: |
+        How the measurement was created.
+
+        This replaces the Garmin-specific interpretation of source type with
+        a provider-independent representation.
+      enum:
+        - MANUAL
+        - DEVICE
+        - APPLICATION
+        - UNKNOWN
+
+
+    # -------------------------------------------------------------------------
+    # Sleep
+    # -------------------------------------------------------------------------
+
+    SleepData:
+      type: object
+      description: |
+        Normalized sleep information.
+
+        Raw measurements and sleep stages should be mapped where a semantic
+        equivalent exists. Provider-specific derived metrics such as sleep
+        scores should only be provided when they actually exist and must not
+        be synthesized simply to match another provider.
+      properties:
+        calendarDate:
+          type: string
+          format: date
+          description: Local calendar date associated with the sleep period.
+
+        totalNapDurationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        unmeasurableSleepInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+          description: |
+            Duration of sleep that could not be assigned to a specific stage.
+
+        deepSleepDurationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        lightSleepDurationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        remSleepDurationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        awakeDurationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        validation:
+          type: string
+          description: |
+            Validation or classification information reported by the original
+            provider.
+
+            The value is intentionally not constrained to Garmin validation
+            values because other health providers may use different
+            classifications.
+
+        spo2Samples:
+          type: array
+          default: [ ]
+          items:
+            $ref: "#/components/schemas/OxygenSaturationData"
+          description: Timestamped oxygen-saturation measurements during sleep.
+
+        sleepLevels:
+          type: array
+          default: [ ]
+          items:
+            $ref: "#/components/schemas/SleepLevelSegment"
+          description: |
+            Normalized sleep-stage intervals.
+
+        sleepScore:
+          $ref: "#/components/schemas/SleepScore"
+          description: |
+            Overall sleep score when supplied by the source provider.
+
+            Scores from different providers must not be assumed to be
+            directly comparable.
+
+        sleepScores:
+          $ref: "#/components/schemas/SleepScoreBreakdown"
+          description: |
+            Optional detailed sleep-score breakdown when provided by the
+            source.
+
+        naps:
+          type: array
+          default: [ ]
+          items:
+            $ref: "#/components/schemas/NapData"
+
+
+    # -------------------------------------------------------------------------
+    # Sleep levels
+    # -------------------------------------------------------------------------
+
+    SleepLevelSegment:
+      type: object
+      description: |
+        A continuous interval belonging to a normalized sleep stage.
+      properties:
+        sleepLevel:
+          $ref: "#/components/schemas/SleepLevel"
+
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+      required:
+        - sleepLevel
+        - startTime
+        - endTime
+
+
+    SleepLevel:
+      type: string
+      description: |
+        Provider-independent sleep stage.
+
+        Provider-specific stages should only be mapped where the semantics are
+        sufficiently equivalent.
+      enum:
+        - AWAKE
+        - LIGHT
+        - DEEP
+        - REM
+        - ASLEEP
+        - IN_BED
+        - UNKNOWN
+
+
+    # -------------------------------------------------------------------------
+    # SpO2
+    # -------------------------------------------------------------------------
+
+    OxygenSaturationData:
+      type: object
+      description: A timestamped oxygen-saturation measurement.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+
+        percentage:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: Oxygen saturation as percentage.
+
+      required:
+        - timestamp
+        - percentage
+
+
+    # -------------------------------------------------------------------------
+    # Naps
+    # -------------------------------------------------------------------------
+
+    NapData:
+      type: object
+      description: Information about an individual nap.
+      properties:
+        startTime:
+          type: string
+          format: date-time
+
+        endTime:
+          type: string
+          format: date-time
+
+        durationInSeconds:
+          type: integer
+          format: int64
+          minimum: 0
+
+        validation:
+          type: string
+          description: |
+            Optional validation/classification information from the source
+            provider.
+
+      required:
+        - startTime
+
+
+    # -------------------------------------------------------------------------
+    # Provider-derived sleep scores
+    # -------------------------------------------------------------------------
+
+    SleepScore:
+      type: object
+      description: |
+        A sleep score reported by the source provider.
+
+        The meaning and calculation of a sleep score may differ between
+        providers.
+      properties:
+        value:
+          type: integer
+
+        qualifier:
+          type: string
+          description: Human-readable/provider-defined score qualification.
+
+        source:
+          $ref: "#/components/schemas/HealthDataSource"
+
+      required:
+        - value
+
+
+    SleepScoreBreakdown:
+      type: object
+      description: |
+        Optional provider-derived components contributing to a sleep score.
+      properties:
+        totalDuration:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        stress:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        awakeCount:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        remPercentage:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        restlessness:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        lightPercentage:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+        deepPercentage:
+          $ref: "#/components/schemas/SleepScoreQualifier"
+
+
+    SleepScoreQualifier:
+      type: object
+      properties:
+        qualifier:
+          type: string
+
+
+    # -------------------------------------------------------------------------
+    # Provenance
+    # -------------------------------------------------------------------------
+
+    HealthDataSource:
+      type: string
+      description: Health-data provider from which the measurement originated.
+      enum:
+        - DEVICE
+        - MANUAL

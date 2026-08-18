@@ -1,5 +1,6 @@
 package io.redlink.more.services.network.demo
 
+import io.redlink.more.observations.healthConnect.HealthConnectDataType
 import io.redlink.more.services.network.openapi.model.ApiKey
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.ContactInfo
@@ -151,6 +152,36 @@ object DemoData {
 //                    required = false,
 //                    version = now.toEpochMilliseconds()
 //                )
+                Observation(
+                    observationId = "9",
+                    observationType = HealthConnectDataType.HEART_RATE.subTypeValue,
+                    observationTitle = "Heart Rate",
+                    participantInfo = "Heart rate monitoring via Health Connect.",
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = observationStart,
+                            end = observationEnd
+                        )
+                    ),
+                    required = false,
+                    hidden = false,
+                    version = now.toEpochMilliseconds()
+                ),
+                Observation(
+                    observationId = "10",
+                    observationType = HealthConnectDataType.STEPS.subTypeValue,
+                    observationTitle = "Steps",
+                    participantInfo = "Step count monitoring via Health Connect.",
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = observationStart,
+                            end = observationEnd
+                        )
+                    ),
+                    required = false,
+                    hidden = false,
+                    version = now.toEpochMilliseconds()
+                ),
                 // hidden observation
                 Observation(
                     observationId = "1",

@@ -15,6 +15,7 @@ import io.ktor.utils.io.core.Closeable
 import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.DataPointEntity
+import io.redlink.more.database.entities.LatestObservationDataEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
@@ -248,6 +249,24 @@ class MockObservationRepository : ObservationRepository {
 
     override suspend fun getObservationByObservationId(observationId: String): ObservationEntity? =
         observations.value[observationId]
+
+    fun addObservations(observations: List<ObservationEntity>) {
+        observations.forEach { storeObservation(it) }
+    }
+
+    private val latestDataPoints =
+        MutableStateFlow<Map<String, LatestObservationDataEntity>>(emptyMap())
+
+    override suspend fun storeLatestDataPoint(data: LatestObservationDataEntity) {
+        latestDataPoints.value += (data.scheduleId to data)
+    }
+
+    override fun latestDataPointForSchedule(scheduleId: String): Flow<LatestObservationDataEntity?> =
+        latestDataPoints.map { it[scheduleId] }
+
+    override suspend fun latestDataPointTimestamp(observationType: String): Long? =
+        latestDataPoints.value.values.filter { it.observationType == observationType }
+            .maxByOrNull { it.timestamp }?.timestamp
 }
 
 class MockScheduleRepository : ScheduleRepository {
@@ -265,6 +284,10 @@ class MockScheduleRepository : ScheduleRepository {
 
     fun storeSchedule(schedule: ScheduleEntity) {
         _schedules.value += (schedule.scheduleId to schedule)
+    }
+
+    fun addSchedules(schedules: List<ScheduleEntity>) {
+        schedules.forEach { storeSchedule(it) }
     }
 
     override fun count(): Flow<Int> = _schedules.map { it.size }

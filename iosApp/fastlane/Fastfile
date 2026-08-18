@@ -32,34 +32,63 @@ platform :ios do
     end
   end
 
-  before_all do
-    setup_google_services
-    create_keychain(
-      name: "temp_keychain",
-      password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      lock_when_sleeps: false
-    )
+    before_all do
+      setup_google_services
 
-    api_key = app_store_connect_api_key(
-      key_id: ENV['APPLE_CONNECT_KEY_ID'],
-      issuer_id: ENV['APPLE_CONNECT_ISSUER_ID'],
-      key_content: ENV['APPLE_CONNECT_KEY_CONTENT'],
-      is_key_content_base64: true,
-      duration: 1000
-    )
-    lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
+      keychain_name = "fastlane_temp_#{Process.pid}"
+      keychain_path = File.expand_path("~/Library/Keychains/#{keychain_name}-db")
 
-    if ENV["FASTLANE_MATCH_SECRET"] && !ENV["FASTLANE_MATCH_SECRET"].empty?
-      ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
+      lane_context[:TEMP_KEYCHAIN_NAME] = keychain_name
+      lane_context[:TEMP_KEYCHAIN_PATH] = keychain_path
+
+      # Remove stale keychain from a previous interrupted run
+      delete_keychain(name: keychain_name) if File.exist?(keychain_path)
+
+      create_keychain(
+        name: keychain_name,
+        password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
+        default_keychain: false,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false
+      )
+
+      api_key = app_store_connect_api_key(
+        key_id: ENV["APPLE_CONNECT_KEY_ID"],
+        issuer_id: ENV["APPLE_CONNECT_ISSUER_ID"],
+        key_content: ENV["APPLE_CONNECT_KEY_CONTENT"],
+        is_key_content_base64: true,
+        duration: 1000
+      )
+
+      lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
+
+      if ENV["FASTLANE_MATCH_SECRET"] && !ENV["FASTLANE_MATCH_SECRET"].empty?
+        ENV["MATCH_PASSWORD"] = ENV["FASTLANE_MATCH_SECRET"]
+      end
     end
-  end
 
-  after_all do |lane|
-    delete_keychain(name: "temp_keychain") if File.exist?(File.expand_path("~/Library/Keychains/temp_keychain-db"))
-  end
+    private_lane :cleanup_temp_keychain do
+      keychain_name = lane_context[:TEMP_KEYCHAIN_NAME]
+      keychain_path = lane_context[:TEMP_KEYCHAIN_PATH]
+
+      next if keychain_name.to_s.empty?
+
+      begin
+        delete_keychain(name: keychain_name) if keychain_path && File.exist?(keychain_path)
+      rescue => e
+        UI.important("Failed to delete temporary keychain #{keychain_name}: #{e.message}")
+      end
+    end
+
+    after_all do |_lane|
+      cleanup_temp_keychain
+    end
+
+    error do |lane, exception|
+      cleanup_temp_keychain
+      UI.error("Lane #{lane} failed: #{exception.message}")
+    end
 
   private_lane :generate_openapi do
     gradle(

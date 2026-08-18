@@ -15,6 +15,7 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.redlink.more.database.migrations.MIGRATION_1_2
 import io.redlink.more.database.migrations.MIGRATION_2_3
+import io.redlink.more.database.migrations.MIGRATION_3_4
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -27,5 +28,5 @@ fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase =
     builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()

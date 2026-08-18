@@ -1,26 +1,16 @@
-buildscript {
-    dependencies {
-        classpath("com.google.gms:google-services:4.4.4")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.6")
-    }
-    repositories {
-        google()  // Google's Maven repository
-        mavenCentral()  // Maven Central repository
-    }
-}
-
 plugins {
-    id("com.android.application").version("8.13.2").apply(false)
-    id("com.android.library").version("8.13.2").apply(false)
-    kotlin("android").version("2.3.10").apply(false)
-    kotlin("multiplatform").version("2.3.10").apply(false)
-    kotlin("plugin.serialization").version("2.3.10").apply(false)
-    id("org.jetbrains.kotlin.plugin.compose").version("2.3.10").apply(false)
-    id("androidx.room").version("2.8.4").apply(false)
-    id("com.google.devtools.ksp").version("2.3.5").apply(false)
-
-    id("com.rickclephas.kmp.nativecoroutines").version("1.0.1").apply(false)
-    id("dev.icerock.mobile.multiplatform-resources").version("0.25.2").apply(false)
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.room) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.kmp.nativecoroutines) apply false
+    alias(libs.plugins.moko.resources) apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
 }
 
 

@@ -1,6 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <!-- GLOBAL -->
+    <string name="global_close">Schließen</string>
+
+    <string name="app_name">MORE</string>
+
+    <!--    NAVIGATION-->
+    <string name="today_view">Heute</string>
+    <string name="goals_view">Ziele</string>
+    <string name="notifications_view">Benachrichtigungen</string>
+    <string name="health_view">Gesundheit</string>
+    <string name="profile_view">Profil</string>
+    <!--TODAYS View-->
+
+    <string name="today_items">Heute zu erledigen</string>
+    <string name="today_items_empty">Du hast gerade keine zu erledigenden Aufgaben</string>
+    <string name="today_no_activity">Derzeit keine Aktivität</string>
+    <string name="no_goals_defined">Du hast zurzeit keine Aktivität, kannst aber Ziele erstellen.
+        Gehe zu „Ziele“ und leg los.
+    </string>
+    <string name="today_timeline">Timeline</string>
+    <string name="today_list_item_time_range">%1$s - %2$s</string>
+    <string name="today_current">Aktuell</string>
+    <string name="today_current_empty">Zurzeit gibt es keine zusätzlichen Hinweise, Erinnerungen
+        oder Fragebögen.
+    </string>
+    <string name="reminder_title">Erinnerung</string>
+    <string name="reminder_snooze">Snooze</string>
+    <string name="reminder_close">Schließen</string>
+    <string name="reminder_snooze_title">Erinnere mich später</string>
+    <string name="reminder_snooze_confirm">Bestätigen</string>
+    <string name="today_now_active">Jetzt aktiv</string>
+    <string name="today_item_upcoming">Anstehend</string>
+    <string name="today_item_completed">Abgeschlossen</string>
+    <string name="reminder_minutes_short">Min.</string>
+    <string name="reminder_hours_short">Std.</string>
+    <string name="reminder_quick_select">Schnellauswahl</string>
+    <string name="reminder_snoozed">Snooze aktiv</string>
+    <string name="reminder_snooze_scheduled">Geplant für %s</string>
+    <string name="reminder_snooze_cancel_title">Snooze abbrechen</string>
+    <string name="reminder_snooze_cancel_message">Bist du sicher, dass du den Snooze für diese
+        Erinnerung abbrechen möchtest?
+    </string>
+
+    <string name="short_question_observation">Befragung</string>
+    <string name="type_health_connect_android">Google Health Connect</string>
+    <string name="type_health_connect_android_short">Health Connect</string>
+    <string name="type_health_connect_ios">Apple Health</string>
+    <string name="type_health_connect_ios_short">Apple Health</string>
+    <string name="type_health_connect_heart_rate">Herzfrequenz</string>
+    <string name="type_health_connect_steps">Schritte</string>
+    <string name="health_connect_not_installed_title">Health Connect nicht installiert</string>
+    <string name="health_connect_not_installed_message">Health Connect wird benötigt, um deine
+        Gesundheitsdaten auf diesem Gerät zu lesen. Möchtest du es aus dem Play Store installieren?
+    </string>
+    <string name="health_connect_install_button">Installieren</string>
+    <string name="observation_permission_missing_title">Berechtigung fehlt</string>
+    <string name="observation_permission_missing_message">Die Berechtigung zum Lesen von %1$s
+        fehlt. Bitte erteile sie in den Einstellungen, um diese Daten weiterhin für die Studie zu
+        erfassen.
+    </string>
+
+
+    <!--    GOALS VIEW -->
+
+    <string name="goals_add_goal">Ziel hinzufügen</string>
+    <string name="goals_no_goals">Noch keine Ziele. Bitte welche hinzufügen!</string>
+    <string name="goals_not_configured">Für diese Studie wurden keine Ziele konfiguriert.</string>
+    <string name="goals_progress">Hier ist ein Stand</string>
+    <string name="goals_delete_title">Ziel löschen</string>
+    <string name="goals_delete_message">Bist du sicher, dass du dieses Ziel löschen möchtest?
+    </string>
+
+    <!--    GOAL WIZARD View-->
+    <string name="goals_wizard_view">Ziele einrichten</string>
+    <string name="goals_wizard_view_setup_create">Setup: Ziele erstellen</string>
+    <string name="goals_wizard_view_setup_edit">Setup: Ziele editieren</string>
+    <string name="goals_wizard_view_setup_baseline">Setup Baseline Tracking</string>
+    <string name="goals_wizard_selection_title">Art der Zielerstellung</string>
+    <string name="goals_wizard_selection_subtitle">Möchten Sie eine Baseline erfassen oder normale Ziele erstellen?</string>
+    <string name="goals_wizard_no_templates_provided">Für diese Studie sind keine Zielvorlagen
+        vorhanden
+    </string>
+    <string name="goals_cannot_have_same_title_error">Ziele können nicht den gleichen Titel haben
+    </string>
+    <string name="goals_wizard_topics_title">Wählen Sie Ihre Zielbereiche</string>
+    <string name="goals_wizard_available_topics">Verfügbare Zielbereiche</string>
+    <string name="goals_wizard_config_step_title">Ziele auswählen &amp; konfigurieren</string>
+    <string name="goals_wizard_available_templates">Verfügbare Vorlagen</string>
+    <string name="goals_wizard_adjust_goals">Ihre Ziele anpassen</string>
+    <string name="goals_wizard_goal_title_label">Titel</string>
+    <string name="goals_wizard_goal_amount_label">Menge: %1$d %2$s</string>
+    <string name="goals_wizard_goal_days_label">Tage pro Woche: %1$d</string>
+    <string name="goals_wizard_summary_title">Zusammenfassung &amp; Verpflichtung</string>
+    <string name="goals_wizard_selected_goals">Ihre gewählten Ziele:</string>
+    <string name="goals_wizard_template_label">Vorlage: %s</string>
+    <string name="goals_wizard_confirm_consents">Bitte bestätigen Sie Folgendes:</string>
+    <string name="goals_wizard_delete">Löschen</string>
+    <string name="goals_delete_confirmation_title">Ziel löschen</string>
+    <string name="goals_delete_confirmation_message">Bist du sicher, dass du das Ziel "%s" löschen
+        möchtest?
+    </string>
+    <string name="goals_delete_confirmation_info">Löschansicht schließen</string>
+    <string name="goals_wizard_duplicate">Duplizieren</string>
+    <string name="goals_wizard_adherence_checks_label">Einhaltungsprüfungen</string>
+    <string name="adherence_check_morning">Morgens</string>
+    <string name="adherence_check_noon">Mittags</string>
+    <string name="adherence_check_afternoon">Nachmittags</string>
+    <string name="adherence_check_evening">Abends</string>
+    <string name="adherence_check_night">Nachts</string>
+    <string name="adherence_check_with_time">%1$s (%2$s)</string>
+    <string name="goal_type_with_preview">%1$s: %2$s</string>
+    <string name="goals_wizard_consents_not_accepted">Bitte bestätigen Sie alle Punkte vor dem
+        Speichern.
+    </string>
+    <string name="goals_wizard_modified_label">Geändert</string>
+    <string name="network_connection_view_offline">Offline</string>
+    <string name="network_connection_view_online">Online</string>
+
+
+    <string name="goals_wizard_confirm_consents_info">Ich werde täglich in der App meine Aktivitäten
+        und Aufgaben eintragen und mittracken.
+    </string>
+    <string name="goals_wizard_consent_commitment">Ich verstehe, wozu ich mich verpflichte.</string>
+    <string name="goals_wizard_consent_achievability">Das fühlt sich für meinen aktuellen
+        Genesungszustand erreichbar an.
+    </string>
+    <string name="goals_wizard_consent_understandable">Ich weiß, wie ich diese Ziele in der App
+        erfassen kann.
+    </string>
+
+
+    <!--    HEALTH VIEW-->
+    <string name="health_no_data">Noch keine Gesundheitsdaten!</string>
+    <string name="health_filter_today">Heute</string>
+    <string name="health_filter_x_days">%d Tage</string>
+    <string name="health_last_x_days">Letzte %d Tage</string>
+    <string name="health_steps_goal">Ziel: %1$d %2$s</string>
+    <string name="health_steps_goal_range">Zielbereich: %s</string>
+    <string name="health_blood_pressure_hyper_hypo">Hyper: %1$s | Hypo: %2$s</string>
+    <string name="health_steps_unit">Schritte</string>
+    <string name="external_goal_steps_label">Schritte</string>
+    <string name="external_goal_steps_unit">Schritte</string>
+    <string name="external_goal_glucose_label">Glukose</string>
+    <string name="external_goal_glucose_unit">mg/dL</string>
+    <string name="external_goal_heart_rate_label">Puls</string>
+    <string name="external_goal_heart_rate_unit">bpm</string>
+    <string name="external_goal_heart_rate_resting_label">Ruhepuls</string>
+    <string name="external_goal_blood_pressure_label">Blutdruck</string>
+    <string name="external_goal_blood_pressure_unit">mmHg</string>
+    <string name="external_goal_sleep_label">Schlaf</string>
+    <string name="external_goal_sleep_unit">Std.</string>
+    <string name="health_steps_history">Schritte Historie</string>
+    <string name="health_distance">Distanz: %.1f km</string>
+    <string name="health_trend">Trend: %d%%</string>
+    <string name="health_trend_rising">steigend</string>
+    <string name="health_trend_falling">fallend</string>
+    <string name="health_trend_constant">gleichbleibend</string>
+    <string name="health_sensor_garmin">Garmin</string>
+    <string name="health_sensor_freestyle_libre">Freestyle Libre</string>
+    <string name="health_blood_pressure_morning">Morgens</string>
+    <string name="health_blood_pressure_noon">Mittags</string>
+    <string name="health_blood_pressure_evening">Abends</string>
+    <string name="health_blood_pressure_sys">SYS</string>
+    <string name="health_blood_pressure_dia">DIA</string>
+    <string name="health_blood_pressure_status">Status</string>
+    <string name="health_blood_pressure_history">Blutdruck Historie</string>
+    <string name="health_raw_data">Rohdaten</string>
+    <string name="health_sleep_quality">Qualität: %1$s (%2$d/100)</string>
+    <string name="health_type">Typ: %s</string>
+    <string name="health_sleep_score_label">Score</string>
+    <string name="health_sleep_history">Schlaf Historie</string>
+    <string name="health_data_not_available">Datenformat für %s nicht unterstützt.</string>
+    <string name="health_visualization_not_supported">Visualisierung %s nicht unterstützt.</string>
+    <string name="health_status_normal">Normal</string>
+    <string name="health_glucose_history">Glukose Historie</string>
+    <string name="health_heart_rate_history">Puls Historie</string>
+    <string name="health_min_max">Min / Max</string>
+    <string name="health_date">Datum</string>
+
+    <string name="health_data_BAR_CHART">Balken Diagramm</string>
+    <string name="health_data_SCATTER_PLOT">Punkt Diagramm</string>
+    <string name="health_data_RANGE_CHART">Balkenbereich Diagramm</string>
+    <string name="health_props_count">Anzahl</string>
+    <string name="health_props_stepGoal">Schritteziel</string>
+    <string name="health_props_resting">Ruhepuls</string>
+    <string name="health_props_min">Min</string>
+    <string name="health_props_max">Max</string>
+    <string name="health_props_duration">Länge</string>
+    <string name="health_props_quality">Qualität</string>
+    <string name="health_props_score">Bewertung</string>
+
+
+    <!--    BASE -->
+    <string name="progress_step_label">Schritt %1$d von %2$d</string>
+    <string name="error_title">Fehler</string>
+    <string name="ok_button">OK</string>
+    <string name="back">Zurück</string>
+    <string name="next">Weiter</string>
+    <string name="save">Speichern</string>
+    <string name="loading">Lädt</string>
+    <string name="delete">Löschen</string>
+    <string name="cancel">Abbrechen</string>
+
+    <string name="calendar_week">KW</string>
+    <string name="close_week_picker">Datumauswahl schließen</string>
+    <string name="select_date">Datum auswählen</string>
+    <string name="data_loading">Daten laden</string>
+    <string name="no_data_for_today">Für heute wurden noch keine Daten synchronisiert.</string>
+
+
+    <!-- today types -->
+    <string name="type_goal">Ziel</string>
+    <string name="eat-amount-of">Essensgewohnheit</string>
+    <string name="trink-amount-of">Trinkgewohnheit</string>
+    <string name="reduce-amount-of">Gewohnheit reduzieren</string>
+    <string name="boolean_goal">Einfache Aufgabe</string>
+    <string name="external_goal">Externes Ziel</string>
+    <string name="step_goal">Schritte Ziel</string>
+
+    <string name="no_data">Keine Daten</string>
+
+    <string name="recorded_at">Letzte Aufnahme: %s</string>
+
+    <!--    OTHER-->
+
+    <string name="deeplink_protocol">app</string>
+    <string name="deeplink_host">io.redlink.umm.blenededcare</string>
     <string name="observation_is_active">Bitte öffne die App und starte die Beobachtung!</string>
     <string name="app_tracking_dialog_title">Berechtigung zur App-Nutzungsverfolgung</string>
     <string name="app_tracking_dialog_message">Diese Studie verwendet App-Nutzungsdaten, um zu
@@ -12,6 +239,10 @@
     <string name="app_tracking_dialog_positive_button">Erlauben</string>
     <string name="app_tracking_dialog_negative_button">Verweigern</string>
     <string name="app_usage_tracking_disabled_title">App-Tracking deaktiviert</string>
+    <string name="app_usage_tracking_title">App-Tracking</string>
+    <string name="app_usage_tracking_info">Ihre App-Nutzung wird erfasst, um die Studie zu
+        unterstützen.
+    </string>
     <string name="app_usage_tracking_disabled_message_ios">Die App-Nutzungsverfolgung ist
         deaktiviert. Bitte aktivieren Sie diese in den Studieneinstellungen. Wenn sie dort bereits
         aktiviert ist, überprüfen Sie bitte Ihre allgemeinen iOS-Datenschutzeinstellungen für
@@ -22,7 +253,347 @@
     </string>
     <string name="app_usage_tracking_disabled_confirm">Einstellungen</string>
 
+    <string name="consent_approved">%s akzeptiert</string>
+    <string name="consent_declined">%s abgelehnt</string>
+
     <string name="more_filter_notification_all">Alle Nachrichten</string>
     <string name="more_filter_notification_unread">Ungelesen</string>
     <string name="more_filter_notification_important">Wichtig</string>
+    <string name="more_filter_entire_time">Gesamter Zeitraum</string>
+    <string name="more_filter_today_tomorrow">Heute und Morgen</string>
+    <string name="more_filter_week">Eine Woche</string>
+    <string name="more_filter_month">Ein Monat</string>
+    <string name="nav_dashboard">Übersicht</string>
+    <string name="nav_notifications">Nachrichten</string>
+    <string name="nav_info">Information</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="nav_task_detail">Aufgabendetails</string>
+    <string name="nav_observation_detail">Observatdetails</string>
+    <string name="nav_study_details">Studiendetails</string>
+    <string name="nav_observation_filter">Filter</string>
+    <string name="nav_notification_filter">Filter</string>
+    <string name="nav_question">Simple Frage</string>
+    <string name="nav_running_schedules">Laufende Beobachtungen</string>
+    <string name="nav_completed_schedules">Vergangene Beobachtungen</string>
+    <string name="nav_leave_study">Studie verlassen</string>
+    <string name="nav_leave_study_confirm">Studie verlassen bestätigen</string>
+    <string name="nav_limesurvey">Limesurvey</string>
+    <string name="nav_observation_errors">Aufzeichnungsfehler</string>
+    <string name="nav_garmin_connect">Garmin Connect</string>
+    <string name="more_ble_view_title">Geräte</string>
+    <string name="nav_scan_qr_code">QR-Code scannen</string>
+    <string name="profile_praecura_not_connected">Nicht mit dem PraeCura-System verbunden. Bitte kontaktieren Sie bei weiteren Fragen Ihren Studien-Administrator.</string>
+    <string name="profile_sub_header_study">Studie</string>
+    <string name="profile_sub_header_privacy">Datenschutz &amp; Berechtigungen</string>
+    <string name="profile_sub_header_devices">Verbundene Geräte</string>
+    <string name="profile_sub_header_account">Konto</string>
+    <string name="profile_sub_header_contact">Kontakt</string>
+    <string name="profile_sub_header_collected_data">Gesammelte Daten</string>
+    <string name="profile_sub_header_app_permissions">App Berechtigungen</string>
+    <string name="profile_sub_header_app_tracking">App-Tracking</string>
+    <string name="profile_sub_header_connected_services">Verbundene Dienste</string>
+    <string name="profile_connected_service_garmin">Garmin Connect</string>
+    <string name="profile_connected_service_freestyle_libre">FreeStyle Libre</string>
+    <string name="profile_connected_status_connected">Verbunden</string>
+    <string name="profile_connected_status_not_connected">Nicht verbunden</string>
+    <string name="profile_connected_action_connect">Verbinden</string>
+    <string name="profile_connected_action_disconnect">Trennen</string>
+    <string name="profile_connected_action_open_app">App öffnen</string>
+    <string name="profile_connected_accessibility_item_status">%1$s, %2$s</string>
+    <string name="profile_connected_accessibility_open_app">%1$s App öffnen</string>
+    <string name="profile_connected_accessibility_connect">%1$s verbinden</string>
+    <string name="profile_connected_accessibility_disconnect">%1$s trennen</string>
+    <!-- Garmin Connect -->
+    <string name="garmin_connect_unavailable">Garmin Connect ist derzeit nicht verfügbar. Bitte
+        versuchen Sie es später erneut.
+    </string>
+    <string name="garmin_connect_close">Schließen</string>
+    <string name="profile_complete_study_title">Studie abschließen</string>
+    <string name="profile_complete_study_subtitle">Studie beenden und alle Daten übermitteln?
+    </string>
+    <string name="profile_leave_study_title">Studie verlassen</string>
+    <string name="profile_exit_study_stay">Weiterhin teilnehmen</string>
+    <string name="profile_leave_study_notice">Wichtige Meldung</string>
+    <string name="profile_leave_study_subtitle">Zurückziehen und die Studie verlassen</string>
+    <string name="profile_leave_study_warning">Wenn Sie die Studie verlassen, können Sie nicht mehr
+        teilnehmen. Ihre Studienteilnahme wird beendet und alle aufgezeichneten Daten werden von
+        Ihrem Gerät gelöscht.
+    </string>
+    <string name="profile_leave_study_button_cancel">Teilnahme fortsetzen!</string>
+    <string name="profile_load_permissions">Lade Berechtigungen&#8230;</string>
+    <string name="more_settings_permission_information">Sie haben alle notwendigen Zustimmungen
+        erteilt. Sie können die Zustimmmungen zurückziehen, indem Sie die gesamte Studie verlassen.
+    </string>
+    <string name="more_settings_refresh_study">Studieneinstellungen aktualisieren</string>
+    <string name="more_settings_refresh_study_failure_okay">OK</string>
+    <string name="more_settings_refresh_study_failure_title">Ein Fehler beim Update der Studie ist
+        aufgetreten!
+    </string>
+    <string name="more_settings_exit_dialog_title">Studie verlassen</string>
+    <string name="more_settings_withdraw_statement">Wenn Sie die Studie verlassen, können Sie später
+        nicht mehr teilnehmen.
+    </string>
+    <string name="more_settings_withdraw_statement_long">Wenn Sie die Studie verlassen, können Sie
+        später nicht mehr teilnehmen. Ihre Studienteilnahme wird beendet und alle bisher
+        aufgezeichneten Daten werden von Ihrem Mobiltelefon gelöscht.
+    </string>
+    <string name="more_settings_withdraw_question">Möchten Sie wirklich die Studie verlassen?
+    </string>
+    <string name="more_settings_withdraw_question_confirm">Sind Sie sicher, dass sie Ihre Teilnahme
+        an der Studie beenden wollen?
+    </string>
+    <string name="more_settings_resign_swipe">Ziehen, um die Studie zu verlassen</string>
+    <string name="more_settings_resign_confirm">Klicken, um auszutreten</string>
+    <string name="more_settings_continue">Weiterhin teilnehmen!</string>
+    <string name="more_settings_withdraw_from_study">Die Studie verlassen</string>
+    <string name="more_read_more">Mehr</string>
+    <string name="more_read_less">Weniger</string>
+    <string name="more_permission_button_decline">Ablehnen</string>
+    <string name="more_permission_button_accept">Akzeptieren</string>
+    <string name="participant_information">Informationen</string>
+
+    <string name="contact_info_no_contact">Es wurden keine Kontaktdaten angegeben. Bitte melden Sie
+        sich bei Fragen an Ihre:n Studienleiter:in.
+    </string>
+
+    <string name="offboarding_view">Offboarding</string>
+    <string name="offboarding_title">Studie abgeschlossen</string>
+    <string name="offboarding_data_safety_title">Datensicherheit</string>
+    <string name="offboarding_data_safety_description">Ihre Teilnahme wurde beendet.
+        Alle während dieser Studie erhobenen Daten wurden sicher verarbeitet.
+        Lokale Daten auf diesem Gerät werden nach dem Verlassen entfernt.
+    </string>
+    <string name="profile_complete_study_warning">Wenn Sie die Studie abschließen, wird Ihre
+        Teilnahme beendet und alle verbleibenden Daten werden übermittelt.
+    </string>
+    <string name="offboarding_exit_button">Studie verlassen</string>
+    <string name="offboarding_call_button">Anrufen</string>
+    <string name="offboarding_email_button">E-Mail schreiben</string>
+    <string name="offboarding_details_title">Studien-Details</string>
+    <string name="study_info_title">Studieninfo</string>
+    <string name="study_info_label_study">Studie</string>
+    <string name="study_info_label_period">Zeitraum</string>
+    <string name="study_info_label_facility">Einrichtung</string>
+    <string name="study_info_label_lead">Studienleitung</string>
+    <string name="study_info_label_participant_id">Teilnehmer-ID</string>
+    <string name="study_info_label_consent">Einverständnis</string>
+    <string name="notification_badge_description">%d Benachrichtigungen</string>
+    <string name="goals_wizard_no_network_error">Eine Netzwerkverbindung ist erforderlich, um Ihre
+        Ziele zu speichern. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.
+    </string>
+    <string name="goals_wizard_save_success">Ziele erfolgreich gespeichert.</string>
+    <string name="goals_wizard_baseline_tracking_label">Baseline Tracking</string>
+    <string name="goals_section_normal">Ziele</string>
+    <string name="goals_section_baseline">Baseline Tracking</string>
+    <string name="goals_wizard_create_normal_goals">Ziele erstellen/bearbeiten</string>
+    <string name="goals_wizard_create_baseline_goals">Baseline Tracking erstellen/bearbeiten
+    </string>
+    <string name="goals_wizard_baseline_selection_title">Baseline Tracking auswählen</string>
+    <string name="goals_wizard_baseline_selection_subtitle">Wählen Sie die Vorlagen für das Baseline
+        Tracking aus
+    </string>
+    <string name="goals_wizard_edit_title">Ziele bearbeiten</string>
+    <string name="goals_wizard_edit_subtitle">Bearbeiten Sie Ihre Ziele</string>
+    <string name="goals_wizard_create_baseline_button">Baseline Tracking erstellen</string>
+    <string name="goals_wizard_success_title">Erfolg</string>
+    <string name="goals_wizard_success_message">Ihre Ziele wurden erfolgreich erstellt.</string>
+    <string name="goals_wizard_dismiss_button">Schließen</string>
+    <string name="goals_convert_to_goal">In Ziel umwandeln</string>
+    <string name="goals_reminder_set">Erinnerung einstellen</string>
+    <string name="goals_reminder_sheet_title">Erinnerung: %s</string>
+    <string name="goals_reminder_enable">Erinnerung aktivieren</string>
+    <string name="goals_reminder_time">Zeit</string>
+    <string name="goals_reminder_message">Eigene Nachricht (optional)</string>
+    <string name="goals_reminder_save">Speichern</string>
+    <string name="goals_reminder_notification_title">Erinnerung: %s</string>
+    <string name="goals_reminder_morning">Morgendliche Erinnerung</string>
+    <string name="goals_reminder_noon">Mittägliche Erinnerung</string>
+    <string name="goals_reminder_evening">Abendliche Erinnerung</string>
+    <string name="goals_reminder_exact_alarm_title">Erinnerungen können verspätet sein</string>
+    <string name="goals_reminder_exact_alarm_message">Sie haben die Berechtigung „Alarme &amp;
+        Erinnerungen“ für diese App deaktiviert. Erinnerungen können dadurch verspätet oder gar
+        nicht
+        ausgelöst werden. Aktivieren Sie die Berechtigung unter Einstellungen → Apps → %1$s →
+        Alarme &amp; Erinnerungen → Alarme &amp; Erinnerungen zulassen.
+    </string>
+    <string name="goals_reminder_notification_summary_title">Mitteilungen können zusammengefasst
+        werden
+    </string>
+    <string name="goals_reminder_notification_summary_message">Erinnerungen dieser App werden im
+        Rahmen einer geplanten Mitteilungsübersicht zugestellt. Dadurch kann sich die Anzeige
+        verzögern. Deaktivieren Sie dies unter Einstellungen → Mitteilungen → Geplante Übersicht
+        und entfernen Sie %1$s aus der Übersicht.
+    </string>
+    <string name="goals_reminder_open_settings">Einstellungen</string>
+    <string name="goals_reminder_continue_anyway">Trotzdem fortfahren</string>
+    <string name="network_error_message">Eine Netzwerkverbindung ist erforderlich, um auf diese
+        Funktion zuzugreifen. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.
+    </string>
+    <string name="health_loading_error">Beim Laden der Gesundheitsdaten ist ein Fehler
+        aufgetreten.
+    </string>
+    <string name="goal_adherence_title">Zieleinhaltung</string>
+    <string name="goals_motivation_streak_body">%1$s Super gemacht bei deinem Ziel "%2$s", bleib dabei!</string>
+    <string name="goals_motivation_miss_body">%1$s Gestern bei "%2$s" fast geschafft, heute klappt es!</string>
+    <string name="goals_motivation_reduce_body">%1$s Gestern hast du dein Limit bei "%2$s" überschritten. Versuche heute, deinen Konsum zu reduzieren!</string>
+
+    <!--    NOTIFICATIONS View-->
+    <string name="notifications_empty">Sie haben noch keine Benachrichtigungen.</string>
+    <string name="notifications_mark_as_read">Als gelesen markieren</string>
+    <string name="notifications_mark_as_unread">Als ungelesen markieren</string>
+    <string name="notifications_delete_title">Benachrichtigung löschen</string>
+    <string name="notifications_delete_message">Sind Sie sicher, dass Sie diese Benachrichtigung
+        löschen möchten?
+    </string>
+    <string name="notifications_tag_reminder">Erinnerung</string>
+    <string name="notifications_tag_important">Wichtig</string>
+
+    <!--    LOGIN    -->
+    <string name="more_welcome_title">Willkommen bei More</string>
+    <string name="more_endpoint_label">Studienendpunkt</string>
+    <string name="more_endpoint_rotatable_arrow_description">Bearbeite den Studienendpunkt</string>
+    <string name="more_registration_token_label">Bitte geben Sie den Registrierungstoken ein
+    </string>
+    <string name="more_registration_token_placeholder">Token eingeben</string>
+    <string name="more_login_button_label">Login</string>
+    <string name="more_endpoint_input_placeholder">URL der Studie eingeben</string>
+    <string name="more_token_error">Ein Fehler beim Token ist aufgetreten</string>
+    <string name="more_404">"Fehler im Token oder in der URL"</string>
+    <string name="more_system_error">System Error! Bitte versuchen Sie es später oder kontaktieren
+        Sie Ihren Studien-Administrator!
+    </string>
+    <string name="more_qr_code_button">Scannen Sie bitte Ihren QR Code</string>
+    <string name="more_qr_code_button_description">Öffnen Sie die Kamera um den QR code zu scannen
+    </string>
+    <string name="more_or_text">oder</string>
+    <string name="more_qr_code_scan_automatically">QR Code wird automatisch gescannt.</string>
+    <string name="more_qr_camera_needed">Um den QR Code zu scannen benötigen wir Zugriff zu deiner
+        Kamera.
+    </string>
+    <string name="more_close_icon">QR Code Scanner-Overlay schließen</string>
+
+    <!--    STUDY STATES    -->
+    <string name="study_paused">Die Studie ist derzeit pausiert</string>
+    <string name="study_paused_descr">Die Studie ist vom Studienleiter derzeit pausiert und wird in
+        Kürze fortgesetzt
+    </string>
+    <string name="study_update">Die Studienkonfiguration wird gerade aktualisiert!</string>
+    <string name="study_update_wait">Bitte warten Sie kurz, bis die Aktualisierung beendet wurde
+    </string>
+    <string name="study_loading">Studie lädt…</string>
+    <string name="study_closed">Diese Studie wurde beendet</string>
+    <string name="study_closed_thanks">Vielen Dank für Ihre Teilnahme</string>
+    <string name="study_personal_message">Nachricht von Ihrem Studien-Administrator</string>
+    <string name="study_loading_error_title">Fehler beim Laden der Studie</string>
+    <string name="study_loading_error_message">Es gab ein Problem beim Laden Ihrer Studie.\nBitte
+        versuchen Sie es später erneut oder kontaktieren Sie Ihren Studien Administrator
+    </string>
+
+    <!--    QUESTIONNAIRE    -->
+    <string name="more_quest_thank_you">Vielen Dank!</string>
+    <string name="more_quest_thank_you_full">Vielen Dank für Ihre Teilnahme!</string>
+    <string name="more_quest_validation">Ihre Antwort zur Frage wurde erfolgreich übermittelt!
+    </string>
+    <string name="more_quest_complete">Einreichen</string>
+    <string name="more_quest_return_button_title">Zurück zur Übersicht</string>
+
+    <!--    BASE    -->
+    <string name="app_version">App Version</string>
+    <string name="more_close">Schließen</string>
+    <string name="more_study_consent">Zustimmung</string>
+    <string name="more_approved">Genehmigt</string>
+    <string name="more_cancel">Abbrechen</string>
+    <string name="more_abort">Abbrechen</string>
+    <string name="more_danger">Gefahr</string>
+    <string name="more_close_overlay">Fenster schließen</string>
+    <string name="more_done">Fertig</string>
+    <string name="done">Fertig</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="reload_button">Neu laden</string>
+
+    <!--    LIMESURVEY    -->
+    <string name="more_lime_survey_loading_error">Systemfehler! Konnte nicht die Daten von
+        LimeSurvey laden!
+    </string>
+    <string name="more_lime_data_loading">Daten werden geladen</string>
+    <string name="more_lime_cancel">LimeSurvey Studie abbrechen</string>
+    <string name="more_lime_finish">LimeSurvey Studie beenden</string>
+
+    <!--    INFO    -->
+    <string name="info_study_details">Studiendetails</string>
+    <string name="info_study_details_desc">Studiendetails öffnen</string>
+    <string name="info_running_observations">Laufende Aufzeichnungen</string>
+    <string name="info_running_observations_desc">Laufende Aufzeichnungen öffnen</string>
+    <string name="info_completed_observations">Vergangene Aufzeichnungen</string>
+    <string name="info_completed_observations_desc">Vergangene Aufzeichnungen öffnen</string>
+    <string name="info_devices">Geräte</string>
+    <string name="info_devices_desc">Geräte öffnen</string>
+    <string name="info_settings">Einstellungen</string>
+    <string name="info_consent_settings">Zustimmung</string>
+    <string name="info_consent_settings_desc">Einstellungen öffnen</string>
+    <string name="info_leave_study">Studie verlassen</string>
+    <string name="info_leave_study_desc">Applikation verlassen</string>
+    <string name="info_disclaimer">Bei Problemen können Sie sich gerne an uns wenden.</string>
+    <string name="info_contact_data">Kontaktdaten</string>
+    <string name="info_participant_credentials">Teilnehmer</string>
+
+    <!--    ERROR    -->
+    <string name="error">Fehler</string>
+    <string name="data_not_found">Daten konnten nicht geladen werden</string>
+    <string name="error_access_bluetooth">Keine Berechtigung für den Zugriff auf Bluetooth</string>
+    <string name="bluetooth_disabled">Bluetooth ist deaktiviert</string>
+    <string name="device_not_connected">Kein verfügbares Gerät verbunden</string>
+    <string name="error_location_services">Ortungsdienste geben einen unbekannten Fehler zurück
+    </string>
+    <string name="location_disabled">Ortungsdienste sind deaktiviert</string>
+    <string name="location_permission_not_granted">Keine Berechtigung für den Zugriff auf die
+        Ortungsdienste gewährt
+    </string>
+    <string name="accelerometer_sensor_not_available">Kann nicht auf den Beschleunigungssensor
+        zugreifen
+    </string>
+    <string name="observation_error">Aufzeichnungfehler</string>
+    <string name="observation_cannot_start">Beobachtung kann nicht gestartet werden! Bitte stellen
+        Sie sicher, dass Bluetooth aktiviert ist und alle notwendigen Geräte verbunden sind!
+    </string>
+    <string name="observation_bluetooth_error">Fehler beim Fortsetzen der Beobachtung! Es gab ein
+        Verbindungsproblem mit einem Bluetooth-Sensor. Bitte stellen Sie sicher, dass Bluetooth
+        aktiviert ist und alle notwendigen Geräte verbunden sind!
+    </string>
+    <string name="hr_unavailable">Funktion zur Messung der Herzfrequenz nicht verfügbar</string>
+    <string name="garmin_connect_unavailable_error">Es konnte Garmin Connect nicht aufgerufen
+        werden. Bitte versuchen Sie es später erneut!
+    </string>
+
+    <!--    ALERT DIALOG    -->
+    <string name="no_internet_connection_title">Keine Internetverbindung</string>
+    <string name="no_internet_connection_body">Bitte verbinden Sie das Gerät mit dem Internet und
+        versuchen es erneut!
+    </string>
+    <string name="no_internet_title">Keine Internetverbindung</string>
+    <string name="no_internet_message">Bitte verbinden Sie das Gerät mit dem Internet und versuchen
+        es erneut!
+    </string>
+
+    <!--    OBSERVATION    -->
+    <string name="more_observation_start">Aufzeichnung starten</string>
+    <string name="more_observation_pause">Aufzeichnung pausieren</string>
+    <string name="more_observation_stop">Aufzeichnung stoppen</string>
+    <string name="more_observation_running">Aufzeichnung läuft</string>
+    <string name="more_questionnaire_start">Fragebogen starten</string>
+    <string name="more_questionnaire_select">Bitte beantworten Sie die Frage</string>
+    <string name="more_questionnaire_type">Simpler Fragebogen</string>
+    <string name="more_observation_notification_explanation">Es werden aktuell Daten aufgezeichnet
+    </string>
+    <string name="more_observation_ready_title">Datenaufzeichnung ist bereit</string>
+    <string name="more_observation_ready_message">Bitte öffnen sie die MORE app, um Daten
+        aufzuzeichnen
+    </string>
+    <string name="more_observation_open">Aufzeichnung öffnen</string>
+    <string name="more_observation_datapoints">Datenpunkte aufgezeichnet</string>
+    <string name="more_limesurvey_start">LimeSurvey starten</string>
+
+    <!--    NOTIFICATIONS -->
+    <string name="important_notifications">Wichtige Nachrichten</string>
+    <string name="notification_default_body">Du hast eine neue Erinnerung.</string>
 </resources>

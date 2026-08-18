@@ -25,7 +25,7 @@ struct ObservationErrorListView: View {
                                 HStack {
                                     Image(systemName: "exclamationmark.triangle")
                                         .font(.more.headline)
-                                        .foregroundColor(.more.important)
+                                        .foregroundColor(.pc.failure)
                                         .padding(.trailing, 4)
                                     BasicText(text: "\(error)!")
                                 }

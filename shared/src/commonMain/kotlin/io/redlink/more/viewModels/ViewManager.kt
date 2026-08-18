@@ -37,6 +37,7 @@ object ViewManager {
     private val _appInForeground = MutableStateFlow(false)
     private val _bleViewOpen = MutableStateFlow(false)
     private val _activeStudy = MutableStateFlow(false)
+    private val _networkConnected = MutableStateFlow(true)
 
     @NativeCoroutines
     val studyLoadingError: StateFlow<Boolean> = _studyLoadingError
@@ -58,6 +59,9 @@ object ViewManager {
 
     @NativeCoroutines
     val activeStudy: StateFlow<Boolean> = _activeStudy
+
+    @NativeCoroutines
+    val networkConnected: StateFlow<Boolean> = _networkConnected
 
     private fun canOpenNewView(): Boolean {
         return _activeStudy.value &&
@@ -130,6 +134,10 @@ object ViewManager {
 
     fun studyError(hasError: Boolean) {
         _studyLoadingError.value = hasError
+    }
+
+    fun networkConnected(state: Boolean) {
+        _networkConnected.value = state
     }
 
     fun appIsInForeground(state: Boolean) {

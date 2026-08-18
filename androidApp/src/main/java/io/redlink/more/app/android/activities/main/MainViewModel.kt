@@ -23,12 +23,13 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.activities.observations.garmin.GarminConnectActivity
 import io.redlink.more.app.android.activities.observations.limeSurvey.LimeSurveyActivity
 import io.redlink.more.app.android.activities.studyDetails.observationDetails.ObservationDetailsViewModel
+import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.models.ScheduleListType
 import io.redlink.more.viewModels.ViewManager
 import io.redlink.more.viewModels.notifications.CoreNotificationFilterViewModel
 import kotlinx.coroutines.launch
 
-class MainViewModel(context: Context) : ViewModel() {
+class MainViewModel : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val showBackButton = mutableStateOf(false)
     val navigationBarTitle = mutableStateOf("")
@@ -56,7 +57,9 @@ class MainViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             ViewManager.bleViewActive.collect {
                 if (it && !lastBleViewState) {
-                    openBLESetupActivity(context)
+                    ActivityProvider.getCurrentActivity()?.let { activity ->
+                        openBLESetupActivity(activity)
+                    }
                 }
                 lastBleViewState = it
             }

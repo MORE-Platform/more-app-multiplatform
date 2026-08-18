@@ -25,6 +25,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!-- Health Connect -->
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
@@ -36,6 +41,20 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <queries>
+        <package android:name="com.google.android.gms" />
+        <!-- Garmin Connect companion app -->
+        <package android:name="com.garmin.android.apps.connectmobile" />
+        <!-- FreeStyle Libre 3 companion apps (region specific package names) -->
+        <package android:name="com.freestylelibre3.app.de" />
+        <package android:name="com.freestylelibre3.app.at" />
+        <package android:name="com.freestylelibre3.app.us" />
+        <package android:name="com.freestylelibre3.app.gb" />
+        <!-- Health Connect -->
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
 
     <application
         android:name="io.redlink.more.app.android.MoreApplication"
@@ -56,7 +75,23 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
         </activity>
+
+        <!-- Permission usage entry point for Android 14 and later -->
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity="io.redlink.more.app.android.activities.ContentActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+
         <activity
             android:name="io.redlink.more.app.android.activities.main.MainActivity"
             android:exported="true"
@@ -129,4 +164,4 @@
             </intent-filter>
         </receiver>
     </application>
-</manifest> 
+</manifest>

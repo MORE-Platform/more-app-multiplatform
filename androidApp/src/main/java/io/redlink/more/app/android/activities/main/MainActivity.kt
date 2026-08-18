@@ -60,6 +60,7 @@ import io.redlink.more.app.android.activities.studyStates.StudyUpdateView
 import io.redlink.more.app.android.activities.taskCompletion.TaskCompletionBarViewModel
 import io.redlink.more.app.android.activities.tasks.TaskDetailsView
 import io.redlink.more.app.android.observations.PermissionUtils
+import io.redlink.more.app.android.observations.healthConnect.AndroidHealthConnectManager
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.models.ScheduleListType
@@ -74,6 +75,8 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     private lateinit var navHostController: NavHostController
 
+    private lateinit var healthConnectLauncherOwnerToken: Any
+
     override fun onResume() {
         super.onResume()
         ActivityProvider.setCurrentActivity(this)
@@ -85,15 +88,22 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         PermissionUtils.cleanupPermissionLauncher(this)
+        if (::healthConnectLauncherOwnerToken.isInitialized) {
+            AndroidHealthConnectManager.cleanupPermissionLauncher(
+                healthConnectLauncherOwnerToken
+            )
+        }
+        super.onDestroy()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = MainViewModel(this)
+        val viewModel = MainViewModel()
 
         PermissionUtils.initializePermissionLauncher(this)
+        healthConnectLauncherOwnerToken =
+            AndroidHealthConnectManager.initializePermissionLauncher(this)
 
         val activityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

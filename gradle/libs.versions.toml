@@ -1,0 +1,127 @@
+[versions]
+androidGradlePlugin = "8.13.2"
+firebaseCrashlyticsGradleVersion = "3.0.6"
+googleServicesVersion = "4.4.4"
+kotlin = "2.3.10"
+kotlinKsp = "2.3.5"
+firebaseBom = "34.17.0"
+room = "2.8.4"
+kmpNativeCoroutines = "1.0.1"
+mokoResourcesPlugin = "0.25.2"
+mokoResources = "0.25.2"
+mokoGraphics = "0.10.1"
+openApiGenerator = "7.17.0"
+foojayResolverConvention = "1.0.0"
+
+compose = "1.11.4"
+composeMaterial = "1.11.4"
+composeMaterialIcons = "1.7.8"
+composeMaterial3 = "1.4.0"
+work = "2.11.2"
+navigation = "2.9.8"
+ktor = "3.5.2"
+camera = "1.6.1"
+polarBleSdk = "6.7.0"
+rxjava = "3.1.12"
+rxandroid = "3.0.2"
+gson = "2.14.0"
+fragment = "1.8.9"
+activityCompose = "1.13.0"
+playServicesLocation = "21.4.0"
+napier = "2.7.1"
+requestInspectorWebView = "1.0.3"
+lifecycleProcess = "2.11.0"
+mlkitBarcodeScanning = "17.3.0"
+coroutines = "1.11.0"
+serializationJson = "1.11.0"
+kotlinxDatetime = "0.8.0"
+sqlite = "2.7.0"
+securityCrypto = "1.1.0"
+kotlinCryptoHashBom = "0.8.0"
+core = "1.19.0"
+healthConnect = "1.1.0"
+
+[plugins]
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradlePlugin" }
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+room = { id = "androidx.room", version.ref = "room" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradleVersion" }
+kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmpNativeCoroutines" }
+moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResourcesPlugin" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openApiGenerator" }
+foojay-resolver-convention = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojayResolverConvention" }
+
+[libraries]
+firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradleVersion" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServicesVersion" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "composeMaterial3" }
+compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "composeMaterialIcons" }
+compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "composeMaterialIcons" }
+
+fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+polar-ble-sdk = { module = "com.github.polarofficial:polar-ble-sdk", version.ref = "polarBleSdk" }
+rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
+rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
+
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-inappmessaging = { module = "com.google.firebase:firebase-inappmessaging" }
+firebase-inappmessaging-display = { module = "com.google.firebase:firebase-inappmessaging-display" }
+
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+request-inspector-webview = { module = "com.github.acsbendi:Android-Request-Inspector-WebView", version.ref = "requestInspectorWebView" }
+lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycleProcess" }
+
+mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeScanning" }
+camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera" }
+camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera" }
+camera-view = { module = "androidx.camera:camera-view", version.ref = "camera" }
+
+moko-resources = { module = "dev.icerock.moko:resources", version.ref = "mokoResources" }
+moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResources" }
+moko-resources-test = { module = "dev.icerock.moko:resources-test", version.ref = "mokoResources" }
+moko-graphics = { module = "dev.icerock.moko:graphics", version.ref = "mokoGraphics" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+kotlincrypto-hash-bom = { module = "org.kotlincrypto.hash:bom", version.ref = "kotlinCryptoHashBom" }
+kotlincrypto-hash-md = { module = "org.kotlincrypto.hash:md" }
+
+security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCrypto" }
+core = { group = "androidx.core", name = "core", version.ref = "core" }
+health-connect-client = { module = "androidx.health.connect:connect-client", version.ref = "healthConnect" }

@@ -17,6 +17,7 @@ import io.redlink.more.mocks.mockObservationDataManager
 import io.redlink.more.observations.appUsage.model.LogEvent
 import io.redlink.more.services.store.PermissionRepositoryImpl
 import io.redlink.more.services.store.PermissionType
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -24,14 +25,14 @@ import kotlin.test.assertTrue
 class AppUsageObservationTest {
 
     @Test
-    fun testInstantEvent() {
+    fun testInstantEvent() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, true)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
         observation.start("1", "1")
 
         val event = LogEvent.URL_OPEN
@@ -45,14 +46,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testRangeEvent() {
+    fun testRangeEvent() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, true)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
         observation.start("1", "1")
 
         observation.onEvent(LogEvent.VIEW_OPEN, "test_view")
@@ -67,14 +68,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testTrackingDeclined() {
+    fun testTrackingDeclined() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, false)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
         observation.start("1", "1")
 
         observation.onEvent(LogEvent.URL_OPEN, "https://example.com")
@@ -82,14 +83,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testStoreWithoutApproval() {
+    fun testStoreWithoutApproval() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, false)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
         observation.start("1", "1")
 
         // BUTTON_PRESS has storeWithoutApproval = true now
@@ -103,14 +104,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testSendAfterApproval() {
+    fun testSendAfterApproval() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, false)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
         observation.start("1", "1")
 
         // VIEW_OPEN has storeWithoutApproval = false
@@ -130,7 +131,7 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testPersistenceAcrossRestarts() {
+    fun testPersistenceAcrossRestarts() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
@@ -138,7 +139,7 @@ class AppUsageObservationTest {
 
         // First session: Tracking is declined, we log an event
         val observation1 = AppUsageObservation(mockRepo, permissionRepo)
-        observation1.setDataManager(mockObservationDataManager(mockRepo))
+        observation1.applyDataManager(mockObservationDataManager(mockRepo))
         observation1.start("1", "1")
 
         observation1.onEvent(LogEvent.URL_OPEN, "https://example.com/buffered")
@@ -148,7 +149,7 @@ class AppUsageObservationTest {
 
         // Restart session: Tracking is still declined, we log another event
         val observation2 = AppUsageObservation(mockRepo, permissionRepo)
-        observation2.setDataManager(mockObservationDataManager(mockRepo))
+        observation2.applyDataManager(mockObservationDataManager(mockRepo))
         observation2.start("1", "1")
 
         observation2.onEvent(LogEvent.URL_OPEN, "https://example.com/buffered2")
@@ -171,14 +172,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testBufferUntilStart() {
+    fun testBufferUntilStart() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, true)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
 
         // No start("1", "1") yet!
 
@@ -197,14 +198,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testStoreWithoutApprovalBufferedUntilStart() {
+    fun testStoreWithoutApprovalBufferedUntilStart() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, false) // Declined
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
 
         observation.onEvent(LogEvent.APP_TRACKING_ACCEPTED, "")
 
@@ -220,14 +221,14 @@ class AppUsageObservationTest {
     }
 
     @Test
-    fun testOnStudyExitClearsBuffer() {
+    fun testOnStudyExitClearsBuffer() = runTest {
         val mockRepo = MockMainRepository()
         val mockSharedStorage = MockSharedStorageRepository()
         val permissionRepo = PermissionRepositoryImpl(mockSharedStorage)
         permissionRepo.updatePermission(PermissionType.APP_TRACKING, true)
 
         val observation = AppUsageObservation(mockRepo, permissionRepo)
-        observation.setDataManager(mockObservationDataManager(mockRepo))
+        observation.applyDataManager(mockObservationDataManager(mockRepo))
 
         // Buffer an event (by not starting observation)
         observation.onEvent(LogEvent.URL_OPEN, "https://redlink.at")

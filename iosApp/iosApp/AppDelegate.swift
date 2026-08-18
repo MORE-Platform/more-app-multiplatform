@@ -50,7 +50,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager, userDefaults: userDefaults),
             dataRecorder: IOSDataRecorder(),
             reminderNotificationSchedulingLimit: 30,
-            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: isDebug
+            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: isDebug,
+            pollingTaskScheduler: IOSPollingTaskScheduler()
+
         )
     }()
 
@@ -71,6 +73,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         DataUploadBackgroundTask.setupBackgroundTasks()
         DailyBackgroundTask.setupBackgroundTasks()
         ObservationReminderBackgroundTask.setupBackgroundTasks()
+        PollingBackgroundTask.setupBackgroundTasks()
 
         let routes = Set(NavigationScreen.allCases.map { $0.values.navigationLink.route })
 

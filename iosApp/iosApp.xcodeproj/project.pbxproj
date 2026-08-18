@@ -62,7 +62,7 @@
 		1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */; };
 		1F45E5BB2F288D7500EE8487 /* ExitButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F45E5BA2F288D7500EE8487 /* ExitButton.swift */; };
 		1F45E5BD2F288DD600EE8487 /* ReloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F45E5BC2F288DD600EE8487 /* ReloadButton.swift */; };
-		1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */; };
+		1F5A248D29C893B3008140CF /* AccelerometerRecorderCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5A248C29C893B3008140CF /* AccelerometerRecorderCollector.swift */; };
 		1F5F842629E6C67A0010C2D2 /* LocalPushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */; };
 		1F60C58629951A5F00858581 /* ErrorText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F60C58529951A5F00858581 /* ErrorText.swift */; };
 		1F638B7429D6B46300455B66 /* CMLogItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */; };
@@ -72,6 +72,9 @@
 		1F6A4E3E29F6D0D200F0247F /* BluetoothDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */; };
 		1F6C31512A121EA500EED533 /* WebViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C31502A121EA500EED533 /* WebViewViewModel.swift */; };
 		1F6C31532A13EB7F00EED533 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */; };
+		1F6F8F3F302B580C0012A1A9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F6F8F3E302B580C0012A1A9 /* GoogleService-Info.plist */; };
+		1F6F8F42302C3ACC0012A1A9 /* StepsHealthConnectCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6F8F41302C3ACC0012A1A9 /* StepsHealthConnectCollector.swift */; };
+		1F6F8F43302C3ACC0012A1A9 /* HeartRateHealthConnectCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6F8F40302C3ACC0012A1A9 /* HeartRateHealthConnectCollector.swift */; };
 		1F750CAD2A6FA771006E455E /* StudyPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F750CAC2A6FA771006E455E /* StudyPausedView.swift */; };
 		1F750CAF2A6FA8AE006E455E /* StudyClosedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F750CAE2A6FA8AE006E455E /* StudyClosedView.swift */; };
 		1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */; };
@@ -137,7 +140,10 @@
 		1FF8D29E2F486B5500C57A01 /* MultiChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF8D29D2F486B5500C57A01 /* MultiChoiceView.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		3007C4E152846B66C9FD5A69 /* SetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3007C5E9B53BC561D105D2B3 /* SetExtension.swift */; };
+		5AEA0DB1FAD1484C9BA099EF /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE08ECBBA81140CBBD885A9E /* HealthKitManager.swift */; };
+		721589241F1D83D4AB9F03BF /* IOSPollingTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8B6D852253640DD777AAA /* IOSPollingTaskScheduler.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		90B2B1A91826796667C87F9A /* PollingBackgroundTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEA5E1EE2CB59547A4884A1 /* PollingBackgroundTask.swift */; };
 		B70888492DF2D4290048A4AC /* QRCodeScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */; };
 		B708884B2DF2E6730048A4AC /* ScanQrCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */; };
 		B708884D2DF2EE600048A4AC /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */; };
@@ -279,7 +285,8 @@
 		1F43DE222EC6137F00B6F07B /* GarminConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminConnectViewModel.swift; sourceTree = "<group>"; };
 		1F45E5BA2F288D7500EE8487 /* ExitButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitButton.swift; sourceTree = "<group>"; };
 		1F45E5BC2F288DD600EE8487 /* ReloadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReloadButton.swift; sourceTree = "<group>"; };
-		1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerBackgroundObservation.swift; sourceTree = "<group>"; };
+		1F5A248C29C893B3008140CF /* AccelerometerRecorderCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccelerometerRecorderCollector.swift; sourceTree = "<group>"; };
+		1F5BEBE12FE9219100224B4C /* AlertBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBannerView.swift; sourceTree = "<group>"; };
 		1F5F842529E6C67A0010C2D2 /* LocalPushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushNotificationService.swift; sourceTree = "<group>"; };
 		1F60C58529951A5F00858581 /* ErrorText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorText.swift; sourceTree = "<group>"; };
 		1F638B7329D6B46300455B66 /* CMLogItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMLogItemExtension.swift; sourceTree = "<group>"; };
@@ -289,6 +296,9 @@
 		1F6A4E3D29F6D0D200F0247F /* BluetoothDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceExtension.swift; sourceTree = "<group>"; };
 		1F6C31502A121EA500EED533 /* WebViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewModel.swift; sourceTree = "<group>"; };
 		1F6C31522A13EB7F00EED533 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		1F6F8F3E302B580C0012A1A9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1F6F8F40302C3ACC0012A1A9 /* HeartRateHealthConnectCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateHealthConnectCollector.swift; sourceTree = "<group>"; };
+		1F6F8F41302C3ACC0012A1A9 /* StepsHealthConnectCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsHealthConnectCollector.swift; sourceTree = "<group>"; };
 		1F750CAC2A6FA771006E455E /* StudyPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyPausedView.swift; sourceTree = "<group>"; };
 		1F750CAE2A6FA8AE006E455E /* StudyClosedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyClosedView.swift; sourceTree = "<group>"; };
 		1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDataCollector.swift; sourceTree = "<group>"; };
@@ -357,6 +367,9 @@
 		7555FF7B242A565900829871 /* More.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = More.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7EE8B6D852253640DD777AAA /* IOSPollingTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSPollingTaskScheduler.swift; sourceTree = "<group>"; };
+		9EEA5E1EE2CB59547A4884A1 /* PollingBackgroundTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingBackgroundTask.swift; sourceTree = "<group>"; };
+		AE08ECBBA81140CBBD885A9E /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		B70888482DF2D4220048A4AC /* QRCodeScanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanDelegate.swift; sourceTree = "<group>"; };
 		B708884A2DF2E66E0048A4AC /* ScanQrCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQrCodeViewModel.swift; sourceTree = "<group>"; };
 		B708884C2DF2EE510048A4AC /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
@@ -476,6 +489,7 @@
 			children = (
 				1F6A4E3A29F6C94B00F0247F /* Bluetooth */,
 				07EF6C4029B5E0C700CEF37D /* PermissionManager.swift */,
+				AE08ECBBA81140CBBD885A9E /* HealthKitManager.swift */,
 				1FE4446F29C849DC006AA11C /* Semaphore.swift */,
 				1F0026DE29CCA24F0034EF65 /* DataUploadManager.swift */,
 				ED6A7F3E29DC405B00E266EC /* FCMService.swift */,
@@ -491,6 +505,8 @@
 				1F988B3E2F2BA0CA0094F99F /* DailyBackgroundTask.swift */,
 				1F0026DC29CC8F710034EF65 /* BackgroundTaskHandler.swift */,
 				1FC4F87329D2B86100F65026 /* DataUploadBackgroundTask.swift */,
+				9EEA5E1EE2CB59547A4884A1 /* PollingBackgroundTask.swift */,
+				7EE8B6D852253640DD777AAA /* IOSPollingTaskScheduler.swift */,
 			);
 			path = BackgroundTasks;
 			sourceTree = "<group>";
@@ -510,6 +526,7 @@
 		1F34796F29B8AFCB0030CA15 /* Observations */ = {
 			isa = PBXGroup;
 			children = (
+				1F6F8F44302C3AD40012A1A9 /* HealthObservationCollectors */,
 				1FA044452F61AE5400DA3E2E /* IOSObservationPermissionObserver.swift */,
 				1F34797029B8AFE10030CA15 /* IOSObservationFactory.swift */,
 				1F34797429B8BECB0030CA15 /* AccelerometerObservation.swift */,
@@ -517,7 +534,7 @@
 				1FE4447129C85D94006AA11C /* IOSDataRecorder.swift */,
 				07D9046729C85166003D2912 /* GPSObservation.swift */,
 				EDACF62829D2FB200032327B /* PolarVerityHeartRateObservation.swift */,
-				1F5A248C29C893B3008140CF /* AccelerometerBackgroundObservation.swift */,
+				1F5A248C29C893B3008140CF /* AccelerometerRecorderCollector.swift */,
 				1F7F094D29D40EC800081B88 /* ObservationDataCollector.swift */,
 				1F8EA2D22A0CC7D600F32602 /* ObservationActionDelegate.swift */,
 			);
@@ -579,6 +596,15 @@
 				1F6C31502A121EA500EED533 /* WebViewViewModel.swift */,
 			);
 			path = WebView;
+			sourceTree = "<group>";
+		};
+		1F6F8F44302C3AD40012A1A9 /* HealthObservationCollectors */ = {
+			isa = PBXGroup;
+			children = (
+				1F6F8F40302C3ACC0012A1A9 /* HeartRateHealthConnectCollector.swift */,
+				1F6F8F41302C3ACC0012A1A9 /* StepsHealthConnectCollector.swift */,
+			);
+			path = HealthObservationCollectors;
 			sourceTree = "<group>";
 		};
 		1F8847B829914BD50023EF10 /* Components */ = {
@@ -1164,8 +1190,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F89378D2BFF1F8D0083D20E /* ObservationErrorsViewModel.swift in Sources */,
-				1F5A248D29C893B3008140CF /* AccelerometerBackgroundObservation.swift in Sources */,
+				1F5A248D29C893B3008140CF /* AccelerometerRecorderCollector.swift in Sources */,
 				1FF5B28D2A8275790076EF8E /* Bundle.swift in Sources */,
 				1F29C68C2E7A78CA003693C5 /* StudyLoadingView.swift in Sources */,
 				1FA763E82A42F834007C1CF9 /* NotificationFilterViewModel.swift in Sources */,
@@ -1174,6 +1199,8 @@
 				1F13BA432993951200938C1E /* ConsentList.swift in Sources */,
 				1F8847E6299182C90023EF10 /* LoginButton.swift in Sources */,
 				1F0A11C82F333C0F00EAE237 /* ObservationReminderBackgroundTask.swift in Sources */,
+				90B2B1A91826796667C87F9A /* PollingBackgroundTask.swift in Sources */,
+				721589241F1D83D4AB9F03BF /* IOSPollingTaskScheduler.swift in Sources */,
 				EDD1DEFF29F7B595009BC8FB /* ScheduleListHeader.swift in Sources */,
 				1F7F094E29D40EC800081B88 /* ObservationDataCollector.swift in Sources */,
 				B79DBA3929D3130600A1F547 /* ExpandableInput.swift in Sources */,
@@ -1202,6 +1229,8 @@
 				1F80EC4529C2524F004667B1 /* NavigationScreen.swift in Sources */,
 				1F750CAD2A6FA771006E455E /* StudyPausedView.swift in Sources */,
 				EDEF4C8329EFD4CA00E830DA /* RunningSchedules.swift in Sources */,
+				1F6F8F42302C3ACC0012A1A9 /* StepsHealthConnectCollector.swift in Sources */,
+   				1F6F8F43302C3ACC0012A1A9 /* HeartRateHealthConnectCollector.swift in Sources */,
 				1F8847D829915C030023EF10 /* MoreTextField.swift in Sources */,
 				1F0026DF29CCA24F0034EF65 /* DataUploadManager.swift in Sources */,
 				1F43997C29B8D70800687906 /* ObservationDetails.swift in Sources */,
@@ -1309,6 +1338,7 @@
 				1F43DE232EC6137F00B6F07B /* GarminConnectViewModel.swift in Sources */,
 				B78B4A7E29F0420700A1BA58 /* ObservationDetailsViewModel.swift in Sources */,
 				07EF6C4129B5E0C700CEF37D /* PermissionManager.swift in Sources */,
+				5AEA0DB1FAD1484C9BA099EF /* HealthKitManager.swift in Sources */,
 				1F8EA2CD2A0BDF9A00F32602 /* LimeSurveyViewModel.swift in Sources */,
 				EDBB2B4429B8B2A100CA973E /* Int64Extension.swift in Sources */,
 				1F34797129B8AFE10030CA15 /* IOSObservationFactory.swift in Sources */,

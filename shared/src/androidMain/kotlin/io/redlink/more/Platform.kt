@@ -14,5 +14,5 @@ import android.os.Build
 
 actual fun getPlatform(): Platform = Platform(
     name = "Android ${Build.VERSION.SDK_INT}",
-    productName = Build.PRODUCT
+    productName = Build.PRODUCT ?: "Android"
 )

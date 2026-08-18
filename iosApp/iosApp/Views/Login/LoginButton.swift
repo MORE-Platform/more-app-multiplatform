@@ -21,7 +21,7 @@ struct LoginButton: View {
     let action: () -> Void
 
     var body: some View {
-        MoreActionButton(backgroundColor: Color.more.primary, disabled: .constant(disabled)) {
+        MoreActionButton(backgroundColor: Color.pc.primary, disabled: .constant(disabled)) {
             action()
         } label: {
             Text("login_button")

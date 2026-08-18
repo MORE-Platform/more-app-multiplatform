@@ -12,6 +12,7 @@ package io.redlink.more.database.repository
 
 import io.ktor.utils.io.core.Closeable
 import io.redlink.more.database.AppDatabase
+import io.redlink.more.database.entities.LatestObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.extensions.asClosure
@@ -28,28 +29,29 @@ class ObservationRepositoryImpl(private val appDatabase: AppDatabase) : Observat
         appDatabase.observationDao().getAllFlow()
 
     override fun observationWithUndoneSchedules(): Flow<Map<ObservationEntity, List<ScheduleEntity>>> {
-        return appDatabase.scheduleDao().getByDoneFlow(false)
+        return appDatabase.scheduleDao().getAllFlow()
             .combine(observations()) { schedules: List<ScheduleEntity>, observations: List<ObservationEntity> ->
                 observations.associateWith { observation ->
-                    schedules.filter { schedule -> schedule.observationId == observation.observationId }
+                    schedules.filter { schedule ->
+                        schedule.observationId == observation.observationId && !schedule.getState()
+                            .completed()
+                    }
                 }
             }
     }
 
     override suspend fun updateLastCollection(type: String, timestamp: Long) {
-        val observations = appDatabase.observationDao().getByObservationType(type)
-        observations.forEach { observation ->
-            val updatedObservation = observation.copy(collectionTimestamp = timestamp)
-            appDatabase.observationDao().update(updatedObservation)
-        }
+        updateLastCollection(setOf(type), timestamp)
     }
 
     override suspend fun updateLastCollection(types: Set<String>, timestamp: Long) {
         types.forEach { type ->
             val observations = appDatabase.observationDao().getByObservationType(type)
             observations.forEach { observation ->
-                val updatedObservation = observation.copy(collectionTimestamp = timestamp)
-                appDatabase.observationDao().update(updatedObservation)
+                if (observation.collectionTimestamp != timestamp) {
+                    val updatedObservation = observation.copy(collectionTimestamp = timestamp)
+                    appDatabase.observationDao().update(updatedObservation)
+                }
             }
         }
     }
@@ -75,17 +77,15 @@ class ObservationRepositoryImpl(private val appDatabase: AppDatabase) : Observat
             emit(maxTimestamp)
         }
 
-    override fun collectTimestampOfType(type: String, newState: (Long?) -> Unit): Closeable {
-        return collectionTimestamp(type).asClosure(newState)
-    }
+    override fun collectTimestampOfType(type: String, newState: (Long?) -> Unit): Closeable =
+        collectionTimestamp(type).asClosure(newState)
 
     override fun collectAllTimestamps(newState: (Map<String, Long>) -> Unit): Closeable {
         return collectAllTimestamps().asClosure(newState)
     }
 
-    override fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationEntity, List<ScheduleEntity>>) -> Unit): Closeable {
-        return observationWithUndoneSchedules().asClosure(newState)
-    }
+    override fun collectObservationsWithUndoneSchedules(newState: (Map<ObservationEntity, List<ScheduleEntity>>) -> Unit): Closeable =
+        observationWithUndoneSchedules().asClosure(newState)
 
     override fun observationTypes(): Flow<Set<String>> =
         observations().transform { observationList ->
@@ -98,4 +98,15 @@ class ObservationRepositoryImpl(private val appDatabase: AppDatabase) : Observat
     override suspend fun getObservationByObservationId(observationId: String): ObservationEntity? {
         return appDatabase.observationDao().getByObservationId(observationId)
     }
+
+    override suspend fun storeLatestDataPoint(data: LatestObservationDataEntity) {
+        appDatabase.latestObservationDataDao().upsert(data)
+    }
+
+    override fun latestDataPointForSchedule(scheduleId: String): Flow<LatestObservationDataEntity?> =
+        appDatabase.latestObservationDataDao().getByScheduleId(scheduleId)
+
+    override suspend fun latestDataPointTimestamp(observationType: String): Long? =
+        appDatabase.latestObservationDataDao()
+            .getLatestByObservationType(observationType)?.timestamp
 }
