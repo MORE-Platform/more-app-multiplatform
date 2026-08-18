@@ -47,7 +47,7 @@ platform :ios do
       create_keychain(
         name: keychain_name,
         password: ENV["FASTLANE_KEYCHAIN_PASSWORD"],
-        default_keychain: false,
+        default_keychain: !ENV["CI"].to_s.empty?,
         unlock: true,
         timeout: 3600,
         lock_when_sleeps: false

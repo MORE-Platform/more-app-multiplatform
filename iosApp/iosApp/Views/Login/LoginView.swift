@@ -152,8 +152,9 @@ struct LoginView: View {
         mainBluetoothConnector: IOSBluetoothConnector(),
         observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager, userDefaults: userDefaults),
         dataRecorder: IOSDataRecorder(),
-        reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: true,
-        pollingTaskScheduler: nil
+        networkWatcher: nil,
+        pollingTaskScheduler: nil,
+        reminderNotificationSchedulingLimit: nil, connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: true
 
     )
     let registration = RegistrationObservable(service: RegistrationService(shared: shared))

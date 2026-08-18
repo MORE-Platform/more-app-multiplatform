@@ -19,13 +19,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
+            "value" : "More benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health devices"
+            "value" : "More needs access to Bluetooth to find and connect to supported health devices"
           }
         }
       }
@@ -36,13 +36,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
+            "value" : "More benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME)  needs access to Bluetooth to find and connect to supported health devices"
+            "value" : "More needs access to Bluetooth to find and connect to supported health devices"
           }
         }
       }
@@ -53,13 +53,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf deine Kamera, um QR-Codes zu scannen."
+            "value" : "More benötigt Zugriff auf deine Kamera, um QR-Codes zu scannen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME)  needs your camera to scan QR-Code"
+            "value" : "More  needs your camera to scan QR-Code"
           }
         }
       }
@@ -71,7 +71,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "MORE needs access to your Health data (e.g. heart rate, steps and distance) to record it for certain studies\n        "
+            "value" : "More needs access to your Health data (e.g. heart rate, steps and distance) to record it for certain studies\n    "
           }
         }
       }

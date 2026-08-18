@@ -86,7 +86,7 @@ extension ConsentViewModel: PermissionManagerObserver {
             // request here - it scopes to whichever subtypes the study actually needs, requests
             // only what's missing, and shows its own alert on decline.
             try? await AppDelegate.shared.observationFactory
-                .observation(type: ObservationTypeEnum.healthConnect.value)?
+                .observation(type: HealthConnectObservationType().observationType)?
                 .updateObservationPermissions()
             if permissionManager.anyNeededPermissionDeclined() {
                 AlertController.shared.openAlertDialog(

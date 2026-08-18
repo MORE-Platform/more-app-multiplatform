@@ -49,9 +49,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             mainBluetoothConnector: polarConnector,
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager, userDefaults: userDefaults),
             dataRecorder: IOSDataRecorder(),
+            networkWatcher: nil,
+            pollingTaskScheduler: IOSPollingTaskScheduler(),
             reminderNotificationSchedulingLimit: 30,
-            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: isDebug,
-            pollingTaskScheduler: IOSPollingTaskScheduler()
+            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: isDebug
 
         )
     }()

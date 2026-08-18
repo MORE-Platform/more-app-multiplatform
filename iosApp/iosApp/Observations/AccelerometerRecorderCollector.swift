@@ -34,7 +34,12 @@ final class AccelerometerRecorderCollector: BackgroundAccelerometerCollector {
     }
 
     func collect(from: KotlinInstant, to: KotlinInstant) async throws -> [ObservationBulkModel] {
-        let start = Date(timeIntervalSince1970: TimeInterval(from.epochSeconds))
+        // CMSensorRecorder only retains ~3 days of data and raises an uncatchable NSException
+        // ("startTime must be within 3 days of today") if `from` predates that window - clamp
+        // defensively rather than crashing when a catch-up collection reaches further back.
+        let earliestAvailable = Date().addingTimeInterval(-3 * 24 * 60 * 60 + 60)
+        let requestedStart = Date(timeIntervalSince1970: TimeInterval(from.epochSeconds))
+        let start = max(requestedStart, earliestAvailable)
         let end = Date(timeIntervalSince1970: TimeInterval(to.epochSeconds))
         guard start < end else {
             Napier.w("AccelerometerRecorderCollector::collect - start must be smaller than end! Start: \(start); End: \(end)")
@@ -52,8 +57,7 @@ final class AccelerometerRecorderCollector: BackgroundAccelerometerCollector {
             let dict = ["x": accel.x, "y": accel.y, "z": accel.z]
             return ObservationBulkModel(
                 data: dict,
-                timestamp: Int64(accDatum.startDate.timeIntervalSince1970),
-                instanceId: nil
+                timestamp: Int64(accDatum.startDate.timeIntervalSince1970)
             )
         }
     }
