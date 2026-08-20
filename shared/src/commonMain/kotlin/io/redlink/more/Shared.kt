@@ -34,6 +34,8 @@ import io.redlink.more.services.ObservationService
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.network.NetworkServiceImpl
+import io.redlink.more.services.network.NetworkServiceProxy
+import io.redlink.more.services.network.demo.DemoNetworkService
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.notification.LocalNotificationListener
 import io.redlink.more.services.notification.NotificationActionObserver
@@ -72,7 +74,9 @@ open class Shared(
     val dataRecorder: DataRecorder,
     reminderNotificationSchedulingLimit: Int? = null,
     val connectionStatusFlow: Flow<Boolean> =
-        konnectionInstance().observeHasConnection()
+        konnectionInstance().observeHasConnection(),
+    val isDebug: Boolean = false,
+
 ) : NotificationActionObserver, ExitStudyListener, AutoCloseable {
     val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
@@ -80,8 +84,11 @@ open class Shared(
         CredentialRepositoryImpl(sharedStorageRepository).also {
             observationFactory.setCredentialsRepository(it)
         }
-    val networkService: NetworkService =
-        NetworkServiceImpl(endpointRepository, credentialRepository)
+    val networkService: NetworkService = NetworkServiceProxy(
+        NetworkServiceImpl(endpointRepository, credentialRepository),
+        if (isDebug) DemoNetworkService() else null,
+        sharedStorageRepository,
+    )
 
     val observationManager = ObservationManager(
         repositories,

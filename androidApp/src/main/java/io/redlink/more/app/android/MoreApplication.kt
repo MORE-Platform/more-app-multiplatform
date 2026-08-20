@@ -119,7 +119,8 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                         repositories,
                         sharedPreferences,
                     ),
-                    AndroidDataRecorder()
+                    AndroidDataRecorder(),
+                    isDebug = BuildConfig.DEBUG
                 )
                 shared = tempShared
                 tempShared.let { shared ->
