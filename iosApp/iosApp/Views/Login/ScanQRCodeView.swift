@@ -126,7 +126,7 @@ struct ScanQRCodeView: View {
         observationFactory: IOSObservationFactory(repository: repos, dataManager: dataManager, userDefaults: userDefaults),
         dataRecorder: IOSDataRecorder(),
         reminderNotificationSchedulingLimit: nil,
-        connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
+        connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: true
     )
     let registrationService = RegistrationService(shared: sharedContainer)
     ScanQRCodeView(model: LoginViewModel(registration: registrationService))

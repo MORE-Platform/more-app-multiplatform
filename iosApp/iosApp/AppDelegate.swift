@@ -34,6 +34,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let dataManager = iOSObservationDataManager(repository: repositories, scope: Scope.shared, studyScope: StudyScope.shared, dispatchers: AppDispatchers.shared)
         let userDefaults = UserDefaultsRepository()
 
+        let isDebug: Bool = {
+            #if DEBUG
+            return true
+            #else
+            return false
+            #endif
+        }()
         return Shared(
             localNotificationListener: LocalPushNotifications(),
             repositories: repositories,
@@ -43,7 +50,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             observationFactory: IOSObservationFactory(repository: repositories, dataManager: dataManager, userDefaults: userDefaults),
             dataRecorder: IOSDataRecorder(),
             reminderNotificationSchedulingLimit: 30,
-            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection()
+            connectionStatusFlow: Shared.companion.konnectionInstance().observeHasConnection(), isDebug: isDebug
         )
     }()
 
