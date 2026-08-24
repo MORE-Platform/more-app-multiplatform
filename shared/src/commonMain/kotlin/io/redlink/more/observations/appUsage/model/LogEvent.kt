@@ -74,6 +74,34 @@ enum class LogEvent(
         key = "app_tracking_declined",
         storageMode = EventStorageMode.INSTANT,
         storeWithoutApproval = true
+    ),
+    BUTTON_CLICK(
+        key = "button_click",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    DATE_SELECTION(
+        key = "date_selection",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    STEP_VIEW_SUBMITTED(
+        key = "step_view_submitted",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    NOTIFICATION_SHOWN(
+        key = "notification_shown",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    NOTIFICATION_CLICKED(
+        key = "notification_clicked",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    NOTIFICATION_DEEPLINK_OPENED(
+        key = "notification_deeplink_opened",
+        storageMode = EventStorageMode.INSTANT
+    ),
+    NOTIFICATION_DELIVERED(
+        key = "notification_delivered",
+        storageMode = EventStorageMode.INSTANT
     );
 
     fun aggregateKey(identifier: String): String =

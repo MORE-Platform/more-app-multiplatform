@@ -36,8 +36,10 @@ import kotlinx.coroutines.launch
 
 class ContentActivity : ComponentActivity() {
     private val viewModel = ContentViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         intent.getStringExtra(NotificationManager.DEEP_LINK)?.let {
             var deepLink = it
             Napier.d { "Received deep link: $deepLink" }

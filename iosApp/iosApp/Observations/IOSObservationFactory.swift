@@ -24,7 +24,11 @@ class IOSObservationFactory: ObservationFactory {
         }
 
         registerObservation {
-            AccelerometerBackgroundObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"])
+            BackgroundAccelerometerObservation(repos: repository, sensorPermissions: ["cmsensorrecorder"], collector: AccelerometerRecorderCollector())
+        }
+
+        registerObservation {
+            HealthConnectObservation(repos: repository, observationFactory: self, collectors: [HeartRateHealthConnectCollector(), StepsHealthConnectCollector()])
         }
 
         registerObservation {

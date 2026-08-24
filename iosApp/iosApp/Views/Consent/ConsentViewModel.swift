@@ -81,6 +81,13 @@ class ConsentViewModel: ObservableObject {
 extension ConsentViewModel: PermissionManagerObserver {
     func accepted() {
         Task { @MainActor in
+            // Delegates to HealthConnectObservation's own collector-aware permission check (the
+            // same logic already used at schedule-start time) instead of a hardcoded HealthKit
+            // request here - it scopes to whichever subtypes the study actually needs, requests
+            // only what's missing, and shows its own alert on decline.
+            try? await AppDelegate.shared.observationFactory
+                .observation(type: HealthConnectObservationType().observationType)?
+                .updateObservationPermissions()
             if permissionManager.anyNeededPermissionDeclined() {
                 AlertController.shared.openAlertDialog(
                     model:

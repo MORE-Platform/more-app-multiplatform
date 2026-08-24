@@ -16,14 +16,19 @@ import android.content.Context
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.Napier
+import io.redlink.more.HEALTH_COLLECTOR_GROUP
 import io.redlink.more.SharedRes
 import io.redlink.more.app.android.MoreApplication
+import io.redlink.more.app.android.observations.healthConnect.AndroidHealthConnectManager
 import io.redlink.more.app.android.util.ActivityProvider
 import io.redlink.more.dialog.AlertController
 import io.redlink.more.dialog.AlertDialogModel
 import io.redlink.more.logging.event
+import io.redlink.more.observations.BundledPermissionCollector
 import io.redlink.more.observations.ObservationPermissionObserver
+import io.redlink.more.observations.PermissionCollector
 import io.redlink.more.observations.appUsage.model.LogEvent
+import io.redlink.more.observations.healthConnect.HealthConnectCollector
 import io.redlink.more.observations.observationTypes.AppUsageObservationType
 import io.redlink.more.observations.observationTypes.ObservationType
 import io.redlink.more.services.store.PermissionApprovalState
@@ -85,6 +90,45 @@ class AndroidObservationPermissionObserver(
                 MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
             }
         } else {
+            MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
+        }
+    }
+
+    override suspend fun permissionStates(collectors: Collection<PermissionCollector>): Map<String, PermissionApprovalState> {
+        if (collectors.isEmpty()) {
+            return emptyMap()
+        }
+        return collectors.associate { it.permissionKey to it.permissionState() }
+    }
+
+    override suspend fun requestPermissions(collectors: Collection<PermissionCollector>) {
+        if (collectors.isEmpty()) return
+        MoreApplication.shared?.observationFactory?.startRequestingPermissions()
+        try {
+            val bundled = collectors.filterIsInstance<BundledPermissionCollector>()
+            val nonBundled = collectors.filter { it !is BundledPermissionCollector }
+
+            val grouped = bundled.groupBy { it.permissionGroup }
+            for ((group, groupCollectors) in grouped) {
+                if (group == HEALTH_COLLECTOR_GROUP) {
+                    val healthCollectors =
+                        groupCollectors.filterIsInstance<HealthConnectCollector>()
+                    val metrics = healthCollectors
+                        .flatMap { AndroidHealthConnectManager.metrics(it.dataType) }
+                        .toSet()
+                    if (metrics.isNotEmpty()) {
+                        AndroidHealthConnectManager.requestPermissions(context, metrics)
+                    }
+                } else {
+                    for (collector in groupCollectors) {
+                        collector.requestPermission()
+                    }
+                }
+            }
+            for (collector in nonBundled) {
+                collector.requestPermission()
+            }
+        } finally {
             MoreApplication.shared?.observationFactory?.stopRequestingPermissions()
         }
     }

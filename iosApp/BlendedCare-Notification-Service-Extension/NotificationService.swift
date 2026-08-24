@@ -11,6 +11,7 @@ import UserNotifications
 class NotificationService: UNNotificationServiceExtension {
     private static let appGroup = "group.ac.at.lbg.dhp.more.group"
     private static let notificationCountKey = "notification_count"
+    private static let pendingDeliveredEventsKey = "pending_notification_delivered_events"
     private static let STUDY_UPDATE_NOTIFICATION_KEY = "key"
     private static let STUDY_UPDATE_NOTIFICATION_VALUE = "STUDY_STATE_CHANGED"
 
@@ -42,8 +43,22 @@ class NotificationService: UNNotificationServiceExtension {
         if let bestAttemptContent {
             bestAttemptContent.badge = NSNumber(value: adjusted)
             defaults?.set(adjusted, forKey: NotificationService.notificationCountKey)
+            recordPendingDeliveredEvent(for: request)
             contentHandler(bestAttemptContent)
         }
+    }
+
+    /// Appends a lightweight delivery record to the shared app-group UserDefaults so the
+    /// main app can flush it as a NOTIFICATION_DELIVERED tracking event on next launch.
+    private func recordPendingDeliveredEvent(for request: UNNotificationRequest) {
+        let userInfo = request.content.userInfo
+        let msgId = (userInfo["gcm.message_id"] as? String)
+            ?? (userInfo["message_id"] as? String)
+            ?? request.identifier
+
+        var pending = defaults?.array(forKey: NotificationService.pendingDeliveredEventsKey) as? [[String: String]] ?? []
+        pending.append(["id": msgId, "timestamp": ISO8601DateFormatter().string(from: Date())])
+        defaults?.set(pending, forKey: NotificationService.pendingDeliveredEventsKey)
     }
 
     override func serviceExtensionTimeWillExpire() {

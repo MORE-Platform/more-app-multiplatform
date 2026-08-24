@@ -33,12 +33,16 @@ object KMMLogger {
     }
 
     fun event(event: LogEvent, message: String? = null) {
-        val logMessage = "[EVENT: ${event.key}] ${message ?: ""}".trim()
-        Napier.i(logMessage, tag = EVENT_TAG)
         EventCollection.logEvent(event, message)
     }
 }
 
+fun LogEvent.track(data: Map<String, Any> = emptyMap()) {
+    val message = if (data.isEmpty()) null else data.entries.joinToString(",") { "${it.key}=${it.value}" }
+    EventCollection.logEvent(this, message)
+}
+
+@Deprecated("Use LogEvent.track() instead", ReplaceWith("event.track()"))
 fun Napier.event(event: LogEvent, message: String? = null) {
     KMMLogger.event(event, message)
 }

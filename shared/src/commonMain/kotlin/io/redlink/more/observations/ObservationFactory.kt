@@ -17,6 +17,8 @@ import io.redlink.more.logging.EventObserver
 import io.redlink.more.observations.appUsage.AppUsageObservation
 import io.redlink.more.observations.garmin.GarminObservation
 import io.redlink.more.observations.limesurvey.LimeSurveyObservation
+import io.redlink.more.observations.observationTypes.ObservationType
+import io.redlink.more.observations.observers.ManualObserver
 import io.redlink.more.observations.questionObservation.QuestionObservation
 import io.redlink.more.scopes.AppDispatchers
 import io.redlink.more.scopes.MoreScope
@@ -32,9 +34,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.milliseconds
 
 abstract class ObservationFactory(
     repository: MainRepository,
@@ -65,11 +69,15 @@ abstract class ObservationFactory(
             }
         }
     }
+
     private var credentialRepository: CredentialRepository? = null
     open val observations = mutableSetOf<Observation>()
 
     private val _studyObservationTypes: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     open val studyObservationTypes: StateFlow<Set<String>> = _studyObservationTypes
+
+    private val _observationsFlow = MutableStateFlow<Set<Observation>>(emptySet())
+    val observationsFlow: StateFlow<Set<Observation>> = _observationsFlow
 
     private val observationProviders = mutableSetOf<() -> Observation>()
 
@@ -112,29 +120,54 @@ abstract class ObservationFactory(
 
     open fun observationPostConstruct(observation: Observation) {}
 
-    protected fun registerObservation(provider: () -> Observation) {
+    open fun registerObservation(provider: () -> Observation) {
         observationProviders.add(provider)
     }
 
     private fun initializeNeededObservations(types: Set<String>) {
-        observationProviders.forEach { provider ->
-            val observation = provider()
-            if (observation.observationType.matchesAny(types)) {
-                if (observations.none { it.observationType.observationType == observation.observationType.observationType }) {
-                    addObservationToList(
-                        observation
-                    )
+        if (types.isEmpty()) {
+            return
+        }
+
+        val pendingTypes = ArrayDeque(types)
+        val processedTypes = mutableSetOf<String>()
+
+        while (pendingTypes.isNotEmpty()) {
+            val currentType = pendingTypes.removeFirst()
+            if (!processedTypes.add(currentType)) {
+                continue
+            }
+
+            observationProviders.forEach { provider ->
+                val observation = provider()
+                if (observation.observationType.matches(currentType)) {
+                    val isAlreadyInitialized = observations.any {
+                        it.observationType.observationType == observation.observationType.observationType
+                    }
+
+                    if (!isAlreadyInitialized) {
+                        addObservationToList(observation)
+                    }
+
+                    observation.observationType.dependentObservationTypes
+                        .filterNot { it in processedTypes }
+                        .forEach { pendingTypes.addLast(it) }
                 }
             }
         }
+
         Napier.d("Initialized needed observations: ${observations.map { it.observationType.observationType }}")
     }
 
     private fun addObservationToList(observation: Observation) {
         observations.add(
             observation
-                .also { observationPostConstruct(it) }
+                .also {
+                    observationPostConstruct(it)
+                    it.applyDataManager(dataManager)
+                }
         )
+        _observationsFlow.value = observations.toSet()
     }
 
     open fun addNeededObservationTypes(observationTypes: Set<String>) {
@@ -152,6 +185,18 @@ abstract class ObservationFactory(
         }
         Napier.d("Cleared needed observations, but ${observations.map { it.observationType.observationType }}")
         ObservationStates.resetAll()
+    }
+
+    fun currentObservationTypes(type: String): ObservationType? {
+        return observations.map { it.observationType }.firstOrNull { it.matches(type) }
+    }
+
+    fun <T : Observation> autoEmit(type: String) = observationsFlow.mapNotNull { obsSet ->
+        obsSet.firstOrNull { it.observationType.matches(type) } as? T
+    }
+
+    fun <T : Observation> autoEmit(clazz: KClass<T>) = observationsFlow.mapNotNull { obsSet ->
+        obsSet.firstOrNull { clazz.isInstance(it) } as? T
     }
 
     open fun setCredentialsRepository(credentialRepository: CredentialRepository) {
@@ -174,7 +219,7 @@ abstract class ObservationFactory(
             .map { it.observationType.observationType }.toSet()
 
     open fun sensorPermissions() =
-        observations.map { it.observationType.sensorPermissions }.flatten().toSet()
+        observations.flatMap { it.observationType.sensorPermissions }.toSet()
 
     open fun bleDevicesNeeded(): Set<String> {
         Napier.i(tag = "ObservationFactory::bleDevicesNeeded") { "Filtering types for BLE: ${studyObservationTypes.value}" }
@@ -193,7 +238,7 @@ abstract class ObservationFactory(
     }
 
     private suspend fun updateObservationPermissionsAndErrorsWhenInForeground() {
-        withTimeoutOrNull(300_000L) {
+        withTimeoutOrNull(300_000L.milliseconds) {
             ViewManager.appInForeground.collectLatest { inForeground ->
                 if (inForeground) {
                     Napier.d { "App in foreground, updating observation permissions and errors..." }
@@ -205,7 +250,7 @@ abstract class ObservationFactory(
                     var currentLogDelay = 1000L
                     while (true) {
                         Napier.d { "App not in foreground! Waiting for permission check..." }
-                        delay(currentLogDelay)
+                        delay(currentLogDelay.milliseconds)
                         currentLogDelay = (currentLogDelay * 2).coerceAtMost(30000L)
                     }
                 }
@@ -246,20 +291,30 @@ abstract class ObservationFactory(
             it.observationType.matches(type)
         } ?: observationProviders.map { it() }.firstOrNull { it.observationType.matches(type) }
             ?.also {
-                observations.add(it)
+                addObservationToList(it)
             }
         return observation?.apply {
             if (!this.observationDataManagerAdded()) {
                 Napier.i(tag = "ObservationFactory::observation") { "Adding data manager to observation of type: $type" }
-                setDataManager(dataManager)
+                applyDataManager(dataManager)
             }
         }
     }
 
-    fun <T : Any> observationsWithInterface(clazz: KClass<T>): Set<T> =
+    inline fun <reified T : Any> observationsWithInterface(clazz: KClass<T>): Set<T> =
         observations.filter { clazz.isInstance(it) }
-            .mapNotNull { it as? T }
+            .filterIsInstance<T>()
             .toSet()
+
+    /**
+     * Runs a single background poll pass, invoked by the platform's shared
+     * [io.redlink.more.observations.polling.PollingTaskScheduler] task/worker (or, when background
+     * updates are disabled, on app foregrounding as before) - collects data for every currently
+     * registered [io.redlink.more.observations.observers.ManualObserver] observation.
+     */
+    suspend fun pollActiveObservations() {
+        observationsWithInterface(ManualObserver::class).forEach { it.collectAllData() }
+    }
 
     fun onStudyExit() {
         observations.forEach { it.onStudyExit() }

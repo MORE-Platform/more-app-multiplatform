@@ -14,15 +14,15 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 
-    id("com.android.library")
-    id("androidx.room")
-    id("com.google.devtools.ksp")
-    id("com.rickclephas.kmp.nativecoroutines")
-    id("org.openapi.generator").version("7.17.0").apply(true)
-    id("dev.icerock.mobile.multiplatform-resources")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.room)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kmp.nativecoroutines)
+    alias(libs.plugins.openapi.generator)
+    alias(libs.plugins.moko.resources)
 }
 
 val generated = "$rootDir/shared/build/generated"
@@ -93,6 +93,7 @@ kotlin {
             implementation("androidx.security:security-crypto-ktx:1.1.0")
             implementation("io.ktor:ktor-client-android:$ktorVersion")
             implementation("com.google.code.gson:gson:$gsonVersion")
+            implementation("androidx.core:core-ktx:1.13.1")
         }
 
         iosMain.dependencies {

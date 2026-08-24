@@ -74,18 +74,20 @@ class QuestionCoreViewModel(
                 "Questionnaire answered, but not yet sent, for Observation ID: $observationId"
             )
             observation?.let { observation ->
-                observation.start(
-                    questionModel.observationId,
-                    questionModel.scheduleId,
-                    notificationId
-                )
-                observation.storeData(mapOf(questionModel.type.observationDataResponseKey to data)) {
-                    Napier.event(
-                        LogEvent.OBSERVATION_EVENT,
-                        "Questionnaire answer successfully sent with Observation ID: $observationId"
+                launchScope {
+                    observation.start(
+                        questionModel.observationId,
+                        questionModel.scheduleId,
+                        notificationId
                     )
-                    scheduleId?.let {
-                        observation.stopAndSetDone(it)
+                    observation.storeData(mapOf(questionModel.type.observationDataResponseKey to data)) {
+                        Napier.event(
+                            LogEvent.OBSERVATION_EVENT,
+                            "Questionnaire answer successfully sent with Observation ID: $observationId"
+                        )
+                        scheduleId?.let {
+                            observation.stopAndSetDone(it)
+                        }
                     }
                 }
             }

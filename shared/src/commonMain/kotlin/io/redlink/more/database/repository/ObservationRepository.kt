@@ -11,6 +11,7 @@
 package io.redlink.more.database.repository
 
 import io.ktor.utils.io.core.Closeable
+import io.redlink.more.database.entities.LatestObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import kotlinx.coroutines.flow.Flow
@@ -44,4 +45,10 @@ interface ObservationRepository {
     fun observationById(observationId: String): Flow<ObservationEntity?>
 
     suspend fun getObservationByObservationId(observationId: String): ObservationEntity?
+
+    suspend fun storeLatestDataPoint(data: LatestObservationDataEntity)
+
+    fun latestDataPointForSchedule(scheduleId: String): Flow<LatestObservationDataEntity?>
+
+    suspend fun latestDataPointTimestamp(observationType: String): Long?
 }

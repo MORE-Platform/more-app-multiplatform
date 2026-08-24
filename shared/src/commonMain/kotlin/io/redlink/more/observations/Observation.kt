@@ -10,37 +10,77 @@
  */
 package io.redlink.more.observations
 
+import dev.icerock.moko.resources.desc.Raw
+import dev.icerock.moko.resources.desc.StringDesc
 import io.github.aakira.napier.Napier
+import io.redlink.more.SharedRes
+import io.redlink.more.database.entities.LatestObservationDataEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.dialog.AlertController
+import io.redlink.more.dialog.AlertDialogModel
+import io.redlink.more.extensions.asString
+import io.redlink.more.extensions.desc
+import io.redlink.more.extensions.formatted
+import io.redlink.more.extensions.reminderId
 import io.redlink.more.models.ScheduleState
 import io.redlink.more.observations.longRunningObservation.LongRunningObservationStorage
 import io.redlink.more.observations.observationTypes.ObservationType
+import io.redlink.more.observations.polling.PollingObservationRegistry
 import io.redlink.more.scopes.Scope
 import io.redlink.more.scopes.StudyScope
 import io.redlink.more.services.notification.NotificationManager
 import io.redlink.more.services.store.PermissionApprovalState
+import io.redlink.more.util.openSystemSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
+
+interface Collector
+interface PermissionCollector : Collector {
+    val permissionKey: String
+    suspend fun permissionState(): PermissionApprovalState
+    suspend fun requestPermission()
+}
+
+interface BundledPermissionCollector : PermissionCollector {
+    val permissionGroup: String
+}
 
 interface ObservationPermissionObserver {
     fun requestPermission(observationType: ObservationType)
     fun permissionState(observationType: ObservationType): PermissionApprovalState
+
+    suspend fun permissionStates(
+        collectors: Collection<PermissionCollector>
+    ): Map<String, PermissionApprovalState> =
+        collectors.associate { it.permissionKey to it.permissionState() }
+
+    suspend fun requestPermissions(
+        collectors: Collection<PermissionCollector>
+    ) {
+        collectors.forEach { it.requestPermission() }
+    }
 }
 
 abstract class Observation(
     protected val repos: MainRepository,
     val observationType: ObservationType,
 ) {
-    private var dataManager: ObservationDataManager? = null
+    protected val permissionQueryMutex = Mutex()
+    private val collectorPermissionQueryMutex = Mutex()
+    private val errorQueryMutex = Mutex()
+
+    protected var dataManager: ObservationDataManager? = null
+        private set
+
     private var notificationManager: NotificationManager? = null
 
     private var permissionObserver: ObservationPermissionObserver? = null
@@ -57,7 +97,7 @@ abstract class Observation(
     private val config = mutableMapOf<String, Any>()
     private var configChanged = false
 
-    protected var lastCollectionTimestamp: Instant = Clock.System.now()
+    protected var lastCollectionTimestamp: Instant? = null
 
     var timestampCollectionJob: Job? = null
 
@@ -70,18 +110,18 @@ abstract class Observation(
         this.longRunningStorage = longRunningObservationStorage
     }
 
-    open fun start(
+    open suspend fun start(
         observationId: String,
         scheduleId: String,
         notificationId: String? = null
     ): Boolean {
         observationIds.add(observationId)
-        StudyScope.launch {
-            val realObservationType =
-                repos.observation.observationById(observationId).firstOrNull()?.observationType
-                    ?: observationType.observationType
-            observationTypes[observationId] = realObservationType
-        }
+        val realObservationType =
+            repos.observation.getObservationByObservationId(observationId)?.observationType
+                ?: repos.observation.observationById(observationId).firstOrNull()?.observationType
+                ?: observationType.observationType
+        observationTypes[observationId] = realObservationType
+
         timestampCollectionJob?.cancel()
         timestampCollectionJob = StudyScope.launch {
             repos.observation.collectTimestampForObservationIds(observationIds).collect {
@@ -108,6 +148,9 @@ abstract class Observation(
                 updateObservationPermissions()
             }
             running = start()
+            if (running) {
+                activate()
+            }
             Napier.i { "Observation with type ${observationType.observationType} started: $running" }
             running
         } else true
@@ -135,7 +178,7 @@ abstract class Observation(
 
     fun observationDataManagerAdded() = dataManager != null
 
-    fun setDataManager(observationDataManager: ObservationDataManager) {
+    fun applyDataManager(observationDataManager: ObservationDataManager) {
         Napier.i(tag = "Observation::setDataManager") { "Setting data manager for observation of type ${observationType.observationType}." }
         dataManager = observationDataManager
     }
@@ -181,20 +224,59 @@ abstract class Observation(
         }
     }
 
+    protected fun observationTypeFor(observationId: String): String? =
+        observationTypes[observationId]
+
     protected fun collectionTimestampToNow() {
         Napier.d(tag = "Observation::collectionTimeStampToNow") { "Collecting timestamp" }
         lastCollectionTimestamp = Clock.System.now()
         StudyScope.launch(Dispatchers.IO) {
-            repos.observation.updateLastCollection(
-                observationIds.toSet(),
-                lastCollectionTimestamp.toEpochMilliseconds()
-            )
+            lastCollectionTimestamp?.let {
+                repos.observation.updateLastCollection(
+                    observationIds.toSet(),
+                    it.toEpochMilliseconds()
+                )
+            }
         }
+    }
+
+    /**
+     * Registers every schedule of this observation type whose window overlaps
+     * `[lastCollectionTimestamp, now)` - i.e. currently active/running ones plus already-completed
+     * ones that were still active after the last collection - so [storeData]/[storeInstant] tag
+     * data with the right observationId/scheduleId. Needed by background poll runs (e.g. triggered
+     * by a [io.redlink.more.observations.polling.PollingTaskScheduler] task/worker while the app
+     * wasn't otherwise running) where the normal `start()` lifecycle never populated them.
+     */
+    protected suspend fun registerRecentSchedules(now: Instant = Clock.System.now()) {
+        getLastCollectionTimestamp()?.let { from ->
+            val fromEpoch = from.epochSeconds
+            val nowEpoch = now.epochSeconds
+            repos.schedule.allSchedulesWithStatus(false)
+                .firstOrNull().orEmpty()
+                .filter { schedule ->
+                    observationType.matches(schedule.observationType) &&
+                            (schedule.start == null || schedule.start <= nowEpoch) &&
+                            (schedule.end == null || schedule.end >= fromEpoch)
+                }
+                .forEach { schedule ->
+                    observationIds.add(schedule.observationId)
+                    observationTypes[schedule.observationId] = schedule.observationType
+                    scheduleIds[schedule.scheduleId] = schedule.observationId
+                }
+        }
+    }
+
+    protected suspend fun getLastCollectionTimestamp(): Instant? {
+        return (lastCollectionTimestamp ?: repos.study.getStudy()
+            .firstOrNull()?.start?.let { Instant.fromEpochSeconds(it) })
     }
 
     protected abstract fun start(): Boolean
 
-    protected abstract fun stop(onCompletion: () -> Unit)
+    protected open fun stop(onCompletion: () -> Unit) = onCompletion()
+
+
 
     fun observerAccessible(): Boolean {
         val errors = observerErrors()
@@ -204,29 +286,95 @@ abstract class Observation(
 
     protected open fun observerErrors(): Set<String> = emptySet()
 
-    fun updateObservationPermissions() {
-        if (hasPermission() != PermissionApprovalState.GRANTED) {
-            Napier.w { "Permissions not given for observation ${observationType.observationType}! Requesting permissions..." }
-            requestPermission()
-        } else {
-            Napier.d { "All permissions given for observation ${observationType.observationType}!" }
-        }
-    }
+    open suspend fun updateObservationPermissions() =
+        permissionQueryMutex.withLock {
+            when (hasPermission()) {
+                PermissionApprovalState.NOT_SET -> {
+                    Napier.w {
+                        "Permissions not given for observation " +
+                                "${observationType.observationType}! Requesting permissions..."
+                    }
+                    requestPermission()
+                }
 
-    suspend fun updateObservationErrors() {
-        repos.schedule.allSchedulesToday(observationType).firstOrNull()?.let {
-            if (it.isNotEmpty()) {
-                Napier.d(tag = "Observation::updateObservationErrors") { "ObservationErrors for ${observationType.observationType}" }
+                PermissionApprovalState.DECLINED -> {
+                    Napier.w {
+                        "Permissions declined for observation " +
+                                "${observationType.observationType}! " +
+                                "Showing missing permission alert..."
+                    }
+                    showMissingPermissionAlert()
+                }
 
-                if (repos.study.studyState.value.isActive()) {
-                    ObservationStates.updateObservationErrors(
-                        observationType.observationType,
-                        observerErrors()
-                    )
+                PermissionApprovalState.GRANTED -> {
+                    Napier.d {
+                        "All permissions given for observation " +
+                                "${observationType.observationType}!"
+                    }
                 }
             }
         }
+
+    protected suspend fun permissionStates(
+        collectors: Collection<PermissionCollector>
+    ): Map<String, PermissionApprovalState> =
+        collectorPermissionQueryMutex.withLock {
+            permissionObserver?.permissionStates(collectors)
+                ?: collectors.associate { it.permissionKey to it.permissionState() }
+        }
+
+    protected suspend fun requestPermissions(
+        collectors: Collection<PermissionCollector>
+    ) = collectorPermissionQueryMutex.withLock {
+        permissionObserver?.requestPermissions(collectors)
+            ?: collectors.forEach { it.requestPermission() }
     }
+
+    /**
+     * Informs the user that this observation's permission is missing (declined, not just
+     * unrequested) and lets them jump straight to the system settings to grant it - unlike
+     * [PermissionApprovalState.NOT_SET], which can be silently re-requested via [requestPermission]'s
+     * platform prompt. Subclasses sharing one instance across several sub-permissions (e.g.
+     * [io.redlink.more.observations.healthConnect.HealthConnectObservation]) may pass a more
+     * specific [titleDesc] naming the affected sub-permission instead of the whole observation type.
+     */
+    protected fun showMissingPermissionAlert(
+        titleDesc: StringDesc = StringDesc.Raw(observationType.observationType)
+    ) {
+        AlertController.openAlertDialog(
+            AlertDialogModel(
+                title = SharedRes.strings.observation_permission_missing_title.desc(),
+                message = SharedRes.strings.observation_permission_missing_message.formatted(
+                    listOf(titleDesc)
+                ),
+                confirmLabel = SharedRes.strings.goals_reminder_open_settings.desc(),
+                cancelLabel = SharedRes.strings.goals_reminder_continue_anyway.desc(),
+                onConfirm = { openSystemSettings() }
+            )
+        )
+    }
+
+    suspend fun updateObservationErrors() =
+        errorQueryMutex.withLock {
+            repos.schedule
+                .allSchedulesToday(observationType)
+                .firstOrNull()
+                ?.let { schedules ->
+                    if (schedules.isNotEmpty()) {
+                        Napier.d(tag = "Observation::updateObservationErrors") {
+                            "ObservationErrors for " +
+                                    observationType.observationType
+                        }
+
+                        if (repos.study.studyState.value.isActive()) {
+                            ObservationStates.updateObservationErrors(
+                                observationType.observationType,
+                                observerErrors()
+                            )
+                        }
+                    }
+                }
+        }
 
     protected abstract fun applyObservationConfig(settings: Map<String, Any>)
 
@@ -242,12 +390,40 @@ abstract class Observation(
         longRunningStorage?.startObservation(data, identifier, timestamp)
     }
 
+    fun <T> upsertLongRunningObservation(data: T, identifier: String, timestamp: Long) {
+        longRunningStorage?.updateObservation(data, identifier, timestamp)
+    }
+
     fun <T> finishLongRunningObservation(data: T, identifier: String, timestamp: Long) {
         longRunningStorage?.finishObservation(data, identifier, timestamp)
     }
 
     fun <T> inRangeLongRunningObservation(data: T, identifier: String, timestamp: Long) {
         longRunningStorage?.inRangeObservation(data, identifier, timestamp)
+    }
+
+    /**
+     * Upserts the single most recent data point for [scheduleId], overwriting whatever was
+     * stored for that schedule before - unlike [storeData], which appends to the full history,
+     * this only exists to back "current value" visualizations (e.g. today list items).
+     */
+    protected suspend fun storeLatestDataPoint(
+        scheduleId: String,
+        observationId: String,
+        observationType: String,
+        data: Any?,
+        timestamp: Long
+    ) {
+        Napier.d { "Storing new datapoint for scheduleId: $scheduleId; observationId: $observationId, type: $observationType, $data" }
+        repos.observation.storeLatestDataPoint(
+            LatestObservationDataEntity(
+                scheduleId = scheduleId,
+                observationId = observationId,
+                observationType = observationType,
+                dataValue = data?.asString() ?: "{}",
+                timestamp = timestamp
+            )
+        )
     }
 
     fun storeData(data: Map<String, Any>, timestamp: Long = -1, onCompletion: () -> Unit = {}) {
@@ -320,14 +496,14 @@ abstract class Observation(
         }
     }
 
-    fun stopAndSetDone(scheduleId: String) {
+    open fun stopAndSetDone(scheduleId: String) {
         Napier.d(tag = "Observation::stopAndSetDone") { "Stopping observation of type ${observationType.observationType} and setting done for schedule $scheduleId." }
         if (scheduleIds.size <= 1) {
             stop {
                 timestampCollectionJob?.cancel()
                 saveAndSend()
                 scheduleIds.keys.forEach {
-                    StudyScope.launch(Dispatchers.IO) {
+                    StudyScope.launch(Dispatchers.Default) {
                         repos.schedule.setCompletionStateFor(it, true)
                     }
                 }
@@ -340,7 +516,7 @@ abstract class Observation(
             }
         } else {
             saveAndSend()
-            StudyScope.launch(Dispatchers.IO) {
+            StudyScope.launch(Dispatchers.Default) {
                 repos.schedule.setCompletionStateFor(scheduleId, true)
             }
             observationShutdown(scheduleId)
@@ -370,12 +546,21 @@ abstract class Observation(
             config.clear()
             configChanged = false
             running = false
+            deactivate()
         }
     }
 
     private fun handleNotification(scheduleId: String) {
-        notificationIds.remove(scheduleId)?.let {
-            notificationManager?.markNotificationAsCompleted(it)
+        Scope.launch {
+            notificationIds.remove(scheduleId)?.let {
+                notificationManager?.markNotificationAsCompleted(it)
+            } ?: run {
+                repos.schedule.scheduleWithId(scheduleId).firstOrNull()?.let {
+                    if (it.reminder) {
+                        notificationManager?.markNotificationAsCompleted(it.reminderId())
+                    }
+                }
+            }
         }
     }
 
@@ -389,30 +574,26 @@ abstract class Observation(
         notificationBody: String,
         fallbackTitle: String = "Error"
     ) {
-        val schedulesSchemaFlows = scheduleIds.keys.map {
-            repos.schedule.scheduleWithId(it)
-        }
-        val combinedFlow = combine(schedulesSchemaFlows) { values ->
-            values.mapNotNull { it }
-        }
-
         StudyScope.launch {
-            val scheduleSchemas = combinedFlow.first()
-            val title =
-                if (scheduleSchemas.isNotEmpty()) scheduleSchemas.joinToString(
-                    ", ",
-                    limit = 5
-                ) { it.observationTitle } else fallbackTitle
+            val observations = scheduleIds.keys
+                .mapNotNull { repos.schedule.scheduleWithId(it).firstOrNull()?.observationTitle }
+                .toSet()
+            val title = if (observations.isNotEmpty()) observations.joinToString(
+                ", ",
+                limit = 5
+            ) else fallbackTitle
             withContext(Dispatchers.Main) {
                 showNotification(title, notificationBody)
             }
         }
     }
 
-    protected fun saveAndSend() {
+    open fun saveAndSend() {
         Napier.d(tag = "Observation::finish") { "Saving and sending data for observation of type ${observationType.observationType}." }
-        dataManager?.saveAndSend()
+        dataManager?.store()
     }
+
+    fun isRunning() = running
 
     fun removeDataCount() {
         Napier.d(tag = "Observation::removeDataCount") { "Removing data point count for observation of type ${observationType.observationType}." }
@@ -422,7 +603,35 @@ abstract class Observation(
         scheduleIds.clear()
     }
 
-    open fun onStudyExit() {}
+    open fun onStudyExit() {
+        deactivate()
+    }
+
+    /**
+     * Activates the shared background poll request (WorkManager `Worker` on Android,
+     * `BGAppRefreshTask` on iOS) for this observation's [pollIntervalMillis], called once the
+     * observation is stored and running in an active study. Observations that don't need
+     * background polling simply leave [pollIntervalMillis] `null`. Safe to call repeatedly -
+     * [PollingObservationRegistry] never resubmits an already-active request.
+     */
+    open fun activate() {
+        pollIntervalMillis()?.let { interval ->
+            PollingObservationRegistry.activate(observationType.observationType, interval)
+        }
+    }
+
+    /**
+     * Deactivates the background poll request started by [activate] - called on study exit, when
+     * the last schedule referencing this observation is paused, and on observation completion.
+     */
+    open fun deactivate() {
+        if (pollIntervalMillis() != null) {
+            PollingObservationRegistry.deactivate(observationType.observationType)
+        }
+    }
+
+    /** Ideal background poll interval for this observation, or `null` if it doesn't poll in the background. */
+    protected open fun pollIntervalMillis(): Long? = null
 
     companion object {
         private val requestedPermissions = mutableSetOf<String>()
@@ -446,5 +655,21 @@ abstract class Observation(
         const val CONFIG_LAST_COLLECTION_TIMESTAMP = "observation_last_collection_timestamp"
 
         const val ERROR_DEVICE_NOT_CONNECTED = "error_device_not_connected"
+
+        /**
+         * Computes the `[from, to)` collection window, bounded below by the later of the last
+         * collection timestamp and the task/schedule start, and above by the earlier of now and
+         * the task/schedule stop. Returns `null` when the window is empty (nothing to collect).
+         */
+        internal fun computeWindow(
+            lastCollectionTimestamp: Instant,
+            taskStart: Instant?,
+            taskStop: Instant?,
+            now: Instant
+        ): Pair<Instant, Instant>? {
+            val from = maxOf(lastCollectionTimestamp, taskStart ?: lastCollectionTimestamp)
+            val to = taskStop?.let { minOf(it, now) } ?: now
+            return if (from < to) from to to else null
+        }
     }
 }

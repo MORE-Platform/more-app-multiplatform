@@ -23,6 +23,7 @@ import io.redlink.more.app.android.extensions.applicationId
 import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
+import io.redlink.more.app.android.observations.AndroidPollingTaskScheduler
 import io.redlink.more.app.android.services.LocalPushNotificationService
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
@@ -30,8 +31,10 @@ import io.redlink.more.database.AppDatabase
 import io.redlink.more.database.getDatabaseBuilder
 import io.redlink.more.database.getRoomDatabase
 import io.redlink.more.database.repository.MainRepositoryImpl
+import io.redlink.more.events.initPlatformContext
 import io.redlink.more.logging.napierDebugBuild
 import io.redlink.more.models.NotificationTextLocalization
+import io.redlink.more.services.network.AndroidNetworkWatcher
 import io.redlink.more.services.store.SharedPreferencesRepository
 import io.redlink.more.viewModels.ViewManager
 
@@ -101,6 +104,7 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
 
         fun initShared(context: Context) {
             if (shared == null) {
+                initPlatformContext(context)
                 polarConnector = PolarConnector(context)
                 val androidBluetoothConnector = polarConnector!!
                 val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
@@ -119,7 +123,10 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
                         repositories,
                         sharedPreferences,
                     ),
-                    AndroidDataRecorder()
+                    AndroidDataRecorder(),
+                    AndroidNetworkWatcher(context),
+                    pollingTaskScheduler = AndroidPollingTaskScheduler(context),
+                    isDebug = BuildConfig.DEBUG
                 )
                 shared = tempShared
                 tempShared.let { shared ->

@@ -15,7 +15,8 @@ open class ObservationType(
     val sensorPermissions: Set<String>,
     val prefix: String? = null,
     val suffix: String? = null,
-    val includes: String? = null
+    val includes: String? = null,
+    val dependentObservationTypes: Set<String> = emptySet()
 ) {
 
 

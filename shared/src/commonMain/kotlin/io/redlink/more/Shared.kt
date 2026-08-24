@@ -15,7 +15,11 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
+import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.events.AppEvent
+import io.redlink.more.events.DayMonitor
+import io.redlink.more.events.EventBus
 import io.redlink.more.extensions.toStudyState
 import io.redlink.more.logging.EventCollection
 import io.redlink.more.logging.EventObserver
@@ -28,12 +32,17 @@ import io.redlink.more.observations.ObservationFactory
 import io.redlink.more.observations.ObservationManager
 import io.redlink.more.observations.ObservationStates
 import io.redlink.more.observations.observationTypes.GarminType
+import io.redlink.more.observations.polling.PollingObservationRegistry
+import io.redlink.more.observations.polling.PollingTaskScheduler
 import io.redlink.more.scopes.Scope
 import io.redlink.more.scopes.StudyScope
 import io.redlink.more.services.ObservationService
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.network.NetworkServiceImpl
+import io.redlink.more.services.network.NetworkServiceProxy
+import io.redlink.more.services.network.NetworkWatcher
+import io.redlink.more.services.network.demo.DemoNetworkService
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.notification.LocalNotificationListener
 import io.redlink.more.services.notification.NotificationActionObserver
@@ -70,9 +79,13 @@ open class Shared(
     mainBluetoothConnector: BluetoothConnector,
     val observationFactory: ObservationFactory,
     val dataRecorder: DataRecorder,
+    networkWatcher: NetworkWatcher? = null,
+    pollingTaskScheduler: PollingTaskScheduler? = null,
     reminderNotificationSchedulingLimit: Int? = null,
     val connectionStatusFlow: Flow<Boolean> =
-        konnectionInstance().observeHasConnection()
+        konnectionInstance().observeHasConnection(),
+    val isDebug: Boolean = false,
+
 ) : NotificationActionObserver, ExitStudyListener, AutoCloseable {
     val deeplinkManager: DeeplinkManager = DeeplinkManagerImpl(repositories, observationFactory)
     val endpointRepository: EndpointRepository = EndpointRepositoryImpl(sharedStorageRepository)
@@ -80,8 +93,11 @@ open class Shared(
         CredentialRepositoryImpl(sharedStorageRepository).also {
             observationFactory.setCredentialsRepository(it)
         }
-    val networkService: NetworkService =
-        NetworkServiceImpl(endpointRepository, credentialRepository)
+    val networkService: NetworkService = NetworkServiceProxy(
+        NetworkServiceImpl(endpointRepository, credentialRepository),
+        if (isDebug) DemoNetworkService() else null,
+        sharedStorageRepository,
+    )
 
     val observationManager = ObservationManager(
         repositories,
@@ -108,10 +124,24 @@ open class Shared(
     val observationService =
         ObservationService(repositories, notificationManager, reminderNotificationSchedulingLimit)
 
+    private val dayMonitor = DayMonitor { event ->
+        EventBus.tryPublish(event)
+    }
+
     private val mutex = Mutex()
     private var mainJob: Job? = null
 
     init {
+        PollingObservationRegistry.init(pollingTaskScheduler, sharedStorageRepository)
+
+        networkWatcher?.let { watcher ->
+            Scope.launch {
+                watcher.watchNetworkState().distinctUntilChanged().collect {
+                    ViewManager.networkConnected(it)
+                }
+            }
+        }
+
         observationFactory.observationsWithInterface(EventObserver::class)
             .forEach { EventCollection.addObserver(it) }
         val handler = CoroutineExceptionHandler { _, t ->
@@ -156,6 +186,25 @@ open class Shared(
                 }
             }
         }.second
+
+        Scope.launch {
+            combine(
+                credentialRepository.hasCredentials,
+                repositories.study.studyState,
+                ViewManager.appInForeground
+            ) { hasCredentials, studyState, appInForeground ->
+                hasCredentials && studyState.isActive() && appInForeground
+            }
+                .distinctUntilChanged()
+                .collect { shouldMonitor ->
+                    if (shouldMonitor) {
+                        dayMonitor.start()
+                        dayMonitor.refresh()
+                    } else {
+                        dayMonitor.stop()
+                    }
+                }
+        }
     }
 
     fun updateData(appInForeground: Boolean) {
@@ -194,6 +243,7 @@ open class Shared(
         observationManager.updateTaskStates()
         observationService.scheduleObservationReminder()
         notificationManager.downloadMissedNotifications()
+        EventBus.tryPublish(AppEvent.ScheduleHaveUpdated)
     }
 
     override fun updateStudy(
@@ -347,6 +397,7 @@ open class Shared(
                     repositories.study.upsert(s)
                 }
                 updateSchedules()
+                EventBus.publish(AppEvent.StudyHasUpdated)
             } catch (e: Exception) {
                 Napier.e(tag = "Shared::updateStudy") { "Exception during updating study: $e" }
                 if (repositories.study.study.value == null) {

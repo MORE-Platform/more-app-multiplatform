@@ -16,12 +16,15 @@ import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
 import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
 import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
+import io.redlink.more.app.android.observations.healthConnect.AndroidHeartRateHealthConnectCollector
+import io.redlink.more.app.android.observations.healthConnect.AndroidStepsHealthConnectCollector
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.ObservationDataManager
 import io.redlink.more.observations.ObservationFactory
+import io.redlink.more.observations.healthConnect.HealthConnectObservation
 import io.redlink.more.scopes.AppDispatchers
 import io.redlink.more.scopes.MoreScope
 import io.redlink.more.scopes.Scope
@@ -47,6 +50,16 @@ class AndroidObservationFactory(
         }
         registerObservation {
             GPSObservation(context, repository, gpsService = GPSService(context))
+        }
+        registerObservation {
+            HealthConnectObservation(
+                repository,
+                this,
+                listOf(
+                    AndroidHeartRateHealthConnectCollector(context),
+                    AndroidStepsHealthConnectCollector(context)
+                )
+            )
         }
         registerObservation {
             PolarHeartRateObservation(repository)

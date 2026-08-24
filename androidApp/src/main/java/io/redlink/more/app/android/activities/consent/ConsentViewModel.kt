@@ -30,9 +30,12 @@ class ConsentViewModel(
         CoreConsentViewModel(registrationService, stringResource(R.string.consent_information))
 
     fun acceptConsent(context: Context) {
-        getSecureID(context)?.let { uniqueDeviceId ->
-            registrationService.acceptConsent(uniqueDeviceId)
+        val uniqueDeviceId = getSecureID(context)
+        if (uniqueDeviceId == null) {
+            registrationService.cancelConsentSubmission()
+            return
         }
+        registrationService.acceptConsent(uniqueDeviceId)
     }
 
     fun openPermissionDeniedAlertDialog(context: Context, missingPermissions: List<String> = emptyList()) {

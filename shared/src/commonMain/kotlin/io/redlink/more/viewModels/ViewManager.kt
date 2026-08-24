@@ -13,9 +13,10 @@ package io.redlink.more.viewModels
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
-import io.redlink.more.logging.event
+import io.redlink.more.logging.track
 import io.redlink.more.observations.Observation
 import io.redlink.more.observations.appUsage.model.LogEvent
+import io.redlink.more.services.tracking.NotificationTrackingFlusher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -36,6 +37,7 @@ object ViewManager {
     private val _appInForeground = MutableStateFlow(false)
     private val _bleViewOpen = MutableStateFlow(false)
     private val _activeStudy = MutableStateFlow(false)
+    private val _networkConnected = MutableStateFlow(true)
 
     @NativeCoroutines
     val studyLoadingError: StateFlow<Boolean> = _studyLoadingError
@@ -57,6 +59,9 @@ object ViewManager {
 
     @NativeCoroutines
     val activeStudy: StateFlow<Boolean> = _activeStudy
+
+    @NativeCoroutines
+    val networkConnected: StateFlow<Boolean> = _networkConnected
 
     private fun canOpenNewView(): Boolean {
         return _activeStudy.value &&
@@ -131,12 +136,17 @@ object ViewManager {
         _studyLoadingError.value = hasError
     }
 
+    fun networkConnected(state: Boolean) {
+        _networkConnected.value = state
+    }
+
     fun appIsInForeground(state: Boolean) {
         if (state) {
-            Napier.event(LogEvent.APP_IN_FOREGROUND)
+            LogEvent.APP_IN_FOREGROUND.track()
             Observation.resetRequestedPermissions()
+            NotificationTrackingFlusher.flush()
         } else {
-            Napier.event(LogEvent.APP_IN_BACKGROUND)
+            LogEvent.APP_IN_BACKGROUND.track()
         }
         _appInForeground.value = state
     }

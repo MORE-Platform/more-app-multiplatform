@@ -2,13 +2,13 @@ package io.redlink.more.registration
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import io.github.aakira.napier.Napier
-import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
 import io.redlink.more.Shared
 import io.redlink.more.app.android.services.network.errors.NetworkServiceError
 import io.redlink.more.getPlatform
 import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
+import io.redlink.more.scopes.AppDispatchers
 import io.redlink.more.scopes.Scope
 import io.redlink.more.services.network.openapi.model.ObservationConsent
 import io.redlink.more.services.network.openapi.model.Study
@@ -19,6 +19,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.kotlincrypto.hash.md.MD5
+import kotlin.io.encoding.Base64
 
 open class RegistrationService(
     private val shared: Shared,
@@ -61,6 +62,15 @@ open class RegistrationService(
         _error.value = null
     }
 
+    fun beginConsentSubmission() {
+        clearError()
+        _isLoading.value = true
+    }
+
+    fun cancelConsentSubmission() {
+        _isLoading.value = false
+    }
+
     open fun sendRegistrationToken(
         loginModel: LoginModel
     ) {
@@ -86,30 +96,33 @@ open class RegistrationService(
         uniqueDeviceId: String,
     ) {
         clearError()
-        validLoginModel.value?.let { loginModel ->
-            study.value?.let { study ->
-                val studyConsent = StudyConsent(
-                    consent = true,
-                    observations = study.observations.map {
-                        ObservationConsent(
-                            observationId = it.observationId,
-                            active = true
-                        )
-                    },
-                    consentInfoMD5 = MD5().digest(study.consentInfo.toByteArray())
-                        .encodeBase64(),
-                    deviceId = "${getPlatform().productName}#$uniqueDeviceId"
-                )
-                sendConsent(studyConsent)
-            }
+        val loginModel = validLoginModel.value
+        val currentStudy = study.value
+        if (loginModel == null || currentStudy == null) {
+            _isLoading.value = false
+            return
         }
+        val studyConsent = StudyConsent(
+            consent = true,
+            observations = currentStudy.observations.map {
+                ObservationConsent(
+                    observationId = it.observationId,
+                    active = true
+                )
+            },
+            consentInfoMD5 = Base64.encode(
+                MD5().digest(currentStudy.consentInfo.toByteArray())
+            ),
+            deviceId = "${getPlatform().productName}#$uniqueDeviceId"
+        )
+        sendConsent(studyConsent)
     }
 
     private fun sendConsent(
         studyConsent: StudyConsent,
     ) {
         _isLoading.value = true
-        Scope.launch(Dispatchers.IO) {
+        Scope.launch(AppDispatchers.io) {
             val (config, networkError) = shared.networkService.sendConsent(
                 _validLoginModel.value!!,
                 studyConsent
@@ -143,7 +156,7 @@ open class RegistrationService(
             }
         }.second.invokeOnCompletion {
             _isLoading.value = false
-            Scope.launch(Dispatchers.IO) {
+            Scope.launch(AppDispatchers.io) {
                 if (shared.credentialRepository.hasCredentials.value) {
                     clearError()
                     _validLoginModel.value = null

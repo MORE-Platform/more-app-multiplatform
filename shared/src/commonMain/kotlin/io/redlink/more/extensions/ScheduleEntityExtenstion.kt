@@ -4,6 +4,8 @@ import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.models.NotificationTextKey
 
+fun ScheduleEntity.reminderId() = "reminder_$scheduleId"
+
 fun ScheduleEntity.toNotificationEntity(
     userFacing: Boolean,
     deepLink: String? = null

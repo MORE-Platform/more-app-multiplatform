@@ -3,13 +3,12 @@ import java.util.Base64
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    id("com.google.gms.google-services")
-    kotlin("android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.firebase.crashlytics")
-    id("com.google.devtools.ksp")
-
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.ksp)
 }
 
 fun loadEnvFromFile(): Properties {
@@ -63,7 +62,7 @@ android {
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 37
         versionName = "5.0.0"
     }
@@ -148,6 +147,7 @@ android {
             }
 
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -215,6 +215,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
 
     ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.health.connect.client)
+
 
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")

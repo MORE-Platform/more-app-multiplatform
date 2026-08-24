@@ -19,13 +19,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
+            "value" : "More benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs access to Bluetooth to find and connect to supported health devices"
+            "value" : "More needs access to Bluetooth to find and connect to supported health devices"
           }
         }
       }
@@ -36,13 +36,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
+            "value" : "More benötigt Zugriff auf Bluetooth, um unterstützte Gesundheitsgeräte zu finden und zu verbinden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME)  needs access to Bluetooth to find and connect to supported health devices"
+            "value" : "More needs access to Bluetooth to find and connect to supported health devices"
           }
         }
       }
@@ -53,13 +53,25 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf deine Kamera, um QR-Codes zu scannen."
+            "value" : "More benötigt Zugriff auf deine Kamera, um QR-Codes zu scannen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME)  needs your camera to scan QR-Code"
+            "value" : "More  needs your camera to scan QR-Code"
+          }
+        }
+      }
+    },
+    "NSHealthShareUsageDescription" : {
+      "comment" : "Privacy - Health Share Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "More needs access to your Health data (e.g. heart rate, steps and distance) to record it for certain studies\n    "
           }
         }
       }
@@ -70,13 +82,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
+            "value" : "MORE benötigt Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs to access you location to track your position for certain studies"
+            "value" : "MORE needs to access you location to track your position for certain studies"
           }
         }
       }
@@ -87,13 +99,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt jederzeit Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
+            "value" : "MORE benötigt jederzeit Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME)  always needs access to you location to track your position for certain studies"
+            "value" : "MORE  always needs access to you location to track your position for certain studies"
           }
         }
       }
@@ -104,13 +116,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
+            "value" : "MORE benötigt Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs to access you location to track your position for certain studies"
+            "value" : "MORE needs to access you location to track your position for certain studies"
           }
         }
       }
@@ -121,13 +133,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt während der Nutzung Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
+            "value" : "MORE benötigt während der Nutzung Zugriff auf deinen Standort, um für bestimmte Studien deine Position zu erfassen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs access to your location to track your position for certain studies"
+            "value" : "MORE needs access to your location to track your position for certain studies"
           }
         }
       }
@@ -138,13 +150,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) benötigt Zugriff auf deine Bewegungsdaten, um deine Aktivität auch im Hintergrund aufzuzeichnen."
+            "value" : "MORE benötigt Zugriff auf deine Bewegungsdaten, um deine Aktivität auch im Hintergrund aufzuzeichnen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) needs access to your motion data to record your movement data in the background"
+            "value" : "MORE needs access to your motion data to record your movement data in the background"
           }
         }
       }
@@ -155,13 +167,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) möchte deine App-Nutzung für deine Studie erfassen."
+            "value" : "MORE möchte deine App-Nutzung für deine Studie erfassen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "$(PRODUCT_NAME) wants to track your app usage for your study"
+            "value" : "MORE wants to track your app usage for your study"
           }
         }
       }

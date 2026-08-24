@@ -140,6 +140,75 @@ class IOSObservationPermissionObserver: NSObject, ObservationPermissionObserver 
         PermissionManager.openSensorPermissionDialog()
         AppDelegate.shared.observationFactory.stopRequestingPermissions()
     }
+
+    func permissionStates(collectors: Any) async throws -> [String: PermissionApprovalState] {
+        if let permissionCollectors = collectors as? [PermissionCollector] {
+            return try await permissionStates(collectors: permissionCollectors)
+        }
+        return [:]
+    }
+
+    func permissionStates(collectors: [PermissionCollector]) async throws -> [String: PermissionApprovalState] {
+        if collectors.isEmpty {
+            return [:]
+        }
+
+        var pairs: [(String, PermissionApprovalState)] = []
+        pairs.reserveCapacity(collectors.count)
+
+        try await withThrowingTaskGroup(of: (String, PermissionApprovalState).self) { group in
+            for collector in collectors {
+                group.addTask {
+                    let state = try await collector.permissionState()
+                    return (collector.permissionKey, state)
+                }
+            }
+
+            for try await pair in group {
+                pairs.append(pair)
+            }
+        }
+
+        return Dictionary(uniqueKeysWithValues: pairs)
+    }
+
+
+    func requestPermissions(collectors: Any) async throws {
+        if let permissionCollectors = collectors as? [PermissionCollector] {
+            try await requestPermissions(collectors: permissionCollectors)
+        }
+    }
+
+
+    @MainActor func requestPermissions(collectors: [PermissionCollector]) async throws {
+        guard !collectors.isEmpty else { return }
+        AppDelegate.shared.observationFactory.startRequestingPermissions()
+        defer {
+            AppDelegate.shared.observationFactory.stopRequestingPermissions()
+        }
+
+        let bundled = collectors.compactMap { $0 as? BundledPermissionCollector }
+        let nonBundled = collectors.filter { !($0 is BundledPermissionCollector) }
+
+        let grouped = Dictionary(grouping: bundled, by: { $0.permissionGroup })
+        for (group, groupCollectors) in grouped {
+            if group == ConstantsKt.HEALTH_COLLECTOR_GROUP {
+                let healthCollectors = groupCollectors.compactMap { $0 as? HealthConnectCollector }
+                let metrics = Set(healthCollectors.flatMap { HealthKitManager.metrics(for: $0.dataType) })
+                if !metrics.isEmpty {
+                    try await HealthKitManager.shared.requestPermissions(for: metrics)
+                }
+            } else {
+                for collector in groupCollectors {
+                    try await collector.requestPermission()
+                }
+            }
+        }
+
+        for collector in nonBundled {
+            try await collector.requestPermission()
+        }
+    }
 }
 
 extension IOSObservationPermissionObserver: CLLocationManagerDelegate {

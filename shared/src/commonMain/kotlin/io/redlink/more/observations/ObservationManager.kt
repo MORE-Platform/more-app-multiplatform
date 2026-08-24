@@ -121,7 +121,7 @@ class ObservationManager(
 
     }
 
-    private fun start(
+    private suspend fun start(
         schedule: ScheduleEntity,
         config: Map<String, Any>
     ): Boolean {

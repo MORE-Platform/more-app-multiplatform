@@ -7,6 +7,7 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).data-upload</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).dailyRefresh</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).observation-reminder-refresh</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).observation-polling</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -54,7 +55,10 @@
             devices
         </string>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs your camera to scan QR-Code</string>
+    <string>More needs your camera to scan QR-Code</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>More needs access to your Health data (e.g. heart rate, steps and distance) to record it for certain studies
+    </string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>$(PRODUCT_NAME) needs to access you location to track your position for certain
             studies
