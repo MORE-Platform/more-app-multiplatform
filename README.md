@@ -480,7 +480,7 @@ reasons, please consider checking through operating system settings that:
 
 ## License
 
-Apache 2.0 with Commons Clause; see LICENSE.txt for further details
+Apache 2.0; see LICENSE.txt for further details
 
 
 <!-- CONTACT -->
