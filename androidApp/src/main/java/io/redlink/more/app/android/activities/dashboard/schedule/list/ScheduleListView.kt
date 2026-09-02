@@ -23,6 +23,7 @@ import io.redlink.more.app.android.activities.dashboard.schedule.ScheduleViewMod
 import io.redlink.more.app.android.extensions.getStringResource
 import io.redlink.more.app.android.shared_composables.EmptyListView
 import io.redlink.more.app.android.shared_composables.ScheduleList
+import io.redlink.more.models.ScheduleListType
 
 @Composable
 fun ScheduleListView(
@@ -31,10 +32,14 @@ fun ScheduleListView(
     showButton: Boolean
 ) {
     val scheduleList by scheduleViewModel.coreViewModel.schedulesByDate.collectAsStateWithLifecycle()
+    val milestones by scheduleViewModel.coreViewModel.milestones.collectAsStateWithLifecycle()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
+        if (scheduleViewModel.scheduleListType == ScheduleListType.MANUALS && milestones.isNotEmpty()) {
+            MilestoneSection(milestones)
+        }
         if (scheduleList.isNotEmpty()) {
             ScheduleList(
                 navController = navController,

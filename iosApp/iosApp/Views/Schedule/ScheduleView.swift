@@ -20,6 +20,9 @@ struct ScheduleView: View {
     @StateObject var viewModel: ScheduleViewModel
     var body: some View {
         VStack {
+            if viewModel.scheduleListType == .manuals && !viewModel.milestones.isEmpty {
+                MilestoneSection(milestones: viewModel.milestones)
+            }
             ScrollViewReader { _ in
                 ScrollView(.vertical) {
                     if viewModel.schedulesByDate.isEmpty {

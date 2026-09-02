@@ -27,6 +27,7 @@ class ScheduleViewModel: ObservableObject {
     @Published var schedulesByDate: [Date: [ScheduleModel]] = [:]
     @Published var observationErrors: [String: Set<String>] = [:]
     @Published var numberOfErrors: Int = 0
+    @Published var milestones: [MilestoneEntity] = []
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -55,6 +56,13 @@ class ScheduleViewModel: ObservableObject {
         .receive(on: DispatchQueue.main)
         .sink(receiveCompletion: { _ in }) { [weak self] numberOfErrors in
             self?.numberOfErrors = numberOfErrors.intValue
+        }
+        .store(in: &cancellables)
+
+        createPublisher(for: coreModel.milestones)
+        .receive(on: DispatchQueue.main)
+        .sink(receiveCompletion: { _ in }) { [weak self] milestones in
+            self?.milestones = milestones
         }
         .store(in: &cancellables)
     }

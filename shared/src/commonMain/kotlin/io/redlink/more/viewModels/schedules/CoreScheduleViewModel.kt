@@ -11,6 +11,7 @@
 package io.redlink.more.viewModels.schedules
 
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.entities.ScheduleEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.extensions.mapState
@@ -28,10 +29,12 @@ import io.redlink.more.viewModels.dashboard.CoreDashboardFilterViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -51,6 +54,10 @@ open class CoreScheduleViewModel(
 
     @NativeCoroutines
     val schedulesByDate: StateFlow<Map<Long, List<ScheduleModel>>> = _schedulesByDate
+
+    @NativeCoroutines
+    val milestones: StateFlow<List<MilestoneEntity>> =
+        repos.milestone.getAllFlow().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val parentJob = SupervisorJob()
 

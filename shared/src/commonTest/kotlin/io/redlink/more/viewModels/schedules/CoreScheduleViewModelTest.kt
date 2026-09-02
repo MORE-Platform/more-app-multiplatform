@@ -1,5 +1,6 @@
 package io.redlink.more.viewModels.schedules
 
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.mocks.MockDataRecorder
 import io.redlink.more.mocks.MockMainRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,5 +76,24 @@ class CoreScheduleViewModelTest {
         val scheduleId = "s1"
         viewModel.stop(scheduleId)
         assertTrue(mockDataRecorder.stopCalled)
+    }
+
+    @Test
+    fun testMilestonesInitiallyEmpty() = runTest {
+        assertTrue(viewModel.milestones.value.isEmpty())
+    }
+
+    @Test
+    fun testMilestonesReflectsRepository() = runTest {
+        val milestone = MilestoneEntity(
+            participantMilestoneId = 1,
+            milestoneId = 1,
+            name = "First Milestone",
+            dateTime = 0L
+        )
+        mockRepo.milestone.storeMilestones(listOf(milestone))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(listOf(milestone), viewModel.milestones.value)
     }
 }
