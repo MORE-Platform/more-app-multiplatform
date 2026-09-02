@@ -19,6 +19,7 @@ import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.PushNotificationServiceType
 import io.redlink.more.services.network.openapi.model.PushNotificationToken
@@ -199,6 +200,27 @@ class NetworkServiceImpl(
             }
         } catch (e: Exception) {
             Napier.e(tag = "NetworkService::downloadMissedNotifications") { "Notification List error: $e" }
+            emptyList()
+        }
+    }
+
+    override suspend fun getMilestones(): List<ParticipantMilestone> {
+        return try {
+            Napier.d(tag = "NetworkService::getMilestones") { "Downloading milestones from the Server..." }
+            val client = networkClients.getMilestonesApi() ?: return emptyList()
+
+            val response = client.listMilestones()
+
+            if (response.success) {
+                val milestones: List<ParticipantMilestone> = response.body()
+                Napier.d(tag = "NetworkService::getMilestones") { "Downloaded milestones: $milestones" }
+                milestones
+            } else {
+                Napier.d(tag = "NetworkService::getMilestones") { "No milestones received from the server" }
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Napier.e(tag = "NetworkService::getMilestones") { "Milestones list error: $e" }
             emptyList()
         }
     }

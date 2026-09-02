@@ -6,6 +6,7 @@ import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.ContactInfo
 import io.redlink.more.services.network.openapi.model.Observation
 import io.redlink.more.services.network.openapi.model.ObservationSchedule
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.SimpleParticipant
 import io.redlink.more.services.network.openapi.model.Study
@@ -110,48 +111,85 @@ object DemoData {
                     version = now.toEpochMilliseconds(),
                     hidden = true
                 ),
-//                Observation(
-//                    observationId = "5",
-//                    observationType = "acc-mobile-observation",
-//                    observationTitle = "Activity Tracking",
-//                    participantInfo = "Using the accelerometer to track activity.",
-//                    schedule = listOf(
-//                        ObservationSchedule(
-//                            start = now.minus(24, DateTimeUnit.HOUR),
-//                            end = now.plus(30, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
-//                        )
-//                    ),
-//                    required = false,
-//                    version = now.toEpochMilliseconds()
-//                ),
-//                Observation(
-//                    observationId = "6",
-//                    observationType = "gps-mobile-observation",
-//                    observationTitle = "Location Tracking",
-//                    participantInfo = "Tracking location for study purposes.",
-//                    schedule = listOf(
-//                        ObservationSchedule(
-//                            start = now.minus(24, DateTimeUnit.HOUR),
-//                            end = now.plus(30, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
-//                        )
-//                    ),
-//                    required = false,
-//                    version = now.toEpochMilliseconds()
-//                ),
-//                Observation(
-//                    observationId = "7",
-//                    observationType = "polar-verity-observation",
-//                    observationTitle = "Heart Rate",
-//                    participantInfo = "Heart rate monitoring via Polar sensor.",
-//                    schedule = listOf(
-//                        ObservationSchedule(
-//                            start = now.minus(24, DateTimeUnit.HOUR),
-//                            end = now.plus(30, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
-//                        )
-//                    ),
-//                    required = false,
-//                    version = now.toEpochMilliseconds()
-//                )
+                Observation(
+                    observationId = "2",
+                    observationType = "multiple-choice-question-observation",
+                    observationTitle = "Symptoms",
+                    participantInfo = "Please select all symptoms you experienced today.",
+                    configuration = buildJsonObject {
+                        put(
+                            "question",
+                            "Which symptoms did you have today?"
+                        )
+                        putJsonArray("answers") {
+                            add(JsonPrimitive("Headache"))
+                            add(JsonPrimitive("Cough"))
+                            add(JsonPrimitive("Fever"))
+                            add(JsonPrimitive("Nausea"))
+                            add(JsonPrimitive("Fatigue"))
+                        }
+                    },
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = observationStart,
+                            end = observationEnd
+                        )
+                    ),
+                    required = false,
+                    version = now.toEpochMilliseconds()
+                ),
+                Observation(
+                    observationId = "3",
+                    observationType = "lime-survey-observation",
+                    observationTitle = "Health Questionnaire",
+                    participantInfo = "A more detailed health questionnaire.",
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = observationStart,
+                            end = observationEnd
+                        )
+                    ),
+                    required = false,
+                    version = now.toEpochMilliseconds()
+                ),
+                Observation(
+                    observationId = "5",
+                    observationType = "acc-mobile-observation",
+                    observationTitle = "Activity Tracking",
+                    participantInfo = "Using the accelerometer to track activity.",
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = now.minus(24, DateTimeUnit.HOUR),
+                            end = now.plus(30, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+                        )
+                    ),
+                    required = false,
+                    version = now.toEpochMilliseconds()
+                ),
+                Observation(
+                    observationId = "6",
+                    observationType = "gps-mobile-observation",
+                    observationTitle = "Location Tracking",
+                    participantInfo = "Tracking location for study purposes.",
+                    schedule = listOf(
+                        ObservationSchedule(
+                            start = now.minus(24, DateTimeUnit.HOUR),
+                            end = now.plus(30, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+                        )
+                    ),
+                    required = false,
+                    version = now.toEpochMilliseconds()
+                ),
+                Observation(
+                    observationId = "8",
+                    observationType = "garmin-observation",
+                    observationTitle = "Garmin Watch",
+                    participantInfo = "Syncing activity data from your Garmin device.",
+                    noSchedule = true,
+                    schedule = emptyList(),
+                    required = false,
+                    version = now.toEpochMilliseconds()
+                ),
                 Observation(
                     observationId = "9",
                     observationType = HealthConnectDataType.HEART_RATE.subTypeValue,
@@ -189,7 +227,10 @@ object DemoData {
                     observationTitle = "Daily Mood",
                     participantInfo = "Please rate your mood today.",
                     configuration = buildJsonObject {
-                        put("question", "How are you feeling today?")
+                        put(
+                            "question",
+                            "How are you feeling today?"
+                        )
                         putJsonArray("answers") {
                             add(JsonPrimitive("Great"))
                             add(JsonPrimitive("Good"))
@@ -276,6 +317,36 @@ object DemoData {
                     put("reminderType", "reminder")
                 }
             ),
+        )
+    }
+
+    fun getDemoMilestones(): List<ParticipantMilestone> {
+        val now = Clock.System.now()
+        return listOf(
+            ParticipantMilestone(
+                participantMilestoneId = 1,
+                milestoneId = 1,
+                name = "First Week Completed",
+                dateTime = now.minus(1, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+            ),
+            ParticipantMilestone(
+                participantMilestoneId = 2,
+                milestoneId = 2,
+                name = "10 Observations Logged",
+                dateTime = now.plus(2, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+            ),
+            ParticipantMilestone(
+                participantMilestoneId = 3,
+                milestoneId = 3,
+                name = "Halfway There!",
+                dateTime = now
+            ),
+            ParticipantMilestone(
+                participantMilestoneId = 4,
+                milestoneId = 4,
+                name = "You did it!",
+                dateTime = now.plus(10, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+            )
         )
     }
 

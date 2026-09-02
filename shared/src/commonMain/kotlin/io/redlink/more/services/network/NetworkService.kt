@@ -16,6 +16,7 @@ import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
@@ -39,6 +40,8 @@ interface NetworkService {
     suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?>
 
     suspend fun downloadMissedNotifications(): List<PushNotification>
+
+    suspend fun getMilestones(): List<ParticipantMilestone>
 
     fun getBasicAuthHeader(): String?
 

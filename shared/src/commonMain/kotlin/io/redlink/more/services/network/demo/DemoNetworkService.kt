@@ -7,6 +7,7 @@ import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
@@ -51,6 +52,10 @@ class DemoNetworkService : NetworkService {
 
     override suspend fun downloadMissedNotifications(): List<PushNotification> {
         return DemoData.getDemoNotifications()
+    }
+
+    override suspend fun getMilestones(): List<ParticipantMilestone> {
+        return DemoData.getDemoMilestones()
     }
 
     override fun getBasicAuthHeader(): String? = null

@@ -11,9 +11,11 @@
 
 package io.redlink.more.database.repository
 
+import androidx.room.immediateTransaction
+import androidx.room.useWriterConnection
 import io.redlink.more.database.AppDatabase
 
-class MainRepositoryImpl(appDatabase: AppDatabase) : MainRepository {
+class MainRepositoryImpl(private val appDatabase: AppDatabase) : MainRepository {
     override val study: StudyRepository = StudyRepositoryImpl(appDatabase)
     override val observation: ObservationRepository = ObservationRepositoryImpl(appDatabase)
     override val observationData: ObservationDataRepository =
@@ -27,10 +29,15 @@ class MainRepositoryImpl(appDatabase: AppDatabase) : MainRepository {
         BluetoothDeviceRepositoryImpl(appDatabase)
     override val aggregatedObservationData: AggregatedObservationDataRepository =
         AggregatedObservationDataRepositoryImpl(appDatabase)
+    override val milestone: MilestoneRepository = MilestoneRepositoryImpl(appDatabase)
 
     override suspend fun deleteAll() {
-        study.deleteStudy()
-        notification.deleteAll()
         aggregatedObservationData.deleteAll()
+        notification.deleteAll()
+        study.deleteStudy()
+        milestone.deleteAll()
     }
+
+    override suspend fun <T> runInTransaction(block: suspend () -> T): T =
+        appDatabase.useWriterConnection { it.immediateTransaction { block() } }
 }

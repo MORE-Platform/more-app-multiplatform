@@ -6,6 +6,7 @@ import io.redlink.more.models.CredentialModel
 import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
@@ -61,6 +62,9 @@ class NetworkServiceProxy(
 
     override suspend fun downloadMissedNotifications(): List<PushNotification> =
         activeService.downloadMissedNotifications()
+
+    override suspend fun getMilestones(): List<ParticipantMilestone> =
+        activeService.getMilestones()
 
     override fun getBasicAuthHeader(): String? = activeService.getBasicAuthHeader()
     override fun getGarminSSOUrl(): Url? = activeService.getGarminSSOUrl()

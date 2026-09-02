@@ -15,6 +15,7 @@ import io.redlink.more.models.CredentialModel
 import io.redlink.more.services.network.openapi.api.ConfigurationApi
 import io.redlink.more.services.network.openapi.api.DataApi
 import io.redlink.more.services.network.openapi.api.GarminRegistrationApi
+import io.redlink.more.services.network.openapi.api.MilestonesApi
 import io.redlink.more.services.network.openapi.api.NotificationsApi
 import io.redlink.more.services.network.openapi.api.RegistrationApi
 import io.redlink.more.services.store.CredentialRepository
@@ -31,6 +32,7 @@ class NetworkClients(
     private var configurationApi: ConfigurationApi? = null
     private var dataApi: DataApi? = null
     private var notificationApi: NotificationsApi? = null
+    private var milestonesApi: MilestonesApi? = null
     private var garminRegistrationApi: GarminRegistrationApi? = null
     private var registrationBaseUrl: String? = null
 
@@ -39,6 +41,7 @@ class NetworkClients(
     private var configurationLastUsed: Long = 0L
     private var dataLastUsed: Long = 0L
     private var notificationLastUsed: Long = 0L
+    private var milestonesLastUsed: Long = 0L
     private var garminLastUsed: Long = 0L
 
     private var lastCredentialsKey: Pair<String, String?>? = null
@@ -172,6 +175,19 @@ class NetworkClients(
         return notificationApi
     }
 
+    fun getMilestonesApi(): MilestonesApi? {
+        ensureCredentialsUpToDate()
+
+        val now = now()
+        if (milestonesApi == null || isExpired(milestonesLastUsed)) {
+            milestonesApi = getHttpClientWithAuth()?.let { client ->
+                MilestonesApi(baseUrl(), client)
+            }
+        }
+        milestonesLastUsed = now
+        return milestonesApi
+    }
+
     fun getGarminRegistrationApi(): GarminRegistrationApi? {
         ensureCredentialsUpToDate()
 
@@ -198,6 +214,7 @@ class NetworkClients(
         configurationApi = null
         dataApi = null
         notificationApi = null
+        milestonesApi = null
         garminRegistrationApi = null
 
         httpClient?.close()
@@ -210,6 +227,7 @@ class NetworkClients(
         configurationLastUsed = 0L
         dataLastUsed = 0L
         notificationLastUsed = 0L
+        milestonesLastUsed = 0L
         garminLastUsed = 0L
     }
 

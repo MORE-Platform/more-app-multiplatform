@@ -16,6 +16,7 @@ import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.DataPointEntity
 import io.redlink.more.database.entities.LatestObservationDataEntity
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
@@ -25,6 +26,7 @@ import io.redlink.more.database.repository.AggregatedObservationDataRepository
 import io.redlink.more.database.repository.BluetoothDeviceRepository
 import io.redlink.more.database.repository.DataPointCountRepository
 import io.redlink.more.database.repository.MainRepository
+import io.redlink.more.database.repository.MilestoneRepository
 import io.redlink.more.database.repository.NotificationRepository
 import io.redlink.more.database.repository.ObservationDataRepository
 import io.redlink.more.database.repository.ObservationRepository
@@ -424,6 +426,20 @@ class MockStudyRepository : StudyRepository {
     }
 }
 
+class MockMilestoneRepository : MilestoneRepository {
+    private val _milestones = MutableStateFlow<List<MilestoneEntity>>(emptyList())
+
+    override fun getAllFlow(): Flow<List<MilestoneEntity>> = _milestones
+
+    override suspend fun storeMilestones(milestones: List<MilestoneEntity>) {
+        _milestones.value = milestones
+    }
+
+    override suspend fun deleteAll() {
+        _milestones.value = emptyList()
+    }
+}
+
 
 class MockAggregatedObservationDataRepository : AggregatedObservationDataRepository {
     private val data = MutableStateFlow<Map<String, AggregatedObservationDataEntity>>(emptyMap())
@@ -494,6 +510,7 @@ class MockMainRepository() : MainRepository {
     private val _mockBluetoothDevice = MockBluetoothDeviceRepository()
     private val _mockStudy = MockStudyRepository()
     private val _mockAggregatedObservationData = MockAggregatedObservationDataRepository()
+    private val _mockMilestone = MockMilestoneRepository()
 
     override val schedule: ScheduleRepository get() = _mockSchedule
     override val notification: NotificationRepository get() = _mockNotification
@@ -503,6 +520,7 @@ class MockMainRepository() : MainRepository {
     override val bluetoothDevice: BluetoothDeviceRepository get() = _mockBluetoothDevice
     override val study: StudyRepository get() = _mockStudy
     override val aggregatedObservationData: AggregatedObservationDataRepository get() = _mockAggregatedObservationData
+    override val milestone: MilestoneRepository get() = _mockMilestone
 
     val mockSchedule: MockScheduleRepository get() = _mockSchedule
     val mockNotification: MockNotificationRepository get() = _mockNotification
@@ -516,7 +534,10 @@ class MockMainRepository() : MainRepository {
         _mockStudy.deleteStudy()
         _mockNotification.deleteAll()
         _mockAggregatedObservationData.deleteAll()
+        _mockMilestone.deleteAll()
     }
+
+    override suspend fun <T> runInTransaction(block: suspend () -> T): T = block()
 }
 
 class MockObservationFactory(

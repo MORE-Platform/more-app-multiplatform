@@ -18,6 +18,7 @@ import io.redlink.more.database.dao.AggregatedObservationDataDao
 import io.redlink.more.database.dao.BluetoothDeviceDao
 import io.redlink.more.database.dao.DataPointDao
 import io.redlink.more.database.dao.LatestObservationDataDao
+import io.redlink.more.database.dao.MilestoneDao
 import io.redlink.more.database.dao.NotificationDao
 import io.redlink.more.database.dao.ObservationDao
 import io.redlink.more.database.dao.ObservationDataDao
@@ -27,6 +28,7 @@ import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.DataPointEntity
 import io.redlink.more.database.entities.LatestObservationDataEntity
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
@@ -43,9 +45,10 @@ import io.redlink.more.database.entities.StudyEntity
         BluetoothDeviceEntity::class,
         DataPointEntity::class,
         AggregatedObservationDataEntity::class,
-        LatestObservationDataEntity::class
+        LatestObservationDataEntity::class,
+        MilestoneEntity::class
     ],
-    version = 4
+    version = 5
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -58,4 +61,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dataPointDao(): DataPointDao
     abstract fun aggregatedObservationDataDao(): AggregatedObservationDataDao
     abstract fun latestObservationDataDao(): LatestObservationDataDao
+    abstract fun milestoneDao(): MilestoneDao
 }

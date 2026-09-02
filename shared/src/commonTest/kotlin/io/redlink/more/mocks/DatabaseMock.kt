@@ -5,6 +5,7 @@ import io.redlink.more.database.dao.AggregatedObservationDataDao
 import io.redlink.more.database.dao.BaseDao
 import io.redlink.more.database.dao.BluetoothDeviceDao
 import io.redlink.more.database.dao.LatestObservationDataDao
+import io.redlink.more.database.dao.MilestoneDao
 import io.redlink.more.database.dao.NotificationDao
 import io.redlink.more.database.dao.ObservationDao
 import io.redlink.more.database.dao.ObservationDataDao
@@ -13,6 +14,7 @@ import io.redlink.more.database.dao.StudyDao
 import io.redlink.more.database.entities.AggregatedObservationDataEntity
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.database.entities.LatestObservationDataEntity
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.entities.ObservationDataEntity
 import io.redlink.more.database.entities.ObservationEntity
@@ -41,6 +43,7 @@ class AppDatabase_Impl : AppDatabase(), DB {
     val bluetoothDeviceDao = MockBluetoothDeviceDao()
     val aggregatedObservationDataDao = MockAggregatedObservationDataDao()
     val latestObservationDataDao = MockLatestObservationDataDao()
+    val milestoneDao = MockMilestoneDao()
 
     override fun studyDao() = studyDao
     override fun scheduleDao() = scheduleDao
@@ -51,6 +54,7 @@ class AppDatabase_Impl : AppDatabase(), DB {
     override fun aggregatedObservationDataDao() = aggregatedObservationDataDao
     override fun latestObservationDataDao() = latestObservationDataDao
     override fun dataPointDao() = TODO()
+    override fun milestoneDao() = milestoneDao
 
     override fun createInvalidationTracker(): androidx.room.InvalidationTracker {
         return androidx.room.InvalidationTracker(this, emptyMap(), emptyMap(), "")
@@ -705,6 +709,22 @@ class MockAggregatedObservationDataDao : AggregatedObservationDataDao {
     override suspend fun deleteById(id: String) = TODO()
     override suspend fun getCount(): Int = TODO()
     override suspend fun getCountByObservationId(observationId: String): Int = TODO()
+}
+
+class MockMilestoneDao : MockBaseDao<MilestoneEntity>(), MilestoneDao {
+    private val _itemsFlow = MutableStateFlow<List<MilestoneEntity>>(emptyList())
+
+    override suspend fun insertAll(entities: List<MilestoneEntity>) {
+        super.insertAll(entities)
+        _itemsFlow.value = items.toList()
+    }
+
+    override fun getAllFlow(): Flow<List<MilestoneEntity>> = _itemsFlow
+
+    override suspend fun deleteAll() {
+        items.clear()
+        _itemsFlow.value = items.toList()
+    }
 }
 
 class MockBluetoothDeviceDao : BluetoothDeviceDao {

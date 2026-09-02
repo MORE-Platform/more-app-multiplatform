@@ -21,6 +21,14 @@ interface MainRepository {
     val notification: NotificationRepository
     val bluetoothDevice: BluetoothDeviceRepository
     val aggregatedObservationData: AggregatedObservationDataRepository
+    val milestone: MilestoneRepository
 
     suspend fun deleteAll()
+
+    /**
+     * Runs [block] inside a single Room write transaction, so partial state (e.g. an
+     * [ObservationRepository] write landing without its matching [ScheduleRepository] write) is
+     * never observable by a concurrent reader.
+     */
+    suspend fun <T> runInTransaction(block: suspend () -> T): T
 }

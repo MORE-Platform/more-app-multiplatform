@@ -7,6 +7,7 @@ import io.redlink.more.models.LoginModel
 import io.redlink.more.services.network.NetworkService
 import io.redlink.more.services.network.openapi.model.AppConfiguration
 import io.redlink.more.services.network.openapi.model.DataBulk
+import io.redlink.more.services.network.openapi.model.ParticipantMilestone
 import io.redlink.more.services.network.openapi.model.PushNotification
 import io.redlink.more.services.network.openapi.model.Study
 import io.redlink.more.services.network.openapi.model.StudyConsent
@@ -14,6 +15,7 @@ import io.redlink.more.services.network.openapi.model.StudyConsent
 class MockNetworkService : NetworkService {
     var lastSentToken: String? = null
     var missedNotifications = listOf<PushNotification>()
+    var milestones = listOf<ParticipantMilestone>()
 
     override fun baseUrl(): String = "http://localhost"
 
@@ -41,6 +43,9 @@ class MockNetworkService : NetworkService {
 
     override suspend fun downloadMissedNotifications(): List<PushNotification> =
         missedNotifications
+
+    override suspend fun getMilestones(): List<ParticipantMilestone> =
+        milestones
 
     override fun getBasicAuthHeader(): String? = null
 

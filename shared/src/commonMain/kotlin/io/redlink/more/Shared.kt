@@ -15,6 +15,7 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.tmapps.konnection.Konnection
 import io.github.aakira.napier.Napier
+import io.redlink.more.database.entities.MilestoneEntity
 import io.redlink.more.database.entities.NotificationEntity
 import io.redlink.more.database.repository.MainRepository
 import io.redlink.more.events.AppEvent
@@ -244,6 +245,16 @@ open class Shared(
         observationService.scheduleObservationReminder()
         notificationManager.downloadMissedNotifications()
         EventBus.tryPublish(AppEvent.ScheduleHaveUpdated)
+        downloadMilestones()
+        if (sharedStorageRepository.load(NetworkServiceProxy.DEMO_MODE_KEY, false)) {
+            val missed = networkService.downloadMissedNotifications()
+            notificationManager.rescheduleNotifications(NotificationEntity.toEntityList(missed))
+        }
+    }
+
+    private suspend fun downloadMilestones() {
+        val milestones = networkService.getMilestones()
+        repositories.milestone.storeMilestones(MilestoneEntity.toEntityList(milestones))
     }
 
     override fun updateStudy(
