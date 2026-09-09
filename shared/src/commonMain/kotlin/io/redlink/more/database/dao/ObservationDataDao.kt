@@ -118,6 +118,9 @@ interface ObservationDataDao : BaseDao<ObservationDataEntity> {
     @Query("SELECT * FROM observation_data ORDER BY timestamp DESC LIMIT :limit")
     suspend fun getLatest(limit: Int): List<ObservationDataEntity>
 
+    @Query("SELECT * FROM observation_data ORDER BY timestamp ASC LIMIT :limit")
+    suspend fun getOldest(limit: Int): List<ObservationDataEntity>
+
     @Query("SELECT * FROM observation_data ORDER BY timestamp DESC LIMIT :limit")
     fun getLatestFlow(limit: Int): Flow<List<ObservationDataEntity>>
 

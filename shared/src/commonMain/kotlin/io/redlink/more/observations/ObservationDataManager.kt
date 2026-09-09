@@ -51,6 +51,22 @@ abstract class ObservationDataManager(
         }
     }
 
+    /**
+     * Like [add], but writes straight to the DB instead of the in-memory buffer. Suspends until the
+     * insert is durable, so a caller draining a large offline recording can persist it chunk-by-chunk
+     * and let each chunk be GC'd before the next -- keeping peak heap at ~one chunk. See
+     * [ObservationDataRepository.addDataDirectly].
+     */
+    open suspend fun addDirectly(dataList: List<ObservationDataEntity>, scheduleIdList: Set<String>) {
+        if (dataList.isNotEmpty()) {
+            repository.observationData.addDataDirectly(dataList)
+            repository.dataPointCount.incrementCount(scheduleIdList, dataList.size.toLong())
+            if (countJob == null && repository.study.studyState.value == StudyState.ACTIVE) {
+                listenToDatapointCountChanges()
+            }
+        }
+    }
+
     open fun saveAndSend() {
         Napier.i(tag = "ObservationDataManager::saveAndSend") { "Saving and sending observations" }
         scope.launch(dispatchers.io) {
@@ -110,7 +126,19 @@ abstract class ObservationDataManager(
 
     protected suspend fun dataBulk() = repository.observationData.allAsBulk()
 
+    /** Oldest-first bounded batch used to drain the upload queue without OOM. See [UPLOAD_BATCH_SIZE]. */
+    protected suspend fun nextDataBulk(limit: Int = UPLOAD_BATCH_SIZE) =
+        repository.observationData.nextBatchAsBulk(limit)
+
     protected suspend fun deleteAll(idSet: Set<String>) {
         repository.observationData.deleteAllWithId(idSet)
+    }
+
+    companion object {
+        // Max data-point rows uploaded per POST. The request body is serialised into a single
+        // in-memory JSON string, so sending the whole queue (up to thousands of rows, each a
+        // Polar offline chunk of up to OFFLINE_STORE_CHUNK_SIZE samples) at once OOM-kills the
+        // app. Drain in small batches instead.
+        const val UPLOAD_BATCH_SIZE = 50
     }
 }

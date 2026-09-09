@@ -334,6 +334,10 @@ class MockObservationDataRepository : ObservationDataRepository {
         addedData.addAll(dataList)
     }
 
+    override suspend fun addDataDirectly(dataList: List<ObservationDataEntity>) {
+        addedData.addAll(dataList)
+    }
+
     override suspend fun store() {
         storeCalled = true
     }
@@ -341,6 +345,8 @@ class MockObservationDataRepository : ObservationDataRepository {
     override suspend fun getCount(): Int = count
 
     override suspend fun allAsBulk(): DataBulk? = null
+
+    override suspend fun nextBatchAsBulk(limit: Int): DataBulk? = null
 
     override suspend fun deleteAllWithId(idSet: Set<String>) {
         deletedIds = idSet

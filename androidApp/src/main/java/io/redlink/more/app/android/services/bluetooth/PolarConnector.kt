@@ -17,16 +17,19 @@ import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.PolarDeviceInfo
 import io.github.aakira.napier.Napier
-import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
-import io.redlink.more.app.android.observations.HR.PolarConnectorListener
-import io.redlink.more.app.android.observations.HR.PolarObserverCallback
+import io.redlink.more.app.android.observations.PolarObservations.PolarConnectorListener
+import io.redlink.more.app.android.observations.PolarObservations.PolarObserverCallback
 import io.redlink.more.database.entities.BluetoothDeviceEntity
 import io.redlink.more.services.bluetooth.BluetoothConnector
 import io.redlink.more.services.bluetooth.BluetoothConnectorObserver
 import io.redlink.more.services.bluetooth.BluetoothState
 import io.redlink.more.services.bluetooth.BluetoothStateManagement
 import io.redlink.more.services.bluetooth.polar.PolarStates
+import io.redlink.more.scopes.Scope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onCompletion
 
 class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListener {
     private val polarObserverCallback: PolarObserverCallback = PolarObserverCallback()
@@ -38,7 +41,8 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_OFFLINE_RECORDING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_DEVICE_TIME_SETUP,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
+            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO,
+            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_TEMPERATURE_DATA
         )
     ).apply {
         setPolarFilter(true)
@@ -48,7 +52,7 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     private val bleManager = BluetoothStateManagement
 
-    private var scanDisposable: Disposable? = null
+    private var scanJob: Job? = null
 
     override val specificBluetoothConnectors: MutableMap<String, BluetoothConnector> =
         mutableMapOf()
@@ -70,15 +74,19 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
         if (!bleManager.scanning.value && observer.isNotEmpty() && bleManager.bluetoothActive.value) {
             bleManager.isScanning(true)
             Napier.i(tag = "PolarConnector::scan") { "Scanning started." }
-            scanDisposable = polarApi.searchForDevice()
-                .subscribe(
-                    { polarDeviceInfo: PolarDeviceInfo ->
-                        didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
-                    },
-                    { error: Throwable ->
+            // SDK 8 returns a cold Flow here; collecting it is what actually starts the scan,
+            // and cancelling the job is what stops it (the RxJava Disposable is gone).
+            scanJob = Scope.launch {
+                polarApi.searchForDevice()
+                    .catch { error ->
                         Napier.e(tag = "PolarConnector::scan") { error.stackTraceToString() }
+                        bleManager.isScanning(false)
                     }
-                )
+                    .onCompletion { bleManager.isScanning(false) }
+                    .collect { polarDeviceInfo: PolarDeviceInfo ->
+                        didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
+                    }
+            }.second
         }
     }
 
@@ -109,7 +117,8 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     override fun stopScanning() {
         Napier.i(tag = "PolarConnector::stopScanning") { "Stopping scanning." }
         if (bleManager.scanning.value) {
-            scanDisposable?.dispose()
+            scanJob?.cancel()
+            scanJob = null
             bleManager.isScanning(false)
         }
     }
@@ -120,6 +129,10 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
             PolarStates.hrFeatureReady(true)
 
             Napier.d(tag = "PolarHeartRateObservation:::setHRFeature") { "HR Feature Ready!" }
+        }
+        if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_SDK_MODE) {
+            Napier.i(tag = "PolarConnector::onPolarFeatureReady") { "SDK Mode ready!" }
+            PolarStates.sdkModeReady(true)
         }
     }
 

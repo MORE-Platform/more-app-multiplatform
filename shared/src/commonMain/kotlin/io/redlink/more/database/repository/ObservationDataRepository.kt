@@ -16,11 +16,20 @@ import io.redlink.more.services.network.openapi.model.DataBulk
 interface ObservationDataRepository {
     fun addData(dataList: List<ObservationDataEntity>)
 
+    /**
+     * Like [addData], but bypasses the in-memory queue and suspends until the rows are in the DB.
+     * Used to drain a large offline recording chunk-by-chunk without holding it all in memory.
+     */
+    suspend fun addDataDirectly(dataList: List<ObservationDataEntity>)
+
     suspend fun store()
 
     suspend fun getCount(): Int
 
     suspend fun allAsBulk(): DataBulk?
+
+    /** Oldest-first bounded batch, used to drain the upload queue without OOM. */
+    suspend fun nextBatchAsBulk(limit: Int): DataBulk?
 
     suspend fun deleteAllWithId(idSet: Set<String>)
 }

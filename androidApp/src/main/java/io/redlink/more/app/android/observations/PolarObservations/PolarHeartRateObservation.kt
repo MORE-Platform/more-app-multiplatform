@@ -8,7 +8,7 @@
  * (see https://www.apache.org/licenses/LICENSE-2.0 and
  * https://commonsclause.com/).
  */
-package io.redlink.more.app.android.observations.HR
+package io.redlink.more.app.android.observations.PolarObservations
 
 import android.Manifest
 import android.content.Context
@@ -16,7 +16,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import io.github.aakira.napier.Napier
-import io.reactivex.rxjava3.disposables.Disposable
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.extensions.stringResource
@@ -31,6 +30,7 @@ import io.redlink.more.services.bluetooth.BluetoothStateManagement
 import io.redlink.more.services.bluetooth.polar.PolarStates
 import io.redlink.more.viewModels.bluetoothConnection.PolarController
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 
 private val permissions =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -64,7 +64,7 @@ class PolarHeartRateObservation(repos: MainRepository) :
     private val bleManager = BluetoothStateManagement
     private val deviceIdentifier = setOf("Polar")
     private val polarConnector = MoreApplication.polarConnector!!
-    private var heartRateDisposable: Disposable? = null
+    private var heartRateJob: Job? = null
     private var deviceConnectionListener: Job? = null
 
     private val polarController = PolarController(repos)
@@ -93,23 +93,27 @@ class PolarHeartRateObservation(repos: MainRepository) :
             }
             return polarDevices.firstOrNull()?.let {
                 try {
-                    heartRateDisposable =
+                    // SDK 8 exposes HR streaming as a cold Flow; collecting it starts the stream and
+                    // cancelling the job stops it (the RxJava Disposable is gone).
+                    heartRateJob = Scope.launch {
                         polarConnector.polarApi.startHrStreaming(it.address!!)
-                            .subscribe(
-                                { polarData ->
-                                    storeData(mapOf("hr" to polarData.samples[0].hr))
-                                },
-                                { error ->
-                                    Napier.e(
-                                        tag = "PolarHeartRateObservation::start",
-                                        message = "HR Recording error: ${error.stackTraceToString()}"
-                                    )
-                                    pauseObservation(PolarVerityHeartRateType(emptySet()))
-                                    showObservationErrorNotification(
-                                        stringResource(R.string.observation_bluetooth_error),
-                                        stringResource(R.string.observation_error)
-                                    )
-                                })
+                            .catch { error ->
+                                Napier.e(
+                                    tag = "PolarHeartRateObservation::start",
+                                    message = "HR Recording error: ${error.stackTraceToString()}"
+                                )
+                                pauseObservation(PolarVerityHeartRateType(emptySet()))
+                                showObservationErrorNotification(
+                                    stringResource(R.string.observation_bluetooth_error),
+                                    stringResource(R.string.observation_error)
+                                )
+                            }
+                            .collect { polarData ->
+                                polarData.samples.firstOrNull()?.let { sample ->
+                                    storeData(mapOf("hr" to sample.hr))
+                                }
+                            }
+                    }.second
                     deviceConnectionListener = listenToDeviceConnection()
                     true
                 } catch (exception: Exception) {
@@ -138,7 +142,8 @@ class PolarHeartRateObservation(repos: MainRepository) :
     }
 
     override fun stop(onCompletion: () -> Unit) {
-        heartRateDisposable?.dispose()
+        heartRateJob?.cancel()
+        heartRateJob = null
         deviceConnectionListener?.cancel()
         deviceConnectionListener = null
         onCompletion()

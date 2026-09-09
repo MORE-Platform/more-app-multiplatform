@@ -15,17 +15,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import io.github.aakira.napier.Napier
 import io.redlink.more.app.android.MoreApplication
 import io.redlink.more.app.android.R
 import io.redlink.more.app.android.activities.consent.ConsentView
+import io.redlink.more.app.android.activities.consent.PolarProfileFormView
 import io.redlink.more.app.android.activities.login.LoginView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingErrorView
 import io.redlink.more.app.android.activities.studyStates.StudyLoadingView
 import io.redlink.more.app.android.extensions.applicationId
+import io.redlink.more.app.android.extensions.getSecureID
 import io.redlink.more.app.android.extensions.stringResource
+import io.redlink.more.app.android.observations.PolarObservations.PolarUserProfile
 import io.redlink.more.app.android.shared_composables.AppVersion
 import io.redlink.more.app.android.shared_composables.MoreBackground
 import io.redlink.more.navigation.model.NavigationRouteParameter
@@ -83,11 +89,35 @@ fun ContentView(viewModel: ContentViewModel) {
     val hasCredentials by MoreApplication.shared!!.credentialRepository.hasCredentials.collectAsStateWithLifecycle()
     val credentialsLoaded by MoreApplication.shared!!.credentialRepository.credentialsLoaded.collectAsStateWithLifecycle()
     val studyLoadingError by ViewManager.studyLoadingError.collectAsStateWithLifecycle()
+    val study by viewModel.registrationService.study.collectAsStateWithLifecycle()
+    var showPolarProfileForm by remember { mutableStateOf(false) }
+
+    // The Polar device's first-time-use setup needs the participant's demographics, so collect them
+    // once during registration -- but only for studies that actually use a Polar observation.
+    val studyHasPolar = study?.observations
+        ?.any { it.observationType.contains("polar360observation") } == true
 
     MoreBackground(showBackButton = false) {
         if (credentialsLoaded && !hasCredentials) {
-            if (validLogin != null) {
-                ConsentView(viewModel.registrationService)
+            if (showPolarProfileForm) {
+                PolarProfileFormView(onComplete = {
+                    viewModel.registrationService.acceptConsent(
+                        getSecureID(MoreApplication.appContext!!) ?: ""
+                    )
+                })
+            } else if (validLogin != null) {
+                ConsentView(
+                    registrationService = viewModel.registrationService,
+                    onConsentAccepted = {
+                        if (studyHasPolar && PolarUserProfile.load() == null) {
+                            showPolarProfileForm = true
+                        } else {
+                            viewModel.registrationService.acceptConsent(
+                                getSecureID(MoreApplication.appContext!!) ?: ""
+                            )
+                        }
+                    }
+                )
             } else {
                 LoginView(viewModel.registrationService)
                 AppVersion()

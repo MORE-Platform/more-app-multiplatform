@@ -234,6 +234,15 @@ abstract class Observation(
 
     open fun ableToAutomaticallyStart() = true
 
+    /**
+     * Whether the schedule should be paused when the observation stops being accessible.
+     *
+     * Offline Polar observations override this to false: the device keeps recording on its own while
+     * out of Bluetooth range, so losing the connection is not a reason to pause the schedule -- the
+     * data is collected on the device and drained on the next connection.
+     */
+    open fun shouldAutoPause(): Boolean = true
+
     fun <T> storeInstant(data: T, timestamp: Long) {
         longRunningStorage?.storeInstant(data, timestamp)
     }
@@ -273,6 +282,101 @@ abstract class Observation(
         Napier.i(tag = "Observation::storeData") { "Observation, with ids $observationIds, ${observationType.observationType} recorded new datapoints!" }
         dataManager?.add(dataSchemas, scheduleIds.keys)
         onCompletion()
+    }
+
+    /**
+     * Persists one payload straight to the DB (bypassing the in-memory buffer). Suspends until the
+     * insert completes. Used by [storeWindowedDirectly] to drain a large offline recording without
+     * accumulating it in memory. See [ObservationDataManager.addDirectly].
+     */
+    suspend fun storeDataDirectly(data: Map<String, Any>, timestamp: Long = -1) {
+        val dataSchemas = ObservationDataEntity.fromData(
+            observationIds.toSet(), setOf(ObservationBulkModel(data, timestamp))
+        ).map {
+            it.observationType =
+                observationTypes[it.observationId] ?: observationType.observationType
+            it
+        }
+        dataManager?.addDirectly(dataSchemas, scheduleIds.keys)
+    }
+
+    /**
+     * Heap-safe store for a large recording received whole from the sensor. Walks [total] in windows
+     * of [chunkSize] using index-based sublist VIEWS (windowing allocates nothing), transforms each
+     * window with [transform], and writes it straight to the DB -- releasing each window before the
+     * next. Peak added heap stays at ~one window regardless of recording length. Runs on the study
+     * scope; [onCompletion] fires once the whole list is drained (or on failure).
+     */
+    fun <T> storeWindowedDirectly(
+        total: List<T>,
+        dataKey: String,
+        chunkSize: Int,
+        transform: (List<T>) -> List<Any>,
+        onCompletion: () -> Unit = {},
+    ) {
+        StudyScope.launch(Dispatchers.IO) {
+            try {
+                var i = 0
+                while (i < total.size) {
+                    val end = minOf(i + chunkSize, total.size)
+                    // subList is a VIEW over `total`, so windowing copies nothing; only the
+                    // transformed chunk is newly allocated, and it is freed on the next iteration.
+                    val processed = transform(total.subList(i, end))
+                    if (processed.isNotEmpty()) {
+                        storeDataDirectly(mapOf(dataKey to processed), -1)
+                    }
+                    i = end
+                }
+            } catch (e: Exception) {
+                Napier.e(tag = "Observation::storeWindowedDirectly") { "[$dataKey] windowed store failed: ${e.message}" }
+            } finally {
+                onCompletion()
+            }
+        }
+    }
+
+    /**
+     * Same heap-safe windowed store as [storeWindowedDirectly], but for a lazily-produced [total]
+     * that is never fully materialised. Buffers items into windows of [chunkSize], transforms and
+     * persists each window straight to the DB, then releases it before pulling the next. Peak added
+     * heap stays at ~one window regardless of how many items the sequence yields -- used for the 1 Hz
+     * PPI padding, which generates one item per second (potentially millions for multi-day
+     * recordings) and must never be collected into a single list.
+     */
+    fun <T> storeWindowedDirectly(
+        total: Sequence<T>,
+        dataKey: String,
+        chunkSize: Int,
+        transform: (List<T>) -> List<Any>,
+        onCompletion: () -> Unit = {},
+    ) {
+        StudyScope.launch(Dispatchers.IO) {
+            try {
+                // Each flushed window is a fresh list handed to transform/store, so the buffer is
+                // never aliased by an in-flight insert.
+                var buffer = ArrayList<T>(chunkSize)
+                for (item in total) {
+                    buffer.add(item)
+                    if (buffer.size >= chunkSize) {
+                        val processed = transform(buffer)
+                        if (processed.isNotEmpty()) {
+                            storeDataDirectly(mapOf(dataKey to processed), -1)
+                        }
+                        buffer = ArrayList(chunkSize)
+                    }
+                }
+                if (buffer.isNotEmpty()) {
+                    val processed = transform(buffer)
+                    if (processed.isNotEmpty()) {
+                        storeDataDirectly(mapOf(dataKey to processed), -1)
+                    }
+                }
+            } catch (e: Exception) {
+                Napier.e(tag = "Observation::storeWindowedDirectly") { "[$dataKey] windowed (sequence) store failed: ${e.message}" }
+            } finally {
+                onCompletion()
+            }
+        }
     }
 
     open fun stopAndFinish(scheduleId: String) {

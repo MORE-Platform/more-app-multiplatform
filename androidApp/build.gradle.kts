@@ -171,7 +171,7 @@ kotlin {
 val composeVersion = "1.6.0"
 val workVersion = "2.10.3"
 val navVersion = "2.9.3"
-val polarSDKVersion = "6.7.0"
+val polarSDKVersion = "8.2.0"
 val ktorVersion = "3.4.0"
 val roomVersion = "2.8.4"
 val koinVersion = "4.1.1"
@@ -211,7 +211,9 @@ dependencies {
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
     implementation("androidx.camera:camera-view:$cameraVersion")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     implementation("androidx.room:room-runtime:$roomVersion")
 
     ksp("androidx.room:room-compiler:$roomVersion")

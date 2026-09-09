@@ -14,7 +14,11 @@ import android.Manifest
 import android.content.Context
 import io.redlink.more.app.android.observations.GPS.GPSObservation
 import io.redlink.more.app.android.observations.GPS.GPSService
-import io.redlink.more.app.android.observations.HR.PolarHeartRateObservation
+import io.redlink.more.app.android.observations.PolarObservations.PolarAccObservation
+import io.redlink.more.app.android.observations.PolarObservations.PolarHeartRateObservation
+import io.redlink.more.app.android.observations.PolarObservations.PolarHrObservation
+import io.redlink.more.app.android.observations.PolarObservations.PolarPpiObservation
+import io.redlink.more.app.android.observations.PolarObservations.PolarTempObservation
 import io.redlink.more.app.android.observations.accelerometer.AccelerometerObservation
 import io.redlink.more.app.android.services.sensorsListener.BluetoothStateListener
 import io.redlink.more.app.android.services.sensorsListener.GPSStateListener
@@ -50,6 +54,18 @@ class AndroidObservationFactory(
         }
         registerObservation {
             PolarHeartRateObservation(repository)
+        }
+        registerObservation {
+            PolarHrObservation(repository)
+        }
+        registerObservation {
+            PolarAccObservation(repository)
+        }
+        registerObservation {
+            PolarTempObservation(repository)
+        }
+        registerObservation {
+            PolarPpiObservation(repository)
         }
         registerObservation {
             appUsageObservation!!

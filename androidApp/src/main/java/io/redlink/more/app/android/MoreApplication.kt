@@ -24,6 +24,7 @@ import io.redlink.more.app.android.observations.AndroidDataRecorder
 import io.redlink.more.app.android.observations.AndroidObservationDataManager
 import io.redlink.more.app.android.observations.AndroidObservationFactory
 import io.redlink.more.app.android.services.LocalPushNotificationService
+import io.redlink.more.app.android.observations.PolarObservations.PolarController
 import io.redlink.more.app.android.services.bluetooth.PolarConnector
 import io.redlink.more.app.android.util.logging.FirebaseCrashlyticsAntilog
 import io.redlink.more.database.AppDatabase
@@ -97,11 +98,20 @@ class MoreApplication : Application(), DefaultLifecycleObserver {
         var polarConnector: PolarConnector? = null
             private set
 
+        /**
+         * Shared across every Polar observation. The controller serializes access to the device
+         * with an internal mutex, which only works if all observations go through the same
+         * instance -- do not construct one per observation.
+         */
+        var polarController: PolarController? = null
+            private set
+
         val openSettings = mutableStateOf(false)
 
         fun initShared(context: Context) {
             if (shared == null) {
                 polarConnector = PolarConnector(context)
+                polarController = PolarController()
                 val androidBluetoothConnector = polarConnector!!
                 val database: AppDatabase = getRoomDatabase(getDatabaseBuilder(context))
                 val repositories = MainRepositoryImpl(database)

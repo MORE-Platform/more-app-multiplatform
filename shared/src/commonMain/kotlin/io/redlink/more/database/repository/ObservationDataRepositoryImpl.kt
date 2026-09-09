@@ -42,6 +42,14 @@ class ObservationDataRepositoryImpl(private val appDatabase: AppDatabase) :
         }
     }
 
+    override suspend fun addDataDirectly(dataList: List<ObservationDataEntity>) {
+        // Insert straight to the DB (no in-memory queue). Room serialises concurrent writes, so we
+        // don't hold [mutex] across the I/O -- matching store(), which also inserts outside the lock.
+        if (dataList.isNotEmpty()) {
+            appDatabase.observationDataDao().insertAll(dataList)
+        }
+    }
+
     override suspend fun store() {
         if (queue.isNotEmpty()) {
             val queueCopy = mutex.withLock {
@@ -58,6 +66,17 @@ class ObservationDataRepositoryImpl(private val appDatabase: AppDatabase) :
     override suspend fun allAsBulk(): DataBulk? {
         return mutex.withLock {
             val observationDataEntities = appDatabase.observationDataDao().getLatest(5000)
+            if (observationDataEntities.isNotEmpty()) {
+                observationDataEntities.mapAsBulkData()
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun nextBatchAsBulk(limit: Int): DataBulk? {
+        return mutex.withLock {
+            val observationDataEntities = appDatabase.observationDataDao().getOldest(limit)
             if (observationDataEntities.isNotEmpty()) {
                 observationDataEntities.mapAsBulkData()
             } else {

@@ -114,24 +114,32 @@ class AndroidObservationDataManager(context: Context, repository: MainRepository
         Napier.i { "Sending data via fallback method..." }
         var attemptCount = 0
         while (attemptCount < maxAttempts && isConnected()) {
-            dataBulk()?.let { bulk ->
-                if (bulk.dataPoints.isNotEmpty()) {
-                    val (ids, error) = networkService.sendData(bulk)
-                    if (error != null) {
-                        Napier.e { "Error sending data: $error" }
-                        attemptCount++
-                        delay(baseDelayMs * attemptCount)
-                        continue
-                    } else {
-                        Napier.i { "Successfully sent ${ids.size} data points! Deleting data from local database..." }
-                        deleteAll(ids)
-                        Napier.i { "Successfully deleted ${ids.size} data points!" }
-                        return@withContext true
-                    }
-                }
+            // Drain the queue in small batches: each POST serialises only UPLOAD_BATCH_SIZE rows into
+            // one in-memory JSON string, so a large backlog (Polar offline chunks hold up to
+            // OFFLINE_STORE_CHUNK_SIZE samples each) can never OOM-kill the app.
+            val bulk = nextDataBulk()
+            if (bulk == null || bulk.dataPoints.isEmpty()) {
+                Napier.i { "Upload queue drained." }
+                return@withContext true
             }
+            val (ids, error) = networkService.sendData(bulk)
+            if (error != null) {
+                Napier.e { "Error sending data: $error" }
+                attemptCount++
+                delay(baseDelayMs * attemptCount)
+                continue
+            }
+            Napier.i { "Successfully sent ${ids.size} data points! Deleting data from local database..." }
+            deleteAll(ids)
+            Napier.i { "Successfully deleted ${ids.size} data points!" }
+            if (ids.size < bulk.dataPoints.size) {
+                // Server withheld some rows (not stored) -- stop and let the next cycle retry them.
+                Napier.w { "Server acked ${ids.size}/${bulk.dataPoints.size}; stopping drain, will retry remainder." }
+                return@withContext true
+            }
+            attemptCount = 0
         }
-        Napier.e { "Max attempts ($maxAttempts) reached, no data points sent!" }
+        Napier.e { "Max attempts ($maxAttempts) reached or offline; stopping upload drain." }
         return@withContext false
     }
 }
