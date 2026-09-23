@@ -1,0 +1,105 @@
+//
+//  PolarProfileFormView.swift
+//  iosApp
+//
+
+import SwiftUI
+
+struct PolarProfileFormView: View {
+    let onComplete: () -> Void
+
+    @State private var gender: PolarUserProfile.Gender = .female
+    @State private var ageText: String = "30"
+    @State private var heightText: String = "170"
+    @State private var weightText: String = "70"
+
+    private var age: Int? { Int(ageText).flatMap { (1...120).contains($0) ? $0 : nil } }
+    private var heightCm: Int? { Int(heightText).flatMap { (50...250).contains($0) ? $0 : nil } }
+    private var weightKg: Int? { Int(weightText).flatMap { (20...300).contains($0) ? $0 : nil } }
+    private var isValid: Bool { age != nil && heightCm != nil && weightKg != nil }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Title2(titleText: "Polar 360 Setup")
+                .padding(.bottom, 8)
+
+            Text("Please provide your physical information for accurate sensor calibration.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 30)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Gender")
+                            .font(.headline)
+                        HStack(spacing: 0) {
+                            ForEach(PolarUserProfile.Gender.allCases, id: \.self) { g in
+                                Button { gender = g } label: {
+                                    Text(g.displayName)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 10)
+                                        .background(gender == g ? genderColor(g) : Color(.systemGray5))
+                                        .foregroundColor(gender == g ? .white : .secondary)
+                                }
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Age (years)")
+                            .font(.headline)
+                        TextField("e.g. 30", text: $ageText)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(.roundedBorder)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(!ageText.isEmpty && age == nil ? Color.red : Color.clear, lineWidth: 1)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Height (cm)")
+                            .font(.headline)
+                        TextField("e.g. 170", text: $heightText)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(.roundedBorder)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(!heightText.isEmpty && heightCm == nil ? Color.red : Color.clear, lineWidth: 1)
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Weight (kg)")
+                            .font(.headline)
+                        TextField("e.g. 70", text: $weightText)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(.roundedBorder)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(!weightText.isEmpty && weightKg == nil ? Color.red : Color.clear, lineWidth: 1)
+                            )
+                    }
+                }
+            }
+
+            Spacer()
+
+            MoreActionButton(disabled: .constant(!isValid)) {
+                PolarUserProfile(gender: gender, age: age!, heightCm: heightCm!, weightKg: weightKg!).save()
+                onComplete()
+            } label: {
+                Text("Continue")
+            }
+        }
+        .padding(24)
+    }
+
+    private func genderColor(_ g: PolarUserProfile.Gender) -> Color {
+        g == .female ? Color(red: 0.89, green: 0.25, blue: 0.52) : Color(red: 0.13, green: 0.47, blue: 0.87)
+    }
+}

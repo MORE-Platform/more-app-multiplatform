@@ -16,7 +16,6 @@
 import CoreBluetooth
 import Foundation
 import PolarBleSdk
-import RxSwift
 import shared
 
 protocol BLEConnectorDelegate {

@@ -30,6 +30,22 @@ class IOSObservationFactory: ObservationFactory {
         registerObservation {
             PolarVerityHeartRateObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
         }
+
+        registerObservation {
+            PolarHrObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
+        }
+
+        registerObservation {
+            PolarAccObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
+        }
+
+        registerObservation {
+            PolarTempObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
+        }
+
+        registerObservation {
+            PolarPpiObservation(repos: repository, sensorPermissions: ["bluetoothAlways"])
+        }
     }
 
     override func observationPostConstruct(observation: Observation_) {

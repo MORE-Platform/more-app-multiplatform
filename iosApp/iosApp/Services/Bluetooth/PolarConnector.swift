@@ -16,7 +16,6 @@
 import CoreBluetooth
 import Foundation
 import PolarBleSdk
-import RxSwift
 import shared
 import UIKit
 
@@ -26,7 +25,7 @@ class PolarConnector: NSObject, BluetoothConnector {
 
     var delegate: BLEConnectorDelegate?
     private var scanningWithUnknownBLEState = false
-    private var devicesSubscription: Disposable?
+    private var scanTask: Task<Void, Never>?
 
     private(set) var polarApi: PolarBleApi
 
@@ -112,16 +111,19 @@ class PolarConnector: NSObject, BluetoothConnector {
         } else if !bleManager.scanningValue && observer.count > 0 && bleManager.bluetoothActiveValue && bleManager.devicesCurrentlyConnectingValue.isEmpty {
             print("Polar: Starting the scan...")
             bleManager.isScanning(scan: true)
-            Task { @MainActor [weak self] in
-                if let self {
-                    self.devicesSubscription = self.polarApi.searchForDevice().subscribe(onNext: { device in
+            // SDK 8 replaced the Rx Observable with an AsyncThrowingStream: iterating it is what
+            // drives the scan, and cancelling the Task is what stops it (Disposable is gone).
+            scanTask = Task { @MainActor [weak self] in
+                guard let self else { return }
+                defer { BluetoothStateManagement.shared.isScanning(scan: false) }
+                do {
+                    for try await device in self.polarApi.searchForDevice() {
                         self.didDiscoverDevice(device: BluetoothDeviceEntity.fromPolarDevice(polarInfo: device))
-                    }, onError: { error in
-                        print(error)
-                        BluetoothStateManagement.shared.isScanning(scan: false)
-                    }, onDisposed: {
-                        BluetoothStateManagement.shared.isScanning(scan: false)
-                    })
+                    }
+                } catch is CancellationError {
+                    // Expected: stopScanning() cancelled the task.
+                } catch {
+                    print(error)
                 }
             }
         }
@@ -131,8 +133,8 @@ class PolarConnector: NSObject, BluetoothConnector {
         Task { @MainActor [weak self] in
             if let self, BluetoothStateManagement.shared.scanningValue {
                 print("Polar: Stopping the scan and cleaning up...")
-                self.devicesSubscription?.dispose()
-                self.devicesSubscription = nil
+                self.scanTask?.cancel()
+                self.scanTask = nil
 
                 BluetoothStateManagement.shared.isScanning(scan: false)
             }
@@ -239,6 +241,10 @@ extension PolarConnector: PolarBleApiDeviceFeaturesObserver {
         if feature == .feature_hr {
             print("Polar HR Feature ready!")
             PolarStates.shared.hrFeatureReady(ready: true)
+        }
+        if feature == .feature_polar_sdk_mode {
+            print("Polar SDK Mode ready!")
+            PolarStates.shared.sdkModeReady(ready: true)
         }
     }
 }

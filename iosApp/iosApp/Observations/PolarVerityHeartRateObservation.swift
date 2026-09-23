@@ -18,7 +18,6 @@ import CoreBluetooth
 import Foundation
 import KMPNativeCoroutinesCombine
 import PolarBleSdk
-import RxSwift
 import shared
 import UIKit
 
@@ -27,7 +26,7 @@ class PolarVerityHeartRateObservation: Observation_ {
     private let polarConnector = AppDelegate.polarConnector
 
     private var connectedDevices: [BluetoothDeviceEntity] = []
-    private var hrObservation: Disposable?
+    private var hrObservation: Task<Void, Never>?
 
     private let bleManager = BluetoothStateManagement.shared
 
@@ -35,14 +34,16 @@ class PolarVerityHeartRateObservation: Observation_ {
 
     private let errorStringTable = "Errors"
 
-    private let polarController: PolarController
+    // Module-qualified: `PolarController` alone now resolves to the app-level controller
+    // that drives the Polar 360 offline recordings, not this KMP view model.
+    private let polarController: shared.PolarController
 
     private var cancellables = Set<AnyCancellable>()
     private static let notificationBackoffInterval: TimeInterval = 60
     private static var lastCannotStartNotificationDate: Date?
 
     init(repos: MainRepository, sensorPermissions: Set<String>) {
-        polarController = PolarController(repos: repos)
+        polarController = shared.PolarController(repos: repos)
         super.init(repos: repos, observationType: PolarVerityHeartRateType(sensorPermissions: sensorPermissions))
 
         createPublisher(for: polarController.hrFeatureChange)
@@ -71,18 +72,24 @@ class PolarVerityHeartRateObservation: Observation_ {
             let acceptableDevices = bleManager.connectedDevicesValue.deviceWithNameIn(nameSet: deviceIdentificer)
             if !acceptableDevices.isEmpty, let firstAddres = acceptableDevices[0].address {
                 listenToDeviceConnection()
-                hrObservation = polarConnector.polarApi.startHrStreaming(firstAddres).subscribe(onNext: { [weak self] data in
-                    if let self, let hrData = data.first {
-                        self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
+                // SDK 8 exposes HR streaming as an AsyncThrowingStream; iterating it starts the
+                // stream and cancelling the Task stops it.
+                hrObservation = Task { [weak self] in
+                    guard let self else { return }
+                    do {
+                        for try await data in self.polarConnector.polarApi.startHrStreaming(firstAddres) {
+                            guard let hrData = data.first else { continue }
+                            self.storeData(data: ["hr": hrData.hr], timestamp: -1) {
+                            }
                         }
-                    }
-                }, onError: { [weak self] error in
-                    print(error)
-                    if let self {
-                        showCannotStartNotificationWithBackoff(title: "Observation Error", message: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!")
+                    } catch is CancellationError {
+                        // Expected: stop() cancelled the task.
+                    } catch {
+                        print(error)
+                        self.showCannotStartNotificationWithBackoff(title: "Observation Error", message: "Error continuing Observation! There was a connection issue to a bluetooth sensor. Please make sure to enable bluetooth and connect all necessary devices!")
                         Observation_.pauseObservation(self.observationType)
                     }
-                })
+                }
                 return true
             }
         }
@@ -91,7 +98,8 @@ class PolarVerityHeartRateObservation: Observation_ {
     }
 
     override func stop(onCompletion: @escaping () -> Void) {
-        hrObservation?.dispose()
+        hrObservation?.cancel()
+        hrObservation = nil
         deviceListener?.cancel()
         onCompletion()
     }

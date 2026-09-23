@@ -10,9 +10,14 @@
  */
 package io.redlink.more.app.android.services.bluetooth
 
+import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.os.Build
+import androidx.core.content.ContextCompat
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.PolarBleApiDefaultImpl
 import com.polar.sdk.api.model.PolarDeviceInfo
@@ -71,23 +76,29 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
     }
 
     override fun scan() {
-        if (!bleManager.scanning.value && observer.isNotEmpty() && bleManager.bluetoothActive.value) {
-            bleManager.isScanning(true)
-            Napier.i(tag = "PolarConnector::scan") { "Scanning started." }
-            // SDK 8 returns a cold Flow here; collecting it is what actually starts the scan,
-            // and cancelling the job is what stops it (the RxJava Disposable is gone).
-            scanJob = Scope.launch {
-                polarApi.searchForDevice()
-                    .catch { error ->
-                        Napier.e(tag = "PolarConnector::scan") { error.stackTraceToString() }
-                        bleManager.isScanning(false)
-                    }
-                    .onCompletion { bleManager.isScanning(false) }
-                    .collect { polarDeviceInfo: PolarDeviceInfo ->
-                        didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
-                    }
-            }.second
+        if (bleManager.scanning.value || observer.isEmpty() || !bleManager.bluetoothActive.value) {
+            // Log why, otherwise a blocked scan is indistinguishable from one that never got called.
+            Napier.w(tag = "PolarConnector::scan") {
+                "Scan skipped: alreadyScanning=${bleManager.scanning.value}, " +
+                    "observers=${observer.size}, bluetoothActive=${bleManager.bluetoothActive.value}"
+            }
+            return
         }
+        bleManager.isScanning(true)
+        Napier.i(tag = "PolarConnector::scan") { "Scanning started. ${scanPreconditions()}" }
+        // SDK 8 returns a cold Flow here; collecting it is what actually starts the scan,
+        // and cancelling the job is what stops it (the RxJava Disposable is gone).
+        scanJob = Scope.launch {
+            polarApi.searchForDevice()
+                .catch { error ->
+                    Napier.e(tag = "PolarConnector::scan") { error.stackTraceToString() }
+                    bleManager.isScanning(false)
+                }
+                .onCompletion { bleManager.isScanning(false) }
+                .collect { polarDeviceInfo: PolarDeviceInfo ->
+                    didDiscoverDevice(polarDeviceInfo.toBluetoothDevice())
+                }
+        }.second
     }
 
     override fun connect(device: BluetoothDeviceEntity): Error? {
@@ -215,6 +226,33 @@ class PolarConnector(context: Context) : BluetoothConnector, PolarConnectorListe
 
     override fun addSpecificBluetoothConnector(key: String, connector: BluetoothConnector) {
         specificBluetoothConnectors[key] = connector
+    }
+
+    /**
+     * BLUETOOTH_SCAN is declared without `neverForLocation`, so Android treats a BLE scan as
+     * location derivation: with location services off the scanner still registers successfully and
+     * then reports nothing at all. That failure is otherwise invisible, so record the preconditions
+     * next to "Scanning started." -- if no device is discovered, this line says whether it could
+     * have been.
+     */
+    private fun scanPreconditions(): String {
+        val ctx = MoreApplication.appContext ?: return "(no context)"
+        val locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        val locationOn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            locationManager?.isLocationEnabled
+        } else {
+            locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        }
+        fun granted(permission: String) =
+            ContextCompat.checkSelfPermission(ctx, permission) == PackageManager.PERMISSION_GRANTED
+        val scanGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            granted(Manifest.permission.BLUETOOTH_SCAN)
+        } else {
+            true
+        }
+        return "locationServicesEnabled=$locationOn, " +
+            "BLUETOOTH_SCAN=$scanGranted, " +
+            "ACCESS_FINE_LOCATION=${granted(Manifest.permission.ACCESS_FINE_LOCATION)}"
     }
 }
 

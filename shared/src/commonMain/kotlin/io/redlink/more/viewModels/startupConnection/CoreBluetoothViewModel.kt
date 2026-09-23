@@ -26,11 +26,17 @@ class CoreBluetoothViewModel(
     val devicesNeededToConnectTo: StateFlow<Set<String>> = observationFactory.studyObservationTypes
     override fun viewIdentifier(): String = NavigationRoute.BLUETOOTH_CONNECTION.viewIdentifier
 
-    override fun viewDidAppear() {
+    // Hook viewOpened/viewClosed, not viewDidAppear/viewDidDisappear: Android calls the former and
+    // the base class routes the latter into them, so this fires on both platforms. Overriding only
+    // viewDidAppear left uiOverride unset on Android, which pinned the scanner to ScanMode.Stopped
+    // and meant Polar devices were never discovered.
+    override fun viewOpened() {
+        super.viewOpened()
         coreBluetooth.viewDidAppear()
     }
 
-    override fun viewDidDisappear() {
+    override fun viewClosed() {
+        super.viewClosed()
         coreBluetooth.viewDidDisappear()
     }
 

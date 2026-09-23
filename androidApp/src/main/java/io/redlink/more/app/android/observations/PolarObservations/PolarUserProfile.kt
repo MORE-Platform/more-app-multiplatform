@@ -45,7 +45,9 @@ data class PolarUserProfile(
         get() = LocalDate.of(LocalDate.now().year - age, 1, 1)
 
     companion object {
-        private const val PREFS_NAME = "polar_profile"
+        // Name deliberately keeps the original "polar360" spelling: renaming it would orphan the
+        // profile saved by an existing install and silently fall back to FTU defaults.
+        private const val PREFS_NAME = "polar360_profile"
         private const val KEY_GENDER = "gender"
         private const val KEY_AGE = "age"
         private const val KEY_HEIGHT = "heightCm"

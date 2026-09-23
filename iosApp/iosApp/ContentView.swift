@@ -70,10 +70,34 @@ struct CredentialsView: View {
 struct RegistrationView: View {
     @ObservedObject var navigationModalState: NavigationModalState
     @StateObject private var registration = RegistrationObservable(service: RegistrationService(shared: AppDelegate.shared))
+    @State private var showPolarProfileForm = false
+
+    /// The Polar device's first-time-use setup needs the participant's demographics, so collect
+    /// them once during registration -- but only for studies that actually use a Polar observation.
+    private var studyHasPolar: Bool {
+        registration.study?.observations.contains { $0.observationType.contains("polar360observation") } ?? false
+    }
+
+    private func acceptConsent() {
+        if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+            registration.service.acceptConsent(uniqueDeviceId: uniqueId)
+        }
+    }
+
     var body: some View {
         VStack {
-            if registration.study != nil {
-                ConsentView(registration: registration)
+            if showPolarProfileForm {
+                PolarProfileFormView {
+                    acceptConsent()
+                }
+            } else if registration.study != nil {
+                ConsentView(registration: registration, onConsentAccepted: {
+                    if studyHasPolar && PolarUserProfile.load() == nil {
+                        showPolarProfileForm = true
+                    } else {
+                        acceptConsent()
+                    }
+                })
             } else {
                 LoginView(registration: registration)
                     .onAppear {

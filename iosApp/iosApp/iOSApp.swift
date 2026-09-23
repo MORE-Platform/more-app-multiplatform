@@ -29,6 +29,7 @@ struct iOSApp: App {
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .background:
+                        PolarController.shared.appIsInBackground = true
                         ViewManager.shared.appIsInForeground(state: false)
                         AppDelegate.shared.updateData(appInForeground: false)
                         if AppDelegate.shared.credentialRepository.hasCredentialsValue {
@@ -37,6 +38,12 @@ struct iOSApp: App {
                     case .inactive:
                         break
                     case .active:
+                        PolarController.shared.appIsInBackground = false
+                        // Observations have completed (or will complete via beginBackgroundTask /
+                        // BGAppRefreshTask). Clear persisted IDs so they don't bleed into the
+                        // next session.
+                        PolarController.shared.clearBackgroundDeviceId()
+                        IOSDataRecorder.clearBackgroundScheduleIds()
                         ViewManager.shared.appIsInForeground(state: true)
                         PermissionManager.resetPermissionAlertFlag()
                         AppDelegate.shared.updateData(appInForeground: true)

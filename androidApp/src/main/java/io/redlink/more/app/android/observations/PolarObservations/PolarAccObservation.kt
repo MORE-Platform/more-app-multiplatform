@@ -61,7 +61,10 @@ private val permissions =
 class PolarAccObservation(repos: MainRepository) :
     Observation(repos, observationType = PolarAccType(permissions)) {
 
-    private val deviceIdentifier = setOf("Polar")
+    // Matched as a substring of the advertised name ("Polar 360 12345678"), so this keyword keeps
+    // a Verity Sense or H10 from satisfying a Polar 360 observation. Left spacing-agnostic on
+    // purpose -- "Polar 360" would miss a device advertising as "Polar360".
+    private val deviceIdentifier = setOf(PolarController.POLAR_360_MODEL)
     private val polarController get() = MoreApplication.polarController!!
     private var streamingJob: Job? = null
     private var offlineRecordingJob: Job? = null

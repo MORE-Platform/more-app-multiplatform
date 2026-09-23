@@ -34,7 +34,12 @@ class ConsentViewModel: ObservableObject {
     lazy var permissionManager = PermissionManager()
     var permissionGranted = false
 
-    init(registrationService: RegistrationService) {
+    /// Lets the caller interject a step before registration completes (the Polar profile form);
+    /// when set, the caller is responsible for calling acceptConsent itself afterwards.
+    var onConsentAccepted: (() -> Void)?
+
+    init(registrationService: RegistrationService, onConsentAccepted: (() -> Void)? = nil) {
+        self.onConsentAccepted = onConsentAccepted
         registration = registrationService
         coreModel = CoreConsentViewModel(registrationService: registrationService, studyConsentTitle: String(localized: "study_consent"))
 
@@ -68,7 +73,9 @@ class ConsentViewModel: ObservableObject {
     }
 
     private func acceptConsent() {
-        if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
+        if let onConsentAccepted {
+            onConsentAccepted()
+        } else if let uniqueId = UIDevice.current.identifierForVendor?.uuidString {
             registration.acceptConsent(uniqueDeviceId: uniqueId)
         }
     }

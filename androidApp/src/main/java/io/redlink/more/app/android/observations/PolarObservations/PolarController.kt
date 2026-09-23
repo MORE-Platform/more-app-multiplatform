@@ -233,14 +233,19 @@ class PolarController {
 
         val all = mutableListOf<Any>()
         for (entry in entries) {
-            if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
-                val startNs =
-                    (entry.date.toInstant(ZoneOffset.UTC).toEpochMilli() - POLAR_EPOCH_OFFSET_MILLIS) * 1_000_000L
-                PolarPpiObservation.recording_startTimestamp = startNs
-                Napier.d(tag = "PolarController::drain") { "[ppi] recording_startTimestamp=$startNs (entry.date=${entry.date})" }
-            }
             val samples = try {
-                polarConnector.polarApi.getOfflineRecord(deviceId, entry, null).extractSamples(dataType, entry)
+                val record = polarConnector.polarApi.getOfflineRecord(deviceId, entry, null)
+                if (dataType == PolarBleApi.PolarDeviceDataType.PPI) {
+                    // The recording header start time is on the device's system (UTC) clock -- the
+                    // same clock the sample timestamps come from. entry.date comes from the file
+                    // path, which is the device's *local* wall clock, and would be off by the
+                    // phone's UTC offset.
+                    val startNs =
+                        (record.startTime.toInstant(ZoneOffset.UTC).toEpochMilli() - POLAR_EPOCH_OFFSET_MILLIS) * 1_000_000L
+                    PolarPpiObservation.recording_startTimestamp = startNs
+                    Napier.d(tag = "PolarController::drain") { "[ppi] recording_startTimestamp=$startNs (startTime=${record.startTime})" }
+                }
+                record.extractSamples(dataType, entry)
             } catch (e: Exception) {
                 // Unreadable/corrupt entry: remove it so it does not accumulate on the device
                 // forever, then move on with no samples from it.
@@ -351,9 +356,16 @@ class PolarController {
             .filter { it.type == dataType }
             .toList()
 
+    /**
+     * The SDK reads the passed [LocalDateTime] as *phone-local* wall clock: it stores it as the
+     * device's local time together with the systemDefault UTC offset, and derives the device's
+     * system (UTC) clock from `atZone(systemDefault()).toInstant()`. Passing UTC wall clock here
+     * would subtract the offset a second time and leave the device -- and therefore every sample
+     * timestamp -- off by the phone's UTC offset.
+     */
     private suspend fun syncDeviceTimeLocked(deviceId: String) {
         try {
-            polarConnector.polarApi.setLocalTime(deviceId, LocalDateTime.now(ZoneOffset.UTC))
+            polarConnector.polarApi.setLocalTime(deviceId, LocalDateTime.now())
             Napier.i(tag = "PolarController::syncDeviceTime") { "Device time synced for $deviceId" }
         } catch (e: Exception) {
             Napier.w(tag = "PolarController::syncDeviceTime") { "Failed to sync device time (ignored): ${e.message}" }
@@ -364,7 +376,9 @@ class PolarController {
     private suspend fun checkIfDeviceIsSetupLocked(deviceId: String): Boolean {
         if (polarConnector.polarApi.isFtuDone(deviceId)) return true
 
-        val deviceTime = LocalDateTime.now(ZoneOffset.UTC)
+        // Parsed by the SDK with this exact pattern and handed to setLocalTime, so it must carry
+        // phone-local wall clock -- the trailing 'Z' is a literal in the pattern, not a UTC marker.
+        val deviceTime = LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
 
         val profile = PolarUserProfile.load()
