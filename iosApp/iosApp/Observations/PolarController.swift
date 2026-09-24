@@ -304,7 +304,6 @@ final class PolarController {
         var entries: [PolarOfflineRecordingEntry] = []
         do {
             for try await entry in polarConnector.polarApi.listOfflineRecordings(deviceId) {
-                Napier.d("PolarController: [\(dataType)] Listed entry: type=\(entry.type), date=\(entry.date), size=\(entry.size) — matches=\(entry.type == dataType)")
                 if entry.type == dataType {
                     entries.append(entry)
                 }
@@ -313,17 +312,19 @@ final class PolarController {
             Napier.e("PolarController: [\(dataType)] listOfflineRecordings error: \(error)")
             throw error
         }
+        // Only the count is logged — logging one line per entry floods the logger and can kill the
+        // app when a device holds hundreds of recordings.
+        Napier.d("PolarController: [\(dataType)] Listed \(entries.count) matching entries")
 
         var all: [Any] = []
+        var emptyEntries = 0
         for entry in entries {
             if dataType == .ppi {
                 let epoch2000: TimeInterval = 946_684_800
                 let startSecs = entry.date.timeIntervalSince1970 - epoch2000
                 let startNs = startSecs > 0 ? UInt64(startSecs) * 1_000_000_000 : 0
                 PolarPpiObservation.recording_startTimestamp = startNs
-                Napier.d("PolarController: [ppi] recording_startTimestamp=\(startNs) (entry.date=\(entry.date))")
             }
-            Napier.d("PolarController: [\(dataType)] Fetching record: date=\(entry.date), size=\(entry.size)")
 
             let data: PolarOfflineRecordingData
             do {
@@ -336,15 +337,17 @@ final class PolarController {
                 continue
             }
 
-            if case .emptyData(let startTime) = data {
-                Napier.w("PolarController: [\(dataType)] SDK returned emptyData — entry={type=\(entry.type), date=\(entry.date), size=\(entry.size)}, startTime=\(startTime) — likely no skin contact during recording; removing entry")
-            }
+            // NOTE: never log per entry here — neither the sample list (a long recording
+            // stringifies hundreds of thousands of samples into one String) nor one line per
+            // entry, which floods the logger when many recordings are read in one go.
+            if case .emptyData = data { emptyEntries += 1 }
             let samples = extractSamples(from: data)
-            // NOTE: never log the sample list itself — for a long recording that stringifies
-            // hundreds of thousands of samples into one String and can OOM-kill the app.
-            Napier.d("PolarController: [\(dataType)] extractSamples result: count=\(samples.count), removing entry...")
             await removeQuietly(deviceId: deviceId, entry: entry)
             all.append(contentsOf: samples)
+        }
+        if emptyEntries > 0 {
+            // Aggregated on purpose: one warning per empty recording floods the logger.
+            Napier.w("PolarController: [\(dataType)] \(emptyEntries) of \(entries.count) entries were empty — likely no skin contact during those recordings")
         }
         Napier.i("PolarController: [\(dataType)] Total samples returned: \(all.count)")
         return all
@@ -355,7 +358,6 @@ final class PolarController {
     private func removeQuietly(deviceId: String, entry: PolarOfflineRecordingEntry) async {
         do {
             try await polarConnector.polarApi.removeOfflineRecord(deviceId, entry: entry)
-            Napier.d("PolarController: Entry removed")
         } catch {
             Napier.e("PolarController: removeOfflineRecord error (ignored): \(error)")
         }
@@ -491,26 +493,23 @@ final class PolarController {
             }
 
         case let .ppiOfflineRecordingData(ppiData, _):
-            Napier.d("PolarController: ppiOfflineRecordingData — sample count=\(ppiData.samples.count)")
             return ppiData.samples.map {
                 ppi_data(hr: $0.hr, timestamp: $0.timeStamp,
                          ppiInMs: $0.ppInMs, ppiErrorEstimate: $0.ppErrorEstimate, skinContact: $0.skinContactStatus)
             }
 
         case let .temperatureOfflineRecordingData(tempData, _):
-            Napier.d("PolarController: temperatureOfflineRecordingData — sample count=\(tempData.samples.count)")
             return tempData.samples.map {
                 temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
             }
 
         case let .skinTemperatureOfflineRecordingData(tempData, _):
-            Napier.d("PolarController: skinTemperatureOfflineRecordingData — sample count=\(tempData.samples.count)")
             return tempData.samples.map {
                 temp_data(temp: $0.temperature, Timestamp: $0.timeStamp)
             }
 
-        case let .emptyData(startTime):
-            Napier.w("PolarController: extractSamples — SDK returned emptyData (startTime=\(startTime)); recording may be too short or corrupted")
+        case .emptyData:
+            // Reported in aggregate by the caller — never log once per entry.
             return []
 
         default:
@@ -552,6 +551,28 @@ final class PolarController {
     func clearBackgroundDeviceId() {
         AppDelegate.appGroupUserDefaults?.removeObject(forKey: Self.backgroundDeviceIdKey)
         Napier.i("PolarController: cleared background deviceId")
+    }
+
+    // MARK: - Offline mode persistence
+
+    private static func offlineModeKey(_ dataKey: String) -> String { "polar360.offlineMode.\(dataKey)" }
+
+    /// Remembers whether the observation behind `dataKey` runs as an offline recording.
+    ///
+    /// Offline mode is part of the observation's configuration, but the config is only applied when
+    /// an observation is started. A Polar observation that has never been started in this process —
+    /// after a cold launch, or when the last start failed because the device was out of range —
+    /// would therefore report `offlineMode == false`, get auto-paused by the periodic task-state
+    /// update while the device is away, and send the UI back to the "start data capture" screen even
+    /// though the device is still recording. Persisting the flag keeps that knowledge across
+    /// instances and launches.
+    func persistOfflineMode(_ enabled: Bool, for dataKey: String) {
+        AppDelegate.appGroupUserDefaults?.set(enabled, forKey: Self.offlineModeKey(dataKey))
+    }
+
+    /// The last persisted offline mode for `dataKey` — false when the observation has never run.
+    func restoredOfflineMode(for dataKey: String) -> Bool {
+        AppDelegate.appGroupUserDefaults?.bool(forKey: Self.offlineModeKey(dataKey)) ?? false
     }
 }
 

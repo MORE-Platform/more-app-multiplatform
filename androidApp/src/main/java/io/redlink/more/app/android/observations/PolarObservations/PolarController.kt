@@ -10,6 +10,7 @@
  */
 package io.redlink.more.app.android.observations.PolarObservations
 
+import android.content.Context
 import com.polar.sdk.api.PolarBleApi
 import com.polar.sdk.api.model.PolarFirstTimeUseConfig
 import com.polar.sdk.api.model.PolarOfflineRecordingData
@@ -434,5 +435,34 @@ class PolarController {
 
         /** Polar timestamps count from 2000-01-01T00:00:00Z. */
         private const val POLAR_EPOCH_OFFSET_MILLIS = 946_684_800_000L
+
+        // --- Offline mode persistence ---
+
+        private const val OFFLINE_MODE_PREFS_NAME = "polar360_offline_mode"
+
+        private fun offlineModePrefs() =
+            MoreApplication.appContext?.getSharedPreferences(
+                OFFLINE_MODE_PREFS_NAME,
+                Context.MODE_PRIVATE
+            )
+
+        /**
+         * Remembers whether the observation behind [dataKey] runs as an offline recording.
+         *
+         * Offline mode is part of the observation's configuration, but the config is only applied
+         * when an observation is started. A Polar observation that has never been started in this
+         * process -- after a cold launch, or when the last start failed because the device was out
+         * of range -- would therefore report `offlineMode == false`, get auto-paused by the
+         * periodic task-state update while the device is away, and send the UI back to the
+         * "start data capture" screen even though the device is still recording. Persisting the
+         * flag keeps that knowledge across instances and process restarts.
+         */
+        fun persistOfflineMode(enabled: Boolean, dataKey: String) {
+            offlineModePrefs()?.edit()?.putBoolean(dataKey, enabled)?.apply()
+        }
+
+        /** The last persisted offline mode for [dataKey] -- false when the observation never ran. */
+        fun restoredOfflineMode(dataKey: String): Boolean =
+            offlineModePrefs()?.getBoolean(dataKey, false) ?: false
     }
 }

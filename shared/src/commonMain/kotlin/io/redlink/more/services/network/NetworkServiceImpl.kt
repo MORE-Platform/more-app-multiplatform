@@ -163,7 +163,9 @@ class NetworkServiceImpl(
 
     override suspend fun sendData(data: DataBulk): Pair<Set<String>, NetworkServiceError?> {
         try {
-            Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints with first being ${data.dataPoints.first()}..." }
+            // Counts only — logging a data point stringifies a full sample window and can
+            // OOM-kill the app when a large offline recording is uploaded.
+            Napier.i(tag = "NetworkService::sendData") { "Sending bulk ${data.bulkId} with ${data.dataPoints.size} datapoints..." }
             val client = networkClients.getDataApi() ?: return Pair(
                 emptySet(),
                 NetworkServiceError(null, "Failed to init HTTP client")

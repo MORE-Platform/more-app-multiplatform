@@ -21,7 +21,11 @@ class PolarHrObservation: Observation_ {
     private var streamTask: Task<Void, Never>?
     private var offlineRecordingTask: Task<Void, Never>?
     private var deviceListener: AnyCancellable?
-    private var offlineMode = false
+    /// Restored from the last applied config so an instance that has not been started yet
+    /// (cold launch, or a start that failed while the device was out of range) already knows it
+    /// is an offline recording and must not be auto-paused. See
+    /// `PolarController.persistOfflineMode(_:for:)`.
+    private var offlineMode = PolarController.shared.restoredOfflineMode(for: PolarHrObservation.dataKey)
     private var stopBackgroundSync: BackgroundSync?
 
     private static let notificationBackoffInterval: TimeInterval = 60
@@ -160,6 +164,7 @@ class PolarHrObservation: Observation_ {
 
     override func applyObservationConfig(settings: Dictionary<String, Any>) {
         offlineMode = controller.isOfflineRecordingMode(config: settings)
+        controller.persistOfflineMode(offlineMode, for: Self.dataKey)
     }
 
     override func shouldAutoPause() -> Bool { !offlineMode }

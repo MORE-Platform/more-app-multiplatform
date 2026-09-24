@@ -69,7 +69,12 @@ class PolarPpiObservation(repos: MainRepository) :
     private var offlineRecordingJob: Job? = null
     private var setupJob: Job? = null
     private var deviceConnectionListener: Job? = null
-    private var offlineMode = false
+    /**
+     * Restored from the last applied config so an instance that has not been started yet
+     * (cold launch, or a start that failed while the device was out of range) already knows it is
+     * an offline recording and must not be auto-paused. See [PolarController.persistOfflineMode].
+     */
+    private var offlineMode = PolarController.restoredOfflineMode(DATA_KEY)
 
     companion object {
         /**
@@ -319,6 +324,7 @@ class PolarPpiObservation(repos: MainRepository) :
 
     override fun applyObservationConfig(settings: Map<String, Any>) {
         offlineMode = polarController.isOfflineRecordingMode(settings)
+        PolarController.persistOfflineMode(offlineMode, DATA_KEY)
     }
 
     private fun hasPermissions(context: Context): Boolean {

@@ -22,7 +22,9 @@ fun Collection<ObservationDataEntity>.mapAsBulkData(): DataBulk? {
     if (dataPoints.isEmpty() || dataPoints.firstOrNull() == null) {
         return null
     }
-    Napier.i { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size} with first being: ${dataPoints.first()}" }
+    // Never log a data point itself: one offline-recording point holds a whole sample window,
+    // so stringifying it builds a huge String and can OOM-kill the app on big uploads.
+    Napier.i { "Created new databulk with ID: $bulkId; Datapoints: ${dataPoints.size}" }
     return DataBulk(
         bulkId = bulkId,
         dataPoints = dataPoints
