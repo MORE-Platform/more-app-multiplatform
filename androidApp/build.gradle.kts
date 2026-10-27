@@ -58,13 +58,13 @@ val envProps = loadEnvFromFile()
 
 android {
     namespace = "io.redlink.more.app.android"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "ac.at.lbg.dhp.more"
         minSdk = 29
         targetSdk = 37
-        versionCode = 37
-        versionName = "5.0.0"
+        versionCode = 38
+        versionName = "5.1.0"
     }
     buildFeatures {
         compose = true
